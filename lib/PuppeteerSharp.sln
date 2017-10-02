@@ -1,0 +1,23 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PuppeteerSharp", ".\PuppeteerSharp\PuppeteerSharp.csproj", "{19B9B1ED-AF6C-4DAF-8B73-401570111F88}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PuppeteerSharp.Tests", ".\PuppeteerSharp.Tests\PuppeteerSharp.Tests.csproj", "{1682289E-5ED3-405F-8ABC-01A3ED58CBC6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{19B9B1ED-AF6C-4DAF-8B73-401570111F88}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19B9B1ED-AF6C-4DAF-8B73-401570111F88}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19B9B1ED-AF6C-4DAF-8B73-401570111F88}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19B9B1ED-AF6C-4DAF-8B73-401570111F88}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1682289E-5ED3-405F-8ABC-01A3ED58CBC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1682289E-5ED3-405F-8ABC-01A3ED58CBC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1682289E-5ED3-405F-8ABC-01A3ED58CBC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1682289E-5ED3-405F-8ABC-01A3ED58CBC6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
