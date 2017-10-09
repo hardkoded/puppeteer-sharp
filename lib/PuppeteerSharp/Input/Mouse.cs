@@ -8,8 +8,8 @@ namespace PuppeteerSharp.Input
     {
         private Session _client;
         private Keyboard _keyboard;
-        private int _x = 0;
-        private int _y = 0;
+        private decimal _x = 0;
+        private decimal _y = 0;
         private string _button = "none";
 
         public Mouse(Session client, Keyboard keyboard)
@@ -18,10 +18,10 @@ namespace PuppeteerSharp.Input
             _keyboard = keyboard;
         }
 
-        public async Task Move(int x, int y, Dictionary<string, object> options = null)
+        public async Task Move(decimal x, decimal y, Dictionary<string, object> options = null)
         {
-            int fromX = _x;
-            int fromY = _y;
+            decimal fromX = _x;
+            decimal fromY = _y;
             _x = x;
             _y = y;
             int steps = options.ContainsKey("steps") ? (int)options["steps"] : 1;
@@ -38,7 +38,7 @@ namespace PuppeteerSharp.Input
             }
         }
 
-        public async Task Click(int x, int y, Dictionary<string, object> options)
+        public async Task Click(decimal x, decimal y, Dictionary<string, object> options)
         {
             await Move(x, y);
             await Down(options);
