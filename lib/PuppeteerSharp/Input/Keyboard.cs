@@ -7,7 +7,7 @@ namespace PuppeteerSharp.Input
     public class Keyboard
     {
         private Session _client;
-        private int _modifiers;
+
         private List<string> _pressedKeys = new List<string>();
         private readonly Dictionary<string, int> _keys = new Dictionary<string, int>(){
             {"Cancel", 3},
@@ -116,6 +116,8 @@ namespace PuppeteerSharp.Input
             {"ZoomOut", 251}
         };
 
+        public int Modifiers { get; set; }
+
         public Keyboard(Session client)
         {
             _client = client;
@@ -131,10 +133,10 @@ namespace PuppeteerSharp.Input
                 _pressedKeys.Add(key);
             }
 
-            _modifiers |= modifierBit(key);
+            Modifiers |= modifierBit(key);
             await _client.Send("Input.dispatchKeyEvent", new Dictionary<string, object>(){
                 {"type", text.Length > 0 ? "keyDown" : "rawKeyDown"},
-                {"modifiers", _modifiers},
+                {"modifiers", Modifiers},
                 {"windowsvirtualKeyCode", CodeForKey(key)},
                 {"key", key},
                 {"text", text},
@@ -145,7 +147,7 @@ namespace PuppeteerSharp.Input
 
         public async Task Up(string key)
         {
-            _modifiers &= modifierBit(key);
+            Modifiers &= modifierBit(key);
 
             if (_pressedKeys.Contains(key))
             {
@@ -154,7 +156,7 @@ namespace PuppeteerSharp.Input
 
             await _client.Send("Input.dispatchKeyEvent", new Dictionary<string, object>(){
                 {"type", "keyUp"},
-                {"modifiers", _modifiers},
+                {"modifiers", Modifiers},
                 {"windowsvirtualKeyCode", CodeForKey(key)},
                 {"key", key}
             });
@@ -164,7 +166,7 @@ namespace PuppeteerSharp.Input
         {
             await _client.Send("Input.dispatchKeyEvent", new Dictionary<string, object>(){
                 {"type", "char"},
-                {"modifiers", _modifiers},
+                {"modifiers", Modifiers},
                 {"key", charText},
                 {"key", charText}
             });
