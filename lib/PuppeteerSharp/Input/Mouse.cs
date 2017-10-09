@@ -28,13 +28,13 @@ namespace PuppeteerSharp.Input
 
             for (var i = 1; i <= steps; i++)
             {
-				await _client.Send("Input.dispatchMouseEvent", new Dictionary<string, object>(){
-    				{"type", "mouseMoved"},
+                await _client.Send("Input.dispatchMouseEvent", new Dictionary<string, object>(){
+                    {"type", "mouseMoved"},
                     {"button", _button},
                     {"x", fromX + (_x - fromX) * (i / steps)},
-    				{"y", fromY + (_y - fromY) * (i / steps)},
+                    {"y", fromY + (_y - fromY) * (i / steps)},
                     {"modifiers", _keyboard.Modifiers}
-    			});
+                });
             }
         }
 
@@ -43,39 +43,39 @@ namespace PuppeteerSharp.Input
             await Move(x, y);
             await Down(options);
 
-            if(options.ContainsKey("delay"))
+            if (options.ContainsKey("delay"))
             {
                 await Task.Delay((int)options["delay"]);
             }
             await Up(options);
         }
 
-		public async Task Down(Dictionary<string, object> options)
-		{
+        public async Task Down(Dictionary<string, object> options)
+        {
             _button = options.ContainsKey("button") ? options["button"].ToString() : "left";
 
-			await _client.Send("Input.dispatchMouseEvent", new Dictionary<string, object>(){
+            await _client.Send("Input.dispatchMouseEvent", new Dictionary<string, object>(){
                 {"type", "mousePressed"},
                 {"button", _button},
                 {"x", _x},
-				{"y", _y},
+                {"y", _y},
                 {"modifiers", _keyboard.Modifiers},
                 {"clickCount", options.ContainsKey("clickCount") ? (int)options["clickCount"]: 1}
-			});
-		}
+            });
+        }
 
-		public async Task Up(Dictionary<string, object> options)
-		{
+        public async Task Up(Dictionary<string, object> options)
+        {
             _button = "none";
 
-			await _client.Send("Input.dispatchMouseEvent", new Dictionary<string, object>(){
-				{"type", "mouseReleased"},
+            await _client.Send("Input.dispatchMouseEvent", new Dictionary<string, object>(){
+                {"type", "mouseReleased"},
                 {"button", options.ContainsKey("button") ? options["button"].ToString() : "left"},
-				{"x", _x},
-				{"y", _y},
-				{"modifiers", _keyboard.Modifiers},
-				{"clickCount", options.ContainsKey("clickCount") ? (int)options["clickCount"]: 1}
-			});
-		}
+                {"x", _x},
+                {"y", _y},
+                {"modifiers", _keyboard.Modifiers},
+                {"clickCount", options.ContainsKey("clickCount") ? (int)options["clickCount"]: 1}
+            });
+        }
     }
 }

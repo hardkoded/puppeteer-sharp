@@ -16,23 +16,23 @@ namespace PuppeteerSharp.Input
             _keyboard = keyboard;
         }
 
-		public async Task Up(decimal x, decimal y)
-		{
+        public async Task Up(decimal x, decimal y)
+        {
             var touchPoints = new[]{
                 new {x= Math.Round(x), y = Math.Round(y)}
             };
 
-			await _client.Send("Input.dispatchTouchEvent", new Dictionary<string, object>(){
-				{"type", "tochStart"},
+            await _client.Send("Input.dispatchTouchEvent", new Dictionary<string, object>(){
+                {"type", "tochStart"},
                 {"touchPoints", touchPoints},
-				{"modifiers", _keyboard.Modifiers},
-			});
+                {"modifiers", _keyboard.Modifiers},
+            });
 
-			await _client.Send("Input.dispatchTouchEvent", new Dictionary<string, object>(){
-				{"type", "touchEnd"},
-				{"touchPoints", touchPoints},
-				{"modifiers", _keyboard.Modifiers},
-			});
-		}
+            await _client.Send("Input.dispatchTouchEvent", new Dictionary<string, object>(){
+                {"type", "touchEnd"},
+                {"touchPoints", touchPoints},
+                {"modifiers", _keyboard.Modifiers},
+            });
+        }
     }
 }
