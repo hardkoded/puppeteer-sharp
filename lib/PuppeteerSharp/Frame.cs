@@ -7,29 +7,28 @@ namespace PuppeteerSharp
     public class Frame
     {
         private Session _client;
-        private Mouse _mouse;
-        private Touchscreen _touchscreen;
+        private Page _page;
         private Frame _parentFrame;
         private string _url = string.Empty;
         private string _id;
         private string _defaultContextId = "<not-initialized>";
+        private object _context = null;
 
-        public Frame(Session client, Mouse mouse, Touchscreen touchscreen, Frame parentFrame, string frameId)
+        public Frame(Session client, Page page, Frame parentFrame, string frameId)
         {
             _client = client;
-            _mouse = mouse;
-            _touchscreen = touchscreen;
+            _page = page;
             _id = frameId;
             _parentFrame = parentFrame;
 
-            if(parentFrame != null)
+            if (parentFrame != null)
             {
                 _parentFrame.ChildFrames.Add(this);
             }
         }
 
-		public List<Frame> ChildFrames = new List<Frame>();
+        public List<Frame> ChildFrames { get; set; } = new List<Frame>();
+        public object ExecutionContext => _context;
 
-
-	}
+    }
 }
