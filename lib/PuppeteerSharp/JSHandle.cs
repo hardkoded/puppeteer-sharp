@@ -8,23 +8,22 @@ namespace PuppeteerSharp
     {
         private ExecutionContext _context;
         private Session _client;
-        private dynamic _remoteObject;
-        private bool _disposed = false;
-
         public JSHandle(ExecutionContext context, Session client, dynamic remoteObject)
         {
             _context = context;
             _client = client;
-            _remoteObject = remoteObject;
+            RemoteObject = remoteObject;
         }
 
         public ExecutionContext ExecutionContext => _context;
+        public bool Disposed { get; set; }
+        public dynamic RemoteObject { get; internal set; }
 
         public async Task<Dictionary<string, object>> GetProperty(string propertyName)
         {
             dynamic response = await _client.Send("Runtime.getProperties", new Dictionary<string, object>()
             {
-                {"objectId", _remoteObject.ObjectId},
+                {"objectId", RemoteObject.ObjectId},
                 {"ownProperties", true}
             });
             var result = new Dictionary<string, object>();
@@ -38,43 +37,43 @@ namespace PuppeteerSharp
 
         public async Task<object> JsonValue()
         {
-            if(((IDictionary<string, object>)_remoteObject).ContainsKey("objectId"))
+            if(((IDictionary<string, object>)RemoteObject).ContainsKey("objectId"))
             {
                 dynamic response = await _client.Send("Retunrime.callFunctionOn", new Dictionary<string, object>()
                 {
                     {"functionDeclaration", "function() { return this; }"},
-                    {"objectId", _remoteObject.objectId},
+                    {"objectId", RemoteObject.objectId},
                     {"returnByValue", true},
                     {"awaitPromise", true}
                 });
                 return Helper.ValueFromRemoteObject(response.result);
             }
 
-            return Helper.ValueFromRemoteObject(_remoteObject);
+            return Helper.ValueFromRemoteObject(RemoteObject);
         }
 
         public ElementHandle AsElement() => null;
 
         public async Task Dispose()
         {
-            if(_disposed)
+            if(Disposed)
             {
                 return;
             }
 
-            _disposed = true;
-            await Helper.ReleaseObject(_client, _remoteObject);
+            Disposed = true;
+            await Helper.ReleaseObject(_client, RemoteObject);
         }
 
         public override string ToString()
         {
-            if (((IDictionary<string, object>)_remoteObject).ContainsKey("objectId"))
+            if (((IDictionary<string, object>)RemoteObject).ContainsKey("objectId"))
             {
-                var type = _remoteObject.subtype ?? _remoteObject.type;
+                var type = RemoteObject.subtype ?? RemoteObject.type;
                 return "JSHandle@" + type;
             }
 
-            return "JSHandle:" + Helper.ValueFromRemoteObject(_remoteObject);
+            return "JSHandle:" + Helper.ValueFromRemoteObject(RemoteObject);
         }
     }
 }
