@@ -23,5 +23,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Input\" />
+    <Folder Include="Helpers\" />
   </ItemGroup>
 </Project>
