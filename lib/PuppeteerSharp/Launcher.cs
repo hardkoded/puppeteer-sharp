@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
 using System.Linq;
 using System.IO;
+using System.Diagnostics;
 
 namespace PuppeteerSharp
 {
@@ -32,16 +33,20 @@ namespace PuppeteerSharp
             "--use-mock-keychain"
         };
 
+        private static bool _chromeClosed;
+        private static Process _chromeProcess;
+        private static string _temporaryUserDataDir = null;
+        private static Connection _connection = null;
+
         public Launcher()
         {
         }
 
         internal static void Launch(Dictionary<string, object> options, PuppeteerOptions puppeteerOptions)
         {
-            string temporaryUserDataDir;
             var chromeArguments = new List<string>(_defaultArgs);
 
-            if(options.ContainsKey("appMode"))
+            if (options.ContainsKey("appMode"))
             {
                 options["headless"] = false;
             }
@@ -50,13 +55,13 @@ namespace PuppeteerSharp
                 chromeArguments.AddRange(_automationArgs);
             }
 
-            if(options.ContainsKey("args") && 
+            if (options.ContainsKey("args") &&
                ((string[])options["args"]).Any(i => i.StartsWith("--user-data-dir", StringComparison.Ordinal)))
             {
-                if(!options.ContainsKey("userDataDir"))
+                if (!options.ContainsKey("userDataDir"))
                 {
-                    temporaryUserDataDir = GetTemporaryDirectory();
-                    chromeArguments.Add($"--user-data-dir=${temporaryUserDataDir}");
+                    _temporaryUserDataDir = GetTemporaryDirectory();
+                    chromeArguments.Add($"--user-data-dir=${_temporaryUserDataDir}");
                 }
                 else
                 {
@@ -64,7 +69,7 @@ namespace PuppeteerSharp
                 }
             }
 
-            if((bool)options.GetValueOrDefault("devtools"))
+            if ((bool)options.GetValueOrDefault("devtools"))
             {
                 chromeArguments.Add("--auto-open-devtools-for-tabs");
                 options["headless"] = false;
@@ -72,7 +77,7 @@ namespace PuppeteerSharp
 
             if ((bool)options.GetValueOrDefault("headless"))
             {
-                chromeArguments.AddRange(new []{
+                chromeArguments.AddRange(new[]{
                     "--headless",
                     "--disable-gpu",
                     "--hide-scrollbars",
@@ -82,57 +87,48 @@ namespace PuppeteerSharp
 
             var chromeExecutable = (options.GetValueOrDefault("executablePath") ?? "").ToString();
 
-            if(!string.IsNullOrEmpty(chromeExecutable))
+            if (!string.IsNullOrEmpty(chromeExecutable))
             {
-                var downloader = Downloader.CreateDefault();-
-                var revisionInfo = downloader.RevisionInfo(Downloader.CurrentPlatform(), 
+                var downloader = Downloader.CreateDefault();
+                var revisionInfo = downloader.RevisionInfo(Downloader.CurrentPlatform(),
                                                            puppeteerOptions.ChromiumRevision);
+                chromeExecutable = revisionInfo.ExecutablePath;
+            }
+
+            if (options.ContainsKey("args"))
+            {
+                chromeArguments.AddRange((string[])options["args"]);
+            }
+
+            _chromeProcess = new Process();
+            _chromeProcess.StartInfo.FileName = chromeExecutable;
+            _chromeProcess.StartInfo.Arguments = string.Join(" ", chromeArguments);
+
+            SetEnvVariables(_chromeProcess.StartInfo.Environment, options.ContainsKey("env") ?
+                            (IDictionary<string, string>)options["env"] :
+                            (IDictionary<string, string>)Environment.GetEnvironmentVariables());
+
+            if (!options.ContainsKey("dumpio"))
+            {
+                _chromeProcess.StartInfo.RedirectStandardOutput = false;
+                _chromeProcess.StartInfo.RedirectStandardError = false;
+            }
+
+            _chromeProcess.Exited += async (sender, e) => {
+                _chromeClosed = true;
+                await KillChrome();
+            };
+
+            try 
+            {
+                var connectionDelay = (int)()options.TryGetValue("slowMo") ?? 0);
+            }
+            catch
+            {
+                ForceKillChrome();
             }
             /*
-            if (typeof chromeExecutable !== 'string') {
-              const downloader = Downloader.createDefault();
-              const revisionInfo = downloader.revisionInfo(downloader.currentPlatform(), ChromiumRevision);
-              console.assert(revisionInfo.downloaded, `Chromium revision is not downloaded. Run "npm install"`);
-              chromeExecutable = revisionInfo.executablePath;
-            }
-            if (Array.isArray(options.args))
-              chromeArguments.push(...options.args);
-
-            const chromeProcess = childProcess.spawn(
-                chromeExecutable,
-                chromeArguments,
-                {
-                  detached: true,
-                  env: options.env || process.env
-                }
-            );
-            if (options.dumpio) {
-              chromeProcess.stdout.pipe(process.stdout);
-              chromeProcess.stderr.pipe(process.stderr);
-            }
-
-            let chromeClosed = false;
-            const waitForChromeToClose = new Promise((fulfill, reject) => {
-              chromeProcess.once('close', () => {
-                chromeClosed = true;
-                // Cleanup as processes exit.
-                if (temporaryUserDataDir) {
-                  removeFolderAsync(temporaryUserDataDir)
-                      .then(() => fulfill())
-                      .catch(err => console.error(err));
-                } else {
-                  fulfill();
-                }
-              });
-            });
-
-            const listeners = [ helper.addEventListener(process, 'exit', forceKillChrome) ];
-            if (options.handleSIGINT !== false)
-              listeners.push(helper.addEventListener(process, 'SIGINT', forceKillChrome));
-            if (options.handleSIGTERM !== false)
-              listeners.push(helper.addEventListener(process, 'SIGTERM', killChrome));
-            if (options.handleSIGHUP !== false)
-              listeners.push(helper.addEventListener(process, 'SIGHUP', killChrome));
+          
             @type {?Connection} 
             let connection = null;
             try
@@ -148,6 +144,36 @@ namespace PuppeteerSharp
                 throw e;
             }
             */
+        }
+
+        private static async Task KillChrome()
+        {
+            if (!string.IsNullOrEmpty(_temporaryUserDataDir))
+            {
+                await ForceKillChrome(); 
+            }
+            else if(_connection != null)
+            {
+                await _connection.SendAsync("Browser.close", null);
+            }
+        }
+
+        private static async Task ForceKillChrome()
+        {
+            if (_chromeProcess.Id != 0 && Process.GetProcessById(_chromeProcess.Id) != null)
+            {
+                _chromeProcess.Kill();
+            }
+
+            await Task.Factory.StartNew(path => Directory.Delete((string)path, true), _temporaryUserDataDir);
+        }
+
+        private static void SetEnvVariables(IDictionary<string, string> environment, IDictionary<string, string> dictionary)
+        {
+            foreach(var item in dictionary)
+            {
+                environment[item.Key] = item.Value;
+            }
         }
 
         public static string GetTemporaryDirectory()

@@ -23,15 +23,48 @@ namespace PuppeteerSharp
             return new Downloader(downloadsFolder);
         }
 
-        internal static string CurrentPlatform()
+        internal static Platform CurrentPlatform()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                return "mac";
+                return Platform.MacOS;
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                return "linux";
+                return Platform.Linux;
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                return IntPtr.Size == 8 ? "win64" : "win32";
-            return string.Empty;
+                return IntPtr.Size == 8 ? Platform.Win64 : Platform.Win32;
+            return Platform.Unknown;
+        }
+
+        internal RevisionInfo RevisionInfo(Platform platform, string revision)
+        {
+            var result = new RevisionInfo
+            {
+                FolderPath = GetFolderPath(platform, revision),
+                Revision = revision
+            };
+            result.ExecutablePath = GetExecutablePath(platform, result.FolderPath);
+            return result;
+        }
+
+        private static string GetExecutablePath(Platform platform, string folderPath)
+        {
+            switch (platform)
+            {
+                case Platform.MacOS:
+                    return Path.Combine(folderPath, "chrome-mac", "Chromium.app", "Contents",
+                                                         "MacOS", "Chromium");
+                case Platform.Linux:
+                    return Path.Combine(folderPath, "chrome-linux", "chrome");
+                case Platform.Win32:
+                case Platform.Win64:
+                    return Path.Combine(folderPath, "chrome-win32", "chrome.exe");
+                default:
+                    throw new ArgumentException("Invalid platform", nameof(platform));
+            }
+        }
+
+        private string GetFolderPath(Platform platform, string revision)
+        {
+            return Path.Combine(_downloadsFolder, $"{platform.ToString()}-{revision}");
         }
     }
 }
