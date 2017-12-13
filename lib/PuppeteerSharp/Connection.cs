@@ -129,7 +129,7 @@ namespace PuppeteerSharp
         #endregion
         #region Static Methods
 
-        public async Task<Connection> Create(string url, int delay = 0)
+        public static async Task<Connection> Create(string url, int delay = 0)
         {
             var ws = new ClientWebSocket();
             await ws.ConnectAsync(new Uri(url), default(CancellationToken)).ConfigureAwait(false);

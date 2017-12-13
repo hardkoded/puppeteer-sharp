@@ -109,6 +109,11 @@ namespace PuppeteerSharp
             throw new NotImplementedException();
         }
 
+        internal static object Create(Connection connection, Dictionary<string, object> options, Func<Task> killChrome)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
     }
 }

@@ -5,6 +5,7 @@ using PuppeteerSharp.Helpers;
 using System.Linq;
 using System.IO;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace PuppeteerSharp
 {
@@ -42,7 +43,7 @@ namespace PuppeteerSharp
         {
         }
 
-        internal static void Launch(Dictionary<string, object> options, PuppeteerOptions puppeteerOptions)
+        internal static async Task Launch(Dictionary<string, object> options, PuppeteerOptions puppeteerOptions)
         {
             var chromeArguments = new List<string>(_defaultArgs);
 
@@ -121,29 +122,52 @@ namespace PuppeteerSharp
 
             try 
             {
-                var connectionDelay = (int)()options.TryGetValue("slowMo") ?? 0);
+                var connectionDelay = (int)(options.GetValueOrDefault("slowMo") ?? 0);
+                var browserWSEndpoint = await WaitForEndpoint(_chromeProcess, 
+                                                              (int)(options.GetValueOrDefault("timeout") ?? 30 * 100));
+
+                _connection = await Connection.Create(browserWSEndpoint, connectionDelay);
+                return Browser.Create(_connection, options, KillChrome);
             }
-            catch
+            catch(Exception ex)
             {
-                ForceKillChrome();
+                await ForceKillChrome();
+                throw new Exception("Failed to create connection", ex);
             }
-            /*
-          
-            @type {?Connection} 
-            let connection = null;
-            try
+
+        }
+
+        private static Task<string> WaitForEndpoint(Process chromeProcess, int timeout)
+        {
+            var taskWrapper = new TaskCompletionSource<string>();
+
+            var output = string.Empty;
+
+            chromeProcess.OutputDataReceived += (sender, e) =>
             {
-                const connectionDelay = options.slowMo || 0;
-                const browserWSEndpoint = await waitForWSEndpoint(chromeProcess, options.timeout || 30 * 1000);
-                connection = await Connection.create(browserWSEndpoint, connectionDelay);
-                return Browser.create(connection, options, killChrome);
-            }
-            catch (e)
+                output += e.Data + "\n";
+                var match = Regex.Match(e.Data, "^DevTools listening on (ws:\/\/.*)");
+
+                if(!match.Success)
+                {
+                    return;
+                }
+
+                CleanUp();
+                taskWrapper.SetResult(match.Value);
+            };
+
+            chromeProcess.Exited += (sender, e) =>
             {
-                forceKillChrome();
-                throw e;
-            }
-            */
+
+            };
+
+            return taskWrapper.Task;
+        }
+
+        private static void CleanUp()
+        {
+            throw new NotImplementedException();
         }
 
         private static async Task KillChrome()
