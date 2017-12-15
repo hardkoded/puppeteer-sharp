@@ -10,8 +10,9 @@ namespace PuppeteerSharp
         {
         }
 
-        public static async void Launch(Dictionary<string, object> options) {
-            Launcher.Launch(options);
+        public static async void Launch(Dictionary<string, object> options, PuppeteerOptions puppeteerOptions) 
+        {
+            Launcher.Launch(options, puppeteerOptions);
         }
     }
 }

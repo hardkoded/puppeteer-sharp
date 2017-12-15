@@ -7,7 +7,7 @@ namespace PuppeteerSharp
 {
     public class Browser
     {
-        public Browser(Connection connection, Dictionary<string, object> options)
+        public Browser(Connection connection, Dictionary<string, object> options, Func<Task> closeCallBack)
         {
             Connection = connection;
             IgnoreHTTPSErrors = options.ContainsKey("ignoreHTTPSErrors") && (bool)options["ignoreHTTPSErrors"];
@@ -15,6 +15,8 @@ namespace PuppeteerSharp
 
             Connection.Closed += (object sender, EventArgs e) => Disconnected?.Invoke(this, new EventArgs());
             Connection.MessageReceived += Connect_MessageReceived;
+
+            _closeCallBack = closeCallBack;
         }
 
         #region Properties
@@ -22,6 +24,7 @@ namespace PuppeteerSharp
         public event EventHandler Closed;
         public event EventHandler Disconnected;
         public event EventHandler<TargetChangedArgs> TargetChanged;
+        private event Func<Task> _closeCallBack;
 
         public string WebSocketEndpoint
         {
@@ -109,9 +112,16 @@ namespace PuppeteerSharp
             throw new NotImplementedException();
         }
 
-        internal static object Create(Connection connection, Dictionary<string, object> options, Func<Task> killChrome)
+        internal static async Task<Browser> CreateAsync(Connection connection, Dictionary<string, object> options, 
+                                                        Func<Task> closeCallBack)
         {
-            throw new NotImplementedException();
+            var browser = new Browser(connection, options, closeCallBack);
+            await connection.SendAsync("Target.setDiscoverTargets", new Dictionary<string, object>()
+            {
+                { "discover", false }
+            });
+
+            return browser;
         }
 
         #endregion

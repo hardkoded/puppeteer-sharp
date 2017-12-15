@@ -6,6 +6,7 @@ using System.Linq;
 using System.IO;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace PuppeteerSharp
 {
@@ -43,7 +44,7 @@ namespace PuppeteerSharp
         {
         }
 
-        internal static async Task Launch(Dictionary<string, object> options, PuppeteerOptions puppeteerOptions)
+        internal static async Task<Browser> Launch(Dictionary<string, object> options, PuppeteerOptions puppeteerOptions)
         {
             var chromeArguments = new List<string>(_defaultArgs);
 
@@ -127,7 +128,7 @@ namespace PuppeteerSharp
                                                               (int)(options.GetValueOrDefault("timeout") ?? 30 * 100));
 
                 _connection = await Connection.Create(browserWSEndpoint, connectionDelay);
-                return Browser.Create(_connection, options, KillChrome);
+                return await Browser.CreateAsync(_connection, options, KillChrome);
             }
             catch(Exception ex)
             {
@@ -146,7 +147,7 @@ namespace PuppeteerSharp
             chromeProcess.OutputDataReceived += (sender, e) =>
             {
                 output += e.Data + "\n";
-                var match = Regex.Match(e.Data, "^DevTools listening on (ws:\/\/.*)");
+                var match = Regex.Match(e.Data, "^DevTools listening on (ws:\\/\\/.*)");
 
                 if(!match.Success)
                 {
@@ -159,8 +160,26 @@ namespace PuppeteerSharp
 
             chromeProcess.Exited += (sender, e) =>
             {
+                CleanUp();
 
+                var error = chromeProcess.StandardError.ReadToEnd();
+                taskWrapper.SetException(new ChromeProcessException($"Failed to launch chrome! {error}"));
             };
+
+            if(timeout > 0)
+            {
+                //We have to declare timer before initializing it because if we don't do this 
+                //we can't dispose it in the action created in the constructor
+                Timer timer = null;
+
+                timer = new Timer((state) => {
+                    taskWrapper.SetException(
+                        new ChromeProcessException($"Timed out after ${timeout} ms while trying to connect to Chrome! " +
+                                                   "The only Chrome revision guaranteed to work is r${ChromiumRevision}"));
+                    timer.Dispose();
+                }, null, timeout, 0);
+
+            }
 
             return taskWrapper.Task;
         }
