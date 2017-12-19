@@ -34,7 +34,7 @@ namespace PuppeteerSharp
 
                 try
                 {
-                    remoteObject = await _client.Send("Runtime.evaluate", new Dictionary<string, object>()
+                    remoteObject = await _client.SendAsync("Runtime.evaluate", new Dictionary<string, object>()
                     {
                         {"expression", _contextID},
                         {"returnByValue", false},
@@ -65,7 +65,7 @@ namespace PuppeteerSharp
                                             nameof(prototypeHandle));
             }
 
-            dynamic response = await _client.Send("Runtime.queryObjects", new Dictionary<string, object>()
+            dynamic response = await _client.SendAsync("Runtime.queryObjects", new Dictionary<string, object>()
             {
                 {"prototypeObjectId", prototypeHandle.RemoteObject.objectId}
             });

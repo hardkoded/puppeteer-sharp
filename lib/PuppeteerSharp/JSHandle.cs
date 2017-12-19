@@ -21,7 +21,7 @@ namespace PuppeteerSharp
 
         public async Task<Dictionary<string, object>> GetProperty(string propertyName)
         {
-            dynamic response = await _client.Send("Runtime.getProperties", new Dictionary<string, object>()
+            dynamic response = await _client.SendAsync("Runtime.getProperties", new Dictionary<string, object>()
             {
                 {"objectId", RemoteObject.ObjectId},
                 {"ownProperties", true}
@@ -39,7 +39,7 @@ namespace PuppeteerSharp
         {
             if(((IDictionary<string, object>)RemoteObject).ContainsKey("objectId"))
             {
-                dynamic response = await _client.Send("Retunrime.callFunctionOn", new Dictionary<string, object>()
+                dynamic response = await _client.SendAsync("Retunrime.callFunctionOn", new Dictionary<string, object>()
                 {
                     {"functionDeclaration", "function() { return this; }"},
                     {"objectId", RemoteObject.objectId},

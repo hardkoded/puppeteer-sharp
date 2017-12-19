@@ -30,8 +30,7 @@ namespace PuppeteerSharp
             if (_targetInfo.Type == "page")
             {
                 var client = await _browser.Connection.CreateSession(_targetInfo.targetId);
-                var page = new Page(client, _browser.IgnoreHTTPSErrors, _browser.AppMode);
-                await page.Initialize();
+                await PuppeteerSharp.Page.CreateAsync(client, _browser.IgnoreHTTPSErrors, _browser.AppMode);
             }
 
             return null;

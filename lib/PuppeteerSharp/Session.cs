@@ -29,7 +29,7 @@ namespace PuppeteerSharp
 
     #region Public Methods
 
-    public async Task<dynamic> Send(string method, params object[] args)
+    public async Task<dynamic> SendAsync(string method, params object[] args)
     {
       if (Connection == null)
       {

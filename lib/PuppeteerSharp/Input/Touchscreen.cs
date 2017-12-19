@@ -22,13 +22,13 @@ namespace PuppeteerSharp.Input
                 new {x= Math.Round(x), y = Math.Round(y)}
             };
 
-            await _client.Send("Input.dispatchTouchEvent", new Dictionary<string, object>(){
+            await _client.SendAsync("Input.dispatchTouchEvent", new Dictionary<string, object>(){
                 {"type", "tochStart"},
                 {"touchPoints", touchPoints},
                 {"modifiers", _keyboard.Modifiers},
             });
 
-            await _client.Send("Input.dispatchTouchEvent", new Dictionary<string, object>(){
+            await _client.SendAsync("Input.dispatchTouchEvent", new Dictionary<string, object>(){
                 {"type", "touchEnd"},
                 {"touchPoints", touchPoints},
                 {"modifiers", _keyboard.Modifiers},

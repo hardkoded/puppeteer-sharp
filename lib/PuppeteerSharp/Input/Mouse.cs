@@ -28,7 +28,7 @@ namespace PuppeteerSharp.Input
 
             for (var i = 1; i <= steps; i++)
             {
-                await _client.Send("Input.dispatchMouseEvent", new Dictionary<string, object>(){
+                await _client.SendAsync("Input.dispatchMouseEvent", new Dictionary<string, object>(){
                     {"type", "mouseMoved"},
                     {"button", _button},
                     {"x", fromX + (_x - fromX) * (i / steps)},
@@ -54,7 +54,7 @@ namespace PuppeteerSharp.Input
         {
             _button = options.ContainsKey("button") ? options["button"].ToString() : "left";
 
-            await _client.Send("Input.dispatchMouseEvent", new Dictionary<string, object>(){
+            await _client.SendAsync("Input.dispatchMouseEvent", new Dictionary<string, object>(){
                 {"type", "mousePressed"},
                 {"button", _button},
                 {"x", _x},
@@ -68,7 +68,7 @@ namespace PuppeteerSharp.Input
         {
             _button = "none";
 
-            await _client.Send("Input.dispatchMouseEvent", new Dictionary<string, object>(){
+            await _client.SendAsync("Input.dispatchMouseEvent", new Dictionary<string, object>(){
                 {"type", "mouseReleased"},
                 {"button", options.ContainsKey("button") ? options["button"].ToString() : "left"},
                 {"x", _x},

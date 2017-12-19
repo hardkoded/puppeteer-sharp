@@ -21,7 +21,7 @@ namespace PuppeteerSharp
 
         public async Task Accept(string promptText)
         {
-            await _client.Send("Page.handleJavaScriptDialog", new Dictionary<string, object>(){
+            await _client.SendAsync("Page.handleJavaScriptDialog", new Dictionary<string, object>(){
                 {"accept", true},
                 {"promptText", promptText}
             });
@@ -29,7 +29,7 @@ namespace PuppeteerSharp
 
         public async Task Dismiss(string promptText)
         {
-            await _client.Send("Page.handleJavaScriptDialog", new Dictionary<string, object>(){
+            await _client.SendAsync("Page.handleJavaScriptDialog", new Dictionary<string, object>(){
                 {"accept", false}
             });
         }

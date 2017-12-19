@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
 using Xunit;
+using PuppeteerSharp;
 using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Tests.Puppeteer
 {
     public class PuppeteerLaunch
     {
+        private const int HttpsPort = 8908;
+        private const string HttpsPrefix = "https://localhost:8908";
+
         private Dictionary<string, object> _defaultBrowserOptions = new Dictionary<string, object>()
         {
             { "executablePath", Environment.GetEnvironmentVariable("CHROME") },
@@ -22,15 +26,19 @@ namespace PuppeteerSharp.Tests.Puppeteer
         {
             var options = _defaultBrowserOptions.Clone();
             options.Add("ignoreHTTPSErrors", true);
-            /*
-            var browser = await puppeteer.launch(options);
-            const page = await browser.newPage();
-            let error = null;
-            const response = await page.goto(HTTPS_PREFIX + '/empty.html').catch (e => error = e);
-            expect(error).toBe(null);
-            expect(response.ok).toBe(true);
-            browser.close()
-            */
+
+            var puppeteerOptions = new PuppeteerOptions()
+            {
+                ChromiumRevision = "3239"
+            };
+
+            var browser = await PuppeteerSharp.Puppeteer.LaunchAsync(options, puppeteerOptions);
+            var page = await browser.NewPageAsync();
+
+            var response = await page.GoToAsync(HttpsPrefix + "/empty.html");
+            Assert.Equals(response.ok, true);
+
+            browser.Close();
         }
     }
 }

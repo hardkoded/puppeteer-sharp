@@ -51,10 +51,12 @@ namespace PuppeteerSharp
         public async Task<Page> NewPageAsync()
         {
             var targetId = (int)(await Connection.SendAsync("Target.createTarget", new Dictionary<string, object>(){
-        {"url", "about:blank"}
-      }));
+                {"url", "about:blank"}
+              }));
+
             var client = await Connection.CreateSession(targetId);
-            return new Page(client, IgnoreHTTPSErrors, AppMode);
+            var page = await Page.CreateAsync(client, IgnoreHTTPSErrors, AppMode);
+            return page;
         }
 
         internal void ChangeTarget(TargetInfo targetInfo)

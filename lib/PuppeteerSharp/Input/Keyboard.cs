@@ -134,7 +134,7 @@ namespace PuppeteerSharp.Input
             }
 
             Modifiers |= modifierBit(key);
-            await _client.Send("Input.dispatchKeyEvent", new Dictionary<string, object>(){
+            await _client.SendAsync("Input.dispatchKeyEvent", new Dictionary<string, object>(){
                 {"type", text.Length > 0 ? "keyDown" : "rawKeyDown"},
                 {"modifiers", Modifiers},
                 {"windowsvirtualKeyCode", CodeForKey(key)},
@@ -154,7 +154,7 @@ namespace PuppeteerSharp.Input
                 _pressedKeys.Remove(key);
             }
 
-            await _client.Send("Input.dispatchKeyEvent", new Dictionary<string, object>(){
+            await _client.SendAsync("Input.dispatchKeyEvent", new Dictionary<string, object>(){
                 {"type", "keyUp"},
                 {"modifiers", Modifiers},
                 {"windowsvirtualKeyCode", CodeForKey(key)},
@@ -164,7 +164,7 @@ namespace PuppeteerSharp.Input
 
         public async Task SendCharacter(string charText)
         {
-            await _client.Send("Input.dispatchKeyEvent", new Dictionary<string, object>(){
+            await _client.SendAsync("Input.dispatchKeyEvent", new Dictionary<string, object>(){
                 {"type", "char"},
                 {"modifiers", Modifiers},
                 {"key", charText},
