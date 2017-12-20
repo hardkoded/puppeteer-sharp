@@ -10,7 +10,7 @@ namespace PuppeteerSharp
 {
   public class Session : IDisposable
   {
-    public Session(Connection connection, int targetId, int sessionId)
+    public Session(Connection connection, string targetId, int sessionId)
     {
       Connection = connection;
       TargetId = targetId;
@@ -22,7 +22,7 @@ namespace PuppeteerSharp
     #endregion
 
     #region Properties
-    public int TargetId { get; private set; }
+    public string TargetId { get; private set; }
     public int SessionId { get; private set; }
     public Connection Connection { get; private set; }
     #endregion

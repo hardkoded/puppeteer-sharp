@@ -12,12 +12,17 @@ namespace PuppeteerSharp
             Connection = connection;
             IgnoreHTTPSErrors = options.ContainsKey("ignoreHTTPSErrors") && (bool)options["ignoreHTTPSErrors"];
             AppMode = options.ContainsKey("appMode") && (bool)options["appMode"];
+            _targets = new Dictionary<string, Target>();
 
             Connection.Closed += (object sender, EventArgs e) => Disconnected?.Invoke(this, new EventArgs());
             Connection.MessageReceived += Connect_MessageReceived;
 
             _closeCallBack = closeCallBack;
         }
+
+        #region Private members
+        private Dictionary<string, Target> _targets;
+        #endregion
 
         #region Properties
         public Connection Connection { get; set; }
@@ -50,9 +55,9 @@ namespace PuppeteerSharp
 
         public async Task<Page> NewPageAsync()
         {
-            var targetId = (int)(await Connection.SendAsync("Target.createTarget", new Dictionary<string, object>(){
+            var targetId = (await Connection.SendAsync("Target.createTarget", new Dictionary<string, object>(){
                 {"url", "about:blank"}
-              }));
+              })).ToString();
 
             var client = await Connection.CreateSession(targetId);
             var page = await Page.CreateAsync(client, IgnoreHTTPSErrors, AppMode);
@@ -86,32 +91,39 @@ namespace PuppeteerSharp
             switch (args.MessageID)
             {
                 case "Target.targetCreated":
-                    targetCreated();
+                    TargetCreated(args);
                     return;
 
                 case "Target.targetDestroyed":
-                    targetDestroyed();
+                    TargetDestroyed(args);
                     return;
 
                 case "Target.targetInfoChanged":
-                    targetInfoChanged();
+                    TargetInfoChanged(args);
                     return;
             }
         }
 
-        private void targetInfoChanged()
+        private void TargetInfoChanged(MessageEventArgs args)
         {
             throw new NotImplementedException();
         }
 
-        private void targetDestroyed()
+        private void TargetDestroyed(MessageEventArgs args)
         {
             throw new NotImplementedException();
         }
 
-        private void targetCreated()
+        private void TargetCreated(MessageEventArgs args)
         {
-            throw new NotImplementedException();
+            var target = new Target(this, args.TargetInfo);
+            _targets[args.TargetInfo.TargetId] = target;
+            /*
+            if (await target.InitializedTask)
+            {
+                
+            }
+            */
         }
 
         internal static async Task<Browser> CreateAsync(Connection connection, Dictionary<string, object> options, 

@@ -52,7 +52,7 @@ namespace PuppeteerSharp
             return await GetResponseAsync(id);
         }
 
-        public async Task<Session> CreateSession(int targetId)
+        public async Task<Session> CreateSession(string targetId)
         {
             int sessionId = (int)await SendAsync("Target.attachToTarget", new { targetId });
             var session = new Session(this, targetId, sessionId);

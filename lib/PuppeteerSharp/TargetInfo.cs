@@ -9,6 +9,6 @@ namespace PuppeteerSharp
 
         public string Type { get; internal set; }
         public string Url { get; internal set; }
-        public int targetId { get; internal set; }
+        public string TargetId { get; internal set; }
     }
 }
