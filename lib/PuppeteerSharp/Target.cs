@@ -14,23 +14,23 @@ namespace PuppeteerSharp
             _browser = browser;
             _targetInfo = targetInfo;
 
-            _initilizedTaskWrapper = new TaskCompletionSource<bool>();
+            InitilizedTaskWrapper = new TaskCompletionSource<bool>();
             _isInitialized = _targetInfo.Type != "page" || _targetInfo.Url != string.Empty;
 
             if (_isInitialized)
             {
-                _initilizedTaskWrapper.SetResult(true);
+                InitilizedTaskWrapper.SetResult(true);
             }
         }
 
         #region Properties
         public string Url => _targetInfo.Url;
         public string Type => _targetInfo.Type == "page" || _targetInfo.Type == "service_worker" ? _targetInfo.Type : "other";
-        public Task InitializedTask => _initilizedTaskWrapper.Task;
+        public Task<bool> InitializedTask => InitilizedTaskWrapper.Task;
         #endregion
 
         #region Private members
-        private TaskCompletionSource<bool> _initilizedTaskWrapper;
+        public TaskCompletionSource<bool> InitilizedTaskWrapper { get; }
 
         #endregion
         public async Task<Page> Page()
@@ -52,7 +52,7 @@ namespace PuppeteerSharp
             if (!_isInitialized && (_targetInfo.Type != "page" || _targetInfo.Url != string.Empty))
             {
                 _isInitialized = true;
-                _initilizedTaskWrapper.SetResult(true);
+                InitilizedTaskWrapper.SetResult(true);
             }
 
             if (previousUrl != targetInfo.Url)

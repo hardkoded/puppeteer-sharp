@@ -29,6 +29,8 @@ namespace PuppeteerSharp
         public event EventHandler Closed;
         public event EventHandler Disconnected;
         public event EventHandler<TargetChangedArgs> TargetChanged;
+        public event EventHandler<TargetChangedArgs> TargetCreated;
+        public event EventHandler<TargetChangedArgs> TargetDestroyed;
         private event Func<Task> _closeCallBack;
 
         public string WebSocketEndpoint
@@ -86,44 +88,64 @@ namespace PuppeteerSharp
 
         #region Private Methods
 
-        public void Connect_MessageReceived(object sender, MessageEventArgs args)
+        public async void Connect_MessageReceived(object sender, MessageEventArgs args)
         {
             switch (args.MessageID)
             {
                 case "Target.targetCreated":
-                    TargetCreated(args);
+                    await CreateTarget(args);
                     return;
 
                 case "Target.targetDestroyed":
-                    TargetDestroyed(args);
+                    DestroyTarget(args);
                     return;
 
                 case "Target.targetInfoChanged":
-                    TargetInfoChanged(args);
+                    ChangeTargetInfo(args);
                     return;
             }
         }
 
-        private void TargetInfoChanged(MessageEventArgs args)
+        private void ChangeTargetInfo(MessageEventArgs args)
         {
-            throw new NotImplementedException();
+            if(!_targets.ContainsKey(args.TargetInfo.TargetId))
+            {
+                throw new InvalidTargetException("Target should exists before ChangeTargetInfo");
+            }
+
+            var target = _targets[args.TargetInfo.TargetId];
+            target.TargetInfoChanged(args.TargetInfo);
         }
 
-        private void TargetDestroyed(MessageEventArgs args)
+        private void DestroyTarget(MessageEventArgs args)
         {
-            throw new NotImplementedException();
+            if (!_targets.ContainsKey(args.TargetInfo.TargetId))
+            {
+                throw new InvalidTargetException("Target should exists before DestroyTarget");
+            }
+
+            var target = _targets[args.TargetInfo.TargetId];
+            target.InitilizedTaskWrapper.SetResult(false);
+            _targets.Remove(args.TargetInfo.TargetId);
+
+            TargetDestroyed(this, new TargetChangedArgs()
+            {
+                Target = target
+            });
         }
 
-        private void TargetCreated(MessageEventArgs args)
+        private async Task CreateTarget(MessageEventArgs args)
         {
             var target = new Target(this, args.TargetInfo);
             _targets[args.TargetInfo.TargetId] = target;
-            /*
+
             if (await target.InitializedTask)
             {
-                
+                TargetCreated(this, new TargetChangedArgs(){
+                    Target = target
+                });
             }
-            */
+
         }
 
         internal static async Task<Browser> CreateAsync(Connection connection, Dictionary<string, object> options, 
