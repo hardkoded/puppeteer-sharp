@@ -1,6 +1,7 @@
 ﻿namespace PuppeteerSharp
 {
-    internal class Response
+    public class Response
     {
+
     }
 }
