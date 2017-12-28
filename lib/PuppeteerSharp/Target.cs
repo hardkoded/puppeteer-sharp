@@ -5,9 +5,11 @@ namespace PuppeteerSharp
 {
     public class Target
     {
+        #region Private members
         private Browser _browser;
         private TargetInfo _targetInfo;
         private bool _isInitialized;
+        #endregion
 
         public Target(Browser browser, TargetInfo targetInfo)
         {
@@ -27,12 +29,9 @@ namespace PuppeteerSharp
         public string Url => _targetInfo.Url;
         public string Type => _targetInfo.Type == "page" || _targetInfo.Type == "service_worker" ? _targetInfo.Type : "other";
         public Task<bool> InitializedTask => InitilizedTaskWrapper.Task;
-        #endregion
-
-        #region Private members
         public TaskCompletionSource<bool> InitilizedTaskWrapper { get; }
-
         #endregion
+
         public async Task<Page> Page()
         {
             if (_targetInfo.Type == "page")
@@ -44,7 +43,7 @@ namespace PuppeteerSharp
             return null;
         }
 
-        public void TargetInfoChanged(TargetInfo targetInfo) 
+        public void TargetInfoChanged(TargetInfo targetInfo)
         {
             var previousUrl = _targetInfo.Url;
             _targetInfo = targetInfo;
