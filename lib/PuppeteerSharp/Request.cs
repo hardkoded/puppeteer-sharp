@@ -11,7 +11,6 @@ namespace PuppeteerSharp
     {
         #region Private Members
         private Session _client;
-        private string _requestId;
         private string _interceptionId;
         private bool _allowInterception;
         private string _resourceType;
@@ -19,8 +18,6 @@ namespace PuppeteerSharp
         private Response _response;
         private string _failureText;
         private Dictionary<string, object> _headers;
-        private string _method;
-        private object _postData;
 
         private readonly Dictionary<string, string> _errorReasons = new Dictionary<string, string>
         {
@@ -43,14 +40,14 @@ namespace PuppeteerSharp
                       string resourceType, Payload payload)
         {
             _client = client;
-            _requestId = requestId;
+            RequestId = requestId;
             _interceptionId = interceptionId;
             _allowInterception = allowInterception;
             _interceptionHandled = false;
             Url = url;
             _resourceType = resourceType.ToLower();
-            _method = payload.Method;
-            _postData = payload.PostData;
+            Method = payload.Method;
+            PostData = payload.PostData;
 
             _headers = new Dictionary<string, object>();
             foreach (KeyValuePair<string, object> keyValue in payload.Headers)
@@ -64,6 +61,9 @@ namespace PuppeteerSharp
         public string Failure => _failureText;
         public string Url { get; internal set; }
         public Task<bool> CompleteTask { get; internal set; }
+        public string RequestId { get; internal set; }
+        public string Method { get; internal set; }
+        public object PostData { get; internal set; }
 
         #endregion
 
