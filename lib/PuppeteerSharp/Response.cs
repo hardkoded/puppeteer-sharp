@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Web;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Linq;
 
 namespace PuppeteerSharp
 {
@@ -55,7 +56,7 @@ namespace PuppeteerSharp
 
                     var response = await _client.SendAsync("Network.getResponseBody", new Dictionary<string, object>
                     {
-                        {"requestID", _request.RequestId}
+                        {"requestID", Request.RequestId}
                     });
 
                     ContentTaskWrapper.SetResult(response.body);
@@ -94,21 +95,16 @@ namespace PuppeteerSharp
                 PostData = request.PostData
             };
 
-            //if (!normalizedUrl.StartsWith("data:"))
-            /*
+            if (!normalizedUrl.StartsWith("data:", System.StringComparison.Ordinal))
+            {
+                foreach (var item in request.Headers.Where(kv => kv.Key != "Accept" && kv.Key != "Referrer" &&
+                                                           kv.Key != "X-DevTools-Emulate-Network-Conditions-Client-Id"))
+                {
+                    hash.Headers[item.Key] = item.Value;
+                }
+            }
 
-
-  if (!normalizedURL.startsWith('data:')) {
-    const headers = Object.keys(request.headers);
-    headers.sort();
-    for (const header of headers) {
-      if (header === 'Accept' || header === 'Referer' || header === 'X-DevTools-Emulate-Network-Conditions-Client-Id')
-        continue;
-      hash.headers[header] = request.headers[header];
-    }
-  }
-  return JSON.stringify(hash);
-             */
+            return JsonConvert.SerializeObject(request);
         }
         #endregion
 

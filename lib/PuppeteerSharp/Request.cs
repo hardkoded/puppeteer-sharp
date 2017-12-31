@@ -17,7 +17,6 @@ namespace PuppeteerSharp
         private bool _interceptionHandled;
         private Response _response;
         private string _failureText;
-        private Dictionary<string, object> _headers;
 
         private readonly Dictionary<string, string> _errorReasons = new Dictionary<string, string>
         {
@@ -49,10 +48,10 @@ namespace PuppeteerSharp
             Method = payload.Method;
             PostData = payload.PostData;
 
-            _headers = new Dictionary<string, object>();
+            Headers = new Dictionary<string, object>();
             foreach (KeyValuePair<string, object> keyValue in payload.Headers)
             {
-                _headers[keyValue.Key] = keyValue.Value;
+                Headers[keyValue.Key] = keyValue.Value;
             }
         }
 
@@ -64,6 +63,7 @@ namespace PuppeteerSharp
         public string RequestId { get; internal set; }
         public string Method { get; internal set; }
         public object PostData { get; internal set; }
+        public Dictionary<string, object> Headers { get; internal set; }
 
         #endregion
 
