@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
 
@@ -18,14 +21,15 @@ namespace PuppeteerSharp
         private List<string> _attemptedAuthentications = new List<string>();
         private bool _userRequestInterceptionEnabled;
         private bool _protocolRequestInterceptionEnabled;
-        private Dictionary<string, object> _requestHashToRequestIds = new Dictionary<string, object>();
+
+        private List<KeyValuePair<string, string>> _requestHashToRequestIds = new List<KeyValuePair<string, string>>();
         private Dictionary<string, object> _requestHashToInterceptionIds = new Dictionary<string, object>();
         #endregion
 
         public NetworkManager(Session client)
         {
             _client = client;
-            _client.MessageReceived += client_MessageReceived;
+            _client.MessageReceived += Client_MessageReceived;
         }
 
         #region Public Properties
@@ -96,7 +100,7 @@ namespace PuppeteerSharp
         #region Private Methods
 
 
-        void client_MessageReceived(object sender, PuppeteerSharp.MessageEventArgs e)
+        private async void Client_MessageReceived(object sender, PuppeteerSharp.MessageEventArgs e)
         {
 
             switch (e.MessageID)
@@ -105,7 +109,7 @@ namespace PuppeteerSharp
                     OnRequestWillBeSent(e);
                     break;
                 case "Network.requestIntercepted":
-                    OnRequestIntercepted(e);
+                    await OnRequestInterceptedAsync(e);
                     break;
                 case "Network.responseReceived":
                     OnResponseReceived(e);
@@ -135,7 +139,74 @@ namespace PuppeteerSharp
             throw new NotImplementedException();
         }
 
-        private void OnRequestIntercepted(MessageEventArgs e)
+        private async Task OnRequestInterceptedAsync(MessageEventArgs e)
+        {
+            if (e.AuthChallenge)
+            {
+                var response = "Default";
+                if (_attemptedAuthentications.Contains(e.InterceptionId))
+                {
+                    response = "CancelAuth";
+                }
+                else if (_credentials != null)
+                {
+                    response = "ProvideCredentials";
+                    _attemptedAuthentications.Add(e.InterceptionId);
+                }
+                var credentials = _credentials ?? new Credentials();
+                await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object>
+                {
+                    {"interceptionId", e.InterceptionId},
+                    {"authChallengeResponse", new { response, credentials.Username, credentials.Password }}
+                });
+                return;
+            }
+            if (!_userRequestInterceptionEnabled && _protocolRequestInterceptionEnabled)
+            {
+                await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object> {
+                    { "interceptionId", e.InterceptionId}
+                });
+            }
+
+            if (!string.IsNullOrEmpty(e.RedirectUrl))
+            {
+                Contract.Ensures(_interceptionIdToRequest.ContainsKey(e.InterceptionId),
+                                 "INTERNAL ERROR: failed to find request for interception redirect.");
+
+                var request = _interceptionIdToRequest[e.InterceptionId];
+
+                HandleRequestRedirect(request, e.ResponseStatusCode, e.ResponseHeaders);
+                HandleRequestStart(request.RequestId, e.InterceptionId, e.RedirectUrl, e.ResourceType, e.Request);
+                return;
+            }
+            var requestHash = GenerateRequestHash(e.Request);
+
+
+            if (_requestHashToRequestIds.Any(i => i.Key == requestHash))
+            {
+                var item = _requestHashToRequestIds.FirstOrDefault(i => i.Key == requestHash);
+                var requestId = item.Value;
+                _requestHashToRequestIds.Remove(item);
+                HandleRequestStart(requestId, e.InterceptionId, e.Request.Url, e.ResourceType, e.Request);
+            }
+            else
+            {
+                _requestHashToInterceptionIds.Add(requestHash, e.InterceptionId);
+                HandleRequestStart(null, e.InterceptionId, e.Request.Url, e.ResourceType, e.Request);
+            }
+        }
+
+        private string GenerateRequestHash(RequestData request)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void HandleRequestStart(string requestId, string interceptionId, string redirectUrl, string resourceType, RequestData request)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void HandleRequestRedirect(Request request, HttpStatusCode responseStatusCode, Dictionary<string, object> responseHeaders)
         {
             throw new NotImplementedException();
         }
