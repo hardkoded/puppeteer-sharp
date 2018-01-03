@@ -11,11 +11,9 @@ namespace PuppeteerSharp
     {
         #region Private Members
         private Session _client;
-        private string _interceptionId;
         private bool _allowInterception;
         private string _resourceType;
         private bool _interceptionHandled;
-        private Response _response;
         private string _failureText;
 
         private readonly Dictionary<string, string> _errorReasons = new Dictionary<string, string>
@@ -40,7 +38,7 @@ namespace PuppeteerSharp
         {
             _client = client;
             RequestId = requestId;
-            _interceptionId = interceptionId;
+            InterceptionId = interceptionId;
             _allowInterception = allowInterception;
             _interceptionHandled = false;
             Url = url;
@@ -56,7 +54,7 @@ namespace PuppeteerSharp
         }
 
         #region Properties
-        public Response Response => _response;
+        public Response Response { get; set; }
         public string Failure => _failureText;
         public string Url { get; internal set; }
         public Task<bool> CompleteTask { get; internal set; }
@@ -64,6 +62,7 @@ namespace PuppeteerSharp
         public string Method { get; internal set; }
         public object PostData { get; internal set; }
         public Dictionary<string, object> Headers { get; internal set; }
+        public string InterceptionId { get; internal set; }
 
         #endregion
 
@@ -80,7 +79,7 @@ namespace PuppeteerSharp
             {
                 await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object>()
                 {
-                    {"interceptionId", _interceptionId},
+                    {"interceptionId", InterceptionId},
                     {"url", overrides.Url},
                     {"method", overrides.Method},
                     {"postData", overrides.PostData},
@@ -110,20 +109,20 @@ namespace PuppeteerSharp
 
             //TODO: In puppeteer this is a buffer but as I don't know the real implementation yet
             //I will consider this a string
-            var responseBody = _response.Body;
+            var responseBody = Response.Body;
             var responseHeaders = new Dictionary<string, object>();
 
-            if (_response.Headers != null)
+            if (Response.Headers != null)
             {
-                foreach (var keyValue in _response.Headers)
+                foreach (var keyValue in Response.Headers)
                 {
                     responseHeaders[keyValue.Key] = keyValue.Value;
                 }
             }
 
-            if (_response.ContentType != null)
+            if (Response.ContentType != null)
             {
-                responseHeaders["content-type"] = _response.ContentType;
+                responseHeaders["content-type"] = Response.ContentType;
             }
 
             if (!string.IsNullOrEmpty(responseBody) && !responseHeaders.ContainsKey("content-length"))
@@ -155,7 +154,7 @@ namespace PuppeteerSharp
             {
                 await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object>
                 {
-                    {"interceptionId", _interceptionId},
+                    {"interceptionId", InterceptionId},
                     {"rawResponse", responseBuffer}
                 });
             }
@@ -180,7 +179,7 @@ namespace PuppeteerSharp
             {
                 await _client.SendAsync("Network.continueInterceptedReques", new Dictionary<string, object>
                 {
-                    {"interceptionId", _interceptionId},
+                    {"interceptionId", InterceptionId},
                     {"errorReason", errorReason}
                 });
             }

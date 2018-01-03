@@ -14,5 +14,10 @@ namespace PuppeteerSharp
         public Dictionary<string, object> ResponseHeaders { get; internal set; }
         public string ResourceType { get; internal set; }
         public RequestData Request { get; internal set; }
+        public Response RedirectResponse { get; internal set; }
+        public string RequestId { get; internal set; }
+        public string Type { get; internal set; }
+        public Response Response { get; internal set; }
     }
+
 }
