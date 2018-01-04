@@ -17,6 +17,7 @@
   <ItemGroup>
     <Compile Remove="WebSocket.cs" />
     <Compile Remove="IRemoteObject.cs" />
+    <Compile Remove="RequestData.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />

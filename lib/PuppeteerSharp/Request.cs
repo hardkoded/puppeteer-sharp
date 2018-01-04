@@ -51,24 +51,26 @@ namespace PuppeteerSharp
             {
                 Headers[keyValue.Key] = keyValue.Value;
             }
+
+            CompleteTaskWrapper = new TaskCompletionSource<bool>();
         }
 
         #region Properties
         public Response Response { get; set; }
-        public string Failure => _failureText;
+        public string Failure { get; set; }
         public string Url { get; internal set; }
-        public Task<bool> CompleteTask { get; internal set; }
         public string RequestId { get; internal set; }
         public string Method { get; internal set; }
         public object PostData { get; internal set; }
         public Dictionary<string, object> Headers { get; internal set; }
         public string InterceptionId { get; internal set; }
-
+        public Task<bool> CompleteTask => CompleteTaskWrapper.Task;
+        public TaskCompletionSource<bool> CompleteTaskWrapper { get; internal set; }
         #endregion
 
         #region Public Methods
 
-        public async Task Continue(RequestData overrides)
+        public async Task Continue(Payload overrides)
         {
             Contract.Requires(_allowInterception, "Request interception is not enabled!");
             Contract.Requires(!_interceptionHandled, "Request interception is already handled!");

@@ -1,6 +1,6 @@
 ﻿namespace PuppeteerSharp
 {
-    public class RequestFinishedArgs
+    public class RequestEventArgs
     {
         public Request Request { get; internal set; }
     }

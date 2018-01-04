@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace PuppeteerSharp
 {
@@ -8,5 +9,10 @@ namespace PuppeteerSharp
         public string Method { get; set; }
         public object PostData { get; set; }
         public Dictionary<string, object> Headers { get; set; }
+
+        internal Payload GetPayload()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

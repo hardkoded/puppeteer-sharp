@@ -33,10 +33,14 @@ namespace PuppeteerSharp
         }
 
         #region Public Properties
+        public Dictionary<string, string> ExtraHTTPHeaders => _extraHTTPHeaders.Clone();
 
         public event EventHandler<ResponseCreatedArgs> ResponseCreated;
-        public event EventHandler<RequestFinishedArgs> RequestFinished;
+        public event EventHandler<RequestEventArgs> RequestCreated;
+        public event EventHandler<RequestEventArgs> RequestFinished;
+        public event EventHandler<RequestEventArgs> RequestFailed;
         public event EventHandler<ResponseReceivedArgs> ResponseReceivedFinished;
+
         #endregion
 
 
@@ -60,11 +64,6 @@ namespace PuppeteerSharp
             {
                 {"headers", _extraHTTPHeaders}
             });
-        }
-
-        public Dictionary<string, string> ExtraHTTPHeaders()
-        {
-            return _extraHTTPHeaders.Clone();
         }
 
         public async Task SetOfflineModeAsync(bool value)
@@ -129,12 +128,43 @@ namespace PuppeteerSharp
 
         private void OnLoadingFailed(MessageEventArgs e)
         {
-            throw new NotImplementedException();
+            // For certain requestIds we never receive requestWillBeSent event.
+            // @see https://crbug.com/750469
+            if (_requestIdToRequest.ContainsKey(e.RequestId))
+            {
+                var request = _requestIdToRequest[e.RequestId];
+
+                request.Failure = e.ErrorText;
+                request.CompleteTaskWrapper.SetResult(true);
+                _requestIdToRequest.Remove(request.RequestId);
+                _interceptionIdToRequest.Remove(request.InterceptionId);
+                _attemptedAuthentications.Remove(request.InterceptionId);
+
+                RequestFailed(this, new RequestEventArgs()
+                {
+                    Request = request
+                });
+            }
         }
 
         private void OnLoadingFinished(MessageEventArgs e)
         {
-            throw new NotImplementedException();
+            // For certain requestIds we never receive requestWillBeSent event.
+            // @see https://crbug.com/750469
+            if (_requestIdToRequest.ContainsKey(e.RequestId))
+            {
+                var request = _requestIdToRequest[e.RequestId];
+
+                request.CompleteTaskWrapper.SetResult(true);
+                _requestIdToRequest.Remove(request.RequestId);
+                _interceptionIdToRequest.Remove(request.InterceptionId);
+                _attemptedAuthentications.Remove(request.InterceptionId);
+
+                RequestFinished(this, new RequestEventArgs()
+                {
+                    Request = request
+                });
+            }
         }
 
         private void OnResponseReceived(MessageEventArgs e)
@@ -201,23 +231,38 @@ namespace PuppeteerSharp
                 var item = _requestHashToRequestIds.FirstOrDefault(i => i.Key == requestHash);
                 var requestId = item.Value;
                 _requestHashToRequestIds.Remove(item);
-                HandleRequestStart(requestId, e.InterceptionId, e.Request.Url, e.ResourceType, e.Request);
+                HandleRequestStart(requestId, e.InterceptionId, e.Request.Url, e.ResourceType, e.Request.GetPayload());
             }
             else
             {
                 _requestHashToInterceptionIds.Add(new KeyValuePair<string, string>(requestHash, e.InterceptionId));
-                HandleRequestStart(null, e.InterceptionId, e.Request.Url, e.ResourceType, e.Request);
+                HandleRequestStart(null, e.InterceptionId, e.Request.Url, e.ResourceType, e.Request.GetPayload());
             }
         }
 
-        private string GenerateRequestHash(RequestData request)
+        private string GenerateRequestHash(Payload request)
         {
             throw new NotImplementedException();
         }
 
-        private void HandleRequestStart(string requestId, string interceptionId, string redirectUrl, string resourceType, RequestData request)
+        private void HandleRequestStart(string requestId, string interceptionId, string url, string resourceType, Payload requestPayload)
         {
-            throw new NotImplementedException();
+            var request = new Request(_client, requestId, interceptionId, _userRequestInterceptionEnabled, url,
+                                      resourceType, requestPayload);
+
+            if (!string.IsNullOrEmpty(requestId))
+            {
+                _requestIdToRequest.Add(requestId, request);
+            }
+            if (!string.IsNullOrEmpty(interceptionId))
+            {
+                _interceptionIdToRequest.Add(interceptionId, request);
+            }
+
+            RequestCreated(this, new RequestEventArgs()
+            {
+                Request = request
+            });
         }
 
         private void HandleRequestRedirect(Request request, HttpStatusCode redirectStatus, Dictionary<string, object> redirectHeaders)
@@ -233,7 +278,7 @@ namespace PuppeteerSharp
                 Response = response
             });
 
-            RequestFinished(this, new RequestFinishedArgs()
+            RequestFinished(this, new RequestEventArgs()
             {
                 Request = request
             });
