@@ -223,7 +223,7 @@ namespace PuppeteerSharp
                 HandleRequestStart(request.RequestId, e.InterceptionId, e.RedirectUrl, e.ResourceType, e.Request);
                 return;
             }
-            var requestHash = GenerateRequestHash(e.Request);
+            var requestHash = e.Request.Hash;
 
 
             if (_requestHashToRequestIds.Any(i => i.Key == requestHash))
@@ -231,18 +231,13 @@ namespace PuppeteerSharp
                 var item = _requestHashToRequestIds.FirstOrDefault(i => i.Key == requestHash);
                 var requestId = item.Value;
                 _requestHashToRequestIds.Remove(item);
-                HandleRequestStart(requestId, e.InterceptionId, e.Request.Url, e.ResourceType, e.Request.GetPayload());
+                HandleRequestStart(requestId, e.InterceptionId, e.Request.Url, e.ResourceType, e.Request);
             }
             else
             {
                 _requestHashToInterceptionIds.Add(new KeyValuePair<string, string>(requestHash, e.InterceptionId));
-                HandleRequestStart(null, e.InterceptionId, e.Request.Url, e.ResourceType, e.Request.GetPayload());
+                HandleRequestStart(null, e.InterceptionId, e.Request.Url, e.ResourceType, e.Request);
             }
-        }
-
-        private string GenerateRequestHash(Payload request)
-        {
-            throw new NotImplementedException();
         }
 
         private void HandleRequestStart(string requestId, string interceptionId, string url, string resourceType, Payload requestPayload)
@@ -291,7 +286,7 @@ namespace PuppeteerSharp
                 // All redirects are handled in requestIntercepted.
                 if (e.RedirectResponse == null)
                 {
-                    var requestHash = GenerateRequestHash(e.Request);
+                    var requestHash = e.Request.Hash;
 
                     KeyValuePair<string, string>? interceptionItem = null;
 

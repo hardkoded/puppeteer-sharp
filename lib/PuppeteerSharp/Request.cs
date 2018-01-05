@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace PuppeteerSharp
 {
-    public class Request
+    public class Request : Payload
     {
         #region Private Members
         private Session _client;
@@ -58,11 +58,7 @@ namespace PuppeteerSharp
         #region Properties
         public Response Response { get; set; }
         public string Failure { get; set; }
-        public string Url { get; internal set; }
         public string RequestId { get; internal set; }
-        public string Method { get; internal set; }
-        public object PostData { get; internal set; }
-        public Dictionary<string, object> Headers { get; internal set; }
         public string InterceptionId { get; internal set; }
         public Task<bool> CompleteTask => CompleteTaskWrapper.Task;
         public TaskCompletionSource<bool> CompleteTaskWrapper { get; internal set; }

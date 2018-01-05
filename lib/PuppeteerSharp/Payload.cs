@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using Newtonsoft.Json;
 
 namespace PuppeteerSharp
 {
@@ -7,5 +11,41 @@ namespace PuppeteerSharp
         public string Method { get; internal set; }
         public object PostData { get; internal set; }
         public Dictionary<string, object> Headers { get; internal set; }
+        public string Url { get; internal set; }
+
+        public string Hash
+        {
+            get
+            {
+                var normalizedUrl = Url;
+
+                try
+                {
+                    // Decoding is necessary to normalize URLs.
+                    // The method will throw if the URL is malformed. In this case,
+                    // consider URL to be normalized as-is.
+                    normalizedUrl = HttpUtility.UrlDecode(Url);
+                }
+                catch { }
+
+                var hash = new Payload()
+                {
+                    Url = Url,
+                    Method = Method,
+                    PostData = PostData
+                };
+
+                if (!normalizedUrl.StartsWith("data:", StringComparison.Ordinal))
+                {
+                    foreach (var item in Headers.Where(kv => kv.Key != "Accept" && kv.Key != "Referrer" &&
+                                                               kv.Key != "X-DevTools-Emulate-Network-Conditions-Client-Id"))
+                    {
+                        hash.Headers[item.Key] = item.Value;
+                    }
+                }
+
+                return JsonConvert.SerializeObject(this);
+            }
+        }
     }
 }
