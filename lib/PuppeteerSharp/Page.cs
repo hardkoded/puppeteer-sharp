@@ -6,25 +6,76 @@ namespace PuppeteerSharp
 {
     public class Page
     {
-        private Session _session;
+        private Session _client;
         private bool _ignoreHTTPSErrors;
-        private bool _appMode;
         private NetworkManager _networkManager;
         private FrameManager _frameManager;
+        private TaskQueue _screenshotTaskQueue;
+        private EmulationManager _emulationManager;
+        private ViewPortOptions _viewport;
 
-        private Page(Session session, FrameTree frameTree, bool ignoreHTTPSErrors, bool appMode)
+        private Page(Session client, FrameTree frameTree, bool ignoreHTTPSErrors, TaskQueue screenshotTaskQueue)
         {
-            _session = session;
+            _client = client;
             _ignoreHTTPSErrors = ignoreHTTPSErrors;
-            _appMode = appMode;
-            _frameManager = new FrameManager(session, frameTree, this);
+            _frameManager = new FrameManager(_client, frameTree, this);
+            _screenshotTaskQueue = screenshotTaskQueue;
+            _emulationManager = new EmulationManager(client);
 
-            this._networkManager = new NetworkManager(session);
+            _networkManager = new NetworkManager(client);
         }
 
-        internal static async Task<Page> CreateAsync(Session session, bool ignoreHTTPSErrors, bool appMode)
+        internal static async Task<Page> CreateAsync(Session client, bool ignoreHTTPSErrors, bool appMode,
+                                                     TaskQueue screenshotTaskQueue)
         {
-            return null;
+            await client.SendAsync("Page.enable", null);
+            dynamic frameTree = await client.SendAsync<FrameTree>("Page.getFrameTree", null);
+            var page = new Page(client, frameTree, ignoreHTTPSErrors, screenshotTaskQueue);
+
+            await Task.WhenAll(
+                client.SendAsync("Page.setLifecycleEventsEnabled", new Dictionary<string, object>
+                {
+                    {"enabled", true }
+                }),
+                client.SendAsync("Network.enable", null),
+                client.SendAsync("Runtime.enable", null),
+                client.SendAsync("Security.enable", null),
+                client.SendAsync("Performance.enable", null)
+            );
+
+            if (ignoreHTTPSErrors)
+            {
+                await client.SendAsync("Security.setOverrideCertificateErrors", new Dictionary<string, object>
+                {
+                    {"override", true}
+                });
+            }
+
+            // Initialize default page size.
+            if (!appMode)
+            {
+                await page.SetViewport(new ViewPortOptions
+                {
+                    Width = 800,
+                    Height = 600
+                });
+            }
+            return page;
+        }
+
+        private async Task SetViewport(ViewPortOptions viewport)
+        {
+            var needsReload = await _emulationManager.EmulateViewport(_client, viewport);
+            _viewport = viewport;
+            if (needsReload)
+            {
+                await Reload();
+            }
+        }
+
+        private Task Reload()
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<dynamic> GoToAsync(string url, Dictionary<string, string> options)
@@ -32,55 +83,57 @@ namespace PuppeteerSharp
             var referrer = _networkManager.ExtraHTTPHeaders["referer"];
             var requests = new Dictionary<string, Request>();
 
-            Action<object, RequestEventArgs> createRequestEventListener = (object sender, RequestEventArgs e) =>
+            EventHandler<RequestEventArgs> createRequestEventListener = (object sender, RequestEventArgs e) =>
                 requests.Add(e.Request.Url, e.Request);
 
-            _networkManager.RequestCreated += new EventHandler<RequestEventArgs>(createRequestEventListener);
+            _networkManager.RequestCreated += createRequestEventListener;
 
             var mainFrame = _frameManager.MainFrame();
             var watcher = new NavigationWatcher(_frameManager, mainFrame, options);
 
-            var navigateTask = Navigate(_session, url, referrer);
+            var navigateTask = Navigate(_client, url, referrer);
 
-            var error = Task.WaitAny(
+            await Task.WhenAll(
                 navigateTask,
                 watcher.NavigationTask
             );
 
+            var error = !string.IsNullOrEmpty(navigateTask.Result) ? navigateTask.Result : watcher.NavigationTask.Result;
 
-            /*
-           
-            const navigationPromise = watcher.navigationPromise();
-            let error = await Promise.race([
-              navigate(this._client, url, referrer),
-              navigationPromise,
-            ]);
-            if (!error)
-              error = await navigationPromise;
-            watcher.cancel();
-            helper.removeEventListeners(eventListeners);
-            if (error)
-              throw error;
-            const request = requests.get(this.mainFrame().url());
-            return request ? request.response() : null;
+            watcher.Cancel();
+            _networkManager.RequestCreated -= createRequestEventListener;
 
-
-                    async function navigate(client, url, referrer)
-                    {
-                        try
-                        {
-                            const response = await client.send('Page.navigate', { url, referrer});
-                    return response.errorText ? new Error(response.errorText) : null;
-                } catch (error) {
-                return error;
-              }
+            if (!string.IsNullOrEmpty(error))
+            {
+                throw new NavigationException(error);
             }
-         */
+
+            Request request = null;
+
+            if (requests.ContainsKey(_frameManager.MainFrame().Url))
+            {
+                request = requests[_frameManager.MainFrame().Url];
+            }
+
+            return request?.Response;
         }
 
-        private Task Navigate(Session session, string url, string referrer)
+        private async Task<string> Navigate(Session client, string url, string referrer)
         {
-            throw new NotImplementedException();
+            try
+            {
+                dynamic response = await client.SendAsync("Page.navigate", new Dictionary<string, object>
+                {
+                    { "url", url},
+                    {"referrer", referrer}
+                });
+
+                return response.ErrorText;
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
         }
     }
 }

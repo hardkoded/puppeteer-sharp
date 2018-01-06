@@ -9,7 +9,6 @@ namespace PuppeteerSharp
         private Session _client;
         private Page _page;
         private Frame _parentFrame;
-        private string _url = string.Empty;
         private string _id;
         private string _defaultContextId = "<not-initialized>";
         private object _context = null;
@@ -29,6 +28,8 @@ namespace PuppeteerSharp
 
         public List<Frame> ChildFrames { get; set; } = new List<Frame>();
         public object ExecutionContext => _context;
+        public string Url { get; set; }
+
 
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp
@@ -16,6 +17,11 @@ namespace PuppeteerSharp
             _options = options;
         }
 
-        public Task NavigationTask { get; internal set; }
+        public Task<string> NavigationTask { get; internal set; }
+
+        internal void Cancel()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

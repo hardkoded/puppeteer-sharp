@@ -30,6 +30,11 @@ namespace PuppeteerSharp
 
         #region Public Methods
 
+        public async Task<T> SendAsync<T>(string method, params object[] args)
+        {
+            return Convert.ChangeType(await SendAsync(method, args), typeof(T));
+        }
+
         public async Task<dynamic> SendAsync(string method, params object[] args)
         {
             if (Connection == null)
