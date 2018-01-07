@@ -14,23 +14,20 @@ namespace PuppeteerSharp
         private TaskQueue _screenshotTaskQueue;
         private EmulationManager _emulationManager;
         private ViewPortOptions _viewport;
-        private Keyboard _keyboard;
         private Mouse _mouse;
-        private Touchscreen _touchscreen;
-        private Tracing _tracing;
         private Dictionary<string, Action> _pageBindings;
 
         private Page(Session client, FrameTree frameTree, bool ignoreHTTPSErrors, TaskQueue screenshotTaskQueue)
         {
             _client = client;
 
-            _keyboard = new Keyboard(client);
-            _mouse = new Mouse(client, _keyboard);
-            _touchscreen = new Touchscreen(client, _keyboard);
+            Keyboard = new Keyboard(client);
+            _mouse = new Mouse(client, Keyboard);
+            Touchscreen = new Touchscreen(client, Keyboard);
             _frameManager = new FrameManager(client, frameTree, this);
             _networkManager = new NetworkManager(client);
             _emulationManager = new EmulationManager(client);
-            _tracing = new Tracing(client);
+            Tracing = new Tracing(client);
             _pageBindings = new Dictionary<string, Action>();
 
             _ignoreHTTPSErrors = ignoreHTTPSErrors;
@@ -62,10 +59,45 @@ namespace PuppeteerSharp
         public event EventHandler<RequestEventArgs> RequestCreated;
         public event EventHandler<RequestEventArgs> RequestFinished;
         public event EventHandler<RequestEventArgs> RequestFailed;
+
+        public Frame MainFrame => _frameManager.MainFrame();
+        public IEnumerable<Frame> Frames => _frameManager.Frames.Values;
+
+        public Keyboard Keyboard { get; internal set; }
+        public Touchscreen Touchscreen { get; internal set; }
+        public Tracing Tracing { get; internal set; }
         #endregion
 
-        internal static async Task<Page> CreateAsync(Session client, bool ignoreHTTPSErrors, bool appMode,
-                                                     TaskQueue screenshotTaskQueue)
+        #region Public Methods
+
+        public async Task TapAsync(string selector)
+        {
+            var handle = await GetElementAsync(selector);
+
+            if (handle != null)
+            {
+                await handle.TapAsync();
+                await handle.DisposeAsync();
+            }
+        }
+        public async Task<ElementHandle> GetElementAsync(string selector)
+        {
+            return await MainFrame.GetElementAsync(selector);
+        }
+
+        public async Task SetRequestInterceptionAsync(bool value)
+        {
+            await _networkManager.SetRequestInterceptionAsync(value);
+        }
+
+        public async Task SetOfflineModeAsync(bool value)
+        {
+            await _networkManager.SetOfflineModeAsync(value);
+        }
+
+
+        public static async Task<Page> CreateAsync(Session client, bool ignoreHTTPSErrors, bool appMode,
+                                                   TaskQueue screenshotTaskQueue)
         {
             await client.SendAsync("Page.enable", null);
             dynamic frameTree = await client.SendAsync<FrameTree>("Page.getFrameTree", null);
@@ -100,79 +132,6 @@ namespace PuppeteerSharp
                 });
             }
             return page;
-        }
-
-        void _client_MessageReceived(object sender, MessageEventArgs e)
-        {
-            switch (e.MessageID)
-            {
-                case "Page.loadEventFired":
-                    Load(this, new EventArgs());
-                    break;
-                case "Runtime.consoleAPICalled":
-                    OnConsoleAPI(e);
-                    break;
-                case "Page.javascriptDialogOpening":
-                    OnDialog(e);
-                    break;
-                case "Runtime.exceptionThrown":
-                    HandleException(e.Exception.ExceptionDetails);
-                    break;
-                case "Security.certificateError":
-                    OnCertificateError(e);
-                    break;
-                case "Inspector.targetCrashed":
-                    OnTargetCrashed(e);
-                    break;
-                case "Performance.metrics":
-                    EmitMetrics(e);
-                    break;
-            }
-        }
-
-        private void OnTargetCrashed(MessageEventArgs e)
-        {
-
-        }
-
-        private void EmitMetrics(MessageEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void OnCertificateError(MessageEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void HandleException(string exceptionDetails)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void OnDialog(MessageEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void OnConsoleAPI(MessageEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private async Task SetViewport(ViewPortOptions viewport)
-        {
-            var needsReload = await _emulationManager.EmulateViewport(_client, viewport);
-            _viewport = viewport;
-            if (needsReload)
-            {
-                await Reload();
-            }
-        }
-
-        private Task Reload()
-        {
-            throw new NotImplementedException();
         }
 
         public async Task<dynamic> GoToAsync(string url, Dictionary<string, string> options)
@@ -215,6 +174,98 @@ namespace PuppeteerSharp
             return request?.Response;
         }
 
+        #endregion
+
+        #region Private Method
+
+        private async void _client_MessageReceived(object sender, MessageEventArgs e)
+        {
+            switch (e.MessageID)
+            {
+                case "Page.loadEventFired":
+                    Load(this, new EventArgs());
+                    break;
+                case "Runtime.consoleAPICalled":
+                    OnConsoleAPI(e);
+                    break;
+                case "Page.javascriptDialogOpening":
+                    OnDialog(e);
+                    break;
+                case "Runtime.exceptionThrown":
+                    HandleException(e.Exception.ExceptionDetails);
+                    break;
+                case "Security.certificateError":
+                    await OnCertificateError(e);
+                    break;
+                case "Inspector.targetCrashed":
+                    OnTargetCrashed(e);
+                    break;
+                case "Performance.metrics":
+                    EmitMetrics(e);
+                    break;
+            }
+        }
+
+        private void OnTargetCrashed(MessageEventArgs e)
+        {
+            if (Error == null)
+            {
+                throw new TargetCrashedException();
+            }
+
+            Error.Invoke(this, new ErrorEventArgs());
+        }
+
+        private void EmitMetrics(MessageEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private async Task OnCertificateError(MessageEventArgs e)
+        {
+            if (_ignoreHTTPSErrors)
+            {
+                //TODO: Puppeteer is silencing an error here, I don't know if that's necessary here
+                await _client.SendAsync("Security.handleCertificateError", new Dictionary<string, object>
+                {
+                    {"eventId", e.eventId },
+                    {"action", "continue"}
+                });
+
+            }
+        }
+
+        private void HandleException(string exceptionDetails)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void OnDialog(MessageEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void OnConsoleAPI(MessageEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private async Task SetViewport(ViewPortOptions viewport)
+        {
+            var needsReload = await _emulationManager.EmulateViewport(_client, viewport);
+            _viewport = viewport;
+            if (needsReload)
+            {
+                await Reload();
+            }
+        }
+
+        private Task Reload()
+        {
+            throw new NotImplementedException();
+        }
+
+
         private async Task<string> Navigate(Session client, string url, string referrer)
         {
             try
@@ -232,5 +283,8 @@ namespace PuppeteerSharp
                 return ex.Message;
             }
         }
+
+        #endregion
+
     }
 }

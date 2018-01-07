@@ -1,6 +1,6 @@
 ﻿namespace PuppeteerSharp
 {
-    internal class Tracing
+    public class Tracing
     {
         private Session client;
 

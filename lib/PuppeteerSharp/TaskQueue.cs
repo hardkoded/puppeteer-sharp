@@ -1,6 +1,6 @@
 ﻿namespace PuppeteerSharp
 {
-    internal class TaskQueue
+    public class TaskQueue
     {
     }
 }

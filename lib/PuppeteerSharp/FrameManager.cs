@@ -9,7 +9,6 @@ namespace PuppeteerSharp
         private Session _client;
         private Mouse _mouse;
         private Touchscreen _touchscreen;
-        private Dictionary<string, Frame> _frames;
         private Page _page;
 
         public FrameManager(Session client, FrameTree frameTree, Page page)
@@ -25,6 +24,9 @@ namespace PuppeteerSharp
         public event EventHandler<EventArgs> FrameAttached;
         public event EventHandler<EventArgs> FrameDetached;
         public event EventHandler<EventArgs> FrameNavigated;
+
+        public Dictionary<string, Frame> Frames { get; internal set; }
+
         #endregion
 
         public Frame MainFrame()

@@ -5,6 +5,8 @@ namespace PuppeteerSharp
 {
     public class MessageEventArgs
     {
+        internal object eventId;
+
         public string MessageID { get; set; }
         public TargetInfo TargetInfo { get; set; }
         public bool AuthChallenge { get; internal set; }

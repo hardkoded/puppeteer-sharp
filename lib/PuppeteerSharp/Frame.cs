@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using PuppeteerSharp.Input;
 
 namespace PuppeteerSharp
@@ -30,6 +31,9 @@ namespace PuppeteerSharp
         public object ExecutionContext => _context;
         public string Url { get; set; }
 
-
+        internal async Task<ElementHandle> GetElementAsync(string selector)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
