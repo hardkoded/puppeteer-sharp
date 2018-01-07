@@ -2,7 +2,7 @@
 
 namespace PuppeteerSharp
 {
-    public struct FrameTree
+    public class FrameTree
     {
         public FrameTree()
         {

@@ -18,16 +18,25 @@ namespace PuppeteerSharp
             _page = page;
 
             HandleFrameTree(frameTree);
+
         }
 
+        #region Properties
+        public event EventHandler<EventArgs> FrameAttached;
+        public event EventHandler<EventArgs> FrameDetached;
+        public event EventHandler<EventArgs> FrameNavigated;
+        #endregion
+
+        public Frame MainFrame()
+        {
+            throw new NotImplementedException();
+        }
+
+        #region Private Methods
         private void HandleFrameTree(FrameTree frameTree)
         {
             throw new NotImplementedException();
         }
-
-        internal Frame MainFrame()
-        {
-            throw new NotImplementedException();
-        }
+        #endregion
     }
 }

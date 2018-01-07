@@ -37,7 +37,7 @@ namespace PuppeteerSharp
             if (_targetInfo.Type == "page")
             {
                 var client = await _browser.Connection.CreateSession(_targetInfo.TargetId);
-                await PuppeteerSharp.Page.CreateAsync(client, _browser.IgnoreHTTPSErrors, _browser.AppMode);
+                await PuppeteerSharp.Page.CreateAsync(client, _browser.IgnoreHTTPSErrors, _browser.AppMode, _browser.ScreenshotTaskQueue);
             }
 
             return null;

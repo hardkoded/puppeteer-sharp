@@ -43,6 +43,7 @@ namespace PuppeteerSharp
 
         public bool IgnoreHTTPSErrors { get; set; }
         public bool AppMode { get; set; }
+        internal TaskQueue ScreenshotTaskQueue { get; set; }
 
         #endregion
 
@@ -61,9 +62,8 @@ namespace PuppeteerSharp
                 {"url", "about:blank"}
               })).ToString();
 
-            var client = await Connection.CreateSession(targetId);
-            var page = await Page.CreateAsync(client, IgnoreHTTPSErrors, AppMode);
-            return page;
+            var target = _targets[targetId];
+            return await target.Page();
         }
 
         internal void ChangeTarget(TargetInfo targetInfo)
@@ -108,7 +108,7 @@ namespace PuppeteerSharp
 
         private void ChangeTargetInfo(MessageEventArgs args)
         {
-            if(!_targets.ContainsKey(args.TargetInfo.TargetId))
+            if (!_targets.ContainsKey(args.TargetInfo.TargetId))
             {
                 throw new InvalidTargetException("Target should exists before ChangeTargetInfo");
             }
@@ -141,14 +141,15 @@ namespace PuppeteerSharp
 
             if (await target.InitializedTask)
             {
-                TargetCreated(this, new TargetChangedArgs(){
+                TargetCreated(this, new TargetChangedArgs()
+                {
                     Target = target
                 });
             }
 
         }
 
-        internal static async Task<Browser> CreateAsync(Connection connection, Dictionary<string, object> options, 
+        internal static async Task<Browser> CreateAsync(Connection connection, Dictionary<string, object> options,
                                                         Func<Task> closeCallBack)
         {
             var browser = new Browser(connection, options, closeCallBack);

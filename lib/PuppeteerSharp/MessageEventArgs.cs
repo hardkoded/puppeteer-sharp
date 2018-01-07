@@ -19,6 +19,7 @@ namespace PuppeteerSharp
         public string Type { get; internal set; }
         public Response Response { get; internal set; }
         public string ErrorText { get; internal set; }
+        public ExceptionInfo Exception { get; internal set; }
     }
 
 }
