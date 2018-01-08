@@ -35,5 +35,35 @@ namespace PuppeteerSharp
         {
             throw new NotImplementedException();
         }
+
+        internal async Task<ExecutionContext> GetExecutionContext()
+        {
+            throw new NotImplementedException();
+        }
+
+        internal Task<object> Eval(string selector, Func<object> pageFunction, object[] args)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal Task<object> Eval(string selector, string pageFunction, object[] args)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal Task<object> EvalMany(string selector, Func<object> pageFunction, object[] args)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal Task<object> EvalMany(string selector, string pageFunction, object[] args)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal async Task<IEnumerable<ElementHandle>> GetElementsAsync(string selector)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

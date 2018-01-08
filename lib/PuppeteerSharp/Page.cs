@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using PuppeteerSharp.Input;
 
@@ -62,10 +63,13 @@ namespace PuppeteerSharp
 
         public Frame MainFrame => _frameManager.MainFrame();
         public IEnumerable<Frame> Frames => _frameManager.Frames.Values;
+        public string Url => MainFrame.Url;
 
         public Keyboard Keyboard { get; internal set; }
         public Touchscreen Touchscreen { get; internal set; }
         public Tracing Tracing { get; internal set; }
+
+
         #endregion
 
         #region Public Methods
@@ -80,9 +84,44 @@ namespace PuppeteerSharp
                 await handle.DisposeAsync();
             }
         }
+
         public async Task<ElementHandle> GetElementAsync(string selector)
         {
             return await MainFrame.GetElementAsync(selector);
+        }
+
+        public async Task<IEnumerable<ElementHandle>> GetElementsAsync(string selector)
+        {
+            return await MainFrame.GetElementsAsync(selector);
+        }
+
+        public async Task<JSHandle> EvaluateHandle(Func<object> pageFunction, params object[] args)
+        {
+            var context = await MainFrame.GetExecutionContext();
+            return await context.EvaluateHandle(pageFunction, args);
+        }
+
+        public async Task<JSHandle> EvaluateHandle(string pageFunction, params object[] args)
+        {
+            var context = await MainFrame.GetExecutionContext();
+            return await context.EvaluateHandle(pageFunction, args);
+        }
+
+        public async Task<JSHandle> QueryObjects(JSHandle prototypeHandle)
+        {
+            var context = await MainFrame.GetExecutionContext();
+            return await context.QueryObjects(prototypeHandle);
+        }
+
+
+        public async Task<object> Eval(string selector, Func<object> pageFunction, params object[] args)
+        {
+            return await MainFrame.Eval(selector, pageFunction, args);
+        }
+
+        public async Task<object> Eval(string selector, string pageFunction, params object[] args)
+        {
+            return await MainFrame.Eval(selector, pageFunction, args);
         }
 
         public async Task SetRequestInterceptionAsync(bool value)
@@ -95,6 +134,36 @@ namespace PuppeteerSharp
             await _networkManager.SetOfflineModeAsync(value);
         }
 
+        public async Task<object> EvalMany(string selector, Func<object> pageFunction, params object[] args)
+        {
+            return await MainFrame.EvalMany(selector, pageFunction, args);
+        }
+
+        public async Task<object> EvalMany(string selector, string pageFunction, params object[] args)
+        {
+            return await MainFrame.EvalMany(selector, pageFunction, args);
+        }
+
+        public async Task<IEnumerable<Cookie>> GetCookies(params string[] urls)
+        {
+            return await _client.SendAsync<List<Cookie>>("Network.getCookies", new Dictionary<string, object>
+            {
+                { "urls", urls.Length > 0 ? urls : (object)Url}
+            });
+        }
+
+        public async Task DeleteCookie(params CookieParam[] cookies)
+        {
+            var pageURL = Url;
+            foreach (var cookie in cookies)
+            {
+                if (string.IsNullOrEmpty(cookie.Url) && pageURL.StartsWith("http", StringComparison.Ordinal))
+                {
+                    cookie.Url = pageURL;
+                }
+                await _client.SendAsync("Network.deleteCookies", cookie);
+            }
+        }
 
         public static async Task<Page> CreateAsync(Session client, bool ignoreHTTPSErrors, bool appMode,
                                                    TaskQueue screenshotTaskQueue)

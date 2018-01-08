@@ -26,9 +26,14 @@ namespace PuppeteerSharp
             return result;
         }
 
-        private async Task<JSHandle> EvaluateHandle(string pageFunction, object[] args)
+        internal async Task<JSHandle> EvaluateHandle(Func<object> pageFunction, object[] args)
         {
-            if(!string.IsNullOrEmpty(pageFunction)) 
+            throw new NotImplementedException();
+        }
+
+        internal async Task<JSHandle> EvaluateHandle(string pageFunction, object[] args)
+        {
+            if (!string.IsNullOrEmpty(pageFunction))
             {
                 dynamic remoteObject;
 
@@ -43,7 +48,7 @@ namespace PuppeteerSharp
 
                     return ObjectHandleFactory(remoteObject);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     throw new EvaluationFailedException("Evaluation Failed", ex);
                 }
@@ -54,14 +59,14 @@ namespace PuppeteerSharp
 
         public async Task<dynamic> QueryObjects(JSHandle prototypeHandle)
         {
-            if(prototypeHandle.Disposed)
+            if (prototypeHandle.Disposed)
             {
                 throw new ArgumentException("prototypeHandle is disposed", nameof(prototypeHandle));
             }
 
             if (!((IDictionary<string, object>)prototypeHandle.RemoteObject).ContainsKey("objectId"))
             {
-                throw new ArgumentException("Prototype JSHandle must not be referencing primitive value", 
+                throw new ArgumentException("Prototype JSHandle must not be referencing primitive value",
                                             nameof(prototypeHandle));
             }
 
@@ -72,5 +77,8 @@ namespace PuppeteerSharp
 
             return ObjectHandleFactory(response.objects);
         }
+
+
+
     }
 }
