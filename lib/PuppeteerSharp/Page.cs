@@ -114,12 +114,12 @@ namespace PuppeteerSharp
         }
 
 
-        public async Task<object> Eval(string selector, Func<object> pageFunction, params object[] args)
+        public async Task<object> EvalAsync(string selector, Func<object> pageFunction, params object[] args)
         {
             return await MainFrame.Eval(selector, pageFunction, args);
         }
 
-        public async Task<object> Eval(string selector, string pageFunction, params object[] args)
+        public async Task<object> EvalAsync(string selector, string pageFunction, params object[] args)
         {
             return await MainFrame.Eval(selector, pageFunction, args);
         }
@@ -134,25 +134,46 @@ namespace PuppeteerSharp
             await _networkManager.SetOfflineModeAsync(value);
         }
 
-        public async Task<object> EvalMany(string selector, Func<object> pageFunction, params object[] args)
+        public async Task<object> EvalManyAsync(string selector, Func<object> pageFunction, params object[] args)
         {
             return await MainFrame.EvalMany(selector, pageFunction, args);
         }
 
-        public async Task<object> EvalMany(string selector, string pageFunction, params object[] args)
+        public async Task<object> EvalManyAsync(string selector, string pageFunction, params object[] args)
         {
             return await MainFrame.EvalMany(selector, pageFunction, args);
         }
 
-        public async Task<IEnumerable<Cookie>> GetCookies(params string[] urls)
+        public async Task<IEnumerable<CookieParam>> GetCookiesAsync(params string[] urls)
         {
-            return await _client.SendAsync<List<Cookie>>("Network.getCookies", new Dictionary<string, object>
+            return await _client.SendAsync<List<CookieParam>>("Network.getCookies", new Dictionary<string, object>
             {
                 { "urls", urls.Length > 0 ? urls : (object)Url}
             });
         }
 
-        public async Task DeleteCookie(params CookieParam[] cookies)
+        public async Task SetCookieAsync(params CookieParam[] cookies)
+        {
+            foreach (var cookie in cookies)
+            {
+                if (string.IsNullOrEmpty(cookie.Url) && Url.StartsWith("http"))
+                {
+                    cookie.Url = Url;
+                }
+            }
+
+            await DeleteCookieAsync(cookies);
+
+            if (cookies.Length > 0)
+            {
+                await _client.SendAsync("Network.setCookies", new Dictionary<string, object>
+                {
+                    { "cookies", cookies}
+                });
+            }
+        }
+
+        public async Task DeleteCookieAsync(params CookieParam[] cookies)
         {
             var pageURL = Url;
             foreach (var cookie in cookies)
@@ -163,6 +184,16 @@ namespace PuppeteerSharp
                 }
                 await _client.SendAsync("Network.deleteCookies", cookie);
             }
+        }
+
+        public async Task<ElementHandle> AddScriptTagAsync(dynamic options)
+        {
+            return await MainFrame.AddScriptTag(options);
+        }
+
+        public async Task<ElementHandle> AddStyleTagAsync(dynamic options)
+        {
+            return await MainFrame.AddStyleTag(options);
         }
 
         public static async Task<Page> CreateAsync(Session client, bool ignoreHTTPSErrors, bool appMode,

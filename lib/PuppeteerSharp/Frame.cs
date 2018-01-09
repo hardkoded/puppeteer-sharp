@@ -65,5 +65,15 @@ namespace PuppeteerSharp
         {
             throw new NotImplementedException();
         }
+
+        internal Task<ElementHandle> AddStyleTag(dynamic options)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal Task<ElementHandle> AddScriptTag(dynamic options)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
