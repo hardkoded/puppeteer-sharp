@@ -75,5 +75,10 @@ namespace PuppeteerSharp
         {
             throw new NotImplementedException();
         }
+
+        internal void OnLifecycleEvent(string loaderId, string name)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

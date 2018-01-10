@@ -16,7 +16,8 @@ namespace PuppeteerSharp
         private EmulationManager _emulationManager;
         private ViewPortOptions _viewport;
         private Mouse _mouse;
-        private Dictionary<string, Action> _pageBindings;
+        private Dictionary<string, Func<object>> _pageBindings;
+
 
         private Page(Session client, FrameTree frameTree, bool ignoreHTTPSErrors, TaskQueue screenshotTaskQueue)
         {
@@ -29,7 +30,7 @@ namespace PuppeteerSharp
             _networkManager = new NetworkManager(client);
             _emulationManager = new EmulationManager(client);
             Tracing = new Tracing(client);
-            _pageBindings = new Dictionary<string, Action>();
+            _pageBindings = new Dictionary<string, Func<object>>();
 
             _ignoreHTTPSErrors = ignoreHTTPSErrors;
 
@@ -194,6 +195,11 @@ namespace PuppeteerSharp
         public async Task<ElementHandle> AddStyleTagAsync(dynamic options)
         {
             return await MainFrame.AddStyleTag(options);
+        }
+
+        public async Task ExposeFunction(string name, Func<object> puppeteerFunction)
+        {
+            //TODO: We won't implement this yet
         }
 
         public static async Task<Page> CreateAsync(Session client, bool ignoreHTTPSErrors, bool appMode,

@@ -6,6 +6,7 @@ namespace PuppeteerSharp
     public class MessageEventArgs
     {
         internal object eventId;
+        internal object parentFrameId;
 
         public string MessageID { get; set; }
         public TargetInfo TargetInfo { get; set; }
@@ -22,6 +23,13 @@ namespace PuppeteerSharp
         public Response Response { get; internal set; }
         public string ErrorText { get; internal set; }
         public ExceptionInfo Exception { get; internal set; }
+        public string FrameId { get; internal set; }
+        public FrameData Frame { get; internal set; }
+        public ContextData Context { get; internal set; }
+        public string ExecutionContextId { get; internal set; }
+        public string LoaderId { get; internal set; }
+        public string Name { get; internal set; }
+        public string ParentFrameId { get; internal set; }
     }
 
 }
