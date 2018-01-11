@@ -24,8 +24,8 @@ namespace PuppeteerSharp
         public string ErrorText { get; internal set; }
         public ExceptionInfo Exception { get; internal set; }
         public string FrameId { get; internal set; }
-        public FrameData Frame { get; internal set; }
-        public ContextData Context { get; internal set; }
+        public FramePayload Frame { get; internal set; }
+        public ContextPayload Context { get; internal set; }
         public string ExecutionContextId { get; internal set; }
         public string LoaderId { get; internal set; }
         public string Name { get; internal set; }

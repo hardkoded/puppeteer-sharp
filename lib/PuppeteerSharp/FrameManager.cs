@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using PuppeteerSharp.Input;
 
 namespace PuppeteerSharp
@@ -25,19 +26,15 @@ namespace PuppeteerSharp
         }
 
         #region Properties
-        public event EventHandler<EventArgs> FrameAttached;
+        public event EventHandler<FrameEventArgs> FrameAttached;
         public event EventHandler<EventArgs> FrameDetached;
-        public event EventHandler<EventArgs> FrameNavigated;
+        public event EventHandler<FrameEventArgs> FrameNavigated;
         public event EventHandler<FrameEventArgs> LifecycleEvent;
 
         public Dictionary<string, Frame> Frames { get; internal set; }
+        public Frame MainFrame { get; internal set; }
 
         #endregion
-
-        public Frame MainFrame()
-        {
-            throw new NotImplementedException();
-        }
 
         #region Private Methods
 
@@ -81,7 +78,7 @@ namespace PuppeteerSharp
                 var frame = Frames[e.FrameId];
 
                 frame.OnLifecycleEvent(e.LoaderId, e.Name);
-                //this.emit(FrameManager.Events.LifecycleEvent, frame);
+                LifecycleEvent?.Invoke(this, new FrameEventArgs(frame));
             }
         }
 
@@ -95,30 +92,106 @@ namespace PuppeteerSharp
             throw new NotImplementedException();
         }
 
-        private void OnExecutionContextCreated(ContextData context)
+        private void OnExecutionContextCreated(ContextPayload context)
         {
-            throw new NotImplementedException();
+            /*
+            var context = new ExecutionContext(_client, contextPayload, this.createJSHandle.bind(this, contextPayload.id));
+            this._contextIdToContext.set(contextPayload.id, context);
+
+            const frame = context._frameId ? this._frames.get(context._frameId) : null;
+            if (frame && context._isDefault)
+                frame._setDefaultContext(context);
+                */
         }
 
         private void OnFrameDetached(string frameId)
         {
+            if (Frames.ContainsKey(frameId))
+            {
+                RemoveFramesRecursively(Frames[frameId]);
+            }
+        }
+
+        private void OnFrameNavigated(Frame frame)
+        {
             throw new NotImplementedException();
         }
 
-        private void OnFrameNavigated(FrameData frame)
+        private void OnFrameNavigated(FramePayload framePayload)
+        {
+            var isMainFrame = string.IsNullOrEmpty(framePayload.ParentId);
+            var frame = isMainFrame ? MainFrame : Frames[framePayload.Id];
+
+            Contract.Assert(isMainFrame || frame != null, "We either navigate top level or have old version of the navigated frame");
+
+            // Detach all child frames first.
+            if (frame != null)
+            {
+                foreach (var child in frame.ChildFrames)
+                {
+                    RemoveFramesRecursively(child);
+                }
+            }
+
+            // Update or create main frame.
+            if (isMainFrame)
+            {
+                if (frame != null)
+                {
+                    // Update frame id to retain frame identity on cross-process navigation.
+                    Frames.Remove(frame.Id);
+                    frame.Id = framePayload.Id;
+                }
+                else
+                {
+                    // Initial main frame navigation.
+                    frame = new Frame(this._client, this._page, null, framePayload.Id);
+                }
+
+                Frames[framePayload.Id] = frame;
+                MainFrame = frame;
+            }
+
+            // Update frame payload.
+            frame.Navigated(framePayload);
+
+            FrameNavigated?.Invoke(this, new FrameEventArgs(frame));
+        }
+
+        private void RemoveFramesRecursively(Frame child)
         {
             throw new NotImplementedException();
         }
 
         private void OnFrameAttached(string frameId, string parentFrameId)
         {
-            throw new NotImplementedException();
+            if (!Frames.ContainsKey(frameId) && Frames.ContainsKey(parentFrameId))
+            {
+                var parentFrame = Frames[parentFrameId];
+                var frame = new Frame(_client, _page, parentFrame, frameId);
+                Frames[frame.Id] = frame;
+                FrameAttached?.Invoke(this, new FrameEventArgs(frame));
+            }
         }
 
         private void HandleFrameTree(FrameTree frameTree)
         {
-            throw new NotImplementedException();
+            if (!string.IsNullOrEmpty(frameTree.Frame.ParentId))
+            {
+                OnFrameAttached(frameTree.Frame.Id, frameTree.Frame.ParentId);
+            }
+
+            OnFrameNavigated(frameTree.Frame);
+
+            if (frameTree.Childs != null)
+            {
+                foreach (var child in frameTree.Childs)
+                {
+                    HandleFrameTree(child);
+                }
+            }
         }
+
         #endregion
     }
 }

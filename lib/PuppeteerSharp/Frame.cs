@@ -30,6 +30,8 @@ namespace PuppeteerSharp
         public List<Frame> ChildFrames { get; set; } = new List<Frame>();
         public object ExecutionContext => _context;
         public string Url { get; set; }
+        public string ParentId { get; internal set; }
+        public string Id { get; internal set; }
 
         internal async Task<ElementHandle> GetElementAsync(string selector)
         {
@@ -77,6 +79,11 @@ namespace PuppeteerSharp
         }
 
         internal void OnLifecycleEvent(string loaderId, string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void Navigated(FramePayload framePayload)
         {
             throw new NotImplementedException();
         }

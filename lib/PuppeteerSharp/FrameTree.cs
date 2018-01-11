@@ -6,10 +6,10 @@ namespace PuppeteerSharp
     {
         public FrameTree()
         {
-            Childs = new List<Frame>();
+            Childs = new List<FrameTree>();
         }
 
         public Frame Frame { get; set; }
-        public List<Frame> Childs { get; set; }
+        public List<FrameTree> Childs { get; set; }
     }
 }

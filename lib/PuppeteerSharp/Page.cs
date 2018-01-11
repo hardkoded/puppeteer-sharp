@@ -53,16 +53,16 @@ namespace PuppeteerSharp
         public event EventHandler<EventArgs> Load;
         public event EventHandler<ErrorEventArgs> Error;
 
-        public event EventHandler<EventArgs> FrameAttached;
+        public event EventHandler<FrameEventArgs> FrameAttached;
         public event EventHandler<EventArgs> FrameDetached;
-        public event EventHandler<EventArgs> FrameNavigated;
+        public event EventHandler<FrameEventArgs> FrameNavigated;
 
         public event EventHandler<ResponseCreatedArgs> ResponseCreated;
         public event EventHandler<RequestEventArgs> RequestCreated;
         public event EventHandler<RequestEventArgs> RequestFinished;
         public event EventHandler<RequestEventArgs> RequestFailed;
 
-        public Frame MainFrame => _frameManager.MainFrame();
+        public Frame MainFrame => _frameManager.MainFrame;
         public IEnumerable<Frame> Frames => _frameManager.Frames.Values;
         public string Url => MainFrame.Url;
 
@@ -250,7 +250,7 @@ namespace PuppeteerSharp
 
             _networkManager.RequestCreated += createRequestEventListener;
 
-            var mainFrame = _frameManager.MainFrame();
+            var mainFrame = _frameManager.MainFrame;
             var watcher = new NavigationWatcher(_frameManager, mainFrame, options);
 
             var navigateTask = Navigate(_client, url, referrer);
@@ -272,9 +272,9 @@ namespace PuppeteerSharp
 
             Request request = null;
 
-            if (requests.ContainsKey(_frameManager.MainFrame().Url))
+            if (requests.ContainsKey(_frameManager.MainFrame.Url))
             {
-                request = requests[_frameManager.MainFrame().Url];
+                request = requests[_frameManager.MainFrame.Url];
             }
 
             return request?.Response;

@@ -1,8 +1,7 @@
 ﻿namespace PuppeteerSharp
 {
-    public class FramePayload
+    public class ContextPayload
     {
         public string Id { get; internal set; }
-        public string ParentId { get; internal set; }
     }
 }

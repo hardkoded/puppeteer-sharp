@@ -7,12 +7,12 @@ namespace PuppeteerSharp
     public class ExecutionContext
     {
         private Session _client;
-        private string _contextID;
+        private string _contextId;
 
-        public ExecutionContext(Session client, string contextID, Func<JSHandle, dynamic> objectHandleFactory)
+        public ExecutionContext(Session client, ContextPayload contextPayload, Func<JSHandle, dynamic> objectHandleFactory)
         {
             _client = client;
-            _contextID = contextID;
+            _contextId = contextPayload.Id;
             ObjectHandleFactory = objectHandleFactory;
         }
 
@@ -41,7 +41,7 @@ namespace PuppeteerSharp
                 {
                     remoteObject = await _client.SendAsync("Runtime.evaluate", new Dictionary<string, object>()
                     {
-                        {"expression", _contextID},
+                        {"expression", _contextId},
                         {"returnByValue", false},
                         {"awaitPromise", true}
                     });
