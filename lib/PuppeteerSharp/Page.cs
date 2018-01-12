@@ -54,7 +54,7 @@ namespace PuppeteerSharp
         public event EventHandler<ErrorEventArgs> Error;
 
         public event EventHandler<FrameEventArgs> FrameAttached;
-        public event EventHandler<EventArgs> FrameDetached;
+        public event EventHandler<FrameEventArgs> FrameDetached;
         public event EventHandler<FrameEventArgs> FrameNavigated;
 
         public event EventHandler<ResponseCreatedArgs> ResponseCreated;
@@ -197,7 +197,7 @@ namespace PuppeteerSharp
             return await MainFrame.AddStyleTag(options);
         }
 
-        public async Task ExposeFunction(string name, Func<object> puppeteerFunction)
+        public async Task ExposeFunctionAsync(string name, Func<object> puppeteerFunction)
         {
             //TODO: We won't implement this yet
         }

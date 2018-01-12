@@ -9,7 +9,7 @@ namespace PuppeteerSharp
         private Session _client;
         private string _contextId;
 
-        public ExecutionContext(Session client, ContextPayload contextPayload, Func<JSHandle, dynamic> objectHandleFactory)
+        public ExecutionContext(Session client, ContextPayload contextPayload, Func<dynamic, JSHandle> objectHandleFactory)
         {
             _client = client;
             _contextId = contextPayload.Id;
@@ -17,21 +17,23 @@ namespace PuppeteerSharp
         }
 
         public Func<JSHandle, dynamic> ObjectHandleFactory { get; internal set; }
+        public string FrameId { get; internal set; }
+        public bool IsDefault { get; internal set; }
 
         public async Task<dynamic> Evaluate(string pageFunction, params object[] args)
         {
-            var handle = await EvaluateHandle(pageFunction, args);
+            var handle = await EvaluateHandleAsync(pageFunction, args);
             dynamic result = await handle.JsonValue();
             await handle.Dispose();
             return result;
         }
 
-        internal async Task<JSHandle> EvaluateHandle(Func<object> pageFunction, object[] args)
+        internal async Task<JSHandle> EvaluateHandleAsync(Func<object> pageFunction, object[] args)
         {
             throw new NotImplementedException();
         }
 
-        internal async Task<JSHandle> EvaluateHandle(string pageFunction, object[] args)
+        internal async Task<JSHandle> EvaluateHandleAsync(string pageFunction, object[] args)
         {
             if (!string.IsNullOrEmpty(pageFunction))
             {
@@ -77,8 +79,6 @@ namespace PuppeteerSharp
 
             return ObjectHandleFactory(response.objects);
         }
-
-
 
     }
 }

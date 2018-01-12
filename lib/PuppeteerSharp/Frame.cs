@@ -13,35 +13,47 @@ namespace PuppeteerSharp
         private string _id;
         private string _defaultContextId = "<not-initialized>";
         private object _context = null;
+        private string _url = string.Empty;
+        private List<WaitTask> _waitTasks;
+        private List<string> _lifecycleEvents;
 
         public Frame(Session client, Page page, Frame parentFrame, string frameId)
         {
             _client = client;
             _page = page;
-            _id = frameId;
             _parentFrame = parentFrame;
+            _id = frameId;
 
             if (parentFrame != null)
             {
                 _parentFrame.ChildFrames.Add(this);
             }
+
+            SetDefaultContext(null);
+
+            _waitTasks = new List<WaitTask>();
+            _lifecycleEvents = new List<string>();
         }
 
+        #region Properties
         public List<Frame> ChildFrames { get; set; } = new List<Frame>();
         public object ExecutionContext => _context;
         public string Url { get; set; }
         public string ParentId { get; internal set; }
         public string Id { get; internal set; }
 
+        public Task<ExecutionContext> ContextResolvedTask => ContextResolveTaskWrapper.Task;
+        public TaskCompletionSource<ExecutionContext> ContextResolveTaskWrapper { get; internal set; }
+
+        #endregion
+
+        #region Public Methods
+
         internal async Task<ElementHandle> GetElementAsync(string selector)
         {
             throw new NotImplementedException();
         }
 
-        internal async Task<ExecutionContext> GetExecutionContext()
-        {
-            throw new NotImplementedException();
-        }
 
         internal Task<object> Eval(string selector, Func<object> pageFunction, object[] args)
         {
@@ -87,5 +99,29 @@ namespace PuppeteerSharp
         {
             throw new NotImplementedException();
         }
+
+        internal void SetDefaultContext(ExecutionContext context)
+        {
+            if (context != null)
+            {
+                ContextResolveTaskWrapper.SetResult(context);
+                ContextResolveTaskWrapper = null;
+
+                foreach (var waitTask in _waitTasks)
+                {
+                    waitTask.Rerun();
+                }
+            }
+            else
+            {
+                ContextResolveTaskWrapper = new TaskCompletionSource<ExecutionContext>();
+            }
+        }
+
+        internal void Detach()
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
     }
 }

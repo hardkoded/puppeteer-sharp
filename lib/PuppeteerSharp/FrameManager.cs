@@ -27,7 +27,7 @@ namespace PuppeteerSharp
 
         #region Properties
         public event EventHandler<FrameEventArgs> FrameAttached;
-        public event EventHandler<EventArgs> FrameDetached;
+        public event EventHandler<FrameEventArgs> FrameDetached;
         public event EventHandler<FrameEventArgs> FrameNavigated;
         public event EventHandler<FrameEventArgs> LifecycleEvent;
 
@@ -84,24 +84,46 @@ namespace PuppeteerSharp
 
         private void OnExecutionContextsCleared()
         {
-            throw new NotImplementedException();
+            foreach (var context in _contextIdToContext.Values)
+            {
+                RemoveContext(context);
+            }
+            _contextIdToContext.Clear();
         }
 
         private void OnExecutionContextDestroyed(string executionContextId)
         {
-            throw new NotImplementedException();
+            _contextIdToContext.TryGetValue(executionContextId, out var context);
+
+            if (context != null)
+            {
+                _contextIdToContext.Remove(executionContextId);
+                RemoveContext(context);
+            }
         }
 
-        private void OnExecutionContextCreated(ContextPayload context)
+        private void OnExecutionContextCreated(ContextPayload contextPayload)
         {
-            /*
-            var context = new ExecutionContext(_client, contextPayload, this.createJSHandle.bind(this, contextPayload.id));
-            this._contextIdToContext.set(contextPayload.id, context);
 
-            const frame = context._frameId ? this._frames.get(context._frameId) : null;
-            if (frame && context._isDefault)
-                frame._setDefaultContext(context);
-                */
+            var context = new ExecutionContext(_client, contextPayload, (dynamic remoteObject) =>
+            {
+                _contextIdToContext.TryGetValue(contextPayload.Id, out var storedContext);
+
+                Contract.Assert(storedContext == null, $"INTERNAL ERROR: missing context with id = {contextPayload.Id}");
+                if (remoteObject.Subtype == "node")
+                {
+                    return new ElementHandle(storedContext, _client, remoteObject, _page);
+                }
+                return new JSHandle(storedContext, _client, remoteObject);
+            });
+
+            _contextIdToContext[contextPayload.Id] = context;
+
+            var frame = !string.IsNullOrEmpty(context.FrameId) ? Frames[context.FrameId] : null;
+            if (frame != null && context.IsDefault)
+            {
+                frame.SetDefaultContext(context);
+            }
         }
 
         private void OnFrameDetached(string frameId)
@@ -158,9 +180,25 @@ namespace PuppeteerSharp
             FrameNavigated?.Invoke(this, new FrameEventArgs(frame));
         }
 
-        private void RemoveFramesRecursively(Frame child)
+        private void RemoveContext(ExecutionContext context)
         {
-            throw new NotImplementedException();
+            var frame = !string.IsNullOrEmpty(context.FrameId) ? Frames[context.FrameId] : null;
+
+            if (frame != null && context.IsDefault)
+            {
+                frame.SetDefaultContext(null);
+            }
+        }
+
+        private void RemoveFramesRecursively(Frame frame)
+        {
+            foreach (var child in frame.ChildFrames)
+            {
+                RemoveFramesRecursively(child);
+            }
+            frame.Detach();
+            Frames.Remove(frame.Id);
+            FrameDetached?.Invoke(this, new FrameEventArgs(frame));
         }
 
         private void OnFrameAttached(string frameId, string parentFrameId)

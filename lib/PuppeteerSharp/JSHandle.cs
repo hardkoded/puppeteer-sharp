@@ -8,7 +8,7 @@ namespace PuppeteerSharp
     {
         private ExecutionContext _context;
         private Session _client;
-        public JSHandle(ExecutionContext context, Session client, dynamic remoteObject)
+        public JSHandle(ExecutionContext context, Session client, object remoteObject)
         {
             _context = context;
             _client = client;
@@ -27,7 +27,7 @@ namespace PuppeteerSharp
                 {"ownProperties", true}
             });
             var result = new Dictionary<string, object>();
-            foreach(var property in response.result)
+            foreach (var property in response.result)
             {
                 result.Add(property.name.ToString(), _context.ObjectHandleFactory(property.value));
             }
@@ -37,7 +37,7 @@ namespace PuppeteerSharp
 
         public async Task<object> JsonValue()
         {
-            if(((IDictionary<string, object>)RemoteObject).ContainsKey("objectId"))
+            if (((IDictionary<string, object>)RemoteObject).ContainsKey("objectId"))
             {
                 dynamic response = await _client.SendAsync("Retunrime.callFunctionOn", new Dictionary<string, object>()
                 {
@@ -56,7 +56,7 @@ namespace PuppeteerSharp
 
         public async Task Dispose()
         {
-            if(Disposed)
+            if (Disposed)
             {
                 return;
             }
