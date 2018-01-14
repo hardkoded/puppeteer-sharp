@@ -71,13 +71,13 @@ namespace PuppeteerSharp
                 }
             }
 
-            if ((bool)options.GetValueOrDefault("devtools"))
+            if (options.TryGetValue("devtools", out var hasDevTools) && (bool)hasDevTools)
             {
                 chromeArguments.Add("--auto-open-devtools-for-tabs");
                 options["headless"] = false;
             }
 
-            if ((bool)options.GetValueOrDefault("headless"))
+            if (options.TryGetValue("headless", out var isHeadless) && (bool)isHeadless)
             {
                 chromeArguments.AddRange(new[]{
                     "--headless",
@@ -89,7 +89,7 @@ namespace PuppeteerSharp
 
             var chromeExecutable = (options.GetValueOrDefault("executablePath") ?? "").ToString();
 
-            if (!string.IsNullOrEmpty(chromeExecutable))
+            if (string.IsNullOrEmpty(chromeExecutable))
             {
                 var downloader = Downloader.CreateDefault();
                 var revisionInfo = downloader.RevisionInfo(Downloader.CurrentPlatform(),
@@ -116,21 +116,22 @@ namespace PuppeteerSharp
                 _chromeProcess.StartInfo.RedirectStandardError = false;
             }
 
-            _chromeProcess.Exited += async (sender, e) => {
+            _chromeProcess.Exited += async (sender, e) =>
+            {
                 _chromeClosed = true;
                 await KillChrome();
             };
 
-            try 
+            try
             {
                 var connectionDelay = (int)(options.GetValueOrDefault("slowMo") ?? 0);
-                var browserWSEndpoint = await WaitForEndpoint(_chromeProcess, 
+                var browserWSEndpoint = await WaitForEndpoint(_chromeProcess,
                                                               (int)(options.GetValueOrDefault("timeout") ?? 30 * 100));
 
                 _connection = await Connection.Create(browserWSEndpoint, connectionDelay);
                 return await Browser.CreateAsync(_connection, options, KillChrome);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 await ForceKillChrome();
                 throw new Exception("Failed to create connection", ex);
@@ -149,7 +150,7 @@ namespace PuppeteerSharp
                 output += e.Data + "\n";
                 var match = Regex.Match(e.Data, "^DevTools listening on (ws:\\/\\/.*)");
 
-                if(!match.Success)
+                if (!match.Success)
                 {
                     return;
                 }
@@ -166,13 +167,14 @@ namespace PuppeteerSharp
                 taskWrapper.SetException(new ChromeProcessException($"Failed to launch chrome! {error}"));
             };
 
-            if(timeout > 0)
+            if (timeout > 0)
             {
                 //We have to declare timer before initializing it because if we don't do this 
                 //we can't dispose it in the action created in the constructor
                 Timer timer = null;
 
-                timer = new Timer((state) => {
+                timer = new Timer((state) =>
+                {
                     taskWrapper.SetException(
                         new ChromeProcessException($"Timed out after ${timeout} ms while trying to connect to Chrome! " +
                                                    "The only Chrome revision guaranteed to work is r${ChromiumRevision}"));
@@ -193,9 +195,9 @@ namespace PuppeteerSharp
         {
             if (!string.IsNullOrEmpty(_temporaryUserDataDir))
             {
-                await ForceKillChrome(); 
+                await ForceKillChrome();
             }
-            else if(_connection != null)
+            else if (_connection != null)
             {
                 await _connection.SendAsync("Browser.close", null);
             }
@@ -213,7 +215,7 @@ namespace PuppeteerSharp
 
         private static void SetEnvVariables(IDictionary<string, string> environment, IDictionary<string, string> dictionary)
         {
-            foreach(var item in dictionary)
+            foreach (var item in dictionary)
             {
                 environment[item.Key] = item.Value;
             }

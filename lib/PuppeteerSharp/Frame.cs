@@ -37,17 +37,17 @@ namespace PuppeteerSharp
 
         #region Properties
         public List<Frame> ChildFrames { get; set; } = new List<Frame>();
-        public object ExecutionContext => _context;
         public string Url { get; set; }
         public string ParentId { get; internal set; }
         public string Id { get; internal set; }
 
-        public Task<ExecutionContext> ContextResolvedTask => ContextResolveTaskWrapper.Task;
         public TaskCompletionSource<ExecutionContext> ContextResolveTaskWrapper { get; internal set; }
 
         #endregion
 
         #region Public Methods
+
+        public Task<ExecutionContext> GetExecutionContextAsync() => ContextResolveTaskWrapper.Task;
 
         internal async Task<ElementHandle> GetElementAsync(string selector)
         {

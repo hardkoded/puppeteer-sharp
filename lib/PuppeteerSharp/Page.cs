@@ -98,19 +98,19 @@ namespace PuppeteerSharp
 
         public async Task<JSHandle> EvaluateHandle(Func<object> pageFunction, params object[] args)
         {
-            var context = await MainFrame.GetExecutionContext();
-            return await context.EvaluateHandle(pageFunction, args);
+            var context = await MainFrame.GetExecutionContextAsync();
+            return await context.EvaluateHandleAsync(pageFunction, args);
         }
 
         public async Task<JSHandle> EvaluateHandle(string pageFunction, params object[] args)
         {
-            var context = await MainFrame.GetExecutionContext();
-            return await context.EvaluateHandle(pageFunction, args);
+            var context = await MainFrame.GetExecutionContextAsync();
+            return await context.EvaluateHandleAsync(pageFunction, args);
         }
 
         public async Task<JSHandle> QueryObjects(JSHandle prototypeHandle)
         {
-            var context = await MainFrame.GetExecutionContext();
+            var context = await MainFrame.GetExecutionContextAsync();
             return await context.QueryObjects(prototypeHandle);
         }
 
@@ -240,7 +240,7 @@ namespace PuppeteerSharp
             return page;
         }
 
-        public async Task<dynamic> GoToAsync(string url, Dictionary<string, string> options)
+        public async Task<dynamic> GoToAsync(string url, Dictionary<string, string> options = null)
         {
             var referrer = _networkManager.ExtraHTTPHeaders["referer"];
             var requests = new Dictionary<string, Request>();
