@@ -18,7 +18,8 @@ namespace PuppeteerSharp.Tests.Puppeteer
             { "executablePath", Environment.GetEnvironmentVariable("CHROME") },
             { "slowMo", Convert.ToInt32(Environment.GetEnvironmentVariable("SLOW_MO") ?? "0") },
             { "headless", Convert.ToBoolean(Environment.GetEnvironmentVariable("HEADLESS") ?? "true") },
-            { "args", new[] { "--no-sandbox" }}
+            { "args", new[] { "--no-sandbox" }},
+            { "timeout", 0}
         };
 
         [Fact]
@@ -29,6 +30,7 @@ namespace PuppeteerSharp.Tests.Puppeteer
 
             var puppeteerOptions = new PuppeteerOptions()
             {
+
                 ChromiumRevision = "3239"
             };
 

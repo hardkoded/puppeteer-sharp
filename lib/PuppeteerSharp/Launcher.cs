@@ -7,6 +7,7 @@ using System.IO;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Collections;
 
 namespace PuppeteerSharp
 {
@@ -106,9 +107,9 @@ namespace PuppeteerSharp
             _chromeProcess.StartInfo.FileName = chromeExecutable;
             _chromeProcess.StartInfo.Arguments = string.Join(" ", chromeArguments);
 
-            SetEnvVariables(_chromeProcess.StartInfo.Environment, options.ContainsKey("env") ?
-                            (IDictionary<string, string>)options["env"] :
-                            (IDictionary<string, string>)Environment.GetEnvironmentVariables());
+            SetEnvVariables(_chromeProcess.StartInfo.Environment,
+                            options.ContainsKey("env") ? (IDictionary<string, string>)options["env"] : null,
+                            (IDictionary)Environment.GetEnvironmentVariables());
 
             if (!options.ContainsKey("dumpio"))
             {
@@ -176,8 +177,7 @@ namespace PuppeteerSharp
                 timer = new Timer((state) =>
                 {
                     taskWrapper.SetException(
-                        new ChromeProcessException($"Timed out after ${timeout} ms while trying to connect to Chrome! " +
-                                                   "The only Chrome revision guaranteed to work is r${ChromiumRevision}"));
+                        new ChromeProcessException($"Timed out after {timeout} ms while trying to connect to Chrome! "));
                     timer.Dispose();
                 }, null, timeout, 0);
 
@@ -213,11 +213,20 @@ namespace PuppeteerSharp
             await Task.Factory.StartNew(path => Directory.Delete((string)path, true), _temporaryUserDataDir);
         }
 
-        private static void SetEnvVariables(IDictionary<string, string> environment, IDictionary<string, string> dictionary)
+        private static void SetEnvVariables(IDictionary<string, string> environment, IDictionary<string, string> customEnv,
+                                            IDictionary realEnv)
         {
-            foreach (var item in dictionary)
+            foreach (DictionaryEntry item in realEnv)
             {
-                environment[item.Key] = item.Value;
+                environment[item.Key.ToString()] = item.Value.ToString();
+            }
+
+            if (customEnv != null)
+            {
+                foreach (var item in customEnv)
+                {
+                    environment[item.Key] = item.Value;
+                }
             }
         }
 
