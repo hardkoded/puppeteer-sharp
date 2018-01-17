@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Tests.Puppeteer
             var puppeteerOptions = new PuppeteerOptions()
             {
 
-                ChromiumRevision = "3239"
+                ChromiumRevision = "526987"
             };
 
             var browser = await PuppeteerSharp.Puppeteer.LaunchAsync(options, puppeteerOptions);

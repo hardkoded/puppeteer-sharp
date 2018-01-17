@@ -127,7 +127,8 @@ namespace PuppeteerSharp
             {
                 var connectionDelay = (int)(options.GetValueOrDefault("slowMo") ?? 0);
                 var browserWSEndpoint = await WaitForEndpoint(_chromeProcess,
-                                                              (int)(options.GetValueOrDefault("timeout") ?? 30 * 100));
+                                                              (int)(options.GetValueOrDefault("timeout") ?? 30 * 100),
+                                                              options.ContainsKey("dumpio"));
 
                 _connection = await Connection.Create(browserWSEndpoint, connectionDelay);
                 return await Browser.CreateAsync(_connection, options, KillChrome);
@@ -140,11 +141,13 @@ namespace PuppeteerSharp
 
         }
 
-        private static Task<string> WaitForEndpoint(Process chromeProcess, int timeout)
+        private static Task<string> WaitForEndpoint(Process chromeProcess, int timeout, bool dumpio)
         {
             var taskWrapper = new TaskCompletionSource<string>();
-
             var output = string.Empty;
+
+            _chromeProcess.StartInfo.RedirectStandardOutput = true;
+            _chromeProcess.StartInfo.RedirectStandardError = true;
 
             chromeProcess.OutputDataReceived += (sender, e) =>
             {
@@ -158,6 +161,13 @@ namespace PuppeteerSharp
 
                 CleanUp();
                 taskWrapper.SetResult(match.Value);
+
+                //Restore defaults for Redirects
+                if (!dumpio)
+                {
+                    _chromeProcess.StartInfo.RedirectStandardOutput = false;
+                    _chromeProcess.StartInfo.RedirectStandardError = false;
+                }
             };
 
             chromeProcess.Exited += (sender, e) =>
@@ -183,6 +193,8 @@ namespace PuppeteerSharp
 
             }
 
+            chromeProcess.Start();
+            chromeProcess.BeginOutputReadLine();
             return taskWrapper.Task;
         }
 
