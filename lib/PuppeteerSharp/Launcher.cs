@@ -40,6 +40,7 @@ namespace PuppeteerSharp
         private static Process _chromeProcess;
         private static string _temporaryUserDataDir = null;
         private static Connection _connection = null;
+        private static Timer _timer = null;
 
         public Launcher()
         {
@@ -146,10 +147,10 @@ namespace PuppeteerSharp
             var taskWrapper = new TaskCompletionSource<string>();
             var output = string.Empty;
 
-            _chromeProcess.StartInfo.RedirectStandardOutput = true;
-            _chromeProcess.StartInfo.RedirectStandardError = true;
+            chromeProcess.StartInfo.RedirectStandardOutput = true;
+            chromeProcess.StartInfo.RedirectStandardError = true;
 
-            chromeProcess.OutputDataReceived += (sender, e) =>
+            chromeProcess.ErrorDataReceived += (sender, e) =>
             {
                 output += e.Data + "\n";
                 var match = Regex.Match(e.Data, "^DevTools listening on (ws:\\/\\/.*)");
@@ -165,8 +166,8 @@ namespace PuppeteerSharp
                 //Restore defaults for Redirects
                 if (!dumpio)
                 {
-                    _chromeProcess.StartInfo.RedirectStandardOutput = false;
-                    _chromeProcess.StartInfo.RedirectStandardError = false;
+                    chromeProcess.StartInfo.RedirectStandardOutput = false;
+                    chromeProcess.StartInfo.RedirectStandardError = false;
                 }
             };
 
@@ -182,25 +183,24 @@ namespace PuppeteerSharp
             {
                 //We have to declare timer before initializing it because if we don't do this 
                 //we can't dispose it in the action created in the constructor
-                Timer timer = null;
-
-                timer = new Timer((state) =>
+                _timer = new Timer((state) =>
                 {
                     taskWrapper.SetException(
                         new ChromeProcessException($"Timed out after {timeout} ms while trying to connect to Chrome! "));
-                    timer.Dispose();
+                    _timer.Dispose();
                 }, null, timeout, 0);
 
             }
 
             chromeProcess.Start();
-            chromeProcess.BeginOutputReadLine();
+            chromeProcess.BeginErrorReadLine();
             return taskWrapper.Task;
         }
 
         private static void CleanUp()
         {
-            throw new NotImplementedException();
+            _timer?.Dispose();
+            _timer = null;
         }
 
         private static async Task KillChrome()
