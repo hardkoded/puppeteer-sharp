@@ -152,22 +152,25 @@ namespace PuppeteerSharp
 
             chromeProcess.ErrorDataReceived += (sender, e) =>
             {
-                output += e.Data + "\n";
-                var match = Regex.Match(e.Data, "^DevTools listening on (ws:\\/\\/.*)");
-
-                if (!match.Success)
+                if (e.Data != null)
                 {
-                    return;
-                }
+                    output += e.Data + "\n";
+                    var match = Regex.Match(e.Data, "^DevTools listening on (ws:\\/\\/.*)");
 
-                CleanUp();
-                taskWrapper.SetResult(match.Value);
+                    if (!match.Success)
+                    {
+                        return;
+                    }
 
-                //Restore defaults for Redirects
-                if (!dumpio)
-                {
-                    chromeProcess.StartInfo.RedirectStandardOutput = false;
-                    chromeProcess.StartInfo.RedirectStandardError = false;
+                    CleanUp();
+                    taskWrapper.SetResult(match.Groups[1].Value);
+
+                    //Restore defaults for Redirects
+                    if (!dumpio)
+                    {
+                        chromeProcess.StartInfo.RedirectStandardOutput = false;
+                        chromeProcess.StartInfo.RedirectStandardError = false;
+                    }
                 }
             };
 
@@ -201,6 +204,7 @@ namespace PuppeteerSharp
         {
             _timer?.Dispose();
             _timer = null;
+            _chromeProcess?.RemoveExitedEvent();
         }
 
         private static async Task KillChrome()
@@ -222,7 +226,10 @@ namespace PuppeteerSharp
                 _chromeProcess.Kill();
             }
 
-            await Task.Factory.StartNew(path => Directory.Delete((string)path, true), _temporaryUserDataDir);
+            if (_temporaryUserDataDir != null)
+            {
+                await Task.Factory.StartNew(path => Directory.Delete((string)path, true), _temporaryUserDataDir);
+            }
         }
 
         private static void SetEnvVariables(IDictionary<string, string> environment, IDictionary<string, string> customEnv,
