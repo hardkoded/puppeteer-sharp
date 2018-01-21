@@ -153,9 +153,9 @@ namespace PuppeteerSharp
                                                         Func<Task> closeCallBack)
         {
             var browser = new Browser(connection, options, closeCallBack);
-            await connection.SendAsync("Target.setDiscoverTargets", new Dictionary<string, object>()
+            await connection.SendAsync("Target.setDiscoverTargets", new
             {
-                { "discover", false }
+                discover = true
             });
 
             return browser;

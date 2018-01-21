@@ -37,14 +37,14 @@ namespace PuppeteerSharp
 
         #region Public Methods
 
-        public async Task<object> SendAsync(string method, params object[] args)
+        public async Task<object> SendAsync(string method, dynamic args = null)
         {
             var id = ++_lastId;
             var message = JsonConvert.SerializeObject(new Dictionary<string, object>(){
                 {"id", id},
                 {"method", method},
                 {"params", args}
-              });
+            });
 
             var encoded = Encoding.UTF8.GetBytes(message);
             var buffer = new ArraySegment<Byte>(encoded, 0, encoded.Length);
@@ -66,7 +66,7 @@ namespace PuppeteerSharp
         private void OnClose()
         {
             _closed = true;
-            if(Closed != null)
+            if (Closed != null)
             {
                 Closed.Invoke(this, new EventArgs());
             }
