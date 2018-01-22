@@ -60,7 +60,7 @@ namespace PuppeteerSharp
         {
             var targetId = (await Connection.SendAsync("Target.createTarget", new Dictionary<string, object>(){
                 {"url", "about:blank"}
-              })).ToString();
+              })).targetId.ToString();
 
             var target = _targets[targetId];
             return await target.Page();

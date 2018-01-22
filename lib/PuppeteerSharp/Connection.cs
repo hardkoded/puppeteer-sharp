@@ -40,7 +40,7 @@ namespace PuppeteerSharp
 
         #region Public Methods
 
-        public async Task<object> SendAsync(string method, dynamic args = null)
+        public async Task<dynamic> SendAsync(string method, dynamic args = null)
         {
             var id = ++_lastId;
             var message = JsonConvert.SerializeObject(new Dictionary<string, object>(){
@@ -113,7 +113,7 @@ namespace PuppeteerSharp
                         //if not we add this to the list, sooner or later some one will come for it 
                         if (obj.id == id)
                         {
-                            return obj;
+                            return obj.result;
                         }
                         else
                         {
@@ -144,12 +144,10 @@ namespace PuppeteerSharp
                         {
                             MessageReceived?.Invoke(this, new MessageEventArgs
                             {
-                                MessageID = obj.Method,
+                                MessageID = obj.method,
                                 MessageData = objAsJObject["params"] as dynamic
                             });
                         }
-
-                        return;
                     }
                 }
                 else if (result.MessageType == WebSocketMessageType.Close)
