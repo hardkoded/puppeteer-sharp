@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
 {
@@ -15,6 +17,7 @@ namespace PuppeteerSharp
             Url = url;
             Delay = delay;
             WebSocket = ws;
+
             _responses = new Dictionary<int, object>();
             _sessions = new Dictionary<int, Session>();
         }
@@ -102,21 +105,52 @@ namespace PuppeteerSharp
                 {
                     var response = Encoding.UTF8.GetString(buffer, 0, result.Count);
                     dynamic obj = JsonConvert.DeserializeObject(response);
+                    var objAsJObject = obj as JObject;
 
-                    //If we get the object we are waiting for we return if
-                    //if not we add this to the list, sooner or later some one will come for it 
-                    if (obj.id == id)
+                    if (objAsJObject["id"] != null)
                     {
-                        return obj;
+                        //If we get the object we are waiting for we return if
+                        //if not we add this to the list, sooner or later some one will come for it 
+                        if (obj.id == id)
+                        {
+                            return obj;
+                        }
+                        else
+                        {
+                            _responses.Add((int)obj.id, id);
+                        }
                     }
                     else
                     {
-                        _responses.Add((int)obj.id, id);
-                    }
+                        if (obj.method == "Target.receivedMessageFromTarget")
+                        {
+                            var session = _sessions.GetValueOrDefault((int)objAsJObject["params"]["sessionId"]);
+                            if (session != null)
+                            {
+                                session.OnMessage(objAsJObject["params"]["message"]);
+                            }
+                        }
+                        else if (obj.method == "Target.detachedFromTarget")
+                        {
+                            var session = _sessions.GetValueOrDefault((int)objAsJObject["params"]["sessionId"]);
+                            if (session != null)
+                            {
+                                session.Close();
+                            }
 
-                }
-                else if (result.MessageType == WebSocketMessageType.Binary)
-                {
+                            _sessions.Remove((int)objAsJObject["params"]["sessionId"]);
+                        }
+                        else
+                        {
+                            MessageReceived?.Invoke(this, new MessageEventArgs
+                            {
+                                MessageID = obj.Method,
+                                MessageData = objAsJObject["params"] as dynamic
+                            });
+                        }
+
+                        return;
+                    }
                 }
                 else if (result.MessageType == WebSocketMessageType.Close)
                 {

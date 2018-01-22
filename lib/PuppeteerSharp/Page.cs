@@ -298,7 +298,7 @@ namespace PuppeteerSharp
                     OnDialog(e);
                     break;
                 case "Runtime.exceptionThrown":
-                    HandleException(e.Exception.ExceptionDetails);
+                    HandleException(e.MessageData.Exception.ExceptionDetails);
                     break;
                 case "Security.certificateError":
                     await OnCertificateError(e);
@@ -334,7 +334,7 @@ namespace PuppeteerSharp
                 //TODO: Puppeteer is silencing an error here, I don't know if that's necessary here
                 await _client.SendAsync("Security.handleCertificateError", new Dictionary<string, object>
                 {
-                    {"eventId", e.eventId },
+                    {"eventId", e.MessageData.eventId },
                     {"action", "continue"}
                 });
 

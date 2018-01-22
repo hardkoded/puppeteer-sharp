@@ -65,6 +65,16 @@ namespace PuppeteerSharp
             }).GetAwaiter().GetResult();
         }
 
+        internal void OnMessage(dynamic message)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void Close()
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
     }
 }
