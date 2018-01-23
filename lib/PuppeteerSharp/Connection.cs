@@ -18,13 +18,18 @@ namespace PuppeteerSharp
             Delay = delay;
             WebSocket = ws;
 
-            _responses = new Dictionary<int, object>();
+            _responses = new Dictionary<int, TaskCompletionSource<dynamic>>();
             _sessions = new Dictionary<int, Session>();
+
+            Task task = Task.Factory.StartNew(async () =>
+            {
+                await GetResponseAsync();
+            });
         }
 
         #region Private Members
         private int _lastId;
-        private Dictionary<int, object> _responses;
+        private Dictionary<int, TaskCompletionSource<dynamic>> _responses;
         private Dictionary<int, Session> _sessions;
         private bool _closed = false;
 
@@ -51,8 +56,14 @@ namespace PuppeteerSharp
 
             var encoded = Encoding.UTF8.GetBytes(message);
             var buffer = new ArraySegment<Byte>(encoded, 0, encoded.Length);
+            QueueId(id);
             await WebSocket.SendAsync(buffer, WebSocketMessageType.Text, true, default(CancellationToken));
-            return await GetResponseAsync(id);
+            return await _responses[id].Task;
+        }
+
+        private void QueueId(int id)
+        {
+            _responses[id] = new TaskCompletionSource<dynamic>();
         }
 
         public async Task<Session> CreateSession(string targetId)
@@ -81,15 +92,9 @@ namespace PuppeteerSharp
         /// Starts listening the socket
         /// </summary>
         /// <returns>The start.</returns>
-        private async Task<object> GetResponseAsync(int id)
+        private async Task<object> GetResponseAsync()
         {
             var buffer = new byte[2048];
-
-            //If the element is already in our list we just return it
-            if (_responses.ContainsKey(id))
-            {
-                return _responses[id];
-            }
 
             //If it's not in the list we wait for it
             while (true)
@@ -109,16 +114,16 @@ namespace PuppeteerSharp
 
                     if (objAsJObject["id"] != null)
                     {
+                        int id = (int)objAsJObject["id"];
+
                         //If we get the object we are waiting for we return if
                         //if not we add this to the list, sooner or later some one will come for it 
-                        if (obj.id == id)
+                        if (!_responses.ContainsKey(id))
                         {
-                            return obj.result;
+                            QueueId(id);
                         }
-                        else
-                        {
-                            _responses.Add((int)obj.id, id);
-                        }
+
+                        _responses[id].SetResult(obj.result);
                     }
                     else
                     {
