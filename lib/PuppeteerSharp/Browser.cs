@@ -108,27 +108,27 @@ namespace PuppeteerSharp
 
         private void ChangeTargetInfo(MessageEventArgs args)
         {
-            if (!_targets.ContainsKey(args.MessageData.TargetInfo.TargetId))
+            if (!_targets.ContainsKey(args.MessageData.targetInfo.targetId))
             {
                 throw new InvalidTargetException("Target should exists before ChangeTargetInfo");
             }
 
-            var target = _targets[args.MessageData.TargetInfo.TargetId];
-            target.TargetInfoChanged(args.MessageData.TargetInfo);
+            var target = _targets[args.MessageData.targetInfo.targetId];
+            target.TargetInfoChanged(args.MessageData.targetInfo);
         }
 
         private void DestroyTarget(MessageEventArgs args)
         {
-            if (!_targets.ContainsKey(args.MessageData.TargetInfo.TargetId))
+            if (!_targets.ContainsKey(args.MessageData.targetInfo.targetId))
             {
                 throw new InvalidTargetException("Target should exists before DestroyTarget");
             }
 
-            var target = _targets[args.MessageData.TargetInfo.TargetId];
+            var target = _targets[args.MessageData.targetInfo.targetId];
             target.InitilizedTaskWrapper.SetResult(false);
-            _targets.Remove(args.MessageData.TargetInfo.TargetId);
+            _targets.Remove(args.MessageData.targetInfo.targetId);
 
-            TargetDestroyed(this, new TargetChangedArgs()
+            TargetDestroyed?.Invoke(this, new TargetChangedArgs()
             {
                 Target = target
             });
@@ -136,12 +136,13 @@ namespace PuppeteerSharp
 
         private async Task CreateTarget(MessageEventArgs args)
         {
-            var target = new Target(this, args.MessageData.TargetInfo);
-            _targets[args.MessageData.TargetInfo.TargetId] = target;
+            var targetInfo = new TargetInfo(args.MessageData.targetInfo);
+            var target = new Target(this, targetInfo);
+            _targets[targetInfo.TargetId] = target;
 
             if (await target.InitializedTask)
             {
-                TargetCreated(this, new TargetChangedArgs()
+                TargetCreated?.Invoke(this, new TargetChangedArgs()
                 {
                     Target = target
                 });

@@ -130,11 +130,11 @@ namespace PuppeteerSharp
         {
             // For certain requestIds we never receive requestWillBeSent event.
             // @see https://crbug.com/750469
-            if (_requestIdToRequest.ContainsKey(e.MessageData.RequestId))
+            if (_requestIdToRequest.ContainsKey(e.MessageData.requestId))
             {
-                var request = _requestIdToRequest[e.MessageData.RequestId];
+                var request = _requestIdToRequest[e.MessageData.requestId];
 
-                request.Failure = e.MessageData.ErrorText;
+                request.Failure = e.MessageData.errorText;
                 request.CompleteTaskWrapper.SetResult(true);
                 _requestIdToRequest.Remove(request.RequestId);
                 _interceptionIdToRequest.Remove(request.InterceptionId);
@@ -151,14 +151,14 @@ namespace PuppeteerSharp
         {
             // For certain requestIds we never receive requestWillBeSent event.
             // @see https://crbug.com/750469
-            if (_requestIdToRequest.ContainsKey(e.MessageData.RequestId))
+            if (_requestIdToRequest.ContainsKey(e.MessageData.requestId))
             {
-                var request = _requestIdToRequest[e.MessageData.RequestId];
+                var request = _requestIdToRequest[e.MessageData.requestId];
 
                 request.CompleteTaskWrapper.SetResult(true);
-                _requestIdToRequest.Remove(request.RequestId);
-                _interceptionIdToRequest.Remove(request.InterceptionId);
-                _attemptedAuthentications.Remove(request.InterceptionId);
+                _requestIdToRequest.Remove(request.requestId);
+                _interceptionIdToRequest.Remove(request.interceptionId);
+                _attemptedAuthentications.Remove(request.interceptionId);
 
                 RequestFinished(this, new RequestEventArgs()
                 {
@@ -170,10 +170,10 @@ namespace PuppeteerSharp
         private void OnResponseReceived(MessageEventArgs e)
         {
             // FileUpload sends a response without a matching request.
-            if (_requestIdToRequest.ContainsKey(e.MessageData.RequestId))
+            if (_requestIdToRequest.ContainsKey(e.MessageData.requestId))
             {
-                var request = _requestIdToRequest[e.MessageData.RequestId];
-                var response = new Response(_client, request, e.MessageData.Response.Status.Value, e.MessageData.Response.Headers);
+                var request = _requestIdToRequest[e.MessageData.requestId];
+                var response = new Response(_client, request, e.MessageData.response.status, e.MessageData.response.headers);
                 request.Response = response;
 
                 ResponseReceivedFinished(this, new ResponseReceivedArgs()
@@ -185,22 +185,22 @@ namespace PuppeteerSharp
 
         private async Task OnRequestInterceptedAsync(MessageEventArgs e)
         {
-            if (e.MessageData.AuthChallenge)
+            if (e.MessageData.authChallenge)
             {
                 var response = "Default";
-                if (_attemptedAuthentications.Contains(e.MessageData.InterceptionId))
+                if (_attemptedAuthentications.Contains(e.MessageData.interceptionId))
                 {
                     response = "CancelAuth";
                 }
                 else if (_credentials != null)
                 {
                     response = "ProvideCredentials";
-                    _attemptedAuthentications.Add(e.MessageData.InterceptionId);
+                    _attemptedAuthentications.Add(e.MessageData.interceptionId);
                 }
                 var credentials = _credentials ?? new Credentials();
                 await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object>
                 {
-                    {"interceptionId", e.MessageData.InterceptionId},
+                    {"interceptionId", e.MessageData.interceptionId},
                     {"authChallengeResponse", new { response, credentials.Username, credentials.Password }}
                 });
                 return;
@@ -208,27 +208,27 @@ namespace PuppeteerSharp
             if (!_userRequestInterceptionEnabled && _protocolRequestInterceptionEnabled)
             {
                 await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object> {
-                    { "interceptionId", e.MessageData.InterceptionId}
+                    { "interceptionId", e.MessageData.interceptionId}
                 });
             }
 
-            if (!string.IsNullOrEmpty(e.MessageData.RedirectUrl))
+            if (!string.IsNullOrEmpty(e.MessageData.redirectUrl))
             {
-                Contract.Ensures(_interceptionIdToRequest.ContainsKey(e.MessageData.InterceptionId),
+                Contract.Ensures(_interceptionIdToRequest.ContainsKey(e.MessageData.interceptionId),
                                  "INTERNAL ERROR: failed to find request for interception redirect.");
 
-                var request = _interceptionIdToRequest[e.MessageData.InterceptionId];
+                var request = _interceptionIdToRequest[e.MessageData.interceptionId];
 
-                HandleRequestRedirect(request, e.MessageData.ResponseStatusCode, e.MessageData.ResponseHeaders);
+                HandleRequestRedirect(request, e.MessageData.responseStatusCode, e.MessageData.responseHeaders);
                 HandleRequestStart(
                     request.RequestId,
-                    e.MessageData.InterceptionId,
-                    e.MessageData.RedirectUrl,
-                    e.MessageData.ResourceType,
-                    e.MessageData.Request);
+                    e.MessageData.interceptionId,
+                    e.MessageData.redirectUrl,
+                    e.MessageData.resourceType,
+                    e.MessageData.request);
                 return;
             }
-            var requestHash = e.MessageData.Request.Hash;
+            var requestHash = e.MessageData.request.hash;
 
 
             if (_requestHashToRequestIds.Any(i => i.Key == requestHash))
@@ -238,20 +238,20 @@ namespace PuppeteerSharp
                 _requestHashToRequestIds.Remove(item);
                 HandleRequestStart(
                     requestId,
-                    e.MessageData.InterceptionId,
-                    e.MessageData.Request.Url,
-                    e.MessageData.ResourceType,
-                    e.MessageData.Request);
+                    e.MessageData.interceptionId,
+                    e.MessageData.request.url,
+                    e.MessageData.resourceType,
+                    e.MessageData.request);
             }
             else
             {
-                _requestHashToInterceptionIds.Add(new KeyValuePair<string, string>(requestHash, e.MessageData.InterceptionId));
+                _requestHashToInterceptionIds.Add(new KeyValuePair<string, string>(requestHash, e.MessageData.interceptionId));
                 HandleRequestStart(
                     null,
-                    e.MessageData.InterceptionId,
-                    e.MessageData.Request.Url,
-                    e.MessageData.ResourceType,
-                    e.MessageData.Request);
+                    e.MessageData.interceptionId,
+                    e.MessageData.request.url,
+                    e.MessageData.resourceType,
+                    e.MessageData.request);
             }
         }
 
@@ -299,9 +299,9 @@ namespace PuppeteerSharp
             if (_protocolRequestInterceptionEnabled)
             {
                 // All redirects are handled in requestIntercepted.
-                if (e.MessageData.RedirectResponse == null)
+                if (e.MessageData.redirectResponse == null)
                 {
-                    var requestHash = e.MessageData.Request.Hash;
+                    var requestHash = e.MessageData.request.hash;
 
                     KeyValuePair<string, string>? interceptionItem = null;
 
@@ -314,34 +314,34 @@ namespace PuppeteerSharp
                     {
                         var request = _interceptionIdToRequest[interceptionItem.Value.Value];
 
-                        request.RequestId = e.MessageData.RequestId;
-                        _requestIdToRequest[e.MessageData.RequestId] = request;
+                        request.RequestId = e.MessageData.requestId;
+                        _requestIdToRequest[e.MessageData.requestId] = request;
                         _requestHashToInterceptionIds.Remove(interceptionItem.Value);
                     }
                     else
                     {
-                        _requestHashToRequestIds.Add(new KeyValuePair<string, string>(requestHash, e.MessageData.RequestId));
+                        _requestHashToRequestIds.Add(new KeyValuePair<string, string>(requestHash, e.MessageData.requestId));
                     }
                     return;
                 }
             }
 
-            if (e.MessageData.RedirectResponse != null && _requestIdToRequest.ContainsKey(e.MessageData.RequestId))
+            if (e.MessageData.redirectResponse != null && _requestIdToRequest.ContainsKey(e.MessageData.requestId))
             {
-                var request = _requestIdToRequest[e.MessageData.RequestId];
+                var request = _requestIdToRequest[e.MessageData.requestId];
                 // If we connect late to the target, we could have missed the requestWillBeSent event.
                 HandleRequestRedirect(
                     request,
-                    e.MessageData.RedirectResponse.Status.Value,
-                    e.MessageData.RedirectResponse.Headers);
+                    e.MessageData.redirectResponse.status,
+                    e.MessageData.redirectResponse.headers);
             }
 
             HandleRequestStart(
-                e.MessageData.RequestId,
+                e.MessageData.requestId,
                 null,
-                e.MessageData.Request.Url,
-                e.MessageData.Type,
-                e.MessageData.Request);
+                e.MessageData.request.url,
+                e.MessageData.type,
+                e.MessageData.request);
         }
 
 

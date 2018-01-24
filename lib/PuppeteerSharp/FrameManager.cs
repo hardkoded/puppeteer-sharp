@@ -43,23 +43,23 @@ namespace PuppeteerSharp
             switch (e.MessageID)
             {
                 case "Page.frameAttached":
-                    OnFrameAttached(e.MessageData.FrameId, e.MessageData.ParentFrameId);
+                    OnFrameAttached(e.MessageData.frameId, e.MessageData.parentFrameId);
                     break;
 
                 case "Page.frameNavigated":
-                    OnFrameNavigated(e.MessageData.Frame);
+                    OnFrameNavigated(e.MessageData.frame);
                     break;
 
                 case "Page.frameDetached":
-                    OnFrameDetached(e.MessageData.FrameId);
+                    OnFrameDetached(e.MessageData.frameId);
                     break;
 
                 case "Runtime.executionContextCreated":
-                    OnExecutionContextCreated(e.MessageData.Context);
+                    OnExecutionContextCreated(e.MessageData.context);
                     break;
 
                 case "Runtime.executionContextDestroyed":
-                    OnExecutionContextDestroyed(e.MessageData.ExecutionContextId);
+                    OnExecutionContextDestroyed(e.MessageData.executionContextId);
                     break;
                 case "Runtime.executionContextsCleared":
                     OnExecutionContextsCleared();
@@ -73,11 +73,11 @@ namespace PuppeteerSharp
 
         private void OnLifeCycleEvent(MessageEventArgs e)
         {
-            if (!Frames.ContainsKey((e.MessageData.FrameId)))
+            if (!Frames.ContainsKey((e.MessageData.frameId)))
             {
-                var frame = Frames[e.MessageData.FrameId];
+                var frame = Frames[e.MessageData.frameId];
 
-                frame.OnLifecycleEvent(e.MessageData.LoaderId, e.MessageData.Name);
+                frame.OnLifecycleEvent(e.MessageData.loaderId, e.MessageData.name);
                 LifecycleEvent?.Invoke(this, new FrameEventArgs(frame));
             }
         }

@@ -298,7 +298,7 @@ namespace PuppeteerSharp
                     OnDialog(e);
                     break;
                 case "Runtime.exceptionThrown":
-                    HandleException(e.MessageData.Exception.ExceptionDetails);
+                    HandleException(e.MessageData.exception.exceptionDetails);
                     break;
                 case "Security.certificateError":
                     await OnCertificateError(e);
