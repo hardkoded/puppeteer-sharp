@@ -19,7 +19,7 @@ namespace PuppeteerSharp
             WebSocket = ws;
 
             _responses = new Dictionary<int, TaskCompletionSource<dynamic>>();
-            _sessions = new Dictionary<int, Session>();
+            _sessions = new Dictionary<string, Session>();
 
             Task task = Task.Factory.StartNew(async () =>
             {
@@ -30,7 +30,7 @@ namespace PuppeteerSharp
         #region Private Members
         private int _lastId;
         private Dictionary<int, TaskCompletionSource<dynamic>> _responses;
-        private Dictionary<int, Session> _sessions;
+        private Dictionary<string, Session> _sessions;
         private bool _closed = false;
 
         #endregion
@@ -68,7 +68,7 @@ namespace PuppeteerSharp
 
         public async Task<Session> CreateSession(string targetId)
         {
-            int sessionId = (int)await SendAsync("Target.attachToTarget", new { targetId });
+            string sessionId = (await SendAsync("Target.attachToTarget", new { targetId })).sessionId;
             var session = new Session(this, targetId, sessionId);
             _sessions.Add(sessionId, session);
             return session;
@@ -129,21 +129,21 @@ namespace PuppeteerSharp
                     {
                         if (obj.method == "Target.receivedMessageFromTarget")
                         {
-                            var session = _sessions.GetValueOrDefault((int)objAsJObject["params"]["sessionId"]);
+                            var session = _sessions.GetValueOrDefault(objAsJObject["params"]["sessionId"].ToString());
                             if (session != null)
                             {
-                                session.OnMessage(objAsJObject["params"]["message"]);
+                                session.OnMessage(objAsJObject["params"]["message"].ToString());
                             }
                         }
                         else if (obj.method == "Target.detachedFromTarget")
                         {
-                            var session = _sessions.GetValueOrDefault((int)objAsJObject["params"]["sessionId"]);
+                            var session = _sessions.GetValueOrDefault(objAsJObject["params"]["sessionId"].ToString());
                             if (session != null)
                             {
                                 session.Close();
                             }
 
-                            _sessions.Remove((int)objAsJObject["params"]["sessionId"]);
+                            _sessions.Remove(objAsJObject["params"]["sessionId"].ToString());
                         }
                         else
                         {
