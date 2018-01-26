@@ -206,8 +206,8 @@ namespace PuppeteerSharp
                                                    TaskQueue screenshotTaskQueue)
         {
             await client.SendAsync("Page.enable", null);
-            dynamic frameTree = await client.SendAsync<FrameTree>("Page.getFrameTree", null);
-            var page = new Page(client, frameTree, ignoreHTTPSErrors, screenshotTaskQueue);
+            dynamic frameTree = await client.SendAsync("Page.getFrameTree");
+            var page = new Page(client, new FrameTree(frameTree), ignoreHTTPSErrors, screenshotTaskQueue);
 
             await Task.WhenAll(
                 client.SendAsync("Page.setLifecycleEventsEnabled", new Dictionary<string, object>

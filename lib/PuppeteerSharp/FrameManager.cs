@@ -134,7 +134,7 @@ namespace PuppeteerSharp
             }
         }
 
-        private void OnFrameNavigated(Frame frame)
+        private void OnFrameNavigated(FrameInfo frame)
         {
             throw new NotImplementedException();
         }
