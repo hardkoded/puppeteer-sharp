@@ -36,10 +36,16 @@ namespace PuppeteerSharp
 
         public async Task<T> SendAsync<T>(string method, params object[] args)
         {
-            return Convert.ChangeType(await SendAsync(method, args), typeof(T));
+            var content = await SendAsync(method, args, true);
+            return JsonConvert.DeserializeObject<T>(content);
         }
 
         public async Task<dynamic> SendAsync(string method, params object[] args)
+        {
+            return await SendAsync(method, false, args);
+        }
+
+        public async Task<dynamic> SendAsync(string method, bool rawContent, params object[] args)
         {
             if (Connection == null)
             {
@@ -55,7 +61,8 @@ namespace PuppeteerSharp
             _callbacks[id] = new MessageTask
             {
                 TaskWrapper = new TaskCompletionSource<dynamic>(),
-                Method = method
+                Method = method,
+                RawContent = rawContent
             };
 
             try
@@ -93,20 +100,28 @@ namespace PuppeteerSharp
             dynamic obj = JsonConvert.DeserializeObject(message);
             var objAsJObject = obj as JObject;
 
-            if (objAsJObject["id"] != null && _callbacks.ContainsKey(obj.id.Value))
+            if (objAsJObject["id"] != null && _callbacks.ContainsKey((int)obj.id))
             {
 
-                var callback = _callbacks[obj.id.Value];
-                _callbacks.Remove(obj.id.Value);
+                var callback = _callbacks[(int)obj.id];
+                _callbacks.Remove((int)obj.id);
+
                 if (objAsJObject["error"] != null)
                 {
-                    callback.SetException(new MessageException(
+                    callback.TaskWrapper.SetException(new MessageException(
                         $"Protocol error({ callback.Method }): {obj.error.message} ${obj.error.data}"
                     ));
                 }
                 else
                 {
-                    callback.TaskWrapper.SetResult(obj.result);
+                    if (callback.RawContent)
+                    {
+                        callback.TaskWrapper.SetResult(JsonConvert.SerializeObject(obj.result));
+                    }
+                    else
+                    {
+                        callback.TaskWrapper.SetResult(obj.result);
+                    }
                 }
             }
             else

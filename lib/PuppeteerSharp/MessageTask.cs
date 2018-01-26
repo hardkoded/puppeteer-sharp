@@ -12,6 +12,7 @@ namespace PuppeteerSharp
         #region public Properties
         public TaskCompletionSource<dynamic> TaskWrapper { get; set; }
         public string Method { get; set; }
+        public bool RawContent { get; set; }
         #endregion
     }
 }
