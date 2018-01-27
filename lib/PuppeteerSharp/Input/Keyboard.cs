@@ -89,7 +89,6 @@ namespace PuppeteerSharp.Input
             {",", 186},
             {"=", 187},
             {"+", 187},
-            {",", 188},
             {"<", 188},
             {"-", 189},
             {"_", 189},
@@ -105,7 +104,6 @@ namespace PuppeteerSharp.Input
             {"|", 220},
             {"]", 221},
             {"}", 221},
-            {"\"", 222},
             {"\"", 222},
             {"AltGraph", 225},
             {"Attn", 246},
@@ -174,11 +172,11 @@ namespace PuppeteerSharp.Input
 
         private int CodeForKey(string key)
         {
-            if(_keys.ContainsKey(key))
+            if (_keys.ContainsKey(key))
             {
                 return _keys[key];
             }
-            if(key.Length == 1)
+            if (key.Length == 1)
             {
                 return key.ToUpper().ToCharArray()[0];
             }
