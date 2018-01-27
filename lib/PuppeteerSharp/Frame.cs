@@ -37,6 +37,7 @@ namespace PuppeteerSharp
 
         #region Properties
         public List<Frame> ChildFrames { get; set; } = new List<Frame>();
+        public string Name { get; set; }
         public string Url { get; set; }
         public string ParentId { get; internal set; }
         public string Id { get; internal set; }
@@ -97,7 +98,8 @@ namespace PuppeteerSharp
 
         internal void Navigated(FramePayload framePayload)
         {
-            throw new NotImplementedException();
+            Name = framePayload.Name;
+            Url = framePayload.Url;
         }
 
         internal void SetDefaultContext(ExecutionContext context)

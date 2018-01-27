@@ -17,7 +17,9 @@ namespace PuppeteerSharp
             Frame = new FramePayload
             {
                 Id = frameTree.frame.id,
-                ParentId = frameTree.frame.parentId
+                ParentId = frameTree.frame.parentId,
+                Name = frameTree.frame.name,
+                Url = frameTree.frame.url
             };
 
             LoadChilds(this, frameTree);

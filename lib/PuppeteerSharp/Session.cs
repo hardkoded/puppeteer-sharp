@@ -34,18 +34,18 @@ namespace PuppeteerSharp
 
         #region Public Methods
 
-        public async Task<T> SendAsync<T>(string method, params object[] args)
+        public async Task<T> SendAsync<T>(string method, dynamic args = null)
         {
             var content = await SendAsync(method, args, true);
             return JsonConvert.DeserializeObject<T>(content);
         }
 
-        public async Task<dynamic> SendAsync(string method, params object[] args)
+        public async Task<dynamic> SendAsync(string method, dynamic args = null)
         {
             return await SendAsync(method, false, args);
         }
 
-        public async Task<dynamic> SendAsync(string method, bool rawContent, params object[] args)
+        public async Task<dynamic> SendAsync(string method, bool rawContent, dynamic args = null)
         {
             if (Connection == null)
             {
