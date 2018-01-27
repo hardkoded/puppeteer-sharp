@@ -134,11 +134,6 @@ namespace PuppeteerSharp
             }
         }
 
-        private void OnFrameNavigated(FrameInfo frame)
-        {
-            throw new NotImplementedException();
-        }
-
         private void OnFrameNavigated(FramePayload framePayload)
         {
             var isMainFrame = string.IsNullOrEmpty(framePayload.ParentId);

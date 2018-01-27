@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 
 namespace PuppeteerSharp
 {
@@ -13,17 +14,17 @@ namespace PuppeteerSharp
 
         public FrameTree(dynamic frameTree)
         {
-            Frame = new FrameInfo
+            Frame = new FramePayload
             {
-                Id = frameTree.id,
-                ParentId = frameTree.parentId
+                Id = frameTree.frame.id,
+                ParentId = frameTree.frame.parentId
             };
 
             LoadChilds(this, frameTree);
         }
 
         #region Properties
-        public FrameInfo Frame { get; set; }
+        public FramePayload Frame { get; set; }
         public List<FrameTree> Childs { get; set; }
         #endregion
 
@@ -31,18 +32,21 @@ namespace PuppeteerSharp
 
         private void LoadChilds(FrameTree frame, dynamic frameTree)
         {
-            foreach (dynamic item in frameTree.childs)
+            if ((frameTree as JObject)["childs"] != null)
             {
-                var newFrame = new FrameTree();
-
-                newFrame.Frame = new FrameInfo
+                foreach (dynamic item in frameTree.childs)
                 {
-                    Id = item.id,
-                    ParentId = item.parentID
-                };
+                    var newFrame = new FrameTree();
 
-                LoadChilds(newFrame, item.childs);
-                frame.Childs.Add(newFrame);
+                    newFrame.Frame = new FramePayload
+                    {
+                        Id = item.id,
+                        ParentId = item.parentID
+                    };
+
+                    LoadChilds(newFrame, item.childs);
+                    frame.Childs.Add(newFrame);
+                }
             }
         }
 
