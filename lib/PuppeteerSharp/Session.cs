@@ -58,12 +58,14 @@ namespace PuppeteerSharp
                 {"params", args}
             });
 
-            _callbacks[id] = new MessageTask
+            var callback = new MessageTask
             {
                 TaskWrapper = new TaskCompletionSource<dynamic>(),
                 Method = method,
                 RawContent = rawContent
             };
+
+            _callbacks[id] = callback;
 
             try
             {
@@ -76,13 +78,12 @@ namespace PuppeteerSharp
             {
                 if (_callbacks.ContainsKey(id))
                 {
-                    var callback = _callbacks[id];
                     _callbacks.Remove(id);
                     callback.TaskWrapper.SetException(new MessageException(ex.Message, ex));
                 }
             }
 
-            return await _callbacks[id].TaskWrapper.Task;
+            return await callback.TaskWrapper.Task;
         }
         #endregion
 
