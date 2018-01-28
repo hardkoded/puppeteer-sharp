@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using PuppeteerSharp.Input;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
 {
@@ -242,7 +243,7 @@ namespace PuppeteerSharp
 
         public async Task<dynamic> GoToAsync(string url, Dictionary<string, string> options = null)
         {
-            var referrer = _networkManager.ExtraHTTPHeaders["referer"];
+            var referrer = _networkManager.ExtraHTTPHeaders?.GetValueOrDefault("referer");
             var requests = new Dictionary<string, Request>();
 
             EventHandler<RequestEventArgs> createRequestEventListener = (object sender, RequestEventArgs e) =>

@@ -13,14 +13,6 @@
     <Description>Headless Chrome .NET API</Description>
     <PackageId>PuppeteerSharp</PackageId>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="WebSocket.cs" />
-    <Compile Remove="IRemoteObject.cs" />
-    <Compile Remove="RequestData.cs" />
-    <Compile Remove="FrameTreeInfo.cs" />
-    <Compile Remove="FrameInfo.cs" />
-  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="System.Net.Http" Version="4.3.3" />

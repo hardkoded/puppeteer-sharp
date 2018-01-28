@@ -1,9 +1,9 @@
 ﻿using System;
 namespace PuppeteerSharp
 {
-    public enum ScreenOrientationType
+    public struct ScreenOrientationType
     {
-        LandscapePrimary,
-        PortraitPrimary
+        public static string LandscapePrimary = "landscapePrimary";
+        public static string PortraitPrimary = "portraitPrimary";
     }
 }

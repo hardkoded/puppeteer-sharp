@@ -33,7 +33,7 @@ namespace PuppeteerSharp
         }
 
         #region Public Properties
-        public Dictionary<string, string> ExtraHTTPHeaders => _extraHTTPHeaders.Clone();
+        public Dictionary<string, string> ExtraHTTPHeaders => _extraHTTPHeaders?.Clone();
 
         public event EventHandler<ResponseCreatedArgs> ResponseCreated;
         public event EventHandler<RequestEventArgs> RequestCreated;
