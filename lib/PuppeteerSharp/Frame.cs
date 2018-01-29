@@ -41,7 +41,7 @@ namespace PuppeteerSharp
         public string Url { get; set; }
         public string ParentId { get; internal set; }
         public string Id { get; internal set; }
-
+        public string LoaderId { get; set; }
         public TaskCompletionSource<ExecutionContext> ContextResolveTaskWrapper { get; internal set; }
 
         #endregion
