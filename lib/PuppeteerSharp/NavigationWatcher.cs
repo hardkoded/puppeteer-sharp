@@ -11,7 +11,7 @@ namespace PuppeteerSharp
     internal class NavigationWatcher
     {
         private FrameManager _frameManager;
-        private Frame _mainFrame;
+        private Frame _frame;
         private dynamic _options;
         private static readonly Dictionary<string, string> _puppeteerToProtocolLifecycle = new Dictionary<string, string>()
         {
@@ -24,16 +24,17 @@ namespace PuppeteerSharp
         private int _timeout;
         private string _initialLoaderId;
         private Task _navigationPromise;
+        private Timer _timer = null;
 
         public NavigationWatcher(FrameManager frameManager, Frame mainFrame, int timeout, dynamic options)
         {
             var waitUntil = new[] { "load" };
 
-            if (options.waitUntil is Array)
+            if (options != null && options.waitUntil is Array)
             {
                 waitUntil = options.waitUntil;
             }
-            else if (options.waitUntil is string)
+            else if (options != null && options.waitUntil is string)
             {
                 waitUntil = new string[] { options.waitUntil.ToString() };
             }
@@ -46,7 +47,7 @@ namespace PuppeteerSharp
             });
 
             _frameManager = frameManager;
-            _mainFrame = mainFrame;
+            _frame = mainFrame;
             _options = options;
             _initialLoaderId = mainFrame.LoaderId;
             _timeout = timeout;
@@ -75,18 +76,50 @@ namespace PuppeteerSharp
         #region Public methods
         public void Cancel()
         {
-            throw new NotImplementedException();
+            CleanUp();
         }
         #endregion
         #region Private methods
-        void FrameManager_LifecycleEvent(object sender, PuppeteerSharp.FrameEventArgs e)
-        {
 
+        void FrameManager_LifecycleEvent(object sender, FrameEventArgs e)
+        {
+            // We expect navigation to commit.
+            if (_frame.LoaderId == _initialLoaderId)
+            {
+                return;
+            }
+            if (!CheckLifecycle(_frame, _expectedLifecycle))
+            {
+                return;
+            }
+
+            LifeCycleCompleteTaskWrapper.SetResult(true);
+        }
+
+        private bool CheckLifecycle(Frame frame, IEnumerable<string> expectedLifecycle)
+        {
+            foreach (var item in expectedLifecycle)
+            {
+                if (!frame.LifecycleEvents.Contains(item))
+                {
+                    return false;
+                }
+            }
+            foreach (var child in frame.ChildFrames)
+            {
+                if (!CheckLifecycle(child, expectedLifecycle))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         private void CleanUp()
         {
-            throw new NotImplementedException();
+            _frameManager.LifecycleEvent -= FrameManager_LifecycleEvent;
+            _frameManager.FrameDetached -= FrameManager_LifecycleEvent;
+            _timer?.Dispose();
         }
 
         private Task CreateTimeoutTask()
@@ -99,12 +132,12 @@ namespace PuppeteerSharp
             }
             else
             {
-                Timer timer = null;
-                timer = new Timer((state) =>
+                _timer = new Timer((state) =>
                 {
                     wrapper.SetException(
                         new ChromeProcessException($"Navigation Timeout Exceeded: '{_timeout}'ms exceeded"));
-                    timer.Dispose();
+                    _timer.Dispose();
+                    _timer = null;
                 }, null, _timeout, 0);
             }
 

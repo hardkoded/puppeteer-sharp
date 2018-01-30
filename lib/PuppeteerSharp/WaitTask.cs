@@ -8,5 +8,10 @@ namespace PuppeteerSharp
         {
             throw new NotImplementedException();
         }
+
+        internal void Termiante(Exception exception)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

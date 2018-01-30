@@ -18,7 +18,7 @@ namespace PuppeteerSharp
         private ViewPortOptions _viewport;
         private Mouse _mouse;
         private Dictionary<string, Func<object>> _pageBindings;
-
+        private const int DefaultNavigationTimeout = 30000;
 
         private Page(Session client, FrameTree frameTree, bool ignoreHTTPSErrors, TaskQueue screenshotTaskQueue)
         {
@@ -252,7 +252,11 @@ namespace PuppeteerSharp
             _networkManager.RequestCreated += createRequestEventListener;
 
             var mainFrame = _frameManager.MainFrame;
-            var watcher = new NavigationWatcher(_frameManager, mainFrame, options);
+            var timeout = options != null && options.ContainsKey("timeout") ?
+                Convert.ToInt32(options["timeout"]) :
+                DefaultNavigationTimeout;
+
+            var watcher = new NavigationWatcher(_frameManager, mainFrame, timeout, options);
 
             var navigateTask = Navigate(_client, url, referrer);
 

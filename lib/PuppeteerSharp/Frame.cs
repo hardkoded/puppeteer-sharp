@@ -15,7 +15,7 @@ namespace PuppeteerSharp
         private object _context = null;
         private string _url = string.Empty;
         private List<WaitTask> _waitTasks;
-        private List<string> _lifecycleEvents;
+        private bool _detached;
 
         public Frame(Session client, Page page, Frame parentFrame, string frameId)
         {
@@ -32,7 +32,7 @@ namespace PuppeteerSharp
             SetDefaultContext(null);
 
             _waitTasks = new List<WaitTask>();
-            _lifecycleEvents = new List<string>();
+            LifecycleEvents = new List<string>();
         }
 
         #region Properties
@@ -43,6 +43,7 @@ namespace PuppeteerSharp
         public string Id { get; internal set; }
         public string LoaderId { get; set; }
         public TaskCompletionSource<ExecutionContext> ContextResolveTaskWrapper { get; internal set; }
+        public List<string> LifecycleEvents { get; internal set; }
 
         #endregion
 
@@ -93,7 +94,12 @@ namespace PuppeteerSharp
 
         internal void OnLifecycleEvent(string loaderId, string name)
         {
-            throw new NotImplementedException();
+            if (name == "init")
+            {
+                LoaderId = loaderId;
+                LifecycleEvents.Clear();
+            }
+            LifecycleEvents.Add(name);
         }
 
         internal void Navigated(FramePayload framePayload)
@@ -122,8 +128,17 @@ namespace PuppeteerSharp
 
         internal void Detach()
         {
-            throw new NotImplementedException();
+            foreach (var waitTask in _waitTasks)
+            {
+                waitTask.Termiante(new Exception("waitForSelector failed: frame got detached."));
+            }
+            _detached = true;
+            if (_parentFrame != null)
+            {
+                _parentFrame.ChildFrames.Remove(this);
+            }
+            _parentFrame = null;
+            #endregion
         }
-        #endregion
     }
 }
