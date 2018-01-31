@@ -23,7 +23,6 @@ namespace PuppeteerSharp
         private IEnumerable<string> _expectedLifecycle;
         private int _timeout;
         private string _initialLoaderId;
-        private Task _navigationPromise;
         private Timer _timer = null;
 
         public NavigationWatcher(FrameManager frameManager, Frame mainFrame, int timeout, dynamic options)
@@ -56,7 +55,7 @@ namespace PuppeteerSharp
             frameManager.FrameDetached += FrameManager_LifecycleEvent;
             LifeCycleCompleteTaskWrapper = new TaskCompletionSource<bool>();
 
-            _navigationPromise = Task.WhenAny(new[]
+            NavigationTask = Task.WhenAny(new[]
             {
                 CreateTimeoutTask(),
                 LifeCycleCompleteTask,
@@ -67,7 +66,7 @@ namespace PuppeteerSharp
         }
 
         #region Properties
-        public Task<string> NavigationTask { get; internal set; }
+        public Task NavigationTask { get; internal set; }
         public Task<bool> LifeCycleCompleteTask => LifeCycleCompleteTaskWrapper.Task;
         public TaskCompletionSource<bool> LifeCycleCompleteTaskWrapper { get; }
 

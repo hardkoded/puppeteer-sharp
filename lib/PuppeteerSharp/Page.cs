@@ -257,7 +257,6 @@ namespace PuppeteerSharp
                 DefaultNavigationTimeout;
 
             var watcher = new NavigationWatcher(_frameManager, mainFrame, timeout, options);
-
             var navigateTask = Navigate(_client, url, referrer);
 
             await Task.WhenAll(
@@ -265,14 +264,14 @@ namespace PuppeteerSharp
                 watcher.NavigationTask
             );
 
-            var error = !string.IsNullOrEmpty(navigateTask.Result) ? navigateTask.Result : watcher.NavigationTask.Result;
+            var exception = navigateTask.Exception ?? watcher.NavigationTask.Exception;
 
             watcher.Cancel();
             _networkManager.RequestCreated -= createRequestEventListener;
 
-            if (!string.IsNullOrEmpty(error))
+            if (exception != null)
             {
-                throw new NavigationException(error);
+                throw new NavigationException(exception.Message, exception);
             }
 
             Request request = null;
@@ -377,21 +376,18 @@ namespace PuppeteerSharp
         }
 
 
-        private async Task<string> Navigate(Session client, string url, string referrer)
+        private async Task Navigate(Session client, string url, string referrer)
         {
-            try
-            {
-                dynamic response = await client.SendAsync("Page.navigate", new Dictionary<string, object>
-                {
-                    { "url", url},
-                    {"referrer", referrer}
-                });
 
-                return response.ErrorText;
-            }
-            catch (Exception ex)
+            dynamic response = await client.SendAsync("Page.navigate", new
             {
-                return ex.Message;
+                url,
+                referrer = referrer ?? string.Empty
+            });
+
+            if (response.errorText != null)
+            {
+                throw new NavigationException(response.errorText);
             }
         }
 

@@ -4,6 +4,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
@@ -337,11 +338,11 @@ namespace PuppeteerSharp
             }
 
             HandleRequestStart(
-                e.MessageData.requestId,
+                e.MessageData.requestId?.ToString(),
                 null,
-                e.MessageData.request.url,
-                e.MessageData.type,
-                e.MessageData.request);
+                e.MessageData.request.url?.ToString(),
+                e.MessageData.type?.ToString(),
+                ((JObject)e.MessageData.request).ToStatic<Payload>());
         }
 
 
