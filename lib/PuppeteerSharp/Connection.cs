@@ -104,11 +104,27 @@ namespace PuppeteerSharp
                     return null;
                 }
 
-                var result = await WebSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+                var endOfMessage = false;
+                string response = string.Empty;
 
-                if (result.MessageType == WebSocketMessageType.Text)
+                while (!endOfMessage)
                 {
-                    var response = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                    var result = await WebSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+                    endOfMessage = result.EndOfMessage;
+
+                    if (result.MessageType == WebSocketMessageType.Text)
+                    {
+                        response += Encoding.UTF8.GetString(buffer, 0, result.Count);
+                    }
+                    else if (result.MessageType == WebSocketMessageType.Close)
+                    {
+                        OnClose();
+                        return null;
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(response))
+                {
                     dynamic obj = JsonConvert.DeserializeObject(response);
                     var objAsJObject = obj as JObject;
 
@@ -155,12 +171,6 @@ namespace PuppeteerSharp
                         }
                     }
                 }
-                else if (result.MessageType == WebSocketMessageType.Close)
-                {
-                    OnClose();
-                    return null;
-                }
-
             }
         }
         #endregion
