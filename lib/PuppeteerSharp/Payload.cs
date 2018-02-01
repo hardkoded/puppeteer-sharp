@@ -8,10 +8,12 @@ namespace PuppeteerSharp
 {
     public class Payload
     {
-
+        [JsonProperty("method")]
         public string Method { get; internal set; }
         public object PostData { get; internal set; }
+        [JsonProperty("headers")]
         public Dictionary<string, object> Headers { get; internal set; }
+        [JsonProperty("url")]
         public string Url { get; internal set; }
 
         public string Hash
