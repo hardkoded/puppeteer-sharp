@@ -152,9 +152,9 @@ namespace PuppeteerSharp
         {
             // For certain requestIds we never receive requestWillBeSent event.
             // @see https://crbug.com/750469
-            if (_requestIdToRequest.ContainsKey(e.MessageData.requestId))
+            if (_requestIdToRequest.ContainsKey(e.MessageData.requestId.ToString()))
             {
-                var request = _requestIdToRequest[e.MessageData.requestId];
+                var request = _requestIdToRequest[e.MessageData.requestId.ToString()];
 
                 request.CompleteTaskWrapper.SetResult(true);
                 _requestIdToRequest.Remove(request.requestId);
@@ -171,10 +171,15 @@ namespace PuppeteerSharp
         private void OnResponseReceived(MessageEventArgs e)
         {
             // FileUpload sends a response without a matching request.
-            if (_requestIdToRequest.ContainsKey(e.MessageData.requestId))
+            if (_requestIdToRequest.ContainsKey(e.MessageData.requestId.ToString()))
             {
-                var request = _requestIdToRequest[e.MessageData.requestId];
-                var response = new Response(_client, request, e.MessageData.response.status, e.MessageData.response.headers);
+                var request = _requestIdToRequest[e.MessageData.requestId.ToString()];
+                var response = new Response(
+                    _client,
+                    request,
+                    (HttpStatusCode)e.MessageData.response.status,
+                    (Dictionary<string, object>)e.MessageData.response.headers);
+
                 request.Response = response;
 
                 ResponseReceivedFinished(this, new ResponseReceivedArgs()
@@ -189,7 +194,7 @@ namespace PuppeteerSharp
             if (e.MessageData.authChallenge)
             {
                 var response = "Default";
-                if (_attemptedAuthentications.Contains(e.MessageData.interceptionId))
+                if (_attemptedAuthentications.Contains(e.MessageData.interceptionId.ToString()))
                 {
                     response = "CancelAuth";
                 }
