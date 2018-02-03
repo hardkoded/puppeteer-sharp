@@ -74,7 +74,7 @@ namespace PuppeteerSharp
 
         private void OnLifeCycleEvent(MessageEventArgs e)
         {
-            if (!Frames.ContainsKey(e.MessageData.frameId.ToString()))
+            if (Frames.ContainsKey(e.MessageData.frameId.ToString()))
             {
                 var frame = Frames[e.MessageData.frameId.ToString()];
 
