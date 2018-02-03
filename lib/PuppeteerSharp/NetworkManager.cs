@@ -131,9 +131,9 @@ namespace PuppeteerSharp
         {
             // For certain requestIds we never receive requestWillBeSent event.
             // @see https://crbug.com/750469
-            if (_requestIdToRequest.ContainsKey(e.MessageData.requestId))
+            if (_requestIdToRequest.ContainsKey(e.MessageData.requestId.ToString()))
             {
-                var request = _requestIdToRequest[e.MessageData.requestId];
+                var request = _requestIdToRequest[e.MessageData.requestId.ToString()];
 
                 request.Failure = e.MessageData.errorText;
                 request.CompleteTaskWrapper.SetResult(true);
@@ -157,11 +157,15 @@ namespace PuppeteerSharp
                 var request = _requestIdToRequest[e.MessageData.requestId.ToString()];
 
                 request.CompleteTaskWrapper.SetResult(true);
-                _requestIdToRequest.Remove(request.requestId);
-                _interceptionIdToRequest.Remove(request.interceptionId);
-                _attemptedAuthentications.Remove(request.interceptionId);
+                _requestIdToRequest.Remove(request.RequestId);
 
-                RequestFinished(this, new RequestEventArgs()
+                if (request.InterceptionId != null)
+                {
+                    _interceptionIdToRequest.Remove(request.InterceptionId);
+                    _attemptedAuthentications.Remove(request.InterceptionId);
+                }
+
+                RequestFinished?.Invoke(this, new RequestEventArgs()
                 {
                     Request = request
                 });
@@ -178,11 +182,11 @@ namespace PuppeteerSharp
                     _client,
                     request,
                     (HttpStatusCode)e.MessageData.response.status,
-                    (Dictionary<string, object>)e.MessageData.response.headers);
+                    ((JObject)e.MessageData.response.headers).ToObject<Dictionary<string, object>>());
 
                 request.Response = response;
 
-                ResponseReceivedFinished(this, new ResponseReceivedArgs()
+                ResponseReceivedFinished?.Invoke(this, new ResponseReceivedArgs()
                 {
                     Response = response
                 });
@@ -347,7 +351,7 @@ namespace PuppeteerSharp
                 null,
                 e.MessageData.request.url?.ToString(),
                 e.MessageData.type?.ToString(),
-                ((JObject)e.MessageData.request).ToStatic<Payload>());
+                ((JObject)e.MessageData.request).ToObject<Payload>());
         }
 
 

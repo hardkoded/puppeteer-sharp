@@ -47,7 +47,7 @@ namespace PuppeteerSharp
             _networkManager.ResponseCreated += (sender, e) => ResponseCreated?.Invoke(this, e);
             _networkManager.RequestFinished += (sender, e) => RequestFinished?.Invoke(this, e);
 
-            _client.MessageReceived += _client_MessageReceived;
+            _client.MessageReceived += client_MessageReceived;
         }
 
         #region Public Properties
@@ -288,12 +288,12 @@ namespace PuppeteerSharp
 
         #region Private Method
 
-        private async void _client_MessageReceived(object sender, MessageEventArgs e)
+        private async void client_MessageReceived(object sender, MessageEventArgs e)
         {
             switch (e.MessageID)
             {
                 case "Page.loadEventFired":
-                    Load(this, new EventArgs());
+                    Load?.Invoke(this, new EventArgs());
                     break;
                 case "Runtime.consoleAPICalled":
                     OnConsoleAPI(e);

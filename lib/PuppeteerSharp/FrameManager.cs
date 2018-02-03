@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using PuppeteerSharp.Input;
+using Newtonsoft.Json.Linq;
 
 namespace PuppeteerSharp
 {
@@ -47,7 +48,7 @@ namespace PuppeteerSharp
                     break;
 
                 case "Page.frameNavigated":
-                    OnFrameNavigated(e.MessageData.frame);
+                    OnFrameNavigated(((JObject)e.MessageData.frame).ToObject<FramePayload>());
                     break;
 
                 case "Page.frameDetached":
@@ -156,7 +157,10 @@ namespace PuppeteerSharp
                 if (frame != null)
                 {
                     // Update frame id to retain frame identity on cross-process navigation.
-                    Frames.Remove(frame.Id);
+                    if (frame.Id != null)
+                    {
+                        Frames.Remove(frame.Id);
+                    }
                     frame.Id = framePayload.Id;
                 }
                 else
