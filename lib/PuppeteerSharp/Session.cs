@@ -137,7 +137,14 @@ namespace PuppeteerSharp
 
         internal void Close()
         {
-            throw new NotImplementedException();
+            foreach (var callback in _callbacks.Values)
+            {
+                callback.TaskWrapper.SetException(new TargetClosedException(
+                    $"Protocol error({callback.Method}): Target closed."
+                ));
+            }
+            _callbacks.Clear();
+            Connection = null;
         }
 
         #endregion

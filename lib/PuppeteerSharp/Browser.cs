@@ -80,8 +80,10 @@ namespace PuppeteerSharp
             return version.product.ToString();
         }
 
-        public void Close()
+        public async Task CloseAsync()
         {
+            await _closeCallBack();
+            Connection.Dispose();
             Closed?.Invoke(this, new EventArgs());
         }
         #endregion
@@ -119,14 +121,17 @@ namespace PuppeteerSharp
 
         private void DestroyTarget(MessageEventArgs args)
         {
-            if (!_targets.ContainsKey(args.MessageData.targetInfo.targetId.Value))
+            if (!_targets.ContainsKey(args.MessageData.targetId.ToString()))
             {
                 throw new InvalidTargetException("Target should exists before DestroyTarget");
             }
 
-            var target = _targets[args.MessageData.targetInfo.targetId.Value];
-            target.InitilizedTaskWrapper.SetResult(false);
-            _targets.Remove(args.MessageData.targetInfo.targetId.Value);
+            var target = _targets[args.MessageData.targetId.ToString()];
+            if (!target.InitilizedTaskWrapper.Task.IsCompleted)
+            {
+                target.InitilizedTaskWrapper.SetResult(false);
+            }
+            _targets.Remove(args.MessageData.targetId.ToString());
 
             TargetDestroyed?.Invoke(this, new TargetChangedArgs()
             {

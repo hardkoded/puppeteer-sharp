@@ -10,7 +10,7 @@ using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
 {
-    public class Connection
+    public class Connection : IDisposable
     {
         public Connection(string url, int delay, ClientWebSocket ws)
         {
@@ -20,6 +20,7 @@ namespace PuppeteerSharp
 
             _responses = new Dictionary<int, TaskCompletionSource<dynamic>>();
             _sessions = new Dictionary<string, Session>();
+            _connectionCloseTask = new TaskCompletionSource<bool>();
 
             Task task = Task.Factory.StartNew(async () =>
             {
@@ -32,7 +33,7 @@ namespace PuppeteerSharp
         private Dictionary<int, TaskCompletionSource<dynamic>> _responses;
         private Dictionary<string, Session> _sessions;
         private bool _closed = false;
-
+        private TaskCompletionSource<bool> _connectionCloseTask;
         #endregion
 
         #region Properties
@@ -80,10 +81,10 @@ namespace PuppeteerSharp
         private void OnClose()
         {
             _closed = true;
-            if (Closed != null)
-            {
-                Closed.Invoke(this, new EventArgs());
-            }
+            _connectionCloseTask.SetResult(true);
+
+            Closed?.Invoke(this, new EventArgs());
+
             _responses.Clear();
             _sessions.Clear();
         }
@@ -109,7 +110,20 @@ namespace PuppeteerSharp
 
                 while (!endOfMessage)
                 {
-                    var result = await WebSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+                    var socketTask = WebSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+
+                    await Task.WhenAny(
+                        _connectionCloseTask.Task,
+                        socketTask
+                    );
+
+                    if (_closed)
+                    {
+                        return null;
+                    }
+
+                    var result = socketTask.Result;
+
                     endOfMessage = result.EndOfMessage;
 
                     if (result.MessageType == WebSocketMessageType.Text)
@@ -181,6 +195,12 @@ namespace PuppeteerSharp
             var ws = new ClientWebSocket();
             await ws.ConnectAsync(new Uri(url), default(CancellationToken)).ConfigureAwait(false);
             return new Connection(url, delay, ws);
+        }
+
+        public void Dispose()
+        {
+            OnClose();
+            WebSocket.Dispose();
         }
 
         #endregion

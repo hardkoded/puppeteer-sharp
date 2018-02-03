@@ -40,7 +40,7 @@ namespace PuppeteerSharp.Tests.Puppeteer
             var response = await page.GoToAsync(HttpsPrefix + "/empty.html");
             Assert.Equal(response.Status.ToString(), "OK");
 
-            browser.Close();
+            await browser.CloseAsync();
         }
     }
 }
