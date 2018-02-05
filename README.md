@@ -24,7 +24,7 @@ This version won't include a new version. It will be about improving the reposit
 * Create basic documentation (Readme, contributing, code of conduct).
 
 ## 0.3 Puppeteer
-It will implement all [Puppeteer related tests](https://github.com/GoogleChrome/puppeteer/blob/master/test/test.js#L108)
+It will implement all [Puppeteer related tests](https://github.com/GoogleChrome/puppeteer/blob/master/test/test.js#L108).
 
 ## 0.4 Page
 It will implement all Page tests except the ones testing the evaluate method.
