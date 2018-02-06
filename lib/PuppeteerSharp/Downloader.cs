@@ -1,14 +1,26 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.IO;
+using System.IO.Compression;
+using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 namespace PuppeteerSharp
 {
     public class Downloader
     {
-        private string _downloadsFolder;
+        private readonly string _downloadsFolder;
         private const string DefaultDownloadHost = "https://storage.googleapis.com";
+        private static readonly Dictionary<Platform, string> _downloadUrls = new Dictionary<Platform, string> {
+            {Platform.Linux, "{0}/chromium-browser-snapshots/Linux_x64/{1}/chrome-linux.zip"},
+            {Platform.MacOS, "'{0}/chromium-browser-snapshots/Mac/{1}/chrome-mac.zip"},
+            {Platform.Win32, "{0}/chromium-browser-snapshots/Win/{1}/chrome-win32.zip"},
+            {Platform.Win64, "{0}/chromium-browser-snapshots/Win_x64/{1}/chrome-win32.zip"}
+        };
+
         private string _downloadHost;
 
         public Downloader(string downloadsFolder)
@@ -17,6 +29,7 @@ namespace PuppeteerSharp
             _downloadHost = DefaultDownloadHost;
         }
 
+        #region Public Methods
         public static Downloader CreateDefault()
         {
             var downloadsFolder = Path.Combine(Directory.GetCurrentDirectory(), ".local-chromium");
@@ -45,6 +58,33 @@ namespace PuppeteerSharp
             return result;
         }
 
+        public async Task DownloadRevisionAsync(Platform platform, string revision)
+        {
+            var url = string.Format(_downloadUrls[platform], _downloadHost, revision);
+            var zipPath = Path.Combine(_downloadsFolder, $"download-{platform.ToString()}-{revision}.zip");
+            var folderPath = GetFolderPath(platform, revision);
+
+            if (!new DirectoryInfo(folderPath).Exists)
+            {
+                return;
+            }
+
+            var downloadFolder = new DirectoryInfo(_downloadsFolder);
+            if (!downloadFolder.Exists)
+            {
+                downloadFolder.Create();
+            }
+
+            await new WebClient().DownloadFileTaskAsync(new Uri(url), zipPath);
+            ZipFile.ExtractToDirectory(zipPath, folderPath);
+
+            new FileInfo(zipPath).Delete();
+
+        }
+
+        #endregion
+
+        #region Private Methods
         private static string GetExecutablePath(Platform platform, string folderPath)
         {
             switch (platform)
@@ -66,5 +106,7 @@ namespace PuppeteerSharp
         {
             return Path.Combine(_downloadsFolder, $"{platform.ToString()}-{revision}");
         }
+
+        #endregion
     }
 }
