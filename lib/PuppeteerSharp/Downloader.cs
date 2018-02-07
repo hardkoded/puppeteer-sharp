@@ -16,7 +16,7 @@ namespace PuppeteerSharp
         private const string DefaultDownloadHost = "https://storage.googleapis.com";
         private static readonly Dictionary<Platform, string> _downloadUrls = new Dictionary<Platform, string> {
             {Platform.Linux, "{0}/chromium-browser-snapshots/Linux_x64/{1}/chrome-linux.zip"},
-            {Platform.MacOS, "'{0}/chromium-browser-snapshots/Mac/{1}/chrome-mac.zip"},
+            {Platform.MacOS, "{0}/chromium-browser-snapshots/Mac/{1}/chrome-mac.zip"},
             {Platform.Win32, "{0}/chromium-browser-snapshots/Win/{1}/chrome-win32.zip"},
             {Platform.Win64, "{0}/chromium-browser-snapshots/Win_x64/{1}/chrome-win32.zip"}
         };
@@ -36,15 +36,18 @@ namespace PuppeteerSharp
             return new Downloader(downloadsFolder);
         }
 
-        internal static Platform CurrentPlatform()
+        internal static Platform CurrentPlatform
         {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                return Platform.MacOS;
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                return Platform.Linux;
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                return IntPtr.Size == 8 ? Platform.Win64 : Platform.Win32;
-            return Platform.Unknown;
+            get
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                    return Platform.MacOS;
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                    return Platform.Linux;
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    return IntPtr.Size == 8 ? Platform.Win64 : Platform.Win32;
+                return Platform.Unknown;
+            }
         }
 
         internal RevisionInfo RevisionInfo(Platform platform, string revision)
@@ -58,13 +61,14 @@ namespace PuppeteerSharp
             return result;
         }
 
-        public async Task DownloadRevisionAsync(Platform platform, string revision)
+        public async Task DownloadRevisionAsync(string revision)
         {
+            var platform = CurrentPlatform;
             var url = string.Format(_downloadUrls[platform], _downloadHost, revision);
             var zipPath = Path.Combine(_downloadsFolder, $"download-{platform.ToString()}-{revision}.zip");
             var folderPath = GetFolderPath(platform, revision);
 
-            if (!new DirectoryInfo(folderPath).Exists)
+            if (new DirectoryInfo(folderPath).Exists)
             {
                 return;
             }
