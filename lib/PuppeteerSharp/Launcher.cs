@@ -46,7 +46,7 @@ namespace PuppeteerSharp
         {
         }
 
-        internal static async Task<Browser> LaunchAsync(Dictionary<string, object> options, PuppeteerOptions puppeteerOptions)
+        internal static async Task<Browser> LaunchAsync(Dictionary<string, object> options, int chromiumRevision)
         {
             var chromeArguments = new List<string>(_defaultArgs);
 
@@ -94,8 +94,7 @@ namespace PuppeteerSharp
             if (string.IsNullOrEmpty(chromeExecutable))
             {
                 var downloader = Downloader.CreateDefault();
-                var revisionInfo = downloader.RevisionInfo(Downloader.CurrentPlatform(),
-                                                           puppeteerOptions.ChromiumRevision);
+                var revisionInfo = downloader.RevisionInfo(Downloader.CurrentPlatform, chromiumRevision);
                 chromeExecutable = revisionInfo.ExecutablePath;
             }
 
