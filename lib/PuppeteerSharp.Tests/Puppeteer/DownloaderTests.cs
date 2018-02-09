@@ -7,10 +7,6 @@ namespace PuppeteerSharp.Tests.Puppeteer
 {
     public class DownloaderTests
     {
-        public DownloaderTests()
-        {
-        }
-
         [Fact(Skip = "Long run")]
         public async Task ShouldDownloadChromium()
         {
