@@ -46,7 +46,7 @@ namespace PuppeteerSharp
         {
         }
 
-        internal static async Task<Browser> LaunchAsync(Dictionary<string, object> options, string chromiumRevision)
+        internal static async Task<Browser> LaunchAsync(Dictionary<string, object> options, int chromiumRevision)
         {
             var chromeArguments = new List<string>(_defaultArgs);
 

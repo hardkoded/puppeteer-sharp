@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.IO.Compression;
@@ -50,7 +51,7 @@ namespace PuppeteerSharp
             }
         }
 
-        internal RevisionInfo RevisionInfo(Platform platform, string revision)
+        internal RevisionInfo RevisionInfo(Platform platform, int revision)
         {
             var result = new RevisionInfo
             {
@@ -61,12 +62,11 @@ namespace PuppeteerSharp
             return result;
         }
 
-        public async Task DownloadRevisionAsync(string revision)
+        public async Task DownloadRevisionAsync(int revision)
         {
-            var platform = CurrentPlatform;
-            var url = string.Format(_downloadUrls[platform], _downloadHost, revision);
-            var zipPath = Path.Combine(_downloadsFolder, $"download-{platform.ToString()}-{revision}.zip");
-            var folderPath = GetFolderPath(platform, revision);
+            var url = string.Format(_downloadUrls[CurrentPlatform], _downloadHost, revision);
+            var zipPath = Path.Combine(_downloadsFolder, $"download-{CurrentPlatform.ToString()}-{revision}.zip");
+            var folderPath = GetFolderPath(CurrentPlatform, revision);
 
             if (new DirectoryInfo(folderPath).Exists)
             {
@@ -80,16 +80,30 @@ namespace PuppeteerSharp
             }
 
             await new WebClient().DownloadFileTaskAsync(new Uri(url), zipPath);
-            ZipFile.ExtractToDirectory(zipPath, folderPath);
+
+            if (CurrentPlatform == Platform.MacOS)
+            {
+                //ZipFile and many others unzip libraries have issues extracting .app files
+                //Until we have a clear solution we'll call the native unzip tool
+                //https://github.com/dotnet/corefx/issues/15516
+                NativeExtractToDirectory(zipPath, folderPath);
+            }
+            else
+            {
+                ZipFile.ExtractToDirectory(zipPath, folderPath);
+            }
 
             new FileInfo(zipPath).Delete();
 
         }
 
-        #endregion
+        public string GetExecutablePath(int revision)
+        {
+            return GetExecutablePath(CurrentPlatform, GetFolderPath(CurrentPlatform, revision));
+        }
 
-        #region Private Methods
-        private static string GetExecutablePath(Platform platform, string folderPath)
+
+        public static string GetExecutablePath(Platform platform, string folderPath)
         {
             switch (platform)
             {
@@ -106,9 +120,23 @@ namespace PuppeteerSharp
             }
         }
 
-        private string GetFolderPath(Platform platform, string revision)
+
+        #endregion
+
+        #region Private Methods
+
+        private string GetFolderPath(Platform platform, int revision)
         {
             return Path.Combine(_downloadsFolder, $"{platform.ToString()}-{revision}");
+        }
+
+        private void NativeExtractToDirectory(string zipPath, string folderPath)
+        {
+            var process = new Process();
+            process.StartInfo.FileName = "unzip";
+            process.StartInfo.Arguments = $"{zipPath} -d {folderPath}";
+            process.Start();
+            process.WaitForExit();
         }
 
         #endregion

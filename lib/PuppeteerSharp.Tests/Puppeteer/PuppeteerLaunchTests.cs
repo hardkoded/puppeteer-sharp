@@ -8,11 +8,11 @@ using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Tests.Puppeteer
 {
-    public class PuppeteerLaunch
+    public class PuppeteerLaunchTests
     {
         private const int HttpsPort = 8908;
         private const string HttpsPrefix = "https://localhost:8908";
-        private const string ChromiumRevision = "526987";
+        public const int ChromiumRevision = 526987;
 
         private Dictionary<string, object> _defaultBrowserOptions = new Dictionary<string, object>()
         {
@@ -22,13 +22,13 @@ namespace PuppeteerSharp.Tests.Puppeteer
             { "timeout", 0}
         };
 
-        public PuppeteerLaunch()
+        public PuppeteerLaunchTests()
         {
             Downloader.CreateDefault().DownloadRevisionAsync(ChromiumRevision).GetAwaiter().GetResult();
         }
 
         [Fact]
-        public async Task should_support_ignoreHTTPSErrors_option()
+        public async Task ShouldSupportIgnoreHTTPSErrorsOption()
         {
             var options = _defaultBrowserOptions.Clone();
             options.Add("ignoreHTTPSErrors", true);

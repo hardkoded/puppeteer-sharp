@@ -10,7 +10,7 @@ namespace PuppeteerSharp
         {
         }
 
-        public static async Task<Browser> LaunchAsync(Dictionary<string, object> options, string chromiumRevision)
+        public static async Task<Browser> LaunchAsync(Dictionary<string, object> options, int chromiumRevision)
         {
             return await Launcher.LaunchAsync(options, chromiumRevision);
         }

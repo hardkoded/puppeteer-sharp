@@ -135,12 +135,15 @@ namespace PuppeteerSharp
             {
                 var request = _requestIdToRequest[e.MessageData.requestId.ToString()];
 
-                request.Failure = e.MessageData.errorText;
+                request.Failure = e.MessageData.errorText.ToString();
                 request.CompleteTaskWrapper.SetResult(true);
                 _requestIdToRequest.Remove(request.RequestId);
-                _interceptionIdToRequest.Remove(request.InterceptionId);
-                _attemptedAuthentications.Remove(request.InterceptionId);
 
+                if (request.InterceptionId != null)
+                {
+                    _interceptionIdToRequest.Remove(request.InterceptionId);
+                    _attemptedAuthentications.Remove(request.InterceptionId);
+                }
                 RequestFailed(this, new RequestEventArgs()
                 {
                     Request = request
