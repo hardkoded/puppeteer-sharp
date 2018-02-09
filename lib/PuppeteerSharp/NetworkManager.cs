@@ -227,9 +227,6 @@ namespace PuppeteerSharp
 
             if (!string.IsNullOrEmpty(e.MessageData.redirectUrl))
             {
-                Contract.Ensures(_interceptionIdToRequest.ContainsKey(e.MessageData.interceptionId),
-                                 "INTERNAL ERROR: failed to find request for interception redirect.");
-
                 var request = _interceptionIdToRequest[e.MessageData.interceptionId];
 
                 HandleRequestRedirect(request, e.MessageData.responseStatusCode, e.MessageData.responseHeaders);

@@ -21,7 +21,6 @@ namespace PuppeteerSharp
             {Platform.Win32, "{0}/chromium-browser-snapshots/Win/{1}/chrome-win32.zip"},
             {Platform.Win64, "{0}/chromium-browser-snapshots/Win_x64/{1}/chrome-win32.zip"}
         };
-
         private string _downloadHost;
 
         public Downloader(string downloadsFolder)
@@ -31,6 +30,7 @@ namespace PuppeteerSharp
         }
 
         #region Public Methods
+
         public static Downloader CreateDefault()
         {
             var downloadsFolder = Path.Combine(Directory.GetCurrentDirectory(), ".local-chromium");
@@ -102,7 +102,6 @@ namespace PuppeteerSharp
             return GetExecutablePath(CurrentPlatform, GetFolderPath(CurrentPlatform, revision));
         }
 
-
         public static string GetExecutablePath(Platform platform, string folderPath)
         {
             switch (platform)
@@ -119,7 +118,6 @@ namespace PuppeteerSharp
                     throw new ArgumentException("Invalid platform", nameof(platform));
             }
         }
-
 
         #endregion
 
