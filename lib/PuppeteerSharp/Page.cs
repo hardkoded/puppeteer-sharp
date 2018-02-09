@@ -4,6 +4,7 @@ using System.Net;
 using System.Threading.Tasks;
 using PuppeteerSharp.Input;
 using PuppeteerSharp.Helpers;
+using System.IO;
 
 namespace PuppeteerSharp
 {
@@ -200,7 +201,7 @@ namespace PuppeteerSharp
 
         public async Task ExposeFunctionAsync(string name, Func<object> puppeteerFunction)
         {
-            //TODO: We won't implement this yet
+            throw new NotImplementedException();
         }
 
         public static async Task<Page> CreateAsync(Session client, bool ignoreHTTPSErrors, bool appMode,
@@ -282,6 +283,11 @@ namespace PuppeteerSharp
             }
 
             return request?.Response;
+        }
+
+        public Task<Stream> Pdf(dynamic options)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

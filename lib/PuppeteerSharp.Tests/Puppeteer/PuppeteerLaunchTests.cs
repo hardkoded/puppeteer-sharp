@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests.Puppeteer
         private const string HttpsPrefix = "https://localhost:8908";
         public const int ChromiumRevision = 526987;
 
-        private Dictionary<string, object> _defaultBrowserOptions = new Dictionary<string, object>()
+        public static readonly Dictionary<string, object> DefaultBrowserOptions = new Dictionary<string, object>()
         {
             { "slowMo", Convert.ToInt32(Environment.GetEnvironmentVariable("SLOW_MO") ?? "0") },
             { "headless", Convert.ToBoolean(Environment.GetEnvironmentVariable("HEADLESS") ?? "true") },
@@ -30,7 +30,7 @@ namespace PuppeteerSharp.Tests.Puppeteer
         [Fact]
         public async Task ShouldSupportIgnoreHTTPSErrorsOption()
         {
-            var options = _defaultBrowserOptions.Clone();
+            var options = DefaultBrowserOptions.Clone();
             options.Add("ignoreHTTPSErrors", true);
 
             var browser = await PuppeteerSharp.Puppeteer.LaunchAsync(options, ChromiumRevision);
