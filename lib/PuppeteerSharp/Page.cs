@@ -285,7 +285,7 @@ namespace PuppeteerSharp
             return request?.Response;
         }
 
-        public Task<Stream> Pdf(dynamic options)
+        public Task<Stream> PdfAsync(dynamic options = null)
         {
             throw new NotImplementedException();
         }
