@@ -23,8 +23,8 @@ namespace PuppeteerSharp.Tests.Page
             }
 
             dirInfo.Create();
-            _browser = PuppeteerSharp.Puppeteer.LaunchAsync(PuppeteerLaunchTests.DefaultBrowserOptions,
-                                                            PuppeteerLaunchTests.ChromiumRevision).GetAwaiter().GetResult();
+            _browser = PuppeteerSharp.Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions,
+                                                            TestConstants.ChromiumRevision).GetAwaiter().GetResult();
         }
 
         public void Dispose()
@@ -32,6 +32,7 @@ namespace PuppeteerSharp.Tests.Page
             _browser.CloseAsync().GetAwaiter().GetResult();
         }
 
+        [Fact]
         public async Task ShouldBeAbleToSaveFile()
         {
             var outputFile = Path.Combine(_baseDirectory, "assets", "output.pdf");
@@ -56,6 +57,7 @@ namespace PuppeteerSharp.Tests.Page
             }
         }
 
+        [Fact]
         public async Task ShouldDefaultToPrintInLetterFormat()
         {
             var page = await _browser.NewPageAsync();
@@ -67,6 +69,7 @@ namespace PuppeteerSharp.Tests.Page
             Assert.Equal(11, TruncateDouble(document.Pages[0].Width.Inch, 0));
         }
 
+        [Fact]
         public async Task ShouldSupportSettingCustomFormat()
         {
             var page = await _browser.NewPageAsync();
@@ -81,6 +84,7 @@ namespace PuppeteerSharp.Tests.Page
             Assert.Equal(11.7, TruncateDouble(document.Pages[0].Width.Inch, 1));
         }
 
+        [Fact]
         public async Task ShouldSupportSettingPaperWidthAndHeight()
         {
             var page = await _browser.NewPageAsync();
@@ -95,73 +99,67 @@ namespace PuppeteerSharp.Tests.Page
             Assert.Equal(10, TruncateDouble(document.Pages[0].Width.Inch, 0));
             Assert.Equal(10, TruncateDouble(document.Pages[0].Width.Inch, 0));
         }
-        /*
 
+        [Fact]
+        public async Task ShouldPrintMultiplePages()
+        {
+            var page = await _browser.NewPageAsync();
+            await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+            // Define width and height in CSS pixels.
+            var width = 50 * 5 + 1;
+            var height = 50 * 5 + 1;
+            var document = PdfReader.Open(await page.PdfAsync(new { width, height }));
+            Assert.Equal(8, document.Pages.Count);
+            Assert.Equal(CssPixelsToInches(width), TruncateDouble(document.Pages[0].Width.Inch, 0));
+            Assert.Equal(CssPixelsToInches(height), TruncateDouble(document.Pages[0].Width.Inch, 0));
+        }
 
-public async Task ShouldPrintMultiplePages()
-{
-   await page.goto(server.PREFIX + '/grid.html');
-   // Define width and height in CSS pixels.
-   const width = 50 * 5 + 1;
-   const height = 50 * 5 + 1;
-   const pages = await getPDFPages(await page.pdf({ width, height}));
-   expect(pages.length).toBe(8);
-   expect(pages[0].width).toBeCloseTo(cssPixelsToInches(width), 2);
-   expect(pages[0].height).toBeCloseTo(cssPixelsToInches(height), 2);
-}
+        [Fact]
+        public async Task ShouldSupportPageRanges()
+        {
+            var page = await _browser.NewPageAsync();
+            await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+            // Define width and height in CSS pixels.
+            var width = 50 * 5 + 1;
+            var height = 50 * 5 + 1;
+            var document = PdfReader.Open(await page.PdfAsync(new { width, height, pageRanges = "1,4-7" }));
+            Assert.Equal(5, document.Pages.Count);
+        }
 
-public async Task ShouldSupportPageRanges()
-{
-   await page.goto(server.PREFIX + '/grid.html');
-   // Define width and height in CSS pixels.
-   const width = 50 * 5 + 1;
-   const height = 50 * 5 + 1;
-   const pages = await getPDFPages(await page.pdf({ width, height, pageRanges: '1,4-7'}));
-   expect(pages.length).toBe(5);
-}
+        [Fact]
+        public async Task ShowThrowFormatIsUnknown()
+        {
+            var page = await _browser.NewPageAsync();
+            var exception = await Assert.ThrowsAsync<ArgumentException>(async () =>
+            {
+                await page.PdfAsync(new { format = "something" });
+            });
 
-public async Task ShowThrowFormatIsUnknown()
-{
+            Assert.Equal("Unknown paper format", exception.Message);
+        }
 
-   let error = null;
-   try
-   {
-       await getPDFPages(await page.pdf({
-       format: 'something'
-       }));
-   }
-   catch (e)
-   {
-       error = e;
-   }
-   expect(error).toBeTruthy();
-   expect(error.message).toContain('Unknown paper format');
-}
+        [Fact]
+        public async Task ShouldThrowIfUnitsAreUnknown()
+        {
+            var page = await _browser.NewPageAsync();
+            var exception = await Assert.ThrowsAsync<ArgumentException>(async () =>
+            {
+                await page.PdfAsync(new { width = "10em" });
+            });
 
-public async Task ShouldThrowIfUnitsAreUnknown()
-{
+            Assert.Equal("Failed to parse parameter value", exception.Message);
+        }
 
-   let error = null;
-   try
-   {
-       await getPDFPages(await page.pdf({
-       width: '10em',
- height: '10em',
-}));
-   }
-   catch (e)
-   {
-       error = e;
-   }
-   expect(error).toBeTruthy();
-   expect(error.message).toContain('Failed to parse parameter value');
-}
-*/
-        public double TruncateDouble(double value, int precision)
+        private double TruncateDouble(double value, int precision)
         {
             double step = Math.Pow(10, precision);
             double tmp = Math.Truncate(step * value);
             return tmp / step;
+        }
+
+        private double CssPixelsToInches(int pixels)
+        {
+            return pixels / 96;
         }
     }
 }

@@ -19,8 +19,8 @@ namespace PuppeteerSharp.Tests.Puppeteer
                 dirInfo.Delete(true);
             }
 
-            await downloader.DownloadRevisionAsync(PuppeteerLaunchTests.ChromiumRevision);
-            Assert.True(new FileInfo(downloader.GetExecutablePath(PuppeteerLaunchTests.ChromiumRevision)).Exists);
+            await downloader.DownloadRevisionAsync(TestConstants.ChromiumRevision);
+            Assert.True(new FileInfo(downloader.GetExecutablePath(TestConstants.ChromiumRevision)).Exists);
         }
     }
 }
