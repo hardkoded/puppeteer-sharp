@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using PuppeteerSharp.Input;
 using PuppeteerSharp.Helpers;
 using System.IO;
+using System.Globalization;
 
 namespace PuppeteerSharp
 {
@@ -20,6 +21,27 @@ namespace PuppeteerSharp
         private Mouse _mouse;
         private Dictionary<string, Func<object>> _pageBindings;
         private const int DefaultNavigationTimeout = 30000;
+
+        private static Dictionary<string, PaperFormat> _paperFormats = new Dictionary<string, PaperFormat> {
+            {"letter", new PaperFormat {Width = 8.5m, Height = 11}},
+            {"legal", new PaperFormat {Width = 8.5m, Height = 14}},
+            {"tabloid", new PaperFormat {Width = 11, Height = 17}},
+            {"ledger", new PaperFormat {Width = 17, Height = 11}},
+            {"a0", new PaperFormat {Width = 33.1m, Height = 46.8m }},
+            {"a1", new PaperFormat {Width = 23.4m, Height = 33.1m }},
+            {"a2", new PaperFormat {Width = 16.5m, Height = 23.4m }},
+            {"a3", new PaperFormat {Width = 11.7m, Height = 16.5m }},
+            {"a4", new PaperFormat {Width = 8.27m, Height = 11.7m }},
+            {"a5", new PaperFormat {Width = 5.83m, Height = 8.27m }},
+            {"a6", new PaperFormat {Width = 4.13m, Height = 5.83m }},
+        };
+
+        private static Dictionary<string, decimal> _unitToPixels = new Dictionary<string, decimal> {
+            {"px", 1},
+            {"in", 96},
+            {"cm", 37.8m},
+            {"mm", 3.78m}
+        };
 
         private Page(Session client, FrameTree frameTree, bool ignoreHTTPSErrors, TaskQueue screenshotTaskQueue)
         {
@@ -285,14 +307,119 @@ namespace PuppeteerSharp
             return request?.Response;
         }
 
-        public Task<Stream> PdfAsync(dynamic options = null)
+        public async Task<Stream> PdfAsync(dynamic options = default(dynamic))
         {
-            throw new NotImplementedException();
+            var scale = DynamicExtensions.GetOrDefault<decimal>(options, "scale", 1);
+            var displayHeaderFooter = DynamicExtensions.GetOrDefault<bool>(options, "displayHeaderFooter", false);
+            var headerTemplate = DynamicExtensions.GetOrDefault<string>(options, "headerTemplate", "");
+            var footerTemplate = DynamicExtensions.GetOrDefault<string>(options, "footerTemplate", "");
+            var printBackground = DynamicExtensions.GetOrDefault<bool>(options, "printBackground", false);
+            var landscape = DynamicExtensions.GetOrDefault<bool>(options, "landscape", false);
+            var pageRanges = DynamicExtensions.GetOrDefault<string>(options, "pageRanges", "");
+
+            var paperWidth = 8.5m;
+            var paperHeight = 11m;
+
+            if (DynamicExtensions.ContainsProperty(options, "format"))
+            {
+                if (!_paperFormats.ContainsKey(options.format.toLowerCase()))
+                {
+                    throw new ArgumentException("Unknown paper format", "format");
+                }
+
+                var format = _paperFormats[options.format.toLowerCase()];
+                paperWidth = format.Width;
+                paperHeight = format.Weight;
+            }
+            else
+            {
+                if (DynamicExtensions.ContainsProperty(options, "format"))
+                {
+                    paperWidth = ConvertPrintParameterToInches(options.width);
+                }
+                if (DynamicExtensions.ContainsProperty(options, "format"))
+                {
+                    paperHeight = ConvertPrintParameterToInches(options.height);
+                }
+            }
+
+            var marginOptions = DynamicExtensions.GetOrDefault<dynamic>(options, "margin", new { });
+            var marginTop = ConvertPrintParameterToInches(DynamicExtensions.GetOrDefault<decimal>(options, "top", 0));
+            var marginLeft = ConvertPrintParameterToInches(DynamicExtensions.GetOrDefault<decimal>(options, "left", 0));
+            var marginBottom = ConvertPrintParameterToInches(DynamicExtensions.GetOrDefault<decimal>(options, "bottom", 0));
+            var marginRight = ConvertPrintParameterToInches(DynamicExtensions.GetOrDefault<decimal>(options, "right", 0));
+
+            var result = await _client.SendAsync("Page.printToPDF", new
+            {
+                landscape = landscape,
+                displayHeaderFooter = displayHeaderFooter,
+                headerTemplate = headerTemplate,
+                footerTemplate = footerTemplate,
+                printBackground = printBackground,
+                scale = scale,
+                paperWidth = paperWidth,
+                paperHeight = paperHeight,
+                marginTop = marginTop,
+                marginBottom = marginBottom,
+                marginLeft = marginLeft,
+                marginRight = marginRight,
+                pageRanges = pageRanges
+            });
+            /*
+            const buffer = new Buffer(result.data, 'base64');
+            if (options.path)
+                await writeFileAsync(options.path, buffer);
+            return buffer;
+            */
         }
 
         #endregion
 
         #region Private Method
+
+        private decimal ConvertPrintParameterToInches(object parameter)
+        {
+            if (parameter == null)
+            {
+                return 0;
+            }
+
+            var pixels = 0;
+
+            if (parameter is decimal || parameter is int)
+            {
+                pixels = Convert.ToDecimal(parameter);
+            }
+            else
+            {
+                var text = parameter.ToString();
+                var unit = text.Substring(text.length - 2).toLowerCase();
+                var valueText = "";
+
+                if (_unitToPixels.ContainsKey(unit))
+                {
+                    valueText = text.substring(0, text.length - 2);
+                }
+                else
+                {
+                    // In case of unknown unit try to parse the whole parameter as number of pixels.
+                    // This is consistent with phantom's paperSize behavior.
+                    unit = "px";
+                    valueText = text;
+                }
+
+                if (Decimal.TryParse(valueText, CultureInfo.InvariantCulture.NumberFormat, out var number))
+                {
+                    pixels = number * _unitToPixels[unit];
+                }
+                else
+                {
+                    throw new ArgumentException($"Failed to parse parameter value: '{text}'", nameof(parameter));
+                }
+            }
+
+            return pixels / 96;
+        }
 
         private async void client_MessageReceived(object sender, MessageEventArgs e)
         {
