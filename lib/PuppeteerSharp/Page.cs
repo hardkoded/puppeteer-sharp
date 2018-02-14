@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Threading.Tasks;
 using PuppeteerSharp.Input;
 using PuppeteerSharp.Helpers;
 using System.IO;
 using System.Globalization;
+using static PuppeteerSharp.Helpers.DynamicExtensions;
+using Newtonsoft.Json.Linq;
 
 namespace PuppeteerSharp
 {
@@ -309,18 +310,18 @@ namespace PuppeteerSharp
 
         public async Task<Stream> PdfAsync(dynamic options = default(dynamic))
         {
-            var scale = DynamicExtensions.GetOrDefault<decimal>(options, "scale", 1);
-            var displayHeaderFooter = DynamicExtensions.GetOrDefault<bool>(options, "displayHeaderFooter", false);
-            var headerTemplate = DynamicExtensions.GetOrDefault<string>(options, "headerTemplate", "");
-            var footerTemplate = DynamicExtensions.GetOrDefault<string>(options, "footerTemplate", "");
-            var printBackground = DynamicExtensions.GetOrDefault<bool>(options, "printBackground", false);
-            var landscape = DynamicExtensions.GetOrDefault<bool>(options, "landscape", false);
-            var pageRanges = DynamicExtensions.GetOrDefault<string>(options, "pageRanges", "");
+            var scale = GetOrDefault<decimal>(options, "scale", 1);
+            var displayHeaderFooter = GetOrDefault<bool>(options, "displayHeaderFooter", false);
+            var headerTemplate = GetOrDefault<string>(options, "headerTemplate", "");
+            var footerTemplate = GetOrDefault<string>(options, "footerTemplate", "");
+            var printBackground = GetOrDefault<bool>(options, "printBackground", false);
+            var landscape = GetOrDefault<bool>(options, "landscape", false);
+            var pageRanges = GetOrDefault<string>(options, "pageRanges", "");
 
             var paperWidth = 8.5m;
             var paperHeight = 11m;
 
-            if (DynamicExtensions.ContainsProperty(options, "format"))
+            if (ContainsProperty(options, "format"))
             {
                 if (!_paperFormats.ContainsKey(options.format.toLowerCase()))
                 {
@@ -333,23 +334,23 @@ namespace PuppeteerSharp
             }
             else
             {
-                if (DynamicExtensions.ContainsProperty(options, "format"))
+                if (ContainsProperty(options, "format"))
                 {
                     paperWidth = ConvertPrintParameterToInches(options.width);
                 }
-                if (DynamicExtensions.ContainsProperty(options, "format"))
+                if (ContainsProperty(options, "format"))
                 {
                     paperHeight = ConvertPrintParameterToInches(options.height);
                 }
             }
 
-            var marginOptions = DynamicExtensions.GetOrDefault<dynamic>(options, "margin", new { });
-            var marginTop = ConvertPrintParameterToInches(DynamicExtensions.GetOrDefault<decimal>(options, "top", 0));
-            var marginLeft = ConvertPrintParameterToInches(DynamicExtensions.GetOrDefault<decimal>(options, "left", 0));
-            var marginBottom = ConvertPrintParameterToInches(DynamicExtensions.GetOrDefault<decimal>(options, "bottom", 0));
-            var marginRight = ConvertPrintParameterToInches(DynamicExtensions.GetOrDefault<decimal>(options, "right", 0));
+            var marginOptions = GetOrDefault<dynamic>(options, "margin", new { });
+            var marginTop = ConvertPrintParameterToInches(GetOrDefault<decimal>(options, "top", 0));
+            var marginLeft = ConvertPrintParameterToInches(GetOrDefault<decimal>(options, "left", 0));
+            var marginBottom = ConvertPrintParameterToInches(GetOrDefault<decimal>(options, "bottom", 0));
+            var marginRight = ConvertPrintParameterToInches(GetOrDefault<decimal>(options, "right", 0));
 
-            var result = await _client.SendAsync("Page.printToPDF", new
+            JObject result = await _client.SendAsync("Page.printToPDF", new
             {
                 landscape = landscape,
                 displayHeaderFooter = displayHeaderFooter,
@@ -365,12 +366,18 @@ namespace PuppeteerSharp
                 marginRight = marginRight,
                 pageRanges = pageRanges
             });
-            /*
-            const buffer = new Buffer(result.data, 'base64');
-            if (options.path)
-                await writeFileAsync(options.path, buffer);
-            return buffer;
-            */
+
+            var buffer = Convert.FromBase64String(result.GetValue("data").Value<string>());
+
+            if (ContainsProperty(options, "path"))
+            {
+                using (var fs = new FileStream(options.path, FileMode.Create, FileAccess.Write))
+                {
+                    fs.Write(buffer, 0, buffer.Length);
+                }
+            }
+
+            return new MemoryStream(buffer);
         }
 
         #endregion
@@ -384,7 +391,7 @@ namespace PuppeteerSharp
                 return 0;
             }
 
-            var pixels = 0;
+            var pixels = 0m;
 
             if (parameter is decimal || parameter is int)
             {
@@ -393,12 +400,12 @@ namespace PuppeteerSharp
             else
             {
                 var text = parameter.ToString();
-                var unit = text.Substring(text.length - 2).toLowerCase();
+                var unit = text.Substring(text.Length - 2).ToLower();
                 var valueText = "";
 
                 if (_unitToPixels.ContainsKey(unit))
                 {
-                    valueText = text.substring(0, text.length - 2);
+                    valueText = text.Substring(0, text.Length - 2);
                 }
                 else
                 {
@@ -408,7 +415,7 @@ namespace PuppeteerSharp
                     valueText = text;
                 }
 
-                if (Decimal.TryParse(valueText, CultureInfo.InvariantCulture.NumberFormat, out var number))
+                if (Decimal.TryParse(valueText, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out var number))
                 {
                     pixels = number * _unitToPixels[unit];
                 }
