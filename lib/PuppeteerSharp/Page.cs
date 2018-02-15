@@ -308,70 +308,61 @@ namespace PuppeteerSharp
             return request?.Response;
         }
 
-        public async Task<Stream> PdfAsync(dynamic options = default(dynamic))
+        public async Task<Stream> PdfAsync(PdfOptions options = default(PdfOptions))
         {
-            var scale = GetOrDefault<decimal>(options, "scale", 1);
-            var displayHeaderFooter = GetOrDefault<bool>(options, "displayHeaderFooter", false);
-            var headerTemplate = GetOrDefault<string>(options, "headerTemplate", "");
-            var footerTemplate = GetOrDefault<string>(options, "footerTemplate", "");
-            var printBackground = GetOrDefault<bool>(options, "printBackground", false);
-            var landscape = GetOrDefault<bool>(options, "landscape", false);
-            var pageRanges = GetOrDefault<string>(options, "pageRanges", "");
-
             var paperWidth = 8.5m;
             var paperHeight = 11m;
 
-            if (ContainsProperty(options, "format"))
+            if (!string.IsNullOrEmpty(options.Format))
             {
-                if (!_paperFormats.ContainsKey(options.format.toLowerCase()))
+                if (!_paperFormats.ContainsKey(options.Format.ToLower()))
                 {
-                    throw new ArgumentException("Unknown paper format", "format");
+                    throw new ArgumentException("Unknown paper format", "options.Format");
                 }
 
-                var format = _paperFormats[options.format.toLowerCase()];
+                var format = _paperFormats[options.Format.ToLower()];
                 paperWidth = format.Width;
-                paperHeight = format.Weight;
+                paperHeight = format.Height;
             }
             else
             {
-                if (ContainsProperty(options, "format"))
+                if (options.Width != null)
                 {
-                    paperWidth = ConvertPrintParameterToInches(options.width);
+                    paperWidth = ConvertPrintParameterToInches(options.Width);
                 }
-                if (ContainsProperty(options, "format"))
+                if (options.Height != null)
                 {
-                    paperHeight = ConvertPrintParameterToInches(options.height);
+                    paperHeight = ConvertPrintParameterToInches(options.Height);
                 }
             }
 
-            var marginOptions = GetOrDefault<dynamic>(options, "margin", new { });
-            var marginTop = ConvertPrintParameterToInches(GetOrDefault<decimal>(options, "top", 0));
-            var marginLeft = ConvertPrintParameterToInches(GetOrDefault<decimal>(options, "left", 0));
-            var marginBottom = ConvertPrintParameterToInches(GetOrDefault<decimal>(options, "bottom", 0));
-            var marginRight = ConvertPrintParameterToInches(GetOrDefault<decimal>(options, "right", 0));
+            var marginTop = ConvertPrintParameterToInches(options.MarginOptions.Top);
+            var marginLeft = ConvertPrintParameterToInches(options.MarginOptions.Left);
+            var marginBottom = ConvertPrintParameterToInches(options.MarginOptions.Bottom);
+            var marginRight = ConvertPrintParameterToInches(options.MarginOptions.Right);
 
             JObject result = await _client.SendAsync("Page.printToPDF", new
             {
-                landscape = landscape,
-                displayHeaderFooter = displayHeaderFooter,
-                headerTemplate = headerTemplate,
-                footerTemplate = footerTemplate,
-                printBackground = printBackground,
-                scale = scale,
-                paperWidth = paperWidth,
-                paperHeight = paperHeight,
-                marginTop = marginTop,
-                marginBottom = marginBottom,
-                marginLeft = marginLeft,
-                marginRight = marginRight,
-                pageRanges = pageRanges
+                landscape = options.Landscape,
+                displayHeaderFooter = options.DisplayHeaderFooter,
+                headerTemplate = options.HeaderTemplate,
+                footerTemplate = options.FooterTemplate,
+                printBackground = options.PrintBackground,
+                scale = options.Scale,
+                paperWidth,
+                paperHeight,
+                marginTop,
+                marginBottom,
+                marginLeft,
+                marginRight,
+                pageRanges = options.PageRanges
             });
 
             var buffer = Convert.FromBase64String(result.GetValue("data").Value<string>());
 
-            if (ContainsProperty(options, "path"))
+            if (!string.IsNullOrEmpty(options.Path))
             {
-                using (var fs = new FileStream(options.path, FileMode.Create, FileAccess.Write))
+                using (var fs = new FileStream(options.Path, FileMode.Create, FileAccess.Write))
                 {
                     fs.Write(buffer, 0, buffer.Length);
                 }

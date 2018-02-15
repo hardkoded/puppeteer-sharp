@@ -35,7 +35,7 @@ namespace PuppeteerSharp.Tests.Page
         [Fact]
         public async Task ShouldBeAbleToSaveFile()
         {
-            var outputFile = Path.Combine(_baseDirectory, "assets", "output.pdf");
+            var outputFile = Path.Combine(_baseDirectory, "output.pdf");
             var fileInfo = new FileInfo(outputFile);
 
             if (fileInfo.Exists)
@@ -44,11 +44,12 @@ namespace PuppeteerSharp.Tests.Page
             }
 
             var page = await _browser.NewPageAsync();
-            await page.PdfAsync(new
+            await page.PdfAsync(new PdfOptions
             {
-                path = outputFile
+                Path = outputFile
             });
 
+            fileInfo = new FileInfo(outputFile);
             Assert.True(new FileInfo(outputFile).Length > 0);
 
             if (fileInfo.Exists)
@@ -74,9 +75,9 @@ namespace PuppeteerSharp.Tests.Page
         {
             var page = await _browser.NewPageAsync();
 
-            var document = PdfReader.Open(await page.PdfAsync(new
+            var document = PdfReader.Open(await page.PdfAsync(new PdfOptions
             {
-                format = "a4"
+                Format = "a4"
             }), PdfDocumentOpenMode.ReadOnly);
 
             Assert.Equal(1, document.Pages.Count);
@@ -89,10 +90,10 @@ namespace PuppeteerSharp.Tests.Page
         {
             var page = await _browser.NewPageAsync();
 
-            var document = PdfReader.Open(await page.PdfAsync(new
+            var document = PdfReader.Open(await page.PdfAsync(new PdfOptions
             {
-                width = "10in",
-                height = "10in"
+                Width = "10in",
+                Height = "10in"
             }), PdfDocumentOpenMode.ReadOnly);
 
             Assert.Equal(1, document.Pages.Count);
@@ -108,7 +109,12 @@ namespace PuppeteerSharp.Tests.Page
             // Define width and height in CSS pixels.
             var width = 50 * 5 + 1;
             var height = 50 * 5 + 1;
-            var document = PdfReader.Open(await page.PdfAsync(new { width, height }));
+            var document = PdfReader.Open(await page.PdfAsync(new PdfOptions
+            {
+                Width = width,
+                Height = height
+            }));
+
             Assert.Equal(8, document.Pages.Count);
             Assert.Equal(CssPixelsToInches(width), TruncateDouble(document.Pages[0].Width.Inch, 0));
             Assert.Equal(CssPixelsToInches(height), TruncateDouble(document.Pages[0].Width.Inch, 0));
@@ -122,7 +128,13 @@ namespace PuppeteerSharp.Tests.Page
             // Define width and height in CSS pixels.
             var width = 50 * 5 + 1;
             var height = 50 * 5 + 1;
-            var document = PdfReader.Open(await page.PdfAsync(new { width, height, pageRanges = "1,4-7" }));
+            var document = PdfReader.Open(await page.PdfAsync(new PdfOptions
+            {
+                Width = width,
+                Height = height,
+                PageRanges = "1,4-7"
+            }));
+
             Assert.Equal(5, document.Pages.Count);
         }
 
@@ -132,7 +144,10 @@ namespace PuppeteerSharp.Tests.Page
             var page = await _browser.NewPageAsync();
             var exception = await Assert.ThrowsAsync<ArgumentException>(async () =>
             {
-                await page.PdfAsync(new { format = "something" });
+                await page.PdfAsync(new PdfOptions
+                {
+                    Format = "something"
+                });
             });
 
             Assert.Equal("Unknown paper format", exception.Message);
@@ -144,7 +159,10 @@ namespace PuppeteerSharp.Tests.Page
             var page = await _browser.NewPageAsync();
             var exception = await Assert.ThrowsAsync<ArgumentException>(async () =>
             {
-                await page.PdfAsync(new { width = "10em" });
+                await page.PdfAsync(new PdfOptions
+                {
+                    Width = "10em"
+                });
             });
 
             Assert.Equal("Failed to parse parameter value", exception.Message);
