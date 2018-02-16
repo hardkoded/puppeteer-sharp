@@ -308,7 +308,9 @@ namespace PuppeteerSharp
             return request?.Response;
         }
 
-        public async Task<Stream> PdfAsync(PdfOptions options = default(PdfOptions))
+        public async Task<Stream> PdfAsync() => await PdfAsync(new PdfOptions());
+
+        public async Task<Stream> PdfAsync(PdfOptions options)
         {
             var paperWidth = 8.5m;
             var paperHeight = 11m;
@@ -317,7 +319,7 @@ namespace PuppeteerSharp
             {
                 if (!_paperFormats.ContainsKey(options.Format.ToLower()))
                 {
-                    throw new ArgumentException("Unknown paper format", "options.Format");
+                    throw new ArgumentException("Unknown paper format");
                 }
 
                 var format = _paperFormats[options.Format.ToLower()];

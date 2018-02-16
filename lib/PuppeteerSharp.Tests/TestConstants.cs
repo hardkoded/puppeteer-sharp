@@ -6,7 +6,7 @@ namespace PuppeteerSharp.Tests
     public static class TestConstants
     {
         public const int HttpsPort = 8908;
-        public const string ServerUrl = "https://localhost:8907";
+        public const string ServerUrl = "http://localhost:8907";
         public const string HttpsPrefix = "https://localhost:8908";
         public const int ChromiumRevision = 526987;
 

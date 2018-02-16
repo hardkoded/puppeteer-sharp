@@ -67,7 +67,7 @@ namespace PuppeteerSharp.Tests.Page
 
             Assert.Equal(1, document.Pages.Count);
             Assert.Equal(8.5, TruncateDouble(document.Pages[0].Width.Inch, 1));
-            Assert.Equal(11, TruncateDouble(document.Pages[0].Width.Inch, 0));
+            Assert.Equal(11, TruncateDouble(document.Pages[0].Height.Inch, 0));
         }
 
         [Fact]
@@ -81,8 +81,8 @@ namespace PuppeteerSharp.Tests.Page
             }), PdfDocumentOpenMode.ReadOnly);
 
             Assert.Equal(1, document.Pages.Count);
-            Assert.Equal(8.27, TruncateDouble(document.Pages[0].Width.Inch, 2));
-            Assert.Equal(11.7, TruncateDouble(document.Pages[0].Width.Inch, 1));
+            Assert.Equal(8.2, TruncateDouble(document.Pages[0].Width.Inch, 1));
+            Assert.Equal(842, document.Pages[0].Height.Point);
         }
 
         [Fact]
@@ -98,7 +98,7 @@ namespace PuppeteerSharp.Tests.Page
 
             Assert.Equal(1, document.Pages.Count);
             Assert.Equal(10, TruncateDouble(document.Pages[0].Width.Inch, 0));
-            Assert.Equal(10, TruncateDouble(document.Pages[0].Width.Inch, 0));
+            Assert.Equal(10, TruncateDouble(document.Pages[0].Height.Inch, 0));
         }
 
         [Fact]
@@ -117,7 +117,7 @@ namespace PuppeteerSharp.Tests.Page
 
             Assert.Equal(8, document.Pages.Count);
             Assert.Equal(CssPixelsToInches(width), TruncateDouble(document.Pages[0].Width.Inch, 0));
-            Assert.Equal(CssPixelsToInches(height), TruncateDouble(document.Pages[0].Width.Inch, 0));
+            Assert.Equal(CssPixelsToInches(height), TruncateDouble(document.Pages[0].Height.Inch, 0));
         }
 
         [Fact]
@@ -165,7 +165,7 @@ namespace PuppeteerSharp.Tests.Page
                 });
             });
 
-            Assert.Equal("Failed to parse parameter value", exception.Message);
+            Assert.Contains("Failed to parse parameter value", exception.Message);
         }
 
         private double TruncateDouble(double value, int precision)
