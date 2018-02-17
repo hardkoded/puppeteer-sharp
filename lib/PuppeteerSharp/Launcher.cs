@@ -125,8 +125,9 @@ namespace PuppeteerSharp
                 var browserWSEndpoint = await WaitForEndpoint(_chromeProcess,
                                                               (int)(options.GetValueOrDefault("timeout") ?? 30 * 100),
                                                               options.ContainsKey("dumpio"));
+                var keepAliveInterval = options.ContainsKey("keepAliveInterval") ? Convert.ToInt32(options["keepAliveInterval"]) : 30;
 
-                _connection = await Connection.Create(browserWSEndpoint, connectionDelay);
+                _connection = await Connection.Create(browserWSEndpoint, connectionDelay, keepAliveInterval);
                 return await Browser.CreateAsync(_connection, options, KillChrome);
             }
             catch (Exception ex)

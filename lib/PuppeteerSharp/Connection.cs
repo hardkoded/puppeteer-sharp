@@ -190,9 +190,10 @@ namespace PuppeteerSharp
         #endregion
         #region Static Methods
 
-        public static async Task<Connection> Create(string url, int delay = 0)
+        public static async Task<Connection> Create(string url, int delay = 0, int keepAliveInterval = 60)
         {
             var ws = new ClientWebSocket();
+            ws.Options.KeepAliveInterval = new TimeSpan(0, 0, keepAliveInterval);
             await ws.ConnectAsync(new Uri(url), default(CancellationToken)).ConfigureAwait(false);
             return new Connection(url, delay, ws);
         }
