@@ -5,7 +5,6 @@ using PuppeteerSharp.Input;
 using PuppeteerSharp.Helpers;
 using System.IO;
 using System.Globalization;
-using static PuppeteerSharp.Helpers.DynamicExtensions;
 using Newtonsoft.Json.Linq;
 
 namespace PuppeteerSharp
@@ -182,7 +181,7 @@ namespace PuppeteerSharp
         {
             foreach (var cookie in cookies)
             {
-                if (string.IsNullOrEmpty(cookie.Url) && Url.StartsWith("http"))
+                if (string.IsNullOrEmpty(cookie.Url) && Url.StartsWith("http", StringComparison.Ordinal))
                 {
                     cookie.Url = Url;
                 }
@@ -220,11 +219,6 @@ namespace PuppeteerSharp
         public async Task<ElementHandle> AddStyleTagAsync(dynamic options)
         {
             return await MainFrame.AddStyleTag(options);
-        }
-
-        public async Task ExposeFunctionAsync(string name, Func<object> puppeteerFunction)
-        {
-            throw new NotImplementedException();
         }
 
         public static async Task<Page> CreateAsync(Session client, bool ignoreHTTPSErrors, bool appMode,
@@ -441,7 +435,7 @@ namespace PuppeteerSharp
                     await OnCertificateError(e);
                     break;
                 case "Inspector.targetCrashed":
-                    OnTargetCrashed(e);
+                    OnTargetCrashed();
                     break;
                 case "Performance.metrics":
                     EmitMetrics(e);
@@ -449,7 +443,7 @@ namespace PuppeteerSharp
             }
         }
 
-        private void OnTargetCrashed(MessageEventArgs e)
+        private void OnTargetCrashed()
         {
             if (Error == null)
             {
