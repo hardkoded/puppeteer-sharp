@@ -15,7 +15,8 @@ namespace PuppeteerSharp.Tests
             { "slowMo", Convert.ToInt32(Environment.GetEnvironmentVariable("SLOW_MO") ?? "0") },
             { "headless", Convert.ToBoolean(Environment.GetEnvironmentVariable("HEADLESS") ?? "true") },
             { "args", new[] { "--no-sandbox" }},
-            { "timeout", 0}
+            { "timeout", 0},
+            { "keepAliveInterval", 120}
         };
     }
 }
