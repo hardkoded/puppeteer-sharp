@@ -36,17 +36,13 @@ namespace PuppeteerSharp
             "--use-mock-keychain"
         };
 
-        private static bool _chromeClosed;
-        private static Process _chromeProcess;
-        private static string _temporaryUserDataDir = null;
-        private static Connection _connection = null;
-        private static Timer _timer = null;
+        private bool _chromeClosed;
+        private Process _chromeProcess;
+        private string _temporaryUserDataDir = null;
+        private Connection _connection = null;
+        private Timer _timer = null;
 
-        public Launcher()
-        {
-        }
-
-        internal static async Task<Browser> LaunchAsync(Dictionary<string, object> options, int chromiumRevision)
+        internal async Task<Browser> LaunchAsync(Dictionary<string, object> options, int chromiumRevision)
         {
             var chromeArguments = new List<string>(_defaultArgs);
 
@@ -141,7 +137,7 @@ namespace PuppeteerSharp
 
         }
 
-        private static Task<string> WaitForEndpoint(Process chromeProcess, int timeout, bool dumpio)
+        private Task<string> WaitForEndpoint(Process chromeProcess, int timeout, bool dumpio)
         {
             var taskWrapper = new TaskCompletionSource<string>();
             var output = string.Empty;
@@ -199,14 +195,14 @@ namespace PuppeteerSharp
             return taskWrapper.Task;
         }
 
-        private static void CleanUp()
+        private void CleanUp()
         {
             _timer?.Dispose();
             _timer = null;
             _chromeProcess?.RemoveExitedEvent();
         }
 
-        private static async Task KillChrome()
+        private async Task KillChrome()
         {
             if (!string.IsNullOrEmpty(_temporaryUserDataDir))
             {
@@ -218,7 +214,7 @@ namespace PuppeteerSharp
             }
         }
 
-        private static async Task ForceKillChrome()
+        private async Task ForceKillChrome()
         {
             if (_chromeProcess.Id != 0 && Process.GetProcessById(_chromeProcess.Id) != null)
             {
