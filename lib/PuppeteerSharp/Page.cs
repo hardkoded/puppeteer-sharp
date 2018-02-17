@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Threading.Tasks;
 using PuppeteerSharp.Input;
 using PuppeteerSharp.Helpers;
+using System.IO;
+using System.Globalization;
+using Newtonsoft.Json.Linq;
 
 namespace PuppeteerSharp
 {
@@ -19,6 +21,27 @@ namespace PuppeteerSharp
         private Mouse _mouse;
         private Dictionary<string, Func<object>> _pageBindings;
         private const int DefaultNavigationTimeout = 30000;
+
+        private static Dictionary<string, PaperFormat> _paperFormats = new Dictionary<string, PaperFormat> {
+            {"letter", new PaperFormat {Width = 8.5m, Height = 11}},
+            {"legal", new PaperFormat {Width = 8.5m, Height = 14}},
+            {"tabloid", new PaperFormat {Width = 11, Height = 17}},
+            {"ledger", new PaperFormat {Width = 17, Height = 11}},
+            {"a0", new PaperFormat {Width = 33.1m, Height = 46.8m }},
+            {"a1", new PaperFormat {Width = 23.4m, Height = 33.1m }},
+            {"a2", new PaperFormat {Width = 16.5m, Height = 23.4m }},
+            {"a3", new PaperFormat {Width = 11.7m, Height = 16.5m }},
+            {"a4", new PaperFormat {Width = 8.27m, Height = 11.7m }},
+            {"a5", new PaperFormat {Width = 5.83m, Height = 8.27m }},
+            {"a6", new PaperFormat {Width = 4.13m, Height = 5.83m }},
+        };
+
+        private static Dictionary<string, decimal> _unitToPixels = new Dictionary<string, decimal> {
+            {"px", 1},
+            {"in", 96},
+            {"cm", 37.8m},
+            {"mm", 3.78m}
+        };
 
         private Page(Session client, FrameTree frameTree, bool ignoreHTTPSErrors, TaskQueue screenshotTaskQueue)
         {
@@ -158,7 +181,7 @@ namespace PuppeteerSharp
         {
             foreach (var cookie in cookies)
             {
-                if (string.IsNullOrEmpty(cookie.Url) && Url.StartsWith("http"))
+                if (string.IsNullOrEmpty(cookie.Url) && Url.StartsWith("http", StringComparison.Ordinal))
                 {
                     cookie.Url = Url;
                 }
@@ -196,11 +219,6 @@ namespace PuppeteerSharp
         public async Task<ElementHandle> AddStyleTagAsync(dynamic options)
         {
             return await MainFrame.AddStyleTag(options);
-        }
-
-        public async Task ExposeFunctionAsync(string name, Func<object> puppeteerFunction)
-        {
-            //TODO: We won't implement this yet
         }
 
         public static async Task<Page> CreateAsync(Session client, bool ignoreHTTPSErrors, bool appMode,
@@ -284,9 +302,118 @@ namespace PuppeteerSharp
             return request?.Response;
         }
 
+        public async Task<Stream> PdfAsync() => await PdfAsync(new PdfOptions());
+
+        public async Task<Stream> PdfAsync(PdfOptions options)
+        {
+            var paperWidth = 8.5m;
+            var paperHeight = 11m;
+
+            if (!string.IsNullOrEmpty(options.Format))
+            {
+                if (!_paperFormats.ContainsKey(options.Format.ToLower()))
+                {
+                    throw new ArgumentException("Unknown paper format");
+                }
+
+                var format = _paperFormats[options.Format.ToLower()];
+                paperWidth = format.Width;
+                paperHeight = format.Height;
+            }
+            else
+            {
+                if (options.Width != null)
+                {
+                    paperWidth = ConvertPrintParameterToInches(options.Width);
+                }
+                if (options.Height != null)
+                {
+                    paperHeight = ConvertPrintParameterToInches(options.Height);
+                }
+            }
+
+            var marginTop = ConvertPrintParameterToInches(options.MarginOptions.Top);
+            var marginLeft = ConvertPrintParameterToInches(options.MarginOptions.Left);
+            var marginBottom = ConvertPrintParameterToInches(options.MarginOptions.Bottom);
+            var marginRight = ConvertPrintParameterToInches(options.MarginOptions.Right);
+
+            JObject result = await _client.SendAsync("Page.printToPDF", new
+            {
+                landscape = options.Landscape,
+                displayHeaderFooter = options.DisplayHeaderFooter,
+                headerTemplate = options.HeaderTemplate,
+                footerTemplate = options.FooterTemplate,
+                printBackground = options.PrintBackground,
+                scale = options.Scale,
+                paperWidth,
+                paperHeight,
+                marginTop,
+                marginBottom,
+                marginLeft,
+                marginRight,
+                pageRanges = options.PageRanges
+            });
+
+            var buffer = Convert.FromBase64String(result.GetValue("data").Value<string>());
+
+            if (!string.IsNullOrEmpty(options.Path))
+            {
+                using (var fs = new FileStream(options.Path, FileMode.Create, FileAccess.Write))
+                {
+                    fs.Write(buffer, 0, buffer.Length);
+                }
+            }
+
+            return new MemoryStream(buffer);
+        }
+
         #endregion
 
         #region Private Method
+
+        private decimal ConvertPrintParameterToInches(object parameter)
+        {
+            if (parameter == null)
+            {
+                return 0;
+            }
+
+            var pixels = 0m;
+
+            if (parameter is decimal || parameter is int)
+            {
+                pixels = Convert.ToDecimal(parameter);
+            }
+            else
+            {
+                var text = parameter.ToString();
+                var unit = text.Substring(text.Length - 2).ToLower();
+                var valueText = "";
+
+                if (_unitToPixels.ContainsKey(unit))
+                {
+                    valueText = text.Substring(0, text.Length - 2);
+                }
+                else
+                {
+                    // In case of unknown unit try to parse the whole parameter as number of pixels.
+                    // This is consistent with phantom's paperSize behavior.
+                    unit = "px";
+                    valueText = text;
+                }
+
+                if (Decimal.TryParse(valueText, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out var number))
+                {
+                    pixels = number * _unitToPixels[unit];
+                }
+                else
+                {
+                    throw new ArgumentException($"Failed to parse parameter value: '{text}'", nameof(parameter));
+                }
+            }
+
+            return pixels / 96;
+        }
 
         private async void client_MessageReceived(object sender, MessageEventArgs e)
         {
@@ -308,7 +435,7 @@ namespace PuppeteerSharp
                     await OnCertificateError(e);
                     break;
                 case "Inspector.targetCrashed":
-                    OnTargetCrashed(e);
+                    OnTargetCrashed();
                     break;
                 case "Performance.metrics":
                     EmitMetrics(e);
@@ -316,7 +443,7 @@ namespace PuppeteerSharp
             }
         }
 
-        private void OnTargetCrashed(MessageEventArgs e)
+        private void OnTargetCrashed()
         {
             if (Error == null)
             {
