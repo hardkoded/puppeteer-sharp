@@ -11,6 +11,7 @@
     <PackageReference Include="xunit" Version="2.2.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
     <PackageReference Include="PdfSharp" Version="1.32.3057" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0002" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Puppeteer\" />

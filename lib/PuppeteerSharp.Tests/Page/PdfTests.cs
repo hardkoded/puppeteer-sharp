@@ -7,35 +7,13 @@ using PdfSharp.Pdf.IO;
 
 namespace PuppeteerSharp.Tests.Page
 {
-    public class PdfTests : IDisposable
+    public class PdfTests : PuppeteerBaseTest
     {
-        private string _baseDirectory;
-        Browser _browser;
-
-        public PdfTests()
-        {
-            _baseDirectory = Path.Combine(Directory.GetCurrentDirectory(), "test-pdf");
-            var dirInfo = new DirectoryInfo(_baseDirectory);
-
-            if (dirInfo.Exists)
-            {
-                dirInfo.Delete(true);
-            }
-
-            dirInfo.Create();
-            _browser = PuppeteerSharp.Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions,
-                                                            TestConstants.ChromiumRevision).GetAwaiter().GetResult();
-        }
-
-        public void Dispose()
-        {
-            _browser.CloseAsync().GetAwaiter().GetResult();
-        }
 
         [Fact]
         public async Task ShouldBeAbleToSaveFile()
         {
-            var outputFile = Path.Combine(_baseDirectory, "output.pdf");
+            var outputFile = Path.Combine(BaseDirectory, "output.pdf");
             var fileInfo = new FileInfo(outputFile);
 
             if (fileInfo.Exists)
@@ -43,7 +21,7 @@ namespace PuppeteerSharp.Tests.Page
                 fileInfo.Delete();
             }
 
-            var page = await _browser.NewPageAsync();
+            var page = await Browser.NewPageAsync();
             await page.PdfAsync(new PdfOptions
             {
                 Path = outputFile
@@ -61,7 +39,7 @@ namespace PuppeteerSharp.Tests.Page
         [Fact]
         public async Task ShouldDefaultToPrintInLetterFormat()
         {
-            var page = await _browser.NewPageAsync();
+            var page = await Browser.NewPageAsync();
 
             var document = PdfReader.Open(await page.PdfAsync(), PdfDocumentOpenMode.ReadOnly);
 
@@ -73,7 +51,7 @@ namespace PuppeteerSharp.Tests.Page
         [Fact]
         public async Task ShouldSupportSettingCustomFormat()
         {
-            var page = await _browser.NewPageAsync();
+            var page = await Browser.NewPageAsync();
 
             var document = PdfReader.Open(await page.PdfAsync(new PdfOptions
             {
@@ -88,7 +66,7 @@ namespace PuppeteerSharp.Tests.Page
         [Fact]
         public async Task ShouldSupportSettingPaperWidthAndHeight()
         {
-            var page = await _browser.NewPageAsync();
+            var page = await Browser.NewPageAsync();
 
             var document = PdfReader.Open(await page.PdfAsync(new PdfOptions
             {
@@ -104,7 +82,7 @@ namespace PuppeteerSharp.Tests.Page
         [Fact]
         public async Task ShouldPrintMultiplePages()
         {
-            var page = await _browser.NewPageAsync();
+            var page = await Browser.NewPageAsync();
             await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             // Define width and height in CSS pixels.
             var width = 50 * 5 + 1;
@@ -123,7 +101,7 @@ namespace PuppeteerSharp.Tests.Page
         [Fact]
         public async Task ShouldSupportPageRanges()
         {
-            var page = await _browser.NewPageAsync();
+            var page = await Browser.NewPageAsync();
             await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             // Define width and height in CSS pixels.
             var width = 50 * 5 + 1;
@@ -141,7 +119,7 @@ namespace PuppeteerSharp.Tests.Page
         [Fact]
         public async Task ShowThrowFormatIsUnknown()
         {
-            var page = await _browser.NewPageAsync();
+            var page = await Browser.NewPageAsync();
             var exception = await Assert.ThrowsAsync<ArgumentException>(async () =>
             {
                 await page.PdfAsync(new PdfOptions
@@ -156,7 +134,7 @@ namespace PuppeteerSharp.Tests.Page
         [Fact]
         public async Task ShouldThrowIfUnitsAreUnknown()
         {
-            var page = await _browser.NewPageAsync();
+            var page = await Browser.NewPageAsync();
             var exception = await Assert.ThrowsAsync<ArgumentException>(async () =>
             {
                 await page.PdfAsync(new PdfOptions

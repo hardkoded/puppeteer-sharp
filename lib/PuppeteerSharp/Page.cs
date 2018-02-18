@@ -367,6 +367,35 @@ namespace PuppeteerSharp
             return new MemoryStream(buffer);
         }
 
+        public async Task SetViewport(ViewPortOptions viewport)
+        {
+            var needsReload = await _emulationManager.EmulateViewport(_client, viewport);
+            _viewport = viewport;
+            if (needsReload)
+            {
+                await Reload();
+            }
+        }
+
+        public async Task ScreenshotAsync(string file) => await ScreenshotAsync(file new ScreenshotOptions());
+
+        public async Task ScreenshotAsync(string file, ScreenshotOptions options)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<Stream> ScreenshotStreamAsync() => await ScreenshotStreamAsync(new ScreenshotOptions());
+
+        public async Task<Stream> ScreenshotStreamAsync(ScreenshotOptions options)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task CloseAsync()
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #region Private Method
@@ -485,16 +514,6 @@ namespace PuppeteerSharp
         private void OnConsoleAPI(MessageEventArgs e)
         {
             throw new NotImplementedException();
-        }
-
-        private async Task SetViewport(ViewPortOptions viewport)
-        {
-            var needsReload = await _emulationManager.EmulateViewport(_client, viewport);
-            _viewport = viewport;
-            if (needsReload)
-            {
-                await Reload();
-            }
         }
 
         private Task Reload()

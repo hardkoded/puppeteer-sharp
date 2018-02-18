@@ -9,6 +9,7 @@ namespace PuppeteerSharp.Tests
         public const string ServerUrl = "http://localhost:8907";
         public const string HttpsPrefix = "https://localhost:8908";
         public const int ChromiumRevision = 526987;
+        public static readonly string EmptyPage = $"{ServerUrl}/empty.html";
 
         public static readonly Dictionary<string, object> DefaultBrowserOptions = new Dictionary<string, object>()
         {
@@ -18,5 +19,7 @@ namespace PuppeteerSharp.Tests
             { "timeout", 0},
             { "keepAliveInterval", 120}
         };
+
+
     }
 }
