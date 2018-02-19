@@ -390,7 +390,42 @@ namespace PuppeteerSharp
 
         public async Task<Stream> ScreenshotStreamAsync(ScreenshotOptions options)
         {
-            throw new NotImplementedException();
+            string screenshotType = null;
+
+            if (!string.IsNullOrEmpty(options.Type))
+            {
+                if (options.Type != "png" || options.Type != "jpeg")
+                {
+                    throw new ArgumentException($"Unknown options.type {options.Type}");
+                }
+                screenshotType = options.Type;
+            }
+
+            if (string.IsNullOrEmpty(screenshotType))
+            {
+                screenshotType = "png";
+            }
+
+            if (options.Quality.HasValue)
+            {
+                if (screenshotType == "jpeg")
+                {
+                    throw new ArgumentException($"options.Quality is unsupported for the {screenshotType} screenshots");
+                }
+
+                if (options.Quality < 0 || options.Quality > 100)
+                {
+                    throw new ArgumentException($"Expected options.quality to be between 0 and 100 (inclusive), got {options.quality}");
+                }
+            }
+
+            if (options.Clip != null && options.FullPage)
+            {
+                throw new ArgumentException("options.clip and options.fullPage are exclusive");
+            }
+
+            //return this._screenshotTaskQueue.postTask(this._screenshotTask.bind(this, screenshotType, options));
+            return null;
         }
 
         public async Task CloseAsync()
