@@ -14,16 +14,31 @@ namespace PuppeteerSharp.Tests.Page
         [Fact]
         public async Task ShouldWorkWithFile()
         {
+            var outputFile = Path.Combine(BaseDirectory, "output.png");
+            var fileInfo = new FileInfo(outputFile);
             var page = await Browser.NewPageAsync();
+
             await page.SetViewport(new ViewPortOptions
             {
                 Width = 500,
                 Height = 500
             });
             await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
-            var outputFile = Path.Combine(BaseDirectory, "output.png");
-            var screenshot = await page.ScreenshotAsync(outputFile);
-            Assert.True(PixelMatch("screenshot-sanity.png", outputFile));
+
+            if (fileInfo.Exists)
+            {
+                fileInfo.Delete();
+            }
+
+            await page.ScreenshotAsync(outputFile);
+
+            fileInfo = new FileInfo(outputFile);
+            Assert.True(new FileInfo(outputFile).Length > 0);
+
+            if (fileInfo.Exists)
+            {
+                fileInfo.Delete();
+            }
         }
 
         [Fact]
@@ -52,9 +67,13 @@ namespace PuppeteerSharp.Tests.Page
             await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             var screenshot = await page.ScreenshotStreamAsync(new ScreenshotOptions
             {
-                Clip = (50, 100),
-                Width = 150,
-                Height = 100
+                Clip = new Clip
+                {
+                    X = 50,
+                    Y = 100,
+                    Width = 150,
+                    Height = 100
+                }
             });
             Assert.True(PixelMatch("screenshot-clip-rect.png", screenshot));
         }
@@ -71,9 +90,13 @@ namespace PuppeteerSharp.Tests.Page
             await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             var screenshot = await page.ScreenshotStreamAsync(new ScreenshotOptions
             {
-                Clip = (50, 600),
-                Width = 100,
-                Height = 100
+                Clip = new Clip
+                {
+                    X = 50,
+                    Y = 600,
+                    Width = 100,
+                    Height = 100
+                }
             });
             Assert.True(PixelMatch("screenshot-offscreen-clip.png", screenshot));
         }
@@ -94,9 +117,13 @@ namespace PuppeteerSharp.Tests.Page
             {
                 tasks.Add(page.ScreenshotStreamAsync(new ScreenshotOptions
                 {
-                    Clip = (50 * i, 0),
-                    Width = 50,
-                    Height = 50
+                    Clip = new Clip
+                    {
+                        X = 50 * i,
+                        Y = 0,
+                        Width = 50,
+                        Height = 50
+                    }
                 }));
             }
 
@@ -145,9 +172,13 @@ namespace PuppeteerSharp.Tests.Page
             {
                 screenshotTasks.Add(pageTasks[i].Result.ScreenshotStreamAsync(new ScreenshotOptions
                 {
-                    Clip = (50 * i, 0),
-                    Width = 50,
-                    Height = 50
+                    Clip = new Clip
+                    {
+                        X = 50 * i,
+                        Y = 0,
+                        Width = 50,
+                        Height = 50
+                    }
                 }));
             }
 
@@ -192,9 +223,13 @@ namespace PuppeteerSharp.Tests.Page
             var page = await Browser.NewPageAsync();
             var screenshot = await page.ScreenshotStreamAsync(new ScreenshotOptions
             {
-                Clip = (0, 0),
-                Width = 11,
-                Height = 11
+                Clip = new Clip
+                {
+                    X = 0,
+                    Y = 0,
+                    Width = 11,
+                    Height = 11
+                }
             });
 
             Assert.True(PixelMatch("screenshot-clip-odd-size.png", screenshot));
