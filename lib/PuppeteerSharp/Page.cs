@@ -42,11 +42,12 @@ namespace PuppeteerSharp
             {"cm", 37.8m},
             {"mm", 3.78m}
         };
+        private Target _target;
 
-        private Page(Session client, FrameTree frameTree, bool ignoreHTTPSErrors, TaskQueue screenshotTaskQueue)
+        private Page(Session client, Target target, FrameTree frameTree, bool ignoreHTTPSErrors, TaskQueue screenshotTaskQueue)
         {
             _client = client;
-
+            _target = target;
             Keyboard = new Keyboard(client);
             _mouse = new Mouse(client, Keyboard);
             Touchscreen = new Touchscreen(client, Keyboard);
@@ -221,12 +222,12 @@ namespace PuppeteerSharp
             return await MainFrame.AddStyleTag(options);
         }
 
-        public static async Task<Page> CreateAsync(Session client, bool ignoreHTTPSErrors, bool appMode,
+        public static async Task<Page> CreateAsync(Session client, Target target, bool ignoreHTTPSErrors, bool appMode,
                                                    TaskQueue screenshotTaskQueue)
         {
             await client.SendAsync("Page.enable", null);
             dynamic result = await client.SendAsync("Page.getFrameTree");
-            var page = new Page(client, new FrameTree(result.frameTree), ignoreHTTPSErrors, screenshotTaskQueue);
+            var page = new Page(client, target, new FrameTree(result.frameTree), ignoreHTTPSErrors, screenshotTaskQueue);
 
             await Task.WhenAll(
                 client.SendAsync("Page.setLifecycleEventsEnabled", new Dictionary<string, object>
@@ -377,11 +378,12 @@ namespace PuppeteerSharp
             }
         }
 
-        public async Task ScreenshotAsync(string file) => await ScreenshotAsync(file new ScreenshotOptions());
+        public async Task ScreenshotAsync(string file) => await ScreenshotAsync(file, new ScreenshotOptions());
 
         public async Task ScreenshotAsync(string file, ScreenshotOptions options)
         {
-            throw new NotImplementedException();
+            var fileInfo = new FileInfo(file);
+            options.Type = fileInfo.Extension.Replace(".", string.Empty);
         }
 
         public async Task<Stream> ScreenshotStreamAsync() => await ScreenshotStreamAsync(new ScreenshotOptions());
@@ -393,7 +395,10 @@ namespace PuppeteerSharp
 
         public async Task CloseAsync()
         {
-            throw new NotImplementedException();
+            await _client?.Connection?.SendAsync("Target.closeTarget", new
+            {
+                targetId = _target.TargetId
+            });
         }
 
         #endregion
