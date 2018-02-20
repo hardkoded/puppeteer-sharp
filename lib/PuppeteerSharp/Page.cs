@@ -428,6 +428,7 @@ namespace PuppeteerSharp
             return null;
         }
 
+
         public async Task CloseAsync()
         {
             await _client?.Connection?.SendAsync("Target.closeTarget", new
@@ -439,6 +440,96 @@ namespace PuppeteerSharp
         #endregion
 
         #region Private Method
+
+        private async Task<Stream> PerformScreenshot(string format, ScreenshotOptions options)
+        {
+            await _client.SendAsync("Target.activateTarget", new
+            {
+                targetId = _target.TargetId
+            });
+
+            var clip = options.Clip != null ? options.Clip.Clone() : null;
+            if (clip != null)
+            {
+                clip.Scale = 1;
+            }
+
+            if (options != null && options.FullPage)
+            {
+                var metrics = await _client.SendAsync("Page.getLayoutMetrics");
+                var width = Math.Ceiling(metrics.contentSize.width.Value);
+                var height = Math.Ceiling(metrics.contentSize.height.Value);
+
+                // Overwrite clip for full page at all times.
+                clip = new Clip
+                {
+                    X = 0,
+                    Y = 0,
+                    Width = width,
+                    Height = height,
+                    Scale = 1
+                };
+
+                var mobile = _viewport.IsMobile;
+                var deviceScaleFactor = _viewport.DeviceScaleFactor;
+                var landscape = _viewport.IsLandscape;
+                var screenOrientation = landscape ?
+                    new ScreenOrientation
+                    {
+                        Angle = 90,
+                        Type = ScreenOrientationType.LandscapePrimary
+                    } :
+                    new ScreenOrientation
+                    {
+                        Angle = 0,
+                        Type = ScreenOrientationType.PortraitPrimary
+                    };
+
+                await _client.SendAsync("Emulation.setDeviceMetricsOverride", new
+                {
+                    mobile,
+                    width,
+                    height,
+                    deviceScaleFactor,
+                    screenOrientation
+                });
+            }
+
+            if (options != null && options.OmitBackground)
+            {
+                await _client.SendAsync("Emulation.setDefaultBackgroundColorOverride", new
+                {
+                    color = new
+                    {
+                        r = 0,
+                        g = 0,
+                        b = 0,
+                        a = 0
+                    }
+                });
+            }
+
+            var result = await _client.SendAsync("Page.captureScreenshot", new
+            {
+                format,
+                quality = options.Quality,
+                clip
+            });
+
+            if (options != null && options.OmitBackground)
+            {
+                await _client.SendAsync("Emulation.setDefaultBackgroundColorOverride");
+            }
+
+            if (options != null && options.FullPage)
+            {
+                await SetViewport(_viewport);
+            }
+
+            var buffer = Convert.FromBase64String(result.GetValue("data").Value<string>());
+
+            return new MemoryStream(buffer);
+        }
 
         private decimal ConvertPrintParameterToInches(object parameter)
         {
