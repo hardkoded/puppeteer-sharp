@@ -382,8 +382,11 @@ namespace PuppeteerSharp
 
         public async Task ScreenshotAsync(string file, ScreenshotOptions options)
         {
+            /*
             var fileInfo = new FileInfo(file);
             options.Type = fileInfo.Extension.Replace(".", string.Empty);
+            */
+            throw new NotImplementedException();
         }
 
         public async Task<Stream> ScreenshotStreamAsync() => await ScreenshotStreamAsync(new ScreenshotOptions());
@@ -415,7 +418,7 @@ namespace PuppeteerSharp
 
                 if (options.Quality < 0 || options.Quality > 100)
                 {
-                    throw new ArgumentException($"Expected options.quality to be between 0 and 100 (inclusive), got {options.quality}");
+                    throw new ArgumentException($"Expected options.quality to be between 0 and 100 (inclusive), got {options.Quality}");
                 }
             }
 
@@ -424,8 +427,7 @@ namespace PuppeteerSharp
                 throw new ArgumentException("options.clip and options.fullPage are exclusive");
             }
 
-            //return this._screenshotTaskQueue.postTask(this._screenshotTask.bind(this, screenshotType, options));
-            return null;
+            return await _screenshotTaskQueue.Enqueue<Stream>(() => PerformScreenshot(screenshotType, options));
         }
 
 
@@ -509,12 +511,18 @@ namespace PuppeteerSharp
                 });
             }
 
-            var result = await _client.SendAsync("Page.captureScreenshot", new
+            dynamic screenMessage = new { format };
+
+            if (options.Quality.HasValue)
             {
-                format,
-                quality = options.Quality,
-                clip
-            });
+                screenMessage.quality = options.Quality.Value;
+            }
+
+            if (options.Clip != null)
+            {
+                screenMessage.clip = options.Clip;
+            }
+            JObject result = await _client.SendAsync("Page.captureScreenshot", screenMessage);
 
             if (options != null && options.OmitBackground)
             {

@@ -237,7 +237,7 @@ namespace PuppeteerSharp.Tests.Page
 
         private bool PixelMatch(string screenShotFile, Stream screenshot)
         {
-            var baseImage = Image.Load(Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", screenShotFile));
+            var baseImage = Image.Load(Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "Screenshots", screenShotFile));
             var compareImage = Image.Load(screenshot);
 
             if (baseImage.Width != compareImage.Width || baseImage.Height != compareImage.Height)
