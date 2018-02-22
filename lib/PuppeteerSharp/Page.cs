@@ -6,6 +6,7 @@ using PuppeteerSharp.Helpers;
 using System.IO;
 using System.Globalization;
 using Newtonsoft.Json.Linq;
+using System.Dynamic;
 
 namespace PuppeteerSharp
 {
@@ -458,7 +459,7 @@ namespace PuppeteerSharp
 
             if (options != null && options.FullPage)
             {
-                var metrics = await _client.SendAsync("Page.getLayoutMetrics");
+                dynamic metrics = await _client.SendAsync("Page.getLayoutMetrics");
                 var width = Math.Ceiling(metrics.contentSize.width.Value);
                 var height = Math.Ceiling(metrics.contentSize.height.Value);
 
@@ -511,7 +512,9 @@ namespace PuppeteerSharp
                 });
             }
 
-            dynamic screenMessage = new { format };
+            dynamic screenMessage = new ExpandoObject();
+
+            screenMessage.format = format;
 
             if (options.Quality.HasValue)
             {

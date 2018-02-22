@@ -237,6 +237,9 @@ namespace PuppeteerSharp.Tests.Page
 
         private bool PixelMatch(string screenShotFile, Stream screenshot)
         {
+            const int pixelThreshold = 10;
+            const decimal totalTolerance = 0.05m;
+
             var baseImage = Image.Load(Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "Screenshots", screenShotFile));
             var compareImage = Image.Load(screenshot);
 
@@ -247,7 +250,7 @@ namespace PuppeteerSharp.Tests.Page
 
             var rgb1 = default(Rgb24);
             var rgb2 = default(Rgb24);
-
+            var invalidPixelsCount = 0;
 
             for (int y = 0; y < baseImage.Height; y++)
             {
@@ -259,16 +262,16 @@ namespace PuppeteerSharp.Tests.Page
                     pixelA.ToRgb24(ref rgb1);
                     pixelB.ToRgb24(ref rgb2);
 
-                    if (rgb1.R != rgb2.R ||
-                        rgb1.G != rgb2.G ||
-                        rgb1.B != rgb2.B)
+                    if (Math.Abs(rgb1.R - rgb2.R) > pixelThreshold ||
+                        Math.Abs(rgb1.G - rgb2.G) > pixelThreshold ||
+                        Math.Abs(rgb1.B - rgb2.B) > pixelThreshold)
                     {
-                        return false;
+                        invalidPixelsCount++;
                     }
                 }
             }
 
-            return true;
+            return (invalidPixelsCount / (baseImage.Height * baseImage.Width)) < totalTolerance;
         }
     }
 }
