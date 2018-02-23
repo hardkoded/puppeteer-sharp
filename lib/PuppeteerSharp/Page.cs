@@ -383,11 +383,18 @@ namespace PuppeteerSharp
 
         public async Task ScreenshotAsync(string file, ScreenshotOptions options)
         {
-            /*
+
             var fileInfo = new FileInfo(file);
             options.Type = fileInfo.Extension.Replace(".", string.Empty);
-            */
-            throw new NotImplementedException();
+
+            var stream = await ScreenshotStreamAsync(options);
+
+            using (var fs = new FileStream(file, FileMode.Create, FileAccess.Write))
+            {
+                byte[] bytesInStream = new byte[stream.Length];
+                stream.Read(bytesInStream, 0, bytesInStream.Length);
+                fs.Write(bytesInStream, 0, bytesInStream.Length);
+            }
         }
 
         public async Task<Stream> ScreenshotStreamAsync() => await ScreenshotStreamAsync(new ScreenshotOptions());
@@ -398,7 +405,7 @@ namespace PuppeteerSharp
 
             if (!string.IsNullOrEmpty(options.Type))
             {
-                if (options.Type != "png" || options.Type != "jpeg")
+                if (options.Type != "png" && options.Type != "jpeg")
                 {
                     throw new ArgumentException($"Unknown options.type {options.Type}");
                 }
@@ -460,8 +467,8 @@ namespace PuppeteerSharp
             if (options != null && options.FullPage)
             {
                 dynamic metrics = await _client.SendAsync("Page.getLayoutMetrics");
-                var width = Math.Ceiling(metrics.contentSize.width.Value);
-                var height = Math.Ceiling(metrics.contentSize.height.Value);
+                var width = Convert.ToInt32(Math.Ceiling(Convert.ToDecimal(metrics.contentSize.width.Value)));
+                var height = Convert.ToInt32(Math.Ceiling(Convert.ToDecimal(metrics.contentSize.height.Value)));
 
                 // Overwrite clip for full page at all times.
                 clip = new Clip
@@ -521,10 +528,11 @@ namespace PuppeteerSharp
                 screenMessage.quality = options.Quality.Value;
             }
 
-            if (options.Clip != null)
+            if (clip != null)
             {
-                screenMessage.clip = options.Clip;
+                screenMessage.clip = clip;
             }
+
             JObject result = await _client.SendAsync("Page.captureScreenshot", screenMessage);
 
             if (options != null && options.OmitBackground)

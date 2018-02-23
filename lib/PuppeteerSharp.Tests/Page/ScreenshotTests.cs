@@ -34,6 +34,7 @@ namespace PuppeteerSharp.Tests.Page
 
             fileInfo = new FileInfo(outputFile);
             Assert.True(new FileInfo(outputFile).Length > 0);
+            Assert.True(PixelMatch("screenshot-sanity.png", outputFile));
 
             if (fileInfo.Exists)
             {
@@ -235,6 +236,14 @@ namespace PuppeteerSharp.Tests.Page
             Assert.True(PixelMatch("screenshot-clip-odd-size.png", screenshot));
         }
 
+        private bool PixelMatch(string screenShotFile, string fileName)
+        {
+            using (Stream stream = File.Open(fileName, FileMode.Open))
+            {
+                return PixelMatch(screenShotFile, stream);
+            }
+        }
+
         private bool PixelMatch(string screenShotFile, Stream screenshot)
         {
             const int pixelThreshold = 10;
@@ -242,6 +251,9 @@ namespace PuppeteerSharp.Tests.Page
 
             var baseImage = Image.Load(Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "Screenshots", screenShotFile));
             var compareImage = Image.Load(screenshot);
+
+            //Just  for debugging purpose
+            compareImage.Save(Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "Screenshots", "test.png"));
 
             if (baseImage.Width != compareImage.Width || baseImage.Height != compareImage.Height)
             {

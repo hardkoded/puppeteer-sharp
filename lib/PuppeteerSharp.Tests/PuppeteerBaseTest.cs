@@ -13,14 +13,13 @@ namespace PuppeteerSharp.Tests
             BaseDirectory = Path.Combine(Directory.GetCurrentDirectory(), "workspace");
             var dirInfo = new DirectoryInfo(BaseDirectory);
 
-            if (dirInfo.Exists)
+            if (!dirInfo.Exists)
             {
-                dirInfo.Delete(true);
+                dirInfo.Create();
             }
 
-            dirInfo.Create();
             Browser = PuppeteerSharp.Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions,
-                                                            TestConstants.ChromiumRevision).GetAwaiter().GetResult();
+                                                           TestConstants.ChromiumRevision).GetAwaiter().GetResult();
         }
 
         public void Dispose()
