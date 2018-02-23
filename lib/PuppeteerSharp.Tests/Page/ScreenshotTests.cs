@@ -188,7 +188,6 @@ namespace PuppeteerSharp.Tests.Page
             for (var i = 0; i < n; i++)
             {
                 Assert.True(PixelMatch($"grid-cell-{i}.png", screenshotTasks[i].Result));
-
             }
 
             var closeTasks = new List<Task>();

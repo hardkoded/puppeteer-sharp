@@ -22,10 +22,7 @@ namespace PuppeteerSharp.Tests.Page
             }
 
             var page = await Browser.NewPageAsync();
-            await page.PdfAsync(new PdfOptions
-            {
-                Path = outputFile
-            });
+            await page.PdfAsync(outputFile);
 
             fileInfo = new FileInfo(outputFile);
             Assert.True(new FileInfo(outputFile).Length > 0);
@@ -41,7 +38,7 @@ namespace PuppeteerSharp.Tests.Page
         {
             var page = await Browser.NewPageAsync();
 
-            var document = PdfReader.Open(await page.PdfAsync(), PdfDocumentOpenMode.ReadOnly);
+            var document = PdfReader.Open(await page.PdfStreamAsync(), PdfDocumentOpenMode.ReadOnly);
 
             Assert.Equal(1, document.Pages.Count);
             Assert.Equal(8.5, TruncateDouble(document.Pages[0].Width.Inch, 1));
@@ -53,7 +50,7 @@ namespace PuppeteerSharp.Tests.Page
         {
             var page = await Browser.NewPageAsync();
 
-            var document = PdfReader.Open(await page.PdfAsync(new PdfOptions
+            var document = PdfReader.Open(await page.PdfStreamAsync(new PdfOptions
             {
                 Format = "a4"
             }), PdfDocumentOpenMode.ReadOnly);
@@ -68,7 +65,7 @@ namespace PuppeteerSharp.Tests.Page
         {
             var page = await Browser.NewPageAsync();
 
-            var document = PdfReader.Open(await page.PdfAsync(new PdfOptions
+            var document = PdfReader.Open(await page.PdfStreamAsync(new PdfOptions
             {
                 Width = "10in",
                 Height = "10in"
@@ -87,7 +84,7 @@ namespace PuppeteerSharp.Tests.Page
             // Define width and height in CSS pixels.
             var width = 50 * 5 + 1;
             var height = 50 * 5 + 1;
-            var document = PdfReader.Open(await page.PdfAsync(new PdfOptions
+            var document = PdfReader.Open(await page.PdfStreamAsync(new PdfOptions
             {
                 Width = width,
                 Height = height
@@ -106,7 +103,7 @@ namespace PuppeteerSharp.Tests.Page
             // Define width and height in CSS pixels.
             var width = 50 * 5 + 1;
             var height = 50 * 5 + 1;
-            var document = PdfReader.Open(await page.PdfAsync(new PdfOptions
+            var document = PdfReader.Open(await page.PdfStreamAsync(new PdfOptions
             {
                 Width = width,
                 Height = height,
@@ -122,7 +119,7 @@ namespace PuppeteerSharp.Tests.Page
             var page = await Browser.NewPageAsync();
             var exception = await Assert.ThrowsAsync<ArgumentException>(async () =>
             {
-                await page.PdfAsync(new PdfOptions
+                await page.PdfStreamAsync(new PdfOptions
                 {
                     Format = "something"
                 });
@@ -137,7 +134,7 @@ namespace PuppeteerSharp.Tests.Page
             var page = await Browser.NewPageAsync();
             var exception = await Assert.ThrowsAsync<ArgumentException>(async () =>
             {
-                await page.PdfAsync(new PdfOptions
+                await page.PdfStreamAsync(new PdfOptions
                 {
                     Width = "10em"
                 });

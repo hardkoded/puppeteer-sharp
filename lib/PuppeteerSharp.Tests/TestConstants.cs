@@ -19,7 +19,5 @@ namespace PuppeteerSharp.Tests
             { "timeout", 0},
             { "keepAliveInterval", 120}
         };
-
-
     }
 }
