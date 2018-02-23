@@ -30,6 +30,7 @@ namespace PuppeteerSharp
         public string Type => _targetInfo.Type == "page" || _targetInfo.Type == "service_worker" ? _targetInfo.Type : "other";
         public Task<bool> InitializedTask => InitilizedTaskWrapper.Task;
         public TaskCompletionSource<bool> InitilizedTaskWrapper { get; }
+        public string TargetId => _targetInfo.TargetId;
         #endregion
 
         public async Task<Page> Page()
@@ -37,7 +38,7 @@ namespace PuppeteerSharp
             if (_targetInfo.Type == "page")
             {
                 var client = await _browser.Connection.CreateSession(_targetInfo.TargetId);
-                return await PuppeteerSharp.Page.CreateAsync(client, _browser.IgnoreHTTPSErrors, _browser.AppMode, _browser.ScreenshotTaskQueue);
+                return await PuppeteerSharp.Page.CreateAsync(client, this, _browser.IgnoreHTTPSErrors, _browser.AppMode, _browser.ScreenshotTaskQueue);
             }
 
             return null;

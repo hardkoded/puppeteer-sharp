@@ -20,16 +20,16 @@ namespace PuppeteerSharp
             var width = viewport.Width;
             var height = viewport.Height;
             var deviceScaleFactor = viewport.DeviceScaleFactor;
-            dynamic screenOrientation = viewport.IsLandscape ?
-                new
+            ScreenOrientation screenOrientation = viewport.IsLandscape ?
+                new ScreenOrientation
                 {
-                    angle = 90,
-                    type = ScreenOrientationType.LandscapePrimary
+                    Angle = 90,
+                    Type = ScreenOrientationType.LandscapePrimary
                 } :
-                new
+                new ScreenOrientation
                 {
-                    angle = 0,
-                    type = ScreenOrientationType.PortraitPrimary
+                    Angle = 0,
+                    Type = ScreenOrientationType.PortraitPrimary
                 };
 
             await Task.WhenAll(new Task[]{

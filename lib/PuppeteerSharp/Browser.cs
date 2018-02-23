@@ -13,11 +13,13 @@ namespace PuppeteerSharp
             IgnoreHTTPSErrors = options.ContainsKey("ignoreHTTPSErrors") && (bool)options["ignoreHTTPSErrors"];
             AppMode = options.ContainsKey("appMode") && (bool)options["appMode"];
             _targets = new Dictionary<string, Target>();
+            ScreenshotTaskQueue = new TaskQueue();
 
             Connection.Closed += (object sender, EventArgs e) => Disconnected?.Invoke(this, new EventArgs());
             Connection.MessageReceived += Connect_MessageReceived;
 
             _closeCallBack = closeCallBack;
+
         }
 
         #region Private members

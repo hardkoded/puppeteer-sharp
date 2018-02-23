@@ -1,6 +1,6 @@
 ﻿namespace PuppeteerSharp
 {
-    internal class ViewPortOptions
+    public class ViewPortOptions
     {
         public ViewPortOptions()
         {

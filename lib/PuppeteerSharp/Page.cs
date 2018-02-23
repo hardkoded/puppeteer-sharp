@@ -6,6 +6,7 @@ using PuppeteerSharp.Helpers;
 using System.IO;
 using System.Globalization;
 using Newtonsoft.Json.Linq;
+using System.Dynamic;
 
 namespace PuppeteerSharp
 {
@@ -42,11 +43,12 @@ namespace PuppeteerSharp
             {"cm", 37.8m},
             {"mm", 3.78m}
         };
+        private Target _target;
 
-        private Page(Session client, FrameTree frameTree, bool ignoreHTTPSErrors, TaskQueue screenshotTaskQueue)
+        private Page(Session client, Target target, FrameTree frameTree, bool ignoreHTTPSErrors, TaskQueue screenshotTaskQueue)
         {
             _client = client;
-
+            _target = target;
             Keyboard = new Keyboard(client);
             _mouse = new Mouse(client, Keyboard);
             Touchscreen = new Touchscreen(client, Keyboard);
@@ -221,12 +223,12 @@ namespace PuppeteerSharp
             return await MainFrame.AddStyleTag(options);
         }
 
-        public static async Task<Page> CreateAsync(Session client, bool ignoreHTTPSErrors, bool appMode,
+        public static async Task<Page> CreateAsync(Session client, Target target, bool ignoreHTTPSErrors, bool appMode,
                                                    TaskQueue screenshotTaskQueue)
         {
             await client.SendAsync("Page.enable", null);
             dynamic result = await client.SendAsync("Page.getFrameTree");
-            var page = new Page(client, new FrameTree(result.frameTree), ignoreHTTPSErrors, screenshotTaskQueue);
+            var page = new Page(client, target, new FrameTree(result.frameTree), ignoreHTTPSErrors, screenshotTaskQueue);
 
             await Task.WhenAll(
                 client.SendAsync("Page.setLifecycleEventsEnabled", new Dictionary<string, object>
@@ -367,9 +369,186 @@ namespace PuppeteerSharp
             return new MemoryStream(buffer);
         }
 
+        public async Task SetViewport(ViewPortOptions viewport)
+        {
+            var needsReload = await _emulationManager.EmulateViewport(_client, viewport);
+            _viewport = viewport;
+            if (needsReload)
+            {
+                await Reload();
+            }
+        }
+
+        public async Task ScreenshotAsync(string file) => await ScreenshotAsync(file, new ScreenshotOptions());
+
+        public async Task ScreenshotAsync(string file, ScreenshotOptions options)
+        {
+
+            var fileInfo = new FileInfo(file);
+            options.Type = fileInfo.Extension.Replace(".", string.Empty);
+
+            var stream = await ScreenshotStreamAsync(options);
+
+            using (var fs = new FileStream(file, FileMode.Create, FileAccess.Write))
+            {
+                byte[] bytesInStream = new byte[stream.Length];
+                stream.Read(bytesInStream, 0, bytesInStream.Length);
+                fs.Write(bytesInStream, 0, bytesInStream.Length);
+            }
+        }
+
+        public async Task<Stream> ScreenshotStreamAsync() => await ScreenshotStreamAsync(new ScreenshotOptions());
+
+        public async Task<Stream> ScreenshotStreamAsync(ScreenshotOptions options)
+        {
+            string screenshotType = null;
+
+            if (!string.IsNullOrEmpty(options.Type))
+            {
+                if (options.Type != "png" && options.Type != "jpeg")
+                {
+                    throw new ArgumentException($"Unknown options.type {options.Type}");
+                }
+                screenshotType = options.Type;
+            }
+
+            if (string.IsNullOrEmpty(screenshotType))
+            {
+                screenshotType = "png";
+            }
+
+            if (options.Quality.HasValue)
+            {
+                if (screenshotType == "jpeg")
+                {
+                    throw new ArgumentException($"options.Quality is unsupported for the {screenshotType} screenshots");
+                }
+
+                if (options.Quality < 0 || options.Quality > 100)
+                {
+                    throw new ArgumentException($"Expected options.quality to be between 0 and 100 (inclusive), got {options.Quality}");
+                }
+            }
+
+            if (options.Clip != null && options.FullPage)
+            {
+                throw new ArgumentException("options.clip and options.fullPage are exclusive");
+            }
+
+            return await _screenshotTaskQueue.Enqueue<Stream>(() => PerformScreenshot(screenshotType, options));
+        }
+
+
+        public async Task CloseAsync()
+        {
+            await _client?.Connection?.SendAsync("Target.closeTarget", new
+            {
+                targetId = _target.TargetId
+            });
+        }
+
         #endregion
 
         #region Private Method
+
+        private async Task<Stream> PerformScreenshot(string format, ScreenshotOptions options)
+        {
+            await _client.SendAsync("Target.activateTarget", new
+            {
+                targetId = _target.TargetId
+            });
+
+            var clip = options.Clip != null ? options.Clip.Clone() : null;
+            if (clip != null)
+            {
+                clip.Scale = 1;
+            }
+
+            if (options != null && options.FullPage)
+            {
+                dynamic metrics = await _client.SendAsync("Page.getLayoutMetrics");
+                var width = Convert.ToInt32(Math.Ceiling(Convert.ToDecimal(metrics.contentSize.width.Value)));
+                var height = Convert.ToInt32(Math.Ceiling(Convert.ToDecimal(metrics.contentSize.height.Value)));
+
+                // Overwrite clip for full page at all times.
+                clip = new Clip
+                {
+                    X = 0,
+                    Y = 0,
+                    Width = width,
+                    Height = height,
+                    Scale = 1
+                };
+
+                var mobile = _viewport.IsMobile;
+                var deviceScaleFactor = _viewport.DeviceScaleFactor;
+                var landscape = _viewport.IsLandscape;
+                var screenOrientation = landscape ?
+                    new ScreenOrientation
+                    {
+                        Angle = 90,
+                        Type = ScreenOrientationType.LandscapePrimary
+                    } :
+                    new ScreenOrientation
+                    {
+                        Angle = 0,
+                        Type = ScreenOrientationType.PortraitPrimary
+                    };
+
+                await _client.SendAsync("Emulation.setDeviceMetricsOverride", new
+                {
+                    mobile,
+                    width,
+                    height,
+                    deviceScaleFactor,
+                    screenOrientation
+                });
+            }
+
+            if (options != null && options.OmitBackground)
+            {
+                await _client.SendAsync("Emulation.setDefaultBackgroundColorOverride", new
+                {
+                    color = new
+                    {
+                        r = 0,
+                        g = 0,
+                        b = 0,
+                        a = 0
+                    }
+                });
+            }
+
+            dynamic screenMessage = new ExpandoObject();
+
+            screenMessage.format = format;
+
+            if (options.Quality.HasValue)
+            {
+                screenMessage.quality = options.Quality.Value;
+            }
+
+            if (clip != null)
+            {
+                screenMessage.clip = clip;
+            }
+
+            JObject result = await _client.SendAsync("Page.captureScreenshot", screenMessage);
+
+            if (options != null && options.OmitBackground)
+            {
+                await _client.SendAsync("Emulation.setDefaultBackgroundColorOverride");
+            }
+
+            if (options != null && options.FullPage)
+            {
+                await SetViewport(_viewport);
+            }
+
+            var buffer = Convert.FromBase64String(result.GetValue("data").Value<string>());
+
+            return new MemoryStream(buffer);
+        }
 
         private decimal ConvertPrintParameterToInches(object parameter)
         {
@@ -485,16 +664,6 @@ namespace PuppeteerSharp
         private void OnConsoleAPI(MessageEventArgs e)
         {
             throw new NotImplementedException();
-        }
-
-        private async Task SetViewport(ViewPortOptions viewport)
-        {
-            var needsReload = await _emulationManager.EmulateViewport(_client, viewport);
-            _viewport = viewport;
-            if (needsReload)
-            {
-                await Reload();
-            }
         }
 
         private Task Reload()
