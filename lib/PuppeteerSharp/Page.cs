@@ -304,9 +304,23 @@ namespace PuppeteerSharp
             return request?.Response;
         }
 
-        public async Task<Stream> PdfAsync() => await PdfAsync(new PdfOptions());
+        public async Task PdfAsync(string file) => await PdfAsync(file, new PdfOptions());
 
-        public async Task<Stream> PdfAsync(PdfOptions options)
+        public async Task PdfAsync(string file, PdfOptions options)
+        {
+            var stream = await PdfStreamAsync(options);
+
+            using (var fs = new FileStream(file, FileMode.Create, FileAccess.Write))
+            {
+                byte[] bytesInStream = new byte[stream.Length];
+                stream.Read(bytesInStream, 0, bytesInStream.Length);
+                fs.Write(bytesInStream, 0, bytesInStream.Length);
+            }
+        }
+
+        public async Task<Stream> PdfStreamAsync() => await PdfStreamAsync(new PdfOptions());
+
+        public async Task<Stream> PdfStreamAsync(PdfOptions options)
         {
             var paperWidth = 8.5m;
             var paperHeight = 11m;
@@ -357,15 +371,6 @@ namespace PuppeteerSharp
             });
 
             var buffer = Convert.FromBase64String(result.GetValue("data").Value<string>());
-
-            if (!string.IsNullOrEmpty(options.Path))
-            {
-                using (var fs = new FileStream(options.Path, FileMode.Create, FileAccess.Write))
-                {
-                    fs.Write(buffer, 0, buffer.Length);
-                }
-            }
-
             return new MemoryStream(buffer);
         }
 
@@ -373,9 +378,10 @@ namespace PuppeteerSharp
         {
             var needsReload = await _emulationManager.EmulateViewport(_client, viewport);
             _viewport = viewport;
+
             if (needsReload)
             {
-                await Reload();
+                await ReloadAsync();
             }
         }
 
@@ -383,7 +389,6 @@ namespace PuppeteerSharp
 
         public async Task ScreenshotAsync(string file, ScreenshotOptions options)
         {
-
             var fileInfo = new FileInfo(file);
             options.Type = fileInfo.Extension.Replace(".", string.Empty);
 
@@ -666,7 +671,7 @@ namespace PuppeteerSharp
             throw new NotImplementedException();
         }
 
-        private Task Reload()
+        private async Task ReloadAsync()
         {
             throw new NotImplementedException();
         }

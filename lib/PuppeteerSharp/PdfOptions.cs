@@ -23,6 +23,5 @@
         public object Width { get; set; }
         public object Height { get; set; }
         public MarginOptions MarginOptions { get; set; }
-        public string Path { get; set; }
     }
 }
