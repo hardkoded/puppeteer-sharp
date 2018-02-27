@@ -23,6 +23,7 @@ namespace PuppeteerSharp.Tests.Page
                 Width = 500,
                 Height = 500
             });
+
             await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
 
             if (fileInfo.Exists)

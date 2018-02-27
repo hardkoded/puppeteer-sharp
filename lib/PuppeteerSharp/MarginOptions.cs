@@ -2,9 +2,9 @@
 {
     public class MarginOptions
     {
-        public decimal Top { get; set; }
-        public decimal Left { get; set; }
-        public decimal Bottom { get; set; }
-        public decimal Right { get; set; }
+        public string Top { get; set; }
+        public string Left { get; set; }
+        public string Bottom { get; set; }
+        public string Right { get; set; }
     }
 }
