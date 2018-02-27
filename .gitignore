@@ -287,3 +287,6 @@ __pycache__/
 *.odx.cs
 *.xsd.cs
 Thumbs.db
+
+# ignore local cert
+/lib/PuppeteerSharp.TestServer/testCert.cer
