@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Xunit;
-using PuppeteerSharp;
-using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Tests.Puppeteer
 {
@@ -18,8 +13,8 @@ namespace PuppeteerSharp.Tests.Puppeteer
         [Fact]
         public async Task ShouldSupportIgnoreHTTPSErrorsOption()
         {
-            var options = TestConstants.DefaultBrowserOptions.Clone();
-            options.Add("ignoreHTTPSErrors", true);
+            var options = TestConstants.DefaultBrowserOptions();
+            options.IgnoreHTTPSErrors = true;
 
             var browser = await PuppeteerSharp.Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision);
             var page = await browser.NewPageAsync();

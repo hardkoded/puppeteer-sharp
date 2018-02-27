@@ -18,7 +18,7 @@ namespace PuppeteerSharp.Tests
                 dirInfo.Create();
             }
 
-            Browser = PuppeteerSharp.Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions,
+            Browser = PuppeteerSharp.Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(),
                                                            TestConstants.ChromiumRevision).GetAwaiter().GetResult();
         }
 

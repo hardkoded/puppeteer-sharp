@@ -34,5 +34,7 @@ namespace PuppeteerSharp
         public IDictionary<string, string> Env { get; } = new Dictionary<string, string>();
 
         public bool Devtools { get; set; }
+
+        public int KeepAliveInterval { get; set; } = 30;
     }
 }

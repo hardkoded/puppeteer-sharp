@@ -7,11 +7,11 @@ namespace PuppeteerSharp
 {
     public class Browser
     {
-        public Browser(Connection connection, Dictionary<string, object> options, Func<Task> closeCallBack)
+        public Browser(Connection connection, LaunchOptions options, Func<Task> closeCallBack)
         {
             Connection = connection;
-            IgnoreHTTPSErrors = options.ContainsKey("ignoreHTTPSErrors") && (bool)options["ignoreHTTPSErrors"];
-            AppMode = options.ContainsKey("appMode") && (bool)options["appMode"];
+            IgnoreHTTPSErrors = options.IgnoreHTTPSErrors;
+            AppMode = options.AppMode;
             _targets = new Dictionary<string, Target>();
             ScreenshotTaskQueue = new TaskQueue();
 
@@ -157,7 +157,7 @@ namespace PuppeteerSharp
 
         }
 
-        internal static async Task<Browser> CreateAsync(Connection connection, Dictionary<string, object> options,
+        internal static async Task<Browser> CreateAsync(Connection connection, LaunchOptions options,
                                                         Func<Task> closeCallBack)
         {
             var browser = new Browser(connection, options, closeCallBack);
