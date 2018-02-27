@@ -104,7 +104,7 @@ namespace PuppeteerSharp
 
             SetEnvVariables(_chromeProcess.StartInfo.Environment, options.Env, Environment.GetEnvironmentVariables());
 
-            if(!options.Dumpio)
+            if(!options.DumpIO)
             {
                 _chromeProcess.StartInfo.RedirectStandardOutput = false;
                 _chromeProcess.StartInfo.RedirectStandardError = false;
@@ -119,7 +119,7 @@ namespace PuppeteerSharp
             try
             {
                 var connectionDelay = options.SlowMo;
-                var browserWSEndpoint = await WaitForEndpoint(_chromeProcess, options.Timeout, options.Dumpio);
+                var browserWSEndpoint = await WaitForEndpoint(_chromeProcess, options.Timeout, options.DumpIO);
                 var keepAliveInterval = options.KeepAliveInterval;
 
                 _connection = await Connection.Create(browserWSEndpoint, connectionDelay, keepAliveInterval);
