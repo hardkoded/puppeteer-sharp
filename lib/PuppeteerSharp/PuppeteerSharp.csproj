@@ -3,15 +3,16 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>0.0.1</PackageVersion>
-    <Authors>kblok</Authors>
-    <Owners>kblok</Owners>
+    <PackageVersion>0.1.0</PackageVersion>
+    <Authors>Darío Kondratiuk</Authors>
+    <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
     <Summary>Headless Chrome .NET API</Summary>
     <PackageTags>headless,chrome,puppeteer</PackageTags>
     <Title>PuppeteerSharp</Title>
     <Description>Headless Chrome .NET API</Description>
     <PackageId>PuppeteerSharp</PackageId>
+    <PackageReleaseNotes>* 0.1: PDF and Screenshots support</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
