@@ -290,3 +290,6 @@ Thumbs.db
 
 # ignore local cert
 /lib/PuppeteerSharp.TestServer/testCert.cer
+
+demos/PuppeteerSharpPdfDemo/google.pdf
+demos/PuppeteerSharpPdfDemo/.local-chromium/
