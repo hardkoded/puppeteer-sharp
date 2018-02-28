@@ -639,7 +639,7 @@ namespace PuppeteerSharp
 
         private void EmitMetrics(MessageEventArgs e)
         {
-            throw new NotImplementedException();
+
         }
 
         private async Task OnCertificateError(MessageEventArgs e)

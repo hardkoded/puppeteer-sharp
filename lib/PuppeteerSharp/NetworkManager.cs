@@ -289,8 +289,12 @@ namespace PuppeteerSharp
             var response = new Response(_client, request, redirectStatus, redirectHeaders);
             request.Response = response;
             _requestIdToRequest.Remove(request.RequestId);
-            _interceptionIdToRequest.Remove(request.InterceptionId);
-            _attemptedAuthentications.Remove(request.InterceptionId);
+
+            if (request.InterceptionId != null)
+            {
+                _interceptionIdToRequest.Remove(request.InterceptionId);
+                _attemptedAuthentications.Remove(request.InterceptionId);
+            }
 
             ResponseCreated(this, new ResponseCreatedArgs()
             {
@@ -335,14 +339,14 @@ namespace PuppeteerSharp
                 }
             }
 
-            if (e.MessageData.redirectResponse != null && _requestIdToRequest.ContainsKey(e.MessageData.requestId))
+            if (e.MessageData.redirectResponse != null && _requestIdToRequest.ContainsKey(e.MessageData.requestId.ToString()))
             {
-                var request = _requestIdToRequest[e.MessageData.requestId];
+                var request = _requestIdToRequest[e.MessageData.requestId.ToString()];
                 // If we connect late to the target, we could have missed the requestWillBeSent event.
                 HandleRequestRedirect(
                     request,
-                    e.MessageData.redirectResponse.status,
-                    e.MessageData.redirectResponse.headers);
+                    (HttpStatusCode)e.MessageData.redirectResponse.status,
+                    e.MessageData.redirectResponse.headers.ToObject<Dictionary<string, object>>());
             }
 
             HandleRequestStart(

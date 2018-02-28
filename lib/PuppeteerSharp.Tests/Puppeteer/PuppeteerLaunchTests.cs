@@ -24,5 +24,19 @@ namespace PuppeteerSharp.Tests.Puppeteer
 
             await browser.CloseAsync();
         }
+
+        [Fact]
+        public async Task ShouldWorkInRealLife()
+        {
+            var options = TestConstants.DefaultBrowserOptions();
+
+            var browser = await PuppeteerSharp.Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision);
+            var page = await browser.NewPageAsync();
+
+            var response = await page.GoToAsync("https://www.google.com");
+            Assert.Equal(response.Status.ToString(), "OK");
+
+            await browser.CloseAsync();
+        }
     }
 }
