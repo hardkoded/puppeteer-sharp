@@ -13,7 +13,7 @@ namespace PuppeteerSharp
 {
     public class Launcher
     {
-        private static string[] _defaultArgs = {
+        private static readonly string[] _defaultArgs = {
             "--disable-background-networking",
             "--disable-background-timer-throttling",
             "--disable-client-side-phishing-detection",
@@ -30,7 +30,7 @@ namespace PuppeteerSharp
             "--safebrowsing-disable-auto-update",
         };
 
-        public static string[] _automationArgs = {
+        public static readonly string[] _automationArgs = {
             "--enable-automation",
             "--password-store=basic",
             "--use-mock-keychain"
@@ -42,40 +42,39 @@ namespace PuppeteerSharp
         private Connection _connection = null;
         private Timer _timer = null;
 
-        internal async Task<Browser> LaunchAsync(Dictionary<string, object> options, int chromiumRevision)
+        internal async Task<Browser> LaunchAsync(LaunchOptions options, int chromiumRevision)
         {
             var chromeArguments = new List<string>(_defaultArgs);
 
-            if (options.ContainsKey("appMode"))
+            if (options.AppMode)
             {
-                options["headless"] = false;
+                options.Headless = false;
             }
             else
             {
                 chromeArguments.AddRange(_automationArgs);
             }
 
-            if (options.ContainsKey("args") &&
-               ((string[])options["args"]).Any(i => i.StartsWith("--user-data-dir", StringComparison.Ordinal)))
+            if (options.Args.Any(i => i.StartsWith("--user-data-dir", StringComparison.Ordinal)))
             {
-                if (!options.ContainsKey("userDataDir"))
+                if (string.IsNullOrEmpty(options.UserDataDir))
                 {
                     _temporaryUserDataDir = GetTemporaryDirectory();
                     chromeArguments.Add($"--user-data-dir=${_temporaryUserDataDir}");
                 }
                 else
                 {
-                    chromeArguments.Add($"--user-data-dir=${options["userDataDir"]}");
+                    chromeArguments.Add($"--user-data-dir=${options.UserDataDir}");
                 }
             }
 
-            if (options.TryGetValue("devtools", out var hasDevTools) && (bool)hasDevTools)
+            if (options.Devtools)
             {
                 chromeArguments.Add("--auto-open-devtools-for-tabs");
-                options["headless"] = false;
+                options.Headless = false;
             }
 
-            if (options.TryGetValue("headless", out var isHeadless) && (bool)isHeadless)
+            if (options.Headless)
             {
                 chromeArguments.AddRange(new[]{
                     "--headless",
@@ -85,7 +84,7 @@ namespace PuppeteerSharp
                 });
             }
 
-            var chromeExecutable = (options.GetValueOrDefault("executablePath") ?? "").ToString();
+            var chromeExecutable = options.ExecutablePath;
 
             if (string.IsNullOrEmpty(chromeExecutable))
             {
@@ -94,20 +93,18 @@ namespace PuppeteerSharp
                 chromeExecutable = revisionInfo.ExecutablePath;
             }
 
-            if (options.ContainsKey("args"))
+            if (options.Args.Any())
             {
-                chromeArguments.AddRange((string[])options["args"]);
+                chromeArguments.AddRange(options.Args);
             }
 
             _chromeProcess = new Process();
             _chromeProcess.StartInfo.FileName = chromeExecutable;
             _chromeProcess.StartInfo.Arguments = string.Join(" ", chromeArguments);
 
-            SetEnvVariables(_chromeProcess.StartInfo.Environment,
-                            options.ContainsKey("env") ? (IDictionary<string, string>)options["env"] : null,
-                            (IDictionary)Environment.GetEnvironmentVariables());
+            SetEnvVariables(_chromeProcess.StartInfo.Environment, options.Env, Environment.GetEnvironmentVariables());
 
-            if (!options.ContainsKey("dumpio"))
+            if(!options.DumpIO)
             {
                 _chromeProcess.StartInfo.RedirectStandardOutput = false;
                 _chromeProcess.StartInfo.RedirectStandardError = false;
@@ -121,11 +118,9 @@ namespace PuppeteerSharp
 
             try
             {
-                var connectionDelay = (int)(options.GetValueOrDefault("slowMo") ?? 0);
-                var browserWSEndpoint = await WaitForEndpoint(_chromeProcess,
-                                                              (int)(options.GetValueOrDefault("timeout") ?? 30 * 100),
-                                                              options.ContainsKey("dumpio"));
-                var keepAliveInterval = options.ContainsKey("keepAliveInterval") ? Convert.ToInt32(options["keepAliveInterval"]) : 30;
+                var connectionDelay = options.SlowMo;
+                var browserWSEndpoint = await WaitForEndpoint(_chromeProcess, options.Timeout, options.DumpIO);
+                var keepAliveInterval = options.KeepAliveInterval;
 
                 _connection = await Connection.Create(browserWSEndpoint, connectionDelay, keepAliveInterval);
                 return await Browser.CreateAsync(_connection, options, KillChrome);
