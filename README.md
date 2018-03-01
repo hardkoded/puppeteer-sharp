@@ -1,6 +1,8 @@
 # Puppeteer Sharp
 
-[![NuGet](https://img.shields.io/nuget/v/PuppeteerSharp.svg?style=flat-square&label=nuget&colorB=green)](https://www.nuget.org/packages/PuppeteerSharp/)
+[![NuGet](https://img.shields.io/nuget/v/PuppeteerSharp.svg?style=flat-square&label=nuget&colorB=green)](NugetUrl)
+
+[NugetUrl]: https://www.nuget.org/packages/PuppeteerSharp/
 
 Puppeteer Sharp is a .NET port of the official [Node.JS Puppeteer API](https://github.com/GoogleChrome/puppeteer). 
 
