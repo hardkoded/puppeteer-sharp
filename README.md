@@ -1,7 +1,48 @@
-# Introduction
+# Puppeteer Sharp
 
-This project is a .NET port of the official [Node.JS Puppeteer API](https://github.com/GoogleChrome/puppeteer). 
-The first goal is to get a functional library with an API as close as the official one.
+[![NuGet](https://img.shields.io/nuget/v/PuppeteerSharp.svg?style=flat-square&label=nuget&colorB=green)](https://www.nuget.org/packages/PuppeteerSharp/)
+
+Puppeteer Sharp is a .NET port of the official [Node.JS Puppeteer API](https://github.com/GoogleChrome/puppeteer). 
+
+# Usage
+
+## Take screenshots
+
+```
+await Downloader.CreateDefault().DownloadRevisionAsync(chromiumRevision);
+var browser = await Puppeteer.LaunchAsync(new LaunchOptions
+{
+    Headless = true
+}, chromiumRevision);
+var page = await browser.NewPageAsync();
+await page.GoToAsync("http://www.google.com");
+await page.ScreenshotAsync(outputFile));
+```
+
+You can also change the view port before generating the screenshot
+
+
+```
+await page.SetViewport(new ViewPortOptions
+{
+    Width = 500,
+    Height = 500
+});
+```
+
+
+## Generate PDF files
+
+```
+await Downloader.CreateDefault().DownloadRevisionAsync(chromiumRevision);
+var browser = await Puppeteer.LaunchAsync(new LaunchOptions
+{
+    Headless = true
+}, chromiumRevision);
+var page = await browser.NewPageAsync();
+await page.GoToAsync("http://www.google.com");
+await page.PdfAsync(outputFile));
+```
 
 # Monthly reports
 
