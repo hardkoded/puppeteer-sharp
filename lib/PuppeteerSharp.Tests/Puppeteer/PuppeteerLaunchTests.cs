@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Net;
 using System.Threading.Tasks;
 using Xunit;
@@ -64,7 +65,7 @@ namespace PuppeteerSharp.Tests.Puppeteer
             await browser.CloseAsync();
         }
 
-        [Fact]
+        [Fact(Skip = "https://github.com/kblok/puppeteer-sharp/issues/76")]
         public async Task ShouldRejectAllPromisesWhenBrowserIsClosed()
         {
             var browser = await PuppeteerSharp.Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.ChromiumRevision);
@@ -76,6 +77,18 @@ namespace PuppeteerSharp.Tests.Puppeteer
             await neverResolves;
             var exception = await Assert.ThrowsAsync<Exception>(() => neverResolves);
             Assert.Contains("Protocol error", exception.Message);
+        }
+
+        [Fact]
+        public async Task ShouldRejectIfExecutablePathIsInvalid()
+        {
+            var options = TestConstants.DefaultBrowserOptions();
+            options.ExecutablePath = "random-invalid-path";
+
+            var exception = await Assert.ThrowsAsync<Exception>(() => PuppeteerSharp.Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision));
+            Assert.Equal("Failed to create connection", exception.Message);
+            Assert.IsType<Win32Exception>(exception.InnerException);
+            Assert.Equal("The system cannot find the file specified", exception.InnerException.Message);
         }
     }
 }

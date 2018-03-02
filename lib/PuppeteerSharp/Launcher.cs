@@ -212,14 +212,22 @@ namespace PuppeteerSharp
 
         private async Task ForceKillChrome()
         {
-            if (_chromeProcess.Id != 0 && Process.GetProcessById(_chromeProcess.Id) != null)
+            // https://stackoverflow.com/questions/2878696/how-do-i-determine-if-a-process-is-associated-with-a-system-diagnostics-process
+            try
             {
-                _chromeProcess.Kill();
-            }
+                if (_chromeProcess.Id != 0 && Process.GetProcessById(_chromeProcess.Id) != null)
+                {
+                    _chromeProcess.Kill();
+                }
 
-            if (_temporaryUserDataDir != null)
+                if (_temporaryUserDataDir != null)
+                {
+                    await Task.Factory.StartNew(path => Directory.Delete((string)path, true), _temporaryUserDataDir);
+                }
+            }
+            catch (InvalidOperationException ex) when (ex.Message == "No process is associated with this object.")
             {
-                await Task.Factory.StartNew(path => Directory.Delete((string)path, true), _temporaryUserDataDir);
+                // swallow
             }
         }
 
