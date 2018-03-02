@@ -38,6 +38,7 @@ namespace PuppeteerSharp
         public Task<string> ContentTask => ContentTaskWrapper.Task;
         public TaskCompletionSource<string> ContentTaskWrapper { get; internal set; }
         public Request Request { get; internal set; }
+        public SecurityDetails SecurityDetails { get; internal set; }
         #endregion
 
         #region Public Methods
