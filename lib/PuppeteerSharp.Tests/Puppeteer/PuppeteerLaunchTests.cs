@@ -63,5 +63,19 @@ namespace PuppeteerSharp.Tests.Puppeteer
             await page.CloseAsync();
             await browser.CloseAsync();
         }
+
+        [Fact]
+        public async Task ShouldRejectAllPromisesWhenBrowserIsClosed()
+        {
+            var browser = await PuppeteerSharp.Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.ChromiumRevision);
+            var page = await browser.NewPageAsync();
+
+            var neverResolves = page.EvaluateHandle("() => new Promise(r => {})");
+            await browser.CloseAsync();
+
+            await neverResolves;
+            var exception = await Assert.ThrowsAsync<Exception>(() => neverResolves);
+            Assert.Contains("Protocol error", exception.Message);
+        }
     }
 }
