@@ -54,7 +54,7 @@ namespace PuppeteerSharp.Tests.Puppeteer
             var responses = new List<Response>();
             page.ResponseCreated += (sender, e) => responses.Add(e.Response);
 
-            await page.GoToAsync(TestConstants.HttpsPrefix + "/plzredirect");
+            await page.GoToAsync(TestConstants.ServerUrl + "/plzredirect");
             Assert.Equal(2, responses.Count);
             Assert.Equal(HttpStatusCode.Redirect, responses[0].Status);
             var securityDetails = responses[0].SecurityDetails;
