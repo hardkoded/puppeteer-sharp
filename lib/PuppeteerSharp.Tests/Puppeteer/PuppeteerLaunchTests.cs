@@ -50,10 +50,7 @@ namespace PuppeteerSharp.Tests.Puppeteer
 
             var browser = await PuppeteerSharp.Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision);
             var page = await browser.NewPageAsync();
-
-            // TODO:
-            // httpsServer.setRedirect('/plzredirect', '/empty.html');
-
+            
             var responses = new List<Response>();
             page.ResponseCreated += (sender, e) => responses.Add(e.Response);
 
