@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Xunit;
@@ -52,7 +53,7 @@ namespace PuppeteerSharp.Tests.Puppeteer
 
             var browser = await PuppeteerSharp.Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision);
             var page = await browser.NewPageAsync();
-            
+
             var responses = new List<Response>();
             page.ResponseCreated += (sender, e) => responses.Add(e.Response);
 
@@ -89,6 +90,34 @@ namespace PuppeteerSharp.Tests.Puppeteer
             var exception = await Assert.ThrowsAsync<FileNotFoundException>(() => PuppeteerSharp.Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision));
             Assert.Equal("Failed to launch chrome! path to executable does not exist", exception.Message);
             Assert.Equal(options.ExecutablePath, exception.FileName);
+        }
+
+        [Fact]
+        public async Task UserDataDirOption()
+        {
+            var userDataDir = Launcher.GetTemporaryDirectory();
+            var options = TestConstants.DefaultBrowserOptions();
+            options.UserDataDir = userDataDir;
+
+            var browser = await PuppeteerSharp.Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision);
+            Assert.True(Directory.GetFiles(userDataDir).Length > 0);
+            await browser.CloseAsync();
+            Assert.True(Directory.GetFiles(userDataDir).Length > 0);
+            Directory.Delete(userDataDir, true);
+        }
+
+        [Fact]
+        public async Task UserDataDirArgument()
+        {
+            var userDataDir = Launcher.GetTemporaryDirectory();
+            var options = TestConstants.DefaultBrowserOptions();
+            options.Args = new[] { $"--user-data-dir={userDataDir}" };
+
+            var browser = await PuppeteerSharp.Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision);
+            Assert.True(Directory.GetFiles(userDataDir).Length > 0);
+            await browser.CloseAsync();
+            Assert.True(Directory.GetFiles(userDataDir).Length > 0);
+            Directory.Delete(userDataDir, true);
         }
     }
 }

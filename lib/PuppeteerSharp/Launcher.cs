@@ -55,7 +55,7 @@ namespace PuppeteerSharp
                 chromeArguments.AddRange(_automationArgs);
             }
 
-            if (options.Args.Any(i => i.StartsWith("--user-data-dir", StringComparison.Ordinal)))
+            if (!options.Args.Any(i => i.StartsWith("--user-data-dir", StringComparison.Ordinal)))
             {
                 if (string.IsNullOrEmpty(options.UserDataDir))
                 {
