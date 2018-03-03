@@ -92,6 +92,10 @@ namespace PuppeteerSharp
                 var revisionInfo = downloader.RevisionInfo(Downloader.CurrentPlatform, chromiumRevision);
                 chromeExecutable = revisionInfo.ExecutablePath;
             }
+            if (!File.Exists(chromeExecutable))
+            {
+                throw new FileNotFoundException("Failed to launch chrome! path to executable does not exist", chromeExecutable);
+            }
 
             if (options.Args.Any())
             {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using Xunit;
@@ -85,10 +86,9 @@ namespace PuppeteerSharp.Tests.Puppeteer
             var options = TestConstants.DefaultBrowserOptions();
             options.ExecutablePath = "random-invalid-path";
 
-            var exception = await Assert.ThrowsAsync<Exception>(() => PuppeteerSharp.Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision));
-            Assert.Equal("Failed to create connection", exception.Message);
-            Assert.IsType<Win32Exception>(exception.InnerException);
-            Assert.Equal("The system cannot find the file specified", exception.InnerException.Message);
+            var exception = await Assert.ThrowsAsync<FileNotFoundException>(() => PuppeteerSharp.Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision));
+            Assert.Equal("Failed to launch chrome! path to executable does not exist", exception.Message);
+            Assert.Equal(options.ExecutablePath, exception.FileName);
         }
     }
 }
