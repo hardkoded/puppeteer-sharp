@@ -8,9 +8,9 @@ using Xunit;
 
 namespace PuppeteerSharp.Tests.Page
 {
+    [Collection("PuppeteerLoaderFixture collection")]
     public class ScreenshotTests : PuppeteerBaseTest
     {
-
         [Fact]
         public async Task ShouldWorkWithFile()
         {

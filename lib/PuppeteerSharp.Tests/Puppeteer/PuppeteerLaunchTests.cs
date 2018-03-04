@@ -8,13 +8,9 @@ using Xunit;
 
 namespace PuppeteerSharp.Tests.Puppeteer
 {
+    [Collection("PuppeteerLoaderFixture collection")]
     public class PuppeteerLaunchTests
     {
-        public PuppeteerLaunchTests()
-        {
-            Downloader.CreateDefault().DownloadRevisionAsync(TestConstants.ChromiumRevision).GetAwaiter().GetResult();
-        }
-
         [Fact]
         public async Task ShouldSupportIgnoreHTTPSErrorsOption()
         {
