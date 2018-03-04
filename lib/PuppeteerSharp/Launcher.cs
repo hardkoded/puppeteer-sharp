@@ -60,11 +60,11 @@ namespace PuppeteerSharp
                 if (string.IsNullOrEmpty(options.UserDataDir))
                 {
                     _temporaryUserDataDir = GetTemporaryDirectory();
-                    chromeArguments.Add($"--user-data-dir=${_temporaryUserDataDir}");
+                    chromeArguments.Add($"--user-data-dir={_temporaryUserDataDir}");
                 }
                 else
                 {
-                    chromeArguments.Add($"--user-data-dir=${options.UserDataDir}");
+                    chromeArguments.Add($"--user-data-dir={options.UserDataDir}");
                 }
             }
 

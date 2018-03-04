@@ -40,7 +40,7 @@ namespace PuppeteerSharp.Tests.Puppeteer
             await browser.CloseAsync();
         }
 
-        [Fact]
+        [Fact(Skip = "test is not part of v1.0.0")]
         public async Task NetworkRedirectsShouldReportSecurityDetails()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -98,7 +98,7 @@ namespace PuppeteerSharp.Tests.Puppeteer
             Assert.True(Directory.GetFiles(userDataDir).Length > 0);
             await browser.CloseAsync();
             Assert.True(Directory.GetFiles(userDataDir).Length > 0);
-            Directory.Delete(userDataDir, true);
+            // Directory.Delete(userDataDir, true);
         }
 
         [Fact]
@@ -106,13 +106,13 @@ namespace PuppeteerSharp.Tests.Puppeteer
         {
             var userDataDir = Launcher.GetTemporaryDirectory();
             var options = TestConstants.DefaultBrowserOptions();
-            options.Args = options.Args.Concat( new[] { $"--user-data-dir={userDataDir}" }).ToArray();
-            
+            options.Args = options.Args.Concat(new[] { $"--user-data-dir={userDataDir}" }).ToArray();
+
             var browser = await PuppeteerSharp.Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision);
             Assert.True(Directory.GetFiles(userDataDir).Length > 0);
             await browser.CloseAsync();
             Assert.True(Directory.GetFiles(userDataDir).Length > 0);
-            Directory.Delete(userDataDir, true);
+            // Directory.Delete(userDataDir, true);
         }
 
         [Fact]
