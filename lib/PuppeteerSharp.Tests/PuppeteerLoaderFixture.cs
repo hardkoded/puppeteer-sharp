@@ -37,6 +37,7 @@ namespace PuppeteerSharp.Tests
             {
                 Console.WriteLine("Killing process");
                 _webServerProcess.Kill();
+                Console.WriteLine("Process killed");
             }
 
         }
