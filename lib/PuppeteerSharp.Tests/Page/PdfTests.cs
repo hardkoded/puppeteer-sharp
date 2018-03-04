@@ -7,9 +7,9 @@ using PdfSharp.Pdf.IO;
 
 namespace PuppeteerSharp.Tests.Page
 {
+    [Collection("PuppeteerLoaderFixture collection")]
     public class PdfTests : PuppeteerBaseTest
     {
-
         [Fact]
         public async Task ShouldBeAbleToSaveFile()
         {
