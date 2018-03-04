@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Xunit;
@@ -109,13 +110,20 @@ namespace PuppeteerSharp.Tests.Puppeteer
         {
             var userDataDir = Launcher.GetTemporaryDirectory();
             var options = TestConstants.DefaultBrowserOptions();
-            options.Args = new[] { $"--user-data-dir={userDataDir}" };
-
+            options.Args = options.Args.Concat( new[] { $"--user-data-dir={userDataDir}" }).ToArray();
+            
             var browser = await PuppeteerSharp.Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision);
             Assert.True(Directory.GetFiles(userDataDir).Length > 0);
             await browser.CloseAsync();
             Assert.True(Directory.GetFiles(userDataDir).Length > 0);
             Directory.Delete(userDataDir, true);
+        }
+
+        [Fact]
+        public void ShouldReturnTheDefaultChromeArguments()
+        {
+            var args = PuppeteerSharp.Puppeteer.DefaultArgs;
+            Assert.Contains("--no-first-run", args);
         }
     }
 }

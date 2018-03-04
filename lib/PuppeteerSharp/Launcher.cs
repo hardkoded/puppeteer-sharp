@@ -13,7 +13,7 @@ namespace PuppeteerSharp
 {
     public class Launcher
     {
-        private static readonly string[] _defaultArgs = {
+        internal static readonly string[] DefaultArgs = {
             "--disable-background-networking",
             "--disable-background-timer-throttling",
             "--disable-client-side-phishing-detection",
@@ -30,7 +30,7 @@ namespace PuppeteerSharp
             "--safebrowsing-disable-auto-update",
         };
 
-        public static readonly string[] _automationArgs = {
+        internal static readonly string[] AutomationArgs = {
             "--enable-automation",
             "--password-store=basic",
             "--use-mock-keychain"
@@ -44,7 +44,7 @@ namespace PuppeteerSharp
 
         internal async Task<Browser> LaunchAsync(LaunchOptions options, int chromiumRevision)
         {
-            var chromeArguments = new List<string>(_defaultArgs);
+            var chromeArguments = new List<string>(DefaultArgs);
 
             if (options.AppMode)
             {
@@ -52,7 +52,7 @@ namespace PuppeteerSharp
             }
             else
             {
-                chromeArguments.AddRange(_automationArgs);
+                chromeArguments.AddRange(AutomationArgs);
             }
 
             if (!options.Args.Any(i => i.StartsWith("--user-data-dir", StringComparison.Ordinal)))

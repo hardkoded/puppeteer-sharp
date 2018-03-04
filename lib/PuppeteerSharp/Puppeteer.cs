@@ -6,6 +6,8 @@ namespace PuppeteerSharp
 {
     public class Puppeteer
     {
+        public static string[] DefaultArgs => Launcher.DefaultArgs;
+
         public static async Task<Browser> LaunchAsync(LaunchOptions options, int chromiumRevision)
         {
             return await new Launcher().LaunchAsync(options, chromiumRevision);
