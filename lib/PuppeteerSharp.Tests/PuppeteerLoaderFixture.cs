@@ -19,6 +19,7 @@ namespace PuppeteerSharp.Tests
         {
             int processId = 0;
 
+            Console.WriteLine("Attempting to kill process");
             try
             {
                 processId = _webServerProcess.Id;
@@ -34,6 +35,7 @@ namespace PuppeteerSharp.Tests
 
             if (processId != 0 && Process.GetProcessById(processId) != null)
             {
+                Console.WriteLine("Killing process");
                 _webServerProcess.Kill();
             }
 
