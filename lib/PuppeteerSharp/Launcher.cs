@@ -108,7 +108,7 @@ namespace PuppeteerSharp
 
             SetEnvVariables(_chromeProcess.StartInfo.Environment, options.Env, Environment.GetEnvironmentVariables());
 
-            if(!options.DumpIO)
+            if (!options.DumpIO)
             {
                 _chromeProcess.StartInfo.RedirectStandardOutput = false;
                 _chromeProcess.StartInfo.RedirectStandardError = false;
@@ -216,22 +216,15 @@ namespace PuppeteerSharp
 
         private async Task ForceKillChrome()
         {
-            // https://stackoverflow.com/questions/2878696/how-do-i-determine-if-a-process-is-associated-with-a-system-diagnostics-process
-            try
+            if (_chromeProcess.Id != 0 && Process.GetProcessById(_chromeProcess.Id) != null)
             {
-                if (_chromeProcess.Id != 0 && Process.GetProcessById(_chromeProcess.Id) != null)
-                {
-                    _chromeProcess.Kill();
-                }
-
-                if (_temporaryUserDataDir != null)
-                {
-                    await Task.Factory.StartNew(path => Directory.Delete((string)path, true), _temporaryUserDataDir);
-                }
+                _chromeProcess.Kill();
+                _chromeProcess.WaitForExit();
             }
-            catch (InvalidOperationException ex) when (ex.Message == "No process is associated with this object.")
+
+            if (_temporaryUserDataDir != null)
             {
-                // swallow
+                await Task.Factory.StartNew(path => Directory.Delete((string)path, true), _temporaryUserDataDir);
             }
         }
 
