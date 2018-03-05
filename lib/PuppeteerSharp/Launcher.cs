@@ -13,7 +13,7 @@ namespace PuppeteerSharp
 {
     public class Launcher
     {
-        private static readonly string[] _defaultArgs = {
+        internal static readonly string[] DefaultArgs = {
             "--disable-background-networking",
             "--disable-background-timer-throttling",
             "--disable-client-side-phishing-detection",
@@ -30,7 +30,7 @@ namespace PuppeteerSharp
             "--safebrowsing-disable-auto-update",
         };
 
-        public static readonly string[] _automationArgs = {
+        internal static readonly string[] AutomationArgs = {
             "--enable-automation",
             "--password-store=basic",
             "--use-mock-keychain"
@@ -44,7 +44,7 @@ namespace PuppeteerSharp
 
         internal async Task<Browser> LaunchAsync(LaunchOptions options, int chromiumRevision)
         {
-            var chromeArguments = new List<string>(_defaultArgs);
+            var chromeArguments = new List<string>(DefaultArgs);
 
             if (options.AppMode)
             {
@@ -52,10 +52,10 @@ namespace PuppeteerSharp
             }
             else
             {
-                chromeArguments.AddRange(_automationArgs);
+                chromeArguments.AddRange(AutomationArgs);
             }
 
-            if (options.Args.Any(i => i.StartsWith("--user-data-dir", StringComparison.Ordinal)))
+            if (!options.Args.Any(i => i.StartsWith("--user-data-dir", StringComparison.Ordinal)))
             {
                 if (string.IsNullOrEmpty(options.UserDataDir))
                 {
@@ -92,6 +92,10 @@ namespace PuppeteerSharp
                 var revisionInfo = downloader.RevisionInfo(Downloader.CurrentPlatform, chromiumRevision);
                 chromeExecutable = revisionInfo.ExecutablePath;
             }
+            if (!File.Exists(chromeExecutable))
+            {
+                throw new FileNotFoundException("Failed to launch chrome! path to executable does not exist", chromeExecutable);
+            }
 
             if (options.Args.Any())
             {
@@ -104,7 +108,7 @@ namespace PuppeteerSharp
 
             SetEnvVariables(_chromeProcess.StartInfo.Environment, options.Env, Environment.GetEnvironmentVariables());
 
-            if(!options.DumpIO)
+            if (!options.DumpIO)
             {
                 _chromeProcess.StartInfo.RedirectStandardOutput = false;
                 _chromeProcess.StartInfo.RedirectStandardError = false;
@@ -204,7 +208,7 @@ namespace PuppeteerSharp
             {
                 await ForceKillChrome();
             }
-            else if (_connection != null)
+            else if (_connection != null && !_connection.IsClosed)
             {
                 await _connection.SendAsync("Browser.close", null);
             }
@@ -212,14 +216,22 @@ namespace PuppeteerSharp
 
         private async Task ForceKillChrome()
         {
-            if (_chromeProcess.Id != 0 && Process.GetProcessById(_chromeProcess.Id) != null)
+            // https://stackoverflow.com/questions/2878696/how-do-i-determine-if-a-process-is-associated-with-a-system-diagnostics-process
+            try
             {
-                _chromeProcess.Kill();
-            }
+                if (_chromeProcess.Id != 0 && Process.GetProcessById(_chromeProcess.Id) != null)
+                {
+                    _chromeProcess.Kill();
+                }
 
-            if (_temporaryUserDataDir != null)
+                if (_temporaryUserDataDir != null)
+                {
+                    await Task.Factory.StartNew(path => Directory.Delete((string)path, true), _temporaryUserDataDir);
+                }
+            }
+            catch (InvalidOperationException ex) when (ex.Message == "No process is associated with this object.")
             {
-                await Task.Factory.StartNew(path => Directory.Delete((string)path, true), _temporaryUserDataDir);
+                // swallow
             }
         }
 

@@ -19,6 +19,7 @@ namespace PuppeteerSharp.Tests
         {
             int processId = 0;
 
+            Console.WriteLine("Attempting to kill process");
             try
             {
                 processId = _webServerProcess.Id;
@@ -34,13 +35,22 @@ namespace PuppeteerSharp.Tests
 
             if (processId != 0 && Process.GetProcessById(processId) != null)
             {
-                _webServerProcess.Kill();
+                try
+                {
+                    Console.WriteLine("Killing process");
+                    _webServerProcess.Kill();
+                    Console.WriteLine("Process killed");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Unable to kill process: {ex.Message}");
+                }
             }
-
         }
 
         private async Task SetupAsync()
         {
+            Downloader.CreateDefault().DownloadRevisionAsync(TestConstants.ChromiumRevision);
             var downloaderTask = Downloader.CreateDefault().DownloadRevisionAsync(TestConstants.ChromiumRevision);
             var serverTask = StartWebServerAsync();
 

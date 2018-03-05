@@ -688,7 +688,7 @@ namespace PuppeteerSharp
 
             if (response.errorText != null)
             {
-                throw new NavigationException(response.errorText);
+                throw new NavigationException(response.errorText.ToString());
             }
         }
 
