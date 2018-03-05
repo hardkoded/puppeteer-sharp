@@ -47,7 +47,7 @@ await page.PdfAsync(outputFile));
 ```
 
 # Monthly reports
-
+ * [March 20128](http://www.hardkoded.com/blogs/puppeteer-sharp-monthly-march-2018)
  * [February 2018](http://www.hardkoded.com/blogs/puppeteer-sharp-monthly-february-2018)
 
 # Roadmap
