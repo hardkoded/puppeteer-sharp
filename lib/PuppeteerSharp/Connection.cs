@@ -32,7 +32,6 @@ namespace PuppeteerSharp
         private int _lastId;
         private Dictionary<int, TaskCompletionSource<dynamic>> _responses;
         private Dictionary<string, Session> _sessions;
-        private bool _closed = false;
         private TaskCompletionSource<bool> _connectionCloseTask;
         #endregion
 
@@ -40,8 +39,11 @@ namespace PuppeteerSharp
         public string Url { get; set; }
         public int Delay { get; set; }
         public WebSocket WebSocket { get; set; }
+        public bool IsClosed { get; internal set; }
+
         public event EventHandler Closed;
         public event EventHandler<MessageEventArgs> MessageReceived;
+
         #endregion
 
         #region Public Methods
@@ -80,13 +82,16 @@ namespace PuppeteerSharp
 
         private void OnClose()
         {
-            _closed = true;
-            _connectionCloseTask.SetResult(true);
+            if (!IsClosed)
+            {
+                IsClosed = true;
+                _connectionCloseTask.SetResult(true);
 
-            Closed?.Invoke(this, new EventArgs());
+                Closed?.Invoke(this, new EventArgs());
 
-            _responses.Clear();
-            _sessions.Clear();
+                _responses.Clear();
+                _sessions.Clear();
+            }
         }
 
         /// <summary>
@@ -100,7 +105,7 @@ namespace PuppeteerSharp
             //If it's not in the list we wait for it
             while (true)
             {
-                if (_closed)
+                if (IsClosed)
                 {
                     return null;
                 }
@@ -117,7 +122,7 @@ namespace PuppeteerSharp
                         socketTask
                     );
 
-                    if (_closed)
+                    if (IsClosed)
                     {
                         return null;
                     }

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace PuppeteerSharp
 {
-    public class Browser
+    public class Browser : IDisposable
     {
         public Browser(Connection connection, LaunchOptions options, Func<Task> closeCallBack)
         {
@@ -167,6 +167,11 @@ namespace PuppeteerSharp
             });
 
             return browser;
+        }
+
+        public void Dispose()
+        {
+            CloseAsync().GetAwaiter().GetResult();
         }
 
         #endregion

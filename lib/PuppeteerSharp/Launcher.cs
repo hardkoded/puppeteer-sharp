@@ -108,7 +108,7 @@ namespace PuppeteerSharp
 
             SetEnvVariables(_chromeProcess.StartInfo.Environment, options.Env, Environment.GetEnvironmentVariables());
 
-            if(!options.DumpIO)
+            if (!options.DumpIO)
             {
                 _chromeProcess.StartInfo.RedirectStandardOutput = false;
                 _chromeProcess.StartInfo.RedirectStandardError = false;
@@ -208,7 +208,7 @@ namespace PuppeteerSharp
             {
                 await ForceKillChrome();
             }
-            else if (_connection != null)
+            else if (_connection != null && !_connection.IsClosed)
             {
                 await _connection.SendAsync("Browser.close", null);
             }
