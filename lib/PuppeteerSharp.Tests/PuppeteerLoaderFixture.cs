@@ -17,6 +17,7 @@ namespace PuppeteerSharp.Tests
 
         public void Dispose()
         {
+            /*
             int processId = 0;
 
             Console.WriteLine("Attempting to kill process");
@@ -46,16 +47,18 @@ namespace PuppeteerSharp.Tests
                     Console.WriteLine($"Unable to kill process: {ex.Message}");
                 }
             }
-
+*/
         }
 
         private async Task SetupAsync()
         {
+            await Downloader.CreateDefault().DownloadRevisionAsync(TestConstants.ChromiumRevision);
+            /*
             var downloaderTask = Downloader.CreateDefault().DownloadRevisionAsync(TestConstants.ChromiumRevision);
             var serverTask = StartWebServerAsync();
 
             await Task.WhenAll(downloaderTask, serverTask);
-
+            */
         }
 
         private async Task StartWebServerAsync()
