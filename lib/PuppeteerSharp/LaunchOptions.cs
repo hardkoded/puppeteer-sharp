@@ -28,5 +28,7 @@ namespace PuppeteerSharp
         public bool Devtools { get; set; }
 
         public int KeepAliveInterval { get; set; } = 30;
+
+        public bool LogProcess { get; set; }
     }
 }

@@ -80,13 +80,16 @@ namespace PuppeteerSharp
 
         private void OnClose()
         {
-            _closed = true;
-            _connectionCloseTask.SetResult(true);
+            if (!_closed)
+            {
+                _closed = true;
+                _connectionCloseTask.SetResult(true);
 
-            Closed?.Invoke(this, new EventArgs());
+                Closed?.Invoke(this, new EventArgs());
 
-            _responses.Clear();
-            _sessions.Clear();
+                _responses.Clear();
+                _sessions.Clear();
+            }
         }
 
         /// <summary>
@@ -102,6 +105,7 @@ namespace PuppeteerSharp
             {
                 if (_closed)
                 {
+                    OnClose();
                     return null;
                 }
 
@@ -119,6 +123,7 @@ namespace PuppeteerSharp
 
                     if (_closed)
                     {
+                        OnClose();
                         return null;
                     }
 

@@ -13,6 +13,7 @@ namespace PuppeteerSharp
 {
     public class Launcher
     {
+        #region Constants
         private static readonly string[] _defaultArgs = {
             "--disable-background-networking",
             "--disable-background-timer-throttling",
@@ -35,15 +36,25 @@ namespace PuppeteerSharp
             "--password-store=basic",
             "--use-mock-keychain"
         };
+        #endregion
 
-        private bool _chromeClosed;
+        #region Private members
         private Process _chromeProcess;
         private string _temporaryUserDataDir = null;
         private Connection _connection = null;
         private Timer _timer = null;
+        private LaunchOptions _currentOptions;
+
+        private static int _processCount = 0;
+        #endregion
+
+        #region Properties
+        public bool IsChromeClosed { get; internal set; }
+        #endregion
 
         internal async Task<Browser> LaunchAsync(LaunchOptions options, int chromiumRevision)
         {
+            _currentOptions = options;
             var chromeArguments = new List<string>(_defaultArgs);
 
             if (options.AppMode)
@@ -104,7 +115,7 @@ namespace PuppeteerSharp
 
             SetEnvVariables(_chromeProcess.StartInfo.Environment, options.Env, Environment.GetEnvironmentVariables());
 
-            if(!options.DumpIO)
+            if (!options.DumpIO)
             {
                 _chromeProcess.StartInfo.RedirectStandardOutput = false;
                 _chromeProcess.StartInfo.RedirectStandardError = false;
@@ -112,7 +123,7 @@ namespace PuppeteerSharp
 
             _chromeProcess.Exited += async (sender, e) =>
             {
-                _chromeClosed = true;
+                IsChromeClosed = true;
                 await KillChrome();
             };
 
@@ -123,6 +134,12 @@ namespace PuppeteerSharp
                 var keepAliveInterval = options.KeepAliveInterval;
 
                 _connection = await Connection.Create(browserWSEndpoint, connectionDelay, keepAliveInterval);
+
+                if (options.LogProcess)
+                {
+                    Console.WriteLine($"PROCESS COUNT: {++_processCount}");
+                }
+
                 return await Browser.CreateAsync(_connection, options, KillChrome);
             }
             catch (Exception ex)
@@ -212,14 +229,25 @@ namespace PuppeteerSharp
 
         private async Task ForceKillChrome()
         {
-            if (_chromeProcess.Id != 0 && Process.GetProcessById(_chromeProcess.Id) != null)
+            try
             {
-                _chromeProcess.Kill();
-            }
+                if (_chromeProcess.Id != 0 && Process.GetProcessById(_chromeProcess.Id) != null)
+                {
+                    if (_currentOptions.LogProcess)
+                    {
+                        Console.WriteLine($"PROCESS COUNT: {--_processCount}");
+                    }
+                    _chromeProcess.Kill();
+                }
 
-            if (_temporaryUserDataDir != null)
+                if (_temporaryUserDataDir != null)
+                {
+                    await Task.Factory.StartNew(path => Directory.Delete((string)path, true), _temporaryUserDataDir);
+                }
+            }
+            catch (InvalidOperationException ex) when (ex.Message == "No process is associated with this object.")
             {
-                await Task.Factory.StartNew(path => Directory.Delete((string)path, true), _temporaryUserDataDir);
+                // swallow
             }
         }
 
