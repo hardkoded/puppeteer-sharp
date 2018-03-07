@@ -44,7 +44,7 @@ namespace PuppeteerSharp
         private Connection _connection = null;
         private Timer _timer = null;
         private LaunchOptions _currentOptions;
-
+        private TaskCompletionSource<bool> _waitForChromeToClose;
         private static int _processCount = 0;
         #endregion
 
@@ -52,7 +52,12 @@ namespace PuppeteerSharp
         public bool IsChromeClosed { get; internal set; }
         #endregion
 
-        internal async Task<Browser> LaunchAsync(LaunchOptions options, int chromiumRevision)
+        public Launcher()
+        {
+            _waitForChromeToClose = new TaskCompletionSource<bool>();
+        }
+
+        public async Task<Browser> LaunchAsync(LaunchOptions options, int chromiumRevision)
         {
             _currentOptions = options;
             var chromeArguments = new List<string>(_defaultArgs);
@@ -110,6 +115,7 @@ namespace PuppeteerSharp
             }
 
             _chromeProcess = new Process();
+            _chromeProcess.EnableRaisingEvents = true;
             _chromeProcess.StartInfo.FileName = chromeExecutable;
             _chromeProcess.StartInfo.Arguments = string.Join(" ", chromeArguments);
 
@@ -123,8 +129,7 @@ namespace PuppeteerSharp
 
             _chromeProcess.Exited += async (sender, e) =>
             {
-                IsChromeClosed = true;
-                await KillChrome();
+                await AfterProcessExit();
             };
 
             try
@@ -158,6 +163,14 @@ namespace PuppeteerSharp
             chromeProcess.StartInfo.RedirectStandardOutput = true;
             chromeProcess.StartInfo.RedirectStandardError = true;
 
+            EventHandler exitedEvent = (sender, e) =>
+            {
+                CleanUp();
+
+                var error = chromeProcess.StandardError.ReadToEnd();
+                taskWrapper.SetException(new ChromeProcessException($"Failed to launch chrome! {error}"));
+            };
+
             chromeProcess.ErrorDataReceived += (sender, e) =>
             {
                 if (e.Data != null)
@@ -179,16 +192,12 @@ namespace PuppeteerSharp
                         chromeProcess.StartInfo.RedirectStandardOutput = false;
                         chromeProcess.StartInfo.RedirectStandardError = false;
                     }
+
+                    chromeProcess.Exited -= exitedEvent;
                 }
             };
 
-            chromeProcess.Exited += (sender, e) =>
-            {
-                CleanUp();
-
-                var error = chromeProcess.StandardError.ReadToEnd();
-                taskWrapper.SetException(new ChromeProcessException($"Failed to launch chrome! {error}"));
-            };
+            chromeProcess.Exited += exitedEvent;
 
             if (timeout > 0)
             {
@@ -215,6 +224,24 @@ namespace PuppeteerSharp
             _chromeProcess?.RemoveExitedEvent();
         }
 
+        private async Task AfterProcessExit()
+        {
+            if (!IsChromeClosed)
+            {
+                IsChromeClosed = true;
+
+                if (_waitForChromeToClose.Task.Status != TaskStatus.RanToCompletion)
+                {
+                    _waitForChromeToClose.SetResult(true);
+                }
+
+                if (_temporaryUserDataDir != null)
+                {
+                    await Task.Factory.StartNew(path => Directory.Delete((string)path, true), _temporaryUserDataDir);
+                }
+            }
+        }
+
         private async Task KillChrome()
         {
             if (!string.IsNullOrEmpty(_temporaryUserDataDir))
@@ -225,6 +252,8 @@ namespace PuppeteerSharp
             {
                 await _connection.SendAsync("Browser.close", null);
             }
+
+            await _waitForChromeToClose.Task;
         }
 
         private async Task ForceKillChrome()
@@ -238,6 +267,7 @@ namespace PuppeteerSharp
                         Console.WriteLine($"PROCESS COUNT: {--_processCount}");
                     }
                     _chromeProcess.Kill();
+                    await AfterProcessExit();
                 }
 
                 if (_temporaryUserDataDir != null)

@@ -34,6 +34,9 @@ namespace PuppeteerSharp
         private Dictionary<string, Session> _sessions;
         private bool _closed = false;
         private TaskCompletionSource<bool> _connectionCloseTask;
+
+        private bool _closeMessageSent;
+        private const string CloseMessage = "Browser.close";
         #endregion
 
         #region Properties
@@ -59,6 +62,15 @@ namespace PuppeteerSharp
             var buffer = new ArraySegment<Byte>(encoded, 0, encoded.Length);
             QueueId(id);
             await WebSocket.SendAsync(buffer, WebSocketMessageType.Text, true, default(CancellationToken));
+
+            //I don't know if this will be the final solution
+            //But for now we will prevent the WebSocket from failing after the process is killed 
+            //by the close mehotd
+            if (method == CloseMessage)
+            {
+                _closeMessageSent = true;
+            }
+
             return await _responses[id].Task;
         }
 
@@ -127,7 +139,16 @@ namespace PuppeteerSharp
                         return null;
                     }
 
-                    var result = socketTask.Result;
+                    WebSocketReceiveResult result = null;
+
+                    try
+                    {
+                        result = socketTask.Result;
+                    }
+                    catch (AggregateException) when (_closeMessageSent)
+                    {
+                        //swallow
+                    }
 
                     endOfMessage = result.EndOfMessage;
 

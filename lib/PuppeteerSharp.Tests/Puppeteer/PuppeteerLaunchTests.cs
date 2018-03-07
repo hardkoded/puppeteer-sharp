@@ -34,5 +34,21 @@ namespace PuppeteerSharp.Tests.Puppeteer
 
             await browser.CloseAsync();
         }
+
+        [Fact]
+        public async Task ChromeShouldBeClosed()
+        {
+            var options = TestConstants.DefaultBrowserOptions();
+            var launcher = new Launcher();
+            var browser = await launcher.LaunchAsync(options, TestConstants.ChromiumRevision);
+            var page = await browser.NewPageAsync();
+
+            var response = await page.GoToAsync("https://www.google.com");
+            Assert.Equal(response.Status.ToString(), "OK");
+
+            await browser.CloseAsync();
+
+            Assert.Equal(true, launcher.IsChromeClosed);
+        }
     }
 }
