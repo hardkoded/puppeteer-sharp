@@ -228,6 +228,11 @@ namespace PuppeteerSharp
         {
             if (!IsChromeClosed)
             {
+                if (_currentOptions.LogProcess)
+                {
+                    Console.WriteLine($"PROCESS COUNT: {--_processCount}");
+                }
+
                 IsChromeClosed = true;
 
                 if (_waitForChromeToClose.Task.Status != TaskStatus.RanToCompletion)
@@ -262,10 +267,6 @@ namespace PuppeteerSharp
             {
                 if (_chromeProcess.Id != 0 && Process.GetProcessById(_chromeProcess.Id) != null)
                 {
-                    if (_currentOptions.LogProcess)
-                    {
-                        Console.WriteLine($"PROCESS COUNT: {--_processCount}");
-                    }
                     _chromeProcess.Kill();
                     await AfterProcessExit();
                 }

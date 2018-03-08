@@ -140,14 +140,17 @@ namespace PuppeteerSharp
                     }
 
                     WebSocketReceiveResult result = null;
-
                     try
                     {
                         result = socketTask.Result;
                     }
                     catch (AggregateException) when (_closeMessageSent)
                     {
-                        //swallow
+                        if (!_closed)
+                        {
+                            OnClose();
+                            return null;
+                        }
                     }
 
                     endOfMessage = result.EndOfMessage;
