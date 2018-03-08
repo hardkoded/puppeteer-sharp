@@ -268,12 +268,7 @@ namespace PuppeteerSharp
                 if (_chromeProcess.Id != 0 && Process.GetProcessById(_chromeProcess.Id) != null)
                 {
                     _chromeProcess.Kill();
-                    await AfterProcessExit();
-                }
-
-                if (_temporaryUserDataDir != null)
-                {
-                    await Task.Factory.StartNew(path => Directory.Delete((string)path, true), _temporaryUserDataDir);
+                    _chromeProcess.WaitForExit();
                 }
             }
             catch (InvalidOperationException ex) when (ex.Message == "No process is associated with this object.")
