@@ -14,7 +14,7 @@ namespace PuppeteerSharp
     public class Launcher
     {
         #region Constants
-        private static readonly string[] _defaultArgs = {
+        internal static readonly string[] DefaultArgs = {
             "--disable-background-networking",
             "--disable-background-timer-throttling",
             "--disable-client-side-phishing-detection",
@@ -31,7 +31,7 @@ namespace PuppeteerSharp
             "--safebrowsing-disable-auto-update",
         };
 
-        public static readonly string[] _automationArgs = {
+        internal static readonly string[] AutomationArgs = {
             "--enable-automation",
             "--password-store=basic",
             "--use-mock-keychain"
@@ -43,7 +43,7 @@ namespace PuppeteerSharp
         private string _temporaryUserDataDir = null;
         private Connection _connection = null;
         private Timer _timer = null;
-        private LaunchOptions _currentOptions;
+        private LaunchOptions _options;
         private TaskCompletionSource<bool> _waitForChromeToClose;
         private static int _processCount = 0;
         #endregion
@@ -59,8 +59,9 @@ namespace PuppeteerSharp
 
         public async Task<Browser> LaunchAsync(LaunchOptions options, int chromiumRevision)
         {
-            _currentOptions = options;
-            var chromeArguments = new List<string>(_defaultArgs);
+            var chromeArguments = new List<string>(DefaultArgs);
+
+            _options = options;
 
             if (options.AppMode)
             {
@@ -68,19 +69,19 @@ namespace PuppeteerSharp
             }
             else
             {
-                chromeArguments.AddRange(_automationArgs);
+                chromeArguments.AddRange(AutomationArgs);
             }
 
-            if (options.Args.Any(i => i.StartsWith("--user-data-dir", StringComparison.Ordinal)))
+            if (!options.Args.Any(i => i.StartsWith("--user-data-dir", StringComparison.Ordinal)))
             {
                 if (string.IsNullOrEmpty(options.UserDataDir))
                 {
                     _temporaryUserDataDir = GetTemporaryDirectory();
-                    chromeArguments.Add($"--user-data-dir=${_temporaryUserDataDir}");
+                    chromeArguments.Add($"--user-data-dir={_temporaryUserDataDir}");
                 }
                 else
                 {
-                    chromeArguments.Add($"--user-data-dir=${options.UserDataDir}");
+                    chromeArguments.Add($"--user-data-dir={options.UserDataDir}");
                 }
             }
 
@@ -107,6 +108,10 @@ namespace PuppeteerSharp
                 var downloader = Downloader.CreateDefault();
                 var revisionInfo = downloader.RevisionInfo(Downloader.CurrentPlatform, chromiumRevision);
                 chromeExecutable = revisionInfo.ExecutablePath;
+            }
+            if (!File.Exists(chromeExecutable))
+            {
+                throw new FileNotFoundException("Failed to launch chrome! path to executable does not exist", chromeExecutable);
             }
 
             if (options.Args.Any())
@@ -142,14 +147,14 @@ namespace PuppeteerSharp
 
                 if (options.LogProcess)
                 {
-                    Console.WriteLine($"PROCESS COUNT: {++_processCount}");
+                    Console.WriteLine($"PROCESS COUNT: {Interlocked.Increment(ref _processCount)}");
                 }
 
                 return await Browser.CreateAsync(_connection, options, KillChrome);
             }
             catch (Exception ex)
             {
-                await ForceKillChrome();
+                ForceKillChrome();
                 throw new Exception("Failed to create connection", ex);
             }
 
@@ -228,9 +233,9 @@ namespace PuppeteerSharp
         {
             if (!IsChromeClosed)
             {
-                if (_currentOptions.LogProcess)
+                if (_options.LogProcess)
                 {
-                    Console.WriteLine($"PROCESS COUNT: {--_processCount}");
+                    Console.WriteLine($"PROCESS COUNT: {Interlocked.Decrement(ref _processCount)}");
                 }
 
                 IsChromeClosed = true;
@@ -251,7 +256,7 @@ namespace PuppeteerSharp
         {
             if (!string.IsNullOrEmpty(_temporaryUserDataDir))
             {
-                await ForceKillChrome();
+                ForceKillChrome();
             }
             else if (_connection != null)
             {
@@ -261,7 +266,7 @@ namespace PuppeteerSharp
             await _waitForChromeToClose.Task;
         }
 
-        private async Task ForceKillChrome()
+        private void ForceKillChrome()
         {
             try
             {
