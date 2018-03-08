@@ -184,7 +184,8 @@ namespace PuppeteerSharp
                     _client,
                     request,
                     (HttpStatusCode)e.MessageData.response.status,
-                    ((JObject)e.MessageData.response.headers).ToObject<Dictionary<string, object>>());
+                    ((JObject)e.MessageData.response.headers).ToObject<Dictionary<string, object>>(),
+                    e.MessageData.response.securityDetails?.ToObject<SecurityDetails>());
 
                 request.Response = response;
 
@@ -284,9 +285,9 @@ namespace PuppeteerSharp
             });
         }
 
-        private void HandleRequestRedirect(Request request, HttpStatusCode redirectStatus, Dictionary<string, object> redirectHeaders)
+        private void HandleRequestRedirect(Request request, HttpStatusCode redirectStatus, Dictionary<string, object> redirectHeaders, SecurityDetails securityDetails = null)
         {
-            var response = new Response(_client, request, redirectStatus, redirectHeaders);
+            var response = new Response(_client, request, redirectStatus, redirectHeaders, securityDetails);
             request.Response = response;
             _requestIdToRequest.Remove(request.RequestId);
 
@@ -346,7 +347,8 @@ namespace PuppeteerSharp
                 HandleRequestRedirect(
                     request,
                     (HttpStatusCode)e.MessageData.redirectResponse.status,
-                    e.MessageData.redirectResponse.headers.ToObject<Dictionary<string, object>>());
+                    e.MessageData.redirectResponse.headers.ToObject<Dictionary<string, object>>(),
+                    e.MessageData.redirectResponse.securityDetails?.ToObject<SecurityDetails>());
             }
 
             HandleRequestStart(

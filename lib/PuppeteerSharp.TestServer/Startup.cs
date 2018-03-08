@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -31,6 +32,8 @@ namespace PuppeteerSharp.TestServer
 
         public void Configure(IApplicationBuilder app)
         {
+            app.UseRewriter(new RewriteOptions()
+                .AddRedirect("plzredirect", "empty.html"));
             app.UseStaticFiles();
         }
     }

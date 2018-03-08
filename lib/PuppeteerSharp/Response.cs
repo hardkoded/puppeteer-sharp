@@ -13,7 +13,7 @@ namespace PuppeteerSharp
         private bool _ok;
         private string _url;
 
-        public Response(Session client, Request request, HttpStatusCode status, Dictionary<string, object> headers)
+        public Response(Session client, Request request, HttpStatusCode status, Dictionary<string, object> headers, SecurityDetails securityDetails)
         {
             _client = client;
             Request = request;
@@ -26,7 +26,7 @@ namespace PuppeteerSharp
             {
                 Headers[keyValue.Key] = keyValue.Value;
             }
-
+            SecurityDetails = securityDetails;
         }
 
         #region Properties
@@ -38,6 +38,7 @@ namespace PuppeteerSharp
         public Task<string> ContentTask => ContentTaskWrapper.Task;
         public TaskCompletionSource<string> ContentTaskWrapper { get; internal set; }
         public Request Request { get; internal set; }
+        public SecurityDetails SecurityDetails { get; internal set; }
         #endregion
 
         #region Public Methods
