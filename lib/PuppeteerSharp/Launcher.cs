@@ -274,6 +274,7 @@ namespace PuppeteerSharp
                 {
                     _chromeProcess.Kill();
                     _chromeProcess.WaitForExit();
+                    _chromeProcess.Close();
                 }
             }
             catch (InvalidOperationException ex) when (ex.Message == "No process is associated with this object.")
