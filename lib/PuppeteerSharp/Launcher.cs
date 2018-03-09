@@ -132,9 +132,9 @@ namespace PuppeteerSharp
                 _chromeProcess.StartInfo.RedirectStandardError = false;
             }
 
-            _chromeProcess.Exited += async (sender, e) =>
+            _chromeProcess.Exited += (sender, e) =>
             {
-                await AfterProcessExit();
+                AfterProcessExit();
             };
 
             try
@@ -229,7 +229,7 @@ namespace PuppeteerSharp
             _chromeProcess?.RemoveExitedEvent();
         }
 
-        private async Task AfterProcessExit()
+        private void AfterProcessExit()
         {
             if (!IsChromeClosed)
             {
@@ -239,7 +239,7 @@ namespace PuppeteerSharp
                 }
 
                 IsChromeClosed = true;
-
+                
                 if (_waitForChromeToClose.Task.Status != TaskStatus.RanToCompletion)
                 {
                     _waitForChromeToClose.SetResult(true);
@@ -247,7 +247,7 @@ namespace PuppeteerSharp
 
                 if (_temporaryUserDataDir != null)
                 {
-                    await Task.Factory.StartNew(path => Directory.Delete((string)path, true), _temporaryUserDataDir);
+                    Directory.Delete(_temporaryUserDataDir, true);
                 }
             }
         }
@@ -264,6 +264,7 @@ namespace PuppeteerSharp
             }
 
             await _waitForChromeToClose.Task;
+            
         }
 
         private void ForceKillChrome()
@@ -274,7 +275,6 @@ namespace PuppeteerSharp
                 {
                     _chromeProcess.Kill();
                     _chromeProcess.WaitForExit();
-                    _chromeProcess.Close();
                 }
             }
             catch (InvalidOperationException ex) when (ex.Message == "No process is associated with this object.")
