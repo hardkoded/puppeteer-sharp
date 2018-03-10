@@ -290,7 +290,7 @@ namespace PuppeteerSharp
 
             if (_temporaryUserDataDir != null)
             {
-                await TryDeleteUserDataDir();
+                await TryDeleteDirectory(_temporaryUserDataDir);
             }
 
             if (_waitForChromeToClose.Task.Status != TaskStatus.RanToCompletion)
