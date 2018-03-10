@@ -63,9 +63,8 @@ namespace PuppeteerSharp
             QueueId(id);
             await WebSocket.SendAsync(buffer, WebSocketMessageType.Text, true, default(CancellationToken));
 
-            //I don't know if this will be the final solution
-            //But for now we will prevent the WebSocket from failing after the process is killed 
-            //by the close mehotd
+            //I don't know if this will be the final solution.
+            //For now this will prevent the WebSocket from failing after the process is killed by the close method.
             if (method == CloseMessage)
             {
                 _closeMessageSent = true;
