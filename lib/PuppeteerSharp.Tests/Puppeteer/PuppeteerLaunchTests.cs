@@ -94,11 +94,12 @@ namespace PuppeteerSharp.Tests.Puppeteer
             var options = TestConstants.DefaultBrowserOptions();
             options.UserDataDir = userDataDir;
 
-            var browser = await PuppeteerSharp.Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision);
+            var launcher = new Launcher();
+            var browser = await launcher.LaunchAsync(options, TestConstants.ChromiumRevision);
             Assert.True(Directory.GetFiles(userDataDir).Length > 0);
             await browser.CloseAsync();
             Assert.True(Directory.GetFiles(userDataDir).Length > 0);
-            await Launcher.TryDeleteDirectory(userDataDir);
+            await launcher.TryDeleteUserDataDir();
         }
 
         [Fact]
@@ -108,11 +109,12 @@ namespace PuppeteerSharp.Tests.Puppeteer
             var options = TestConstants.DefaultBrowserOptions();
             options.Args = options.Args.Concat(new[] { $"--user-data-dir={userDataDir}" }).ToArray();
 
-            var browser = await PuppeteerSharp.Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision);
+            var launcher = new Launcher();
+            var browser = await launcher.LaunchAsync(options, TestConstants.ChromiumRevision);
             Assert.True(Directory.GetFiles(userDataDir).Length > 0);
             await browser.CloseAsync();
             Assert.True(Directory.GetFiles(userDataDir).Length > 0);
-            await Launcher.TryDeleteDirectory(userDataDir);
+            await launcher.TryDeleteUserDataDir();
         }
 
         [Fact]

@@ -46,6 +46,8 @@ namespace PuppeteerSharp
         private LaunchOptions _options;
         private TaskCompletionSource<bool> _waitForChromeToClose;
         private static int _processCount = 0;
+
+        private const string UserDataDirArgument = "--user-data-dir";
         #endregion
 
         #region Properties
@@ -73,17 +75,22 @@ namespace PuppeteerSharp
                 chromeArguments.AddRange(AutomationArgs);
             }
 
-            if (!options.Args.Any(i => i.StartsWith("--user-data-dir", StringComparison.Ordinal)))
+            var userDataDirOption = options.Args.FirstOrDefault(i => i.StartsWith(UserDataDirArgument, StringComparison.Ordinal));
+            if (string.IsNullOrEmpty(userDataDirOption))
             {
                 if (string.IsNullOrEmpty(options.UserDataDir))
                 {
                     _temporaryUserDataDir = GetTemporaryDirectory();
-                    chromeArguments.Add($"--user-data-dir={_temporaryUserDataDir}");
+                    chromeArguments.Add($"{UserDataDirArgument}={_temporaryUserDataDir}");
                 }
                 else
                 {
-                    chromeArguments.Add($"--user-data-dir={options.UserDataDir}");
+                    chromeArguments.Add($"{UserDataDirArgument}={options.UserDataDir}");
                 }
+            }
+            else
+            {
+                _options.UserDataDir = userDataDirOption.Replace($"{UserDataDirArgument}=", string.Empty);
             }
 
             if (options.Devtools)
@@ -161,8 +168,13 @@ namespace PuppeteerSharp
 
         }
 
-        public static async Task TryDeleteDirectory(string folder, int times = 10, TimeSpan? delay = null)
+        public async Task TryDeleteUserDataDir(int times = 10, TimeSpan? delay = null)
         {
+            if (!IsChromeClosed)
+            {
+                throw new InvalidOperationException("Unable to delete user data dir, Chorme is still open");
+            }
+
             if (times <= 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(times));
@@ -173,6 +185,7 @@ namespace PuppeteerSharp
                 delay = new TimeSpan(0, 0, 0, 0, 100);
             }
 
+            string folder = string.IsNullOrEmpty(_temporaryUserDataDir) ? _options.UserDataDir : _temporaryUserDataDir;
             int attempts = 0;
             while (true)
             {
@@ -290,7 +303,7 @@ namespace PuppeteerSharp
 
             if (_temporaryUserDataDir != null)
             {
-                await TryDeleteDirectory(_temporaryUserDataDir);
+                await TryDeleteUserDataDir();
             }
 
             if (_waitForChromeToClose.Task.Status != TaskStatus.RanToCompletion)
