@@ -136,6 +136,12 @@ namespace PuppeteerSharp
             }
 
         }
+        internal string GetExecutablePath()
+        {
+            var downloader = Downloader.CreateDefault();
+            var revisionInfo = downloader.RevisionInfo(Downloader.CurrentPlatform, Downloader.DefaultRevision);
+            return revisionInfo.ExecutablePath;
+        }
 
         private Task<string> WaitForEndpoint(Process chromeProcess, int timeout, bool dumpio)
         {
