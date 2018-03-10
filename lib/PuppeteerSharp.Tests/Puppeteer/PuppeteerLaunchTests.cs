@@ -9,7 +9,7 @@ using Xunit;
 namespace PuppeteerSharp.Tests.Puppeteer
 {
     [Collection("PuppeteerLoaderFixture collection")]
-    public class PuppeteerLaunchTests
+    public class PuppeteerLaunchTests : PuppeteerBaseTest
     {
         [Fact]
         public async Task ShouldSupportIgnoreHTTPSErrorsOption()
@@ -98,7 +98,7 @@ namespace PuppeteerSharp.Tests.Puppeteer
             Assert.True(Directory.GetFiles(userDataDir).Length > 0);
             await browser.CloseAsync();
             Assert.True(Directory.GetFiles(userDataDir).Length > 0);
-            Directory.Delete(userDataDir, true);
+            await Launcher.TryDeleteFolder(userDataDir);
         }
 
         [Fact]
@@ -112,7 +112,7 @@ namespace PuppeteerSharp.Tests.Puppeteer
             Assert.True(Directory.GetFiles(userDataDir).Length > 0);
             await browser.CloseAsync();
             Assert.True(Directory.GetFiles(userDataDir).Length > 0);
-            Directory.Delete(userDataDir, true);
+            await Launcher.TryDeleteFolder(userDataDir);
         }
 
         [Fact]

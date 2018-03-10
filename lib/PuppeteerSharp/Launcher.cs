@@ -57,6 +57,7 @@ namespace PuppeteerSharp
             _waitForChromeToClose = new TaskCompletionSource<bool>();
         }
 
+        #region Public methods
         public async Task<Browser> LaunchAsync(LaunchOptions options, int chromiumRevision)
         {
             var chromeArguments = new List<string>(DefaultArgs);
@@ -132,9 +133,9 @@ namespace PuppeteerSharp
                 _chromeProcess.StartInfo.RedirectStandardError = false;
             }
 
-            _chromeProcess.Exited += (sender, e) =>
+            _chromeProcess.Exited += async (sender, e) =>
             {
-                AfterProcessExit();
+                await AfterProcessExit();
             };
 
             try
@@ -159,6 +160,50 @@ namespace PuppeteerSharp
             }
 
         }
+
+        public static async Task TryDeleteFolder(string folder, int times = 10, TimeSpan? delay = null)
+        {
+            if (times <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(times));
+            }
+
+            if (delay == null)
+            {
+                delay = new TimeSpan(0, 0, 0, 0, 100);
+            }
+
+            int attempts = 0;
+            while (true)
+            {
+                try
+                {
+                    attempts++;
+                    Directory.Delete(folder, true);
+                    break;
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    if (attempts == times)
+                    {
+                        throw;
+                    }
+
+                    await Task.Delay(delay.Value);
+                }
+            }
+        }
+
+        public static string GetTemporaryDirectory()
+        {
+            string tempDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            Directory.CreateDirectory(tempDirectory);
+            return tempDirectory;
+        }
+
+        #endregion
+
+        #region Private methods
 
         private Task<string> WaitForEndpoint(Process chromeProcess, int timeout, bool dumpio)
         {
@@ -229,7 +274,7 @@ namespace PuppeteerSharp
             _chromeProcess?.RemoveExitedEvent();
         }
 
-        private void AfterProcessExit()
+        private async Task AfterProcessExit()
         {
             if (!IsChromeClosed)
             {
@@ -239,15 +284,15 @@ namespace PuppeteerSharp
                 }
 
                 IsChromeClosed = true;
-                
-                if (_waitForChromeToClose.Task.Status != TaskStatus.RanToCompletion)
-                {
-                    _waitForChromeToClose.SetResult(true);
-                }
 
                 if (_temporaryUserDataDir != null)
                 {
-                    Directory.Delete(_temporaryUserDataDir, true);
+                    await TryDeleteFolder(_temporaryUserDataDir);
+                }
+
+                if (_waitForChromeToClose.Task.Status != TaskStatus.RanToCompletion)
+                {
+                    _waitForChromeToClose.SetResult(true);
                 }
             }
         }
@@ -283,6 +328,7 @@ namespace PuppeteerSharp
             }
         }
 
+
         private static void SetEnvVariables(IDictionary<string, string> environment, IDictionary<string, string> customEnv,
                                             IDictionary realEnv)
         {
@@ -300,11 +346,7 @@ namespace PuppeteerSharp
             }
         }
 
-        public static string GetTemporaryDirectory()
-        {
-            string tempDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-            Directory.CreateDirectory(tempDirectory);
-            return tempDirectory;
-        }
+        #endregion
+        
     }
 }
