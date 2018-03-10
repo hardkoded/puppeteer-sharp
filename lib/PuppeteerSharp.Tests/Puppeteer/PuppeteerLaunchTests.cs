@@ -98,7 +98,7 @@ namespace PuppeteerSharp.Tests.Puppeteer
             Assert.True(Directory.GetFiles(userDataDir).Length > 0);
             await browser.CloseAsync();
             Assert.True(Directory.GetFiles(userDataDir).Length > 0);
-            await Launcher.TryDeleteFolder(userDataDir);
+            await Launcher.TryDeleteDirectory(userDataDir);
         }
 
         [Fact]
@@ -112,7 +112,7 @@ namespace PuppeteerSharp.Tests.Puppeteer
             Assert.True(Directory.GetFiles(userDataDir).Length > 0);
             await browser.CloseAsync();
             Assert.True(Directory.GetFiles(userDataDir).Length > 0);
-            await Launcher.TryDeleteFolder(userDataDir);
+            await Launcher.TryDeleteDirectory(userDataDir);
         }
 
         [Fact]

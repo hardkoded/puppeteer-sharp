@@ -161,7 +161,7 @@ namespace PuppeteerSharp
 
         }
 
-        public static async Task TryDeleteFolder(string folder, int times = 10, TimeSpan? delay = null)
+        public static async Task TryDeleteDirectory(string folder, int times = 10, TimeSpan? delay = null)
         {
             if (times <= 0)
             {
@@ -287,7 +287,7 @@ namespace PuppeteerSharp
 
                 if (_temporaryUserDataDir != null)
                 {
-                    await TryDeleteFolder(_temporaryUserDataDir);
+                    await TryDeleteDirectory(_temporaryUserDataDir);
                 }
 
                 if (_waitForChromeToClose.Task.Status != TaskStatus.RanToCompletion)
@@ -309,7 +309,7 @@ namespace PuppeteerSharp
             }
 
             await _waitForChromeToClose.Task;
-            
+
         }
 
         private void ForceKillChrome()
@@ -347,6 +347,6 @@ namespace PuppeteerSharp
         }
 
         #endregion
-        
+
     }
 }
