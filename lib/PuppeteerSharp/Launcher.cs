@@ -276,25 +276,28 @@ namespace PuppeteerSharp
 
         private async Task AfterProcessExit()
         {
-            if (!IsChromeClosed)
+            if (IsChromeClosed)
             {
-                if (_options.LogProcess)
-                {
-                    Console.WriteLine($"PROCESS COUNT: {Interlocked.Decrement(ref _processCount)}");
-                }
-
-                IsChromeClosed = true;
-
-                if (_temporaryUserDataDir != null)
-                {
-                    await TryDeleteDirectory(_temporaryUserDataDir);
-                }
-
-                if (_waitForChromeToClose.Task.Status != TaskStatus.RanToCompletion)
-                {
-                    _waitForChromeToClose.SetResult(true);
-                }
+                return;
             }
+
+            if (_options.LogProcess)
+            {
+                Console.WriteLine($"PROCESS COUNT: {Interlocked.Decrement(ref _processCount)}");
+            }
+
+            IsChromeClosed = true;
+
+            if (_temporaryUserDataDir != null)
+            {
+                await TryDeleteUserDataDir();
+            }
+
+            if (_waitForChromeToClose.Task.Status != TaskStatus.RanToCompletion)
+            {
+                _waitForChromeToClose.SetResult(true);
+            }
+
         }
 
         private async Task KillChrome()
