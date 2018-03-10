@@ -446,10 +446,13 @@ namespace PuppeteerSharp
 
         public async Task CloseAsync()
         {
-            await _client?.Connection?.SendAsync("Target.closeTarget", new
+            if (_client != null && !_client.Connection.IsClosed)
             {
-                targetId = _target.TargetId
-            });
+                await _client.Connection.SendAsync("Target.closeTarget", new
+                {
+                    targetId = _target.TargetId
+                });
+            }
         }
 
         #endregion

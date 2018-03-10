@@ -46,7 +46,7 @@ namespace PuppeteerSharp
         public bool IgnoreHTTPSErrors { get; set; }
         public bool AppMode { get; set; }
         internal TaskQueue ScreenshotTaskQueue { get; set; }
-
+        public bool IsClosed { get; internal set; }
         #endregion
 
         #region Public Methods
@@ -84,9 +84,14 @@ namespace PuppeteerSharp
 
         public async Task CloseAsync()
         {
-            await _closeCallBack();
-            Connection.Dispose();
-            Closed?.Invoke(this, new EventArgs());
+            if (!IsClosed)
+            {
+                IsClosed = true;
+
+                await _closeCallBack();
+                Connection.Dispose();
+                Closed?.Invoke(this, new EventArgs());
+            }
         }
         #endregion
 
