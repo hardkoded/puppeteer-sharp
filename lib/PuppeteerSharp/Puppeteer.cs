@@ -6,7 +6,7 @@ namespace PuppeteerSharp
     {
         public static string[] DefaultArgs => Launcher.DefaultArgs;
 
-        public static string GetExecutablePath() => new Launcher().GetExecutablePath();
+        public static string GetExecutablePath() => Launcher.GetExecutablePath();
 
         public static async Task<Browser> LaunchAsync(LaunchOptions options, int chromiumRevision)
         {

@@ -136,7 +136,8 @@ namespace PuppeteerSharp
             }
 
         }
-        internal string GetExecutablePath()
+
+        internal static string GetExecutablePath()
         {
             var downloader = Downloader.CreateDefault();
             var revisionInfo = downloader.RevisionInfo(Downloader.CurrentPlatform, Downloader.DefaultRevision);
