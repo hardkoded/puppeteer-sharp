@@ -34,6 +34,9 @@ namespace PuppeteerSharp
         private Dictionary<string, Session> _sessions;
         private bool _closed = false;
         private TaskCompletionSource<bool> _connectionCloseTask;
+
+        private bool _closeMessageSent;
+        private const string CloseMessage = "Browser.close";
         #endregion
 
         #region Properties
@@ -59,6 +62,14 @@ namespace PuppeteerSharp
             var buffer = new ArraySegment<Byte>(encoded, 0, encoded.Length);
             QueueId(id);
             await WebSocket.SendAsync(buffer, WebSocketMessageType.Text, true, default(CancellationToken));
+
+            //I don't know if this will be the final solution.
+            //For now this will prevent the WebSocket from failing after the process is killed by the close method.
+            if (method == CloseMessage)
+            {
+                _closeMessageSent = true;
+            }
+
             return await _responses[id].Task;
         }
 
@@ -80,13 +91,16 @@ namespace PuppeteerSharp
 
         private void OnClose()
         {
-            _closed = true;
-            _connectionCloseTask.SetResult(true);
+            if (!_closed)
+            {
+                _closed = true;
+                _connectionCloseTask.SetResult(true);
 
-            Closed?.Invoke(this, new EventArgs());
+                Closed?.Invoke(this, new EventArgs());
 
-            _responses.Clear();
-            _sessions.Clear();
+                _responses.Clear();
+                _sessions.Clear();
+            }
         }
 
         /// <summary>
@@ -102,6 +116,7 @@ namespace PuppeteerSharp
             {
                 if (_closed)
                 {
+                    OnClose();
                     return null;
                 }
 
@@ -119,10 +134,23 @@ namespace PuppeteerSharp
 
                     if (_closed)
                     {
+                        OnClose();
                         return null;
                     }
 
-                    var result = socketTask.Result;
+                    WebSocketReceiveResult result = null;
+                    try
+                    {
+                        result = socketTask.Result;
+                    }
+                    catch (AggregateException) when (_closeMessageSent)
+                    {
+                        if (!_closed)
+                        {
+                            OnClose();
+                            return null;
+                        }
+                    }
 
                     endOfMessage = result.EndOfMessage;
 

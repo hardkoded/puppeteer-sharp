@@ -13,6 +13,7 @@ namespace PuppeteerSharp
 {
     public class Launcher
     {
+        #region Constants
         internal static readonly string[] DefaultArgs = {
             "--disable-background-networking",
             "--disable-background-timer-throttling",
@@ -35,16 +36,35 @@ namespace PuppeteerSharp
             "--password-store=basic",
             "--use-mock-keychain"
         };
+        #endregion
 
-        private bool _chromeClosed;
+        #region Private members
         private Process _chromeProcess;
         private string _temporaryUserDataDir = null;
         private Connection _connection = null;
         private Timer _timer = null;
+        private LaunchOptions _options;
+        private TaskCompletionSource<bool> _waitForChromeToClose;
+        private static int _processCount = 0;
 
-        internal async Task<Browser> LaunchAsync(LaunchOptions options, int chromiumRevision)
+        private const string UserDataDirArgument = "--user-data-dir";
+        #endregion
+
+        #region Properties
+        public bool IsChromeClosed { get; internal set; }
+        #endregion
+
+        public Launcher()
+        {
+            _waitForChromeToClose = new TaskCompletionSource<bool>();
+        }
+
+        #region Public methods
+        public async Task<Browser> LaunchAsync(LaunchOptions options, int chromiumRevision)
         {
             var chromeArguments = new List<string>(DefaultArgs);
+
+            _options = options;
 
             if (options.AppMode)
             {
@@ -55,17 +75,22 @@ namespace PuppeteerSharp
                 chromeArguments.AddRange(AutomationArgs);
             }
 
-            if (!options.Args.Any(i => i.StartsWith("--user-data-dir", StringComparison.Ordinal)))
+            var userDataDirOption = options.Args.FirstOrDefault(i => i.StartsWith(UserDataDirArgument, StringComparison.Ordinal));
+            if (string.IsNullOrEmpty(userDataDirOption))
             {
                 if (string.IsNullOrEmpty(options.UserDataDir))
                 {
                     _temporaryUserDataDir = GetTemporaryDirectory();
-                    chromeArguments.Add($"--user-data-dir={_temporaryUserDataDir}");
+                    chromeArguments.Add($"{UserDataDirArgument}={_temporaryUserDataDir}");
                 }
                 else
                 {
-                    chromeArguments.Add($"--user-data-dir={options.UserDataDir}");
+                    chromeArguments.Add($"{UserDataDirArgument}={options.UserDataDir}");
                 }
+            }
+            else
+            {
+                _options.UserDataDir = userDataDirOption.Replace($"{UserDataDirArgument}=", string.Empty);
             }
 
             if (options.Devtools)
@@ -103,6 +128,7 @@ namespace PuppeteerSharp
             }
 
             _chromeProcess = new Process();
+            _chromeProcess.EnableRaisingEvents = true;
             _chromeProcess.StartInfo.FileName = chromeExecutable;
             _chromeProcess.StartInfo.Arguments = string.Join(" ", chromeArguments);
 
@@ -116,8 +142,7 @@ namespace PuppeteerSharp
 
             _chromeProcess.Exited += async (sender, e) =>
             {
-                _chromeClosed = true;
-                await KillChrome();
+                await AfterProcessExit();
             };
 
             try
@@ -127,15 +152,71 @@ namespace PuppeteerSharp
                 var keepAliveInterval = options.KeepAliveInterval;
 
                 _connection = await Connection.Create(browserWSEndpoint, connectionDelay, keepAliveInterval);
+
+                if (options.LogProcess)
+                {
+                    Console.WriteLine($"PROCESS COUNT: {Interlocked.Increment(ref _processCount)}");
+                }
+
                 return await Browser.CreateAsync(_connection, options, KillChrome);
             }
             catch (Exception ex)
             {
-                await ForceKillChrome();
+                ForceKillChrome();
                 throw new Exception("Failed to create connection", ex);
             }
 
         }
+
+        public async Task TryDeleteUserDataDir(int times = 10, TimeSpan? delay = null)
+        {
+            if (!IsChromeClosed)
+            {
+                throw new InvalidOperationException("Unable to delete user data dir, Chorme is still open");
+            }
+
+            if (times <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(times));
+            }
+
+            if (delay == null)
+            {
+                delay = new TimeSpan(0, 0, 0, 0, 100);
+            }
+
+            string folder = string.IsNullOrEmpty(_temporaryUserDataDir) ? _options.UserDataDir : _temporaryUserDataDir;
+            int attempts = 0;
+            while (true)
+            {
+                try
+                {
+                    attempts++;
+                    Directory.Delete(folder, true);
+                    break;
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    if (attempts == times)
+                    {
+                        throw;
+                    }
+
+                    await Task.Delay(delay.Value);
+                }
+            }
+        }
+
+        public static string GetTemporaryDirectory()
+        {
+            string tempDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            Directory.CreateDirectory(tempDirectory);
+            return tempDirectory;
+        }
+
+        #endregion
+
+        #region Private methods
 
         private Task<string> WaitForEndpoint(Process chromeProcess, int timeout, bool dumpio)
         {
@@ -144,6 +225,14 @@ namespace PuppeteerSharp
 
             chromeProcess.StartInfo.RedirectStandardOutput = true;
             chromeProcess.StartInfo.RedirectStandardError = true;
+
+            EventHandler exitedEvent = (sender, e) =>
+            {
+                CleanUp();
+
+                var error = chromeProcess.StandardError.ReadToEnd();
+                taskWrapper.SetException(new ChromeProcessException($"Failed to launch chrome! {error}"));
+            };
 
             chromeProcess.ErrorDataReceived += (sender, e) =>
             {
@@ -166,16 +255,12 @@ namespace PuppeteerSharp
                         chromeProcess.StartInfo.RedirectStandardOutput = false;
                         chromeProcess.StartInfo.RedirectStandardError = false;
                     }
+
+                    chromeProcess.Exited -= exitedEvent;
                 }
             };
 
-            chromeProcess.Exited += (sender, e) =>
-            {
-                CleanUp();
-
-                var error = chromeProcess.StandardError.ReadToEnd();
-                taskWrapper.SetException(new ChromeProcessException($"Failed to launch chrome! {error}"));
-            };
+            chromeProcess.Exited += exitedEvent;
 
             if (timeout > 0)
             {
@@ -202,31 +287,63 @@ namespace PuppeteerSharp
             _chromeProcess?.RemoveExitedEvent();
         }
 
+        private async Task AfterProcessExit()
+        {
+            if (IsChromeClosed)
+            {
+                return;
+            }
+
+            if (_options.LogProcess)
+            {
+                Console.WriteLine($"PROCESS COUNT: {Interlocked.Decrement(ref _processCount)}");
+            }
+
+            IsChromeClosed = true;
+
+            if (_temporaryUserDataDir != null)
+            {
+                await TryDeleteUserDataDir();
+            }
+
+            if (_waitForChromeToClose.Task.Status != TaskStatus.RanToCompletion)
+            {
+                _waitForChromeToClose.SetResult(true);
+            }
+
+        }
+
         private async Task KillChrome()
         {
             if (!string.IsNullOrEmpty(_temporaryUserDataDir))
             {
-                await ForceKillChrome();
+                ForceKillChrome();
             }
             else if (_connection != null)
             {
                 await _connection.SendAsync("Browser.close", null);
             }
+
+            await _waitForChromeToClose.Task;
+
         }
 
-        private async Task ForceKillChrome()
+        private void ForceKillChrome()
         {
-            if (_chromeProcess.Id != 0 && Process.GetProcessById(_chromeProcess.Id) != null)
+            try
             {
-                _chromeProcess.Kill();
-                _chromeProcess.WaitForExit();
+                if (_chromeProcess.Id != 0 && Process.GetProcessById(_chromeProcess.Id) != null)
+                {
+                    _chromeProcess.Kill();
+                    _chromeProcess.WaitForExit();
+                }
             }
-
-            if (_temporaryUserDataDir != null)
+            catch (InvalidOperationException ex) when (ex.Message == "No process is associated with this object.")
             {
-                await Task.Factory.StartNew(path => Directory.Delete((string)path, true), _temporaryUserDataDir);
+                // swallow
             }
         }
+
 
         private static void SetEnvVariables(IDictionary<string, string> environment, IDictionary<string, string> customEnv,
                                             IDictionary realEnv)
@@ -245,11 +362,7 @@ namespace PuppeteerSharp
             }
         }
 
-        public static string GetTemporaryDirectory()
-        {
-            string tempDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-            Directory.CreateDirectory(tempDirectory);
-            return tempDirectory;
-        }
+        #endregion
+
     }
 }
