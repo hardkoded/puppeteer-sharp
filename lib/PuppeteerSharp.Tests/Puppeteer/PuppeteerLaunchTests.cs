@@ -9,7 +9,7 @@ using Xunit;
 namespace PuppeteerSharp.Tests.Puppeteer
 {
     [Collection("PuppeteerLoaderFixture collection")]
-    public class PuppeteerLaunchTests
+    public class PuppeteerLaunchTests : PuppeteerBaseTest
     {
         [Fact]
         public async Task ShouldSupportIgnoreHTTPSErrorsOption()
@@ -94,11 +94,12 @@ namespace PuppeteerSharp.Tests.Puppeteer
             var options = TestConstants.DefaultBrowserOptions();
             options.UserDataDir = userDataDir;
 
-            var browser = await PuppeteerSharp.Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision);
+            var launcher = new Launcher();
+            var browser = await launcher.LaunchAsync(options, TestConstants.ChromiumRevision);
             Assert.True(Directory.GetFiles(userDataDir).Length > 0);
             await browser.CloseAsync();
             Assert.True(Directory.GetFiles(userDataDir).Length > 0);
-            // Directory.Delete(userDataDir, true);
+            await launcher.TryDeleteUserDataDir();
         }
 
         [Fact]
@@ -108,11 +109,12 @@ namespace PuppeteerSharp.Tests.Puppeteer
             var options = TestConstants.DefaultBrowserOptions();
             options.Args = options.Args.Concat(new[] { $"--user-data-dir={userDataDir}" }).ToArray();
 
-            var browser = await PuppeteerSharp.Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision);
+            var launcher = new Launcher();
+            var browser = await launcher.LaunchAsync(options, TestConstants.ChromiumRevision);
             Assert.True(Directory.GetFiles(userDataDir).Length > 0);
             await browser.CloseAsync();
             Assert.True(Directory.GetFiles(userDataDir).Length > 0);
-            // Directory.Delete(userDataDir, true);
+            await launcher.TryDeleteUserDataDir();
         }
 
         [Fact]
@@ -120,6 +122,22 @@ namespace PuppeteerSharp.Tests.Puppeteer
         {
             var args = PuppeteerSharp.Puppeteer.DefaultArgs;
             Assert.Contains("--no-first-run", args);
+        }
+
+        [Fact]
+        public async Task ChromeShouldBeClosed()
+        {
+            var options = TestConstants.DefaultBrowserOptions();
+            var launcher = new Launcher();
+            var browser = await launcher.LaunchAsync(options, TestConstants.ChromiumRevision);
+            var page = await browser.NewPageAsync();
+
+            var response = await page.GoToAsync("https://www.google.com");
+            Assert.Equal(response.Status.ToString(), "OK");
+
+            await browser.CloseAsync();
+
+            Assert.True(launcher.IsChromeClosed);
         }
     }
 }
