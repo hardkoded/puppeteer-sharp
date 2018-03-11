@@ -84,15 +84,18 @@ namespace PuppeteerSharp
 
         public async Task CloseAsync()
         {
-            if (!IsClosed)
+            if (IsClosed)
             {
-                IsClosed = true;
-
-                await _closeCallBack();
-                Connection.Dispose();
-                Closed?.Invoke(this, new EventArgs());
+                return;
             }
+
+            IsClosed = true;
+
+            await _closeCallBack();
+            Connection.Dispose();
+            Closed?.Invoke(this, new EventArgs());
         }
+
         #endregion
 
         #region Private Methods

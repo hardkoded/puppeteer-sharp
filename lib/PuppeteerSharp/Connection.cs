@@ -92,16 +92,18 @@ namespace PuppeteerSharp
 
         private void OnClose()
         {
-            if (!IsClosed)
+            if (IsClosed)
             {
-                IsClosed = true;
-                _connectionCloseTask.SetResult(true);
-
-                Closed?.Invoke(this, new EventArgs());
-
-                _responses.Clear();
-                _sessions.Clear();
+                return;
             }
+
+            IsClosed = true;
+            _connectionCloseTask.SetResult(true);
+
+            Closed?.Invoke(this, new EventArgs());
+
+            _responses.Clear();
+            _sessions.Clear();
         }
 
         /// <summary>
