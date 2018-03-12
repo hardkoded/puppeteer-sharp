@@ -446,7 +446,7 @@ namespace PuppeteerSharp
 
         public async Task CloseAsync()
         {
-            if (_client != null && !_client.Connection.IsClosed)
+            if (!(_client?.Connection?.IsClosed ?? true))
             {
                 await _client.Connection.SendAsync("Target.closeTarget", new
                 {
