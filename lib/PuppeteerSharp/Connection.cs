@@ -32,7 +32,6 @@ namespace PuppeteerSharp
         private int _lastId;
         private Dictionary<int, TaskCompletionSource<dynamic>> _responses;
         private Dictionary<string, Session> _sessions;
-        private bool _closed = false;
         private TaskCompletionSource<bool> _connectionCloseTask;
 
         private bool _closeMessageSent;
@@ -45,6 +44,8 @@ namespace PuppeteerSharp
         public WebSocket WebSocket { get; set; }
         public event EventHandler Closed;
         public event EventHandler<MessageEventArgs> MessageReceived;
+        public bool IsClosed { get; internal set; }
+
         #endregion
 
         #region Public Methods
@@ -91,16 +92,18 @@ namespace PuppeteerSharp
 
         private void OnClose()
         {
-            if (!_closed)
+            if (IsClosed)
             {
-                _closed = true;
-                _connectionCloseTask.SetResult(true);
-
-                Closed?.Invoke(this, new EventArgs());
-
-                _responses.Clear();
-                _sessions.Clear();
+                return;
             }
+
+            IsClosed = true;
+            _connectionCloseTask.SetResult(true);
+
+            Closed?.Invoke(this, new EventArgs());
+
+            _responses.Clear();
+            _sessions.Clear();
         }
 
         /// <summary>
@@ -114,7 +117,7 @@ namespace PuppeteerSharp
             //If it's not in the list we wait for it
             while (true)
             {
-                if (_closed)
+                if (IsClosed)
                 {
                     OnClose();
                     return null;
@@ -132,7 +135,7 @@ namespace PuppeteerSharp
                         socketTask
                     );
 
-                    if (_closed)
+                    if (IsClosed)
                     {
                         OnClose();
                         return null;
@@ -145,7 +148,7 @@ namespace PuppeteerSharp
                     }
                     catch (AggregateException) when (_closeMessageSent)
                     {
-                        if (!_closed)
+                        if (!IsClosed)
                         {
                             OnClose();
                             return null;

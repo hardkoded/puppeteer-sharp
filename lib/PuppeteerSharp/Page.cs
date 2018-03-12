@@ -10,7 +10,7 @@ using System.Dynamic;
 
 namespace PuppeteerSharp
 {
-    public class Page
+    public class Page : IDisposable
     {
         private Session _client;
         private bool _ignoreHTTPSErrors;
@@ -446,10 +446,13 @@ namespace PuppeteerSharp
 
         public async Task CloseAsync()
         {
-            await _client?.Connection?.SendAsync("Target.closeTarget", new
+            if (!(_client?.Connection?.IsClosed ?? true))
             {
-                targetId = _target.TargetId
-            });
+                await _client.Connection.SendAsync("Target.closeTarget", new
+                {
+                    targetId = _target.TargetId
+                });
+            }
         }
 
         #endregion
@@ -691,8 +694,13 @@ namespace PuppeteerSharp
                 throw new NavigationException(response.errorText.ToString());
             }
         }
-
         #endregion
 
+        #region IDisposable
+        public void Dispose()
+        {
+            CloseAsync().GetAwaiter().GetResult();
+        }
+        #endregion
     }
 }

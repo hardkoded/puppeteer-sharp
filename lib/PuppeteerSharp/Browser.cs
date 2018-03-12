@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace PuppeteerSharp
 {
-    public class Browser
+    public class Browser : IDisposable
     {
         public Browser(Connection connection, LaunchOptions options, Func<Task> closeCallBack)
         {
@@ -46,7 +46,7 @@ namespace PuppeteerSharp
         public bool IgnoreHTTPSErrors { get; set; }
         public bool AppMode { get; set; }
         internal TaskQueue ScreenshotTaskQueue { get; set; }
-
+        public bool IsClosed { get; internal set; }
         #endregion
 
         #region Public Methods
@@ -84,10 +84,18 @@ namespace PuppeteerSharp
 
         public async Task CloseAsync()
         {
+            if (IsClosed)
+            {
+                return;
+            }
+
+            IsClosed = true;
+
             await _closeCallBack();
             Connection.Dispose();
             Closed?.Invoke(this, new EventArgs());
         }
+
         #endregion
 
         #region Private Methods
@@ -169,6 +177,13 @@ namespace PuppeteerSharp
             return browser;
         }
 
+        #endregion
+
+        #region IDisposable
+        public void Dispose()
+        {
+            CloseAsync().GetAwaiter().GetResult();
+        }
         #endregion
     }
 }

@@ -16,138 +16,150 @@ namespace PuppeteerSharp.Tests.Page
         {
             var outputFile = Path.Combine(BaseDirectory, "output.png");
             var fileInfo = new FileInfo(outputFile);
-            var page = await Browser.NewPageAsync();
 
-            await page.SetViewport(new ViewPortOptions
+            using (var page = await Browser.NewPageAsync())
             {
-                Width = 500,
-                Height = 500
-            });
+                await page.SetViewport(new ViewPortOptions
+                {
+                    Width = 500,
+                    Height = 500
+                });
 
-            await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+                await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
 
-            if (fileInfo.Exists)
-            {
-                fileInfo.Delete();
-            }
+                if (fileInfo.Exists)
+                {
+                    fileInfo.Delete();
+                }
 
-            await page.ScreenshotAsync(outputFile);
+                await page.ScreenshotAsync(outputFile);
 
-            fileInfo = new FileInfo(outputFile);
-            Assert.True(new FileInfo(outputFile).Length > 0);
-            Assert.True(PixelMatch("screenshot-sanity.png", outputFile));
+                fileInfo = new FileInfo(outputFile);
+                Assert.True(new FileInfo(outputFile).Length > 0);
+                Assert.True(PixelMatch("screenshot-sanity.png", outputFile));
 
-            if (fileInfo.Exists)
-            {
-                fileInfo.Delete();
+                if (fileInfo.Exists)
+                {
+                    fileInfo.Delete();
+                }
             }
         }
 
         [Fact]
         public async Task ShouldWork()
         {
-            var page = await Browser.NewPageAsync();
-            await page.SetViewport(new ViewPortOptions
+            using (var page = await Browser.NewPageAsync())
             {
-                Width = 500,
-                Height = 500
-            });
-            await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
-            var screenshot = await page.ScreenshotStreamAsync();
-            Assert.True(PixelMatch("screenshot-sanity.png", screenshot));
+                await page.SetViewport(new ViewPortOptions
+                {
+                    Width = 500,
+                    Height = 500
+                });
+                await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+                var screenshot = await page.ScreenshotStreamAsync();
+                Assert.True(PixelMatch("screenshot-sanity.png", screenshot));
+            }
         }
 
         [Fact]
         public async Task ShouldClipRect()
         {
-            var page = await Browser.NewPageAsync();
-            await page.SetViewport(new ViewPortOptions
+            using (var page = await Browser.NewPageAsync())
             {
-                Width = 500,
-                Height = 500
-            });
-            await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
-            var screenshot = await page.ScreenshotStreamAsync(new ScreenshotOptions
-            {
-                Clip = new Clip
+                await page.SetViewport(new ViewPortOptions
                 {
-                    X = 50,
-                    Y = 100,
-                    Width = 150,
-                    Height = 100
-                }
-            });
-            Assert.True(PixelMatch("screenshot-clip-rect.png", screenshot));
+                    Width = 500,
+                    Height = 500
+                });
+                await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+                var screenshot = await page.ScreenshotStreamAsync(new ScreenshotOptions
+                {
+                    Clip = new Clip
+                    {
+                        X = 50,
+                        Y = 100,
+                        Width = 150,
+                        Height = 100
+                    }
+                });
+                Assert.True(PixelMatch("screenshot-clip-rect.png", screenshot));
+            }
         }
 
         [Fact]
         public async Task ShouldWorkForOffscreenClip()
         {
-            var page = await Browser.NewPageAsync();
-            await page.SetViewport(new ViewPortOptions
+            using (var page = await Browser.NewPageAsync())
             {
-                Width = 500,
-                Height = 500
-            });
-            await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
-            var screenshot = await page.ScreenshotStreamAsync(new ScreenshotOptions
-            {
-                Clip = new Clip
+                await page.SetViewport(new ViewPortOptions
                 {
-                    X = 50,
-                    Y = 600,
-                    Width = 100,
-                    Height = 100
-                }
-            });
-            Assert.True(PixelMatch("screenshot-offscreen-clip.png", screenshot));
+                    Width = 500,
+                    Height = 500
+                });
+                await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+                var screenshot = await page.ScreenshotStreamAsync(new ScreenshotOptions
+                {
+                    Clip = new Clip
+                    {
+                        X = 50,
+                        Y = 600,
+                        Width = 100,
+                        Height = 100
+                    }
+                });
+                Assert.True(PixelMatch("screenshot-offscreen-clip.png", screenshot));
+            }
         }
 
         [Fact]
         public async Task ShouldRunInParallel()
         {
-            var page = await Browser.NewPageAsync();
-            await page.SetViewport(new ViewPortOptions
+            using (var page = await Browser.NewPageAsync())
             {
-                Width = 500,
-                Height = 500
-            });
-            await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
-
-            var tasks = new List<Task<Stream>>();
-            for (var i = 0; i < 3; ++i)
-            {
-                tasks.Add(page.ScreenshotStreamAsync(new ScreenshotOptions
+                await page.SetViewport(new ViewPortOptions
                 {
-                    Clip = new Clip
-                    {
-                        X = 50 * i,
-                        Y = 0,
-                        Width = 50,
-                        Height = 50
-                    }
-                }));
-            }
+                    Width = 500,
+                    Height = 500
+                });
+                await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
 
-            await Task.WhenAll(tasks);
-            Assert.True(PixelMatch("grid-cell-1.png", tasks[0].Result));
+                var tasks = new List<Task<Stream>>();
+                for (var i = 0; i < 3; ++i)
+                {
+                    tasks.Add(page.ScreenshotStreamAsync(new ScreenshotOptions
+                    {
+                        Clip = new Clip
+                        {
+                            X = 50 * i,
+                            Y = 0,
+                            Width = 50,
+                            Height = 50
+                        }
+                    }));
+                }
+
+                await Task.WhenAll(tasks);
+                Assert.True(PixelMatch("grid-cell-1.png", tasks[0].Result));
+            }
         }
 
         [Fact]
         public async Task ShouldTakeFullPageScreenshots()
         {
-            var page = await Browser.NewPageAsync();
-            await page.SetViewport(new ViewPortOptions
+            using (var page = await Browser.NewPageAsync())
             {
-                Width = 500,
-                Height = 500
-            });
-            await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
-            var screenshot = await page.ScreenshotStreamAsync(new ScreenshotOptions
-            {
-                FullPage = true
-            });
-            Assert.True(PixelMatch("screenshot-grid-fullpage.png", screenshot));
+                await page.SetViewport(new ViewPortOptions
+                {
+                    Width = 500,
+                    Height = 500
+                });
+                await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+                var screenshot = await page.ScreenshotStreamAsync(new ScreenshotOptions
+                {
+                    FullPage = true
+                });
+                Assert.True(PixelMatch("screenshot-grid-fullpage.png", screenshot));
+            }
         }
 
         [Fact]
@@ -203,37 +215,41 @@ namespace PuppeteerSharp.Tests.Page
         [Fact]
         public async Task ShouldAllowTransparency()
         {
-            var page = await Browser.NewPageAsync();
-            await page.SetViewport(new ViewPortOptions
+            using (var page = await Browser.NewPageAsync())
             {
-                Width = 100,
-                Height = 100
-            });
-            await page.GoToAsync(TestConstants.EmptyPage);
-            var screenshot = await page.ScreenshotStreamAsync(new ScreenshotOptions
-            {
-                OmitBackground = true
-            });
+                await page.SetViewport(new ViewPortOptions
+                {
+                    Width = 100,
+                    Height = 100
+                });
+                await page.GoToAsync(TestConstants.EmptyPage);
+                var screenshot = await page.ScreenshotStreamAsync(new ScreenshotOptions
+                {
+                    OmitBackground = true
+                });
 
-            Assert.True(PixelMatch("transparent.png", screenshot));
+                Assert.True(PixelMatch("transparent.png", screenshot));
+            }
         }
 
         [Fact]
         public async Task ShouldWorkWithOddClipSizeOnRetinaDisplays()
         {
-            var page = await Browser.NewPageAsync();
-            var screenshot = await page.ScreenshotStreamAsync(new ScreenshotOptions
+            using (var page = await Browser.NewPageAsync())
             {
-                Clip = new Clip
+                var screenshot = await page.ScreenshotStreamAsync(new ScreenshotOptions
                 {
-                    X = 0,
-                    Y = 0,
-                    Width = 11,
-                    Height = 11
-                }
-            });
+                    Clip = new Clip
+                    {
+                        X = 0,
+                        Y = 0,
+                        Width = 11,
+                        Height = 11
+                    }
+                });
 
-            Assert.True(PixelMatch("screenshot-clip-odd-size.png", screenshot));
+                Assert.True(PixelMatch("screenshot-clip-odd-size.png", screenshot));
+            }
         }
 
         private bool PixelMatch(string screenShotFile, string fileName)
