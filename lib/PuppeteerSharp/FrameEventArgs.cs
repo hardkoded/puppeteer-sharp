@@ -2,11 +2,11 @@
 {
     public class FrameEventArgs
     {
-        private Frame _frame;
+        public Frame Frame { get; set; }
 
         public FrameEventArgs(Frame frame)
         {
-            _frame = frame;
+            Frame = frame;
         }
     }
 }
