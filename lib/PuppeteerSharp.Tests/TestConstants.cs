@@ -8,6 +8,7 @@ namespace PuppeteerSharp.Tests
         public const string ServerUrl = "http://localhost:8907";
         public const string HttpsPrefix = "https://localhost:8908";
         public const int ChromiumRevision = Downloader.DefaultRevision;
+        public const string AboutBlank = "about:blank";
         public static readonly string EmptyPage = $"{ServerUrl}/empty.html";
 
         public static LaunchOptions DefaultBrowserOptions() => new LaunchOptions
