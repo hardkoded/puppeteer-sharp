@@ -456,7 +456,7 @@ namespace PuppeteerSharp
             }
         }
 
-        public async Task<T> EvaluateAsync<T>(string script)
+        public async Task<T> EvaluateAsync<T>(string script, params object[] args)
         {
             throw new NotImplementedException();
         }

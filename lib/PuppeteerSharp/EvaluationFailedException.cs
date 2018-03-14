@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace PuppeteerSharp
 {
     [Serializable]
-    publi class EvaluationFailedException : Exception
+    public class EvaluationFailedException : Exception
     {
         public EvaluationFailedException()
         {
