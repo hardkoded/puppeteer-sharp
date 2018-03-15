@@ -92,6 +92,11 @@ namespace PuppeteerSharp
             throw new NotImplementedException();
         }
 
+        internal Task<string> GetTitleAsync()
+        {
+            throw new NotImplementedException();
+        }
+
         internal void OnLifecycleEvent(string loaderId, string name)
         {
             if (name == "init")
