@@ -6,6 +6,7 @@ namespace PuppeteerSharp.Tests.Page
     [Collection("PuppeteerLoaderFixture collection")]
     public class TitleTests : PuppeteerBaseTest
     {
+        [Fact]
         public async Task ShouldReturnThePageTitle()
         {
             var page = await Browser.NewPageAsync();

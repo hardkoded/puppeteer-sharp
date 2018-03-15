@@ -37,9 +37,9 @@ namespace PuppeteerSharp
 
         public async Task<object> JsonValue()
         {
-            if (((IDictionary<string, object>)RemoteObject).ContainsKey("objectId"))
+            if (RemoteObject.objectId != null)
             {
-                dynamic response = await _client.SendAsync("Retunrime.callFunctionOn", new Dictionary<string, object>()
+                dynamic response = await _client.SendAsync("Runtime.callFunctionOn", new Dictionary<string, object>()
                 {
                     {"functionDeclaration", "function() { return this; }"},
                     {"objectId", RemoteObject.objectId},

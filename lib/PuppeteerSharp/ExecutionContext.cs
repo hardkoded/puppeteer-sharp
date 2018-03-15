@@ -7,16 +7,18 @@ namespace PuppeteerSharp
     public class ExecutionContext
     {
         private Session _client;
-        private string _contextId;
+        private int _contextId;
 
         public ExecutionContext(Session client, ContextPayload contextPayload, Func<dynamic, JSHandle> objectHandleFactory)
         {
             _client = client;
             _contextId = contextPayload.Id;
+            FrameId = contextPayload.AuxData.FrameId;
+            IsDefault = contextPayload.AuxData.IsDefault;
             ObjectHandleFactory = objectHandleFactory;
         }
 
-        public Func<JSHandle, dynamic> ObjectHandleFactory { get; internal set; }
+        public Func<dynamic, JSHandle> ObjectHandleFactory { get; internal set; }
         public string FrameId { get; internal set; }
         public bool IsDefault { get; internal set; }
 
@@ -43,12 +45,13 @@ namespace PuppeteerSharp
                 {
                     remoteObject = await _client.SendAsync("Runtime.evaluate", new Dictionary<string, object>()
                     {
-                        {"expression", _contextId},
+                        {"expression", pageFunction},
+                        { "contextId", _contextId},
                         {"returnByValue", false},
                         {"awaitPromise", true}
                     });
 
-                    return ObjectHandleFactory(remoteObject);
+                    return ObjectHandleFactory(remoteObject.result);
                 }
                 catch (Exception ex)
                 {

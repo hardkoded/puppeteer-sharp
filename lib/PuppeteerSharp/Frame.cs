@@ -54,7 +54,7 @@ namespace PuppeteerSharp
         internal async Task<dynamic> EvaluateAsync(string pageFunction, params object[] args)
         {
             var context = await GetExecutionContextAsync();
-            return context.Evaluate(pageFunction, args);
+            return await context.Evaluate(pageFunction, args);
         }
 
         internal async Task<ElementHandle> GetElementAsync(string selector)
@@ -100,7 +100,8 @@ namespace PuppeteerSharp
 
         internal async Task<string> GetTitleAsync()
         {
-            return await EvaluateAsync("() =>  document.title");
+            var result = await EvaluateAsync("document.title");
+            return result.ToString();
         }
 
         internal void OnLifecycleEvent(string loaderId, string name)
@@ -124,7 +125,7 @@ namespace PuppeteerSharp
             if (context != null)
             {
                 ContextResolveTaskWrapper.SetResult(context);
-                ContextResolveTaskWrapper = null;
+                // ContextResolveTaskWrapper = null;
 
                 foreach (var waitTask in _waitTasks)
                 {
