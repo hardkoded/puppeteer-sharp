@@ -14,7 +14,6 @@
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0002" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Puppeteer\" />
     <Folder Include="Page\" />
   </ItemGroup>
   <ItemGroup>
