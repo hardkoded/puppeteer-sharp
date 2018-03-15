@@ -62,7 +62,6 @@ namespace PuppeteerSharp
             throw new NotImplementedException();
         }
 
-
         internal Task<object> Eval(string selector, Func<object> pageFunction, object[] args)
         {
             throw new NotImplementedException();
@@ -100,7 +99,7 @@ namespace PuppeteerSharp
 
         internal async Task<string> GetTitleAsync()
         {
-            var result = await EvaluateAsync("document.title");
+            var result = await EvaluateAsync("() => document.title");
             return result.ToString();
         }
 
@@ -125,7 +124,6 @@ namespace PuppeteerSharp
             if (context != null)
             {
                 ContextResolveTaskWrapper.SetResult(context);
-                // ContextResolveTaskWrapper = null;
 
                 foreach (var waitTask in _waitTasks)
                 {
@@ -149,8 +147,9 @@ namespace PuppeteerSharp
             {
                 _parentFrame.ChildFrames.Remove(this);
             }
-            _parentFrame = null;
-            #endregion
+            _parentFrame = null;            
         }
+
+        #endregion
     }
 }
