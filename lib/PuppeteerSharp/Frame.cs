@@ -51,6 +51,12 @@ namespace PuppeteerSharp
 
         public Task<ExecutionContext> GetExecutionContextAsync() => ContextResolveTaskWrapper.Task;
 
+        internal async Task<dynamic> EvaluateAsync(string pageFunction, params object[] args)
+        {
+            var context = await GetExecutionContextAsync();
+            return context.Evaluate(pageFunction, args);
+        }
+
         internal async Task<ElementHandle> GetElementAsync(string selector)
         {
             throw new NotImplementedException();
@@ -92,9 +98,9 @@ namespace PuppeteerSharp
             throw new NotImplementedException();
         }
 
-        internal Task<string> GetTitleAsync()
+        internal async Task<string> GetTitleAsync()
         {
-            throw new NotImplementedException();
+            return await EvaluateAsync("() =>  document.title");
         }
 
         internal void OnLifecycleEvent(string loaderId, string name)
