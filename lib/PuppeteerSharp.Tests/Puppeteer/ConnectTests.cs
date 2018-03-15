@@ -7,7 +7,7 @@ namespace PuppeteerSharp.Tests.Puppeteer
     [Collection("PuppeteerLoaderFixture collection")]
     public class ConnectTests : PuppeteerBaseTest
     {
-        [Fact(Skip = "WIP")]
+        [Fact]
         public async Task ShouldBeAbleToConnectMultipleTimesToTheSameBrowser()
         {
             using (var originalBrowser = await PuppeteerSharp.Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.ChromiumRevision))
@@ -34,7 +34,6 @@ namespace PuppeteerSharp.Tests.Puppeteer
             var page = await originalBrowser.NewPageAsync();
             await page.GoToAsync(TestConstants.ServerUrl + "/frames/nested-frames.html");
             originalBrowser.Disconnect();
-
 
             using (var browser = await PuppeteerSharp.Puppeteer.ConnectAsync(new ConnectOptions { BrowserWSEndpoint = browserWSEndpoint }))
             {

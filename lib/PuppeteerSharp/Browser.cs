@@ -20,7 +20,11 @@ namespace PuppeteerSharp
             Connection.MessageReceived += Connect_MessageReceived;
 
             _closeCallBack = closeCallBack;
+        }
 
+        internal Browser(Connection connection, ConnectOptions options)
+            : this(connection, new LaunchOptions { IgnoreHTTPSErrors = options.IgnoreHTTPSErrors, AppMode = options.AppMode }, () => connection.SendAsync("Browser.close"))
+        {
         }
 
         #region Private members
@@ -109,7 +113,7 @@ namespace PuppeteerSharp
 
         public void Disconnect()
         {
-            throw new NotImplementedException();
+            Connection.Dispose();
         }
 
         #endregion

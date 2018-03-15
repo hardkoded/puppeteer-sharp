@@ -13,9 +13,9 @@ namespace PuppeteerSharp
             return await new Launcher().LaunchAsync(options, chromiumRevision);
         }
 
-        public static async Task<Browser> ConnectAsync(ConnectOptions options)
+        public static Task<Browser> ConnectAsync(ConnectOptions options)
         {
-            throw new System.NotImplementedException();
+            return Launcher.ConnectAsync(options);
         }
     }
 }
