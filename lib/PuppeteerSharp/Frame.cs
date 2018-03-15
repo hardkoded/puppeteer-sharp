@@ -99,7 +99,7 @@ namespace PuppeteerSharp
 
         internal async Task<string> GetTitleAsync()
         {
-            var result = await EvaluateAsync("() => document.title");
+            var result = await EvaluateAsync("document.title");
             return result.ToString();
         }
 
