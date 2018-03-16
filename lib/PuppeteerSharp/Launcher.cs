@@ -129,6 +129,7 @@ namespace PuppeteerSharp
 
             _chromeProcess = new Process();
             _chromeProcess.EnableRaisingEvents = true;
+            _chromeProcess.StartInfo.UseShellExecute = false;
             _chromeProcess.StartInfo.FileName = chromeExecutable;
             _chromeProcess.StartInfo.Arguments = string.Join(" ", chromeArguments);
 
