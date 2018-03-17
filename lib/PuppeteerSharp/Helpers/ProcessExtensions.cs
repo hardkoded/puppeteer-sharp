@@ -9,11 +9,17 @@ namespace PuppeteerSharp.Helpers
     {
         public static void RemoveExitedEvent(this Process process)
         {
-            var eventField = typeof(Process).GetField("_onExited", BindingFlags.NonPublic | BindingFlags.Instance);
+            RemoveHandler(process, "_onExited");
+            RemoveHandler(process, "onExited");
+        }
+
+        private static void RemoveHandler(Process process, string fieldId)
+        {
+            var eventField = typeof(Process).GetField(fieldId, BindingFlags.NonPublic | BindingFlags.Instance);
 
             if (eventField != null)
             {
-                var obj = eventField.GetValue(process);
+                object obj = eventField.GetValue(process);
                 var pi = process.GetType().GetProperty("Events", BindingFlags.NonPublic | BindingFlags.Instance);
                 var list = (EventHandlerList)pi.GetValue(process, null);
                 list.RemoveHandler(obj, list[obj]);
