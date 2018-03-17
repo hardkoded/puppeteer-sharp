@@ -18,6 +18,7 @@ namespace PuppeteerSharp
             Delay = delay;
             WebSocket = ws;
 
+            _socketQueue = new TaskQueue();
             _responses = new Dictionary<int, TaskCompletionSource<dynamic>>();
             _sessions = new Dictionary<string, Session>();
             _connectionCloseTask = new TaskCompletionSource<bool>();
@@ -36,6 +37,7 @@ namespace PuppeteerSharp
 
         private bool _closeMessageSent;
         private const string CloseMessage = "Browser.close";
+        private TaskQueue _socketQueue;
         #endregion
 
         #region Properties
@@ -62,7 +64,8 @@ namespace PuppeteerSharp
             var encoded = Encoding.UTF8.GetBytes(message);
             var buffer = new ArraySegment<Byte>(encoded, 0, encoded.Length);
             QueueId(id);
-            await WebSocket.SendAsync(buffer, WebSocketMessageType.Text, true, default(CancellationToken));
+
+            await _socketQueue.Enqueue(() => WebSocket.SendAsync(buffer, WebSocketMessageType.Text, true, default(CancellationToken)));
 
             //I don't know if this will be the final solution.
             //For now this will prevent the WebSocket from failing after the process is killed by the close method.

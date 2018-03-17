@@ -58,6 +58,7 @@ namespace PuppeteerSharp.Tests
                                              "PuppeteerSharp.TestServer");
 
             _webServerProcess = new Process();
+            _webServerProcess.StartInfo.UseShellExecute = false;
             _webServerProcess.StartInfo.FileName = "dotnet";
             _webServerProcess.StartInfo.WorkingDirectory = webServerPath;
             _webServerProcess.StartInfo.Arguments = $"./bin/{build}/netcoreapp2.0/PuppeteerSharp.TestServer.dll";
