@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using PuppeteerSharp.Input;
 using Newtonsoft.Json.Linq;
+using System.Diagnostics;
 
 namespace PuppeteerSharp
 {
@@ -12,14 +13,14 @@ namespace PuppeteerSharp
         private Mouse _mouse;
         private Touchscreen _touchscreen;
         private Page _page;
-        private Dictionary<string, ExecutionContext> _contextIdToContext;
+        private Dictionary<int, ExecutionContext> _contextIdToContext;
 
         public FrameManager(Session client, FrameTree frameTree, Page page)
         {
             _client = client;
             _page = page;
             Frames = new Dictionary<string, Frame>();
-            _contextIdToContext = new Dictionary<string, ExecutionContext>();
+            _contextIdToContext = new Dictionary<int, ExecutionContext>();
 
             _client.MessageReceived += _client_MessageReceived;
             HandleFrameTree(frameTree);
@@ -60,7 +61,7 @@ namespace PuppeteerSharp
                     break;
 
                 case "Runtime.executionContextDestroyed":
-                    OnExecutionContextDestroyed(e.MessageData.executionContextId.ToString());
+                    OnExecutionContextDestroyed((int)e.MessageData.executionContextId);
                     break;
                 case "Runtime.executionContextsCleared":
                     OnExecutionContextsCleared();
@@ -92,7 +93,7 @@ namespace PuppeteerSharp
             _contextIdToContext.Clear();
         }
 
-        private void OnExecutionContextDestroyed(string executionContextId)
+        private void OnExecutionContextDestroyed(int executionContextId)
         {
             _contextIdToContext.TryGetValue(executionContextId, out var context);
 
@@ -109,8 +110,11 @@ namespace PuppeteerSharp
             var context = new ExecutionContext(_client, contextPayload, (dynamic remoteObject) =>
             {
                 _contextIdToContext.TryGetValue(contextPayload.Id, out var storedContext);
-
-                Contract.Assert(storedContext == null, $"INTERNAL ERROR: missing context with id = {contextPayload.Id}");
+                
+                if(storedContext == null)
+                {
+                    Console.WriteLine($"INTERNAL ERROR: missing context with id = {contextPayload.Id}");
+                }
                 if (remoteObject.Subtype == "node")
                 {
                     return new ElementHandle(storedContext, _client, remoteObject, _page);
