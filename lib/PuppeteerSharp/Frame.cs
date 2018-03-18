@@ -97,6 +97,28 @@ namespace PuppeteerSharp
             throw new NotImplementedException();
         }
 
+        internal async Task<string> GetContentAsync()
+        {
+            var result = await EvaluateAsync(@"() => {
+      let retVal = '';
+      if (document.doctype)
+        retVal = new XMLSerializer().serializeToString(document.doctype);
+      if (document.documentElement)
+        retVal += document.documentElement.outerHTML;
+      return retVal;
+    }");
+            return result.ToString();
+        }
+
+        internal async Task SetContentAsync(string html)
+        {
+            await EvaluateAsync(@"html => {
+                document.open();
+                document.write(html);
+                document.close();
+            }", html);
+        }
+
         internal async Task<string> GetTitleAsync()
         {
             var result = await EvaluateAsync("document.title");
@@ -147,7 +169,7 @@ namespace PuppeteerSharp
             {
                 _parentFrame.ChildFrames.Remove(this);
             }
-            _parentFrame = null;            
+            _parentFrame = null;
         }
 
         #endregion
