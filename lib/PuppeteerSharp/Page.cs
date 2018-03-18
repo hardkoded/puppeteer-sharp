@@ -123,12 +123,6 @@ namespace PuppeteerSharp
             return await MainFrame.GetElementsAsync(selector);
         }
 
-        public async Task<JSHandle> EvaluateHandle(Func<object> pageFunction, params object[] args)
-        {
-            var context = await MainFrame.GetExecutionContextAsync();
-            return await context.EvaluateHandleAsync(pageFunction, args);
-        }
-
         public async Task<JSHandle> EvaluateHandle(string pageFunction, params object[] args)
         {
             var context = await MainFrame.GetExecutionContextAsync();
@@ -457,9 +451,9 @@ namespace PuppeteerSharp
             }
         }
 
-        public async Task<T> EvaluateAsync<T>(string script, params object[] args)
+        public Task<T> EvaluateAsync<T>(string script, params object[] args)
         {
-            throw new NotImplementedException();
+            return _frameManager.MainFrame.EvaluateAsync<T>(script, args);
         }
 
         #endregion
@@ -681,7 +675,7 @@ namespace PuppeteerSharp
             throw new NotImplementedException();
         }
 
-        private async Task ReloadAsync()
+        private Task ReloadAsync()
         {
             throw new NotImplementedException();
         }

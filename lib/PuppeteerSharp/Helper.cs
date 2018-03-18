@@ -37,5 +37,24 @@ namespace PuppeteerSharp
                 Console.WriteLine(ex.ToString());
             }
         }
+
+        public static string GetExceptionMessage(EvaluateExceptionDetails exceptionDetails)
+        {
+            if (exceptionDetails.Exception != null)
+            {
+                return exceptionDetails.Exception.Description;
+            }
+            var message = exceptionDetails.Text;
+            if (exceptionDetails.StackTrace != null)
+            {
+                foreach (var callframe in exceptionDetails.StackTrace.CallFrames)
+                {
+                    var location = $"{callframe.Url}:{callframe.LineNumber}:{callframe.ColumnNumber}";
+                    var functionName = string.IsNullOrEmpty(callframe.FunctionName) ? "<anonymous>" : callframe.FunctionName;
+                    message += $"\n at ${functionName} (${location})";
+                }
+            }
+            return message;
+        }
     }
 }

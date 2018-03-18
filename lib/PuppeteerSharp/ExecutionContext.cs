@@ -22,44 +22,65 @@ namespace PuppeteerSharp
         public string FrameId { get; internal set; }
         public bool IsDefault { get; internal set; }
 
-        public async Task<dynamic> Evaluate(string pageFunction, params object[] args)
+        public async Task<T> EvaluateAsync<T>(string script, params object[] args)
         {
-            var handle = await EvaluateHandleAsync(pageFunction, args);
+            var handle = await EvaluateHandleAsync(script, args);
             dynamic result = await handle.JsonValue();
             await handle.Dispose();
-            return result;
+            return result.ToObject<T>();
         }
 
-        internal async Task<JSHandle> EvaluateHandleAsync(Func<object> pageFunction, object[] args)
+        internal async Task<JSHandle> EvaluateHandleAsync(string script, object[] args)
         {
-            throw new NotImplementedException();
-        }
-
-        internal async Task<JSHandle> EvaluateHandleAsync(string pageFunction, object[] args)
-        {
-            if (!string.IsNullOrEmpty(pageFunction))
+            if (string.IsNullOrEmpty(script))
             {
-                dynamic remoteObject;
-
-                try
-                {
-                    remoteObject = await _client.SendAsync("Runtime.evaluate", new Dictionary<string, object>()
-                    {
-                        ["expression"] = pageFunction,
-                        ["contextId"] = _contextId,
-                        ["returnByValue"] = false,
-                        ["awaitPromise"] = true
-                    });
-
-                    return ObjectHandleFactory(remoteObject.result);
-                }
-                catch (Exception ex)
-                {
-                    throw new EvaluationFailedException("Evaluation Failed", ex);
-                }
+                return null;
             }
 
-            return null;
+            if (IsFunction(script))
+            {
+                dynamic result = await _client.SendAsync("Runtime.callFunctionOn", new Dictionary<string, object>()
+                {
+                    {"functionDeclaration", script },
+                    {"executionContextId", _contextId},
+                    {"arguments", args},
+                    {"returnByValue", false},
+                    {"awaitPromise", true}
+                });
+
+                if (result.exceptionDetails != null)
+                {
+                    throw new EvaluationFailedException("Evaluation failed: " +
+                        Helper.GetExceptionMessage(result.exceptionDetails.ToObject<EvaluateExceptionDetails>()));
+                }
+
+                return ObjectHandleFactory(result.result);
+            }
+
+            dynamic remoteObject;
+
+            try
+            {
+                remoteObject = await _client.SendAsync("Runtime.evaluate", new Dictionary<string, object>()
+                {
+                    {"contextId", _contextId},
+                    {"expression", script},
+                    {"returnByValue", false},
+                    {"awaitPromise", true}
+                });
+
+                return ObjectHandleFactory(remoteObject.result);
+            }
+            catch (Exception ex)
+            {
+                throw new EvaluationFailedException("Evaluation Failed", ex);
+            }
+
+        }
+
+        private bool IsFunction(string script)
+        {
+            return script.Contains("=>");
         }
 
         public async Task<dynamic> QueryObjects(JSHandle prototypeHandle)

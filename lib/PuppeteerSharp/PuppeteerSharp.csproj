@@ -27,4 +27,7 @@
     <Folder Include="Input\" />
     <Folder Include="Helpers\" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="ExceptionInfo.cs" />
+  </ItemGroup>
 </Project>

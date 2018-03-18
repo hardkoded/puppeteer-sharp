@@ -50,20 +50,15 @@ namespace PuppeteerSharp
 
         #region Public Methods
 
-        public async Task<T> EvaluateAsync<T>(string script)
+        public async Task<T> EvaluateAsync<T>(string script, params object[] args)
         {
-            throw new NotImplementedException();
+            var context = await GetExecutionContextAsync();
+            return await context.EvaluateAsync<T>(script, args);
         }
 
         public Task<ExecutionContext> GetExecutionContextAsync() => ContextResolveTaskWrapper.Task;
 
-        internal async Task<dynamic> EvaluateAsync(string pageFunction, params object[] args)
-        {
-            var context = await GetExecutionContextAsync();
-            return await context.Evaluate(pageFunction, args);
-        }
-
-        internal async Task<ElementHandle> GetElementAsync(string selector)
+        internal Task<ElementHandle> GetElementAsync(string selector)
         {
             throw new NotImplementedException();
         }
@@ -105,8 +100,8 @@ namespace PuppeteerSharp
 
         internal async Task<string> GetTitleAsync()
         {
-            var result = await EvaluateAsync("document.title");
-            return result.ToString();
+            var result = await EvaluateAsync<string>("document.title");
+            return result;
         }
 
         internal void OnLifecycleEvent(string loaderId, string name)
@@ -153,7 +148,7 @@ namespace PuppeteerSharp
             {
                 _parentFrame.ChildFrames.Remove(this);
             }
-            _parentFrame = null;            
+            _parentFrame = null;
         }
 
         #endregion
