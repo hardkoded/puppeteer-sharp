@@ -1,6 +1,5 @@
-﻿namespace PuppeteerSharp
+namespace PuppeteerSharp
 {
-
     public struct ContextPayloadAuxData
     {
         public string FrameId { get; set; }
