@@ -26,7 +26,7 @@ namespace PuppeteerSharp
         #endregion
 
         #region Properties
-        public string TargetId { get; private set; }
+        public string TargetId { get; }
         public string SessionId { get; private set; }
         public Connection Connection { get; private set; }
         public event EventHandler<MessageEventArgs> MessageReceived;
@@ -40,9 +40,9 @@ namespace PuppeteerSharp
             return JsonConvert.DeserializeObject<T>(content);
         }
 
-        public async Task<dynamic> SendAsync(string method, dynamic args = null)
+        public Task<dynamic> SendAsync(string method, dynamic args = null)
         {
-            return await SendAsync(method, false, args);
+            return SendAsync(method, false, args);
         }
 
         public async Task<dynamic> SendAsync(string method, bool rawContent, dynamic args = null)

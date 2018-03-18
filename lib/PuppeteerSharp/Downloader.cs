@@ -21,6 +21,8 @@ namespace PuppeteerSharp
         };
         private string _downloadHost;
 
+        public const int DefaultRevision = 526987;
+
         public Downloader(string downloadsFolder)
         {
             _downloadsFolder = downloadsFolder;
