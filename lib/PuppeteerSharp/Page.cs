@@ -444,6 +444,7 @@ namespace PuppeteerSharp
             return await _screenshotTaskQueue.Enqueue<Stream>(() => PerformScreenshot(screenshotType, options));
         }
 
+        public Task<string> GetTitleAsync() => MainFrame.GetTitleAsync();
 
         public async Task CloseAsync()
         {

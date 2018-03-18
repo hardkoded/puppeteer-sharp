@@ -57,11 +57,16 @@ namespace PuppeteerSharp
 
         public Task<ExecutionContext> GetExecutionContextAsync() => ContextResolveTaskWrapper.Task;
 
+        internal async Task<dynamic> EvaluateAsync(string pageFunction, params object[] args)
+        {
+            var context = await GetExecutionContextAsync();
+            return await context.Evaluate(pageFunction, args);
+        }
+
         internal async Task<ElementHandle> GetElementAsync(string selector)
         {
             throw new NotImplementedException();
         }
-
 
         internal Task<object> Eval(string selector, Func<object> pageFunction, object[] args)
         {
@@ -98,6 +103,12 @@ namespace PuppeteerSharp
             throw new NotImplementedException();
         }
 
+        internal async Task<string> GetTitleAsync()
+        {
+            var result = await EvaluateAsync("document.title");
+            return result.ToString();
+        }
+
         internal void OnLifecycleEvent(string loaderId, string name)
         {
             if (name == "init")
@@ -119,7 +130,6 @@ namespace PuppeteerSharp
             if (context != null)
             {
                 ContextResolveTaskWrapper.SetResult(context);
-                ContextResolveTaskWrapper = null;
 
                 foreach (var waitTask in _waitTasks)
                 {
@@ -143,8 +153,9 @@ namespace PuppeteerSharp
             {
                 _parentFrame.ChildFrames.Remove(this);
             }
-            _parentFrame = null;
-            #endregion
+            _parentFrame = null;            
         }
+
+        #endregion
     }
 }

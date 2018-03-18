@@ -2,12 +2,14 @@
 {
     public class ContextPayload
     {
-
         public ContextPayload(dynamic context)
         {
             Id = context.id;
+            AuxData = context.auxData.ToObject<ContextPayloadAuxData>();
         }
 
-        public string Id { get; internal set; }
+        public int Id { get; internal set; }
+
+        public ContextPayloadAuxData AuxData { get; internal set; }
     }
 }
