@@ -451,6 +451,11 @@ namespace PuppeteerSharp
             }
         }
 
+        public Task<dynamic> EvaluateAsync(string script, params object[] args)
+        {
+            return _frameManager.MainFrame.EvaluateAsync(script, args);
+        }
+
         public Task<T> EvaluateAsync<T>(string script, params object[] args)
         {
             return _frameManager.MainFrame.EvaluateAsync<T>(script, args);

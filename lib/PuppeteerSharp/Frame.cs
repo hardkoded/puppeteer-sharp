@@ -50,6 +50,12 @@ namespace PuppeteerSharp
 
         #region Public Methods
 
+        public async Task<dynamic> EvaluateAsync(string script, params object[] args)
+        {
+            var context = await GetExecutionContextAsync();
+            return await context.EvaluateAsync(script, args);
+        }
+
         public async Task<T> EvaluateAsync<T>(string script, params object[] args)
         {
             var context = await GetExecutionContextAsync();

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace PuppeteerSharp
 {
@@ -22,12 +24,17 @@ namespace PuppeteerSharp
         public string FrameId { get; internal set; }
         public bool IsDefault { get; internal set; }
 
-        public async Task<T> EvaluateAsync<T>(string script, params object[] args)
+        public async Task<dynamic> EvaluateAsync(string script, params object[] args)
         {
             var handle = await EvaluateHandleAsync(script, args);
             dynamic result = await handle.JsonValue();
             await handle.Dispose();
-            return result.ToObject<T>();
+            return result;
+        }
+
+        public async Task<T> EvaluateAsync<T>(string script, params object[] args)
+        {
+            return ((JObject)await EvaluateAsync(script, args)).ToObject<T>();
         }
 
         internal async Task<JSHandle> EvaluateHandleAsync(string script, object[] args)
@@ -39,24 +46,15 @@ namespace PuppeteerSharp
 
             if (IsFunction(script))
             {
-                dynamic result = await _client.SendAsync("Runtime.callFunctionOn", new Dictionary<string, object>()
-                {
-                    {"functionDeclaration", script },
-                    {"executionContextId", _contextId},
-                    {"arguments", args},
-                    {"returnByValue", false},
-                    {"awaitPromise", true}
-                });
-
-                if (result.exceptionDetails != null)
-                {
-                    throw new EvaluationFailedException("Evaluation failed: " +
-                        Helper.GetExceptionMessage(result.exceptionDetails.ToObject<EvaluateExceptionDetails>()));
-                }
-
-                return ObjectHandleFactory(result.result);
+                return await EvaluateFunctionAsync(script, args);
             }
 
+            return await EvaluateExpressionAsync(script);
+
+        }
+
+        private async Task<JSHandle> EvaluateExpressionAsync(string script)
+        {
             dynamic remoteObject;
 
             try
@@ -75,7 +73,31 @@ namespace PuppeteerSharp
             {
                 throw new EvaluationFailedException("Evaluation Failed", ex);
             }
+        }
 
+        private async Task<JSHandle> EvaluateFunctionAsync(string script, object[] args)
+        {
+            dynamic result = await _client.SendAsync("Runtime.callFunctionOn", new Dictionary<string, object>()
+                {
+                    {"functionDeclaration", script },
+                    {"executionContextId", _contextId},
+                    {"arguments", FormatArguments(args)},
+                    {"returnByValue", false},
+                    {"awaitPromise", true}
+                });
+
+            if (result.exceptionDetails != null)
+            {
+                throw new EvaluationFailedException("Evaluation failed: " +
+                    Helper.GetExceptionMessage(result.exceptionDetails.ToObject<EvaluateExceptionDetails>()));
+            }
+
+            return ObjectHandleFactory(result.result);
+        }
+
+        private object FormatArguments(object[] args)
+        {
+            return args.Select(o => new { value = o });
         }
 
         private bool IsFunction(string script)
