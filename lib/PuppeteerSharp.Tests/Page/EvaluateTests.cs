@@ -79,7 +79,7 @@ namespace PuppeteerSharp.Tests.Page
             using (var page = await Browser.NewPageAsync())
             {
                 dynamic result = await page.EvaluateAsync<dynamic>("() => NaN");
-                throw new NotImplementedException();
+                Assert.Equal(double.NaN, result);
             }
         }
 
@@ -89,7 +89,7 @@ namespace PuppeteerSharp.Tests.Page
             using (var page = await Browser.NewPageAsync())
             {
                 dynamic result = await page.EvaluateAsync<dynamic>("() => -0");
-                throw new NotImplementedException();
+                Assert.Equal(-0, result);
             }
         }
 
@@ -99,7 +99,7 @@ namespace PuppeteerSharp.Tests.Page
             using (var page = await Browser.NewPageAsync())
             {
                 dynamic result = await page.EvaluateAsync<dynamic>("() => Infinity");
-                throw new NotImplementedException();
+                Assert.Equal(double.PositiveInfinity, result);
             }
         }
 
@@ -109,7 +109,7 @@ namespace PuppeteerSharp.Tests.Page
             using (var page = await Browser.NewPageAsync())
             {
                 dynamic result = await page.EvaluateAsync<dynamic>("() => -Infinity");
-                throw new NotImplementedException();
+                Assert.Equal(double.NegativeInfinity, result);
             }
         }
 
@@ -118,7 +118,7 @@ namespace PuppeteerSharp.Tests.Page
         {
             using (var page = await Browser.NewPageAsync())
             {
-                dynamic result = await page.EvaluateAsync<bool>("a, b => Object.is(a, null) && Object.is(b, 'foo')", null, "foo");
+                dynamic result = await page.EvaluateAsync<bool>("(a, b) => Object.is(a, null) && Object.is(b, 'foo')", null, "foo");
                 Assert.True(result);
             }
         }
