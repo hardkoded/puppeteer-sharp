@@ -35,7 +35,7 @@ namespace PuppeteerSharp
         public async Task<T> EvaluateAsync<T>(string script, params object[] args)
         {
             var result = await EvaluateAsync(script, args);
-            return ((JValue)result).ToObject<T>();
+            return ((JToken)result).ToObject<T>();
         }
 
         internal async Task<JSHandle> EvaluateHandleAsync(string script, object[] args)
