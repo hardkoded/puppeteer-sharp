@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Xunit;
 
 namespace PuppeteerSharp.Tests.Page
@@ -10,7 +6,7 @@ namespace PuppeteerSharp.Tests.Page
     [Collection("PuppeteerLoaderFixture collection")]
     public class SetContentTests : PuppeteerBaseTest
     {
-        const string expectedOutput = "<html><head></head><body><div>hello</div></body></html>";
+        const string ExpectedOutput = "<html><head></head><body><div>hello</div></body></html>";
 
         [Fact]
         public async Task ShouldWork()
@@ -20,7 +16,7 @@ namespace PuppeteerSharp.Tests.Page
             await page.SetContentAsync("<div>hello</div>");
             var result = await page.GetContentAsync();
 
-            Assert.Equal(expectedOutput, result);
+            Assert.Equal(ExpectedOutput, result);
         }
 
         [Fact]
@@ -32,7 +28,7 @@ namespace PuppeteerSharp.Tests.Page
             await page.SetContentAsync($"{doctype}<div>hello</div>");
             var result = await page.GetContentAsync();
 
-            Assert.Equal($"{doctype}{expectedOutput}", result);
+            Assert.Equal($"{doctype}{ExpectedOutput}", result);
         }
 
         [Fact]
@@ -45,29 +41,7 @@ namespace PuppeteerSharp.Tests.Page
             await page.SetContentAsync($"{doctype}<div>hello</div>");
             var result = await page.GetContentAsync();
 
-            Assert.Equal($"{doctype}{expectedOutput}", result);
+            Assert.Equal($"{doctype}{ExpectedOutput}", result);
         }
-
-        /*
-        it('should work', async({ page, server}) => {
-      await page.setContent('<div>hello</div>');
-        const result = await page.content();
-        expect(result).toBe(expectedOutput);
-    });
-    it('should work with doctype', async({ page, server}) => {
-      const doctype = '<!DOCTYPE html>';
-    await page.setContent(`${ doctype}<div>hello</div>`);
-      const result = await page.content();
-    expect(result).toBe(`${ doctype}${expectedOutput
-}`);
-    });
-    it('should work with HTML 4 doctype', async({ page, server}) => {
-      const doctype = '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" ' +
-        '"http://www.w3.org/TR/html4/strict.dtd">';
-await page.setContent(`${ doctype}<div>hello</div>`);
-      const result = await page.content();
-expect(result).toBe(`${ doctype}${expectedOutput}`);
-    });
-    */
     }
 }
