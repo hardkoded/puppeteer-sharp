@@ -100,13 +100,13 @@ namespace PuppeteerSharp
         internal async Task<string> GetContentAsync()
         {
             var result = await EvaluateAsync(@"() => {
-      let retVal = '';
-      if (document.doctype)
-        retVal = new XMLSerializer().serializeToString(document.doctype);
-      if (document.documentElement)
-        retVal += document.documentElement.outerHTML;
-      return retVal;
-    }");
+              let retVal = '';
+              if (document.doctype)
+                retVal = new XMLSerializer().serializeToString(document.doctype);
+              if (document.documentElement)
+                retVal += document.documentElement.outerHTML;
+              return retVal;
+            }");
             return result.ToString();
         }
 
