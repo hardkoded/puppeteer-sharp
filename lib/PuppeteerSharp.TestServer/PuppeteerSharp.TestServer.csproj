@@ -1,23 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <ApplicationIcon />
     <OutputType>Library</OutputType>
-    <StartupObject />
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Condition="'$(Platform)' == 'x64'" Include="..\packages\Libuv.1.9.1\runtimes\win7-x64\native\libuv.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Visible>False</Visible>
-      <Link>libuv.dll</Link>
-    </None>
-    <None Condition="'$(Platform)' == 'x86'" Include="..\packages\Libuv.1.9.1\runtimes\win7-x86\native\libuv.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Visible>False</Visible>
-      <Link>libuv.dll</Link>
-    </None>
-  </ItemGroup>
 
   <ItemGroup>
     <Folder Include="wwwroot\" />
@@ -32,9 +17,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore" Version="2.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.3" />
-    <PackageReference Include="Microsoft.AspNetCore.Rewrite" Version="2.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore" Version="2.1.0-preview1-final" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.1.0-preview1-final" />
+    <PackageReference Include="Microsoft.AspNetCore.Rewrite" Version="2.1.0-preview1-final" />
+    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.1.0-preview1-final" />
   </ItemGroup>
 </Project>
