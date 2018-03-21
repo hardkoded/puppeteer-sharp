@@ -104,11 +104,7 @@ namespace PuppeteerSharp
             throw new NotImplementedException();
         }
 
-        internal async Task<string> GetTitleAsync()
-        {
-            var result = await EvaluateAsync<string>("document.title");
-            return result;
-        }
+        internal async Task<string> GetTitleAsync() => await EvaluateAsync<string>("document.title");
 
         internal void OnLifecycleEvent(string loaderId, string name)
         {

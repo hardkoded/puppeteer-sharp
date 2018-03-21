@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -7,23 +8,17 @@ namespace PuppeteerSharp.Tests.Page
     [Collection("PuppeteerLoaderFixture collection")]
     public class EvaluateTests : PuppeteerBaseTest
     {
-        [Fact]
-        public async Task ShouldWork()
+        [Theory]
+        [InlineData("() => 7 * 3", 21)] //ShouldWork
+        [InlineData("() => Promise.resolve(8 * 7)", 56)] //ShouldAwaitPromise
+        [InlineData("1 + 5;", 6)] //ShouldAcceptSemiColons
+        [InlineData("2 + 5\n// do some math!'", 7)] //ShouldAceptStringComments
+        public async Task BasicIntEvaluationTest(string script, object expected)
         {
             using (var page = await Browser.NewPageAsync())
             {
-                var result = await page.EvaluateAsync<int>("() => 7 * 3");
-                Assert.Equal(21, result);
-            }
-        }
-
-        [Fact]
-        public async Task ShouldAwaitPromise()
-        {
-            using (var page = await Browser.NewPageAsync())
-            {
-                var result = await page.EvaluateAsync<int>("() => Promise.resolve(8 * 7)");
-                Assert.Equal(56, result);
+                var result = await page.EvaluateAsync<int>(script);
+                Assert.Equal(expected, result);
             }
         }
 
@@ -73,43 +68,17 @@ namespace PuppeteerSharp.Tests.Page
             }
         }
 
-        [Fact]
-        public async Task ShouldReturnNaN()
+        [Theory]
+        [InlineData("() => NaN", double.NaN)] //ShouldReturnNaN
+        [InlineData("() => -0", -0)] //ShouldReturnNegative0
+        [InlineData("() => Infinity", double.PositiveInfinity)] //ShouldReturnInfinity
+        [InlineData("() => -Infinity", double.NegativeInfinity)] //ShouldReturnNegativeInfinty
+        public async Task BasicEvaluationTest(string script, object expected)
         {
             using (var page = await Browser.NewPageAsync())
             {
-                dynamic result = await page.EvaluateAsync<dynamic>("() => NaN");
-                Assert.Equal(double.NaN, result);
-            }
-        }
-
-        [Fact]
-        public async Task ShouldReturnNegative0()
-        {
-            using (var page = await Browser.NewPageAsync())
-            {
-                dynamic result = await page.EvaluateAsync<dynamic>("() => -0");
-                Assert.Equal(-0, result);
-            }
-        }
-
-        [Fact]
-        public async Task ShouldReturnInfinity()
-        {
-            using (var page = await Browser.NewPageAsync())
-            {
-                dynamic result = await page.EvaluateAsync<dynamic>("() => Infinity");
-                Assert.Equal(double.PositiveInfinity, result);
-            }
-        }
-
-        [Fact]
-        public async Task ShouldReturnNegativeInfinty()
-        {
-            using (var page = await Browser.NewPageAsync())
-            {
-                dynamic result = await page.EvaluateAsync<dynamic>("() => -Infinity");
-                Assert.Equal(double.NegativeInfinity, result);
+                dynamic result = await page.EvaluateAsync(script);
+                Assert.Equal(expected, result);
             }
         }
 
@@ -124,43 +93,25 @@ namespace PuppeteerSharp.Tests.Page
         }
 
         [Fact]
+        public async Task ShouldProperlyIgnoreUndefinedFields()
+        {
+            using (var page = await Browser.NewPageAsync())
+            {
+                var result = await page.EvaluateAsync<Dictionary<string, object>>("() => ({a: undefined})");
+                Assert.False(result.ContainsKey("a"));
+            }
+        }
+
+        [Fact]
         public async Task ShouldProperlySerializeNullFields()
         {
             using (var page = await Browser.NewPageAsync())
             {
-                dynamic result = await page.EvaluateAsync<dynamic>("() => ({a: undefined})");
-                Assert.Null(result.a);
+                var result = await page.EvaluateAsync<Dictionary<string, object>>("() => ({a: null})");
+                Assert.True(result.ContainsKey("a"));
+                Assert.Null(result["a"]);
             }
         }
 
-        [Fact]
-        public async Task ShouldAcceptAString()
-        {
-            using (var page = await Browser.NewPageAsync())
-            {
-                var result = await page.EvaluateAsync<int>("1 + 2");
-                Assert.Equal(3, result);
-            }
-        }
-
-        [Fact]
-        public async Task ShouldAcceptSemiColons()
-        {
-            using (var page = await Browser.NewPageAsync())
-            {
-                var result = await page.EvaluateAsync<int>("1 + 5;");
-                Assert.Equal(6, result);
-            }
-        }
-
-        [Fact]
-        public async Task ShouldAceptStringComments()
-        {
-            using (var page = await Browser.NewPageAsync())
-            {
-                var result = await page.EvaluateAsync<int>("2 + 5\n// do some math!'");
-                Assert.Equal(7, result);
-            }
-        }
     }
 }
