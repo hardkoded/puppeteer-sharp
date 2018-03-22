@@ -9,7 +9,7 @@ namespace PuppeteerSharp
         [JsonProperty("lineNumber")]
         public int LineNumber { get; internal set; }
         [JsonProperty("url")]
-        public int Url { get; internal set; }
+        public string Url { get; internal set; }
         [JsonProperty("functionName")]
         public string FunctionName { get; internal set; }
     }

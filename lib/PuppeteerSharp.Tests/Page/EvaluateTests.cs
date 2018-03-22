@@ -9,18 +9,29 @@ namespace PuppeteerSharp.Tests.Page
     public class EvaluateTests : PuppeteerBaseTest
     {
         [Theory]
-        [InlineData("() => 7 * 3", 21)] //ShouldWork
-        [InlineData("() => Promise.resolve(8 * 7)", 56)] //ShouldAwaitPromise
         [InlineData("1 + 5;", 6)] //ShouldAcceptSemiColons
         [InlineData("2 + 5\n// do some math!'", 7)] //ShouldAceptStringComments
-        public async Task BasicIntEvaluationTest(string script, object expected)
+        public async Task BasicIntExressionEvaluationTest(string script, object expected)
         {
             using (var page = await Browser.NewPageAsync())
             {
-                var result = await page.EvaluateAsync<int>(script);
+                var result = await page.EvaluateExpressionAsync<int>(script);
                 Assert.Equal(expected, result);
             }
         }
+
+        [Theory]
+        [InlineData("() => 7 * 3", 21)] //ShouldWork
+        [InlineData("() => Promise.resolve(8 * 7)", 56)] //ShouldAwaitPromise
+        public async Task BasicIntFunctionEvaluationTest(string script, object expected)
+        {
+            using (var page = await Browser.NewPageAsync())
+            {
+                var result = await page.EvaluateFunctionAsync<int>(script);
+                Assert.Equal(expected, result);
+            }
+        }
+
 
         [Fact]
         public async Task ShouldWorkRightAfterFrameNavigated()
@@ -31,7 +42,7 @@ namespace PuppeteerSharp.Tests.Page
             {
                 page.FrameNavigated += (sender, e) =>
                 {
-                    frameEvaluation = e.Frame.EvaluateAsync<int>("() => 6 * 7");
+                    frameEvaluation = e.Frame.EvaluateFunctionAsync<int>("() => 6 * 7");
                 };
 
                 await page.GoToAsync(TestConstants.EmptyPage);
@@ -46,7 +57,7 @@ namespace PuppeteerSharp.Tests.Page
             {
                 var exception = await Assert.ThrowsAsync<EvaluationFailedException>(() =>
                 {
-                    return page.EvaluateAsync<object>("() => not.existing.object.property");
+                    return page.EvaluateFunctionAsync<object>("() => not.existing.object.property");
                 });
 
                 Assert.NotNull(exception);
@@ -63,7 +74,7 @@ namespace PuppeteerSharp.Tests.Page
                 {
                     foo = "bar!"
                 };
-                dynamic result = await page.EvaluateAsync("a => a", obj);
+                dynamic result = await page.EvaluateFunctionAsync("a => a", obj);
                 Assert.Equal("bar!", result.foo.ToString());
             }
         }
@@ -77,7 +88,7 @@ namespace PuppeteerSharp.Tests.Page
         {
             using (var page = await Browser.NewPageAsync())
             {
-                dynamic result = await page.EvaluateAsync(script);
+                dynamic result = await page.EvaluateFunctionAsync(script);
                 Assert.Equal(expected, result);
             }
         }
@@ -87,7 +98,7 @@ namespace PuppeteerSharp.Tests.Page
         {
             using (var page = await Browser.NewPageAsync())
             {
-                dynamic result = await page.EvaluateAsync<bool>("(a, b) => Object.is(a, null) && Object.is(b, 'foo')", null, "foo");
+                dynamic result = await page.EvaluateFunctionAsync<bool>("(a, b) => Object.is(a, null) && Object.is(b, 'foo')", null, "foo");
                 Assert.True(result);
             }
         }
@@ -97,7 +108,7 @@ namespace PuppeteerSharp.Tests.Page
         {
             using (var page = await Browser.NewPageAsync())
             {
-                var result = await page.EvaluateAsync<Dictionary<string, object>>("() => ({a: undefined})");
+                var result = await page.EvaluateFunctionAsync<Dictionary<string, object>>("() => ({a: undefined})");
                 Assert.False(result.ContainsKey("a"));
             }
         }
@@ -107,7 +118,7 @@ namespace PuppeteerSharp.Tests.Page
         {
             using (var page = await Browser.NewPageAsync())
             {
-                var result = await page.EvaluateAsync<Dictionary<string, object>>("() => ({a: null})");
+                var result = await page.EvaluateFunctionAsync<Dictionary<string, object>>("() => ({a: null})");
                 Assert.True(result.ContainsKey("a"));
                 Assert.Null(result["a"]);
             }

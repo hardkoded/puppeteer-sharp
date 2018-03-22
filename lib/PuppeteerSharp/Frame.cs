@@ -50,16 +50,28 @@ namespace PuppeteerSharp
 
         #region Public Methods
 
-        public async Task<dynamic> EvaluateAsync(string script, params object[] args)
+        public async Task<dynamic> EvaluateExpressionAsync(string script)
         {
             var context = await GetExecutionContextAsync();
-            return await context.EvaluateAsync(script, args);
+            return await context.EvaluateExpressionAsync(script);
         }
 
-        public async Task<T> EvaluateAsync<T>(string script, params object[] args)
+        public async Task<T> EvaluateExpressionAsync<T>(string script)
         {
             var context = await GetExecutionContextAsync();
-            return await context.EvaluateAsync<T>(script, args);
+            return await context.EvaluateExpressionAsync<T>(script);
+        }
+
+        public async Task<dynamic> EvaluateFunctionAsync(string script, params object[] args)
+        {
+            var context = await GetExecutionContextAsync();
+            return await context.EvaluateFunctionAsync(script, args);
+        }
+
+        public async Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
+        {
+            var context = await GetExecutionContextAsync();
+            return await context.EvaluateFunctionAsync<T>(script, args);
         }
 
         public Task<ExecutionContext> GetExecutionContextAsync() => ContextResolveTaskWrapper.Task;
@@ -104,7 +116,7 @@ namespace PuppeteerSharp
             throw new NotImplementedException();
         }
 
-        internal async Task<string> GetTitleAsync() => await EvaluateAsync<string>("document.title");
+        internal async Task<string> GetTitleAsync() => await EvaluateExpressionAsync<string>("document.title");
 
         internal void OnLifecycleEvent(string loaderId, string name)
         {

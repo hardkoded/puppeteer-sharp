@@ -24,38 +24,41 @@ namespace PuppeteerSharp
         public string FrameId { get; internal set; }
         public bool IsDefault { get; internal set; }
 
-        public async Task<dynamic> EvaluateAsync(string script, params object[] args)
+        public async Task<dynamic> EvaluateExpressionAsync(string script)
         {
-            var handle = await EvaluateHandleAsync(script, args);
+            var handle = await EvaluateExpressionHandleAsync(script);
             dynamic result = await handle.JsonValue();
             await handle.Dispose();
             return result;
         }
 
-        public async Task<T> EvaluateAsync<T>(string script, params object[] args)
+        public async Task<T> EvaluateExpressionAsync<T>(string script)
         {
-            var result = await EvaluateAsync(script, args);
+            var result = await EvaluateExpressionAsync(script);
             return ((JToken)result).ToObject<T>();
         }
 
-        internal async Task<JSHandle> EvaluateHandleAsync(string script, object[] args)
+        public async Task<dynamic> EvaluateFunctionAsync(string script, params object[] args)
+        {
+            var handle = await EvaluateFunctionHandleAsync(script, args);
+            dynamic result = await handle.JsonValue();
+            await handle.Dispose();
+            return result;
+        }
+
+        public async Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
+        {
+            var result = await EvaluateFunctionAsync(script, args);
+            return ((JToken)result).ToObject<T>();
+        }
+
+        internal async Task<JSHandle> EvaluateExpressionHandleAsync(string script)
         {
             if (string.IsNullOrEmpty(script))
             {
                 return null;
             }
 
-            if (IsFunction(script))
-            {
-                return await EvaluateFunctionAsync(script, args);
-            }
-
-            return await EvaluateExpressionAsync(script);
-
-        }
-
-        private async Task<JSHandle> EvaluateExpressionAsync(string script)
-        {
             dynamic remoteObject;
 
             try
@@ -76,8 +79,13 @@ namespace PuppeteerSharp
             }
         }
 
-        private async Task<JSHandle> EvaluateFunctionAsync(string script, object[] args)
+        internal async Task<JSHandle> EvaluateFunctionHandleAsync(string script, object[] args)
         {
+            if (string.IsNullOrEmpty(script))
+            {
+                return null;
+            }
+
             dynamic result = await _client.SendAsync("Runtime.callFunctionOn", new Dictionary<string, object>()
                 {
                     {"functionDeclaration", script },
