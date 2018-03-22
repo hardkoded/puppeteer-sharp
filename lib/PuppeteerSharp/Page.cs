@@ -267,7 +267,12 @@ namespace PuppeteerSharp
             var requests = new Dictionary<string, Request>();
 
             EventHandler<RequestEventArgs> createRequestEventListener = (object sender, RequestEventArgs e) =>
-                requests.Add(e.Request.Url, e.Request);
+            {
+                if (!requests.ContainsKey(e.Request.Url))
+                {
+                    requests.Add(e.Request.Url, e.Request);
+                }
+            };
 
             _networkManager.RequestCreated += createRequestEventListener;
 
@@ -662,22 +667,19 @@ namespace PuppeteerSharp
 
         private void HandleException(string exceptionDetails)
         {
-            throw new NotImplementedException();
         }
 
         private void OnDialog(MessageEventArgs e)
         {
-            throw new NotImplementedException();
         }
 
         private void OnConsoleAPI(MessageEventArgs e)
         {
-            throw new NotImplementedException();
         }
 
         private async Task ReloadAsync()
         {
-            throw new NotImplementedException();
+            return null;
         }
 
 

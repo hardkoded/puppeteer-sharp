@@ -10,7 +10,6 @@ namespace PuppeteerSharp
         private Session _client;
         private Page _page;
         private Frame _parentFrame;
-        private string _id;
         private string _defaultContextId = "<not-initialized>";
         private object _context = null;
         private string _url = string.Empty;
@@ -22,7 +21,7 @@ namespace PuppeteerSharp
             _client = client;
             _page = page;
             _parentFrame = parentFrame;
-            _id = frameId;
+            Id = frameId;
 
             if (parentFrame != null)
             {
