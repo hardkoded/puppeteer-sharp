@@ -458,25 +458,17 @@ namespace PuppeteerSharp
             }
         }
 
-        public Task<dynamic> EvaluateExpressionAsync(string script)
-        {
-            return _frameManager.MainFrame.EvaluateExpressionAsync(script);
-        }
+        public Task<dynamic> EvaluateExpressionAsync(string script) =>
+            _frameManager.MainFrame.EvaluateExpressionAsync(script);
 
-        public Task<T> EvaluateExpressionAsync<T>(string script)
-        {
-            return _frameManager.MainFrame.EvaluateExpressionAsync<T>(script);
-        }
+        public Task<T> EvaluateExpressionAsync<T>(string script) =>
+            _frameManager.MainFrame.EvaluateExpressionAsync<T>(script);
 
-        public Task<dynamic> EvaluateFunctionAsync(string script, params object[] args)
-        {
-            return _frameManager.MainFrame.EvaluateFunctionAsync(script, args);
-        }
+        public Task<dynamic> EvaluateFunctionAsync(string script, params object[] args) =>
+            _frameManager.MainFrame.EvaluateFunctionAsync(script, args);
 
-        public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
-        {
-            return _frameManager.MainFrame.EvaluateFunctionAsync<T>(script, args);
-        }
+        public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args) =>
+            _frameManager.MainFrame.EvaluateFunctionAsync<T>(script, args);
 
         #endregion
 
