@@ -121,6 +121,5 @@ namespace PuppeteerSharp.Tests.Page
                 Assert.Null(result["a"]);
             }
         }
-
     }
 }
