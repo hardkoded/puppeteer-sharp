@@ -32,7 +32,6 @@ namespace PuppeteerSharp.Tests.Page
             }
         }
 
-
         [Fact]
         public async Task ShouldWorkRightAfterFrameNavigated()
         {

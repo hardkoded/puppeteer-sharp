@@ -15,7 +15,6 @@ namespace PuppeteerSharp
         private Session _client;
         private bool _ignoreHTTPSErrors;
         private NetworkManager _networkManager;
-
         private FrameManager _frameManager;
         private TaskQueue _screenshotTaskQueue;
         private EmulationManager _emulationManager;
