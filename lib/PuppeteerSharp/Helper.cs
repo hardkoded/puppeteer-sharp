@@ -38,7 +38,7 @@ namespace PuppeteerSharp
             }
         }
 
-        public static string GetExceptionMessage(EvaluateExceptionDetails exceptionDetails)
+        internal static string GetExceptionMessage(EvaluateExceptionDetails exceptionDetails)
         {
             if (exceptionDetails.Exception != null)
             {

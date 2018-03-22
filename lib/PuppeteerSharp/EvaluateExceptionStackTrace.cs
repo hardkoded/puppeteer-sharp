@@ -6,6 +6,6 @@ namespace PuppeteerSharp
     public class EvaluateExceptionStackTrace
     {
         [JsonProperty("callFrames")]
-        public IEnumerable<EvaluationExceptionCallFrame> CallFrames { get; internal set; }
+        public EvaluationExceptionCallFrame[] CallFrames { get; internal set; }
     }
 }

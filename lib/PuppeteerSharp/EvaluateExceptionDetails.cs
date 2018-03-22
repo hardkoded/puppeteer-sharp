@@ -5,7 +5,7 @@ namespace PuppeteerSharp
     public class EvaluateExceptionDetails
     {
         [JsonProperty("exception")]
-        public EvaluateExceptionInfo Exception { get; set; }
+        public EvaluateExceptionInfo Exception { get; internal set; }
         [JsonProperty("text")]
         public string Text { get; internal set; }
         [JsonProperty("stackTrace")]

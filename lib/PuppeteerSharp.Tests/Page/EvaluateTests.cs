@@ -59,8 +59,7 @@ namespace PuppeteerSharp.Tests.Page
                     return page.EvaluateFunctionAsync<object>("() => not.existing.object.property");
                 });
 
-                Assert.NotNull(exception);
-                Assert.True(exception.Message.Contains("not is not defined"));
+                Assert.Contains("not is not defined", exception.Message);
             }
         }
 
@@ -97,7 +96,7 @@ namespace PuppeteerSharp.Tests.Page
         {
             using (var page = await Browser.NewPageAsync())
             {
-                dynamic result = await page.EvaluateFunctionAsync<bool>("(a, b) => Object.is(a, null) && Object.is(b, 'foo')", null, "foo");
+                bool result = await page.EvaluateFunctionAsync<bool>("(a, b) => Object.is(a, null) && Object.is(b, 'foo')", null, "foo");
                 Assert.True(result);
             }
         }
@@ -108,7 +107,7 @@ namespace PuppeteerSharp.Tests.Page
             using (var page = await Browser.NewPageAsync())
             {
                 var result = await page.EvaluateFunctionAsync<Dictionary<string, object>>("() => ({a: undefined})");
-                Assert.False(result.ContainsKey("a"));
+                Assert.Empty(result);
             }
         }
 

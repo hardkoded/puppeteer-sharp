@@ -86,7 +86,7 @@ namespace PuppeteerSharp
                 return null;
             }
 
-            dynamic result = await _client.SendAsync("Runtime.callFunctionOn", new Dictionary<string, object>()
+            dynamic response = await _client.SendAsync("Runtime.callFunctionOn", new Dictionary<string, object>()
                 {
                     {"functionDeclaration", script },
                     {"executionContextId", _contextId},
@@ -95,23 +95,18 @@ namespace PuppeteerSharp
                     {"awaitPromise", true}
                 });
 
-            if (result.exceptionDetails != null)
+            if (response.exceptionDetails != null)
             {
                 throw new EvaluationFailedException("Evaluation failed: " +
-                    Helper.GetExceptionMessage(result.exceptionDetails.ToObject<EvaluateExceptionDetails>()));
+                    Helper.GetExceptionMessage(response.exceptionDetails.ToObject<EvaluateExceptionDetails>()));
             }
 
-            return ObjectHandleFactory(result.result);
+            return ObjectHandleFactory(response.result);
         }
 
         private object FormatArguments(object[] args)
         {
             return args.Select(o => new { value = o });
-        }
-
-        private bool IsFunction(string script)
-        {
-            return script.Contains("=>");
         }
 
         public async Task<dynamic> QueryObjects(JSHandle prototypeHandle)
