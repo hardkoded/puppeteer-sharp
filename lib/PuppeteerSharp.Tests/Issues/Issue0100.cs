@@ -4,7 +4,7 @@ using Xunit;
 
 namespace PuppeteerSharp.Tests.Issues
 {
-    [CollectionDefinition("PuppeteerLoaderFixture collection")]
+    [Collection("PuppeteerLoaderFixture collection")]
     public class Issue0100 : PuppeteerBaseTest
     {
         [Fact]
@@ -26,7 +26,6 @@ namespace PuppeteerSharp.Tests.Issues
                 await page.GoToAsync("https://darksky.net/forecast/51.2211,4.3997/si12/en");
                 var pdf = await page.PdfStreamAsync();
                 Assert.NotNull(pdf);
-
             }
         }
     }
