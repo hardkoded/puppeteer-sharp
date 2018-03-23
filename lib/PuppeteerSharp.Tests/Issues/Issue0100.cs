@@ -4,15 +4,15 @@ using Xunit;
 
 namespace PuppeteerSharp.Tests.Issues
 {
-    public class PdfIssuesTests : PuppeteerBaseTest
+    public class Issue0100 : PuppeteerBaseTest
     {
-        public PdfIssuesTests()
+        public Issue0100()
         {
             Downloader.CreateDefault().DownloadRevisionAsync(TestConstants.ChromiumRevision).GetAwaiter().GetResult();
         }
 
         [Fact]
-        public async Task Issue100()
+        public async Task PdfWundergroundShouldWork()
         {
             using (var browser = PuppeteerSharp.Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(),
                                                                      TestConstants.ChromiumRevision))
@@ -21,9 +21,18 @@ namespace PuppeteerSharp.Tests.Issues
                 var response = await page.GoToAsync("https://www.wunderground.com/weather/be/antwerp");
                 var pdf = await page.PdfStreamAsync();
                 Assert.NotNull(pdf);
+            }
+        }
 
+        [Fact]
+        public async Task PdfDarkskyShouldWork()
+        {
+            using (var browser = PuppeteerSharp.Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(),
+                                                                     TestConstants.ChromiumRevision))
+            using (var page = await Browser.NewPageAsync())
+            {
                 await page.GoToAsync("https://darksky.net/forecast/51.2211,4.3997/si12/en");
-                pdf = await page.PdfStreamAsync();
+                var pdf = await page.PdfStreamAsync();
                 Assert.NotNull(pdf);
 
             }
