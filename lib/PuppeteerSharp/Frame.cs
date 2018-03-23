@@ -116,6 +116,27 @@ namespace PuppeteerSharp
             throw new NotImplementedException();
         }
 
+        internal async Task<string> GetContentAsync()
+        {
+            return await EvaluateFunctionAsync<string>(@"() => {
+                let retVal = '';
+                if (document.doctype)
+                    retVal = new XMLSerializer().serializeToString(document.doctype);
+                if (document.documentElement)
+                    retVal += document.documentElement.outerHTML;
+                return retVal;
+            }");
+        }
+
+        internal async Task SetContentAsync(string html)
+        {
+            await EvaluateFunctionAsync(@"html => {
+                document.open();
+                document.write(html);
+                document.close();
+            }", html);
+        }
+        
         internal async Task<string> GetTitleAsync() => await EvaluateExpressionAsync<string>("document.title");
 
         internal void OnLifecycleEvent(string loaderId, string name)

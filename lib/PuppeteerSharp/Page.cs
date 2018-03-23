@@ -262,6 +262,10 @@ namespace PuppeteerSharp
             return page;
         }
 
+        public async Task<string> GetContentAsync() => await _frameManager.MainFrame.GetContentAsync();
+
+        public async Task SetContentAsync(string html) => await _frameManager.MainFrame.SetContentAsync(html);
+
         public async Task<dynamic> GoToAsync(string url, Dictionary<string, string> options = null)
         {
             var referrer = _networkManager.ExtraHTTPHeaders?.GetValueOrDefault("referer");
