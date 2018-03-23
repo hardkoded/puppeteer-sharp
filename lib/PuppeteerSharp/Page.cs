@@ -20,6 +20,7 @@ namespace PuppeteerSharp
         private EmulationManager _emulationManager;
         private ViewPortOptions _viewport;
         private Mouse _mouse;
+
         private Dictionary<string, Func<object>> _pageBindings;
         private const int DefaultNavigationTimeout = 30000;
 
@@ -262,7 +263,7 @@ namespace PuppeteerSharp
             return page;
         }
 
-        public async Task<dynamic> GoToAsync(string url, Dictionary<string, string> options = null)
+        public async Task<Response> GoToAsync(string url, Dictionary<string, string> options = null)
         {
             var referrer = _networkManager.ExtraHTTPHeaders?.GetValueOrDefault("referer");
             var requests = new Dictionary<string, Request>();
@@ -468,6 +469,16 @@ namespace PuppeteerSharp
 
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
             => _frameManager.MainFrame.EvaluateFunctionAsync<T>(script, args);
+
+        public Task AuthenticateAsync(Credentials credentials)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task ReloadAsync()
+        {
+            throw new NotImplementedException();
+        }
 
         #endregion
 
@@ -687,12 +698,6 @@ namespace PuppeteerSharp
         {
             throw new NotImplementedException();
         }
-
-        private Task ReloadAsync()
-        {
-            throw new NotImplementedException();
-        }
-
 
         private async Task Navigate(Session client, string url, string referrer)
         {
