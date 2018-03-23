@@ -36,7 +36,7 @@ namespace PuppeteerSharp.Tests.Page
         {
             var page = await Browser.NewPageAsync();
             const string doctype = "<!DOCTYPE html PUBLIC \" -//W3C//DTD HTML 4.01//EN\" " +
-        "\"http://www.w3.org/TR/html4/strict.dtd\">";
+                "\"http://www.w3.org/TR/html4/strict.dtd\">";
 
             await page.SetContentAsync($"{doctype}<div>hello</div>");
             var result = await page.GetContentAsync();
