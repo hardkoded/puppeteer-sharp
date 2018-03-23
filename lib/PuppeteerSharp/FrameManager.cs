@@ -110,8 +110,8 @@ namespace PuppeteerSharp
             var context = new ExecutionContext(_client, contextPayload, (dynamic remoteObject) =>
             {
                 _contextIdToContext.TryGetValue(contextPayload.Id, out var storedContext);
-                
-                if(storedContext == null)
+
+                if (storedContext == null)
                 {
                     Console.WriteLine($"INTERNAL ERROR: missing context with id = {contextPayload.Id}");
                 }
