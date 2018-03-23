@@ -10,37 +10,32 @@ namespace PuppeteerSharp.Tests.Puppeteer
         [Fact]
         public async Task ShouldBeAbleToConnectMultipleTimesToTheSameBrowser()
         {
-            using (var originalBrowser = await PuppeteerSharp.Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.ChromiumRevision))
+            var secondBrowser = await PuppeteerSharp.Puppeteer.ConnectAsync(new ConnectOptions
             {
-                var browser = await PuppeteerSharp.Puppeteer.ConnectAsync(new ConnectOptions
-                {
-                    BrowserWSEndpoint = originalBrowser.WebSocketEndpoint
-                });
-                var page = await browser.NewPageAsync();
-                // TODO: Assert.Equal(56, await page.EvaluateAsync("() => 7 * 8"));
-                browser.Disconnect();
+                BrowserWSEndpoint = Browser.WebSocketEndpoint
+            });
+            var page = await secondBrowser.NewPageAsync();
+            Assert.Equal(56, await page.EvaluateFunctionAsync<int>("() => 7 * 8"));
+            secondBrowser.Disconnect();
 
-                var secondPage = await originalBrowser.NewPageAsync();
-                // TODO: Assert.Equal(42, await secondPage.EvaluateAsync("() => 7 * 6"));
-            }
+            var secondPage = await Browser.NewPageAsync();
+            Assert.Equal(42, await secondPage.EvaluateFunctionAsync<int>("() => 7 * 6"));
         }
 
-        [Fact(Skip = "WIP")]
+        [Fact(Skip = "Test Hangs on line30; NavigationWatcher.NavigationTask doesn't complete")]
         public async Task ShouldBeAbleToReconnectToADisconnectedBrowser()
         {
-            var originalBrowser = await PuppeteerSharp.Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.ChromiumRevision);
-
-            var browserWSEndpoint = originalBrowser.WebSocketEndpoint;
-            var page = await originalBrowser.NewPageAsync();
+            var browserWSEndpoint = Browser.WebSocketEndpoint;
+            var page = await Browser.NewPageAsync();
             await page.GoToAsync(TestConstants.ServerUrl + "/frames/nested-frames.html");
-            originalBrowser.Disconnect();
+            Browser.Disconnect();
 
-            using (var browser = await PuppeteerSharp.Puppeteer.ConnectAsync(new ConnectOptions { BrowserWSEndpoint = browserWSEndpoint }))
+            using (var secondBrowser = await PuppeteerSharp.Puppeteer.ConnectAsync(new ConnectOptions { BrowserWSEndpoint = browserWSEndpoint }))
             {
-                var pages = await browser.GetPagesAsync();
+                var pages = await secondBrowser.GetPagesAsync();
                 var restoredPage = pages.First(p => p.Url == TestConstants.ServerUrl + "/frames/nested-frames.html");
-                Assert.Equal("reconnect-nested-frames.txt", FrameUtils.DumpFrames(restoredPage.MainFrame));
-                // TODO: Assert.Equal(56, await restoredPage.EvaluateAsync("() => 7 * 8"));
+                Assert.Equal(GoldenUtils.ReconnectNestedFramesTxt, FrameUtils.DumpFrames(restoredPage.MainFrame));
+                Assert.Equal(56, await restoredPage.EvaluateFunctionAsync<int>("() => 7 * 8"));
             }
         }
     }

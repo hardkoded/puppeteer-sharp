@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PuppeteerSharp.Tests
+﻿namespace PuppeteerSharp.Tests
 {
-    public class GoldenUtils
+    public static class GoldenUtils
     {
-        
+        public static readonly string ReconnectNestedFramesTxt =
+@"http://localhost:<PORT>/frames/nested-frames.html
+    http://localhost:<PORT>/frames/two-frames.html
+        http://localhost:<PORT>/frames/frame.html
+        http://localhost:<PORT>/frames/frame.html
+    http://localhost:<PORT>/frames/frame.html;";
     }
 }
