@@ -65,7 +65,7 @@ namespace PuppeteerSharp.Tests.Puppeteer
                                                                             TestConstants.ChromiumRevision))
             using (var page = await browser.NewPageAsync())
             {
-                var neverResolves = page.EvaluateHandle("() => new Promise(r => {})");
+                var neverResolves = page.EvaluateFunctionHandle("() => new Promise(r => {})");
                 await browser.CloseAsync();
 
                 await neverResolves;
