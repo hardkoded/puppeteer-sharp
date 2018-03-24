@@ -36,7 +36,7 @@ namespace PuppeteerSharp
 
         public async Task<T> SendAsync<T>(string method, dynamic args = null)
         {
-            var content = await SendAsync(method, args, true);
+            var content = await SendAsync(method, true, args);
             return JsonConvert.DeserializeObject<T>(content);
         }
 

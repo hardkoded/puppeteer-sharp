@@ -173,11 +173,12 @@ namespace PuppeteerSharp
         }
 
         public async Task<IEnumerable<CookieParam>> GetCookiesAsync(params string[] urls)
-        {
-            return await _client.SendAsync<List<CookieParam>>("Network.getCookies", new Dictionary<string, object>
+        {            
+            var response = await _client.SendAsync("Network.getCookies", new Dictionary<string, object>
             {
-                { "urls", urls.Length > 0 ? urls : (object)Url}
+                { "urls", urls.Length > 0 ? urls : new string[] { Url } }
             });
+            return response.cookies.ToObject<CookieParam[]>();
         }
 
         public async Task SetCookieAsync(params CookieParam[] cookies)
