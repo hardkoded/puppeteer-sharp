@@ -84,7 +84,7 @@ namespace PuppeteerSharp
         public event EventHandler<FrameEventArgs> FrameDetached;
         public event EventHandler<FrameEventArgs> FrameNavigated;
 
-        public event EventHandler<ResponseCreatedArgs> ResponseCreated;
+        public event EventHandler<ResponseCreatedEventArgs> ResponseCreated;
         public event EventHandler<RequestEventArgs> RequestCreated;
         public event EventHandler<RequestEventArgs> RequestFinished;
         public event EventHandler<RequestEventArgs> RequestFailed;
@@ -263,7 +263,7 @@ namespace PuppeteerSharp
             return page;
         }
 
-        public async Task<Response> GoToAsync(string url, Dictionary<string, string> options = null)
+        public async Task<Response> GoToAsync(string url, NavigationOptions options = null)
         {
             var referrer = _networkManager.ExtraHTTPHeaders?.GetValueOrDefault("referer");
             var requests = new Dictionary<string, Request>();
@@ -274,11 +274,9 @@ namespace PuppeteerSharp
             _networkManager.RequestCreated += createRequestEventListener;
 
             var mainFrame = _frameManager.MainFrame;
-            var timeout = options != null && options.ContainsKey("timeout") ?
-                Convert.ToInt32(options["timeout"]) :
-                DefaultNavigationTimeout;
+            var timeout = options?.Timeout ?? DefaultNavigationTimeout;
 
-            var watcher = new NavigationWatcher(_frameManager, mainFrame, timeout, options);
+            var watcher = new NavigatorWatcher(_frameManager, mainFrame, timeout, options);
             var navigateTask = Navigate(_client, url, referrer);
 
             await Task.WhenAll(
@@ -472,17 +470,49 @@ namespace PuppeteerSharp
 
         public Task AuthenticateAsync(Credentials credentials)
         {
-            throw new NotImplementedException();
+            return _networkManager.AuthenticateAsync(credentials);
         }
 
-        public Task ReloadAsync()
+        public async Task<Response> ReloadAsync(NavigationOptions options = null)
         {
-            throw new NotImplementedException();
+            var navigationTask = WaitForNavigation(options);
+
+            await Task.WhenAll(
+              navigationTask,
+              _client.SendAsync("Page.reload")
+            );
+
+            return navigationTask.Result;
         }
 
         #endregion
 
         #region Private Method
+
+        private async Task<Response> WaitForNavigation(NavigationOptions options = null)
+        {
+            var mainFrame = _frameManager.MainFrame;
+            var timeout = options?.Timeout ?? DefaultNavigationTimeout;
+            var watcher = new NavigatorWatcher(_frameManager, mainFrame, timeout, options);
+            var responses = new Dictionary<string, Response>();
+
+            EventHandler<ResponseCreatedEventArgs> createResponseEventListener = (object sender, ResponseCreatedEventArgs e) =>
+                responses.Add(e.Response.Url, e.Response);
+
+            _networkManager.ResponseCreated += createResponseEventListener;
+
+            await watcher.NavigationTask;
+
+            _networkManager.ResponseCreated -= createResponseEventListener;
+
+            var exception = watcher.NavigationTask.Exception;
+            if (exception != null)
+            {
+                throw new NavigationException(exception.Message, exception);
+            }
+
+            return responses.GetValueOrDefault(_frameManager.MainFrame.Url);
+        }
 
         private async Task<Stream> PerformScreenshot(string format, ScreenshotOptions options)
         {

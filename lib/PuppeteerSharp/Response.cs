@@ -11,7 +11,6 @@ namespace PuppeteerSharp
         //TODO: In puppeteer this is a buffer but as I don't know the real implementation yet
         //I will consider this a string
         private bool _ok;
-        private string _url;
 
         public Response(Session client, Request request, HttpStatusCode status, Dictionary<string, object> headers, SecurityDetails securityDetails)
         {
@@ -19,7 +18,7 @@ namespace PuppeteerSharp
             Request = request;
             Status = status;
             _ok = (int)status >= 200 && (int)status <= 299;
-            _url = request.Url;
+            Url = request.Url;
 
             Headers = new Dictionary<string, object>();
             foreach (KeyValuePair<string, object> keyValue in headers)
@@ -30,6 +29,7 @@ namespace PuppeteerSharp
         }
 
         #region Properties
+        public string Url { get; internal set; }
         public string Body { get; internal set; }
         public Dictionary<string, object> Headers { get; internal set; }
         public string ContentType { get; internal set; }
