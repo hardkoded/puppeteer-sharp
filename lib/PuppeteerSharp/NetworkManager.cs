@@ -233,8 +233,8 @@ namespace PuppeteerSharp
                 HandleRequestStart(request.RequestId, e.MessageData);
                 return;
             }
-            var requestHash = e.MessageData.request.hash;
 
+            var requestHash = e.MessageData.request.ToObject<Payload>().Hash;
 
             if (_requestHashToRequestIds.Any(i => i.Key == requestHash))
             {
@@ -310,7 +310,7 @@ namespace PuppeteerSharp
                 // All redirects are handled in requestIntercepted.
                 if (e.MessageData.redirectResponse == null)
                 {
-                    var requestHash = e.MessageData.request.hash;
+                    var requestHash = e.MessageData.request.ToObject<Payload>().Hash;
 
                     KeyValuePair<string, string>? interceptionItem = null;
 
