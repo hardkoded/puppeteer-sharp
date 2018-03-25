@@ -146,7 +146,11 @@ namespace PuppeteerSharp.Tests.Page
         [Fact]
         public async Task ShouldNotSetACookieOnADataURLPage()
         {
+            var page = await Browser.NewPageAsync();
+            await page.GoToAsync("data:,Hello%2C%20World!");
+            var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await page.SetCookieAsync(new CookieParam { Name = "example-cookie", Value = "best" }));
 
+            Assert.Equal("Protocol error (Network.deleteCookies): At least one of the url and domain needs to be specified ", exception.Message);
         }
 
         [Fact] // need a better name for this one
