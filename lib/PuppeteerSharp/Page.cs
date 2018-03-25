@@ -384,6 +384,8 @@ namespace PuppeteerSharp
             return new MemoryStream(buffer);
         }
 
+        public async Task SetJavaScriptEnabledAsync(bool enabled) => await _client.SendAsync("Emulation.setScriptExecutionDisabled", new { value = !enabled });
+
         public async Task SetViewport(ViewPortOptions viewport)
         {
             var needsReload = await _emulationManager.EmulateViewport(_client, viewport);
