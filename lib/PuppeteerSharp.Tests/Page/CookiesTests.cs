@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -116,7 +117,11 @@ namespace PuppeteerSharp.Tests.Page
         [Fact]
         public async Task ShouldNotSetACookieOnABlankPage()
         {
+            var page = await Browser.NewPageAsync();
+            await page.GoToAsync(TestConstants.AboutBlank);
 
+            var exception = await Assert.ThrowsAsync<MessageException>(async () => await page.SetCookieAsync(new CookieParam { Name = "example-cookie", Value = "best" }));
+            Assert.Equal("Protocol error (Network.deleteCookies): At least one of the url and domain needs to be specified ", exception.Message);
         }
 
         [Fact]

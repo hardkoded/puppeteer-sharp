@@ -49,7 +49,7 @@ namespace PuppeteerSharp
         {
             if (Connection == null)
             {
-                throw new Exception($"Protocol error (${method}): Session closed. Most likely the page has been closed.");
+                throw new Exception($"Protocol error ({method}): Session closed. Most likely the page has been closed.");
             }
             int id = ++_lastId;
             var message = JsonConvert.SerializeObject(new Dictionary<string, object>(){
@@ -110,7 +110,7 @@ namespace PuppeteerSharp
                 if (objAsJObject["error"] != null)
                 {
                     callback.TaskWrapper.SetException(new MessageException(
-                        $"Protocol error({ callback.Method }): {obj.error.message} ${obj.error.data}"
+                        $"Protocol error ({ callback.Method }): {obj.error.message} {obj.error.data}"
                     ));
                 }
                 else
