@@ -14,7 +14,7 @@ namespace PuppeteerSharp
         public string Domain { get; set; }
 
         [JsonProperty("url", NullValueHandling = NullValueHandling.Ignore)]
-        public string Url { get; internal set; }
+        public string Url { get; set; }
 
         [JsonProperty("path", NullValueHandling = NullValueHandling.Ignore)]
         public string Path { get; set; }

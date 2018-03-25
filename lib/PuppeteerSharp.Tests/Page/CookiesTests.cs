@@ -127,7 +127,20 @@ namespace PuppeteerSharp.Tests.Page
         [Fact]
         public async Task ShouldNotSetACookieWithBlankPageURL()
         {
+            var page = await Browser.NewPageAsync();
+            await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
 
+            var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await page.SetCookieAsync(new CookieParam
+            {
+                Name = "example-cookie",
+                Value = "best"
+            }, new CookieParam
+            {
+                Url = TestConstants.AboutBlank,
+                Name = "example-cookie-blank",
+                Value = "best"
+            }));
+            Assert.Equal("Blank page can not have cookie \"example-cookie-blank\"", exception.Message);
         }
 
         [Fact]
