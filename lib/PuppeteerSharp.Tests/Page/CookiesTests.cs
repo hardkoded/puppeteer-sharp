@@ -81,11 +81,11 @@ namespace PuppeteerSharp.Tests.Page
             Assert.Equal(cookie.Secure, false);
             Assert.Equal(cookie.Session, true);
             Assert.Equal("gridcookie=GRID", await page.EvaluateExpressionAsync<string>("document.cookie"));
-            
+
             await page.GoToAsync(TestConstants.ServerUrl + "/empty.html");
             Assert.Empty(await page.GetCookiesAsync());
             Assert.Equal(string.Empty, await page.EvaluateExpressionAsync<string>("document.cookie"));
-            
+
             await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             Assert.Equal("gridcookie=GRID", await page.EvaluateExpressionAsync<string>("document.cookie"));
         }
@@ -93,7 +93,24 @@ namespace PuppeteerSharp.Tests.Page
         [Fact]
         public async Task ShouldDeleteACookie()
         {
-
+            var page = await Browser.NewPageAsync();
+            await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+            await page.SetCookieAsync(new CookieParam
+            {
+                Name = "cookie1",
+                Value = "1"
+            }, new CookieParam
+            {
+                Name = "cookie2",
+                Value = "2"
+            }, new CookieParam
+            {
+                Name = "cookie3",
+                Value = "3"
+            });
+            Assert.Equal("cookie1=1; cookie2=2; cookie3=3", await page.EvaluateExpressionAsync<string>("document.cookie"));
+            await page.DeleteCookieAsync(new CookieParam { Name = "cookie2" });
+            Assert.Equal("cookie1=1; cookie3=3", await page.EvaluateExpressionAsync<string>("document.cookie"));
         }
 
         [Fact]
