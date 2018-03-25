@@ -9,6 +9,7 @@ namespace PuppeteerSharp.Tests
         public const string HttpsPrefix = "https://localhost:8908";
         public const int ChromiumRevision = Downloader.DefaultRevision;
         public const string AboutBlank = "about:blank";
+        public static readonly string CrossProcessHttpPrefix = "http://127.0.0.1:8907";
         public static readonly string EmptyPage = $"{ServerUrl}/empty.html";
 
         public static LaunchOptions DefaultBrowserOptions() => new LaunchOptions

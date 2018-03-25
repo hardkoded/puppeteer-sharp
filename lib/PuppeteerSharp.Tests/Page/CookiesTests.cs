@@ -153,22 +153,65 @@ namespace PuppeteerSharp.Tests.Page
             Assert.Equal("Protocol error (Network.deleteCookies): At least one of the url and domain needs to be specified ", exception.Message);
         }
 
-        [Fact] // need a better name for this one
-        public async Task ShouldNotSetACookieWithBlankPageURL2()
-        {
-
-        }
-
         [Fact]
         public async Task ShouldSetACookieOnADifferentDomain()
         {
-
+            var page = await Browser.NewPageAsync();
+            await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+            await page.SetCookieAsync(new CookieParam { Name = "example-cookie", Value = "best", Url = "https://www.example.com" });
+            Assert.Equal(string.Empty, await page.EvaluateExpressionAsync<string>("document.cookie"));
+            Assert.Empty(await page.GetCookiesAsync());
+            var cookie = Assert.Single(await page.GetCookiesAsync("https://www.example.com"));
+            Assert.Equal(cookie.Name, "example-cookie");
+            Assert.Equal(cookie.Value, "best");
+            Assert.Equal(cookie.Domain, "www.example.com");
+            Assert.Equal(cookie.Path, "/");
+            Assert.Equal(cookie.Expires, -1);
+            Assert.Equal(cookie.Size, 18);
+            Assert.Equal(cookie.HttpOnly, false);
+            Assert.Equal(cookie.Secure, true);
+            Assert.Equal(cookie.Session, true);
         }
 
-        [Fact]
+        [Fact(Skip = "Line182 doesn't return")]
         public async Task ShouldSetCookiesFromAFrame()
         {
+            var page = await Browser.NewPageAsync();
+            await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+            await page.SetCookieAsync(new CookieParam { Name = "localhost-cookie", Value = "best" });
+            await page.EvaluateFunctionAsync(@"src => {
+                let fulfill;
+                const promise = new Promise(x => fulfill = x);
+                const iframe = document.createElement('iframe');
+                document.body.appendChild(iframe);
+                iframe.onload = fulfill;
+                iframe.src = src;
+                return promise;
+            }", TestConstants.CrossProcessHttpPrefix);
+            await page.SetCookieAsync(new CookieParam { Name = "127-cookie", Value = "worst", Url = TestConstants.CrossProcessHttpPrefix });
+            Assert.Equal("localhost-cookie=best", await page.EvaluateExpressionAsync<string>("document.cookie"));
+            Assert.Equal("127-cookie=worst", await page.Frames.ElementAt(1).EvaluateExpressionAsync<string>("document.cookie"));
+            var cookie = Assert.Single(await page.GetCookiesAsync());
+            Assert.Equal(cookie.Name, "localhost-cookie");
+            Assert.Equal(cookie.Value, "best");
+            Assert.Equal(cookie.Domain, "localhost");
+            Assert.Equal(cookie.Path, "/");
+            Assert.Equal(cookie.Expires, -1);
+            Assert.Equal(cookie.Size, 20);
+            Assert.Equal(cookie.HttpOnly, false);
+            Assert.Equal(cookie.Secure, false);
+            Assert.Equal(cookie.Session, true);
 
+            cookie = Assert.Single(await page.GetCookiesAsync(TestConstants.CrossProcessHttpPrefix));
+            Assert.Equal(cookie.Name, "127-cookie");
+            Assert.Equal(cookie.Value, "worst");
+            Assert.Equal(cookie.Domain, "127.0.0.1");
+            Assert.Equal(cookie.Path, "/");
+            Assert.Equal(cookie.Expires, -1);
+            Assert.Equal(cookie.Size, 15);
+            Assert.Equal(cookie.HttpOnly, false);
+            Assert.Equal(cookie.Secure, false);
+            Assert.Equal(cookie.Session, true);
         }
     }
 }
