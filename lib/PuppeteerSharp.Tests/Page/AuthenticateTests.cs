@@ -12,7 +12,6 @@ namespace PuppeteerSharp.Tests.Page
         [Fact]
         public async Task ShouldWork()
         {
-            //server.setAuth('/empty.html', 'user', 'pass');
             using (var page = await Browser.NewPageAsync())
             {
                 var response = await page.GoToAsync(TestConstants.AuthenticateUrl);
