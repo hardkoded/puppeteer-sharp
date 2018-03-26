@@ -263,13 +263,22 @@ namespace PuppeteerSharp
             return page;
         }
 
+        public async Task<string> GetContentAsync() => await _frameManager.MainFrame.GetContentAsync();
+
+        public async Task SetContentAsync(string html) => await _frameManager.MainFrame.SetContentAsync(html);
+
         public async Task<Response> GoToAsync(string url, NavigationOptions options = null)
         {
             var referrer = _networkManager.ExtraHTTPHeaders?.GetValueOrDefault("referer");
             var requests = new Dictionary<string, Request>();
 
             EventHandler<RequestEventArgs> createRequestEventListener = (object sender, RequestEventArgs e) =>
-                requests.Add(e.Request.Url, e.Request);
+            {
+                if (!requests.ContainsKey(e.Request.Url))
+                {
+                    requests.Add(e.Request.Url, e.Request);
+                }
+            };
 
             _networkManager.RequestCreated += createRequestEventListener;
 
@@ -373,6 +382,8 @@ namespace PuppeteerSharp
             var buffer = Convert.FromBase64String(result.GetValue("data").Value<string>());
             return new MemoryStream(buffer);
         }
+
+        public async Task SetJavaScriptEnabledAsync(bool enabled) => await _client.SendAsync("Emulation.setScriptExecutionDisabled", new { value = !enabled });
 
         public async Task SetViewport(ViewPortOptions viewport)
         {
@@ -716,17 +727,14 @@ namespace PuppeteerSharp
 
         private void HandleException(string exceptionDetails)
         {
-            throw new NotImplementedException();
         }
 
         private void OnDialog(MessageEventArgs e)
         {
-            throw new NotImplementedException();
         }
 
         private void OnConsoleAPI(MessageEventArgs e)
         {
-            throw new NotImplementedException();
         }
 
         private async Task Navigate(Session client, string url, string referrer)

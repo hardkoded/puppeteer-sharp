@@ -59,24 +59,13 @@ namespace PuppeteerSharp
                 return null;
             }
 
-            dynamic remoteObject;
-
-            try
+            return await EvaluateHandleAsync("Runtime.evaluate", new Dictionary<string, object>()
             {
-                remoteObject = await _client.SendAsync("Runtime.evaluate", new Dictionary<string, object>()
-                {
-                    {"contextId", _contextId},
-                    {"expression", script},
-                    {"returnByValue", false},
-                    {"awaitPromise", true}
-                });
-
-                return ObjectHandleFactory(remoteObject.result);
-            }
-            catch (Exception ex)
-            {
-                throw new EvaluationFailedException("Evaluation Failed", ex);
-            }
+                {"contextId", _contextId},
+                {"expression", script},
+                {"returnByValue", false},
+                {"awaitPromise", true}
+            });
         }
 
         internal async Task<JSHandle> EvaluateFunctionHandleAsync(string script, object[] args)
@@ -86,14 +75,19 @@ namespace PuppeteerSharp
                 return null;
             }
 
-            dynamic response = await _client.SendAsync("Runtime.callFunctionOn", new Dictionary<string, object>()
-                {
-                    {"functionDeclaration", script },
-                    {"executionContextId", _contextId},
-                    {"arguments", FormatArguments(args)},
-                    {"returnByValue", false},
-                    {"awaitPromise", true}
-                });
+            return await EvaluateHandleAsync("Runtime.callFunctionOn", new Dictionary<string, object>()
+            {
+                {"functionDeclaration", script },
+                {"executionContextId", _contextId},
+                {"arguments", FormatArguments(args)},
+                {"returnByValue", false},
+                {"awaitPromise", true}
+            });
+        }
+
+        private async Task<JSHandle> EvaluateHandleAsync(string method, dynamic args)
+        {
+            dynamic response = await _client.SendAsync(method, args);
 
             if (response.exceptionDetails != null)
             {
