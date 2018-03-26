@@ -208,13 +208,19 @@ namespace PuppeteerSharp
                 else if (_credentials != null)
                 {
                     response = "ProvideCredentials";
-                    _attemptedAuthentications.Add(e.MessageData.interceptionId);
+                    _attemptedAuthentications.Add(e.MessageData.interceptionId.ToString());
                 }
                 var credentials = _credentials ?? new Credentials();
                 await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object>
                 {
-                    {"interceptionId", e.MessageData.interceptionId},
-                    {"authChallengeResponse", new { response, credentials.Username, credentials.Password }}
+                    {"interceptionId", e.MessageData.interceptionId.ToString()},
+                    {"authChallengeResponse", new
+                        {
+                            response,
+                            username = credentials.Username,
+                            password = credentials.Password
+                        }
+                    }
                 });
                 return;
             }
@@ -254,7 +260,7 @@ namespace PuppeteerSharp
         {
             HandleRequestStart(
                 requestId,
-                null,
+                messageData.interceptionId?.ToString(),
                 messageData.request.url?.ToString(),
                 (messageData.resourceType ?? messageData.type)?.ToString(),
                 ((JObject)messageData.request).ToObject<Payload>());
@@ -324,7 +330,7 @@ namespace PuppeteerSharp
                         var request = _interceptionIdToRequest[interceptionItem.Value.Value];
 
                         request.RequestId = e.MessageData.requestId;
-                        _requestIdToRequest[e.MessageData.requestId] = request;
+                        _requestIdToRequest[e.MessageData.requestId.ToString()] = request;
                         _requestHashToInterceptionIds.Remove(interceptionItem.Value);
                     }
                     else

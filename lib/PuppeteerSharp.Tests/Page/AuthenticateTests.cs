@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Tests.Page
             //server.setAuth('/empty.html', 'user', 'pass');
             using (var page = await Browser.NewPageAsync())
             {
-                var response = await page.GoToAsync($"{TestConstants.AuthenticateUrl}testuser");
+                var response = await page.GoToAsync(TestConstants.AuthenticateUrl);
                 Assert.Equal(HttpStatusCode.Unauthorized, response.Status);
 
                 await page.AuthenticateAsync(new Credentials
@@ -40,7 +40,7 @@ namespace PuppeteerSharp.Tests.Page
                     Password = "bar"
                 });
 
-                var response = await page.GoToAsync($"{TestConstants.AuthenticateUrl}testuser2");
+                var response = await page.GoToAsync(TestConstants.AuthenticateUrl);
                 Assert.Equal(HttpStatusCode.Unauthorized, response.Status);
             }
         }
@@ -56,12 +56,12 @@ namespace PuppeteerSharp.Tests.Page
                     Password = "pass"
                 });
 
-                var response = await page.GoToAsync($"{TestConstants.AuthenticateUrl}testuser3");
+                var response = await page.GoToAsync(TestConstants.AuthenticateUrl);
                 Assert.Equal(HttpStatusCode.OK, response.Status);
 
                 await page.AuthenticateAsync(null);
 
-                response = await page.GoToAsync($"{TestConstants.CrossProcessAuthenticateUrl}testuser3");
+                response = await page.GoToAsync(TestConstants.CrossProcessAuthenticateUrl);
                 Assert.Equal(HttpStatusCode.Unauthorized, response.Status);
             }
         }

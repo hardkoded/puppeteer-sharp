@@ -53,7 +53,7 @@ namespace PuppeteerSharp
                     }
                 }
 
-                return JsonConvert.SerializeObject(this);
+                return JsonConvert.SerializeObject(hash);
             }
         }
     }

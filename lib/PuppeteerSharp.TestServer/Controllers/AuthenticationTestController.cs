@@ -7,8 +7,6 @@ namespace PuppeteerSharp.TestServer.Controllers
     public class AuthenticationTestController : Controller
     {
         [HttpGet("authenticationtest/testuser")]
-        [HttpGet("authenticationtest/testuser2")]
-        [HttpGet("authenticationtest/testuser3")]
         public IActionResult TestUser()
         {
             if (!Authenticate("user", "pass"))
@@ -35,6 +33,8 @@ namespace PuppeteerSharp.TestServer.Controllers
 
                 return username == usernameToCheck && password == passwordToCheck;
             }
+
+            HttpContext.Response.Headers.Add("WWW-Authenticate", "Basic realm=\"Basic\"");
 
             return false;
         }
