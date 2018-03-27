@@ -266,7 +266,7 @@ namespace PuppeteerSharp
 
         public async Task SetContentAsync(string html) => await _frameManager.MainFrame.SetContentAsync(html);
 
-        public async Task<dynamic> GoToAsync(string url, Dictionary<string, string> options = null)
+        public async Task<Response> GoToAsync(string url, Dictionary<string, string> options = null)
         {
             var referrer = _networkManager.ExtraHTTPHeaders?.GetValueOrDefault("referer");
             var requests = new Dictionary<string, Request>();
@@ -479,6 +479,12 @@ namespace PuppeteerSharp
 
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
             => _frameManager.MainFrame.EvaluateFunctionAsync<T>(script, args);
+
+
+        public async Task SetExtraHttpHeadersAsync(Dictionary<string, string> headers)
+        {
+            await _networkManager.SetExtraHTTPHeadersAsync(headers);
+        }
 
         #endregion
 
