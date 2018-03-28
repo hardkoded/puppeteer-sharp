@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace PuppeteerSharp
 {
-    internal class NavigationWatcher
+    internal class NavigatorWatcher
     {
         private FrameManager _frameManager;
         private Frame _frame;
@@ -25,17 +25,13 @@ namespace PuppeteerSharp
         private string _initialLoaderId;
         private Timer _timer = null;
 
-        public NavigationWatcher(FrameManager frameManager, Frame mainFrame, int timeout, dynamic options)
+        public NavigatorWatcher(FrameManager frameManager, Frame mainFrame, int timeout, NavigationOptions options)
         {
             var waitUntil = new[] { "load" };
 
-            if (options != null && options.waitUntil is Array)
+            if (options?.WaitUntil != null)
             {
-                waitUntil = options.waitUntil;
-            }
-            else if (options != null && options.waitUntil is string)
-            {
-                waitUntil = new string[] { options.waitUntil.ToString() };
+                waitUntil = options.WaitUntil;
             }
 
             _expectedLifecycle = waitUntil.Select(w =>
