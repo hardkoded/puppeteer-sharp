@@ -359,27 +359,27 @@ namespace PuppeteerSharp
         {
             var enabled = _userRequestInterceptionEnabled || _credentials != null;
 
-            if (enabled != _protocolRequestInterceptionEnabled)
+            if (enabled == _protocolRequestInterceptionEnabled)
             {
-                _protocolRequestInterceptionEnabled = enabled;
-                var patterns = enabled ?
-                    new object[] { new KeyValuePair<string, string>("urlPattern", "*") } :
-                    new object[] { };
-
-                await Task.WhenAll(
-                    _client.SendAsync("Network.setCacheDisabled", new Dictionary<string, object>
-                    {
-                        { "cacheDisabled", enabled}
-                    }),
-                    _client.SendAsync("Network.setRequestInterception", new Dictionary<string, object>
-                    {
-                        { "patterns", patterns}
-                    })
-                );
+                return;
             }
 
-        }
+            _protocolRequestInterceptionEnabled = enabled;
+            var patterns = enabled ?
+                new object[] { new KeyValuePair<string, string>("urlPattern", "*") } :
+                Array.Empty<object>();
 
+            await Task.WhenAll(
+                _client.SendAsync("Network.setCacheDisabled", new Dictionary<string, object>
+                {
+                    { "cacheDisabled", enabled}
+                }),
+                _client.SendAsync("Network.setRequestInterception", new Dictionary<string, object>
+                {
+                    { "patterns", patterns}
+                })
+            );
+        }
         #endregion
     }
 }

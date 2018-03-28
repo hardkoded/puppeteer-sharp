@@ -29,7 +29,7 @@ namespace PuppeteerSharp
         {
             var waitUntil = new[] { "load" };
 
-            if (options != null && options.WaitUntil != null)
+            if (options?.WaitUntil != null)
             {
                 waitUntil = options.WaitUntil;
             }

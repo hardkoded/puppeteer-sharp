@@ -114,21 +114,16 @@ namespace PuppeteerSharp
         }
 
         public async Task<ElementHandle> GetElementAsync(string selector)
-        {
-            return await MainFrame.GetElementAsync(selector);
-        }
+            => await MainFrame.GetElementAsync(selector);
 
         public async Task<IEnumerable<ElementHandle>> GetElementsAsync(string selector)
-        {
-            return await MainFrame.GetElementsAsync(selector);
-        }
+            => await MainFrame.GetElementsAsync(selector);
 
         public async Task<JSHandle> EvaluateExpressionHandle(string script)
         {
             var context = await MainFrame.GetExecutionContextAsync();
             return await context.EvaluateExpressionHandleAsync(script);
         }
-
 
         public async Task<JSHandle> EvaluateFunctionHandle(string pageFunction, params object[] args)
         {
@@ -142,36 +137,22 @@ namespace PuppeteerSharp
             return await context.QueryObjects(prototypeHandle);
         }
 
-
         public async Task<object> EvalAsync(string selector, Func<object> pageFunction, params object[] args)
-        {
-            return await MainFrame.Eval(selector, pageFunction, args);
-        }
+            => await MainFrame.Eval(selector, pageFunction, args);
 
         public async Task<object> EvalAsync(string selector, string pageFunction, params object[] args)
-        {
-            return await MainFrame.Eval(selector, pageFunction, args);
-        }
+            => await MainFrame.Eval(selector, pageFunction, args);
 
         public async Task SetRequestInterceptionAsync(bool value)
-        {
-            await _networkManager.SetRequestInterceptionAsync(value);
-        }
+            => await _networkManager.SetRequestInterceptionAsync(value);
 
-        public async Task SetOfflineModeAsync(bool value)
-        {
-            await _networkManager.SetOfflineModeAsync(value);
-        }
+        public async Task SetOfflineModeAsync(bool value) => await _networkManager.SetOfflineModeAsync(value);
 
         public async Task<object> EvalManyAsync(string selector, Func<object> pageFunction, params object[] args)
-        {
-            return await MainFrame.EvalMany(selector, pageFunction, args);
-        }
+            => await MainFrame.EvalMany(selector, pageFunction, args);
 
         public async Task<object> EvalManyAsync(string selector, string pageFunction, params object[] args)
-        {
-            return await MainFrame.EvalMany(selector, pageFunction, args);
-        }
+            => await MainFrame.EvalMany(selector, pageFunction, args);
 
         public async Task<IEnumerable<CookieParam>> GetCookiesAsync(params string[] urls)
         {
@@ -215,15 +196,9 @@ namespace PuppeteerSharp
             }
         }
 
-        public async Task<ElementHandle> AddScriptTagAsync(dynamic options)
-        {
-            return await MainFrame.AddScriptTag(options);
-        }
+        public async Task<ElementHandle> AddScriptTagAsync(dynamic options) => await MainFrame.AddScriptTag(options);
 
-        public async Task<ElementHandle> AddStyleTagAsync(dynamic options)
-        {
-            return await MainFrame.AddStyleTag(options);
-        }
+        public async Task<ElementHandle> AddStyleTagAsync(dynamic options) => await MainFrame.AddStyleTag(options);
 
         public static async Task<Page> CreateAsync(Session client, Target target, bool ignoreHTTPSErrors, bool appMode,
                                                    TaskQueue screenshotTaskQueue)
@@ -383,7 +358,8 @@ namespace PuppeteerSharp
             return new MemoryStream(buffer);
         }
 
-        public async Task SetJavaScriptEnabledAsync(bool enabled) => await _client.SendAsync("Emulation.setScriptExecutionDisabled", new { value = !enabled });
+        public async Task SetJavaScriptEnabledAsync(bool enabled)
+            => await _client.SendAsync("Emulation.setScriptExecutionDisabled", new { value = !enabled });
 
         public async Task SetViewport(ViewPortOptions viewport)
         {
@@ -451,7 +427,7 @@ namespace PuppeteerSharp
                 throw new ArgumentException("options.clip and options.fullPage are exclusive");
             }
 
-            return await _screenshotTaskQueue.Enqueue<Stream>(() => PerformScreenshot(screenshotType, options));
+            return await _screenshotTaskQueue.Enqueue(() => PerformScreenshot(screenshotType, options));
         }
 
         public Task<string> GetTitleAsync() => MainFrame.GetTitleAsync();
@@ -479,10 +455,7 @@ namespace PuppeteerSharp
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
             => _frameManager.MainFrame.EvaluateFunctionAsync<T>(script, args);
 
-        public Task AuthenticateAsync(Credentials credentials)
-        {
-            return _networkManager.AuthenticateAsync(credentials);
-        }
+        public Task AuthenticateAsync(Credentials credentials) => _networkManager.AuthenticateAsync(credentials);
 
         public async Task<Response> ReloadAsync(NavigationOptions options = null)
         {
@@ -754,10 +727,7 @@ namespace PuppeteerSharp
         #endregion
 
         #region IDisposable
-        public void Dispose()
-        {
-            CloseAsync().GetAwaiter().GetResult();
-        }
+        public void Dispose() => CloseAsync().GetAwaiter().GetResult();
         #endregion
     }
 }
