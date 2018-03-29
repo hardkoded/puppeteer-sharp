@@ -20,7 +20,6 @@ namespace PuppeteerSharp
         private EmulationManager _emulationManager;
         private ViewPortOptions _viewport;
         private Mouse _mouse;
-
         private Dictionary<string, Func<object>> _pageBindings;
         private const int DefaultNavigationTimeout = 30000;
 
@@ -454,6 +453,9 @@ namespace PuppeteerSharp
 
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
             => _frameManager.MainFrame.EvaluateFunctionAsync<T>(script, args);
+
+        public async Task SetExtraHttpHeadersAsync(Dictionary<string, string> headers)
+            => await _networkManager.SetExtraHTTPHeadersAsync(headers);
 
         public Task AuthenticateAsync(Credentials credentials) => _networkManager.AuthenticateAsync(credentials);
 
