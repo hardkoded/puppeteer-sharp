@@ -173,7 +173,7 @@ namespace PuppeteerSharp
         }
 
         public async Task<IEnumerable<CookieParam>> GetCookiesAsync(params string[] urls)
-        {            
+        {
             var response = await _client.SendAsync("Network.getCookies", new Dictionary<string, object>
             {
                 { "urls", urls.Length > 0 ? urls : new string[] { Url } }
@@ -188,6 +188,10 @@ namespace PuppeteerSharp
                 if (string.IsNullOrEmpty(cookie.Url) && Url.StartsWith("http", StringComparison.Ordinal))
                 {
                     cookie.Url = Url;
+                }
+                if (cookie.Url == "about:blank")
+                {
+                    throw new Exception($"Blank page can not have cookie \"{cookie.Name}\"");
                 }
             }
 

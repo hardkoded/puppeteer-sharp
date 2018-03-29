@@ -173,7 +173,7 @@ namespace PuppeteerSharp.Tests.Page
             Assert.Equal(cookie.Session, true);
         }
 
-        [Fact(Skip = "Line182 doesn't return")]
+        [Fact]
         public async Task ShouldSetCookiesFromAFrame()
         {
             var page = await Browser.NewPageAsync();
