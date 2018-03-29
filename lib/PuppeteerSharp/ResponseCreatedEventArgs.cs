@@ -1,6 +1,6 @@
 ﻿namespace PuppeteerSharp
 {
-    public class ResponseCreatedArgs
+    public class ResponseCreatedEventArgs
     {
         public Response Response { get; internal set; }
     }

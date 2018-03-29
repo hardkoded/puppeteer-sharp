@@ -8,6 +8,11 @@ namespace PuppeteerSharp
 {
     public class Payload
     {
+        public Payload()
+        {
+            Headers = new Dictionary<string, object>();
+        }
+
         [JsonProperty("method")]
         public string Method { get; internal set; }
         public object PostData { get; internal set; }
@@ -16,6 +21,7 @@ namespace PuppeteerSharp
         [JsonProperty("url")]
         public string Url { get; internal set; }
 
+        [JsonIgnore]
         public string Hash
         {
             get
@@ -47,7 +53,7 @@ namespace PuppeteerSharp
                     }
                 }
 
-                return JsonConvert.SerializeObject(this);
+                return JsonConvert.SerializeObject(hash);
             }
         }
     }
