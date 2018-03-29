@@ -35,7 +35,7 @@ namespace PuppeteerSharp
         #region Public Properties
         public Dictionary<string, string> ExtraHTTPHeaders => _extraHTTPHeaders?.Clone();
 
-        public event EventHandler<ResponseCreatedArgs> ResponseCreated;
+        public event EventHandler<ResponseCreatedEventArgs> ResponseCreated;
         public event EventHandler<RequestEventArgs> RequestCreated;
         public event EventHandler<RequestEventArgs> RequestFinished;
         public event EventHandler<RequestEventArgs> RequestFailed;
@@ -189,7 +189,7 @@ namespace PuppeteerSharp
 
                 request.Response = response;
 
-                ResponseReceivedFinished?.Invoke(this, new ResponseReceivedArgs()
+                ResponseCreated?.Invoke(this, new ResponseCreatedEventArgs
                 {
                     Response = response
                 });
@@ -198,7 +198,7 @@ namespace PuppeteerSharp
 
         private async Task OnRequestInterceptedAsync(MessageEventArgs e)
         {
-            if (e.MessageData.authChallenge)
+            if (e.MessageData.authChallenge != null)
             {
                 var response = "Default";
                 if (_attemptedAuthentications.Contains(e.MessageData.interceptionId.ToString()))
@@ -208,61 +208,62 @@ namespace PuppeteerSharp
                 else if (_credentials != null)
                 {
                     response = "ProvideCredentials";
-                    _attemptedAuthentications.Add(e.MessageData.interceptionId);
+                    _attemptedAuthentications.Add(e.MessageData.interceptionId.ToString());
                 }
                 var credentials = _credentials ?? new Credentials();
                 await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object>
                 {
-                    {"interceptionId", e.MessageData.interceptionId},
-                    {"authChallengeResponse", new { response, credentials.Username, credentials.Password }}
+                    {"interceptionId", e.MessageData.interceptionId.ToString()},
+                    {"authChallengeResponse", new
+                        {
+                            response,
+                            username = credentials.Username,
+                            password = credentials.Password
+                        }
+                    }
                 });
                 return;
             }
             if (!_userRequestInterceptionEnabled && _protocolRequestInterceptionEnabled)
             {
                 await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object> {
-                    { "interceptionId", e.MessageData.interceptionId}
+                    { "interceptionId", e.MessageData.interceptionId.ToString()}
                 });
             }
 
             if (!string.IsNullOrEmpty(e.MessageData.redirectUrl))
             {
-                var request = _interceptionIdToRequest[e.MessageData.interceptionId];
+                var request = _interceptionIdToRequest[e.MessageData.interceptionId.ToString()];
 
                 HandleRequestRedirect(request, e.MessageData.responseStatusCode, e.MessageData.responseHeaders);
-                HandleRequestStart(
-                    request.RequestId,
-                    e.MessageData.interceptionId,
-                    e.MessageData.redirectUrl,
-                    e.MessageData.resourceType,
-                    e.MessageData.request);
+                HandleRequestStart(request.RequestId, e.MessageData);
                 return;
             }
-            var requestHash = e.MessageData.request.hash;
 
+            var requestHash = e.MessageData.request.ToObject<Payload>().Hash;
 
             if (_requestHashToRequestIds.Any(i => i.Key == requestHash))
             {
                 var item = _requestHashToRequestIds.FirstOrDefault(i => i.Key == requestHash);
                 var requestId = item.Value;
                 _requestHashToRequestIds.Remove(item);
-                HandleRequestStart(
-                    requestId,
-                    e.MessageData.interceptionId,
-                    e.MessageData.request.url,
-                    e.MessageData.resourceType,
-                    e.MessageData.request);
+                HandleRequestStart(requestId, e.MessageData);
             }
             else
             {
-                _requestHashToInterceptionIds.Add(new KeyValuePair<string, string>(requestHash, e.MessageData.interceptionId));
-                HandleRequestStart(
-                    null,
-                    e.MessageData.interceptionId,
-                    e.MessageData.request.url,
-                    e.MessageData.resourceType,
-                    e.MessageData.request);
+                _requestHashToInterceptionIds.Add(new KeyValuePair<string, string>(requestHash, e.MessageData.interceptionId.ToString()));
+                HandleRequestStart(null, e.MessageData);
             }
+        }
+
+        private void HandleRequestStart(string requestId, dynamic messageData)
+        {
+            HandleRequestStart(
+                requestId,
+                messageData.interceptionId?.ToString(),
+                messageData.request.url?.ToString(),
+                (messageData.resourceType ?? messageData.type)?.ToString(),
+                ((JObject)messageData.request).ToObject<Payload>());
         }
 
         private void HandleRequestStart(string requestId, string interceptionId, string url, string resourceType, Payload requestPayload)
@@ -297,7 +298,7 @@ namespace PuppeteerSharp
                 _attemptedAuthentications.Remove(request.InterceptionId);
             }
 
-            ResponseCreated(this, new ResponseCreatedArgs()
+            ResponseCreated(this, new ResponseCreatedEventArgs()
             {
                 Response = response
             });
@@ -315,7 +316,7 @@ namespace PuppeteerSharp
                 // All redirects are handled in requestIntercepted.
                 if (e.MessageData.redirectResponse == null)
                 {
-                    var requestHash = e.MessageData.request.hash;
+                    var requestHash = e.MessageData.request.ToObject<Payload>().Hash;
 
                     KeyValuePair<string, string>? interceptionItem = null;
 
@@ -329,12 +330,12 @@ namespace PuppeteerSharp
                         var request = _interceptionIdToRequest[interceptionItem.Value.Value];
 
                         request.RequestId = e.MessageData.requestId;
-                        _requestIdToRequest[e.MessageData.requestId] = request;
+                        _requestIdToRequest[e.MessageData.requestId.ToString()] = request;
                         _requestHashToInterceptionIds.Remove(interceptionItem.Value);
                     }
                     else
                     {
-                        _requestHashToRequestIds.Add(new KeyValuePair<string, string>(requestHash, e.MessageData.requestId));
+                        _requestHashToRequestIds.Add(new KeyValuePair<string, string>(requestHash, e.MessageData.requestId.ToString()));
                     }
                     return;
                 }
@@ -351,40 +352,34 @@ namespace PuppeteerSharp
                     e.MessageData.redirectResponse.securityDetails?.ToObject<SecurityDetails>());
             }
 
-            HandleRequestStart(
-                e.MessageData.requestId?.ToString(),
-                null,
-                e.MessageData.request.url?.ToString(),
-                e.MessageData.type?.ToString(),
-                ((JObject)e.MessageData.request).ToObject<Payload>());
+            HandleRequestStart(e.MessageData.requestId?.ToString(), e.MessageData);
         }
-
 
         private async Task UpdateProtocolRequestInterceptionAsync()
         {
             var enabled = _userRequestInterceptionEnabled || _credentials != null;
 
-            if (enabled != _protocolRequestInterceptionEnabled)
+            if (enabled == _protocolRequestInterceptionEnabled)
             {
-                _protocolRequestInterceptionEnabled = enabled;
-                var patterns = enabled ?
-                    new Dictionary<string, object> { { "urlPattern", "*" } } :
-                    new Dictionary<string, object>();
-
-                await Task.WhenAll(
-                    _client.SendAsync("Network.setCacheDisabled", new Dictionary<string, object>
-                    {
-                        { "cacheDisabled", enabled}
-                    }),
-                    _client.SendAsync("Network.setRequestInterception", new Dictionary<string, object>
-                    {
-                        { "patterns", patterns}
-                    })
-                );
+                return;
             }
 
-        }
+            _protocolRequestInterceptionEnabled = enabled;
+            var patterns = enabled ?
+                new object[] { new KeyValuePair<string, string>("urlPattern", "*") } :
+                Array.Empty<object>();
 
+            await Task.WhenAll(
+                _client.SendAsync("Network.setCacheDisabled", new Dictionary<string, object>
+                {
+                    { "cacheDisabled", enabled}
+                }),
+                _client.SendAsync("Network.setRequestInterception", new Dictionary<string, object>
+                {
+                    { "patterns", patterns}
+                })
+            );
+        }
         #endregion
     }
 }
