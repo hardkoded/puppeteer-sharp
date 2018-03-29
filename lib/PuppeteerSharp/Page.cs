@@ -482,9 +482,7 @@ namespace PuppeteerSharp
 
 
         public async Task SetExtraHttpHeadersAsync(Dictionary<string, string> headers)
-        {
-            await _networkManager.SetExtraHTTPHeadersAsync(headers);
-        }
+            => await _networkManager.SetExtraHTTPHeadersAsync(headers);
 
         #endregion
 

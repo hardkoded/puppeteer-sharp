@@ -18,7 +18,7 @@ namespace PuppeteerSharp.Tests.Page
                 });
 
                 var response = await page.GoToAsync($"{TestConstants.ServerUrl}/headertests/test");
-                Assert.Equal("Bar", response.Body);
+                Assert.Equal("Bar", await response.TextAsync());
             }
         }
     }
