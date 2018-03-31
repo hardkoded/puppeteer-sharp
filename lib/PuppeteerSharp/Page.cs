@@ -21,7 +21,8 @@ namespace PuppeteerSharp
         private ViewPortOptions _viewport;
         private Mouse _mouse;
         private Dictionary<string, Func<object>> _pageBindings;
-        private const int DefaultNavigationTimeout = 30000;
+
+        public int DefaultNavigationTimeout { get; set; } = 30000;
 
         private static Dictionary<string, PaperFormat> _paperFormats = new Dictionary<string, PaperFormat> {
             {"letter", new PaperFormat {Width = 8.5m, Height = 11}},
@@ -262,12 +263,17 @@ namespace PuppeteerSharp
             var watcher = new NavigatorWatcher(_frameManager, mainFrame, timeout, options);
             var navigateTask = Navigate(_client, url, referrer);
 
-            await Task.WhenAll(
-                navigateTask,
-                watcher.NavigationTask
+            await Task.WhenAny(
+                 navigateTask, navigateTask,
+                 watcher.NavigationTask
             );
 
-            var exception = navigateTask.Exception ?? watcher.NavigationTask.Exception;
+            var exception = navigateTask.Exception?.InnerException;
+            if (exception == null)
+            {
+                await watcher.NavigationTask;
+                exception = watcher.NavigationTask.Exception?.InnerException;
+            }
 
             watcher.Cancel();
             _networkManager.RequestCreated -= createRequestEventListener;

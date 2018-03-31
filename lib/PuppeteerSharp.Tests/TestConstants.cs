@@ -13,6 +13,7 @@ namespace PuppeteerSharp.Tests
         public static readonly string EmptyPage = $"{ServerUrl}/empty.html";
         public static readonly string CrossProcessAuthenticateUrl = $"{ServerIpUrl}/authenticationtest/testuser";
         public static readonly string AuthenticateUrl = $"{ServerUrl}/authenticationtest/testuser";
+        public static readonly string MaximumNavigationTimeout = $"{ServerUrl}/maximumnavigationtimeout/testuser";
 
         public static LaunchOptions DefaultBrowserOptions() => new LaunchOptions
         {

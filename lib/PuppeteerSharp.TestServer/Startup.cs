@@ -33,7 +33,11 @@ namespace PuppeteerSharp.TestServer
         public void Configure(IApplicationBuilder app)
         {
             app.UseRewriter(new RewriteOptions()
-                .AddRedirect("plzredirect", "empty.html"));
+                .AddRedirect("plzredirect", "empty.html")
+                .AddRedirect("/redirect/1.html", "/redirect/2.html")
+                .AddRedirect("/redirect/2.html", "/redirect/3.html")
+                .AddRedirect("/redirect/3.html", "/empty.html")
+            );
             app.UseStaticFiles();
             app.UseMvc();
         }
