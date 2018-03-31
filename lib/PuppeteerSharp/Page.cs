@@ -267,12 +267,17 @@ namespace PuppeteerSharp
             var watcher = new NavigatorWatcher(_frameManager, mainFrame, timeout, options);
             var navigateTask = Navigate(_client, url, referrer);
 
-            await Task.WhenAll(
+            await Task.WhenAny(
                 navigateTask,
                 watcher.NavigationTask
             );
 
-            var exception = navigateTask.Exception ?? watcher.NavigationTask.Exception;
+            var exception = navigateTask.Exception;
+            if(exception == null)
+            {
+                await watcher.NavigationTask;
+                exception = watcher.NavigationTask.Exception;
+            }
 
             watcher.Cancel();
             _networkManager.RequestCreated -= createRequestEventListener;
