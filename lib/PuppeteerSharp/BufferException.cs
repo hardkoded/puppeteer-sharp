@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace PuppeteerSharp
 {
     [Serializable]
-    internal class BufferException : Exception
+    internal class BufferException : PuppeteerException
     {
         public BufferException()
         {

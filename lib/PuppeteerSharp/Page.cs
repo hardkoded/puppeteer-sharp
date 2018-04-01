@@ -172,7 +172,7 @@ namespace PuppeteerSharp
                 }
                 if (cookie.Url == "about:blank")
                 {
-                    throw new Exception($"Blank page can not have cookie \"{cookie.Name}\"");
+                    throw new PuppeteerException($"Blank page can not have cookie \"{cookie.Name}\"");
                 }
             }
 
