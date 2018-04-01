@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.Diagnostics.Contracts;
 using PuppeteerSharp.Helpers;
+using System;
 
 namespace PuppeteerSharp
 {
@@ -29,6 +30,11 @@ namespace PuppeteerSharp
             if (options?.WaitUntil != null)
             {
                 waitUntil = options.WaitUntil;
+            }
+
+            if (waitUntil.Contains("networkidle"))
+            {
+                throw new ArgumentException("\"networkidle\" option is no longer supported. Use \"networkidle2\" instead");
             }
 
             _expectedLifecycle = waitUntil.Select(w =>
