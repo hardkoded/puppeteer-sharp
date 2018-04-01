@@ -34,9 +34,9 @@ namespace PuppeteerSharp.TestServer
         {
             app.UseRewriter(new RewriteOptions()
                 .AddRedirect("plzredirect", "empty.html")
-                .AddRedirect("/redirect/1.html", "/redirect/2.html")
-                .AddRedirect("/redirect/2.html", "/redirect/3.html")
-                .AddRedirect("/redirect/3.html", "/empty.html")
+                .AddRedirect("redirect/1.html", "redirect/2.html")
+                .AddRedirect("redirect/2.html", "redirect/3.html")
+                .AddRedirect("redirect/3.html", "empty.html")
             );
             app.UseStaticFiles();
             app.UseMvc();

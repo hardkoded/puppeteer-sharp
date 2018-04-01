@@ -101,17 +101,24 @@ namespace PuppeteerSharp.Tests.Page
             using (var page = await Browser.NewPageAsync())
             {
                 page.DefaultNavigationTimeout = 1;
-                var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await page.GoToAsync(TestConstants.MaximumNavigationTimeout, new NavigationOptions { Timeout = 1 }));
+                var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await page.GoToAsync(TestConstants.MaximumNavigationTimeout));
                 Assert.Contains("Navigation Timeout Exceeded: 1ms", exception.Message);
             }
         }
 
-        [Fact(Skip = "Page.once('load')")]
+        [Fact]
         public async Task ShouldDisableTimeoutWhenItsSetTo0()
         {
             using (var page = await Browser.NewPageAsync())
             {
                 var loaded = false;
+                void OnLoad(object sender, EventArgs e)
+                {
+                    loaded = true;
+                    page.Load -= OnLoad;
+                }
+
+                page.Load += OnLoad;
                 // TODO: page.once('load', () => loaded = true);
                 page.DefaultNavigationTimeout = 1;
                 await page.GoToAsync(TestConstants.ServerUrl + "/grid.html", new NavigationOptions { Timeout = 0, WaitUntil = new[] { "load" } });
@@ -134,7 +141,7 @@ namespace PuppeteerSharp.Tests.Page
         {
             using (var page = await Browser.NewPageAsync())
             {
-                var response =  await page.GoToAsync("data:text/html,hello");
+                var response = await page.GoToAsync("data:text/html,hello");
                 Assert.Equal(HttpStatusCode.OK, response.Status);
             }
         }

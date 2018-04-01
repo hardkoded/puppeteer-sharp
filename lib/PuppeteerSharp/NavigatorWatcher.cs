@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Diagnostics.Contracts;
 using PuppeteerSharp.Helpers;
-using System.Threading;
 
 namespace PuppeteerSharp
 {
@@ -23,7 +21,6 @@ namespace PuppeteerSharp
         private IEnumerable<string> _expectedLifecycle;
         private int _timeout;
         private string _initialLoaderId;
-        private Timer _timer = null;
 
         public NavigatorWatcher(FrameManager frameManager, Frame mainFrame, int timeout, NavigationOptions options)
         {
@@ -58,11 +55,12 @@ namespace PuppeteerSharp
             }).ContinueWith((task) =>
             {
                 CleanUp();
+                return task.GetAwaiter().GetResult();
             });
         }
 
         #region Properties
-        public Task NavigationTask { get; internal set; }
+        public Task<Task> NavigationTask { get; internal set; }
         public Task<bool> LifeCycleCompleteTask => LifeCycleCompleteTaskWrapper.Task;
         public TaskCompletionSource<bool> LifeCycleCompleteTaskWrapper { get; }
 
@@ -117,30 +115,23 @@ namespace PuppeteerSharp
         {
             _frameManager.LifecycleEvent -= FrameManager_LifecycleEvent;
             _frameManager.FrameDetached -= FrameManager_LifecycleEvent;
-            _timer?.Dispose();
         }
 
-        private Task CreateTimeoutTask()
+        private async Task CreateTimeoutTask()
         {
             var wrapper = new TaskCompletionSource<bool>();
 
             if (_timeout == 0)
             {
-                wrapper.SetResult(true);
+                await Task.Delay(-1);
             }
             else
             {
-                _timer = new Timer((state) =>
-                {
-                    wrapper.SetException(
-                        new ChromeProcessException($"Navigation Timeout Exceeded: '{_timeout}'ms exceeded"));
-                    _timer.Dispose();
-                    _timer = null;
-                }, null, _timeout, 0);
+                await Task.Delay(_timeout);
+                throw new ChromeProcessException($"Navigation Timeout Exceeded: {_timeout}ms exceeded");
             }
-
-            return wrapper.Task;
         }
+
         #endregion
     }
 }

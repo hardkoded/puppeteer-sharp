@@ -264,15 +264,15 @@ namespace PuppeteerSharp
             var navigateTask = Navigate(_client, url, referrer);
 
             await Task.WhenAny(
-                 navigateTask, navigateTask,
+                 navigateTask,
                  watcher.NavigationTask
             );
 
             var exception = navigateTask.Exception?.InnerException;
             if (exception == null)
             {
-                await watcher.NavigationTask;
-                exception = watcher.NavigationTask.Exception?.InnerException;
+                var navigation = await watcher.NavigationTask;
+                exception = navigation.Exception?.InnerException;
             }
 
             watcher.Cancel();
