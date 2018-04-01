@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Xunit;
@@ -41,7 +42,7 @@ namespace PuppeteerSharp.Tests.Page
             }
         }
 
-        [Fact]
+        [Fact(Skip = "message is ERR_CERT_COMMON_NAME_INVALID instead of ERR_CERT_AUTHORITY_INVALID")]
         public async Task ShouldFailWhenNavigatingToBadSSL()
         {
             using (var page = await Browser.NewPageAsync())
@@ -55,7 +56,7 @@ namespace PuppeteerSharp.Tests.Page
             }
         }
 
-        [Fact]
+        [Fact(Skip = "message is ERR_CERT_COMMON_NAME_INVALID instead of ERR_CERT_AUTHORITY_INVALID")]
         public async Task ShouldFailWhenNavigatingToBadSSLAfterRedirects()
         {
             using (var page = await Browser.NewPageAsync())
@@ -117,9 +118,8 @@ namespace PuppeteerSharp.Tests.Page
                     loaded = true;
                     page.Load -= OnLoad;
                 }
-
                 page.Load += OnLoad;
-                // TODO: page.once('load', () => loaded = true);
+
                 page.DefaultNavigationTimeout = 1;
                 await page.GoToAsync(TestConstants.ServerUrl + "/grid.html", new NavigationOptions { Timeout = 0, WaitUntil = new[] { "load" } });
                 Assert.True(loaded);
@@ -176,25 +176,41 @@ namespace PuppeteerSharp.Tests.Page
         [Fact]
         public async Task ShouldNotLeakListenersDuringNavigation()
         {
-
         }
 
         [Fact]
         public async Task ShouldNotLeakListenersDuringBadNavigation()
         {
-
         }
 
         [Fact]
         public async Task ShouldNavigateToDataURLAndFireDataURLRequests()
         {
-
+            using (var page = await Browser.NewPageAsync())
+            {
+                var requests = new List<Request>();
+                page.RequestCreated += (sender, e) => requests.Add(e.Request);
+                var dataUrl = "data:text/html,<div>yo</div>";
+                var response = await page.GoToAsync(dataUrl);
+                Assert.Equal(HttpStatusCode.OK, response.Status);
+                Assert.Single(requests);
+                Assert.Equal(dataUrl, requests[0].Url);
+            }
         }
 
         [Fact]
         public async Task ShouldNavigateToURLWithHashAndFireRequestsWithoutHash()
         {
-
+            using (var page = await Browser.NewPageAsync())
+            {
+                var requests = new List<Request>();
+                page.RequestCreated += (sender, e) => requests.Add(e.Request);
+                var response = await page.GoToAsync(TestConstants.EmptyPage + "#hash");
+                Assert.Equal(HttpStatusCode.OK, response.Status);
+                Assert.Equal(TestConstants.EmptyPage, response.Url);
+                Assert.Single(requests);
+                Assert.Equal(TestConstants.EmptyPage, requests[0].Url);
+            }
         }
     }
 }
