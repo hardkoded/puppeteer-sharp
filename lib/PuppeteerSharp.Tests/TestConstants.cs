@@ -17,7 +17,7 @@ namespace PuppeteerSharp.Tests
         public static LaunchOptions DefaultBrowserOptions() => new LaunchOptions
         {
             SlowMo = Convert.ToInt32(Environment.GetEnvironmentVariable("SLOW_MO")),
-            Headless = false, //Convert.ToBoolean(Environment.GetEnvironmentVariable("HEADLESS") ?? "true"),
+            Headless = Convert.ToBoolean(Environment.GetEnvironmentVariable("HEADLESS") ?? "true"),
             Args = new[] { "--no-sandbox" },
             Timeout = 0,
             KeepAliveInterval = 120,
