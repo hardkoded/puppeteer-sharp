@@ -4,15 +4,13 @@ using Xunit;
 namespace PuppeteerSharp.Tests.Page
 {
     [Collection("PuppeteerLoaderFixture collection")]
-    public class TitleTests : PuppeteerBaseTest
+    public class TitleTests : PuppeteerPageBaseTest
     {
         [Fact]
         public async Task ShouldReturnThePageTitle()
         {
-            var page = await Browser.NewPageAsync();
-
-            await page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
-            Assert.Equal("Button test", await page.GetTitleAsync());
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
+            Assert.Equal("Button test", await Page.GetTitleAsync());
         }
     }
 }
