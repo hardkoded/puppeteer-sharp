@@ -155,10 +155,11 @@ namespace PuppeteerSharp
 
         public async Task<IEnumerable<CookieParam>> GetCookiesAsync(params string[] urls)
         {
-            return await _client.SendAsync<List<CookieParam>>("Network.getCookies", new Dictionary<string, object>
+            var response = await _client.SendAsync("Network.getCookies", new Dictionary<string, object>
             {
-                { "urls", urls.Length > 0 ? urls : (object)Url}
+                { "urls", urls.Length > 0 ? urls : new string[] { Url } }
             });
+            return response.cookies.ToObject<CookieParam[]>();
         }
 
         public async Task SetCookieAsync(params CookieParam[] cookies)
@@ -168,6 +169,10 @@ namespace PuppeteerSharp
                 if (string.IsNullOrEmpty(cookie.Url) && Url.StartsWith("http", StringComparison.Ordinal))
                 {
                     cookie.Url = Url;
+                }
+                if (cookie.Url == "about:blank")
+                {
+                    throw new PuppeteerException($"Blank page can not have cookie \"{cookie.Name}\"");
                 }
             }
 
@@ -262,12 +267,17 @@ namespace PuppeteerSharp
             var watcher = new NavigatorWatcher(_frameManager, mainFrame, timeout, options);
             var navigateTask = Navigate(_client, url, referrer);
 
-            await Task.WhenAll(
+            await Task.WhenAny(
                 navigateTask,
                 watcher.NavigationTask
             );
 
-            var exception = navigateTask.Exception ?? watcher.NavigationTask.Exception;
+            var exception = navigateTask.Exception;
+            if(exception == null)
+            {
+                await watcher.NavigationTask;
+                exception = watcher.NavigationTask.Exception;
+            }
 
             watcher.Cancel();
             _networkManager.RequestCreated -= createRequestEventListener;
