@@ -119,8 +119,7 @@ namespace PuppeteerSharp.Tests.Page
                     page.Load -= OnLoad;
                 }
                 page.Load += OnLoad;
-
-                page.DefaultNavigationTimeout = 1;
+                
                 await page.GoToAsync(TestConstants.ServerUrl + "/grid.html", new NavigationOptions { Timeout = 0, WaitUntil = new[] { "load" } });
                 Assert.True(loaded);
             }
