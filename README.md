@@ -48,7 +48,31 @@ await page.GoToAsync("http://www.google.com");
 await page.PdfAsync(outputFile));
 ```
 
+## Inject HTML
+
+```cs
+using(var page = await Browser.NewPageAsync())
+{
+    await page.SetContentAsync("<div>My Receipt</div>");
+    var result = await page.GetContentAsync();
+    await page.PdfAsync(outputFile);
+    SaveHtmlToDB(result);
+}
+```
+
+## Evaluate Javascript
+
+```cs
+using (var page = await Browser.NewPageAsync())
+{
+    var seven = await page.EvaluateFunctionAsync<int>(“4 + 3”);
+    var someObject = await page.EvaluateFunctionAsync<dynamic>("(value) => ({a: value})", 5);
+    Console.WriteLine(someObject.a);
+}
+```
+
 # Monthly reports
+ * [April 2018](http://www.hardkoded.com/blogs/puppeteer-sharp-monthly-april-2018)
  * [March 2018](http://www.hardkoded.com/blogs/puppeteer-sharp-monthly-march-2018)
  * [February 2018](http://www.hardkoded.com/blogs/puppeteer-sharp-monthly-february-2018)
 
