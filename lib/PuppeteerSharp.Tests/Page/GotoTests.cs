@@ -174,16 +174,6 @@ namespace PuppeteerSharp.Tests.Page
         }
 
         [Fact]
-        public async Task ShouldNotLeakListenersDuringNavigation()
-        {
-        }
-
-        [Fact]
-        public async Task ShouldNotLeakListenersDuringBadNavigation()
-        {
-        }
-
-        [Fact]
         public async Task ShouldNavigateToDataURLAndFireDataURLRequests()
         {
             using (var page = await Browser.NewPageAsync())
