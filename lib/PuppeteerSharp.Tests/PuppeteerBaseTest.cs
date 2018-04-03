@@ -1,12 +1,20 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace PuppeteerSharp.Tests
 {
     public class PuppeteerBaseTest : IDisposable
     {
-        internal string BaseDirectory { get; set; }
-        internal Browser Browser { get; set; }
+        protected string BaseDirectory { get; set; }
+        protected Browser Browser { get; set; }
+
+        protected virtual async Task InitializeAsync()
+        {
+            Browser = await PuppeteerSharp.Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.ChromiumRevision);
+        }
+
+        protected virtual async Task DisposeAsync() => await Browser.CloseAsync();
 
         public PuppeteerBaseTest()
         {
@@ -18,13 +26,9 @@ namespace PuppeteerSharp.Tests
                 dirInfo.Create();
             }
 
-            Browser = PuppeteerSharp.Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(),
-                                                           TestConstants.ChromiumRevision).GetAwaiter().GetResult();
+            InitializeAsync().GetAwaiter().GetResult();
         }
 
-        public void Dispose()
-        {
-            Browser.CloseAsync().GetAwaiter().GetResult();
-        }
+        public void Dispose() => DisposeAsync().GetAwaiter().GetResult();
     }
 }
