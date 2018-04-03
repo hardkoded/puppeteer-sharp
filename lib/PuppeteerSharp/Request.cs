@@ -93,7 +93,7 @@ namespace PuppeteerSharp
         }
 
 
-        public async Task Respond()
+        public async Task Respond(ResponseData response)
         {
             if (Url.StartsWith("data:", StringComparison.Ordinal))
             {
@@ -107,20 +107,20 @@ namespace PuppeteerSharp
 
             //TODO: In puppeteer this is a buffer but as I don't know the real implementation yet
             //I will consider this a string
-            var responseBody = Response.Body;
+            var responseBody = response.Body;
             var responseHeaders = new Dictionary<string, object>();
 
-            if (Response.Headers != null)
+            if (response.Headers != null)
             {
-                foreach (var keyValue in Response.Headers)
+                foreach (var keyValue in response.Headers)
                 {
                     responseHeaders[keyValue.Key] = keyValue.Value;
                 }
             }
 
-            if (Response.ContentType != null)
+            if (response.ContentType != null)
             {
-                responseHeaders["content-type"] = Response.ContentType;
+                responseHeaders["content-type"] = response.ContentType;
             }
 
             if (!string.IsNullOrEmpty(responseBody) && !responseHeaders.ContainsKey("content-length"))
@@ -128,7 +128,7 @@ namespace PuppeteerSharp
                 responseHeaders["content-length"] = responseBody.Length;
             }
 
-            var statusCode = Response.Status ?? HttpStatusCode.Accepted;
+            var statusCode = response.Status ?? HttpStatusCode.Accepted;
             var statusText = statusCode.ToString();
             var statusLine = $"HTTP / 1.1${(int)statusCode} ${statusText}";
 
