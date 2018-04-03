@@ -7,6 +7,7 @@ using System.IO;
 using System.Globalization;
 using Newtonsoft.Json.Linq;
 using System.Dynamic;
+using System.Threading;
 
 namespace PuppeteerSharp
 {
@@ -260,7 +261,8 @@ namespace PuppeteerSharp
             var mainFrame = _frameManager.MainFrame;
             var timeout = options?.Timeout ?? DefaultNavigationTimeout;
 
-            var watcher = new NavigatorWatcher(_frameManager, mainFrame, timeout, options);
+            var cts = new CancellationTokenSource();
+            var watcher = new NavigatorWatcher(_frameManager, mainFrame, timeout, options, cts);
             var navigateTask = Navigate(_client, url, referrer);
 
             await Task.WhenAny(
@@ -271,6 +273,7 @@ namespace PuppeteerSharp
             var exception = navigateTask.Exception?.InnerException;
             if (exception == null)
             {
+                cts.Cancel();
                 var navigation = await watcher.NavigationTask;
                 exception = navigation.Exception?.InnerException;
             }
@@ -485,7 +488,7 @@ namespace PuppeteerSharp
         {
             var mainFrame = _frameManager.MainFrame;
             var timeout = options?.Timeout ?? DefaultNavigationTimeout;
-            var watcher = new NavigatorWatcher(_frameManager, mainFrame, timeout, options);
+            var watcher = new NavigatorWatcher(_frameManager, mainFrame, timeout, options, new CancellationTokenSource());
             var responses = new Dictionary<string, Response>();
 
             EventHandler<ResponseCreatedEventArgs> createResponseEventListener = (object sender, ResponseCreatedEventArgs e) =>
