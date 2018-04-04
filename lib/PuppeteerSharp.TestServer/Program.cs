@@ -7,7 +7,6 @@ namespace PuppeteerSharp.TestServer
     public class Program
     {
         public static IWebHostBuilder GetWebHostBuilder(params string[] args) => WebHost.CreateDefaultBuilder(args)
-            .UseKestrel()
             .UseStartup<Startup>()
             .UseKestrel(options =>
             {
