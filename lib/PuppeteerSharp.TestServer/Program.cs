@@ -8,6 +8,7 @@ namespace PuppeteerSharp.TestServer
     {
         public static IWebHostBuilder GetWebHostBuilder(params string[] args) => WebHost.CreateDefaultBuilder(args)
             .UseStartup<Startup>()
+            .UseSockets()
             .UseKestrel(options =>
             {
                 options.Listen(IPAddress.Loopback, 8907);
