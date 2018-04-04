@@ -10,32 +10,28 @@ namespace PuppeteerSharp
 {
     internal class NavigatorWatcher
     {
+        private static readonly Dictionary<WaitUntilNavigation, string> _puppeteerToProtocolLifecycle = new Dictionary<WaitUntilNavigation, string>()
+        {
+            [WaitUntilNavigation.Load] = "load",
+            [WaitUntilNavigation.DOMContentLoaded] = "DOMContentLoaded",
+            [WaitUntilNavigation.Networkidle0] = "networkIdle",
+            [WaitUntilNavigation.Networkidle2] = "networkAlmostIdle"
+        };
+
         private FrameManager _frameManager;
         private Frame _frame;
-        private dynamic _options;
-        private static readonly Dictionary<string, string> _puppeteerToProtocolLifecycle = new Dictionary<string, string>()
-        {
-            {"load", "load"},
-            {"domcontentloaded", "DOMContentLoaded"},
-            {"networkidle0", "networkIdle"},
-            {"networkidle2", "networkAlmostIdle"}
-        };
+        private NavigationOptions _options;
         private IEnumerable<string> _expectedLifecycle;
         private int _timeout;
         private string _initialLoaderId;
 
         public NavigatorWatcher(FrameManager frameManager, Frame mainFrame, int timeout, NavigationOptions options, CancellationTokenSource cts)
         {
-            var waitUntil = new[] { "load" };
+            var waitUntil = new[] { WaitUntilNavigation.Load };
 
             if (options?.WaitUntil != null)
             {
                 waitUntil = options.WaitUntil;
-            }
-
-            if (waitUntil.Contains("networkidle"))
-            {
-                throw new ArgumentException("\"networkidle\" option is no longer supported. Use \"networkidle2\" instead");
             }
 
             _expectedLifecycle = waitUntil.Select(w =>

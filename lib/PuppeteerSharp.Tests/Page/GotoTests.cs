@@ -17,10 +17,10 @@ namespace PuppeteerSharp.Tests.Page
         }
 
         [Theory]
-        [InlineData("domcontentloaded")]
-        [InlineData("networkidle0")]
-        [InlineData("networkidle2")]
-        public async Task ShouldNavigateToEmptyPage(string waitUntil)
+        [InlineData(WaitUntilNavigation.DOMContentLoaded)]
+        [InlineData(WaitUntilNavigation.Networkidle0)]
+        [InlineData(WaitUntilNavigation.Networkidle2)]
+        public async Task ShouldNavigateToEmptyPage(WaitUntilNavigation waitUntil)
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage, new NavigationOptions { WaitUntil = new[] { waitUntil } });
             Assert.Equal(HttpStatusCode.OK, response.Status);
@@ -49,13 +49,6 @@ namespace PuppeteerSharp.Tests.Page
         {
             var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await Page.GoToAsync(TestConstants.HttpsPrefix + "/redirect/2.html"));
             Assert.Contains("net::ERR_CERT_AUTHORITY_INVALID", exception.Message);
-        }
-
-        [Fact]
-        public async Task ShouldThrowIfNetworkidleIsPassedAsAnOption()
-        {
-            var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await Page.GoToAsync(TestConstants.EmptyPage, new NavigationOptions { WaitUntil = new[] { "networkidle" } }));
-            Assert.Contains("\"networkidle\" option is no longer supported", exception.Message);
         }
 
         [Fact]
@@ -91,7 +84,7 @@ namespace PuppeteerSharp.Tests.Page
             }
             Page.Load += OnLoad;
 
-            await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html", new NavigationOptions { Timeout = 0, WaitUntil = new[] { "load" } });
+            await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html", new NavigationOptions { Timeout = 0, WaitUntil = new[] { WaitUntilNavigation.Load } });
             Assert.True(loaded);
         }
 
