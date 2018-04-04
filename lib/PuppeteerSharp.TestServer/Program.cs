@@ -1,14 +1,12 @@
 ﻿using System.Net;
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
 namespace PuppeteerSharp.TestServer
 {
     public class Program
     {
-        public static IWebHostBuilder GetWebHostBuilder(params string[] args) => WebHost.CreateDefaultBuilder(args)
+        public static IWebHostBuilder GetWebHostBuilder(params string[] args) => new WebHostBuilder()
             .UseStartup<Startup>()
-            .UseSockets()
             .UseKestrel(options =>
             {
                 options.Listen(IPAddress.Loopback, 8907);
