@@ -55,7 +55,7 @@ namespace PuppeteerSharp
             _mouse = new Mouse(client, Keyboard);
             Touchscreen = new Touchscreen(client, Keyboard);
             _frameManager = new FrameManager(client, frameTree, this);
-            _networkManager = new NetworkManager(client);
+            _networkManager = new NetworkManager(client, _frameManager);
             _emulationManager = new EmulationManager(client);
             Tracing = new Tracing(client);
             _pageBindings = new Dictionary<string, Func<object>>();
