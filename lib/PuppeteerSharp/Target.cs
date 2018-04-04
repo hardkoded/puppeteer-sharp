@@ -8,7 +8,7 @@ namespace PuppeteerSharp
         #region Private members
         private Browser _browser;
         private TargetInfo _targetInfo;
-        private bool _isInitialized;
+        internal bool _isInitialized;
         #endregion
 
         public Target(Browser browser, TargetInfo targetInfo)

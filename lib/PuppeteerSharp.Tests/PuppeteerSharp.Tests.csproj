@@ -16,6 +16,7 @@
   <ItemGroup>
     <Folder Include="Puppeteer\" />
     <Folder Include="Issues\" />
+    <Folder Include="Page\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PuppeteerSharp\PuppeteerSharp.csproj" />

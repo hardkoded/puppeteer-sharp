@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp
@@ -19,7 +20,11 @@ namespace PuppeteerSharp
             Connection.MessageReceived += Connect_MessageReceived;
 
             _closeCallBack = closeCallBack;
+        }
 
+        internal Browser(Connection connection, ConnectOptions options)
+            : this(connection, new LaunchOptions { IgnoreHTTPSErrors = options.IgnoreHTTPSErrors, AppMode = options.AppMode }, () => connection.SendAsync("Browser.close"))
+        {
         }
 
         #region Private members
@@ -68,6 +73,16 @@ namespace PuppeteerSharp
             return await target.Page();
         }
 
+        public Target[] GetTargets()
+        {
+            return _targets.Values.Where(target => target._isInitialized).ToArray();
+        }
+
+        public Task<Page[]> GetPagesAsync()
+        {
+            return Task.WhenAll(GetTargets().Select(target => target.Page()));
+        }
+
         internal void ChangeTarget(TargetInfo targetInfo)
         {
             TargetChanged?.Invoke(this, new TargetChangedArgs()
@@ -94,6 +109,11 @@ namespace PuppeteerSharp
             await _closeCallBack();
             Connection.Dispose();
             Closed?.Invoke(this, new EventArgs());
+        }
+
+        public void Disconnect()
+        {
+            Connection.Dispose();
         }
 
         #endregion

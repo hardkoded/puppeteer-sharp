@@ -168,7 +168,7 @@ namespace PuppeteerSharp
             }
 
         }
-        
+
         public async Task TryDeleteUserDataDir(int times = 10, TimeSpan? delay = null)
         {
             if (!IsChromeClosed)
@@ -222,10 +222,16 @@ namespace PuppeteerSharp
             return tempDirectory;
         }
 
+        public async static Task<Browser> ConnectAsync(ConnectOptions options)
+        {
+            var connection = await Connection.Create(options.BrowserWSEndpoint);
+            return await Browser.CreateAsync(connection, new LaunchOptions { IgnoreHTTPSErrors = options.IgnoreHTTPSErrors, AppMode = options.AppMode }, () => connection.SendAsync("Browser.close"));
+        }
+
         #endregion
 
         #region Private methods
-        
+
         private Task<string> WaitForEndpoint(Process chromeProcess, int timeout, bool dumpio)
         {
             var taskWrapper = new TaskCompletionSource<string>();
