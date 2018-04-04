@@ -10,7 +10,6 @@ namespace PuppeteerSharp
 {
     public class NetworkManager
     {
-
         #region Private members
         private Session _client;
         private Dictionary<string, Request> _requestIdToRequest = new Dictionary<string, Request>();
@@ -24,10 +23,12 @@ namespace PuppeteerSharp
 
         private List<KeyValuePair<string, string>> _requestHashToRequestIds = new List<KeyValuePair<string, string>>();
         private List<KeyValuePair<string, string>> _requestHashToInterceptionIds = new List<KeyValuePair<string, string>>();
+        private FrameManager _frameManager;
         #endregion
 
-        public NetworkManager(Session client)
+        public NetworkManager(Session client, FrameManager frameManager)
         {
+            _frameManager = frameManager;
             _client = client;
             _client.MessageReceived += Client_MessageReceived;
         }
@@ -263,13 +264,16 @@ namespace PuppeteerSharp
                 messageData.interceptionId?.ToString(),
                 messageData.request.url?.ToString(),
                 (messageData.resourceType ?? messageData.type)?.ToString(),
-                ((JObject)messageData.request).ToObject<Payload>());
+                ((JObject)messageData.request).ToObject<Payload>(),
+                messageData.frameId?.ToString());
         }
 
-        private void HandleRequestStart(string requestId, string interceptionId, string url, string resourceType, Payload requestPayload)
+        private void HandleRequestStart(string requestId, string interceptionId, string url, string resourceType, Payload requestPayload, string frameId)
         {
+            _frameManager.Frames.TryGetValue(frameId, out var frame);
+
             var request = new Request(_client, requestId, interceptionId, _userRequestInterceptionEnabled, url,
-                                      resourceType, requestPayload);
+                                      resourceType, requestPayload, frame);
 
             if (!string.IsNullOrEmpty(requestId))
             {

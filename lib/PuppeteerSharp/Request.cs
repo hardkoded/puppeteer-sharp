@@ -34,7 +34,7 @@ namespace PuppeteerSharp
         #endregion
 
         public Request(Session client, string requestId, string interceptionId, bool allowInterception, string url,
-                      string resourceType, Payload payload)
+                      string resourceType, Payload payload, Frame frame)
         {
             _client = client;
             RequestId = requestId;
@@ -45,6 +45,7 @@ namespace PuppeteerSharp
             _resourceType = resourceType.ToLower();
             Method = payload.Method;
             PostData = payload.PostData;
+            Frame = frame;
 
             Headers = new Dictionary<string, object>();
             foreach (KeyValuePair<string, object> keyValue in payload.Headers)
@@ -62,6 +63,7 @@ namespace PuppeteerSharp
         public string InterceptionId { get; internal set; }
         public Task<bool> CompleteTask => CompleteTaskWrapper.Task;
         public TaskCompletionSource<bool> CompleteTaskWrapper { get; internal set; }
+        public Frame Frame { get; }
         #endregion
 
         #region Public Methods
