@@ -18,19 +18,15 @@
     <Folder Include="Issues\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Condition="'$(Platform)' == 'x64'" Include="..\packages\Libuv.1.9.1\runtimes\win7-x64\native\libuv.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Visible>False</Visible>
-      <Link>libuv.dll</Link>
-    </None>
-    <None Condition="'$(Platform)' == 'x86'" Include="..\packages\Libuv.1.9.1\runtimes\win7-x86\native\libuv.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Visible>False</Visible>
-      <Link>libuv.dll</Link>
-    </None>
-  </ItemGroup>
-  
+  <PropertyGroup Condition="'$(Platform)' == 'x64'">
+    <RuntimeIdentifier>win7-x64</RuntimeIdentifier>
+    <BaseNuGetRuntimeIdentifier>win7-x64</BaseNuGetRuntimeIdentifier>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Platform)' == 'x86'">
+    <RuntimeIdentifier>win7-x86</RuntimeIdentifier>
+    <BaseNuGetRuntimeIdentifier>win7-x86</BaseNuGetRuntimeIdentifier>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\PuppeteerSharp.TestServer\PuppeteerSharp.TestServer.csproj" />
     <ProjectReference Include="..\PuppeteerSharp\PuppeteerSharp.csproj" />
