@@ -17,6 +17,20 @@
     <Folder Include="Puppeteer\" />
     <Folder Include="Issues\" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Condition="'$(Platform)' == 'x64'" Include="..\packages\Libuv.1.9.1\runtimes\win7-x64\native\libuv.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Visible>False</Visible>
+      <Link>libuv.dll</Link>
+    </None>
+    <None Condition="'$(Platform)' == 'x86'" Include="..\packages\Libuv.1.9.1\runtimes\win7-x86\native\libuv.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Visible>False</Visible>
+      <Link>libuv.dll</Link>
+    </None>
+  </ItemGroup>
+  
   <ItemGroup>
     <ProjectReference Include="..\PuppeteerSharp.TestServer\PuppeteerSharp.TestServer.csproj" />
     <ProjectReference Include="..\PuppeteerSharp\PuppeteerSharp.csproj" />
