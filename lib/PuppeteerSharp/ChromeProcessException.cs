@@ -1,7 +1,6 @@
-﻿using System;
-namespace PuppeteerSharp
+﻿namespace PuppeteerSharp
 {
-    public class ChromeProcessException : Exception
+    public class ChromeProcessException : PuppeteerException
     {
         public ChromeProcessException(string message) : base(message)
         {

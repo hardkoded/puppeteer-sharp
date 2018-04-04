@@ -5,21 +5,18 @@ using Xunit;
 namespace PuppeteerSharp.Tests.Page
 {
     [Collection("PuppeteerLoaderFixture collection")]
-    public class SetExtraHttpHeadersTests : PuppeteerBaseTest
+    public class SetExtraHttpHeadersTests : PuppeteerPageBaseTest
     {
         [Fact]
         public async Task ShouldWork()
         {
-            using (var page = await Browser.NewPageAsync())
+            await Page.SetExtraHttpHeadersAsync(new Dictionary<string, string>
             {
-                await page.SetExtraHttpHeadersAsync(new Dictionary<string, string>
-                {
-                    ["Foo"] = "Bar"
-                });
+                ["Foo"] = "Bar"
+            });
 
-                var response = await page.GoToAsync($"{TestConstants.ServerUrl}/headertests/test");
-                Assert.Equal("Bar", await response.TextAsync());
-            }
+            var response = await Page.GoToAsync($"{TestConstants.ServerUrl}/headertests/test");
+            Assert.Equal("Bar", await response.TextAsync());
         }
     }
 }
