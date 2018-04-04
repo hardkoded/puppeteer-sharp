@@ -45,7 +45,7 @@ namespace PuppeteerSharp
             switch (e.MessageID)
             {
                 case "Page.frameAttached":
-                    OnFrameAttached(e.MessageData.frameId.ToString(), e.MessageData.parentFrameId);
+                    OnFrameAttached(e.MessageData.frameId.ToString(), e.MessageData.parentFrameId.ToString());
                     break;
 
                 case "Page.frameNavigated":
@@ -110,8 +110,8 @@ namespace PuppeteerSharp
             var context = new ExecutionContext(_client, contextPayload, (dynamic remoteObject) =>
             {
                 _contextIdToContext.TryGetValue(contextPayload.Id, out var storedContext);
-                
-                if(storedContext == null)
+
+                if (storedContext == null)
                 {
                     Console.WriteLine($"INTERNAL ERROR: missing context with id = {contextPayload.Id}");
                 }
@@ -149,9 +149,9 @@ namespace PuppeteerSharp
             // Detach all child frames first.
             if (frame != null)
             {
-                foreach (var child in frame.ChildFrames)
+                while (frame.ChildFrames.Count > 0)
                 {
-                    RemoveFramesRecursively(child);
+                    RemoveFramesRecursively(frame.ChildFrames[0]);
                 }
             }
 
@@ -195,9 +195,9 @@ namespace PuppeteerSharp
 
         private void RemoveFramesRecursively(Frame frame)
         {
-            foreach (var child in frame.ChildFrames)
+            while (frame.ChildFrames.Count > 0)
             {
-                RemoveFramesRecursively(child);
+                RemoveFramesRecursively(frame.ChildFrames[0]);
             }
             frame.Detach();
             Frames.Remove(frame.Id);

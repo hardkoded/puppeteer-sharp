@@ -10,7 +10,6 @@ namespace PuppeteerSharp
         private Session _client;
         private Page _page;
         private Frame _parentFrame;
-        private string _id;
         private string _defaultContextId = "<not-initialized>";
         private object _context = null;
         private string _url = string.Empty;
@@ -22,7 +21,7 @@ namespace PuppeteerSharp
             _client = client;
             _page = page;
             _parentFrame = parentFrame;
-            _id = frameId;
+            Id = frameId;
 
             if (parentFrame != null)
             {
@@ -38,6 +37,7 @@ namespace PuppeteerSharp
         #region Properties
         public List<Frame> ChildFrames { get; set; } = new List<Frame>();
         public string Name { get; set; }
+
         public string Url { get; set; }
         public string ParentId { get; internal set; }
         public string Id { get; internal set; }
@@ -49,15 +49,33 @@ namespace PuppeteerSharp
 
         #region Public Methods
 
-        public Task<ExecutionContext> GetExecutionContextAsync() => ContextResolveTaskWrapper.Task;
-
-        internal async Task<dynamic> EvaluateAsync(string pageFunction, params object[] args)
+        public async Task<dynamic> EvaluateExpressionAsync(string script)
         {
             var context = await GetExecutionContextAsync();
-            return await context.Evaluate(pageFunction, args);
+            return await context.EvaluateExpressionAsync(script);
         }
 
-        internal async Task<ElementHandle> GetElementAsync(string selector)
+        public async Task<T> EvaluateExpressionAsync<T>(string script)
+        {
+            var context = await GetExecutionContextAsync();
+            return await context.EvaluateExpressionAsync<T>(script);
+        }
+
+        public async Task<dynamic> EvaluateFunctionAsync(string script, params object[] args)
+        {
+            var context = await GetExecutionContextAsync();
+            return await context.EvaluateFunctionAsync(script, args);
+        }
+
+        public async Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
+        {
+            var context = await GetExecutionContextAsync();
+            return await context.EvaluateFunctionAsync<T>(script, args);
+        }
+
+        public Task<ExecutionContext> GetExecutionContextAsync() => ContextResolveTaskWrapper.Task;
+
+        internal Task<ElementHandle> GetElementAsync(string selector)
         {
             throw new NotImplementedException();
         }
@@ -97,11 +115,28 @@ namespace PuppeteerSharp
             throw new NotImplementedException();
         }
 
-        internal async Task<string> GetTitleAsync()
+        internal async Task<string> GetContentAsync()
         {
-            var result = await EvaluateAsync("document.title");
-            return result.ToString();
+            return await EvaluateFunctionAsync<string>(@"() => {
+                let retVal = '';
+                if (document.doctype)
+                    retVal = new XMLSerializer().serializeToString(document.doctype);
+                if (document.documentElement)
+                    retVal += document.documentElement.outerHTML;
+                return retVal;
+            }");
         }
+
+        internal async Task SetContentAsync(string html)
+        {
+            await EvaluateFunctionAsync(@"html => {
+                document.open();
+                document.write(html);
+                document.close();
+            }", html);
+        }
+        
+        internal async Task<string> GetTitleAsync() => await EvaluateExpressionAsync<string>("document.title");
 
         internal void OnLifecycleEvent(string loaderId, string name)
         {
@@ -147,7 +182,7 @@ namespace PuppeteerSharp
             {
                 _parentFrame.ChildFrames.Remove(this);
             }
-            _parentFrame = null;            
+            _parentFrame = null;
         }
 
         #endregion

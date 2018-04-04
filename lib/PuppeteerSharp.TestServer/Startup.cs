@@ -27,7 +27,7 @@ namespace PuppeteerSharp.TestServer
 
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddMvc();
         }
 
         public void Configure(IApplicationBuilder app)
@@ -35,6 +35,7 @@ namespace PuppeteerSharp.TestServer
             app.UseRewriter(new RewriteOptions()
                 .AddRedirect("plzredirect", "empty.html"));
             app.UseStaticFiles();
+            app.UseMvc();
         }
     }
 }

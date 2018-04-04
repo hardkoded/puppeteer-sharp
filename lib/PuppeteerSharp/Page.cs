@@ -53,7 +53,7 @@ namespace PuppeteerSharp
             _mouse = new Mouse(client, Keyboard);
             Touchscreen = new Touchscreen(client, Keyboard);
             _frameManager = new FrameManager(client, frameTree, this);
-            _networkManager = new NetworkManager(client);
+            _networkManager = new NetworkManager(client, _frameManager);
             _emulationManager = new EmulationManager(client);
             Tracing = new Tracing(client);
             _pageBindings = new Dictionary<string, Func<object>>();
@@ -83,7 +83,7 @@ namespace PuppeteerSharp
         public event EventHandler<FrameEventArgs> FrameDetached;
         public event EventHandler<FrameEventArgs> FrameNavigated;
 
-        public event EventHandler<ResponseCreatedArgs> ResponseCreated;
+        public event EventHandler<ResponseCreatedEventArgs> ResponseCreated;
         public event EventHandler<RequestEventArgs> RequestCreated;
         public event EventHandler<RequestEventArgs> RequestFinished;
         public event EventHandler<RequestEventArgs> RequestFailed;
@@ -113,25 +113,21 @@ namespace PuppeteerSharp
         }
 
         public async Task<ElementHandle> GetElementAsync(string selector)
-        {
-            return await MainFrame.GetElementAsync(selector);
-        }
+            => await MainFrame.GetElementAsync(selector);
 
         public async Task<IEnumerable<ElementHandle>> GetElementsAsync(string selector)
-        {
-            return await MainFrame.GetElementsAsync(selector);
-        }
+            => await MainFrame.GetElementsAsync(selector);
 
-        public async Task<JSHandle> EvaluateHandle(Func<object> pageFunction, params object[] args)
+        public async Task<JSHandle> EvaluateExpressionHandle(string script)
         {
             var context = await MainFrame.GetExecutionContextAsync();
-            return await context.EvaluateHandleAsync(pageFunction, args);
+            return await context.EvaluateExpressionHandleAsync(script);
         }
 
-        public async Task<JSHandle> EvaluateHandle(string pageFunction, params object[] args)
+        public async Task<JSHandle> EvaluateFunctionHandle(string pageFunction, params object[] args)
         {
             var context = await MainFrame.GetExecutionContextAsync();
-            return await context.EvaluateHandleAsync(pageFunction, args);
+            return await context.EvaluateFunctionHandleAsync(pageFunction, args);
         }
 
         public async Task<JSHandle> QueryObjects(JSHandle prototypeHandle)
@@ -140,43 +136,30 @@ namespace PuppeteerSharp
             return await context.QueryObjects(prototypeHandle);
         }
 
-
         public async Task<object> EvalAsync(string selector, Func<object> pageFunction, params object[] args)
-        {
-            return await MainFrame.Eval(selector, pageFunction, args);
-        }
+            => await MainFrame.Eval(selector, pageFunction, args);
 
         public async Task<object> EvalAsync(string selector, string pageFunction, params object[] args)
-        {
-            return await MainFrame.Eval(selector, pageFunction, args);
-        }
+            => await MainFrame.Eval(selector, pageFunction, args);
 
         public async Task SetRequestInterceptionAsync(bool value)
-        {
-            await _networkManager.SetRequestInterceptionAsync(value);
-        }
+            => await _networkManager.SetRequestInterceptionAsync(value);
 
-        public async Task SetOfflineModeAsync(bool value)
-        {
-            await _networkManager.SetOfflineModeAsync(value);
-        }
+        public async Task SetOfflineModeAsync(bool value) => await _networkManager.SetOfflineModeAsync(value);
 
         public async Task<object> EvalManyAsync(string selector, Func<object> pageFunction, params object[] args)
-        {
-            return await MainFrame.EvalMany(selector, pageFunction, args);
-        }
+            => await MainFrame.EvalMany(selector, pageFunction, args);
 
         public async Task<object> EvalManyAsync(string selector, string pageFunction, params object[] args)
-        {
-            return await MainFrame.EvalMany(selector, pageFunction, args);
-        }
+            => await MainFrame.EvalMany(selector, pageFunction, args);
 
         public async Task<IEnumerable<CookieParam>> GetCookiesAsync(params string[] urls)
         {
-            return await _client.SendAsync<List<CookieParam>>("Network.getCookies", new Dictionary<string, object>
+            var response = await _client.SendAsync("Network.getCookies", new Dictionary<string, object>
             {
-                { "urls", urls.Length > 0 ? urls : (object)Url}
+                { "urls", urls.Length > 0 ? urls : new string[] { Url } }
             });
+            return response.cookies.ToObject<CookieParam[]>();
         }
 
         public async Task SetCookieAsync(params CookieParam[] cookies)
@@ -186,6 +169,10 @@ namespace PuppeteerSharp
                 if (string.IsNullOrEmpty(cookie.Url) && Url.StartsWith("http", StringComparison.Ordinal))
                 {
                     cookie.Url = Url;
+                }
+                if (cookie.Url == "about:blank")
+                {
+                    throw new PuppeteerException($"Blank page can not have cookie \"{cookie.Name}\"");
                 }
             }
 
@@ -213,15 +200,9 @@ namespace PuppeteerSharp
             }
         }
 
-        public async Task<ElementHandle> AddScriptTagAsync(dynamic options)
-        {
-            return await MainFrame.AddScriptTag(options);
-        }
+        public async Task<ElementHandle> AddScriptTagAsync(dynamic options) => await MainFrame.AddScriptTag(options);
 
-        public async Task<ElementHandle> AddStyleTagAsync(dynamic options)
-        {
-            return await MainFrame.AddStyleTag(options);
-        }
+        public async Task<ElementHandle> AddStyleTagAsync(dynamic options) => await MainFrame.AddStyleTag(options);
 
         public static async Task<Page> CreateAsync(Session client, Target target, bool ignoreHTTPSErrors, bool appMode,
                                                    TaskQueue screenshotTaskQueue)
@@ -261,30 +242,42 @@ namespace PuppeteerSharp
             return page;
         }
 
-        public async Task<dynamic> GoToAsync(string url, Dictionary<string, string> options = null)
+        public async Task<string> GetContentAsync() => await _frameManager.MainFrame.GetContentAsync();
+
+        public async Task SetContentAsync(string html) => await _frameManager.MainFrame.SetContentAsync(html);
+
+        public async Task<Response> GoToAsync(string url, NavigationOptions options = null)
         {
             var referrer = _networkManager.ExtraHTTPHeaders?.GetValueOrDefault("referer");
             var requests = new Dictionary<string, Request>();
 
             EventHandler<RequestEventArgs> createRequestEventListener = (object sender, RequestEventArgs e) =>
-                requests.Add(e.Request.Url, e.Request);
+            {
+                if (!requests.ContainsKey(e.Request.Url))
+                {
+                    requests.Add(e.Request.Url, e.Request);
+                }
+            };
 
             _networkManager.RequestCreated += createRequestEventListener;
 
             var mainFrame = _frameManager.MainFrame;
-            var timeout = options != null && options.ContainsKey("timeout") ?
-                Convert.ToInt32(options["timeout"]) :
-                DefaultNavigationTimeout;
+            var timeout = options?.Timeout ?? DefaultNavigationTimeout;
 
-            var watcher = new NavigationWatcher(_frameManager, mainFrame, timeout, options);
+            var watcher = new NavigatorWatcher(_frameManager, mainFrame, timeout, options);
             var navigateTask = Navigate(_client, url, referrer);
 
-            await Task.WhenAll(
+            await Task.WhenAny(
                 navigateTask,
                 watcher.NavigationTask
             );
 
-            var exception = navigateTask.Exception ?? watcher.NavigationTask.Exception;
+            var exception = navigateTask.Exception;
+            if (exception == null)
+            {
+                await watcher.NavigationTask;
+                exception = watcher.NavigationTask.Exception;
+            }
 
             watcher.Cancel();
             _networkManager.RequestCreated -= createRequestEventListener;
@@ -374,6 +367,9 @@ namespace PuppeteerSharp
             return new MemoryStream(buffer);
         }
 
+        public async Task SetJavaScriptEnabledAsync(bool enabled)
+            => await _client.SendAsync("Emulation.setScriptExecutionDisabled", new { value = !enabled });
+
         public async Task SetViewport(ViewPortOptions viewport)
         {
             var needsReload = await _emulationManager.EmulateViewport(_client, viewport);
@@ -440,7 +436,7 @@ namespace PuppeteerSharp
                 throw new ArgumentException("options.clip and options.fullPage are exclusive");
             }
 
-            return await _screenshotTaskQueue.Enqueue<Stream>(() => PerformScreenshot(screenshotType, options));
+            return await _screenshotTaskQueue.Enqueue(() => PerformScreenshot(screenshotType, options));
         }
 
         public Task<string> GetTitleAsync() => MainFrame.GetTitleAsync();
@@ -456,9 +452,63 @@ namespace PuppeteerSharp
             }
         }
 
+        public Task<dynamic> EvaluateExpressionAsync(string script)
+            => _frameManager.MainFrame.EvaluateExpressionAsync(script);
+
+        public Task<T> EvaluateExpressionAsync<T>(string script)
+            => _frameManager.MainFrame.EvaluateExpressionAsync<T>(script);
+
+        public Task<dynamic> EvaluateFunctionAsync(string script, params object[] args)
+            => _frameManager.MainFrame.EvaluateFunctionAsync(script, args);
+
+        public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
+            => _frameManager.MainFrame.EvaluateFunctionAsync<T>(script, args);
+
+        public async Task SetExtraHttpHeadersAsync(Dictionary<string, string> headers)
+            => await _networkManager.SetExtraHTTPHeadersAsync(headers);
+
+        public Task AuthenticateAsync(Credentials credentials) => _networkManager.AuthenticateAsync(credentials);
+
+        public async Task<Response> ReloadAsync(NavigationOptions options = null)
+        {
+            var navigationTask = WaitForNavigation(options);
+
+            await Task.WhenAll(
+              navigationTask,
+              _client.SendAsync("Page.reload")
+            );
+
+            return navigationTask.Result;
+        }
+
         #endregion
 
         #region Private Method
+
+        private async Task<Response> WaitForNavigation(NavigationOptions options = null)
+        {
+            var mainFrame = _frameManager.MainFrame;
+            var timeout = options?.Timeout ?? DefaultNavigationTimeout;
+            var watcher = new NavigatorWatcher(_frameManager, mainFrame, timeout, options);
+            var responses = new Dictionary<string, Response>();
+
+            EventHandler<ResponseCreatedEventArgs> createResponseEventListener = (object sender, ResponseCreatedEventArgs e) =>
+                responses.Add(e.Response.Url, e.Response);
+
+            _networkManager.ResponseCreated += createResponseEventListener;
+
+            await watcher.NavigationTask;
+
+            _networkManager.ResponseCreated -= createResponseEventListener;
+
+            var exception = watcher.NavigationTask.Exception;
+            if (exception != null)
+            {
+                throw new NavigationException(exception.Message, exception);
+            }
+
+            return responses.GetValueOrDefault(_frameManager.MainFrame.Url);
+        }
 
         private async Task<Stream> PerformScreenshot(string format, ScreenshotOptions options)
         {
@@ -662,24 +712,15 @@ namespace PuppeteerSharp
 
         private void HandleException(string exceptionDetails)
         {
-            throw new NotImplementedException();
         }
 
         private void OnDialog(MessageEventArgs e)
         {
-            throw new NotImplementedException();
         }
 
         private void OnConsoleAPI(MessageEventArgs e)
         {
-            throw new NotImplementedException();
         }
-
-        private async Task ReloadAsync()
-        {
-            throw new NotImplementedException();
-        }
-
 
         private async Task Navigate(Session client, string url, string referrer)
         {
@@ -698,10 +739,7 @@ namespace PuppeteerSharp
         #endregion
 
         #region IDisposable
-        public void Dispose()
-        {
-            CloseAsync().GetAwaiter().GetResult();
-        }
+        public void Dispose() => CloseAsync().GetAwaiter().GetResult();
         #endregion
     }
 }

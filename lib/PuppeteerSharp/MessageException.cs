@@ -2,9 +2,8 @@
 
 namespace PuppeteerSharp
 {
-    internal class MessageException : Exception
+    public class MessageException : PuppeteerException
     {
-
         public MessageException(string message) : base(message)
         {
         }

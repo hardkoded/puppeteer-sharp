@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace PuppeteerSharp
 {
     [Serializable]
-    internal class InvalidTargetException : Exception
+    internal class InvalidTargetException : PuppeteerException
     {
         public InvalidTargetException()
         {

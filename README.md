@@ -48,7 +48,31 @@ await page.GoToAsync("http://www.google.com");
 await page.PdfAsync(outputFile));
 ```
 
+## Inject HTML
+
+```cs
+using(var page = await Browser.NewPageAsync())
+{
+    await page.SetContentAsync("<div>My Receipt</div>");
+    var result = await page.GetContentAsync();
+    await page.PdfAsync(outputFile);
+    SaveHtmlToDB(result);
+}
+```
+
+## Evaluate Javascript
+
+```cs
+using (var page = await Browser.NewPageAsync())
+{
+    var seven = await page.EvaluateFunctionAsync<int>(“4 + 3”);
+    var someObject = await page.EvaluateFunctionAsync<dynamic>("(value) => ({a: value})", 5);
+    Console.WriteLine(someObject.a);
+}
+```
+
 # Monthly reports
+ * [April 2018](http://www.hardkoded.com/blogs/puppeteer-sharp-monthly-april-2018)
  * [March 2018](http://www.hardkoded.com/blogs/puppeteer-sharp-monthly-march-2018)
  * [February 2018](http://www.hardkoded.com/blogs/puppeteer-sharp-monthly-february-2018)
 
@@ -90,7 +114,7 @@ The 1.0 version will have all (or most) Puppeteer features implemented. I don't 
 
 # Progress
 
-* Tests on Google's Puppeteer: 548.
-* Tests on Puppeteer Sharp: 19.
-* Passing tests: 19.
+* Tests on Google's Puppeteer: 554.
+* Tests on Puppeteer Sharp: 55.
+* Passing tests: 55.
 
