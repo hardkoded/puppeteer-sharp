@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using PuppeteerSharp.TestServer;
 using System;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp.Tests
@@ -29,7 +29,7 @@ namespace PuppeteerSharp.Tests
 
         private async Task StartWebServerAsync()
         {
-            var builder = TestServer.Program.GetWebHostBuilder();
+            var builder = Startup.GetWebHostBuilder();
 
             builder.UseContentRoot(TestUtils.FindParentDirectory("PuppeteerSharp.TestServer"));
 
