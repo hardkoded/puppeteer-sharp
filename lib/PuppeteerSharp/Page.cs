@@ -688,7 +688,7 @@ namespace PuppeteerSharp
                 throw new TargetCrashedException();
             }
 
-            Error.Invoke(this, new ErrorEventArgs());
+            Error.Invoke(this, new ErrorEventArgs("Page crashed!"));
         }
 
         private void EmitMetrics(MessageEventArgs e)
