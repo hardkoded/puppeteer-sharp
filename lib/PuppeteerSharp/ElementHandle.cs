@@ -13,6 +13,11 @@ namespace PuppeteerSharp
             _page = page;
         }
 
+        public Task ClickAsync()
+        {
+            throw new NotImplementedException();
+        }
+
         internal Task TapAsync()
         {
             throw new NotImplementedException();
