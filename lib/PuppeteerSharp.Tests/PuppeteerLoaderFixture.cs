@@ -31,14 +31,14 @@ namespace PuppeteerSharp.Tests
         {
             var builder = TestServer.Program.GetWebHostBuilder();
 
-            builder.UseContentRoot(FindParentFirectory("PuppeteerSharp.TestServer"));
+            builder.UseContentRoot(FindParentDirectory("PuppeteerSharp.TestServer"));
 
             _host = builder.Build();
 
             await _host.StartAsync();
         }
 
-        public static string FindParentFirectory(string directory)
+        public static string FindParentDirectory(string directory)
         {
             var current = Directory.GetCurrentDirectory();
             while (!Directory.Exists(Path.Combine(current, directory)))
