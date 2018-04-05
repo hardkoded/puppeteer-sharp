@@ -13,10 +13,15 @@
     <PackageReference Include="PdfSharp" Version="1.32.3057" />
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0002" />
   </ItemGroup>
+
   <ItemGroup>
     <Folder Include="Puppeteer\" />
     <Folder Include="Issues\" />
   </ItemGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)'=='net471'">
+    <RuntimeIdentifier>win7-x64</RuntimeIdentifier>
+  </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\PuppeteerSharp.TestServer\PuppeteerSharp.TestServer.csproj" />

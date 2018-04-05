@@ -30,12 +30,22 @@ namespace PuppeteerSharp.Tests
         private async Task StartWebServerAsync()
         {
             var builder = TestServer.Program.GetWebHostBuilder();
-            builder
-                .UseContentRoot(Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "..", "PuppeteerSharp.TestServer"));
+
+            builder.UseContentRoot(GetContentRoot());
 
             _host = builder.Build();
 
             await _host.StartAsync();
+        }
+
+        private static string GetContentRoot()
+        {
+            var current = Directory.GetCurrentDirectory();
+            while (!Directory.Exists(Path.Combine(current, "PuppeteerSharp.TestServer")))
+            {
+                current = Directory.GetParent(current).FullName;
+            }
+            return Path.Combine(current, "PuppeteerSharp.TestServer");
         }
     }
 }
