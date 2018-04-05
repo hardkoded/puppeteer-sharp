@@ -31,21 +31,21 @@ namespace PuppeteerSharp.Tests
         {
             var builder = TestServer.Program.GetWebHostBuilder();
 
-            builder.UseContentRoot(GetContentRoot());
+            builder.UseContentRoot(FindParentFirectory("PuppeteerSharp.TestServer"));
 
             _host = builder.Build();
 
             await _host.StartAsync();
         }
 
-        private static string GetContentRoot()
+        public static string FindParentFirectory(string directory)
         {
             var current = Directory.GetCurrentDirectory();
-            while (!Directory.Exists(Path.Combine(current, "PuppeteerSharp.TestServer")))
+            while (!Directory.Exists(Path.Combine(current, directory)))
             {
                 current = Directory.GetParent(current).FullName;
             }
-            return Path.Combine(current, "PuppeteerSharp.TestServer");
+            return Path.Combine(current, directory);
         }
     }
 }
