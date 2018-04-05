@@ -13,6 +13,17 @@ namespace PuppeteerSharp.TestServer
 {
     public class Startup
     {
+        public static IWebHostBuilder GetWebHostBuilder() => new WebHostBuilder()
+            .UseStartup<Startup>()
+            .UseKestrel(options =>
+            {
+                options.Listen(IPAddress.Loopback, 8907);
+                options.Listen(IPAddress.Loopback, 8908, listenOptions =>
+                {
+                    listenOptions.UseHttps("testCert.cer");
+                });
+            });
+
         public Startup()
         {
         }
