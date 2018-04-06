@@ -7,19 +7,19 @@ namespace PuppeteerSharp
     public class Dialog
     {
         private Session _client;
-        private string _type;
+        public DialogType DialogType { get; set; }
+        public string DefaultValue { get; set; }
+        public string Message { get; set; }
 
-        public Dialog(Session client, string type, string message)
+        public Dialog(Session client, DialogType type, string message, string defaultValue)
         {
             _client = client;
-            _type = type;
+            DialogType = type;
             Message = message;
+            DefaultValue = defaultValue;
         }
 
-        public string Message { get; set; }
-        public string DefaultValue { get; set; }
-
-        public async Task Accept(string promptText)
+        public async Task Accept(string promptText = null)
         {
             await _client.SendAsync("Page.handleJavaScriptDialog", new Dictionary<string, object>(){
                 {"accept", true},
@@ -27,7 +27,7 @@ namespace PuppeteerSharp
             });
         }
 
-        public async Task Dismiss(string promptText)
+        public async Task Dismiss()
         {
             await _client.SendAsync("Page.handleJavaScriptDialog", new Dictionary<string, object>(){
                 {"accept", false}
@@ -40,7 +40,6 @@ namespace PuppeteerSharp
             public const string BeforeUnload = "beforeunload";
             public const string Confirm = "confirm";
             public const string Prompt = "prompt";
-
         }
     }
 }

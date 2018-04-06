@@ -7,6 +7,7 @@ using System.IO;
 using System.Globalization;
 using Newtonsoft.Json.Linq;
 using System.Dynamic;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
@@ -665,7 +666,7 @@ namespace PuppeteerSharp
                     OnConsoleAPI(e);
                     break;
                 case "Page.javascriptDialogOpening":
-                    OnDialog(e);
+                    OnDialog(e.MessageData.ToObject<PageJavascriptDialogOpeningMessage>());
                     break;
                 case "Runtime.exceptionThrown":
                     HandleException(e.MessageData.exception.exceptionDetails);
@@ -715,8 +716,33 @@ namespace PuppeteerSharp
         {
         }
 
-        private void OnDialog(MessageEventArgs e)
+        private void OnDialog(PageJavascriptDialogOpeningMessage message)
         {
+
+            DialogType dialogType;
+            if (message.Type == "alert")
+            {
+                dialogType = DialogType.Alert;
+            }
+            else if (message.Type == "confirm")
+            {
+                dialogType = DialogType.Confirm;
+            }
+            else if (message.Type == "prompt")
+            {
+                dialogType = DialogType.Prompt;
+            }
+            else if (message.Type == "beforeunload")
+            {
+                dialogType = DialogType.BeforeUnload;
+            }
+            else
+            {
+                throw new PuppeteerException($"Unknown javascript dialog type {message.Type}");
+            }
+
+            var dialog = new Dialog(_client, dialogType, message.Message, message.DefaultPrompt);
+            Dialog?.Invoke(this, new DialogEventArgs(dialog));
         }
 
         private void OnConsoleAPI(MessageEventArgs e)

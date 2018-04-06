@@ -5,8 +5,8 @@ namespace PuppeteerSharp
 {
     public class DialogEventArgs : EventArgs
     {
-        public DialogInfo DialogInfo { get; }
+        public Dialog DialogInfo { get; }
 
-        public DialogEventArgs(DialogInfo dialogInfo) => DialogInfo = dialogInfo;
+        public DialogEventArgs(Dialog dialogInfo) => DialogInfo = dialogInfo;
     }
 }

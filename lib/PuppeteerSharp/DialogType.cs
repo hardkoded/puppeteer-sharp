@@ -3,6 +3,8 @@
     public enum DialogType
     {
         Alert,
-        Prompt
+        Prompt,
+        Confirm,
+        BeforeUnload
     }
 }
