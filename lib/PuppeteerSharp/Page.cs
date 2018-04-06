@@ -78,6 +78,7 @@ namespace PuppeteerSharp
         #region Public Properties
         public event EventHandler<EventArgs> Load;
         public event EventHandler<ErrorEventArgs> Error;
+        public event EventHandler<DialogEventArgs> Dialog;
 
         public event EventHandler<FrameEventArgs> FrameAttached;
         public event EventHandler<FrameEventArgs> FrameDetached;
