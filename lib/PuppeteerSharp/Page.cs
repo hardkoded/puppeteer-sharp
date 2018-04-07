@@ -666,7 +666,7 @@ namespace PuppeteerSharp
                     OnConsoleAPI(e);
                     break;
                 case "Page.javascriptDialogOpening":
-                    OnDialog(e.MessageData.ToObject<PageJavascriptDialogOpeningMessage>());
+                    OnDialog(e.MessageData.ToObject<PageJavascriptDialogOpeningMessageResponse>());
                     break;
                 case "Runtime.exceptionThrown":
                     HandleException(e.MessageData.exception.exceptionDetails);
@@ -716,23 +716,23 @@ namespace PuppeteerSharp
         {
         }
 
-        private void OnDialog(PageJavascriptDialogOpeningMessage message)
+        private void OnDialog(PageJavascriptDialogOpeningMessageResponse message)
         {
 
             DialogType dialogType;
-            if (message.Type == "alert")
+            if (message.Type == PuppeteerSharp.Dialog.Type.Alert)
             {
                 dialogType = DialogType.Alert;
             }
-            else if (message.Type == "confirm")
+            else if (message.Type == PuppeteerSharp.Dialog.Type.Confirm)
             {
                 dialogType = DialogType.Confirm;
             }
-            else if (message.Type == "prompt")
+            else if (message.Type == PuppeteerSharp.Dialog.Type.Prompt)
             {
                 dialogType = DialogType.Prompt;
             }
-            else if (message.Type == "beforeunload")
+            else if (message.Type == PuppeteerSharp.Dialog.Type.BeforeUnload)
             {
                 dialogType = DialogType.BeforeUnload;
             }

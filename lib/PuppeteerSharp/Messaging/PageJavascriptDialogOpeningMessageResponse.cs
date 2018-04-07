@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace PuppeteerSharp.Messaging
 {
-    public class PageJavascriptDialogOpeningMessage
+    public class PageJavascriptDialogOpeningMessageResponse
     {
         [JsonProperty("type")]
         public string Type { get; set; }
