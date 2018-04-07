@@ -19,7 +19,7 @@ namespace PuppeteerSharp
             DefaultValue = defaultValue;
         }
 
-        public async Task Accept(string promptText = null)
+        public async Task Accept(string promptText = "")
         {
             await _client.SendAsync("Page.handleJavaScriptDialog", new Dictionary<string, object>(){
                 {"accept", true},

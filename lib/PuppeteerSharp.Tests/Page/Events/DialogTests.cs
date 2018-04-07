@@ -12,13 +12,13 @@ namespace PuppeteerSharp.Tests.Page.Events
         [Fact]
         public async Task ShouldFire()
         {
-            Page.Dialog += (sender, e) =>
+            Page.Dialog += async (sender, e) =>
             {
-                Assert.Equal(DialogType.Alert, e.DialogInfo.DialogType);
-                Assert.Equal(string.Empty, e.DialogInfo.DefaultValue);
-                Assert.Equal("yo", e.DialogInfo.Message);
+                Assert.Equal(DialogType.Alert, e.Dialog.DialogType);
+                Assert.Equal(string.Empty, e.Dialog.DefaultValue);
+                Assert.Equal("yo", e.Dialog.Message);
 
-                e.DialogInfo.Accept();
+                await e.Dialog.Accept();
             };
 
             await Page.EvaluateExpressionAsync("alert('yo');");
@@ -27,13 +27,13 @@ namespace PuppeteerSharp.Tests.Page.Events
         [Fact]
         public async Task ShouldAllowAcceptingPrompts()
         {
-            Page.Dialog += (sender, e) =>
+            Page.Dialog += async (sender, e) =>
             {
-                Assert.Equal(DialogType.Prompt, e.DialogInfo.DialogType);
-                Assert.Equal("yes.", e.DialogInfo.DefaultValue);
-                Assert.Equal("question?", e.DialogInfo.Message);
+                Assert.Equal(DialogType.Prompt, e.Dialog.DialogType);
+                Assert.Equal("yes.", e.Dialog.DefaultValue);
+                Assert.Equal("question?", e.Dialog.Message);
 
-                e.DialogInfo.Accept("answer!");
+                await e.Dialog.Accept("answer!");
             };
 
             var result = await Page.EvaluateExpressionAsync<string>("prompt('question?', 'yes.')");
@@ -43,9 +43,9 @@ namespace PuppeteerSharp.Tests.Page.Events
         [Fact]
         public async Task ShouldDismissThePrompt()
         {
-            Page.Dialog += (sender, e) =>
+            Page.Dialog += async (sender, e) =>
             {
-                e.DialogInfo.Dismiss();
+                await e.Dialog.Dismiss();
             };
 
             var result = await Page.EvaluateExpressionAsync<string>("prompt('question?')");
