@@ -78,6 +78,7 @@ namespace PuppeteerSharp
         #region Public Properties
         public event EventHandler<EventArgs> Load;
         public event EventHandler<ErrorEventArgs> Error;
+        public event EventHandler<MetricEventArgs> MetricsReceived;
 
         public event EventHandler<FrameEventArgs> FrameAttached;
         public event EventHandler<FrameEventArgs> FrameDetached;
@@ -100,6 +101,11 @@ namespace PuppeteerSharp
         #endregion
 
         #region Public Methods
+
+        public Task<Dictionary<string, decimal>> MetricsAsync()
+        {
+            throw new NotImplementedException();
+        }
 
         public async Task TapAsync(string selector)
         {
