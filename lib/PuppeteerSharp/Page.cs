@@ -720,19 +720,19 @@ namespace PuppeteerSharp
         {
 
             DialogType dialogType;
-            if (message.Type == PuppeteerSharp.Dialog.Type.Alert)
+            if (message.Type == "alert")
             {
                 dialogType = DialogType.Alert;
             }
-            else if (message.Type == PuppeteerSharp.Dialog.Type.Confirm)
+            else if (message.Type == "confirm")
             {
                 dialogType = DialogType.Confirm;
             }
-            else if (message.Type == PuppeteerSharp.Dialog.Type.Prompt)
+            else if (message.Type == "prompt")
             {
                 dialogType = DialogType.Prompt;
             }
-            else if (message.Type == PuppeteerSharp.Dialog.Type.BeforeUnload)
+            else if (message.Type == "beforeunload")
             {
                 dialogType = DialogType.BeforeUnload;
             }

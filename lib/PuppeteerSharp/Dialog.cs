@@ -35,13 +35,5 @@ namespace PuppeteerSharp
                 {"accept", false}
             });
         }
-
-        public class Type
-        {
-            public const string Alert = "alert";
-            public const string BeforeUnload = "beforeunload";
-            public const string Confirm = "confirm";
-            public const string Prompt = "prompt";
-        }
     }
 }
