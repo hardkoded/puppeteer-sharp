@@ -7,6 +7,7 @@ using System.IO;
 using System.Globalization;
 using Newtonsoft.Json.Linq;
 using System.Dynamic;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
@@ -102,9 +103,10 @@ namespace PuppeteerSharp
 
         #region Public Methods
 
-        public Task<Dictionary<string, decimal>> MetricsAsync()
+        public async Task<Dictionary<string, decimal>> MetricsAsync()
         {
-            throw new NotImplementedException();
+            var response = await _client.SendAsync<PerformanceGetMetricsResponse>("Performance.getMetrics");
+            return BuildMetricsObject(response.Metrics);
         }
 
         public async Task TapAsync(string selector)
@@ -490,6 +492,13 @@ namespace PuppeteerSharp
         #endregion
 
         #region Private Method
+
+        private Dictionary<string, decimal> BuildMetricsObject(List<KeyValuePair<string, decimal>> metrics)
+        {
+            var result = new Dictionary<string, decimal>();
+
+            foreach ()
+        }
 
         private async Task<Response> WaitForNavigation(NavigationOptions options = null)
         {
