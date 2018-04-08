@@ -14,7 +14,7 @@ namespace PuppeteerSharp.TestServer
 {
     public class SimpleServer
     {
-        private readonly IDictionary<string, TaskCompletionSource<HttpRequest>> _requestSubscribers;
+        private readonly IDictionary<string, Action<HttpRequest>> _requestSubscribers;
         private readonly IDictionary<string, RequestDelegate> _routes;
         private readonly IDictionary<string, (string username, string password)> _auths;
         private readonly IWebHost _webHost;
@@ -24,7 +24,7 @@ namespace PuppeteerSharp.TestServer
 
         public SimpleServer(int port, string contentRoot, bool isHttps)
         {
-            _requestSubscribers = new ConcurrentDictionary<string, TaskCompletionSource<HttpRequest>>();
+            _requestSubscribers = new ConcurrentDictionary<string, Action<HttpRequest>>();
             _routes = new ConcurrentDictionary<string, RequestDelegate>();
             _auths = new ConcurrentDictionary<string, (string username, string password)>();
             _webHost = new WebHostBuilder()
@@ -42,7 +42,7 @@ namespace PuppeteerSharp.TestServer
                         }
                         if (_requestSubscribers.TryGetValue(context.Request.Path, out var subscriber))
                         {
-                            subscriber.SetResult(context.Request);
+                            subscriber(context.Request);
                         }
                         if (_routes.TryGetValue(context.Request.Path, out var handler))
                         {
@@ -86,7 +86,7 @@ namespace PuppeteerSharp.TestServer
             _auths.Clear();
             foreach (var subscriber in _requestSubscribers.Values)
             {
-                subscriber.TrySetCanceled();
+                subscriber(null);
             }
             _requestSubscribers.Clear();
         }
@@ -107,13 +107,16 @@ namespace PuppeteerSharp.TestServer
 
         public async Task<T> WaitForRequest<T>(string path, Func<HttpRequest, T> selector)
         {
-            var taskCompletion = new TaskCompletionSource<HttpRequest>();
-            _requestSubscribers.Add(path, taskCompletion);
+            var taskCompletion = new TaskCompletionSource<T>();
+            _requestSubscribers.Add(path, (httpRequest) =>
+            {
+                taskCompletion.SetResult(selector(httpRequest));
+            });
 
             var request = await taskCompletion.Task;
             _requestSubscribers.Remove(path);
 
-            return selector(request);
+            return request;
         }
 
         private static bool Authenticate(string username, string password, HttpContext context)
