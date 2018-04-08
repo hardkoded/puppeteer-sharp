@@ -666,7 +666,7 @@ namespace PuppeteerSharp
                     OnConsoleAPI(e);
                     break;
                 case "Page.javascriptDialogOpening":
-                    OnDialog(e.MessageData.ToObject<PageJavascriptDialogOpeningMessageResponse>());
+                    OnDialog(e.MessageData.ToObject<PageJavascriptDialogOpeningResponse>());
                     break;
                 case "Runtime.exceptionThrown":
                     HandleException(e.MessageData.exception.exceptionDetails);
@@ -716,7 +716,7 @@ namespace PuppeteerSharp
         {
         }
 
-        private void OnDialog(PageJavascriptDialogOpeningMessageResponse message)
+        private void OnDialog(PageJavascriptDialogOpeningResponse message)
         {
             var dialog = new Dialog(_client, message.Type, message.Message, message.DefaultPrompt);
             Dialog?.Invoke(this, new DialogEventArgs(dialog));
