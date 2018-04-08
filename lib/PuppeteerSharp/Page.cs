@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using PuppeteerSharp.Input;
@@ -43,23 +44,6 @@ namespace PuppeteerSharp
             {"in", 96},
             {"cm", 37.8m},
             {"mm", 3.78m}
-        };
-
-        private static List<string> _supportedMetrics = new List<string>
-        {
-            "Timestamp",
-            "Documents",
-            "Frames",
-            "JSEventListeners",
-            "Nodes",
-            "LayoutCount",
-            "RecalcStyleCount",
-            "LayoutDuration",
-            "RecalcStyleDuration",
-            "ScriptDuration",
-            "TaskDuration",
-            "JSHeapUsedSize",
-            "JSHeapTotalSize"
         };
 
         private Target _target;
@@ -116,6 +100,22 @@ namespace PuppeteerSharp
         public Touchscreen Touchscreen { get; internal set; }
         public Tracing Tracing { get; internal set; }
 
+        public static IEnumerable<string> SupportedMetrics = new List<string>
+        {
+            "Timestamp",
+            "Documents",
+            "Frames",
+            "JSEventListeners",
+            "Nodes",
+            "LayoutCount",
+            "RecalcStyleCount",
+            "LayoutDuration",
+            "RecalcStyleDuration",
+            "ScriptDuration",
+            "TaskDuration",
+            "JSHeapUsedSize",
+            "JSHeapTotalSize"
+        };
 
         #endregion
 
@@ -517,7 +517,7 @@ namespace PuppeteerSharp
 
             foreach (var item in metrics)
             {
-                if (_supportedMetrics.Contains(item.Name))
+                if (SupportedMetrics.Contains(item.Name))
                 {
                     result.Add(item.Name, item.Value);
                 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
@@ -31,21 +32,7 @@ namespace PuppeteerSharp.Tests.Page
 
         private void CheckMetrics(Dictionary<string, decimal> metrics)
         {
-            var metricsToCheck = new List<string>{
-                "Timestamp",
-                "Documents",
-                "Frames",
-                "JSEventListeners",
-                "Nodes",
-                "LayoutCount",
-                "RecalcStyleCount",
-                "LayoutDuration",
-                "RecalcStyleDuration",
-                "ScriptDuration",
-                "TaskDuration",
-                "JSHeapUsedSize",
-                "JSHeapTotalSize",
-            };
+            var metricsToCheck = PuppeteerSharp.Page.SupportedMetrics.ToList();
 
             foreach (var name in metrics.Keys)
             {
