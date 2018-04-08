@@ -119,7 +119,7 @@ namespace PuppeteerSharp.TestServer
         private static bool Authenticate(string username, string password, HttpContext context)
         {
             string authHeader = context.Request.Headers["Authorization"];
-            if (authHeader.StartsWith("Basic", StringComparison.Ordinal))
+            if (authHeader != null && authHeader.StartsWith("Basic", StringComparison.Ordinal))
             {
                 string encodedUsernamePassword = authHeader.Substring("Basic ".Length).Trim();
                 var encoding = Encoding.GetEncoding("iso-8859-1");
