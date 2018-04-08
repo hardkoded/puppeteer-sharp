@@ -718,30 +718,7 @@ namespace PuppeteerSharp
 
         private void OnDialog(PageJavascriptDialogOpeningMessageResponse message)
         {
-
-            DialogType dialogType;
-            if (message.Type == "alert")
-            {
-                dialogType = DialogType.Alert;
-            }
-            else if (message.Type == "confirm")
-            {
-                dialogType = DialogType.Confirm;
-            }
-            else if (message.Type == "prompt")
-            {
-                dialogType = DialogType.Prompt;
-            }
-            else if (message.Type == "beforeunload")
-            {
-                dialogType = DialogType.BeforeUnload;
-            }
-            else
-            {
-                throw new PuppeteerException($"Unknown javascript dialog type {message.Type}");
-            }
-
-            var dialog = new Dialog(_client, dialogType, message.Message, message.DefaultPrompt);
+            var dialog = new Dialog(_client, message.Type, message.Message, message.DefaultPrompt);
             Dialog?.Invoke(this, new DialogEventArgs(dialog));
         }
 
