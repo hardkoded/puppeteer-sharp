@@ -18,7 +18,7 @@ namespace PuppeteerSharp.Tests.Page
             var headerTask = Server.WaitForRequest("/empty.html", request => request.Headers["Foo"]);
             await Task.WhenAll(Page.GoToAsync(TestConstants.EmptyPage), headerTask);
 
-            Assert.Equal("Bar", await headerTask);
+            Assert.Equal("Bar", headerTask.Result);
         }
     }
 }
