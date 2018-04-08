@@ -82,6 +82,7 @@ namespace PuppeteerSharp
         public event EventHandler<EventArgs> Load;
         public event EventHandler<ErrorEventArgs> Error;
         public event EventHandler<MetricEventArgs> MetricsReceived;
+        public event EventHandler<DialogEventArgs> Dialog;
 
         public event EventHandler<FrameEventArgs> FrameAttached;
         public event EventHandler<FrameEventArgs> FrameDetached;
@@ -705,7 +706,7 @@ namespace PuppeteerSharp
                     OnConsoleAPI(e);
                     break;
                 case "Page.javascriptDialogOpening":
-                    OnDialog(e);
+                    OnDialog(e.MessageData.ToObject<PageJavascriptDialogOpeningResponse>());
                     break;
                 case "Runtime.exceptionThrown":
                     HandleException(e.MessageData.exception.exceptionDetails);
@@ -753,8 +754,10 @@ namespace PuppeteerSharp
         {
         }
 
-        private void OnDialog(MessageEventArgs e)
+        private void OnDialog(PageJavascriptDialogOpeningResponse message)
         {
+            var dialog = new Dialog(_client, message.Type, message.Message, message.DefaultPrompt);
+            Dialog?.Invoke(this, new DialogEventArgs(dialog));
         }
 
         private void OnConsoleAPI(MessageEventArgs e)
