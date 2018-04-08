@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using PuppeteerSharp.Input;
@@ -79,6 +80,7 @@ namespace PuppeteerSharp
         #region Public Properties
         public event EventHandler<EventArgs> Load;
         public event EventHandler<ErrorEventArgs> Error;
+        public event EventHandler<MetricEventArgs> MetricsReceived;
         public event EventHandler<DialogEventArgs> Dialog;
 
         public event EventHandler<FrameEventArgs> FrameAttached;
@@ -98,10 +100,32 @@ namespace PuppeteerSharp
         public Touchscreen Touchscreen { get; internal set; }
         public Tracing Tracing { get; internal set; }
 
+        public static IEnumerable<string> SupportedMetrics = new List<string>
+        {
+            "Timestamp",
+            "Documents",
+            "Frames",
+            "JSEventListeners",
+            "Nodes",
+            "LayoutCount",
+            "RecalcStyleCount",
+            "LayoutDuration",
+            "RecalcStyleDuration",
+            "ScriptDuration",
+            "TaskDuration",
+            "JSHeapUsedSize",
+            "JSHeapTotalSize"
+        };
 
         #endregion
 
         #region Public Methods
+
+        public async Task<Dictionary<string, decimal>> MetricsAsync()
+        {
+            var response = await _client.SendAsync<PerformanceGetMetricsResponse>("Performance.getMetrics");
+            return BuildMetricsObject(response.Metrics);
+        }
 
         public async Task TapAsync(string selector)
         {
@@ -487,6 +511,21 @@ namespace PuppeteerSharp
 
         #region Private Method
 
+        private Dictionary<string, decimal> BuildMetricsObject(List<Metric> metrics)
+        {
+            var result = new Dictionary<string, decimal>();
+
+            foreach (var item in metrics)
+            {
+                if (SupportedMetrics.Contains(item.Name))
+                {
+                    result.Add(item.Name, item.Value);
+                }
+            }
+
+            return result;
+        }
+
         private async Task<Response> WaitForNavigation(NavigationOptions options = null)
         {
             var mainFrame = _frameManager.MainFrame;
@@ -678,7 +717,7 @@ namespace PuppeteerSharp
                     OnTargetCrashed();
                     break;
                 case "Performance.metrics":
-                    EmitMetrics(e);
+                    EmitMetrics(e.MessageData.ToObject<PerformanceMetricsResponse>());
                     break;
             }
         }
@@ -693,10 +732,8 @@ namespace PuppeteerSharp
             Error.Invoke(this, new ErrorEventArgs("Page crashed!"));
         }
 
-        private void EmitMetrics(MessageEventArgs e)
-        {
-
-        }
+        private void EmitMetrics(PerformanceMetricsResponse metrics)
+            => MetricsReceived?.Invoke(this, new MetricEventArgs(metrics.Title, BuildMetricsObject(metrics.Metrics)));
 
         private async Task OnCertificateError(MessageEventArgs e)
         {
