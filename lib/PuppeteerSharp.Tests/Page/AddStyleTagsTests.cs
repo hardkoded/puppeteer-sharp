@@ -52,7 +52,7 @@ namespace PuppeteerSharp.Tests.Page
             });
 
             // TODO use "page.$" implementation
-            var styleHandle = await Page.EvaluateExpressionAsync("document.querySelectorAll('style')");
+            var styleHandle = await Page.EvaluateExpressionAsync("document.querySelector('style')");
             var styleContent = await Page.EvaluateFunctionAsync("(style) => style.innerHTML", styleHandle);
 
             Assert.Contains(Path.Combine("assets", "injectedstyle.css"), styleContent);
