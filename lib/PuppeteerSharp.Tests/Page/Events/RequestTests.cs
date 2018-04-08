@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace PuppeteerSharp.Tests.Page
+namespace PuppeteerSharp.Tests.Page.Events
 {
     [Collection("PuppeteerLoaderFixture collection")]
-    public class EventsRequestTests : PuppeteerPageBaseTest
+    public class RequestTests : PuppeteerPageBaseTest
     {
         [Fact]
         public async Task ShouldFire()

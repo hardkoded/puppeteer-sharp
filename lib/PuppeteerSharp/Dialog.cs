@@ -7,40 +7,50 @@ namespace PuppeteerSharp
     public class Dialog
     {
         private Session _client;
-        private string _type;
+        public DialogType DialogType { get; set; }
+        public string DefaultValue { get; set; }
+        public string Message { get; set; }
+        private static readonly Dictionary<string, DialogType> _dialogTypeMap = new Dictionary<string, DialogType>
+        {
+            ["alert"] = DialogType.Alert,
+            ["prompt"] = DialogType.Prompt,
+            ["confirm"] = DialogType.Confirm,
+            ["beforeunload"] = DialogType.BeforeUnload
+        };
 
-        public Dialog(Session client, string type, string message)
+        public Dialog(Session client, string type, string message, string defaultValue)
         {
             _client = client;
-            _type = type;
+            DialogType = GetDialogType(type);
             Message = message;
+            DefaultValue = defaultValue;
         }
 
-        public string Message { get; set; }
-        public string DefaultValue { get; set; }
-
-        public async Task Accept(string promptText)
+        public async Task Accept(string promptText = "")
         {
-            await _client.SendAsync("Page.handleJavaScriptDialog", new Dictionary<string, object>(){
+            await _client.SendAsync("Page.handleJavaScriptDialog", new Dictionary<string, object>
+            {
                 {"accept", true},
                 {"promptText", promptText}
             });
         }
 
-        public async Task Dismiss(string promptText)
+        public async Task Dismiss()
         {
-            await _client.SendAsync("Page.handleJavaScriptDialog", new Dictionary<string, object>(){
+            await _client.SendAsync("Page.handleJavaScriptDialog", new Dictionary<string, object>
+            {
                 {"accept", false}
             });
         }
 
-        public class Type
+        public static DialogType GetDialogType(string dialogType)
         {
-            public const string Alert = "alert";
-            public const string BeforeUnload = "beforeunload";
-            public const string Confirm = "confirm";
-            public const string Prompt = "prompt";
+            if (_dialogTypeMap.ContainsKey(dialogType))
+            {
+                return _dialogTypeMap[dialogType];
+            }
 
+            throw new PuppeteerException($"Unknown javascript dialog type {dialogType}");
         }
     }
 }
