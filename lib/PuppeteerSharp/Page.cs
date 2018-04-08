@@ -45,7 +45,6 @@ namespace PuppeteerSharp
             {"cm", 37.8m},
             {"mm", 3.78m}
         };
-
         private Target _target;
 
         private Page(Session client, Target target, FrameTree frameTree, bool ignoreHTTPSErrors, TaskQueue screenshotTaskQueue)
