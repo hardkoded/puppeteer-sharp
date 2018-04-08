@@ -44,6 +44,24 @@ namespace PuppeteerSharp
             {"cm", 37.8m},
             {"mm", 3.78m}
         };
+
+        private static List<string> _supportedMetrics = new List<string>
+        {
+            "Timestamp",
+            "Documents",
+            "Frames",
+            "JSEventListeners",
+            "Nodes",
+            "LayoutCount",
+            "RecalcStyleCount",
+            "LayoutDuration",
+            "RecalcStyleDuration",
+            "ScriptDuration",
+            "TaskDuration",
+            "JSHeapUsedSize",
+            "JSHeapTotalSize"
+        };
+
         private Target _target;
 
         private Page(Session client, Target target, FrameTree frameTree, bool ignoreHTTPSErrors, TaskQueue screenshotTaskQueue)
@@ -493,11 +511,19 @@ namespace PuppeteerSharp
 
         #region Private Method
 
-        private Dictionary<string, decimal> BuildMetricsObject(List<KeyValuePair<string, decimal>> metrics)
+        private Dictionary<string, decimal> BuildMetricsObject(List<Metric> metrics)
         {
             var result = new Dictionary<string, decimal>();
 
-            foreach ()
+            foreach (var item in metrics)
+            {
+                if (_supportedMetrics.Contains(item.Name))
+                {
+                    result.Add(item.Name, item.Value);
+                }
+            }
+
+            return result;
         }
 
         private async Task<Response> WaitForNavigation(NavigationOptions options = null)
@@ -691,7 +717,7 @@ namespace PuppeteerSharp
                     OnTargetCrashed();
                     break;
                 case "Performance.metrics":
-                    EmitMetrics(e);
+                    EmitMetrics(e.MessageData.ToObject<PerformanceMetricsResponse>());
                     break;
             }
         }
@@ -706,10 +732,8 @@ namespace PuppeteerSharp
             Error.Invoke(this, new ErrorEventArgs("Page crashed!"));
         }
 
-        private void EmitMetrics(MessageEventArgs e)
-        {
-
-        }
+        private void EmitMetrics(PerformanceMetricsResponse metrics)
+            => MetricsReceived?.Invoke(this, new MetricEventArgs(metrics.Title, BuildMetricsObject(metrics.Metrics)));
 
         private async Task OnCertificateError(MessageEventArgs e)
         {
