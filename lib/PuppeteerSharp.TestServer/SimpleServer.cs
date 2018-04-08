@@ -84,10 +84,9 @@ namespace PuppeteerSharp.TestServer
         {
             _routes.Clear();
             _auths.Clear();
-            var exception = new Exception("Static Server has been reset");
             foreach (var subscriber in _requestSubscribers.Values)
             {
-                subscriber.SetException(exception);
+                subscriber.TrySetCanceled();
             }
             _requestSubscribers.Clear();
         }
@@ -106,7 +105,7 @@ namespace PuppeteerSharp.TestServer
             });
         }
 
-        public async Task<HttpRequest> WaitForRequest(string path)
+        public async Task<T> WaitForRequest<T>(string path, Func<HttpRequest, T> selector)
         {
             var taskCompletion = new TaskCompletionSource<HttpRequest>();
             _requestSubscribers.Add(path, taskCompletion);
@@ -114,13 +113,13 @@ namespace PuppeteerSharp.TestServer
             var request = await taskCompletion.Task;
             _requestSubscribers.Remove(path);
 
-            return request;
+            return selector(request);
         }
 
         private static bool Authenticate(string username, string password, HttpContext context)
         {
             string authHeader = context.Request.Headers["Authorization"];
-            if (authHeader != null && authHeader.StartsWith("Basic", StringComparison.Ordinal))
+            if (authHeader.StartsWith("Basic", StringComparison.Ordinal))
             {
                 string encodedUsernamePassword = authHeader.Substring("Basic ".Length).Trim();
                 var encoding = Encoding.GetEncoding("iso-8859-1");

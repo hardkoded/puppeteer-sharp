@@ -26,16 +26,10 @@ namespace PuppeteerSharp.Tests
             Server = SimpleServer.Create(TestConstants.Port, TestUtils.FindParentDirectory("PuppeteerSharp.TestServer"));
             HttpsServer = SimpleServer.CreateHttps(TestConstants.HttpsPort, TestUtils.FindParentDirectory("PuppeteerSharp.TestServer"));
 
-            await Server.StartAsync();
-            await downloaderTask;
-            await HttpsServer.StartAsync();            
-
-            /*
             var serverStart = Server.StartAsync();
             var httpsServerStart = HttpsServer.StartAsync();
 
             await Task.WhenAll(downloaderTask, serverStart, httpsServerStart);
-            */
         }
     }
 }

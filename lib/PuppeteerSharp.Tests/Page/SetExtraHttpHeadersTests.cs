@@ -15,8 +15,10 @@ namespace PuppeteerSharp.Tests.Page
                 ["Foo"] = "Bar"
             });
 
-            var response = await Page.GoToAsync($"{TestConstants.ServerUrl}/headertests/test");
-            Assert.Equal("Bar", await response.TextAsync());
+            var headerTask = Server.WaitForRequest("/empty.html", request => request.Headers["Foo"]);
+            await Task.WhenAll(Page.GoToAsync(TestConstants.EmptyPage), headerTask);
+
+            Assert.Equal("Bar", await headerTask);
         }
     }
 }
