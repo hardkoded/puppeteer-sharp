@@ -7,7 +7,7 @@ namespace PuppeteerSharp.Tests.Page
     [Collection("PuppeteerLoaderFixture collection")]
     public class AddStyleTagsTests : PuppeteerPageBaseTest
     {
-        const string BackgroundColorScript =
+        private const string BackgroundColorScript =
             "window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')";
 
         [Fact]
@@ -15,7 +15,11 @@ namespace PuppeteerSharp.Tests.Page
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
 
-            var styleHandle = await Page.AddStyleTagAsync(new AddTagOptions {Url = "/injectedstyle.css"});
+            var styleHandle = await Page.AddStyleTagAsync(new AddTagOptions
+            {
+                Url = "/injectedstyle.css"
+            });
+            
             Assert.NotNull(styleHandle.AsElement());
 
             var bgColor = await Page.EvaluateExpressionAsync(BackgroundColorScript);
@@ -28,9 +32,11 @@ namespace PuppeteerSharp.Tests.Page
             await Page.GoToAsync(TestConstants.EmptyPage);
 
             var exception = await Assert.ThrowsAsync<PuppeteerException>(() =>
-            {
-                return Page.AddStyleTagAsync(new AddTagOptions {Url = "/nonexistfile.css"});
-            });
+                Page.AddStyleTagAsync(new AddTagOptions
+                {
+                    Url = "/nonexistfile.css"
+                })
+            );
 
             Assert.Contains("Loading style from /nonexistfile.css failed", exception.Message);
         }
@@ -39,7 +45,11 @@ namespace PuppeteerSharp.Tests.Page
         public async Task ShouldWorkWithAPath()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            await Page.AddStyleTagAsync(new AddTagOptions {Path = "assets/injectedstyle.css"});
+            
+            await Page.AddStyleTagAsync(new AddTagOptions
+            {
+                Path = "assets/injectedstyle.css"
+            });
 
             // TODO use "page.$" implementation
             var styleHandle = await Page.EvaluateExpressionAsync("document.querySelectorAll('style')");
@@ -52,8 +62,12 @@ namespace PuppeteerSharp.Tests.Page
         public async Task ShouldWorkWithContent()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
+            
             var styleHandle =
-                await Page.AddStyleTagAsync(new AddTagOptions {Content = "body { background-color: green; }"});
+                await Page.AddStyleTagAsync(new AddTagOptions
+                {
+                    Content = "body { background-color: green; }"
+                });
 
             Assert.NotNull(styleHandle.AsElement());
 
@@ -68,9 +82,11 @@ namespace PuppeteerSharp.Tests.Page
             await Page.GoToAsync(TestConstants.ServerUrl + "/csp.html");
 
             await Assert.ThrowsAsync<PuppeteerException>(() =>
-            {
-                return Page.AddStyleTagAsync(new AddTagOptions {Content = "body { background-color: green; }"});
-            });
+                Page.AddStyleTagAsync(new AddTagOptions
+                {
+                    Content = "body { background-color: green; }"
+                })
+            );
         }
 
         [Fact]
@@ -79,10 +95,11 @@ namespace PuppeteerSharp.Tests.Page
             await Page.GoToAsync(TestConstants.ServerUrl + "/csp.html");
 
             await Assert.ThrowsAsync<PuppeteerException>(() =>
-            {
-                return Page.AddStyleTagAsync(
-                    new AddTagOptions {Url = TestConstants.CrossProcessHttpPrefix + "/injectedstyle.css"});
-            });
+                Page.AddStyleTagAsync(new AddTagOptions
+                {
+                    Url = TestConstants.CrossProcessHttpPrefix + "/injectedstyle.css"
+                })
+            );
         }
     }
 }
