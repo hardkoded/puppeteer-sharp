@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
+﻿using System.Net;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -12,7 +10,9 @@ namespace PuppeteerSharp.Tests.Page
         [Fact]
         public async Task ShouldWork()
         {
-            var response = await Page.GoToAsync(TestConstants.AuthenticateUrl);
+            Server.SetAuth("/empty.html", "user", "pass");
+
+            var response = await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.Equal(HttpStatusCode.Unauthorized, response.Status);
 
             await Page.AuthenticateAsync(new Credentials

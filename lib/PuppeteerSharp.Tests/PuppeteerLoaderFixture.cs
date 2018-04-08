@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using PuppeteerSharp.TestServer;
+﻿using PuppeteerSharp.TestServer;
 using System;
 using System.Threading.Tasks;
 
@@ -7,7 +6,8 @@ namespace PuppeteerSharp.Tests
 {
     public class PuppeteerLoaderFixture : IDisposable
     {
-        IWebHost _host;
+        public static SimpleServer Server { get; private set; }
+        public static SimpleServer HttpsServer { get; private set; }
 
         public PuppeteerLoaderFixture()
         {
@@ -16,26 +16,26 @@ namespace PuppeteerSharp.Tests
 
         public void Dispose()
         {
-            _host.StopAsync().GetAwaiter().GetResult();
+            Task.WaitAll(Server.StopAsync(), HttpsServer.StopAsync());
         }
 
         private async Task SetupAsync()
         {
             var downloaderTask = Downloader.CreateDefault().DownloadRevisionAsync(TestConstants.ChromiumRevision);
-            var serverTask = StartWebServerAsync();
 
-            await Task.WhenAll(downloaderTask, serverTask);
-        }
+            Server = SimpleServer.Create(TestConstants.Port, TestUtils.FindParentDirectory("PuppeteerSharp.TestServer"));
+            HttpsServer = SimpleServer.CreateHttps(TestConstants.HttpsPort, TestUtils.FindParentDirectory("PuppeteerSharp.TestServer"));
 
-        private async Task StartWebServerAsync()
-        {
-            var builder = Startup.GetWebHostBuilder();
+            await Server.StartAsync();
+            await downloaderTask;
+            await HttpsServer.StartAsync();            
 
-            builder.UseContentRoot(TestUtils.FindParentDirectory("PuppeteerSharp.TestServer"));
+            /*
+            var serverStart = Server.StartAsync();
+            var httpsServerStart = HttpsServer.StartAsync();
 
-            _host = builder.Build();
-
-            await _host.StartAsync();
+            await Task.WhenAll(downloaderTask, serverStart, httpsServerStart);
+            */
         }
     }
 }

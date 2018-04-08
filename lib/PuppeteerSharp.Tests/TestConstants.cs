@@ -4,7 +4,8 @@ namespace PuppeteerSharp.Tests
 {
     public static class TestConstants
     {
-        public const int HttpsPort = 8908;
+        public const int Port = 8907;
+        public const int HttpsPort = Port + 1;
         public const string ServerUrl = "http://localhost:8907";
         public const string ServerIpUrl = "http://127.0.0.1:8907";
         public const string HttpsPrefix = "https://localhost:8908";

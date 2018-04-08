@@ -19,10 +19,10 @@ namespace PuppeteerSharp.TestServer
         private readonly IDictionary<string, (string username, string password)> _auths;
         private readonly IWebHost _webHost;
 
-        public static SimpleServer Create(int port) => new SimpleServer(port, isHttps: false);
-        public static SimpleServer CreateHttps(int port) => new SimpleServer(port, isHttps: true);
+        public static SimpleServer Create(int port, string contentRoot) => new SimpleServer(port, contentRoot, isHttps: false);
+        public static SimpleServer CreateHttps(int port, string contentRoot) => new SimpleServer(port, contentRoot, isHttps: true);
 
-        public SimpleServer(int port, bool isHttps)
+        public SimpleServer(int port, string contentRoot, bool isHttps)
         {
             _requestSubscribers = new ConcurrentDictionary<string, TaskCompletionSource<HttpRequest>>();
             _routes = new ConcurrentDictionary<string, RequestDelegate>();
@@ -34,7 +34,7 @@ namespace PuppeteerSharp.TestServer
                 )
                 .Configure(app => app.Use((context, next) =>
                     {
-                        if (_auths.TryGetValue(context.Request.Path, out var auth) && Authenticate(auth.username, auth.password, context))
+                        if (_auths.TryGetValue(context.Request.Path, out var auth) && !Authenticate(auth.username, auth.password, context))
                         {
                             context.Response.Headers.Add("WWW-Authenticate", "Basic realm=\"Secure Area\"");
                             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
@@ -55,13 +55,14 @@ namespace PuppeteerSharp.TestServer
                 {
                     if (isHttps)
                     {
-                        options.Listen(IPAddress.Loopback, port);
+                        options.Listen(IPAddress.Loopback, port, listenOptions => listenOptions.UseHttps("testCert.cer"));
                     }
                     else
                     {
-                        options.Listen(IPAddress.Loopback, port, listenOptions => listenOptions.UseHttps("testCert.cer"));
+                        options.Listen(IPAddress.Loopback, port);
                     }
                 })
+                .UseContentRoot(contentRoot)
                 .Build();
         }
 
@@ -70,7 +71,9 @@ namespace PuppeteerSharp.TestServer
             _auths.Add(path, (username, password));
         }
 
-        public async Task Stop()
+        public Task StartAsync() => _webHost.StartAsync();
+
+        public async Task StopAsync()
         {
             Reset();
 
@@ -117,7 +120,7 @@ namespace PuppeteerSharp.TestServer
         private static bool Authenticate(string username, string password, HttpContext context)
         {
             string authHeader = context.Request.Headers["Authorization"];
-            if (authHeader.StartsWith("Basic", StringComparison.Ordinal))
+            if (authHeader != null && authHeader.StartsWith("Basic", StringComparison.Ordinal))
             {
                 string encodedUsernamePassword = authHeader.Substring("Basic ".Length).Trim();
                 var encoding = Encoding.GetEncoding("iso-8859-1");
