@@ -490,6 +490,9 @@ namespace PuppeteerSharp
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
             => _frameManager.MainFrame.EvaluateFunctionAsync<T>(script, args);
 
+        public async Task SetUserAgentAsync(string userAgent)
+            => await _networkManager.SetUserAgentAsync(userAgent);
+
         public async Task SetExtraHttpHeadersAsync(Dictionary<string, string> headers)
             => await _networkManager.SetExtraHTTPHeadersAsync(headers);
 
