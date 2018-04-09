@@ -11,6 +11,18 @@ namespace PuppeteerSharp.Tests.Page
             "window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')";
 
         [Fact]
+        public async Task ShouldThrowAnErrorIfNoOptionsAreProvided()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+
+            var exception = await Assert.ThrowsAsync<PuppeteerException>(() =>
+                Page.AddStyleTagAsync(new AddTagOptions())
+            );
+
+            Assert.Contains("Provide an object with a `Url`, `Path` or `Content` property", exception.Message);
+        }
+        
+        [Fact]
         public async Task ShouldWorkWithAUrl()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
