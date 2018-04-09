@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
@@ -122,10 +123,65 @@ namespace PuppeteerSharp.Tests.Page
             Assert.Equal(TestConstants.EmptyPage, response.Url);
         }
 
-        [Fact(Skip = "complicated")]
+        [Fact]
         public async Task ShouldWaitForNetworkIdleToSucceedNavigation()
         {
+            var responses = new List<HttpResponse>();
+            Server.SetRoute("/fetch-request-a.js", async context => responses.Add(context.Response));
+            Server.SetRoute("/fetch-request-b.js", async context => responses.Add(context.Response));
+            Server.SetRoute("/fetch-request-c.js", async context => responses.Add(context.Response));
+            Server.SetRoute("/fetch-request-d.js", async context => responses.Add(context.Response));
 
+            var initialFetchResourcesRequested = Task.WhenAll(
+                Server.WaitForRequest("/fetch-request-a.js"),
+                Server.WaitForRequest("/fetch-request-b.js"),
+                Server.WaitForRequest("/fetch-request-c.js")
+            );
+            var secondFetchResourceRequested = Server.WaitForRequest("/fetch-request-d.js");
+
+            var navigationFinished = false;
+            var navigationTask = Page.GoToAsync(TestConstants.ServerUrl + "/networkidle.html",
+                new NavigationOptions { WaitUntil = new[] { WaitUntilNavigation.Networkidle0 } })
+                .ContinueWith(res => {
+                    navigationFinished = true;
+                    return res.Result;
+                });
+
+            var pageLoaded = new TaskCompletionSource<bool>();
+            void WaitPageLoad(object sender, EventArgs e)
+            {
+                pageLoaded.SetResult(true);
+                Page.Load -= WaitPageLoad;
+            }
+            Page.Load += WaitPageLoad;
+            await pageLoaded.Task;
+
+            Assert.False(navigationFinished);
+
+            await initialFetchResourcesRequested;
+
+            Assert.False(navigationFinished);
+
+            foreach (var response in responses)
+            {
+                response.StatusCode = 404;
+                await response.WriteAsync("File not found");
+            }
+
+            responses.Clear();
+
+            await secondFetchResourceRequested;
+
+            Assert.False(navigationFinished);
+
+            foreach (var response in responses)
+            {
+                response.StatusCode = 404;
+                await response.WriteAsync("File not found");
+            }
+
+            var navigationResponse = await navigationTask;
+            Assert.Equal(HttpStatusCode.OK, navigationResponse.Status);
         }
 
         [Fact]
