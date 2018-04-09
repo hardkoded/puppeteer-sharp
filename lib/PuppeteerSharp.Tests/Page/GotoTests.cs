@@ -113,6 +113,10 @@ namespace PuppeteerSharp.Tests.Page
         [Fact]
         public async Task ShouldReturnLastResponseInRedirectChain()
         {
+            Server.SetRedirect("/redirect/1.html", "/redirect/2.html");
+            Server.SetRedirect("/redirect/2.html", "/redirect/3.html");
+            Server.SetRedirect("/redirect/3.html", TestConstants.EmptyPage);
+
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/redirect/1.html");
             Assert.Equal(HttpStatusCode.OK, response.Status);
             Assert.Equal(TestConstants.EmptyPage, response.Url);
