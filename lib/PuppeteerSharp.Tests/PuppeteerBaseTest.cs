@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PuppeteerSharp.TestServer;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -9,9 +10,14 @@ namespace PuppeteerSharp.Tests
         protected string BaseDirectory { get; set; }
         protected Browser Browser { get; set; }
 
+        protected SimpleServer Server => PuppeteerLoaderFixture.Server;
+        protected SimpleServer HttpsServer => PuppeteerLoaderFixture.HttpsServer;
+
         protected virtual async Task InitializeAsync()
         {
             Browser = await PuppeteerSharp.Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.ChromiumRevision);
+            Server.Reset();
+            HttpsServer.Reset();
         }
 
         protected virtual async Task DisposeAsync() => await Browser.CloseAsync();
