@@ -19,11 +19,11 @@ namespace PuppeteerSharp.Tests.Page
             {
                 Url = "/injectedstyle.css"
             });
-            
+
             Assert.NotNull(styleHandle.AsElement());
 
-            var bgColor = await Page.EvaluateExpressionAsync(BackgroundColorScript);
-            Assert.Equal("rgb(255, 0, 0)", bgColor.ToString());
+            var bgColor = await Page.EvaluateExpressionAsync<string>(BackgroundColorScript);
+            Assert.Equal("rgb(255, 0, 0)", bgColor);
         }
 
         [Fact]
@@ -45,7 +45,23 @@ namespace PuppeteerSharp.Tests.Page
         public async Task ShouldWorkWithAPath()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            
+
+            var styleHandle = await Page.AddStyleTagAsync(new AddTagOptions
+            {
+                Path = "assets/injectedstyle.css"
+            });
+
+            Assert.NotNull(styleHandle.AsElement());
+
+            var bgColor = await Page.EvaluateExpressionAsync<string>(BackgroundColorScript);
+            Assert.Equal("rgb(255, 0, 0)", bgColor);
+        }
+
+        [Fact]
+        public async Task ShouldIncludeSourcemapWhenPathIsProvided()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+
             await Page.AddStyleTagAsync(new AddTagOptions
             {
                 Path = "assets/injectedstyle.css"
@@ -62,44 +78,17 @@ namespace PuppeteerSharp.Tests.Page
         public async Task ShouldWorkWithContent()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            
-            var styleHandle =
-                await Page.AddStyleTagAsync(new AddTagOptions
-                {
-                    Content = "body { background-color: green; }"
-                });
+
+            var styleHandle = await Page.AddStyleTagAsync(new AddTagOptions
+            {
+                Content = "body { background-color: green; }"
+            });
 
             Assert.NotNull(styleHandle.AsElement());
 
-            var bgColor = await Page.EvaluateExpressionAsync(BackgroundColorScript);
+            var bgColor = await Page.EvaluateExpressionAsync<string>(BackgroundColorScript);
 
-            Assert.Equal("rgb(0, 128, 0)", bgColor.ToString());
-        }
-
-        [Fact]
-        public async Task ShouldThrowWhenAddedWithContentToTheCspPage()
-        {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/csp.html");
-
-            await Assert.ThrowsAsync<PuppeteerException>(() =>
-                Page.AddStyleTagAsync(new AddTagOptions
-                {
-                    Content = "body { background-color: green; }"
-                })
-            );
-        }
-
-        [Fact]
-        public async Task ShouldThrowWhenAddedWithUrlToTheCspPage()
-        {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/csp.html");
-
-            await Assert.ThrowsAsync<PuppeteerException>(() =>
-                Page.AddStyleTagAsync(new AddTagOptions
-                {
-                    Url = TestConstants.CrossProcessHttpPrefix + "/injectedstyle.css"
-                })
-            );
+            Assert.Equal("rgb(0, 128, 0)", bgColor);
         }
     }
 }
