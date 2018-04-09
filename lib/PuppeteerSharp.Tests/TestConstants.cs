@@ -4,7 +4,8 @@ namespace PuppeteerSharp.Tests
 {
     public static class TestConstants
     {
-        public const int HttpsPort = 8908;
+        public const int Port = 8907;
+        public const int HttpsPort = Port + 1;
         public const string ServerUrl = "http://localhost:8907";
         public const string ServerIpUrl = "http://127.0.0.1:8907";
         public const string HttpsPrefix = "https://localhost:8908";
@@ -12,7 +13,7 @@ namespace PuppeteerSharp.Tests
         public const string AboutBlank = "about:blank";
         public static readonly string CrossProcessHttpPrefix = "http://127.0.0.1:8907";
         public static readonly string EmptyPage = $"{ServerUrl}/empty.html";
-        public static readonly string CrossProcessAuthenticateUrl = $"{ServerIpUrl}/authenticationtest/testuser";
+        public static readonly string CrossProcessUrl = ServerIpUrl;
         public static readonly string AuthenticateUrl = $"{ServerUrl}/authenticationtest/testuser";
         public static readonly string MaximumNavigationTimeout = $"{ServerUrl}/maximumnavigationtimeout/testuser";
 
