@@ -126,11 +126,17 @@ namespace PuppeteerSharp.Tests.Page
         [Fact]
         public async Task ShouldWaitForNetworkIdleToSucceedNavigation()
         {
-            var responses = new List<HttpResponse>();
-            Server.SetRoute("/fetch-request-a.js", async context => responses.Add(context.Response));
-            Server.SetRoute("/fetch-request-b.js", async context => responses.Add(context.Response));
-            Server.SetRoute("/fetch-request-c.js", async context => responses.Add(context.Response));
-            Server.SetRoute("/fetch-request-d.js", async context => responses.Add(context.Response));
+            var responses = new List<TaskCompletionSource<Func<HttpResponse, Task>>>();
+            foreach (var url in new[] { "/fetch-request-a.js", "/fetch-request-b.js", "/fetch-request-c.js", "/fetch-request-d.js" })
+            {
+                Server.SetRoute(url, async context =>
+                {
+                    var taskCompletion = new TaskCompletionSource<Func<HttpResponse, Task>>();
+                    responses.Add(taskCompletion);
+                    var actionResponse = await taskCompletion.Task;
+                    await actionResponse(context.Response);
+                });
+            }
 
             var initialFetchResourcesRequested = Task.WhenAll(
                 Server.WaitForRequest("/fetch-request-a.js"),
@@ -142,7 +148,8 @@ namespace PuppeteerSharp.Tests.Page
             var navigationFinished = false;
             var navigationTask = Page.GoToAsync(TestConstants.ServerUrl + "/networkidle.html",
                 new NavigationOptions { WaitUntil = new[] { WaitUntilNavigation.Networkidle0 } })
-                .ContinueWith(res => {
+                .ContinueWith(res =>
+                {
                     navigationFinished = true;
                     return res.Result;
                 });
@@ -162,10 +169,15 @@ namespace PuppeteerSharp.Tests.Page
 
             Assert.False(navigationFinished);
 
-            foreach (var response in responses)
+            while (responses.Count != 3) await Task.Delay(10); // todo: figure out why
+
+            foreach (var actionResponse in responses)
             {
-                response.StatusCode = 404;
-                await response.WriteAsync("File not found");
+                actionResponse.SetResult(response =>
+                {
+                    response.StatusCode = 404;
+                    return response.WriteAsync("File not found");
+                });
             }
 
             responses.Clear();
@@ -174,10 +186,15 @@ namespace PuppeteerSharp.Tests.Page
 
             Assert.False(navigationFinished);
 
-            foreach (var response in responses)
+            while (responses.Count != 1) await Task.Delay(10); // todo: figure out why
+
+            foreach (var actionResponse in responses)
             {
-                response.StatusCode = 404;
-                await response.WriteAsync("File not found");
+                actionResponse.SetResult(response =>
+                {
+                    response.StatusCode = 404;
+                    return response.WriteAsync("File not found");
+                });
             }
 
             var navigationResponse = await navigationTask;
