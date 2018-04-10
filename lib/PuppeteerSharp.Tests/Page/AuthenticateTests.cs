@@ -10,7 +10,9 @@ namespace PuppeteerSharp.Tests.Page
         [Fact]
         public async Task ShouldWork()
         {
-            var response = await Page.GoToAsync(TestConstants.AuthenticateUrl);
+            Server.SetAuth("/empty.html", "user", "pass");
+
+            var response = await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.Equal(HttpStatusCode.Unauthorized, response.Status);
 
             await Page.AuthenticateAsync(new Credentials
@@ -26,31 +28,35 @@ namespace PuppeteerSharp.Tests.Page
         [Fact]
         public async Task ShouldFailIfWrongCredentials()
         {
+            Server.SetAuth("/empty.html", "user2", "pass2");
+
             await Page.AuthenticateAsync(new Credentials
             {
                 Username = "foo",
                 Password = "bar"
             });
 
-            var response = await Page.GoToAsync(TestConstants.AuthenticateUrl);
+            var response = await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.Equal(HttpStatusCode.Unauthorized, response.Status);
         }
 
         [Fact]
         public async Task ShouldAllowDisableAuthentication()
         {
+            Server.SetAuth("/empty.html", "user3", "pass3");
+
             await Page.AuthenticateAsync(new Credentials
             {
-                Username = "user",
-                Password = "pass"
+                Username = "user3",
+                Password = "pass3"
             });
 
-            var response = await Page.GoToAsync(TestConstants.AuthenticateUrl);
+            var response = await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.Equal(HttpStatusCode.OK, response.Status);
 
             await Page.AuthenticateAsync(null);
 
-            response = await Page.GoToAsync(TestConstants.CrossProcessAuthenticateUrl);
+            response = await Page.GoToAsync(TestConstants.CrossProcessUrl + "/empty.html");
             Assert.Equal(HttpStatusCode.Unauthorized, response.Status);
         }
     }
