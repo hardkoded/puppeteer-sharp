@@ -1,20 +1,21 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace PuppeteerSharp.Tests
 {
-    public class PuppeteerBaseTest : IDisposable
+    [Collection("PuppeteerLoaderFixture collection")]
+    public class PuppeteerBaseTest : IAsyncLifetime
     {
         protected string BaseDirectory { get; set; }
         protected Browser Browser { get; set; }
 
-        protected virtual async Task InitializeAsync()
+        public virtual async Task InitializeAsync()
         {
             Browser = await PuppeteerSharp.Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.ChromiumRevision);
         }
 
-        protected virtual async Task DisposeAsync() => await Browser.CloseAsync();
+        public virtual async Task DisposeAsync() => await Browser.CloseAsync();
 
         public PuppeteerBaseTest()
         {
@@ -25,10 +26,6 @@ namespace PuppeteerSharp.Tests
             {
                 dirInfo.Create();
             }
-
-            InitializeAsync().GetAwaiter().GetResult();
         }
-
-        public void Dispose() => DisposeAsync().GetAwaiter().GetResult();
     }
 }

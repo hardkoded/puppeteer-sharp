@@ -4,6 +4,7 @@ using Xunit;
 
 namespace PuppeteerSharp.Tests.Page
 {
+    [Collection("PuppeteerLoaderFixture collection")]
     public class OfflineModeTests : PuppeteerPageBaseTest
     {
         [Fact]

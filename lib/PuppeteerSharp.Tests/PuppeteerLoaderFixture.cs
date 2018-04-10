@@ -1,31 +1,13 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using PuppeteerSharp.TestServer;
-using System;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace PuppeteerSharp.Tests
 {
-    public class PuppeteerLoaderFixture : IDisposable
+    public class PuppeteerLoaderFixture : IAsyncLifetime
     {
-        IWebHost _host;
-
-        public PuppeteerLoaderFixture()
-        {
-            SetupAsync().GetAwaiter().GetResult();
-        }
-
-        public void Dispose()
-        {
-            _host.StopAsync().GetAwaiter().GetResult();
-        }
-
-        private async Task SetupAsync()
-        {
-            var downloaderTask = Downloader.CreateDefault().DownloadRevisionAsync(TestConstants.ChromiumRevision);
-            var serverTask = StartWebServerAsync();
-
-            await Task.WhenAll(downloaderTask, serverTask);
-        }
+        private IWebHost _host;
 
         private async Task StartWebServerAsync()
         {
@@ -36,6 +18,19 @@ namespace PuppeteerSharp.Tests
             _host = builder.Build();
 
             await _host.StartAsync();
+        }
+
+        public async Task InitializeAsync()
+        {
+            var downloaderTask = Downloader.CreateDefault().DownloadRevisionAsync(TestConstants.ChromiumRevision);
+            var serverTask = StartWebServerAsync();
+
+            await Task.WhenAll(downloaderTask, serverTask);
+        }
+
+        public async Task DisposeAsync()
+        {
+            await _host.StopAsync();
         }
     }
 }
