@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace PuppeteerSharp.Tests.Page
