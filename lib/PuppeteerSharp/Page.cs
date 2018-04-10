@@ -143,7 +143,7 @@ namespace PuppeteerSharp
 
         public async Task<IEnumerable<ElementHandle>> GetElementsAsync(string selector)
             => await MainFrame.GetElementsAsync(selector);
-        
+
         public async Task<JSHandle> EvaluateExpressionHandle(string script)
         {
             var context = await MainFrame.GetExecutionContextAsync();
@@ -409,7 +409,10 @@ namespace PuppeteerSharp
 
         public async Task EmulateAsync(DeviceDescriptor options)
         {
-            throw new NotImplementedException();
+            await Task.WhenAll(
+                SetViewport(options.ViewPort),
+                SetUserAgentAsync(options.UserAgent)
+                );
         }
 
         public async Task ScreenshotAsync(string file) => await ScreenshotAsync(file, new ScreenshotOptions());
