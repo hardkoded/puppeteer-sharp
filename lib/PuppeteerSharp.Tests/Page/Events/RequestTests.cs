@@ -4,16 +4,16 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace PuppeteerSharp.Tests.Page
+namespace PuppeteerSharp.Tests.Page.Events
 {
     [Collection("PuppeteerLoaderFixture collection")]
-    public class EventsRequestTests : PuppeteerPageBaseTest
+    public class RequestTests : PuppeteerPageBaseTest
     {
         [Fact]
         public async Task ShouldFire()
         {
             List<Request> requests = new List<Request>();
-            Page.RequestCreated += (sender, eventArgs) => requests.Add(eventArgs.Request);
+            Page.RequestCreated += (sender, e) => requests.Add(e.Request);
 
             await Page.GoToAsync(TestConstants.EmptyPage);
             await FrameUtils.AttachFrame(Page, "frame1", TestConstants.EmptyPage);
