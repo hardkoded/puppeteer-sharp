@@ -12,8 +12,12 @@ namespace PuppeteerSharp.Tests.Page
             Assert.Contains("Mozilla", await Page.EvaluateFunctionAsync<string>("() => navigator.userAgent"));
             await Page.SetUserAgentAsync("foobar");
 
-            // todo: make like puppeteer
-            Assert.Equal("foobar", await Page.EvaluateFunctionAsync<string>("() => navigator.userAgent"));
+            var userAgentTask = Server.WaitForRequest("/empty.html", request => request.Headers["User-Agent"].ToString());
+            await Task.WhenAll(
+                userAgentTask,
+                Page.GoToAsync(TestConstants.EmptyPage)
+            );
+            Assert.Equal("foobar", userAgentTask.Result);
         }
     }
 }
