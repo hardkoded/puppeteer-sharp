@@ -28,7 +28,7 @@ namespace PuppeteerSharp.Tests.Page
             var button = await Page.GetElementAsync("button");
             await Page.EvaluateFunctionAsync("button => button.style.marginTop = '200px'", button);
             await button.ClickAsync();
-            Assert.Equal("Clicked", await Page.EvaluateFunctionAsync("() => result"));
+            Assert.Equal("Clicked", await Page.EvaluateFunctionAsync<string>("() => result"));
         }
     }
 }

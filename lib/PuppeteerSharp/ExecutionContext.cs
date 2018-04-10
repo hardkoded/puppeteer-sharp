@@ -68,7 +68,7 @@ namespace PuppeteerSharp
             });
         }
 
-        internal async Task<JSHandle> EvaluateFunctionHandleAsync(string script, object[] args)
+        internal async Task<JSHandle> EvaluateFunctionHandleAsync(string script, params object[] args)
         {
             if (string.IsNullOrEmpty(script))
             {
@@ -79,7 +79,7 @@ namespace PuppeteerSharp
             {
                 {"functionDeclaration", script },
                 {"executionContextId", _contextId},
-                {"arguments", FormatArguments(args)},
+                {"arguments", args.Select(FormatArgument)},
                 {"returnByValue", false},
                 {"awaitPromise", true}
             });
@@ -98,9 +98,24 @@ namespace PuppeteerSharp
             return ObjectHandleFactory(response.result);
         }
 
-        private object FormatArguments(object[] args)
+        private object FormatArgument(object arg)
         {
-            return args.Select(o => new { value = o });
+            switch (arg)
+            {
+                case double d:
+                    // no such thing as -0 in C# :)
+                    if (double.IsPositiveInfinity(d)) return new { unserializableValue = "Infinity" };
+                    if (double.IsNegativeInfinity(d)) return new { unserializableValue = "-Infinity" };
+                    if (double.IsNaN(d)) return new { unserializableValue = "NaN" };
+                    break;
+                case JSHandle objectHandle:
+                    if (objectHandle.ExecutionContext != this) throw new PuppeteerException("JSHandles can be evaluated only in the context they were created!");
+                    if (objectHandle.Disposed) throw new PuppeteerException("JSHandle is disposed!");
+                    if (objectHandle.RemoteObject.unserializableValue != null) return new { objectHandle.RemoteObject.unserializableValue };
+                    if (objectHandle.RemoteObject.objectId == null) return new { objectHandle.RemoteObject.value };
+                    return new { objectHandle.RemoteObject.objectId };
+            }
+            return new { value = arg };
         }
 
         public async Task<dynamic> QueryObjects(JSHandle prototypeHandle)
