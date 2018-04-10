@@ -474,7 +474,7 @@ namespace PuppeteerSharp
                 await _client.Connection.SendAsync("Target.closeTarget", new
                 {
                     targetId = _target.TargetId
-                });
+                }, false);
             }
         }
 
