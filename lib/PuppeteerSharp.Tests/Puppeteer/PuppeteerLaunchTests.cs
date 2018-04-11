@@ -38,6 +38,19 @@ namespace PuppeteerSharp.Tests.Puppeteer
             }
         }
 
+        [Fact]
+        public async Task ShouldWorkInRealLifeWithOptions()
+        {
+            var options = TestConstants.DefaultBrowserOptions();
+
+            using (var browser = await PuppeteerSharp.Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision))
+            using (var page = await browser.NewPageAsync())
+            {
+                var response = await page.GoToAsync("https://www.google.com", new NavigationOptions() { Timeout = 5000, WaitUntil = new[] { "networkidle0" } });
+                Assert.Equal(response.Status.ToString(), "OK");
+            }
+        }
+
         [Fact(Skip = "test is not part of v1.0.0")]
         public async Task NetworkRedirectsShouldReportSecurityDetails()
         {
