@@ -25,7 +25,7 @@ namespace PuppeteerSharp.Input
             decimal fromX = _x;
             decimal fromY = _y;
             _x = x;
-            _y = y;            
+            _y = y;
             int steps = options.ContainsKey("steps") ? (int)options["steps"] : 1;
 
             for (var i = 1; i <= steps; i++)

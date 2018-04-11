@@ -15,6 +15,7 @@ namespace PuppeteerSharp
         private string _url = string.Empty;
         private List<WaitTask> _waitTasks;
         private bool _detached;
+        private TaskCompletionSource<ElementHandle> _documentCompletionSource;
 
         public Frame(Session client, Page page, Frame parentFrame, string frameId)
         {
@@ -190,8 +191,7 @@ namespace PuppeteerSharp
         #endregion
 
         #region Private Methods
-
-        private TaskCompletionSource<ElementHandle> _documentCompletionSource;
+        
         private async Task<ElementHandle> GetDocument()
         {
             if (_documentCompletionSource == null)

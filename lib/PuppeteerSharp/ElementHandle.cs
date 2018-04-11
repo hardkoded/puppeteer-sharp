@@ -19,7 +19,7 @@ namespace PuppeteerSharp
 
         public async Task ClickAsync(Dictionary<string, object> options = null)
         {
-            var (x, y) = await GetVisibleCenterAsync();
+            var (x, y) = await VisibleCenterAsync();
             await _page.Mouse.Click(x, y, options ?? new Dictionary<string, object>());
         }
 
@@ -30,7 +30,9 @@ namespace PuppeteerSharp
 
         internal async Task<ElementHandle> GetElementAsync(string selector)
         {
-            var handle = await ExecutionContext.EvaluateFunctionHandleAsync("(element, selector) => element.querySelector(selector)", this, selector);
+            var handle = await ExecutionContext.EvaluateFunctionHandleAsync(
+                "(element, selector) => element.querySelector(selector)",
+                this, selector);
 
             var element = handle.AsElement();
             if (element != null)
@@ -47,12 +49,15 @@ namespace PuppeteerSharp
             throw new NotImplementedException();
         }
 
-        private async Task<(decimal x, decimal y)> GetVisibleCenterAsync()
+        private async Task<(decimal x, decimal y)> VisibleCenterAsync()
         {
             await ScrollIntoViewIfNeededAsync();
-            var box = await GetBoundingBoxAsync();
+            var box = await BoundingBoxAsync();
             if (box == null)
+            {
                 throw new PuppeteerException("Node is not visible");
+            }
+
             return (
                 x: box.X + (box.Width / 2),
                 y: box.Y + (box.Height / 2)
@@ -74,7 +79,7 @@ namespace PuppeteerSharp
                 throw new PuppeteerException(errorMessage);
         }
 
-        private async Task<BoundingBox> GetBoundingBoxAsync()
+        private async Task<BoundingBox> BoundingBoxAsync()
         {
             var result = await _client.SendAsync("DOM.getBoxModel", new { objectId = RemoteObject.objectId.ToString() });
 

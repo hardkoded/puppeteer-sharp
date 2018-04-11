@@ -22,11 +22,10 @@ namespace PuppeteerSharp
         private readonly FrameManager _frameManager;
         private readonly TaskQueue _screenshotTaskQueue;
         private readonly EmulationManager _emulationManager;
-        
+
         private ViewPortOptions _viewport;
         private Dictionary<string, Func<object>> _pageBindings;
 
-        internal Mouse Mouse { get; }
 
         private static readonly Dictionary<string, PaperFormat> _paperFormats = new Dictionary<string, PaperFormat> {
             {"letter", new PaperFormat {Width = 8.5m, Height = 11}},
@@ -98,12 +97,13 @@ namespace PuppeteerSharp
         public Frame MainFrame => _frameManager.MainFrame;
         public IEnumerable<Frame> Frames => _frameManager.Frames.Values;
         public string Url => MainFrame.Url;
-                
-        public Keyboard Keyboard { get; internal set; }
-        public Touchscreen Touchscreen { get; internal set; }
-        public Tracing Tracing { get; internal set; }
 
-        public static IEnumerable<string> SupportedMetrics = new List<string>
+        public Keyboard Keyboard { get; }
+        public Touchscreen Touchscreen { get; }
+        public Tracing Tracing { get; }
+        public Mouse Mouse { get; }
+
+        public static readonly IEnumerable<string> SupportedMetrics = new List<string>
         {
             "Timestamp",
             "Documents",

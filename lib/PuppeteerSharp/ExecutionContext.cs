@@ -109,10 +109,14 @@ namespace PuppeteerSharp
                     if (double.IsNaN(d)) return new { unserializableValue = "NaN" };
                     break;
                 case JSHandle objectHandle:
-                    if (objectHandle.ExecutionContext != this) throw new PuppeteerException("JSHandles can be evaluated only in the context they were created!");
-                    if (objectHandle.Disposed) throw new PuppeteerException("JSHandle is disposed!");
-                    if (objectHandle.RemoteObject.unserializableValue != null) return new { objectHandle.RemoteObject.unserializableValue };
-                    if (objectHandle.RemoteObject.objectId == null) return new { objectHandle.RemoteObject.value };
+                    if (objectHandle.ExecutionContext != this)
+                        throw new PuppeteerException("JSHandles can be evaluated only in the context they were created!");
+                    if (objectHandle.Disposed)
+                        throw new PuppeteerException("JSHandle is disposed!");
+                    if (objectHandle.RemoteObject.unserializableValue != null)
+                        return new { objectHandle.RemoteObject.unserializableValue };
+                    if (objectHandle.RemoteObject.objectId == null)
+                        return new { objectHandle.RemoteObject.value };
                     return new { objectHandle.RemoteObject.objectId };
             }
             return new { value = arg };
