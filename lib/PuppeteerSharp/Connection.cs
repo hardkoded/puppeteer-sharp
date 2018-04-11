@@ -52,7 +52,7 @@ namespace PuppeteerSharp
 
         #region Public Methods
 
-        public async Task<dynamic> SendAsync(string method, dynamic args = null, bool waitForResponse = true)
+        public async Task<dynamic> SendAsync(string method, dynamic args = null)
         {
             var id = ++_lastId;
             var message = JsonConvert.SerializeObject(new Dictionary<string, object>(){
@@ -74,14 +74,7 @@ namespace PuppeteerSharp
                 _closeMessageSent = true;
             }
 
-            if (waitForResponse)
-            {
-                return await _responses[id].Task;
-            }
-            else
-            {
-                return Task.CompletedTask;
-            }
+            return await _responses[id].Task;
         }
 
         private void QueueId(int id)
