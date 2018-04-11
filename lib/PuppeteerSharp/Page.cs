@@ -477,7 +477,7 @@ namespace PuppeteerSharp
                 });
             }
 
-            return null;
+            return Task.CompletedTask;
         }
 
         public Task<dynamic> EvaluateExpressionAsync(string script)
