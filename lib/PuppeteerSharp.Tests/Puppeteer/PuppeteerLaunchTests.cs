@@ -21,7 +21,7 @@ namespace PuppeteerSharp.Tests.Puppeteer
             using (var page = await browser.NewPageAsync())
             {
                 var response = await page.GoToAsync(TestConstants.HttpsPrefix + "/empty.html");
-                Assert.Equal(response.Status.ToString(), "OK");
+                Assert.Equal(response.Status, HttpStatusCode.OK);
             }
         }
 
@@ -34,7 +34,7 @@ namespace PuppeteerSharp.Tests.Puppeteer
             using (var page = await browser.NewPageAsync())
             {
                 var response = await page.GoToAsync("https://www.google.com");
-                Assert.Equal(response.Status.ToString(), "OK");
+                Assert.Equal(response.Status, HttpStatusCode.OK);
             }
         }
 
@@ -46,8 +46,14 @@ namespace PuppeteerSharp.Tests.Puppeteer
             using (var browser = await PuppeteerSharp.Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision))
             using (var page = await browser.NewPageAsync())
             {
-                var response = await page.GoToAsync("https://www.google.com", new NavigationOptions() { Timeout = 5000, WaitUntil = new[] { "networkidle0" } });
-                Assert.Equal(response.Status.ToString(), "OK");
+                var response = await page.GoToAsync(
+                    "https://www.google.com",
+                    new NavigationOptions()
+                    {
+                        Timeout = 5000,
+                        WaitUntil = new[] { "networkidle0" }
+                    });
+                Assert.Equal(response.Status, HttpStatusCode.OK);
             }
         }
 
@@ -153,7 +159,7 @@ namespace PuppeteerSharp.Tests.Puppeteer
             using (var page = await browser.NewPageAsync())
             {
                 var response = await page.GoToAsync(TestConstants.EmptyPage);
-                Assert.Equal(response.Status.ToString(), "OK");
+                Assert.Equal(response.Status, HttpStatusCode.OK);
 
                 await browser.CloseAsync();
 
@@ -171,7 +177,7 @@ namespace PuppeteerSharp.Tests.Puppeteer
             using (var page = await browser.NewPageAsync())
             {
                 var response = await page.GoToAsync(TestConstants.EmptyPage);
-                Assert.Equal(response.Status.ToString(), "OK");
+                Assert.Equal(response.Status, HttpStatusCode.OK);
             }
 
             Assert.True(launcher.IsChromeClosed);
