@@ -467,15 +467,17 @@ namespace PuppeteerSharp
 
         public Task<string> GetTitleAsync() => MainFrame.GetTitleAsync();
 
-        public async Task CloseAsync()
+        public Task CloseAsync()
         {
             if (!(_client?.Connection?.IsClosed ?? true))
             {
-                await _client.Connection.SendAsync("Target.closeTarget", new
+                return _client.Connection.SendAsync("Target.closeTarget", new
                 {
                     targetId = _target.TargetId
                 });
             }
+
+            return Task.CompletedTask;
         }
 
         public Task<dynamic> EvaluateExpressionAsync(string script)
@@ -780,7 +782,7 @@ namespace PuppeteerSharp
         #endregion
 
         #region IDisposable
-        public void Dispose() => CloseAsync().GetAwaiter().GetResult();
+        public void Dispose() => CloseAsync();
         #endregion
     }
 }
