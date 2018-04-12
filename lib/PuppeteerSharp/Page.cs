@@ -410,13 +410,10 @@ namespace PuppeteerSharp
             }
         }
 
-        public async Task EmulateAsync(DeviceDescriptor options)
-        {
-            await Task.WhenAll(
-                SetViewport(options.ViewPort),
-                SetUserAgentAsync(options.UserAgent)
-                );
-        }
+        public async Task EmulateAsync(DeviceDescriptor options) => await Task.WhenAll(
+            SetViewport(options.ViewPort),
+            SetUserAgentAsync(options.UserAgent)
+        );
 
         public async Task ScreenshotAsync(string file) => await ScreenshotAsync(file, new ScreenshotOptions());
 
