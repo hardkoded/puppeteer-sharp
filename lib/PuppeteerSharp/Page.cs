@@ -8,6 +8,7 @@ using System.IO;
 using System.Globalization;
 using Newtonsoft.Json.Linq;
 using System.Dynamic;
+using Newtonsoft.Json;
 using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
@@ -82,6 +83,7 @@ namespace PuppeteerSharp
         public event EventHandler<ErrorEventArgs> Error;
         public event EventHandler<MetricEventArgs> MetricsReceived;
         public event EventHandler<DialogEventArgs> Dialog;
+        public event EventHandler<ConsoleEventArgs> Console;
 
         public event EventHandler<FrameEventArgs> FrameAttached;
         public event EventHandler<FrameEventArgs> FrameDetached;
@@ -704,7 +706,7 @@ namespace PuppeteerSharp
                     Load?.Invoke(this, new EventArgs());
                     break;
                 case "Runtime.consoleAPICalled":
-                    OnConsoleAPI(e);
+                    await OnConsoleAPI(e.MessageData.ToObject<PageConsoleResponse>());
                     break;
                 case "Page.javascriptDialogOpening":
                     OnDialog(e.MessageData.ToObject<PageJavascriptDialogOpeningResponse>());
@@ -761,8 +763,37 @@ namespace PuppeteerSharp
             Dialog?.Invoke(this, new DialogEventArgs(dialog));
         }
 
-        private void OnConsoleAPI(MessageEventArgs e)
+        private async Task OnConsoleAPI(PageConsoleResponse message)
         {
+            // TODO Do we need to translate this part ?
+//            if (event.type === 'debug' && event.args.length && event.args[0].value === 'driver:page-binding') {
+//                const {name, seq, args} = JSON.parse(event.args[1].value);
+//                const result = await this._pageBindings[name](...args);
+//                const expression = helper.evaluationString(deliverResult, name, seq, result);
+//                this._client.send('Runtime.evaluate', { expression, contextId: event.executionContextId }).catch(debugError);
+//
+//                function deliverResult(name, seq, result) {
+//                    window[name]['callbacks'].get(seq)(result);
+//                    window[name]['callbacks'].delete(seq);
+//                }
+//                return;
+//            }
+            
+            if (Console?.GetInvocationList().Length == 0) {
+                foreach (var arg in message.Args)
+                {
+                    await Helper.ReleaseObject(_client, arg);
+                }
+                
+                return;
+            }
+            
+            var handles = message.Args
+                .Select(_ => (JSHandle)_frameManager.CreateJsHandle(message.ExecutionContextId, _))
+                .ToList();
+
+            var consoleMessage = new ConsoleMessage(message.Type, handles);
+            Console?.Invoke(this, new ConsoleEventArgs(consoleMessage));
         }
 
         private async Task Navigate(Session client, string url, string referrer)

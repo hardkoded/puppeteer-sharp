@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -67,13 +67,13 @@ namespace PuppeteerSharp
 
         public override string ToString()
         {
-            if (((IDictionary<string, object>)RemoteObject).ContainsKey("objectId"))
+            if (((JObject)RemoteObject)["objectId"] != null)
             {
                 var type = RemoteObject.subtype ?? RemoteObject.type;
                 return "JSHandle@" + type;
             }
 
-            return "JSHandle:" + Helper.ValueFromRemoteObject(RemoteObject);
+            return Helper.ValueFromRemoteObject(RemoteObject);
         }
     }
 }
