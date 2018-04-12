@@ -115,7 +115,7 @@ namespace PuppeteerSharp
                 {
                     Console.WriteLine($"INTERNAL ERROR: missing context with id = {contextPayload.Id}");
                 }
-                if (remoteObject.Subtype == "node")
+                if (remoteObject.subtype == "node")
                 {
                     return new ElementHandle(storedContext, _client, remoteObject, _page);
                 }
