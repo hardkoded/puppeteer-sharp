@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>0.3.2</PackageVersion>
+    <PackageVersion>0.3.3</PackageVersion>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
@@ -12,11 +12,12 @@
     <Title>PuppeteerSharp</Title>
     <Description>Headless Chrome .NET API</Description>
     <PackageId>PuppeteerSharp</PackageId>
-    <PackageReleaseNotes>* 0.3.2: Frame/FrameManager and Page redirect fixes
-* 0.3.1 : .NET Framework Support
-* 0.3.0 : Process improvements, User data dir support
-* 0.1.0 : PDF and Screenshots support</PackageReleaseNotes>
-    <ReleaseVersion>0.3.2</ReleaseVersion>
+    <PackageReleaseNotes>* 0.3.3: Page.Dispose fixes. NavigationOptions properties were made public. Several Page features are included as pre-release.
+* 0.3.2: Frame/FrameManager and Page redirect fixes
+* 0.3.1: .NET Framework Support
+* 0.3.0: Process improvements, User data dir support
+* 0.1.0: PDF and Screenshots support</PackageReleaseNotes>
+    <ReleaseVersion>0.3.3</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
   <ItemGroup>
