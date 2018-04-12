@@ -25,10 +25,7 @@ namespace PuppeteerSharp
             Args = args;
         }
 
-        public string Text()
-        {
-            return string.Join(" ", Args);
-        }
+        public string Text() => string.Join(" ", Args);
 
         private static ConsoleType GetConsoleType(string consoleType)
         {
