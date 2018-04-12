@@ -20,7 +20,6 @@ namespace PuppeteerSharp
         private FrameManager _frameManager;
         private TaskQueue _screenshotTaskQueue;
         private EmulationManager _emulationManager;
-        private ViewPortOptions _viewport;
         private Mouse _mouse;
         private Dictionary<string, Func<object>> _pageBindings;
         private const int DefaultNavigationTimeout = 30000;
@@ -99,6 +98,7 @@ namespace PuppeteerSharp
         public Keyboard Keyboard { get; internal set; }
         public Touchscreen Touchscreen { get; internal set; }
         public Tracing Tracing { get; internal set; }
+        public ViewPortOptions Viewport { get; private set; }
 
         public static IEnumerable<string> SupportedMetrics = new List<string>
         {
@@ -399,7 +399,7 @@ namespace PuppeteerSharp
         public async Task SetViewport(ViewPortOptions viewport)
         {
             var needsReload = await _emulationManager.EmulateViewport(_client, viewport);
-            _viewport = viewport;
+            Viewport = viewport;
 
             if (needsReload)
             {
@@ -582,9 +582,9 @@ namespace PuppeteerSharp
                     Scale = 1
                 };
 
-                var mobile = _viewport.IsMobile;
-                var deviceScaleFactor = _viewport.DeviceScaleFactor;
-                var landscape = _viewport.IsLandscape;
+                var mobile = Viewport.IsMobile;
+                var deviceScaleFactor = Viewport.DeviceScaleFactor;
+                var landscape = Viewport.IsLandscape;
                 var screenOrientation = landscape ?
                     new ScreenOrientation
                     {
@@ -644,7 +644,7 @@ namespace PuppeteerSharp
 
             if (options != null && options.FullPage)
             {
-                await SetViewport(_viewport);
+                await SetViewport(Viewport);
             }
 
             var buffer = Convert.FromBase64String(result.GetValue("data").Value<string>());
