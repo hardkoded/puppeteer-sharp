@@ -49,9 +49,11 @@ namespace PuppeteerSharp.Tests.Page
 
             await Page.GoToAsync(TestConstants.ServerUrl + "/mobile.html");
             Assert.False(await Page.EvaluateExpressionAsync<bool>("'ontouchstart' in window"));
+
             await Page.SetViewport(TestConstants.IPhone.ViewPort);
             Assert.True(await Page.EvaluateExpressionAsync<bool>("'ontouchstart' in window"));
             Assert.Equal("Recieved touch", await Page.EvaluateFunctionAsync<string>(dispatchTouch));
+
             await Page.SetViewport(new ViewPortOptions { Width = 100, Height = 100 });
             Assert.False(await Page.EvaluateExpressionAsync<bool>("'ontouchstart' in window"));
         }
