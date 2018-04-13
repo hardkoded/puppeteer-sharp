@@ -22,10 +22,8 @@ namespace PuppeteerSharp
         private readonly FrameManager _frameManager;
         private readonly TaskQueue _screenshotTaskQueue;
         private readonly EmulationManager _emulationManager;
-
-        private ViewPortOptions _viewport;
+        
         private Dictionary<string, Func<object>> _pageBindings;
-
 
         private static readonly Dictionary<string, PaperFormat> _paperFormats = new Dictionary<string, PaperFormat> {
             {"letter", new PaperFormat {Width = 8.5m, Height = 11}},
