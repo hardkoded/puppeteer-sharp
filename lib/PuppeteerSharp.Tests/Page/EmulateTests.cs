@@ -9,10 +9,8 @@ namespace PuppeteerSharp.Tests.Page
         [Fact]
         public async Task ShouldWork()
         {
-            var iPhone = DeviceDescriptors.Get(DeviceDescriptorName.IPhone6);
-
             await Page.GoToAsync(TestConstants.ServerUrl + "/mobile.html");
-            await Page.EmulateAsync(iPhone);
+            await Page.EmulateAsync(TestConstants.IPhone);
 
             Assert.Equal(375, await Page.EvaluateExpressionAsync<int>("window.innerWidth"));
             Assert.Contains("Safari", await Page.EvaluateExpressionAsync<string>("navigator.userAgent"));
@@ -21,9 +19,7 @@ namespace PuppeteerSharp.Tests.Page
         [Fact]
         public async Task ShouldSupportClicking()
         {
-            var iPhone = DeviceDescriptors.Get(DeviceDescriptorName.IPhone6);
-
-            await Page.EmulateAsync(iPhone);
+            await Page.EmulateAsync(TestConstants.IPhone);
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
             var button = await Page.GetElementAsync("button");
             await Page.EvaluateFunctionAsync("button => button.style.marginTop = '200px'", button);
