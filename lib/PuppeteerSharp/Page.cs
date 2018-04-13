@@ -765,20 +765,6 @@ namespace PuppeteerSharp
 
         private async Task OnConsoleAPI(PageConsoleResponse message)
         {
-            // TODO Do we need to translate this part ?
-//            if (event.type === 'debug' && event.args.length && event.args[0].value === 'driver:page-binding') {
-//                const {name, seq, args} = JSON.parse(event.args[1].value);
-//                const result = await this._pageBindings[name](...args);
-//                const expression = helper.evaluationString(deliverResult, name, seq, result);
-//                this._client.send('Runtime.evaluate', { expression, contextId: event.executionContextId }).catch(debugError);
-//
-//                function deliverResult(name, seq, result) {
-//                    window[name]['callbacks'].get(seq)(result);
-//                    window[name]['callbacks'].delete(seq);
-//                }
-//                return;
-//            }
-            
             if (Console?.GetInvocationList().Length == 0) {
                 foreach (var arg in message.Args)
                 {
