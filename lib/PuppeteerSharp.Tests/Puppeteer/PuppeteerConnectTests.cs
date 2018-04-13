@@ -51,10 +51,8 @@ namespace PuppeteerSharp.Tests.Puppeteer
                     BrowserWSEndpoint = originalBrowser.WebSocketEndpoint
                 };
 
-                using (var page = await originalBrowser.NewPageAsync())
-                {
-                    await page.GoToAsync(TestConstants.CrossProcessHttpPrefix + "/frames/nested-frames.html");
-                }
+                var page = await originalBrowser.NewPageAsync();
+                await page.GoToAsync(TestConstants.CrossProcessHttpPrefix + "/frames/nested-frames.html");
 
                 await originalBrowser.DisconnectAsync();
 
