@@ -14,17 +14,20 @@ namespace PuppeteerSharp
 {
     public class Page : IDisposable
     {
-        private Session _client;
-        private bool _ignoreHTTPSErrors;
-        private NetworkManager _networkManager;
-        private FrameManager _frameManager;
-        private TaskQueue _screenshotTaskQueue;
-        private EmulationManager _emulationManager;
-        private Mouse _mouse;
-        private Dictionary<string, Func<object>> _pageBindings;
         private const int DefaultNavigationTimeout = 30000;
 
-        private static Dictionary<string, PaperFormat> _paperFormats = new Dictionary<string, PaperFormat> {
+        private readonly Session _client;
+        private readonly bool _ignoreHTTPSErrors;
+        private readonly NetworkManager _networkManager;
+        private readonly FrameManager _frameManager;
+        private readonly TaskQueue _screenshotTaskQueue;
+        private readonly EmulationManager _emulationManager;
+
+        private ViewPortOptions _viewport;
+        private Dictionary<string, Func<object>> _pageBindings;
+
+
+        private static readonly Dictionary<string, PaperFormat> _paperFormats = new Dictionary<string, PaperFormat> {
             {"letter", new PaperFormat {Width = 8.5m, Height = 11}},
             {"legal", new PaperFormat {Width = 8.5m, Height = 14}},
             {"tabloid", new PaperFormat {Width = 11, Height = 17}},
@@ -38,7 +41,7 @@ namespace PuppeteerSharp
             {"a6", new PaperFormat {Width = 4.13m, Height = 5.83m }},
         };
 
-        private static Dictionary<string, decimal> _unitToPixels = new Dictionary<string, decimal> {
+        private static readonly Dictionary<string, decimal> _unitToPixels = new Dictionary<string, decimal> {
             {"px", 1},
             {"in", 96},
             {"cm", 37.8m},
@@ -51,7 +54,7 @@ namespace PuppeteerSharp
             _client = client;
             _target = target;
             Keyboard = new Keyboard(client);
-            _mouse = new Mouse(client, Keyboard);
+            Mouse = new Mouse(client, Keyboard);
             Touchscreen = new Touchscreen(client, Keyboard);
             _frameManager = new FrameManager(client, frameTree, this);
             _networkManager = new NetworkManager(client, _frameManager);
@@ -95,12 +98,13 @@ namespace PuppeteerSharp
         public IEnumerable<Frame> Frames => _frameManager.Frames.Values;
         public string Url => MainFrame.Url;
 
-        public Keyboard Keyboard { get; internal set; }
-        public Touchscreen Touchscreen { get; internal set; }
-        public Tracing Tracing { get; internal set; }
+        public Keyboard Keyboard { get; }
+        public Touchscreen Touchscreen { get; }
+        public Tracing Tracing { get; }
+        public Mouse Mouse { get; }
         public ViewPortOptions Viewport { get; private set; }
 
-        public static IEnumerable<string> SupportedMetrics = new List<string>
+        public static readonly IEnumerable<string> SupportedMetrics = new List<string>
         {
             "Timestamp",
             "Documents",
@@ -407,6 +411,11 @@ namespace PuppeteerSharp
             }
         }
 
+        public async Task EmulateAsync(DeviceDescriptor options) => await Task.WhenAll(
+            SetViewport(options.ViewPort),
+            SetUserAgentAsync(options.UserAgent)
+        );
+
         public async Task ScreenshotAsync(string file) => await ScreenshotAsync(file, new ScreenshotOptions());
 
         public async Task ScreenshotAsync(string file, ScreenshotOptions options)
@@ -491,6 +500,9 @@ namespace PuppeteerSharp
 
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
             => _frameManager.MainFrame.EvaluateFunctionAsync<T>(script, args);
+
+        public async Task SetUserAgentAsync(string userAgent)
+            => await _networkManager.SetUserAgentAsync(userAgent);
 
         public async Task SetExtraHttpHeadersAsync(Dictionary<string, string> headers)
             => await _networkManager.SetExtraHTTPHeadersAsync(headers);
