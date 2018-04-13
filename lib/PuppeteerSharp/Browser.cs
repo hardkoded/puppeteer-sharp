@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp
 {
     public class Browser : IDisposable
     {
-        public Browser(Connection connection, LaunchOptions options, Func<Task> closeCallBack)
+        public Browser(Connection connection, BrowserOptions options, Func<Task> closeCallBack)
         {
             Connection = connection;
             IgnoreHTTPSErrors = options.IgnoreHTTPSErrors;
@@ -68,6 +69,12 @@ namespace PuppeteerSharp
             return await target.Page();
         }
 
+        public async Task<IEnumerable<Page>> Pages()
+        {
+            return (await Task.WhenAll(this._targets.Select(x => x.Value.Page())))
+                .Where(x => x != null);
+        }
+
         internal void ChangeTarget(TargetInfo targetInfo)
         {
             TargetChanged?.Invoke(this, new TargetChangedArgs()
@@ -82,6 +89,12 @@ namespace PuppeteerSharp
             return version.product.ToString();
         }
 
+        public Task DisconnectAsync()
+        {
+            Connection.Dispose();
+            return Task.CompletedTask;
+        }
+
         public async Task CloseAsync()
         {
             if (IsClosed)
@@ -92,7 +105,7 @@ namespace PuppeteerSharp
             IsClosed = true;
 
             await _closeCallBack();
-            Connection.Dispose();
+            await DisconnectAsync();
             Closed?.Invoke(this, new EventArgs());
         }
 
@@ -165,7 +178,7 @@ namespace PuppeteerSharp
 
         }
 
-        internal static async Task<Browser> CreateAsync(Connection connection, LaunchOptions options,
+        internal static async Task<Browser> CreateAsync(Connection connection, BrowserOptions options,
                                                         Func<Task> closeCallBack)
         {
             var browser = new Browser(connection, options, closeCallBack);

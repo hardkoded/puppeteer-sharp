@@ -169,6 +169,28 @@ namespace PuppeteerSharp
 
         }
         
+        /// <summary>
+        /// Connects to an existing browser.
+        /// </summary>
+        /// <param name="options">Options for connecting.</param>
+        /// <returns>A connected browser.</returns>
+        public async Task<Browser> ConnectAsync(ConnectOptions options)
+        {
+            try
+            {
+                var connectionDelay = options.SlowMo;
+                var keepAliveInterval = options.KeepAliveInterval;
+
+                _connection = await Connection.Create(options.BrowserWSEndpoint, connectionDelay, keepAliveInterval);
+
+                return await Browser.CreateAsync(_connection, options, () => Task.CompletedTask);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to create connection", ex);
+            }
+        }
+
         public async Task TryDeleteUserDataDir(int times = 10, TimeSpan? delay = null)
         {
             if (!IsChromeClosed)
@@ -225,7 +247,7 @@ namespace PuppeteerSharp
         #endregion
 
         #region Private methods
-        
+
         private Task<string> WaitForEndpoint(Process chromeProcess, int timeout, bool dumpio)
         {
             var taskWrapper = new TaskCompletionSource<string>();
@@ -333,7 +355,6 @@ namespace PuppeteerSharp
             }
 
             await _waitForChromeToClose.Task;
-
         }
 
         private void ForceKillChrome()
@@ -351,7 +372,6 @@ namespace PuppeteerSharp
                 // swallow
             }
         }
-
 
         private static void SetEnvVariables(IDictionary<string, string> environment, IDictionary<string, string> customEnv,
                                             IDictionary realEnv)

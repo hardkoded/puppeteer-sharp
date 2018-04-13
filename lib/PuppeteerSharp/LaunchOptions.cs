@@ -3,12 +3,8 @@ using System.Collections.Generic;
 
 namespace PuppeteerSharp
 {
-    public class LaunchOptions
-    {
-        public bool AppMode { get; set; }
-
-        public bool IgnoreHTTPSErrors { get; set; }
-        
+    public class LaunchOptions : BrowserOptions
+    {        
         public bool Headless { get; set; } = true;
 
         public string ExecutablePath { get; set; }
