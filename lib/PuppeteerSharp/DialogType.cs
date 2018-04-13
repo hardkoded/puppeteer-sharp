@@ -1,10 +1,14 @@
-﻿namespace PuppeteerSharp
+﻿using System.Runtime.Serialization;
+
+namespace PuppeteerSharp
 {
     public enum DialogType
     {
         Alert,
         Prompt,
         Confirm,
-        BeforeUnload
+        
+        [EnumMember(Value = "beforeunload")]
+        BeforeUnload,
     }
 }
