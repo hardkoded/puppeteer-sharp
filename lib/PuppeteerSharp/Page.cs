@@ -15,7 +15,7 @@ namespace PuppeteerSharp
 {
     public class Page : IDisposable
     {
-        private const int DefaultNavigationTimeout = 30000;
+        public int DefaultNavigationTimeout { get; set; } = 30000;
 
         private readonly Session _client;
         private readonly bool _ignoreHTTPSErrors;
