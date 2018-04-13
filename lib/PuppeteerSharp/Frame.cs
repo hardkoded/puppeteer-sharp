@@ -15,6 +15,7 @@ namespace PuppeteerSharp
         private string _url = string.Empty;
         private List<WaitTask> _waitTasks;
         private bool _detached;
+        private TaskCompletionSource<ElementHandle> _documentCompletionSource;
 
         public Frame(Session client, Page page, Frame parentFrame, string frameId)
         {
@@ -75,9 +76,11 @@ namespace PuppeteerSharp
 
         public Task<ExecutionContext> GetExecutionContextAsync() => ContextResolveTaskWrapper.Task;
 
-        internal Task<ElementHandle> GetElementAsync(string selector)
+        internal async Task<ElementHandle> GetElementAsync(string selector)
         {
-            throw new NotImplementedException();
+            var document = await GetDocument();
+            var value = await document.GetElementAsync(selector);
+            return value;
         }
 
         internal Task<object> Eval(string selector, Func<object> pageFunction, object[] args)
@@ -135,7 +138,7 @@ namespace PuppeteerSharp
                 document.close();
             }", html);
         }
-        
+
         internal async Task<string> GetTitleAsync() => await EvaluateExpressionAsync<string>("document.title");
 
         internal void OnLifecycleEvent(string loaderId, string name)
@@ -183,6 +186,22 @@ namespace PuppeteerSharp
                 _parentFrame.ChildFrames.Remove(this);
             }
             _parentFrame = null;
+        }
+
+        #endregion
+
+        #region Private Methods
+        
+        private async Task<ElementHandle> GetDocument()
+        {
+            if (_documentCompletionSource == null)
+            {
+                _documentCompletionSource = new TaskCompletionSource<ElementHandle>();
+                var context = await GetExecutionContextAsync();
+                var document = await context.EvaluateExpressionHandleAsync("document");
+                _documentCompletionSource.SetResult(document.AsElement());
+            }
+            return await _documentCompletionSource.Task;
         }
 
         #endregion

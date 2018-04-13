@@ -7,7 +7,8 @@ namespace PuppeteerSharp
     public class JSHandle
     {
         private ExecutionContext _context;
-        private Session _client;
+        protected readonly Session _client;
+
         public JSHandle(ExecutionContext context, Session client, object remoteObject)
         {
             _context = context;
@@ -52,7 +53,7 @@ namespace PuppeteerSharp
             return Helper.ValueFromRemoteObject(RemoteObject);
         }
 
-        public ElementHandle AsElement() => null;
+        public virtual ElementHandle AsElement() => null;
 
         public async Task Dispose()
         {

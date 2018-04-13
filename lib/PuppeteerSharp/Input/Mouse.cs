@@ -20,6 +20,8 @@ namespace PuppeteerSharp.Input
 
         public async Task Move(decimal x, decimal y, Dictionary<string, object> options = null)
         {
+            options = options ?? new Dictionary<string, object>();
+
             decimal fromX = _x;
             decimal fromY = _y;
             _x = x;
@@ -40,6 +42,8 @@ namespace PuppeteerSharp.Input
 
         public async Task Click(decimal x, decimal y, Dictionary<string, object> options)
         {
+            options = options ?? new Dictionary<string, object>();
+
             await Move(x, y);
             await Down(options);
 
@@ -52,6 +56,8 @@ namespace PuppeteerSharp.Input
 
         public async Task Down(Dictionary<string, object> options)
         {
+            options = options ?? new Dictionary<string, object>();
+
             _button = options.ContainsKey("button") ? options["button"].ToString() : "left";
 
             await _client.SendAsync("Input.dispatchMouseEvent", new Dictionary<string, object>(){
@@ -66,6 +72,8 @@ namespace PuppeteerSharp.Input
 
         public async Task Up(Dictionary<string, object> options)
         {
+            options = options ?? new Dictionary<string, object>();
+
             _button = "none";
 
             await _client.SendAsync("Input.dispatchMouseEvent", new Dictionary<string, object>(){
