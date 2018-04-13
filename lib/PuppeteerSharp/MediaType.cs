@@ -8,9 +8,7 @@ namespace PuppeteerSharp
     public enum MediaType
     {
         Print,
-
         Screen,
-
         [EnumMember(Value = "")]
         None
     }
