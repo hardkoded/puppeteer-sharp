@@ -123,7 +123,6 @@ namespace PuppeteerSharp
 
         private void OnExecutionContextCreated(ContextPayload contextPayload)
         {
-
             var context = new ExecutionContext(_client, contextPayload, 
                 remoteObject => CreateJsHandle(contextPayload.Id, remoteObject));
 
