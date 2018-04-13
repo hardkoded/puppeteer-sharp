@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace PuppeteerSharp
+﻿namespace PuppeteerSharp
 {
-    internal class TargetClosedException : PuppeteerException
+    public class TargetClosedException : PuppeteerException
     {
         public TargetClosedException(string message) : base(message)
         {
