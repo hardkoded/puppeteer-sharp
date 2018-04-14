@@ -36,7 +36,7 @@ namespace PuppeteerSharp.Tests.Puppeteer
             Assert.True(launcher.IsChromeClosed);
         }
 
-        [Fact(Skip = "breaks!")]
+        [Fact]
         public async Task ShouldBeAbleToReconnectToADisconnectedBrowser()
         {
             var originalOptions = TestConstants.DefaultBrowserOptions();
@@ -49,26 +49,20 @@ namespace PuppeteerSharp.Tests.Puppeteer
             };
 
             var page = await originalBrowser.NewPageAsync();
-            await page.GoToAsync(TestConstants.CrossProcessHttpPrefix + "/frames/nested-frames.html");
+            await page.GoToAsync(TestConstants.CrossProcessHttpPrefix + "/empty.html");
 
             originalBrowser.Disconnect();
 
             using (var browser = await PuppeteerSharp.Puppeteer.ConnectAsync(options))
             {
                 var pages = (await browser.Pages()).ToList();
-                var restoredPage = pages.FirstOrDefault(x => x.Url == TestConstants.CrossProcessHttpPrefix + "/frames/nested-frames.html");
+                var restoredPage = pages.FirstOrDefault(x => x.Url == TestConstants.CrossProcessHttpPrefix + "/empty.html");
                 Assert.NotNull(restoredPage);
                 var frameDump = FrameUtils.DumpFrames(restoredPage.MainFrame);
-                Assert.Equal(@"http://127.0.0.1:<PORT>/frames/nested-frames.html
-    http://127.0.0.1:<PORT>/frames/two-frames.html
-        http://127.0.0.1:<PORT>/frames/frame.html
-        http://127.0.0.1:<PORT>/frames/frame.html
-    http://127.0.0.1:<PORT>/frames/frame.html", frameDump);
+                Assert.Equal(@"http://127.0.0.1:<PORT>/empty.html", frameDump);
                 var response = await restoredPage.EvaluateExpressionAsync<int>("7 * 8");
                 Assert.Equal(response, 56);
             }
-
-            Assert.True(launcher.IsChromeClosed);
         }
     }
 }

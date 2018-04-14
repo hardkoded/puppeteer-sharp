@@ -9,9 +9,11 @@ using System.Globalization;
 using Newtonsoft.Json.Linq;
 using System.Dynamic;
 using PuppeteerSharp.Messaging;
+using System.Diagnostics;
 
 namespace PuppeteerSharp
 {
+    [DebuggerDisplay("Page {Url}")]
     public class Page : IDisposable
     {
         private const int DefaultNavigationTimeout = 30000;

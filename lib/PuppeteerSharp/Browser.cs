@@ -69,11 +69,9 @@ namespace PuppeteerSharp
             return await target.Page();
         }
 
-        public async Task<IEnumerable<Page>> Pages()
-        {
-            return (await Task.WhenAll(this._targets.Select(x => x.Value.Page())))
+        public async Task<IEnumerable<Page>> Pages() =>
+            (await Task.WhenAll(this._targets.Select(x => x.Value.Page())))
                 .Where(x => x != null);
-        }
 
         internal void ChangeTarget(TargetInfo targetInfo)
         {
@@ -89,10 +87,7 @@ namespace PuppeteerSharp
             return version.product.ToString();
         }
 
-        public void Disconnect()
-        {
-            Connection.Dispose();
-        }
+        public void Disconnect() => Connection.Dispose();
 
         public async Task CloseAsync()
         {

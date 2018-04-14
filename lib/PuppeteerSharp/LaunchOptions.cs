@@ -13,6 +13,9 @@ namespace PuppeteerSharp
         /// </summary>
         public bool IgnoreHTTPSErrors { get; set; }
 
+        /// <summary>
+        /// If set to true, sets Headless = false, otherwise, enables automation.
+        /// </summary>
         public bool AppMode { get; set; }
 
         /// <summary>
@@ -60,8 +63,14 @@ namespace PuppeteerSharp
         /// </summary>
         public bool Devtools { get; set; }
 
+        /// <summary>
+        /// Keep alive value.
+        /// </summary>
         public int KeepAliveInterval { get; set; } = 30;
 
+        /// <summary>
+        /// Logs process counts after launching chrome and after exiting.
+        /// </summary>
         public bool LogProcess { get; set; }
     }
 }

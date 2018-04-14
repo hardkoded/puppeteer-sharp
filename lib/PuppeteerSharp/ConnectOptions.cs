@@ -10,6 +10,9 @@
         /// </summary>
         public bool IgnoreHTTPSErrors { get; set; }
 
+        /// <summary>
+        /// If set to true, sets Headless = false, otherwise, enables automation.
+        /// </summary>
         public bool AppMode { get; set; }
 
         /// <summary>
