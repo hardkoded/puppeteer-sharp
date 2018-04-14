@@ -297,12 +297,16 @@ namespace PuppeteerSharp
             var watcher = new NavigatorWatcher(_frameManager, mainFrame, timeout, options, cts);
             var navigateTask = Navigate(_client, url, referrer);
 
-            await navigateTask;
-            var exception = navigateTask.Exception?.InnerException;
+            await Task.WhenAny(
+                watcher.NavigationTask,
+                navigateTask);
+
+            AggregateException exception = navigateTask.Exception;
+
             if (exception == null)
             {
-                var navigation = await watcher.NavigationTask;
-                exception = navigation.Exception?.InnerException;
+                cts.Cancel();
+                exception = (await watcher.NavigationTask).Exception;
             }
 
             watcher.Cancel();
@@ -310,7 +314,7 @@ namespace PuppeteerSharp
 
             if (exception != null)
             {
-                throw new NavigationException(exception.Message, exception);
+                throw new NavigationException(exception.InnerException.Message, exception.InnerException);
             }
 
             Request request = null;

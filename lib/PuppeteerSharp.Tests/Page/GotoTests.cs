@@ -131,6 +131,7 @@ namespace PuppeteerSharp.Tests.Page
         public async Task ShouldWaitForNetworkIdleToSucceedNavigation()
         {
             var responses = new List<TaskCompletionSource<Func<HttpResponse, Task>>>();
+            var firstFetchActions = new TaskCompletionSource<bool>();
             foreach (var url in new[] {
                 "/fetch-request-a.js",
                 "/fetch-request-b.js",
@@ -141,6 +142,7 @@ namespace PuppeteerSharp.Tests.Page
                 {
                     var taskCompletion = new TaskCompletionSource<Func<HttpResponse, Task>>();
                     responses.Add(taskCompletion);
+                    firstFetchActions.TrySetResult(true);
                     var actionResponse = await taskCompletion.Task;
                     await actionResponse(context.Response);
                 });
@@ -176,6 +178,8 @@ namespace PuppeteerSharp.Tests.Page
             await initialFetchResourcesRequested;
 
             Assert.False(navigationFinished);
+
+            await firstFetchActions.Task;
 
             foreach (var actionResponse in responses)
             {
