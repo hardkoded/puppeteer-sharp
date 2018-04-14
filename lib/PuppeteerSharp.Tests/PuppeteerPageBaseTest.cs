@@ -1,20 +1,20 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Xunit;
 
 namespace PuppeteerSharp.Tests
 {
+    [Collection("PuppeteerLoaderFixture collection")]
     public class PuppeteerPageBaseTest : PuppeteerBaseTest
     {
         protected PuppeteerSharp.Page Page { get; set; }
 
-        protected override async Task InitializeAsync()
+        public override async Task InitializeAsync()
         {
             await base.InitializeAsync();
             Page = await Browser.NewPageAsync();
         }
 
-        protected override async Task DisposeAsync()
+        public override async Task DisposeAsync()
         {
             await Page.CloseAsync();
             await base.DisposeAsync();
