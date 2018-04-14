@@ -60,6 +60,17 @@ namespace PuppeteerSharp
         }
 
         #region Public methods
+        /// <summary>
+        /// The method launches a browser instance with given arguments. The browser will be closed when the Browser is disposed.
+        /// </summary>
+        /// <param name="options">Options for launching Chrome</param>
+        /// <param name="chromiumRevision">The revision of Chrome to launch.</param>
+        /// <returns>A connected browser.</returns>
+        /// <remarks>
+        /// See <a href="https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/">this article</a>
+        /// for a description of the differences between Chromium and Chrome.
+        /// <a href="https://chromium.googlesource.com/chromium/src/+/lkcr/docs/chromium_browser_vs_google_chrome.md">This article</a> describes some differences for Linux users.
+        /// </remarks>
         public async Task<Browser> LaunchAsync(LaunchOptions options, int chromiumRevision)
         {
             var chromeArguments = new List<string>(DefaultArgs);
@@ -170,7 +181,7 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// This methods attaches Puppeteer to an existing Chromium instance.
+        /// Attaches Puppeteer to an existing Chromium instance. The browser will be closed when the Browser is disposed.
         /// </summary>
         /// <param name="options">Options for connecting.</param>
         /// <returns>A connected browser.</returns>
