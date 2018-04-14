@@ -62,16 +62,20 @@ namespace PuppeteerSharp.Tests.Page
         [Fact]
         public async Task ShouldFailWhenExceedingMaximumNavigationTimeout()
         {
+            Server.SetRoute("/empty.html", context => Task.Delay(-1));
+
             var exception = await Assert.ThrowsAnyAsync<Exception>(async ()
-                => await Page.GoToAsync(TestConstants.MaximumNavigationTimeout, new NavigationOptions { Timeout = 1 }));
+                => await Page.GoToAsync(TestConstants.EmptyPage, new NavigationOptions { Timeout = 1 }));
             Assert.Contains("Navigation Timeout Exceeded: 1ms", exception.Message);
         }
 
         [Fact]
         public async Task ShouldFailWhenExceedingDefaultMaximumNavigationTimeout()
         {
+            Server.SetRoute("/empty.html", context => Task.Delay(-1));
+
             Page.DefaultNavigationTimeout = 1;
-            var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await Page.GoToAsync(TestConstants.MaximumNavigationTimeout));
+            var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await Page.GoToAsync(TestConstants.EmptyPage));
             Assert.Contains("Navigation Timeout Exceeded: 1ms", exception.Message);
         }
 

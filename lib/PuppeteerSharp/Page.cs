@@ -23,10 +23,8 @@ namespace PuppeteerSharp
         private readonly FrameManager _frameManager;
         private readonly TaskQueue _screenshotTaskQueue;
         private readonly EmulationManager _emulationManager;
-
-        private ViewPortOptions _viewport;
+        
         private Dictionary<string, Func<object>> _pageBindings;
-
 
         private static readonly Dictionary<string, PaperFormat> _paperFormats = new Dictionary<string, PaperFormat> {
             {"letter", new PaperFormat {Width = 8.5m, Height = 11}},
@@ -103,6 +101,7 @@ namespace PuppeteerSharp
         public Touchscreen Touchscreen { get; }
         public Tracing Tracing { get; }
         public Mouse Mouse { get; }
+        public ViewPortOptions Viewport { get; private set; }
 
         public static readonly IEnumerable<string> SupportedMetrics = new List<string>
         {
@@ -402,10 +401,13 @@ namespace PuppeteerSharp
         public async Task SetJavaScriptEnabledAsync(bool enabled)
             => await _client.SendAsync("Emulation.setScriptExecutionDisabled", new { value = !enabled });
 
+        public async Task EmulateMediaAsync(MediaType media)
+            => await _client.SendAsync("Emulation.setEmulatedMedia", new { media });
+
         public async Task SetViewport(ViewPortOptions viewport)
         {
             var needsReload = await _emulationManager.EmulateViewport(_client, viewport);
-            _viewport = viewport;
+            Viewport = viewport;
 
             if (needsReload)
             {
@@ -596,9 +598,9 @@ namespace PuppeteerSharp
                     Scale = 1
                 };
 
-                var mobile = _viewport.IsMobile;
-                var deviceScaleFactor = _viewport.DeviceScaleFactor;
-                var landscape = _viewport.IsLandscape;
+                var mobile = Viewport.IsMobile;
+                var deviceScaleFactor = Viewport.DeviceScaleFactor;
+                var landscape = Viewport.IsLandscape;
                 var screenOrientation = landscape ?
                     new ScreenOrientation
                     {
@@ -658,7 +660,7 @@ namespace PuppeteerSharp
 
             if (options != null && options.FullPage)
             {
-                await SetViewport(_viewport);
+                await SetViewport(Viewport);
             }
 
             var buffer = Convert.FromBase64String(result.GetValue("data").Value<string>());

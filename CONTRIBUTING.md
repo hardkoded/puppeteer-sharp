@@ -36,6 +36,7 @@ information on pull requests.
 
 Though this list will change over time, these are the things to consider now:
  * [We are team spaces](https://www.youtube.com/watch?v=SsoOG6ZeyUI).
+ * Every public API should have an XML documentation.
  * Try to follow the current style.
  * Don’t reinvent the wheel.
 
@@ -45,6 +46,5 @@ Don’t worry about commit messages or about how many commits your PR has. [Your
 
 ## Writing Tests
 
-Every feature should be accompanied by a test.
-
-Every public api event/method should be accompanied by a test.
+* Every feature should be accompanied by a test.
+* Every public api event/method should be accompanied by a test.
