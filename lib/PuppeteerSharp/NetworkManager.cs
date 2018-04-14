@@ -270,7 +270,12 @@ namespace PuppeteerSharp
 
         private void HandleRequestStart(string requestId, string interceptionId, string url, string resourceType, Payload requestPayload, string frameId)
         {
-            _frameManager.Frames.TryGetValue(frameId ?? "", out var frame);
+            Frame frame = null;
+
+            if (!string.IsNullOrEmpty(frameId))
+            {
+                _frameManager.Frames.TryGetValue(frameId, out frame);
+            }
 
             var request = new Request(_client, requestId, interceptionId, _userRequestInterceptionEnabled, url,
                                       resourceType, requestPayload, frame);

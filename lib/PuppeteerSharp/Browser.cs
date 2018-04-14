@@ -8,7 +8,7 @@ namespace PuppeteerSharp
 {
     public class Browser : IDisposable
     {
-        public Browser(Connection connection, BrowserOptions options, Func<Task> closeCallBack)
+        public Browser(Connection connection, IBrowserOptions options, Func<Task> closeCallBack)
         {
             Connection = connection;
             IgnoreHTTPSErrors = options.IgnoreHTTPSErrors;
@@ -89,10 +89,9 @@ namespace PuppeteerSharp
             return version.product.ToString();
         }
 
-        public Task DisconnectAsync()
+        public void Disconnect()
         {
             Connection.Dispose();
-            return Task.CompletedTask;
         }
 
         public async Task CloseAsync()
@@ -105,7 +104,7 @@ namespace PuppeteerSharp
             IsClosed = true;
 
             await _closeCallBack();
-            await DisconnectAsync();
+            Disconnect();
             Closed?.Invoke(this, new EventArgs());
         }
 
@@ -178,7 +177,7 @@ namespace PuppeteerSharp
 
         }
 
-        internal static async Task<Browser> CreateAsync(Connection connection, BrowserOptions options,
+        internal static async Task<Browser> CreateAsync(Connection connection, IBrowserOptions options,
                                                         Func<Task> closeCallBack)
         {
             var browser = new Browser(connection, options, closeCallBack);

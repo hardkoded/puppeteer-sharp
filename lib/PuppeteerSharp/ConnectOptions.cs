@@ -3,15 +3,22 @@
     /// <summary>
     /// Options for connecting to an existing browser.
     /// </summary>
-    public class ConnectOptions : BrowserOptions
+    public class ConnectOptions : IBrowserOptions
     {
         /// <summary>
-        /// The endpoint to connect to.
+        /// Whether to ignore HTTPS errors during navigation. Defaults to false.
+        /// </summary>
+        public bool IgnoreHTTPSErrors { get; set; }
+
+        public bool AppMode { get; set; }
+
+        /// <summary>
+        /// A browser websocket endpoint to connect to.
         /// </summary>
         public string BrowserWSEndpoint { get; set; }
 
         /// <summary>
-        /// Slow mo value.
+        /// Slows down Puppeteer operations by the specified amount of milliseconds. Useful so that you can see what is going on.
         /// </summary>
         public int SlowMo { get; set; }
 

@@ -168,9 +168,9 @@ namespace PuppeteerSharp
             }
 
         }
-        
+
         /// <summary>
-        /// Connects to an existing browser.
+        /// This methods attaches Puppeteer to an existing Chromium instance.
         /// </summary>
         /// <param name="options">Options for connecting.</param>
         /// <returns>A connected browser.</returns>
@@ -183,7 +183,7 @@ namespace PuppeteerSharp
 
                 _connection = await Connection.Create(options.BrowserWSEndpoint, connectionDelay, keepAliveInterval);
 
-                return await Browser.CreateAsync(_connection, options, () => Task.CompletedTask);
+                return await Browser.CreateAsync(_connection, options, () => _connection.SendAsync("Browser.close", null));
             }
             catch (Exception ex)
             {
