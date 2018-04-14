@@ -127,7 +127,11 @@ namespace PuppeteerSharp.Tests.Page
         public async Task ShouldWaitForNetworkIdleToSucceedNavigation()
         {
             var responses = new List<TaskCompletionSource<Func<HttpResponse, Task>>>();
-            foreach (var url in new[] { "/fetch-request-a.js", "/fetch-request-b.js", "/fetch-request-c.js", "/fetch-request-d.js" })
+            foreach (var url in new[] {
+                "/fetch-request-a.js",
+                "/fetch-request-b.js",
+                "/fetch-request-c.js",
+                "/fetch-request-d.js" })
             {
                 Server.SetRoute(url, async context =>
                 {
