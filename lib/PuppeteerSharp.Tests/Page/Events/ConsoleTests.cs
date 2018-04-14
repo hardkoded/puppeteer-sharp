@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace PuppeteerSharp.Tests.Page.Events
@@ -22,15 +23,15 @@ namespace PuppeteerSharp.Tests.Page.Events
             Page.Console += EventHandler;
 
             await Page.EvaluateExpressionAsync("console.log('hello', 5, {foo: 'bar'})");
+            
+            var obj = new Dictionary<string, object> {{"foo", "bar"}};
 
             Assert.Equal("hello 5 JSHandle@object", message.Text());
             Assert.Equal(ConsoleType.Log, message.Type);
 
-            Assert.Equal("hello", (await message.Args[0].JsonValue()).ToString());
-            Assert.Equal("5", (await message.Args[1].JsonValue()).ToString());
-
-            // TODO Json Serialization is not exactly the same as in Puppeteer
-            Assert.Equal("{\r\n  \"foo\": \"bar\"\r\n}", (await message.Args[2].JsonValue()).ToString());
+            Assert.Equal("hello", await message.Args[0].JsonValue());
+            Assert.Equal(5, await message.Args[1].JsonValue<float>());
+            Assert.Equal(obj,await message.Args[2].JsonValue<Dictionary<string, object>>());
         }
 
         [Fact]

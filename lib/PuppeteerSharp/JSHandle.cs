@@ -36,7 +36,9 @@ namespace PuppeteerSharp
             return result;
         }
 
-        public async Task<object> JsonValue()
+        public async Task<object> JsonValue() => await JsonValue<object>();
+
+        public async Task<T> JsonValue<T>()
         {
             if (RemoteObject.objectId != null)
             {
@@ -47,10 +49,10 @@ namespace PuppeteerSharp
                     {"returnByValue", true},
                     {"awaitPromise", true}
                 });
-                return Helper.ValueFromRemoteObject(response.result);
+                return Helper.ValueFromRemoteObject<T>(response.result);
             }
 
-            return Helper.ValueFromRemoteObject(RemoteObject);
+            return Helper.ValueFromRemoteObject<T>(RemoteObject);
         }
 
         public virtual ElementHandle AsElement() => null;
@@ -74,7 +76,7 @@ namespace PuppeteerSharp
                 return "JSHandle@" + type;
             }
 
-            return Helper.ValueFromRemoteObject(RemoteObject);
+            return Helper.ValueFromRemoteObject<object>(RemoteObject)?.ToString();
         }
     }
 }
