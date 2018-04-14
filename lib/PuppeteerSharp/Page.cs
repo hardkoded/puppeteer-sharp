@@ -23,7 +23,7 @@ namespace PuppeteerSharp
         private readonly FrameManager _frameManager;
         private readonly TaskQueue _screenshotTaskQueue;
         private readonly EmulationManager _emulationManager;
-        
+
         private Dictionary<string, Func<object>> _pageBindings;
 
         private static readonly Dictionary<string, PaperFormat> _paperFormats = new Dictionary<string, PaperFormat> {
@@ -297,15 +297,10 @@ namespace PuppeteerSharp
             var watcher = new NavigatorWatcher(_frameManager, mainFrame, timeout, options, cts);
             var navigateTask = Navigate(_client, url, referrer);
 
-            await Task.WhenAny(
-                 navigateTask,
-                 watcher.NavigationTask
-            );
-
+            await navigateTask;
             var exception = navigateTask.Exception?.InnerException;
             if (exception == null)
             {
-                cts.Cancel();
                 var navigation = await watcher.NavigationTask;
                 exception = navigation.Exception?.InnerException;
             }
@@ -783,7 +778,6 @@ namespace PuppeteerSharp
 
         private async Task Navigate(Session client, string url, string referrer)
         {
-
             dynamic response = await client.SendAsync("Page.navigate", new
             {
                 url,

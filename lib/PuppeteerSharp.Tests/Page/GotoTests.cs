@@ -177,8 +177,6 @@ namespace PuppeteerSharp.Tests.Page
 
             Assert.False(navigationFinished);
 
-            while (responses.Count != 3) await Task.Delay(10); // todo: figure out why
-
             foreach (var actionResponse in responses)
             {
                 actionResponse.SetResult(response =>
@@ -193,8 +191,6 @@ namespace PuppeteerSharp.Tests.Page
             await secondFetchResourceRequested;
 
             Assert.False(navigationFinished);
-
-            while (responses.Count != 1) await Task.Delay(10); // todo: figure out why
 
             foreach (var actionResponse in responses)
             {
