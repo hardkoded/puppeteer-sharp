@@ -13,10 +13,14 @@ namespace PuppeteerSharp.Tests.Page.Events
         public async Task ShouldThrowWhenPageCrashes()
         {
             string error = null;
-            Page.Error += (sender, e) => error = e.Error;
+            Page.Error += (sender, e) =>
+            {
+                error = e.Error;
+            };
+            var waitForErrorTask = WaitForError();
             var gotoTask = Page.GoToAsync("chrome://crash");
 
-            await WaitForError();
+            await waitForErrorTask;
             Assert.Equal("Page crashed!", error);
         }
     }
