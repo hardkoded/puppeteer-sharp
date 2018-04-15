@@ -293,20 +293,21 @@ namespace PuppeteerSharp
             var mainFrame = _frameManager.MainFrame;
             var timeout = options?.Timeout ?? DefaultNavigationTimeout;
 
-            var cts = new CancellationTokenSource();
-            var watcher = new NavigatorWatcher(_frameManager, mainFrame, timeout, options, cts);
+            var watcher = new NavigatorWatcher(_frameManager, mainFrame, timeout, options);
             var navigateTask = Navigate(_client, url, referrer);
 
             await Task.WhenAny(
                 watcher.NavigationTask,
                 navigateTask);
 
-            AggregateException exception = navigateTask.Exception;
+            AggregateException exception = navigateTask.Exception ?? watcher.NavigationTask.Result.Exception;
 
             if (exception == null)
             {
-                cts.Cancel();
-                exception = (await watcher.NavigationTask).Exception;
+                await Task.WhenAll(
+                    watcher.NavigationTask,
+                    navigateTask);
+                exception = navigateTask.Exception ?? watcher.NavigationTask.Result.Exception;
             }
 
             watcher.Cancel();
@@ -547,7 +548,7 @@ namespace PuppeteerSharp
         {
             var mainFrame = _frameManager.MainFrame;
             var timeout = options?.Timeout ?? DefaultNavigationTimeout;
-            var watcher = new NavigatorWatcher(_frameManager, mainFrame, timeout, options, new CancellationTokenSource());
+            var watcher = new NavigatorWatcher(_frameManager, mainFrame, timeout, options);
             var responses = new Dictionary<string, Response>();
 
             EventHandler<ResponseCreatedEventArgs> createResponseEventListener = (object sender, ResponseCreatedEventArgs e) =>

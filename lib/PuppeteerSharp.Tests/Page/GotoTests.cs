@@ -131,18 +131,19 @@ namespace PuppeteerSharp.Tests.Page
         public async Task ShouldWaitForNetworkIdleToSucceedNavigation()
         {
             var responses = new List<TaskCompletionSource<Func<HttpResponse, Task>>>();
-            var firstFetchActions = new TaskCompletionSource<bool>();
+            var fetches = new Dictionary<string, TaskCompletionSource<bool>>();
             foreach (var url in new[] {
                 "/fetch-request-a.js",
                 "/fetch-request-b.js",
                 "/fetch-request-c.js",
                 "/fetch-request-d.js" })
             {
+                fetches[url] = new TaskCompletionSource<bool>();
                 Server.SetRoute(url, async context =>
                 {
                     var taskCompletion = new TaskCompletionSource<Func<HttpResponse, Task>>();
                     responses.Add(taskCompletion);
-                    firstFetchActions.TrySetResult(true);
+                    fetches[context.Request.Path].SetResult(true);
                     var actionResponse = await taskCompletion.Task;
                     await actionResponse(context.Response);
                 });
@@ -179,7 +180,10 @@ namespace PuppeteerSharp.Tests.Page
 
             Assert.False(navigationFinished);
 
-            await firstFetchActions.Task;
+            await Task.WhenAll(
+                fetches["/fetch-request-a.js"].Task,
+                fetches["/fetch-request-b.js"].Task,
+                fetches["/fetch-request-c.js"].Task);
 
             foreach (var actionResponse in responses)
             {
@@ -195,6 +199,8 @@ namespace PuppeteerSharp.Tests.Page
             await secondFetchResourceRequested;
 
             Assert.False(navigationFinished);
+
+            await fetches["/fetch-request-d.js"].Task;
 
             foreach (var actionResponse in responses)
             {

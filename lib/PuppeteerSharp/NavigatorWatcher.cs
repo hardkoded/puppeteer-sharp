@@ -25,7 +25,7 @@ namespace PuppeteerSharp
         private int _timeout;
         private string _initialLoaderId;
 
-        public NavigatorWatcher(FrameManager frameManager, Frame mainFrame, int timeout, NavigationOptions options, CancellationTokenSource cts)
+        public NavigatorWatcher(FrameManager frameManager, Frame mainFrame, int timeout, NavigationOptions options)
         {
             var waitUntil = new[] { WaitUntilNavigation.Load };
 
@@ -53,7 +53,7 @@ namespace PuppeteerSharp
 
             NavigationTask = Task.WhenAny(new[]
             {
-                CreateTimeoutTask(cts),
+                CreateTimeoutTask(),
                 LifeCycleCompleteTask,
             }).ContinueWith((task) =>
             {
@@ -120,7 +120,7 @@ namespace PuppeteerSharp
             _frameManager.FrameDetached -= FrameManager_LifecycleEvent;
         }
 
-        private async Task CreateTimeoutTask(CancellationTokenSource cts)
+        private async Task CreateTimeoutTask()
         {
             var wrapper = new TaskCompletionSource<bool>();
 
@@ -131,10 +131,7 @@ namespace PuppeteerSharp
             else
             {
                 await Task.Delay(_timeout);
-                if (!cts.IsCancellationRequested)
-                {
-                    throw new ChromeProcessException($"Navigation Timeout Exceeded: {_timeout}ms exceeded");
-                }
+                throw new ChromeProcessException($"Navigation Timeout Exceeded: {_timeout}ms exceeded");
             }
         }
 
