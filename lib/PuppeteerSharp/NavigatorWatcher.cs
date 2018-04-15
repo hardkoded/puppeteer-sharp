@@ -58,7 +58,7 @@ namespace PuppeteerSharp
             }).ContinueWith((task) =>
             {
                 CleanUp();
-                return task.GetAwaiter().GetResult();
+                return task.Result;
             });
         }
 
