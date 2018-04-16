@@ -300,7 +300,17 @@ namespace PuppeteerSharp
                 watcher.NavigationTask,
                 navigateTask);
 
-            AggregateException exception = navigateTask.Exception ?? watcher.NavigationTask.Result.Exception;
+            AggregateException exception = null;
+
+            if (navigateTask.IsFaulted)
+            {
+                exception = navigateTask.Exception;
+            }
+            else if (watcher.NavigationTask.IsCompleted &&
+                watcher.NavigationTask.Result.IsFaulted)
+            {
+                exception = watcher.NavigationTask.Result?.Exception;
+            }
 
             if (exception == null)
             {
