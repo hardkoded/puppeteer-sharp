@@ -103,7 +103,13 @@ As this will be quite a big version, I think we will publish many 0.3.X versions
 It will implement all Frame tests.
 
 ## 0.6 Simple interactions
-It will implement all the test related to setting values to inputs and clicking on elements.
+It will implement all tests related to setting values to inputs and clicking on elements.
+
+## 0.7 Page Improvements
+It will implement all missing Page tests.
+
+## 0.8 Element Handle and JS Handle
+It will implement all tests releated to Element handles and JS handles.
 
 ## 0.X Intermediate versions
 At this point, We will have implemented most features, except the ones which are javascript related.
@@ -114,7 +120,7 @@ The 1.0 version will have all (or most) Puppeteer features implemented. I don't 
 
 # Progress
 
-* Tests on Google's Puppeteer: 554.
-* Tests on Puppeteer Sharp: 55.
-* Passing tests: 55.
+* Tests on Google's Puppeteer: 405.
+* Tests on Puppeteer Sharp: 80.
+* Passing tests: 80.
 

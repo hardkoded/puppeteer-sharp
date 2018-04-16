@@ -46,7 +46,7 @@ namespace PuppeteerSharp
         private LaunchOptions _options;
         private TaskCompletionSource<bool> _waitForChromeToClose;
         private static int _processCount = 0;
-
+        private bool _processLoaded;
         private const string UserDataDirArgument = "--user-data-dir";
         #endregion
 
@@ -164,6 +164,7 @@ namespace PuppeteerSharp
                 var keepAliveInterval = options.KeepAliveInterval;
 
                 _connection = await Connection.Create(browserWSEndpoint, connectionDelay, keepAliveInterval);
+                _processLoaded = true;
 
                 if (options.LogProcess)
                 {
@@ -175,7 +176,7 @@ namespace PuppeteerSharp
             catch (Exception ex)
             {
                 ForceKillChrome();
-                throw new Exception("Failed to create connection", ex);
+                throw new ChromeProcessException("Failed to create connection", ex);
             }
 
         }
@@ -269,10 +270,14 @@ namespace PuppeteerSharp
 
             EventHandler exitedEvent = (sender, e) =>
             {
+                if (_options.LogProcess && !_processLoaded)
+                {
+                    Console.WriteLine($"PROCESS COUNT: {Interlocked.Increment(ref _processCount)}");
+                }
+
                 CleanUp();
 
-                var error = chromeProcess.StandardError.ReadToEnd();
-                taskWrapper.SetException(new ChromeProcessException($"Failed to launch chrome! {error}"));
+                taskWrapper.SetException(new ChromeProcessException($"Failed to launch chrome! {output}"));
             };
 
             chromeProcess.ErrorDataReceived += (sender, e) =>
@@ -372,7 +377,7 @@ namespace PuppeteerSharp
         {
             try
             {
-                if (_chromeProcess.Id != 0 && Process.GetProcessById(_chromeProcess.Id) != null)
+                if (_chromeProcess.Id != 0 && !_chromeProcess.HasExited && Process.GetProcessById(_chromeProcess.Id) != null)
                 {
                     _chromeProcess.Kill();
                     _chromeProcess.WaitForExit();

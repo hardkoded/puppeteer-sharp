@@ -26,4 +26,9 @@
     <ProjectReference Include="..\PuppeteerSharp.TestServer\PuppeteerSharp.TestServer.csproj" />
     <ProjectReference Include="..\PuppeteerSharp\PuppeteerSharp.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Update="test.runsettings">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>
