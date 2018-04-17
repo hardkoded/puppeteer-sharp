@@ -8,7 +8,7 @@ before_build:
 - ps: >-
     dotnet restore .\lib\PuppeteerSharp.sln
     
-    .\appveyor\installcert.ps1
+    CertUtil -addStore Root C:\projects\puppeteer-sharp\lib\PuppeteerSharp.TestServer\testCert.cer
 build:
   project: .\lib\PuppeteerSharp.sln
   publish_nuget: true
