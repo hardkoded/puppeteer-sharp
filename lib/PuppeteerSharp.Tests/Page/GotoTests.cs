@@ -34,7 +34,7 @@ namespace PuppeteerSharp.Tests.Page
             Assert.Contains("Cannot navigate to invalid URL", exception.Message);
         }
 
-        [Fact(Skip = "message is ERR_CERT_COMMON_NAME_INVALID instead of ERR_CERT_AUTHORITY_INVALID")]
+        [Fact]
         public async Task ShouldFailWhenNavigatingToBadSSL()
         {
             Page.RequestCreated += (sender, e) => Assert.NotNull(e.Request);
@@ -45,7 +45,7 @@ namespace PuppeteerSharp.Tests.Page
             Assert.Contains("net::ERR_CERT_AUTHORITY_INVALID", exception.Message);
         }
 
-        [Fact(Skip = "message is ERR_CERT_COMMON_NAME_INVALID instead of ERR_CERT_AUTHORITY_INVALID")]
+        [Fact]
         public async Task ShouldFailWhenNavigatingToBadSSLAfterRedirects()
         {
             var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await Page.GoToAsync(TestConstants.HttpsPrefix + "/redirect/2.html"));
