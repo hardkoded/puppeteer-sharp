@@ -9,10 +9,8 @@ before_build:
     dotnet restore .\lib\PuppeteerSharp.sln
 
     Import-Module WebAdministration
-
-    New-SelfSignedCertificate -Subject "localhost" -FriendlyName "localhost" -CertStoreLocation "cert:\LocalMachine\My"
-
-    Get-ChildItem -Path cert:\LocalMachine\my | where { $_.subject -eq "CN=localhost" } | Export-Certificate -FilePath C:\projects\puppeteer-sharp\lib\PuppeteerSharp.TestServer\testCert.cer
+    Set-Location -Path cert:\LocalMachine\My
+    Import-Certificate -Filepath "C:\projects\puppeteer-sharp\lib\PuppeteerSharp.TestServer\testCert.cer"
 
 build:
   project: .\lib\PuppeteerSharp.sln
