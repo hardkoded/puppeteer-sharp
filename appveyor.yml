@@ -4,6 +4,9 @@ branches:
   - master
 image: Previous Visual Studio 2017
 configuration: Release
+before_build:
+- ps: >-
+    dotnet restore .\lib\PuppeteerSharp.sln
 build:
   project: .\lib\PuppeteerSharp.sln
   publish_nuget: true
