@@ -110,7 +110,7 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
         internal WaitTask(Frame frame, string predicateBody, string polling, int timeout, object[] args)
         {
             _frame = frame;
-            _predicateBody = $"return ( {predicateBody} )(...args)"; //predicateBody;
+            _predicateBody = $"return ( {predicateBody} )(...args)";
             _polling = polling;
             _timeout = timeout;
             _args = args;
