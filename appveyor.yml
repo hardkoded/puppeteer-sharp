@@ -6,8 +6,9 @@ image: Previous Visual Studio 2017
 configuration: Release
 before_build:
 - ps: >-
-    - dotnet restore .\lib\PuppeteerSharp.sln
-    - .\appveyor\installcert.ps1
+  dotnet restore .\lib\PuppeteerSharp.sln
+  
+  .\appveyor\installcert.ps1
 build:
   project: .\lib\PuppeteerSharp.sln
   publish_nuget: true
