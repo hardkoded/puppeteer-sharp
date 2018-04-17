@@ -9,7 +9,7 @@ namespace PuppeteerSharp
     {
         private readonly Frame _frame;
         private readonly string _predicateBody;
-        private readonly string _polling;
+        private readonly WaitForFunctionPollingOption _polling;
         private readonly int _timeout;
         private readonly object[] _args;
         private readonly Task _timeoutTimer;
@@ -107,7 +107,7 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
   }
 }";
 
-        internal WaitTask(Frame frame, string predicateBody, string polling, int timeout, object[] args)
+        internal WaitTask(Frame frame, string predicateBody, WaitForFunctionPollingOption polling, int timeout, object[] args)
         {
             if (string.IsNullOrEmpty(predicateBody))
             {

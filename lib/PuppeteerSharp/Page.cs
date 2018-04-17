@@ -538,8 +538,8 @@ namespace PuppeteerSharp
         public Task WaitForTimeoutAsync(int milliseconds)
             => MainFrame.WaitForTimeoutAsync(milliseconds);
 
-        public Task WaitForFunctionAsync(string function, WaitForFunctionOptions options = null, params object[] args)
-            => MainFrame.WaitForFunctionAsync(function, options ?? new WaitForFunctionOptions(), args);
+        public Task WaitForFunctionAsync(string script, WaitForFunctionOptions options = null, params object[] args)
+            => MainFrame.WaitForFunctionAsync(script, options ?? new WaitForFunctionOptions(), args);
 
         public Task WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
             => MainFrame.WaitForSelectorAsync(selector, options ?? new WaitForSelectorOptions());

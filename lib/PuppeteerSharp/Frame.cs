@@ -191,8 +191,8 @@ namespace PuppeteerSharp
 
         internal Task WaitForTimeoutAsync(int milliseconds) => Task.Delay(milliseconds);
 
-        internal Task WaitForFunctionAsync(string function, WaitForFunctionOptions options, params object[] args)
-            => new WaitTask(this, function, options.Polling, options.Timeout, args).Task;
+        internal Task WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args)
+            => new WaitTask(this, script, options.Polling, options.Timeout, args).Task;
 
         internal Task WaitForSelectorAsync(string selector, WaitForSelectorOptions options)
         {
@@ -213,7 +213,7 @@ namespace PuppeteerSharp
                 return !!(rect.top || rect.bottom || rect.width || rect.height);
               }
             }";
-            var polling = options.Visible || options.Hidden ? "raf" : "mutation";
+            var polling = options.Visible || options.Hidden ? WaitForFunctionPollingOption.Raf : WaitForFunctionPollingOption.Mutation;
             return WaitForFunctionAsync(predicate, new WaitForFunctionOptions
             {
                 Timeout = options.Timeout,
