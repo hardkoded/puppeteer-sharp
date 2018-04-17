@@ -535,6 +535,18 @@ namespace PuppeteerSharp
             return navigationTask.Result;
         }
 
+        public Task WaitForTimeoutAsync(int milliseconds) => Task.Delay(milliseconds);
+
+        public async Task WaitForFunctionAsync(string function, WaitForFunctionOptions options = null, params object[] args)
+        {
+            options = options ?? new WaitForFunctionOptions();
+        }
+
+        public async Task WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
+        {
+            options = options ?? new WaitForSelectorOptions();
+        }
+
         #endregion
 
         #region Private Method
@@ -809,5 +821,18 @@ namespace PuppeteerSharp
         #region IDisposable
         public void Dispose() => CloseAsync();
         #endregion
+    }
+
+    public class WaitForFunctionOptions
+    {
+        public int Timeout { get; set; } = 30_000;
+        public string Polling { get; set; } = "raf";
+    }
+
+    public class WaitForSelectorOptions
+    {
+        public int Timeout { get; set; } = 30_000;
+        public bool Visible { get; set; }
+        public bool Hidden { get; set; }
     }
 }
