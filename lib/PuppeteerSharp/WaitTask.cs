@@ -109,6 +109,11 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
 
         internal WaitTask(Frame frame, string predicateBody, string polling, int timeout, object[] args)
         {
+            if (string.IsNullOrEmpty(predicateBody))
+            {
+                throw new ArgumentNullException(nameof(predicateBody));
+            }
+
             _frame = frame;
             _predicateBody = $"return ( {predicateBody} )(...args)";
             _polling = polling;
