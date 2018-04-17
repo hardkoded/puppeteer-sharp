@@ -9,7 +9,9 @@ before_build:
     dotnet restore .\lib\PuppeteerSharp.sln
 
     Import-Module WebAdministration
+    
     Set-Location -Path cert:\LocalMachine\My
+    
     Import-Certificate -Filepath "C:\projects\puppeteer-sharp\lib\PuppeteerSharp.TestServer\testCert.cer"
 
 build:
