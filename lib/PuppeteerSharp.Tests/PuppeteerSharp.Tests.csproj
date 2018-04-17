@@ -15,7 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Puppeteer\" />
     <Folder Include="Issues\" />
   </ItemGroup>
 

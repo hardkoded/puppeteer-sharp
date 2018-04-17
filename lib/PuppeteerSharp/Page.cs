@@ -1,18 +1,19 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using PuppeteerSharp.Input;
-using PuppeteerSharp.Helpers;
-using System.IO;
-using System.Globalization;
-using Newtonsoft.Json.Linq;
+using System.Diagnostics;
 using System.Dynamic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Input;
 using PuppeteerSharp.Messaging;
-using System.Threading;
 
 namespace PuppeteerSharp
 {
+    [DebuggerDisplay("Page {Url}")]
     public class Page : IDisposable
     {
         public int DefaultNavigationTimeout { get; set; } = 30000;

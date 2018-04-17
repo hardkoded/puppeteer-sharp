@@ -60,6 +60,17 @@ namespace PuppeteerSharp
         }
 
         #region Public methods
+        /// <summary>
+        /// The method launches a browser instance with given arguments. The browser will be closed when the Browser is disposed.
+        /// </summary>
+        /// <param name="options">Options for launching Chrome</param>
+        /// <param name="chromiumRevision">The revision of Chrome to launch.</param>
+        /// <returns>A connected browser.</returns>
+        /// <remarks>
+        /// See <a href="https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/">this article</a>
+        /// for a description of the differences between Chromium and Chrome.
+        /// <a href="https://chromium.googlesource.com/chromium/src/+/lkcr/docs/chromium_browser_vs_google_chrome.md">This article</a> describes some differences for Linux users.
+        /// </remarks>
         public async Task<Browser> LaunchAsync(LaunchOptions options, int chromiumRevision)
         {
             var chromeArguments = new List<string>(DefaultArgs);
@@ -168,6 +179,28 @@ namespace PuppeteerSharp
                 throw new ChromeProcessException("Failed to create connection", ex);
             }
 
+        }
+
+        /// <summary>
+        /// Attaches Puppeteer to an existing Chromium instance. The browser will be closed when the Browser is disposed.
+        /// </summary>
+        /// <param name="options">Options for connecting.</param>
+        /// <returns>A connected browser.</returns>
+        public async Task<Browser> ConnectAsync(ConnectOptions options)
+        {
+            try
+            {
+                var connectionDelay = options.SlowMo;
+                var keepAliveInterval = options.KeepAliveInterval;
+
+                _connection = await Connection.Create(options.BrowserWSEndpoint, connectionDelay, keepAliveInterval);
+
+                return await Browser.CreateAsync(_connection, options, () => _connection.SendAsync("Browser.close", null));
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to create connection", ex);
+            }
         }
 
         public async Task TryDeleteUserDataDir(int times = 10, TimeSpan? delay = null)
@@ -338,7 +371,6 @@ namespace PuppeteerSharp
             }
 
             await _waitForChromeToClose.Task;
-
         }
 
         private void ForceKillChrome()
@@ -356,7 +388,6 @@ namespace PuppeteerSharp
                 // swallow
             }
         }
-
 
         private static void SetEnvVariables(IDictionary<string, string> environment, IDictionary<string, string> customEnv,
                                             IDictionary realEnv)
