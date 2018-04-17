@@ -541,6 +541,8 @@ namespace PuppeteerSharp
         public Task WaitForFunctionAsync(string script, WaitForFunctionOptions options = null, params object[] args)
             => MainFrame.WaitForFunctionAsync(script, options ?? new WaitForFunctionOptions(), args);
 
+        public Task WaitForFunctionAsync(string script, params object[] args) => WaitForFunctionAsync(script, null, args);
+
         public Task WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
             => MainFrame.WaitForSelectorAsync(selector, options ?? new WaitForSelectorOptions());
 
