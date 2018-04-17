@@ -535,17 +535,14 @@ namespace PuppeteerSharp
             return navigationTask.Result;
         }
 
-        public Task WaitForTimeoutAsync(int milliseconds) => Task.Delay(milliseconds);
+        public Task WaitForTimeoutAsync(int milliseconds)
+            => MainFrame.WaitForTimeoutAsync(milliseconds);
 
-        public async Task WaitForFunctionAsync(string function, WaitForFunctionOptions options = null, params object[] args)
-        {
-            options = options ?? new WaitForFunctionOptions();
-        }
+        public Task WaitForFunctionAsync(string function, WaitForFunctionOptions options = null, params object[] args)
+            => MainFrame.WaitForFunctionAsync(function, options ?? new WaitForFunctionOptions(), args);
 
-        public async Task WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
-        {
-            options = options ?? new WaitForSelectorOptions();
-        }
+        public Task WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
+            => MainFrame.WaitForSelectorAsync(selector, options ?? new WaitForSelectorOptions());
 
         #endregion
 

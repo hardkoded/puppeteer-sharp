@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -14,8 +11,9 @@ namespace PuppeteerSharp.Tests.Page
         public async Task ShouldWaitForSelector()
         {
             var found = false;
-            var waitFor = Page.WaitForSelectorAsync("div").ContinueWith(task => found = true);
+            var waitFor = Page.WaitForSelectorAsync("div").ContinueWith(_ => found = true);
             await Page.GoToAsync(TestConstants.EmptyPage);
+
             Assert.False(found);
 
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
