@@ -51,7 +51,7 @@ namespace PuppeteerSharp.Tests.Puppeteer
                     new NavigationOptions()
                     {
                         Timeout = 5000,
-                        WaitUntil = new[] { "networkidle0" }
+                        WaitUntil = new[] { WaitUntilNavigation.Networkidle0 }
                     });
                 Assert.Equal(response.Status, HttpStatusCode.OK);
             }

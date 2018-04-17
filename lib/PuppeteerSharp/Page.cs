@@ -1,22 +1,22 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using PuppeteerSharp.Input;
-using PuppeteerSharp.Helpers;
-using System.IO;
-using System.Globalization;
-using Newtonsoft.Json.Linq;
-using System.Dynamic;
-using PuppeteerSharp.Messaging;
 using System.Diagnostics;
+using System.Dynamic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Input;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
     [DebuggerDisplay("Page {Url}")]
     public class Page : IDisposable
     {
-        private const int DefaultNavigationTimeout = 30000;
+        public int DefaultNavigationTimeout { get; set; } = 30000;
 
         private readonly Session _client;
         private readonly bool _ignoreHTTPSErrors;
@@ -24,7 +24,7 @@ namespace PuppeteerSharp
         private readonly FrameManager _frameManager;
         private readonly TaskQueue _screenshotTaskQueue;
         private readonly EmulationManager _emulationManager;
-        
+
         private Dictionary<string, Func<object>> _pageBindings;
 
         private static readonly Dictionary<string, PaperFormat> _paperFormats = new Dictionary<string, PaperFormat> {
@@ -298,15 +298,27 @@ namespace PuppeteerSharp
             var navigateTask = Navigate(_client, url, referrer);
 
             await Task.WhenAny(
-                navigateTask,
-                watcher.NavigationTask
-            );
+                watcher.NavigationTask,
+                navigateTask);
 
-            var exception = navigateTask.Exception;
+            AggregateException exception = null;
+
+            if (navigateTask.IsFaulted)
+            {
+                exception = navigateTask.Exception;
+            }
+            else if (watcher.NavigationTask.IsCompleted &&
+                watcher.NavigationTask.Result.IsFaulted)
+            {
+                exception = watcher.NavigationTask.Result?.Exception;
+            }
+
             if (exception == null)
             {
-                await watcher.NavigationTask;
-                exception = watcher.NavigationTask.Exception;
+                await Task.WhenAll(
+                    watcher.NavigationTask,
+                    navigateTask);
+                exception = navigateTask.Exception ?? watcher.NavigationTask.Result.Exception;
             }
 
             watcher.Cancel();
@@ -314,7 +326,7 @@ namespace PuppeteerSharp
 
             if (exception != null)
             {
-                throw new NavigationException(exception.Message, exception);
+                throw new NavigationException(exception.InnerException.Message, exception.InnerException);
             }
 
             Request request = null;
@@ -782,7 +794,6 @@ namespace PuppeteerSharp
 
         private async Task Navigate(Session client, string url, string referrer)
         {
-
             dynamic response = await client.SendAsync("Page.navigate", new
             {
                 url,

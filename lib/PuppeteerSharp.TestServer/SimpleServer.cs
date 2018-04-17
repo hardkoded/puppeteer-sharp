@@ -119,6 +119,8 @@ namespace PuppeteerSharp.TestServer
             return request;
         }
 
+        public Task WaitForRequest(string path) => WaitForRequest<bool>(path, request => true);
+
         private static bool Authenticate(string username, string password, HttpContext context)
         {
             string authHeader = context.Request.Headers["Authorization"];

@@ -61,11 +61,12 @@ namespace PuppeteerSharp
 
         public async Task<Page> NewPageAsync()
         {
-            var targetId = (await Connection.SendAsync("Target.createTarget", new Dictionary<string, object>(){
+            string targetId = (await Connection.SendAsync("Target.createTarget", new Dictionary<string, object>(){
                 {"url", "about:blank"}
               })).targetId.ToString();
 
             var target = _targets[targetId];
+            await target.InitializedTask;
             return await target.Page();
         }
 
