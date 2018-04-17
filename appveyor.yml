@@ -7,13 +7,7 @@ configuration: Release
 before_build:
 - ps: >-
     dotnet restore .\lib\PuppeteerSharp.sln
-
-    Import-Module WebAdministration
-    
-    Set-Location -Path cert:\LocalMachine\My
-    
-    Import-Certificate -Filepath "C:\projects\puppeteer-sharp\lib\PuppeteerSharp.TestServer\testCert.cer"
-
+    .\appveyor\installcert.ps1
 build:
   project: .\lib\PuppeteerSharp.sln
   publish_nuget: true
