@@ -50,7 +50,7 @@ namespace PuppeteerSharp.Tests.Puppeteer
                     "https://www.google.com",
                     new NavigationOptions()
                     {
-                        Timeout = 5000,
+                        Timeout = 10000,
                         WaitUntil = new[] { WaitUntilNavigation.Networkidle0 }
                     });
                 Assert.Equal(response.Status, HttpStatusCode.OK);
