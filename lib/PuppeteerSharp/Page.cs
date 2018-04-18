@@ -175,6 +175,11 @@ namespace PuppeteerSharp
         public async Task SetRequestInterceptionAsync(bool value)
             => await _networkManager.SetRequestInterceptionAsync(value);
 
+        /// <summary>
+        /// Set offline mode for the page.
+        /// </summary>
+        /// <returns>Result task</returns>
+        /// <param name="value">When <c>true</c> enables offline mode for the page.</param>
         public async Task SetOfflineModeAsync(bool value) => await _networkManager.SetOfflineModeAsync(value);
 
         public async Task<object> EvalManyAsync(string selector, Func<object> pageFunction, params object[] args)
