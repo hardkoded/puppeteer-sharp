@@ -12,7 +12,6 @@
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0002" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Puppeteer\" />
     <Folder Include="Issues\" />
   </ItemGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net471'">
@@ -21,5 +20,10 @@
   <ItemGroup>
     <ProjectReference Include="..\PuppeteerSharp.TestServer\PuppeteerSharp.TestServer.csproj" />
     <ProjectReference Include="..\PuppeteerSharp\PuppeteerSharp.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="test.runsettings">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

@@ -1,8 +1,9 @@
-﻿using System;
+﻿using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp
 {
+    [DebuggerDisplay("Target {Type} - {Url}")]
     public class Target
     {
         #region Private members

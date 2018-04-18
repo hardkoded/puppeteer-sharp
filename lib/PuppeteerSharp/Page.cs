@@ -1,31 +1,33 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using PuppeteerSharp.Input;
-using PuppeteerSharp.Helpers;
-using System.IO;
-using System.Globalization;
-using Newtonsoft.Json.Linq;
+using System.Diagnostics;
 using System.Dynamic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Input;
 using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
+    [DebuggerDisplay("Page {Url}")]
     public class Page : IDisposable
     {
-        private Session _client;
-        private bool _ignoreHTTPSErrors;
-        private NetworkManager _networkManager;
-        private FrameManager _frameManager;
-        private TaskQueue _screenshotTaskQueue;
-        private EmulationManager _emulationManager;
-        private ViewPortOptions _viewport;
-        private Mouse _mouse;
-        private Dictionary<string, Func<object>> _pageBindings;
-        private const int DefaultNavigationTimeout = 30000;
+        public int DefaultNavigationTimeout { get; set; } = 30000;
 
-        private static Dictionary<string, PaperFormat> _paperFormats = new Dictionary<string, PaperFormat> {
+        private readonly Session _client;
+        private readonly bool _ignoreHTTPSErrors;
+        private readonly NetworkManager _networkManager;
+        private readonly FrameManager _frameManager;
+        private readonly TaskQueue _screenshotTaskQueue;
+        private readonly EmulationManager _emulationManager;
+
+        private Dictionary<string, Func<object>> _pageBindings;
+
+        private static readonly Dictionary<string, PaperFormat> _paperFormats = new Dictionary<string, PaperFormat> {
             {"letter", new PaperFormat {Width = 8.5m, Height = 11}},
             {"legal", new PaperFormat {Width = 8.5m, Height = 14}},
             {"tabloid", new PaperFormat {Width = 11, Height = 17}},
@@ -39,7 +41,7 @@ namespace PuppeteerSharp
             {"a6", new PaperFormat {Width = 4.13m, Height = 5.83m }},
         };
 
-        private static Dictionary<string, decimal> _unitToPixels = new Dictionary<string, decimal> {
+        private static readonly Dictionary<string, decimal> _unitToPixels = new Dictionary<string, decimal> {
             {"px", 1},
             {"in", 96},
             {"cm", 37.8m},
@@ -52,7 +54,7 @@ namespace PuppeteerSharp
             _client = client;
             _target = target;
             Keyboard = new Keyboard(client);
-            _mouse = new Mouse(client, Keyboard);
+            Mouse = new Mouse(client, Keyboard);
             Touchscreen = new Touchscreen(client, Keyboard);
             _frameManager = new FrameManager(client, frameTree, this);
             _networkManager = new NetworkManager(client, _frameManager);
@@ -96,11 +98,13 @@ namespace PuppeteerSharp
         public IEnumerable<Frame> Frames => _frameManager.Frames.Values;
         public string Url => MainFrame.Url;
 
-        public Keyboard Keyboard { get; internal set; }
-        public Touchscreen Touchscreen { get; internal set; }
-        public Tracing Tracing { get; internal set; }
+        public Keyboard Keyboard { get; }
+        public Touchscreen Touchscreen { get; }
+        public Tracing Tracing { get; }
+        public Mouse Mouse { get; }
+        public ViewPortOptions Viewport { get; private set; }
 
-        public static IEnumerable<string> SupportedMetrics = new List<string>
+        public static readonly IEnumerable<string> SupportedMetrics = new List<string>
         {
             "Timestamp",
             "Documents",
@@ -294,15 +298,27 @@ namespace PuppeteerSharp
             var navigateTask = Navigate(_client, url, referrer);
 
             await Task.WhenAny(
-                navigateTask,
-                watcher.NavigationTask
-            );
+                watcher.NavigationTask,
+                navigateTask);
 
-            var exception = navigateTask.Exception;
+            AggregateException exception = null;
+
+            if (navigateTask.IsFaulted)
+            {
+                exception = navigateTask.Exception;
+            }
+            else if (watcher.NavigationTask.IsCompleted &&
+                watcher.NavigationTask.Result.IsFaulted)
+            {
+                exception = watcher.NavigationTask.Result?.Exception;
+            }
+
             if (exception == null)
             {
-                await watcher.NavigationTask;
-                exception = watcher.NavigationTask.Exception;
+                await Task.WhenAll(
+                    watcher.NavigationTask,
+                    navigateTask);
+                exception = navigateTask.Exception ?? watcher.NavigationTask.Result.Exception;
             }
 
             watcher.Cancel();
@@ -310,7 +326,7 @@ namespace PuppeteerSharp
 
             if (exception != null)
             {
-                throw new NavigationException(exception.Message, exception);
+                throw new NavigationException(exception.InnerException.Message, exception.InnerException);
             }
 
             Request request = null;
@@ -396,16 +412,24 @@ namespace PuppeteerSharp
         public async Task SetJavaScriptEnabledAsync(bool enabled)
             => await _client.SendAsync("Emulation.setScriptExecutionDisabled", new { value = !enabled });
 
+        public async Task EmulateMediaAsync(MediaType media)
+            => await _client.SendAsync("Emulation.setEmulatedMedia", new { media });
+
         public async Task SetViewport(ViewPortOptions viewport)
         {
             var needsReload = await _emulationManager.EmulateViewport(_client, viewport);
-            _viewport = viewport;
+            Viewport = viewport;
 
             if (needsReload)
             {
                 await ReloadAsync();
             }
         }
+
+        public async Task EmulateAsync(DeviceDescriptor options) => await Task.WhenAll(
+            SetViewport(options.ViewPort),
+            SetUserAgentAsync(options.UserAgent)
+        );
 
         public async Task ScreenshotAsync(string file) => await ScreenshotAsync(file, new ScreenshotOptions());
 
@@ -467,15 +491,17 @@ namespace PuppeteerSharp
 
         public Task<string> GetTitleAsync() => MainFrame.GetTitleAsync();
 
-        public async Task CloseAsync()
+        public Task CloseAsync()
         {
             if (!(_client?.Connection?.IsClosed ?? true))
             {
-                await _client.Connection.SendAsync("Target.closeTarget", new
+                return _client.Connection.SendAsync("Target.closeTarget", new
                 {
                     targetId = _target.TargetId
                 });
             }
+
+            return Task.CompletedTask;
         }
 
         public Task<dynamic> EvaluateExpressionAsync(string script)
@@ -489,6 +515,9 @@ namespace PuppeteerSharp
 
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
             => _frameManager.MainFrame.EvaluateFunctionAsync<T>(script, args);
+
+        public async Task SetUserAgentAsync(string userAgent)
+            => await _networkManager.SetUserAgentAsync(userAgent);
 
         public async Task SetExtraHttpHeadersAsync(Dictionary<string, string> headers)
             => await _networkManager.SetExtraHTTPHeadersAsync(headers);
@@ -580,9 +609,9 @@ namespace PuppeteerSharp
                     Scale = 1
                 };
 
-                var mobile = _viewport.IsMobile;
-                var deviceScaleFactor = _viewport.DeviceScaleFactor;
-                var landscape = _viewport.IsLandscape;
+                var mobile = Viewport.IsMobile;
+                var deviceScaleFactor = Viewport.DeviceScaleFactor;
+                var landscape = Viewport.IsLandscape;
                 var screenOrientation = landscape ?
                     new ScreenOrientation
                     {
@@ -642,7 +671,7 @@ namespace PuppeteerSharp
 
             if (options != null && options.FullPage)
             {
-                await SetViewport(_viewport);
+                await SetViewport(Viewport);
             }
 
             var buffer = Convert.FromBase64String(result.GetValue("data").Value<string>());
@@ -765,7 +794,6 @@ namespace PuppeteerSharp
 
         private async Task Navigate(Session client, string url, string referrer)
         {
-
             dynamic response = await client.SendAsync("Page.navigate", new
             {
                 url,
@@ -780,7 +808,7 @@ namespace PuppeteerSharp
         #endregion
 
         #region IDisposable
-        public void Dispose() => CloseAsync().GetAwaiter().GetResult();
+        public void Dispose() => CloseAsync();
         #endregion
     }
 }
