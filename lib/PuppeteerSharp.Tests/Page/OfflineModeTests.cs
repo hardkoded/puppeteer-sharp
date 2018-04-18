@@ -22,7 +22,6 @@ namespace PuppeteerSharp.Tests.Page
         public async Task ShouldEmulateNavigatorOnLine()
         {
             const string navigatorOnLine = "window.navigator.onLine";
-
             Assert.True(await Page.EvaluateExpressionAsync<bool>(navigatorOnLine));
 
             await Page.SetOfflineModeAsync(true);

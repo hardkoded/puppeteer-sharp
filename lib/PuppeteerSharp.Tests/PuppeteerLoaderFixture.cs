@@ -1,15 +1,25 @@
-using PuppeteerSharp.TestServer;
+﻿using PuppeteerSharp.TestServer;
+using System;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace PuppeteerSharp.Tests
 {
-    public class PuppeteerLoaderFixture : IAsyncLifetime
+    public class PuppeteerLoaderFixture : IDisposable
     {
         public static SimpleServer Server { get; private set; }
         public static SimpleServer HttpsServer { get; private set; }
 
-        public async Task InitializeAsync()
+        public PuppeteerLoaderFixture()
+        {
+            SetupAsync().GetAwaiter().GetResult();
+        }
+
+        public void Dispose()
+        {
+            Task.WaitAll(Server.StopAsync(), HttpsServer.StopAsync());
+        }
+
+        private async Task SetupAsync()
         {
             var downloaderTask = Downloader.CreateDefault().DownloadRevisionAsync(TestConstants.ChromiumRevision);
 
@@ -20,11 +30,6 @@ namespace PuppeteerSharp.Tests
             var httpsServerStart = HttpsServer.StartAsync();
 
             await Task.WhenAll(downloaderTask, serverStart, httpsServerStart);
-        }
-
-        public async Task DisposeAsync()
-        {
-            await Task.WhenAll(Server.StopAsync(), HttpsServer.StopAsync());
         }
     }
 }
