@@ -124,14 +124,14 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
             _taskCompletion = new TaskCompletionSource<JSHandle>();
 
             _cts = new CancellationTokenSource();
-
-            _timeoutTimer = Task.Delay(timeout, _cts.Token).ContinueWith(_
+            
+            _timeoutTimer = System.Threading.Tasks.Task.Delay(timeout, _cts.Token).ContinueWith(_
                 => Termiante(new PuppeteerException($"waiting failed: timeout {timeout}ms exceeded")));
 
             Rerun();
         }
 
-        internal Task Task => _taskCompletion.Task;
+        internal Task<JSHandle> Task => _taskCompletion.Task;
 
         internal async void Rerun()
         {
@@ -142,7 +142,8 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
             var context = await _frame.GetExecutionContextAsync();
             try
             {
-                success = await context.EvaluateFunctionHandleAsync(WaitForPredicatePageFunction, new object[] { _predicateBody, _polling, _timeout }.Concat(_args).ToArray());
+                success = await context.EvaluateFunctionHandleAsync(WaitForPredicatePageFunction,
+                    new object[] { _predicateBody, _polling, _timeout }.Concat(_args).ToArray());
             }
             catch (Exception ex)
             {
