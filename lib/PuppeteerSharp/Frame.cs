@@ -191,10 +191,10 @@ namespace PuppeteerSharp
 
         internal Task WaitForTimeoutAsync(int milliseconds) => Task.Delay(milliseconds);
 
-        internal Task WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args)
+        internal Task<JSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args)
             => new WaitTask(this, script, options.Polling, options.Timeout, args).Task;
 
-        internal Task WaitForSelectorAsync(string selector, WaitForSelectorOptions options)
+        internal async Task<ElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options)
         {
             const string predicate = @"
               function predicate(selector, waitForVisible, waitForHidden) {
@@ -214,11 +214,12 @@ namespace PuppeteerSharp
               }
             }";
             var polling = options.Visible || options.Hidden ? WaitForFunctionPollingOption.Raf : WaitForFunctionPollingOption.Mutation;
-            return WaitForFunctionAsync(predicate, new WaitForFunctionOptions
+            var handle = await WaitForFunctionAsync(predicate, new WaitForFunctionOptions
             {
                 Timeout = options.Timeout,
                 Polling = polling
             }, selector, options.Visible, options.Hidden);
+            return handle.AsElement();
         }
 
         #endregion

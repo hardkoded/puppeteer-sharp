@@ -9,7 +9,6 @@ using System.Globalization;
 using Newtonsoft.Json.Linq;
 using System.Dynamic;
 using PuppeteerSharp.Messaging;
-using System.Threading;
 
 namespace PuppeteerSharp
 {
@@ -535,15 +534,39 @@ namespace PuppeteerSharp
             return navigationTask.Result;
         }
 
+        /// <summary>
+        /// Waits for a timeout
+        /// </summary>
+        /// <param name="milliseconds"></param>
+        /// <returns>A task that resolves when after the timeout</returns>
         public Task WaitForTimeoutAsync(int milliseconds)
             => MainFrame.WaitForTimeoutAsync(milliseconds);
 
-        public Task WaitForFunctionAsync(string script, WaitForFunctionOptions options = null, params object[] args)
+        /// <summary>
+        /// Waits for a script to be evaluated to a truthy value
+        /// </summary>
+        /// <param name="script">Function to be evaluated in browser context</param>
+        /// <param name="options">Optional waiting parameters</param>
+        /// <param name="args">Arguments to pass to <c>script</c></param>
+        /// <returns>A task that resolves when the <c>script</c> returns a truthy value</returns>
+        public Task<JSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options = null, params object[] args)
             => MainFrame.WaitForFunctionAsync(script, options ?? new WaitForFunctionOptions(), args);
 
-        public Task WaitForFunctionAsync(string script, params object[] args) => WaitForFunctionAsync(script, null, args);
+        /// <summary>
+        /// Waits for a script to be evaluated to a truthy value
+        /// </summary>
+        /// <param name="script">Function to be evaluated in browser context</param>
+        /// <param name="args">Arguments to pass to <c>script</c></param>
+        /// <returns>A task that resolves when the <c>script</c> returns a truthy value</returns>
+        public Task<JSHandle> WaitForFunctionAsync(string script, params object[] args) => WaitForFunctionAsync(script, null, args);
 
-        public Task WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
+        /// <summary>
+        /// Waits for a selector to be added to the DOM
+        /// </summary>
+        /// <param name="selector">A selector of an element to wait for</param>
+        /// <param name="options">Optional waiting parameters</param>
+        /// <returns>A task that resolves when element specified by selector string is added to DOM</returns>
+        public Task<ElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
             => MainFrame.WaitForSelectorAsync(selector, options ?? new WaitForSelectorOptions());
 
         #endregion
