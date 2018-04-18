@@ -21,14 +21,13 @@ namespace PuppeteerSharp.Tests.Page
         [Fact]
         public async Task ShouldEmulateNavigatorOnLine()
         {
-            const string navigatorOnLine = "window.navigator.onLine";
-            Assert.True(await Page.EvaluateExpressionAsync<bool>(navigatorOnLine));
+            Assert.True(await Page.EvaluateExpressionAsync<bool>("window.navigator.onLine"));
 
             await Page.SetOfflineModeAsync(true);
-            Assert.False(await Page.EvaluateExpressionAsync<bool>(navigatorOnLine));
+            Assert.False(await Page.EvaluateExpressionAsync<bool>("window.navigator.onLine"));
 
             await Page.SetOfflineModeAsync(false);
-            Assert.True(await Page.EvaluateExpressionAsync<bool>(navigatorOnLine));
+            Assert.True(await Page.EvaluateExpressionAsync<bool>("window.navigator.onLine"));
         }
     }
 }
