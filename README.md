@@ -71,6 +71,28 @@ using (var page = await Browser.NewPageAsync())
 }
 ```
 
+## Wait For Selector
+
+```cs
+using (var page = await Browser.NewPageAsync())
+{
+    await page.GoToAsync("http://www.spapage.com");
+    await page.WaitForSelectorAsync("div.main-content")
+    await page.PdfAsync(outputFile));
+}
+```
+
+## Wait For Function
+```cs
+using (var page = await Browser.NewPageAsync())
+{
+    await page.GoToAsync("http://www.spapage.com");
+    var watchDog = page.WaitForFunctionAsync("window.innerWidth < 100");
+    await Page.SetViewport(new ViewPortOptions { Width = 50, Height = 50 });
+    await watchDog;
+}
+```
+
 # Monthly reports
  * [April 2018](http://www.hardkoded.com/blogs/puppeteer-sharp-monthly-april-2018)
  * [March 2018](http://www.hardkoded.com/blogs/puppeteer-sharp-monthly-march-2018)
