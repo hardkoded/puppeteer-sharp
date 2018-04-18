@@ -19,5 +19,14 @@ namespace PuppeteerSharp.Tests.Page
             );
             Assert.Equal("foobar", userAgentTask.Result);
         }
+
+        [Fact]
+        public async Task ShouldSimulateDeviceUserAgent()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/mobile.html");
+            Assert.Contains("Chrome", await Page.EvaluateExpressionAsync<string>("navigator.userAgent"));
+            await Page.SetUserAgentAsync(TestConstants.IPhone.UserAgent);
+            Assert.Contains("Safari", await Page.EvaluateExpressionAsync<string>("navigator.userAgent"));
+        }
     }
 }
