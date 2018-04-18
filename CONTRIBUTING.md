@@ -18,8 +18,10 @@ The test server requires a self-signed certificate at this location: `.\lib\Pupp
 You can run this PowerShell script on Windows
 
 ```
-New-SelfSignedCertificate -Subject "puppeteer" -FriendlyName "Puppeteer" -CertStoreLocation "cert:\LocalMachine\My"
-Get-ChildItem -Path cert:\LocalMachine\my | where { $_.subject -eq "CN=puppeteer" } | Export-Certificate -FilePath .\lib\PuppeteerSharp.TestServer\testCert.cer
+New-SelfSignedCertificate -Subject "localhost" -FriendlyName "Puppeteer" -CertStoreLocation "cert:\CurrentUser\My"
+
+Get-ChildItem -Path cert:\CurrentUSer\my | where { $_.friendlyname -eq "Puppeteer" } | Export-Certificate -FilePath C:\projects\puppeteer-sharp\lib\PuppeteerSharp.TestServer\testCert.cer
+
 ```
 
 On MacOS, you can create an “SSL Client” certificate using the Keychain Access app and then export it to `.\lib\PuppeteerSharp.TestServer\testCert.cer`

@@ -289,6 +289,7 @@ __pycache__/
 Thumbs.db
 
 # ignore local cert
+/lib/PuppeteerSharp.TestServer/testCert.cer
 /lib/PuppeteerSharp.Tests/Screenshots/test.png
 
 demos/PuppeteerSharpPdfDemo/google.pdf
