@@ -17,7 +17,7 @@ namespace PuppeteerSharp.Tests
             }", frameId, url);
         }
 
-        public static string DumpFrames(Frame frame, string indentation = "")
+        public static string DumpFrames(PuppeteerSharp.Frame frame, string indentation = "")
         {
             var result = indentation + Regex.Replace(frame.Url, @":\d{4}", ":<PORT>");
             foreach (var child in frame.ChildFrames)
