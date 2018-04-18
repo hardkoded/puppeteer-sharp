@@ -71,6 +71,26 @@ using (var page = await Browser.NewPageAsync())
 }
 ```
 
+## Connect to a remote browser
+
+```cs
+var options = new ConnectOptions()
+{
+    BrowserWSEndpoint = "wss://chrome.browserless.io?token={apikey}"
+};
+
+var url = "https://www.google.com/";
+
+using (var browser = await PuppeteerSharp.Puppeteer.ConnectAsync(options))
+{
+    using (var page = await browser.NewPageAsync())
+    {
+        await page.GoToAsync(url);
+        await page.PdfAsync("wot.pdf");
+    }
+}
+```
+
 # Monthly reports
  * [April 2018](http://www.hardkoded.com/blogs/puppeteer-sharp-monthly-april-2018)
  * [March 2018](http://www.hardkoded.com/blogs/puppeteer-sharp-monthly-march-2018)
