@@ -12,11 +12,11 @@ namespace PuppeteerSharp
         private Frame _parentFrame;
         private string _defaultContextId = "<not-initialized>";
         private object _context = null;
-        private string _url = string.Empty;        
+        private string _url = string.Empty;
         private bool _detached;
         private TaskCompletionSource<ElementHandle> _documentCompletionSource;
 
-        internal List<WaitTask> WaitTasks;
+        internal List<WaitTask> WaitTasks { get; }
 
         public Frame(Session client, Page page, Frame parentFrame, string frameId)
         {
