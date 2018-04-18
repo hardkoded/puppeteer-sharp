@@ -194,8 +194,9 @@ namespace PuppeteerSharp
         internal Task<JSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args)
             => new WaitTask(this, script, options.Polling, options.Timeout, args).Task;
 
-        internal async Task<ElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options)
+        public async Task<ElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
         {
+            options = options ?? new WaitForSelectorOptions();
             const string predicate = @"
               function predicate(selector, waitForVisible, waitForHidden) {
               const node = document.querySelector(selector);
