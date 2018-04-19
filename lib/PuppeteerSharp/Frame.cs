@@ -194,6 +194,12 @@ namespace PuppeteerSharp
         internal Task<JSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args)
             => new WaitTask(this, script, options.Polling, options.Timeout, args).Task;
 
+        /// <summary>
+        /// Waits for a selector to be added to the DOM
+        /// </summary>
+        /// <param name="selector">A selector of an element to wait for</param>
+        /// <param name="options">Optional waiting parameters</param>
+        /// <returns>A task that resolves when element specified by selector string is added to DOM</returns>
         public async Task<ElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
         {
             options = options ?? new WaitForSelectorOptions();
