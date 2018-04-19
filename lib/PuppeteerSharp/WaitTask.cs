@@ -10,6 +10,7 @@ namespace PuppeteerSharp
         private readonly Frame _frame;
         private readonly string _predicateBody;
         private readonly WaitForFunctionPollingOption _polling;
+        private readonly int? _pollingInterval;
         private readonly int _timeout;
         private readonly object[] _args;
         private readonly Task _timeoutTimer;
@@ -107,16 +108,21 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
   }
 }";
 
-        internal WaitTask(Frame frame, string predicateBody, WaitForFunctionPollingOption polling, int timeout, object[] args)
+        internal WaitTask(Frame frame, string predicateBody, WaitForFunctionPollingOption polling, int? pollingInterval, int timeout, object[] args)
         {
             if (string.IsNullOrEmpty(predicateBody))
             {
                 throw new ArgumentNullException(nameof(predicateBody));
             }
+            if(pollingInterval <= 10)
+            {
+                throw new ArgumentOutOfRangeException(nameof(pollingInterval), "Cannot poll with non-positive interval");
+            }
 
             _frame = frame;
             _predicateBody = $"return ( {predicateBody} )(...args)";
             _polling = polling;
+            _pollingInterval = pollingInterval;
             _timeout = timeout;
             _args = args;
 
@@ -124,7 +130,7 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
             _taskCompletion = new TaskCompletionSource<JSHandle>();
 
             _cts = new CancellationTokenSource();
-            
+
             _timeoutTimer = System.Threading.Tasks.Task.Delay(timeout, _cts.Token).ContinueWith(_
                 => Termiante(new PuppeteerException($"waiting failed: timeout {timeout}ms exceeded")));
 
@@ -143,7 +149,7 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
             try
             {
                 success = await context.EvaluateFunctionHandleAsync(WaitForPredicatePageFunction,
-                    new object[] { _predicateBody, _polling, _timeout }.Concat(_args).ToArray());
+                    new object[] { _predicateBody, _pollingInterval ?? (object)_polling, _timeout }.Concat(_args).ToArray());
             }
             catch (Exception ex)
             {

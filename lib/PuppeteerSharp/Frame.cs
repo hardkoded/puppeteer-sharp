@@ -192,7 +192,7 @@ namespace PuppeteerSharp
         internal Task WaitForTimeoutAsync(int milliseconds) => Task.Delay(milliseconds);
 
         internal Task<JSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args)
-            => new WaitTask(this, script, options.Polling, options.Timeout, args).Task;
+            => new WaitTask(this, script, options.Polling, options.PollingInterval, options.Timeout, args).Task;
 
         internal async Task<ElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options)
         {

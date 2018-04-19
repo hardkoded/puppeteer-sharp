@@ -7,13 +7,13 @@ namespace PuppeteerSharp.Tests.Frame
     [Collection("PuppeteerLoaderFixture collection")]
     public class WaitForFunctionTests : PuppeteerPageBaseTest
     {
-        [Fact(Skip = "not implemented yet")]
+        [Fact]
         public async Task ShouldPollOnInterval()
         {
             var success = false;
             var startTime = DateTime.Now;
             var polling = 100;
-            var watchdog = Page.WaitForFunctionAsync("() => window.__FOO === 'hit'"/*, { polling }*/)
+            var watchdog = Page.WaitForFunctionAsync("() => window.__FOO === 'hit'", new WaitForFunctionOptions { PollingInterval = polling })
                 .ContinueWith(_ => success = true);
             await Page.EvaluateExpressionAsync("window.__FOO = 'hit'");
             Assert.False(success);
@@ -42,6 +42,15 @@ namespace PuppeteerSharp.Tests.Frame
                 new WaitForFunctionOptions { Polling = WaitForFunctionPollingOption.Raf });
             await Page.EvaluateExpressionAsync("window.__FOO = 'hit'");
             await watchdog;
+        }
+
+        [Fact]
+        public async Task ShouldThrowNegativePollingInterval()
+        {
+            var exception = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(()
+                => Page.WaitForFunctionAsync("() => !!document.body", new WaitForFunctionOptions { PollingInterval = -10 }));
+
+            Assert.Contains("Cannot poll with non-positive interval", exception.Message);
         }
 
         [Fact]
