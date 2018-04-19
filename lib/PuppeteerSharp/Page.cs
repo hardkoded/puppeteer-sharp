@@ -1,9 +1,14 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Dynamic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
-using PuppeteerSharp.Input;
+using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Input;
 using System.IO;
 using System.Globalization;
 using Newtonsoft.Json.Linq;
@@ -13,9 +18,10 @@ using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
+    [DebuggerDisplay("Page {Url}")]
     public class Page : IDisposable
     {
-        private const int DefaultNavigationTimeout = 30000;
+        public int DefaultNavigationTimeout { get; set; } = 30000;
 
         private readonly Session _client;
         private readonly bool _ignoreHTTPSErrors;
@@ -24,9 +30,7 @@ namespace PuppeteerSharp
         private readonly TaskQueue _screenshotTaskQueue;
         private readonly EmulationManager _emulationManager;
 
-        private ViewPortOptions _viewport;
         private Dictionary<string, Func<object>> _pageBindings;
-
 
         private static readonly Dictionary<string, PaperFormat> _paperFormats = new Dictionary<string, PaperFormat> {
             {"letter", new PaperFormat {Width = 8.5m, Height = 11}},
@@ -104,6 +108,7 @@ namespace PuppeteerSharp
         public Touchscreen Touchscreen { get; }
         public Tracing Tracing { get; }
         public Mouse Mouse { get; }
+        public ViewPortOptions Viewport { get; private set; }
 
         public static readonly IEnumerable<string> SupportedMetrics = new List<string>
         {
@@ -176,6 +181,11 @@ namespace PuppeteerSharp
         public async Task SetRequestInterceptionAsync(bool value)
             => await _networkManager.SetRequestInterceptionAsync(value);
 
+        /// <summary>
+        /// Set offline mode for the page.
+        /// </summary>
+        /// <returns>Result task</returns>
+        /// <param name="value">When <c>true</c> enables offline mode for the page.</param>
         public async Task SetOfflineModeAsync(bool value) => await _networkManager.SetOfflineModeAsync(value);
 
         public async Task<object> EvalManyAsync(string selector, Func<object> pageFunction, params object[] args)
@@ -299,15 +309,27 @@ namespace PuppeteerSharp
             var navigateTask = Navigate(_client, url, referrer);
 
             await Task.WhenAny(
-                navigateTask,
-                watcher.NavigationTask
-            );
+                watcher.NavigationTask,
+                navigateTask);
 
-            var exception = navigateTask.Exception;
+            AggregateException exception = null;
+
+            if (navigateTask.IsFaulted)
+            {
+                exception = navigateTask.Exception;
+            }
+            else if (watcher.NavigationTask.IsCompleted &&
+                watcher.NavigationTask.Result.IsFaulted)
+            {
+                exception = watcher.NavigationTask.Result?.Exception;
+            }
+
             if (exception == null)
             {
-                await watcher.NavigationTask;
-                exception = watcher.NavigationTask.Exception;
+                await Task.WhenAll(
+                    watcher.NavigationTask,
+                    navigateTask);
+                exception = navigateTask.Exception ?? watcher.NavigationTask.Result.Exception;
             }
 
             watcher.Cancel();
@@ -315,7 +337,7 @@ namespace PuppeteerSharp
 
             if (exception != null)
             {
-                throw new NavigationException(exception.Message, exception);
+                throw new NavigationException(exception.InnerException.Message, exception.InnerException);
             }
 
             Request request = null;
@@ -401,10 +423,13 @@ namespace PuppeteerSharp
         public async Task SetJavaScriptEnabledAsync(bool enabled)
             => await _client.SendAsync("Emulation.setScriptExecutionDisabled", new { value = !enabled });
 
+        public async Task EmulateMediaAsync(MediaType media)
+            => await _client.SendAsync("Emulation.setEmulatedMedia", new { media });
+
         public async Task SetViewport(ViewPortOptions viewport)
         {
             var needsReload = await _emulationManager.EmulateViewport(_client, viewport);
-            _viewport = viewport;
+            Viewport = viewport;
 
             if (needsReload)
             {
@@ -522,6 +547,41 @@ namespace PuppeteerSharp
             return navigationTask.Result;
         }
 
+        /// <summary>
+        /// Waits for a timeout
+        /// </summary>
+        /// <param name="milliseconds"></param>
+        /// <returns>A task that resolves when after the timeout</returns>
+        public Task WaitForTimeoutAsync(int milliseconds)
+            => MainFrame.WaitForTimeoutAsync(milliseconds);
+
+        /// <summary>
+        /// Waits for a script to be evaluated to a truthy value
+        /// </summary>
+        /// <param name="script">Function to be evaluated in browser context</param>
+        /// <param name="options">Optional waiting parameters</param>
+        /// <param name="args">Arguments to pass to <c>script</c></param>
+        /// <returns>A task that resolves when the <c>script</c> returns a truthy value</returns>
+        public Task<JSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options = null, params object[] args)
+            => MainFrame.WaitForFunctionAsync(script, options ?? new WaitForFunctionOptions(), args);
+
+        /// <summary>
+        /// Waits for a script to be evaluated to a truthy value
+        /// </summary>
+        /// <param name="script">Function to be evaluated in browser context</param>
+        /// <param name="args">Arguments to pass to <c>script</c></param>
+        /// <returns>A task that resolves when the <c>script</c> returns a truthy value</returns>
+        public Task<JSHandle> WaitForFunctionAsync(string script, params object[] args) => WaitForFunctionAsync(script, null, args);
+
+        /// <summary>
+        /// Waits for a selector to be added to the DOM
+        /// </summary>
+        /// <param name="selector">A selector of an element to wait for</param>
+        /// <param name="options">Optional waiting parameters</param>
+        /// <returns>A task that resolves when element specified by selector string is added to DOM</returns>
+        public Task<ElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
+            => MainFrame.WaitForSelectorAsync(selector, options ?? new WaitForSelectorOptions());
+
         #endregion
 
         #region Private Method
@@ -595,9 +655,9 @@ namespace PuppeteerSharp
                     Scale = 1
                 };
 
-                var mobile = _viewport.IsMobile;
-                var deviceScaleFactor = _viewport.DeviceScaleFactor;
-                var landscape = _viewport.IsLandscape;
+                var mobile = Viewport.IsMobile;
+                var deviceScaleFactor = Viewport.DeviceScaleFactor;
+                var landscape = Viewport.IsLandscape;
                 var screenOrientation = landscape ?
                     new ScreenOrientation
                     {
@@ -657,7 +717,7 @@ namespace PuppeteerSharp
 
             if (options != null && options.FullPage)
             {
-                await SetViewport(_viewport);
+                await SetViewport(Viewport);
             }
 
             var buffer = Convert.FromBase64String(result.GetValue("data").Value<string>());
@@ -795,7 +855,6 @@ namespace PuppeteerSharp
 
         private async Task Navigate(Session client, string url, string referrer)
         {
-
             dynamic response = await client.SendAsync("Page.navigate", new
             {
                 url,

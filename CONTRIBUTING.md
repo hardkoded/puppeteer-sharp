@@ -18,8 +18,10 @@ The test server requires a self-signed certificate at this location: `.\lib\Pupp
 You can run this PowerShell script on Windows
 
 ```
-New-SelfSignedCertificate -Subject "puppeteer" -FriendlyName "Puppeteer" -CertStoreLocation "cert:\LocalMachine\My"
-Get-ChildItem -Path cert:\LocalMachine\my | where { $_.subject -eq "CN=puppeteer" } | Export-Certificate -FilePath .\lib\PuppeteerSharp.TestServer\testCert.cer
+New-SelfSignedCertificate -Subject "localhost" -FriendlyName "Puppeteer" -CertStoreLocation "cert:\CurrentUser\My"
+
+Get-ChildItem -Path cert:\CurrentUSer\my | where { $_.friendlyname -eq "Puppeteer" } | Export-Certificate -FilePath C:\projects\puppeteer-sharp\lib\PuppeteerSharp.TestServer\testCert.cer
+
 ```
 
 On MacOS, you can create an “SSL Client” certificate using the Keychain Access app and then export it to `.\lib\PuppeteerSharp.TestServer\testCert.cer`
@@ -36,6 +38,7 @@ information on pull requests.
 
 Though this list will change over time, these are the things to consider now:
  * [We are team spaces](https://www.youtube.com/watch?v=SsoOG6ZeyUI).
+ * Every public API should have an XML documentation.
  * Try to follow the current style.
  * Don’t reinvent the wheel.
 
@@ -45,6 +48,5 @@ Don’t worry about commit messages or about how many commits your PR has. [Your
 
 ## Writing Tests
 
-Every feature should be accompanied by a test.
-
-Every public api event/method should be accompanied by a test.
+* Every feature should be accompanied by a test.
+* Every public api event/method should be accompanied by a test.

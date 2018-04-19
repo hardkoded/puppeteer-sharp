@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace PuppeteerSharp
 {
     [Serializable]
-    internal class NavigationException : PuppeteerException
+    public class NavigationException : PuppeteerException
     {
         public NavigationException()
         {

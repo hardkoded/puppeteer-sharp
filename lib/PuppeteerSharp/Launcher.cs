@@ -46,7 +46,7 @@ namespace PuppeteerSharp
         private LaunchOptions _options;
         private TaskCompletionSource<bool> _waitForChromeToClose;
         private static int _processCount = 0;
-
+        private bool _processLoaded;
         private const string UserDataDirArgument = "--user-data-dir";
         #endregion
 
@@ -60,6 +60,17 @@ namespace PuppeteerSharp
         }
 
         #region Public methods
+        /// <summary>
+        /// The method launches a browser instance with given arguments. The browser will be closed when the Browser is disposed.
+        /// </summary>
+        /// <param name="options">Options for launching Chrome</param>
+        /// <param name="chromiumRevision">The revision of Chrome to launch.</param>
+        /// <returns>A connected browser.</returns>
+        /// <remarks>
+        /// See <a href="https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/">this article</a>
+        /// for a description of the differences between Chromium and Chrome.
+        /// <a href="https://chromium.googlesource.com/chromium/src/+/lkcr/docs/chromium_browser_vs_google_chrome.md">This article</a> describes some differences for Linux users.
+        /// </remarks>
         public async Task<Browser> LaunchAsync(LaunchOptions options, int chromiumRevision)
         {
             var chromeArguments = new List<string>(DefaultArgs);
@@ -153,6 +164,7 @@ namespace PuppeteerSharp
                 var keepAliveInterval = options.KeepAliveInterval;
 
                 _connection = await Connection.Create(browserWSEndpoint, connectionDelay, keepAliveInterval);
+                _processLoaded = true;
 
                 if (options.LogProcess)
                 {
@@ -164,11 +176,33 @@ namespace PuppeteerSharp
             catch (Exception ex)
             {
                 ForceKillChrome();
-                throw new Exception("Failed to create connection", ex);
+                throw new ChromeProcessException("Failed to create connection", ex);
             }
 
         }
-        
+
+        /// <summary>
+        /// Attaches Puppeteer to an existing Chromium instance. The browser will be closed when the Browser is disposed.
+        /// </summary>
+        /// <param name="options">Options for connecting.</param>
+        /// <returns>A connected browser.</returns>
+        public async Task<Browser> ConnectAsync(ConnectOptions options)
+        {
+            try
+            {
+                var connectionDelay = options.SlowMo;
+                var keepAliveInterval = options.KeepAliveInterval;
+
+                _connection = await Connection.Create(options.BrowserWSEndpoint, connectionDelay, keepAliveInterval);
+
+                return await Browser.CreateAsync(_connection, options, () => _connection.SendAsync("Browser.close", null));
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to create connection", ex);
+            }
+        }
+
         public async Task TryDeleteUserDataDir(int times = 10, TimeSpan? delay = null)
         {
             if (!IsChromeClosed)
@@ -225,7 +259,7 @@ namespace PuppeteerSharp
         #endregion
 
         #region Private methods
-        
+
         private Task<string> WaitForEndpoint(Process chromeProcess, int timeout, bool dumpio)
         {
             var taskWrapper = new TaskCompletionSource<string>();
@@ -236,10 +270,14 @@ namespace PuppeteerSharp
 
             EventHandler exitedEvent = (sender, e) =>
             {
+                if (_options.LogProcess && !_processLoaded)
+                {
+                    Console.WriteLine($"PROCESS COUNT: {Interlocked.Increment(ref _processCount)}");
+                }
+
                 CleanUp();
 
-                var error = chromeProcess.StandardError.ReadToEnd();
-                taskWrapper.SetException(new ChromeProcessException($"Failed to launch chrome! {error}"));
+                taskWrapper.SetException(new ChromeProcessException($"Failed to launch chrome! {output}"));
             };
 
             chromeProcess.ErrorDataReceived += (sender, e) =>
@@ -333,14 +371,13 @@ namespace PuppeteerSharp
             }
 
             await _waitForChromeToClose.Task;
-
         }
 
         private void ForceKillChrome()
         {
             try
             {
-                if (_chromeProcess.Id != 0 && Process.GetProcessById(_chromeProcess.Id) != null)
+                if (_chromeProcess.Id != 0 && !_chromeProcess.HasExited && Process.GetProcessById(_chromeProcess.Id) != null)
                 {
                     _chromeProcess.Kill();
                     _chromeProcess.WaitForExit();
@@ -351,7 +388,6 @@ namespace PuppeteerSharp
                 // swallow
             }
         }
-
 
         private static void SetEnvVariables(IDictionary<string, string> environment, IDictionary<string, string> customEnv,
                                             IDictionary realEnv)
