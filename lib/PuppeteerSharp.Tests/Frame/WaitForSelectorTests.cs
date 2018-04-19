@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -62,14 +61,12 @@ namespace PuppeteerSharp.Tests.Frame
             await FrameUtils.AttachFrame(Page, "frame1", TestConstants.EmptyPage);
             var otherFrame = Page.Frames.ElementAt(1);
             var added = false;
-            var watchdog = Page.WaitForSelectorAsync("div").ContinueWith(_ => added = true);
+            Page.WaitForSelectorAsync("div").ContinueWith(_ => added = true);
             await otherFrame.EvaluateFunctionAsync(AddElement, "div");
             Assert.False(added);
 
             await Page.EvaluateFunctionAsync(AddElement, "div");
             Assert.True(added);
-
-            await watchdog;
         }
 
         [Fact]
@@ -80,7 +77,7 @@ namespace PuppeteerSharp.Tests.Frame
             var frame1 = Page.Frames.ElementAt(1);
             var frame2 = Page.Frames.ElementAt(2);
             var added = false;
-            var watchdog = frame2.WaitForSelectorAsync("div").ContinueWith(_ => added = true);
+            frame2.WaitForSelectorAsync("div").ContinueWith(_ => added = true);
             Assert.False(added);
 
             await frame1.EvaluateFunctionAsync(AddElement, "div");
@@ -88,8 +85,6 @@ namespace PuppeteerSharp.Tests.Frame
 
             await frame2.EvaluateFunctionAsync(AddElement, "div");
             Assert.True(added);
-
-            await watchdog;
         }
 
         [Fact]
@@ -107,12 +102,115 @@ namespace PuppeteerSharp.Tests.Frame
         public async Task ShouldThrowWhenFrameIsDetached()
         {
             await FrameUtils.AttachFrame(Page, "frame1", TestConstants.EmptyPage);
-            var frame = Page.Frames.ElementAt(1);            
+            var frame = Page.Frames.ElementAt(1);
             var waitTask = frame.WaitForSelectorAsync(".box").ContinueWith(task => task?.Exception?.InnerException);
             await FrameUtils.DetachFrame(Page, "frame1");
             var waitException = await waitTask;
             Assert.NotNull(waitException);
             Assert.Contains("waitForSelector failed: frame got detached", waitException.Message);
+        }
+
+        [Fact]
+        public async Task ShouldSurviveCrossProcessNavigation()
+        {
+            var boxFound = false;
+            var waitForSelector = Page.WaitForSelectorAsync(".box").ContinueWith(_ => boxFound = true);
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            Assert.False(boxFound);
+            await Page.ReloadAsync();
+            Assert.False(boxFound);
+            await Page.GoToAsync(TestConstants.CrossProcessHttpPrefix + "/grid.html");
+            await waitForSelector;
+            Assert.True(boxFound);
+        }
+
+        [Fact]
+        public async Task ShouldWaitForVisible()
+        {
+            var divFound = false;
+            var waitForSelector = Page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Visible = true })
+                .ContinueWith(_ => divFound = true);
+            await Page.SetContentAsync("<div style='display: none; visibility: hidden;'>1</div>");
+            Assert.False(divFound);
+            await Page.EvaluateExpressionAsync("document.querySelector('div').style.removeProperty('display')");
+            Assert.False(divFound);
+            await Page.EvaluateExpressionAsync("document.querySelector('div').style.removeProperty('visibility')");
+            Assert.True(await waitForSelector);
+            Assert.True(divFound);
+        }
+
+        [Fact]
+        public async Task ShouldWaitForVisibleRecursively()
+        {
+            var divVisible = false;
+            var waitForSelector = Page.WaitForSelectorAsync("div#inner", new WaitForSelectorOptions { Visible = true })
+                .ContinueWith(_ => divVisible = true);
+            await Page.SetContentAsync("<div style='display: none; visibility: hidden;'><div id='inner'>hi</div></div>");
+            Assert.False(divVisible);
+            await Page.EvaluateExpressionAsync("document.querySelector('div').style.removeProperty('display')");
+            Assert.False(divVisible);
+            await Page.EvaluateExpressionAsync("document.querySelector('div').style.removeProperty('visibility')");
+            Assert.True(await waitForSelector);
+            Assert.True(divVisible);
+        }
+
+        [Theory]
+        [InlineData("visibility", "hidden")]
+        [InlineData("display", "none")]
+        public async Task HiddenShouldWaitForVisibility(string propertyName, string propertyValue)
+        {
+            var divHidden = false;
+            await Page.SetContentAsync("<div style='display: block;'></div>");
+            var waitForSelector = Page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Hidden = true })
+                .ContinueWith(_ => divHidden = true);
+            await Page.WaitForSelectorAsync("div"); // do a round trip
+            Assert.False(divHidden);
+            await Page.EvaluateExpressionAsync($"document.querySelector('div').style.setProperty('{propertyName}', '{propertyValue}')");
+            Assert.True(await waitForSelector);
+            Assert.True(divHidden);
+        }
+
+        [Fact]
+        public async Task HiddenShouldWaitForRemoval()
+        {
+            await Page.SetContentAsync("<div></div>");
+            var divRemoved = false;
+            var waitForSelector = Page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Hidden = true })
+                .ContinueWith(_ => divRemoved = true);
+            await Page.WaitForSelectorAsync("div"); // do a round trip
+            Assert.False(divRemoved);
+            await Page.EvaluateExpressionAsync("document.querySelector('div').remove()");
+            Assert.True(await waitForSelector);
+            Assert.True(divRemoved);
+        }
+
+        [Fact]
+        public async Task ShouldRespectTimeout()
+        {
+            var exception = await Assert.ThrowsAnyAsync<PuppeteerException>(async ()
+                => await Page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Timeout = 10 }));
+
+            Assert.NotNull(exception);
+            Assert.Contains("waiting failed: timeout", exception.Message);
+        }
+
+        [Fact]
+        public async Task ShouldRespondToNodeAttributeMutation()
+        {
+            var divFound = false;
+            var waitForSelector = Page.WaitForSelectorAsync(".zombo").ContinueWith(_ => divFound = true);
+            await Page.SetContentAsync("<div class='notZombo'></div>");
+            Assert.False(divFound);
+            await Page.EvaluateExpressionAsync("document.querySelector('div').className = 'zombo'");
+            Assert.True(await waitForSelector);
+        }
+
+        [Fact]
+        public async Task ShouldReturnTheElementHandle()
+        {
+            var waitForSelector = Page.WaitForSelectorAsync(".zombo");
+            await Page.SetContentAsync("<div class='zombo'>anything</div>");
+            Assert.Equal("anything", await Page.EvaluateFunctionAsync<string>("x => x.textContent", await waitForSelector));
         }
     }
 }
