@@ -12,7 +12,8 @@ namespace PuppeteerSharp.Tests.Page
             var newPage = await Browser.NewPageAsync();
             var neverResolves = newPage.EvaluateFunctionAsync("() => new Promise(r => {})");
             
-            await newPage.CloseAsync();
+            // Put into a var to avoid warning
+            var t = newPage.CloseAsync();
 
             var exception = await Assert.ThrowsAsync<TargetClosedException>(async () => await neverResolves);
             

@@ -849,7 +849,7 @@ namespace PuppeteerSharp
                 .Select(_ => (JSHandle)_frameManager.CreateJsHandle(message.ExecutionContextId, _))
                 .ToList();
 
-            var consoleMessage = new ConsoleMessage(message.Type, handles);
+            var consoleMessage = new ConsoleMessage(message.Type, string.Join(" ", handles), handles);
             Console?.Invoke(this, new ConsoleEventArgs(consoleMessage));
         }
 
