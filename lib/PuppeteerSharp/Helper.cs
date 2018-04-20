@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace PuppeteerSharp
 {
@@ -32,7 +33,38 @@ namespace PuppeteerSharp
                         throw new Exception("Unsupported unserializable value: " + remoteObject.unserializableValue);
                 }
             }
-            return remoteObject.value;
+
+            if (remoteObject.value == null)
+            {
+                return null;
+            }
+
+            // https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-RemoteObject
+            string objectValue = remoteObject.value.ToString();
+            string objectType = remoteObject.type.ToString();
+            
+            switch (objectType)
+            {
+                case "object":
+                    return JsonConvert.DeserializeObject<T>(objectValue);
+                case "undefined": 
+                    return null;
+                case "number":
+                    switch (Type.GetTypeCode(typeof(T)))
+                    {
+                        case TypeCode.Int32:
+                        case TypeCode.Int64:
+                            return int.Parse(objectValue);
+                        default:
+                            return float.Parse(objectValue);
+                    }
+                case "boolean": 
+                    return bool.Parse(objectValue);
+                case "bigint": 
+                    return double.Parse(objectValue);
+                default: // string, symbol, function
+                    return objectValue;
+            }
         }
 
         internal static async Task ReleaseObject(Session client, dynamic remoteObject)
