@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PuppeteerSharp.Messaging;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -73,7 +74,7 @@ namespace PuppeteerSharp
                     OnScriptParsed();
                     break;
                 case "Runtime.executionContextsCleared":
-                    OnExecutionContextsCleared(e.MessageData);
+                    OnExecutionContextsCleared(e.MessageData.ToObject<RuntimeExecutionContextsClearedResponse>());
                     break;
             }
         }
@@ -88,18 +89,19 @@ namespace PuppeteerSharp
             _scriptURLs.Clear();
             _scriptSources.Clear();
         }
-        private async void OnExecutionContextsCleared(dynamic @event)
+
+        private async void OnExecutionContextsCleared(RuntimeExecutionContextsClearedResponse @event)
         {
-            if (@event.url != null)
+            if (@event.Url != null)
             {
                 return;
             }
 
             try
             {
-                var response = await _client.SendAsync("Debugger.getScriptSource", new { scriptId = @event.scriptId.ToString() });
-                _scriptURLs.Add(@event.scriptId.ToString(), @event.url.ToString());
-                _scriptSources.Add(@event.scriptId.ToString(), response.scriptSource.ToString());
+                var response = await _client.SendAsync("Debugger.getScriptSource", new { scriptId = @event.ScriptId });
+                _scriptURLs.Add(@event.ScriptId, @event.Url);
+                _scriptSources.Add(@event.ScriptId, response.scriptSource.ToString());
             }
             catch (Exception ex)
             {
