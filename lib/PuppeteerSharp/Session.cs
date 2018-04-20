@@ -86,6 +86,10 @@ namespace PuppeteerSharp
             return await callback.TaskWrapper.Task;
         }
 
+        /// <summary>
+        /// Detaches session from target. Once detached, session won't emit any events and can't be used to send messages.
+        /// </summary>
+        /// <returns></returns>
         public Task DetachAsync()
             => Connection.SendAsync("Target.detachFromTarget", new { sessionId = SessionId });
 
