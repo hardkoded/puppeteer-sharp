@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace PuppeteerSharp
 {
@@ -31,6 +29,6 @@ namespace PuppeteerSharp
         /// <remarks>
         /// JavaScript Coverage doesn't include anonymous scripts; however, scripts with sourceURLs are reported.
         /// </remarks>
-        public Task StopJSCoverageAsync() => _jsCoverage.StopAsync();        
+        public Task StopJSCoverageAsync() => _jsCoverage.StopAsync();
     }
 }
