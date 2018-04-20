@@ -52,12 +52,11 @@ namespace PuppeteerSharp
             {"cm", 37.8m},
             {"mm", 3.78m}
         };
-        private Target _target;
 
         private Page(Session client, Target target, FrameTree frameTree, bool ignoreHTTPSErrors, TaskQueue screenshotTaskQueue)
         {
             _client = client;
-            _target = target;
+            Target = target;
             Keyboard = new Keyboard(client);
             Mouse = new Mouse(client, Keyboard);
             Touchscreen = new Touchscreen(client, Keyboard);
@@ -68,6 +67,7 @@ namespace PuppeteerSharp
             _pageBindings = new Dictionary<string, Func<object>>();
 
             _ignoreHTTPSErrors = ignoreHTTPSErrors;
+            Coverage = new Coverage(client);
 
             _screenshotTaskQueue = screenshotTaskQueue;
 
@@ -104,8 +104,10 @@ namespace PuppeteerSharp
         public IEnumerable<Frame> Frames => _frameManager.Frames.Values;
         public string Url => MainFrame.Url;
 
+        public Target Target { get; }
         public Keyboard Keyboard { get; }
         public Touchscreen Touchscreen { get; }
+        public Coverage Coverage { get; }
         public Tracing Tracing { get; }
         public Mouse Mouse { get; }
         public ViewPortOptions Viewport { get; private set; }
@@ -508,7 +510,7 @@ namespace PuppeteerSharp
             {
                 return _client.Connection.SendAsync("Target.closeTarget", new
                 {
-                    targetId = _target.TargetId
+                    targetId = Target.TargetId
                 });
             }
 
@@ -630,7 +632,7 @@ namespace PuppeteerSharp
         {
             await _client.SendAsync("Target.activateTarget", new
             {
-                targetId = _target.TargetId
+                targetId = Target.TargetId
             });
 
             var clip = options.Clip != null ? options.Clip.Clone() : null;
@@ -836,15 +838,16 @@ namespace PuppeteerSharp
 
         private async Task OnConsoleAPI(PageConsoleResponse message)
         {
-            if (Console?.GetInvocationList().Length == 0) {
+            if (Console?.GetInvocationList().Length == 0)
+            {
                 foreach (var arg in message.Args)
                 {
                     await Helper.ReleaseObject(_client, arg);
                 }
-                
+
                 return;
             }
-            
+
             var handles = message.Args
                 .Select(_ => (JSHandle)_frameManager.CreateJsHandle(message.ExecutionContextId, _))
                 .ToList();

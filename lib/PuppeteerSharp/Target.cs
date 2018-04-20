@@ -62,5 +62,7 @@ namespace PuppeteerSharp
             }
         }
 
+        public Task<Session> CreateCDPSession() => _browser.Connection.CreateSession(TargetId);
+
     }
 }

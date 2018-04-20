@@ -85,6 +85,10 @@ namespace PuppeteerSharp
 
             return await callback.TaskWrapper.Task;
         }
+
+        public Task DetachAsync()
+            => Connection.SendAsync("Target.detachFromTarget", new { sessionId = SessionId });
+
         #endregion
 
         #region Private Mathods
