@@ -114,7 +114,7 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
             {
                 throw new ArgumentNullException(nameof(predicateBody));
             }
-            if(pollingInterval <= 10)
+            if (pollingInterval <= 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(pollingInterval), "Cannot poll with non-positive interval");
             }
