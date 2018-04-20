@@ -62,7 +62,7 @@ namespace PuppeteerSharp
                _client.SendAsync("Debugger.disable")
            );
             _client.MessageReceived -= client_MessageReceived;
-            
+
             // TODO: return coverage;            
         }
 
@@ -71,15 +71,34 @@ namespace PuppeteerSharp
             switch (e.MessageID)
             {
                 case "Debugger.scriptParsed":
-                    OnScriptParsed();
+                    OnScriptParsed(e.MessageData.ToObject<ScriptParsedResponse>());
                     break;
                 case "Runtime.executionContextsCleared":
-                    OnExecutionContextsCleared(e.MessageData.ToObject<RuntimeExecutionContextsClearedResponse>());
+                    OnExecutionContextsCleared();
                     break;
             }
         }
 
-        private void OnScriptParsed()
+        private async void OnScriptParsed(ScriptParsedResponse scriptParseResponse)
+        {
+            if (scriptParseResponse.Url != null)
+            {
+                return;
+            }
+
+            try
+            {
+                var response = await _client.SendAsync("Debugger.getScriptSource", new { scriptId = scriptParseResponse.ScriptId });
+                _scriptURLs.Add(scriptParseResponse.ScriptId, scriptParseResponse.Url);
+                _scriptSources.Add(scriptParseResponse.ScriptId, response.scriptSource.ToString());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+        }
+
+        private void OnExecutionContextsCleared()
         {
             if (!_resetOnNavigation)
             {
@@ -88,25 +107,6 @@ namespace PuppeteerSharp
 
             _scriptURLs.Clear();
             _scriptSources.Clear();
-        }
-
-        private async void OnExecutionContextsCleared(RuntimeExecutionContextsClearedResponse @event)
-        {
-            if (@event.Url != null)
-            {
-                return;
-            }
-
-            try
-            {
-                var response = await _client.SendAsync("Debugger.getScriptSource", new { scriptId = @event.ScriptId });
-                _scriptURLs.Add(@event.ScriptId, @event.Url);
-                _scriptSources.Add(@event.ScriptId, response.scriptSource.ToString());
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
         }
     }
 }
