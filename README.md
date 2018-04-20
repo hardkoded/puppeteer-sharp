@@ -76,7 +76,7 @@ using (var page = await Browser.NewPageAsync())
 ```cs
 var options = new ConnectOptions()
 {
-    BrowserWSEndpoint = "wss://chrome.browserless.io?token={apikey}"
+    BrowserWSEndpoint = $"wss://www.externalbrowser.io?token={apikey}"
 };
 
 var url = "https://www.google.com/";
