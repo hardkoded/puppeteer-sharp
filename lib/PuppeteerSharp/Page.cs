@@ -16,7 +16,7 @@ namespace PuppeteerSharp
     [DebuggerDisplay("Page {Url}")]
     public class Page : IDisposable
     {
-        public int DefaultNavigationTimeout { get; set; } = 30000;
+        public int DefaultNavigationTimeout { get; set; } = 30000000;
 
         private readonly Session _client;
         private readonly bool _ignoreHTTPSErrors;
