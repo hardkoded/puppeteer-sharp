@@ -19,7 +19,7 @@ namespace PuppeteerSharp
             }
         }
 
-        internal static object ValueFromRemoteObject(dynamic remoteObject)
+        internal static object ValueFromRemoteObject<T>(dynamic remoteObject)
         {
             if (remoteObject.unserializableValue != null)
             {
