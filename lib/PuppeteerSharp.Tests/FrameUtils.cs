@@ -22,7 +22,7 @@ namespace PuppeteerSharp.Tests
             var result = indentation + Regex.Replace(frame.Url, @":\d{4}", ":<PORT>");
             foreach (var child in frame.ChildFrames)
             {
-                result += Environment.NewLine + DumpFrames(child, "    " + indentation);
+                result += "\n" + DumpFrames(child, "    " + indentation);
             }
 
             return result;

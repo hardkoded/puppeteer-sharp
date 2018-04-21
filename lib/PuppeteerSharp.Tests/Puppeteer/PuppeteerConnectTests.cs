@@ -18,13 +18,13 @@ namespace PuppeteerSharp.Tests.Puppeteer
             using (var page = await browser.NewPageAsync())
             {
                 var response = await page.EvaluateExpressionAsync<int>("7 * 8");
-                Assert.Equal(response, 56);
+                Assert.Equal(56, response);
             }
 
             using (var originalPage = await Browser.NewPageAsync())
             {
                 var response = await originalPage.EvaluateExpressionAsync<int>("7 * 6");
-                Assert.Equal(response, 42);
+                Assert.Equal(42, response);
             }
         }
 
@@ -36,7 +36,7 @@ namespace PuppeteerSharp.Tests.Puppeteer
                 BrowserWSEndpoint = Browser.WebSocketEndpoint
             };
 
-            var url = TestConstants.CrossProcessHttpPrefix + "/frames/frame.html";
+            var url = TestConstants.CrossProcessHttpPrefix + "/frames/nested-frames.html";
             var page = await Browser.NewPageAsync();
             await page.GoToAsync(url);
 
@@ -48,9 +48,13 @@ namespace PuppeteerSharp.Tests.Puppeteer
                 var restoredPage = pages.FirstOrDefault(x => x.Url == url);
                 Assert.NotNull(restoredPage);
                 var frameDump = FrameUtils.DumpFrames(restoredPage.MainFrame);
-                Assert.Equal(@"http://127.0.0.1:<PORT>/frames/frame.html", frameDump);
+                Assert.Equal(@"http://127.0.0.1:<PORT>/frames/nested-frames.html
+    http://127.0.0.1:<PORT>/frames/two-frames.html
+        http://127.0.0.1:<PORT>/frames/frame.html
+        http://127.0.0.1:<PORT>/frames/frame.html
+    http://127.0.0.1:<PORT>/frames/frame.html", frameDump);
                 var response = await restoredPage.EvaluateExpressionAsync<int>("7 * 8");
-                Assert.Equal(response, 56);
+                Assert.Equal(56, response);
             }
         }
     }

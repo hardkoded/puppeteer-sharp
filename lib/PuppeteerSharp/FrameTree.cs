@@ -22,6 +22,7 @@ namespace PuppeteerSharp
                 Url = frameTree.frame.url
             };
 
+            Childs = new List<FrameTree>();
             LoadChilds(this, frameTree);
         }
 
@@ -34,19 +35,23 @@ namespace PuppeteerSharp
 
         private void LoadChilds(FrameTree frame, dynamic frameTree)
         {
-            if ((frameTree as JObject)["childs"] != null)
+            if ((frameTree as JObject)["childFrames"] != null)
             {
-                foreach (dynamic item in frameTree.childs)
+                foreach (dynamic item in frameTree.childFrames)
                 {
                     var newFrame = new FrameTree();
 
                     newFrame.Frame = new FramePayload
                     {
-                        Id = item.id,
-                        ParentId = item.parentID
+                        Id = item.frame.id,
+                        ParentId = item.frame.parentId,
+                        Url = item.frame.url
                     };
 
-                    LoadChilds(newFrame, item.childs);
+                    if ((item as JObject)["childFrames"] != null)
+                    {
+                        LoadChilds(newFrame, item);
+                    }
                     frame.Childs.Add(newFrame);
                 }
             }
