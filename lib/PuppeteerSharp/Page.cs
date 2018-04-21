@@ -19,7 +19,7 @@ using PuppeteerSharp.Messaging;
 namespace PuppeteerSharp
 {
     [DebuggerDisplay("Page {Url}")]
-    public class Page : IDisposable
+    public class Page : IDisposable, IEquatable<Page>
     {
         public int DefaultNavigationTimeout { get; set; } = 30000;
 
@@ -870,6 +870,9 @@ namespace PuppeteerSharp
 
         #region IDisposable
         public void Dispose() => CloseAsync();
+        #endregion
+        #region IEquatable
+        public bool Equals(Page other) => MainFrame.Id == other.MainFrame.Id;
         #endregion
     }
 }
