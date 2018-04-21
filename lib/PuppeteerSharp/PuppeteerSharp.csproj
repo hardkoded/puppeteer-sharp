@@ -11,7 +11,33 @@
     <Title>PuppeteerSharp</Title>
     <Description>Headless Chrome .NET API</Description>
     <PackageId>PuppeteerSharp</PackageId>
-    <PackageReleaseNotes>* 0.3.3: Page.Dispose fixes. NavigationOptions properties were made public. Several Page features are included as pre-release.
+    <PackageReleaseNotes>* 0.4.0: Page Features, are you ready?
+    - Page.GoToAsync
+    - Page.ReloadAsync
+    - Page.EmulateMediaAsync
+    - Page.SetViewport
+    - Page.EmulateAsync
+    - Page.SetUserAgentAsync
+    - Page.MetricsAsync
+    - Page.Dialog
+    - Page.Error
+    - Page.RequestCreated
+    - Page.GetCookiesAsync
+    - Page.SetCookieAsync
+    - Page.SetExtraHttpHeadersAsync
+    - Page.AuthenticateAsync
+    - Page.SetJavaScriptEnabledAsync
+    - Page.SetContentAsync
+    - Page.EvaluateFunctionAsync
+    - Page.EvaluateExpressionAsync
+    - Page.GetTitleAsync
+    - Page.SetOfflineModeAsync
+    - Page.CloseAsync
+    - Page.Console
+    - Page.WaitForTimeoutAsync
+    - Page.WaitForFunctionAsync
+    - Page.WaitForSelectorAsync
+* 0.3.3: Page.Dispose fixes. NavigationOptions properties were made public. Several Page features are included as pre-release.
 * 0.3.2: Frame/FrameManager and Page redirect fixes
 * 0.3.1: .NET Framework Support
 * 0.3.0: Process improvements, User data dir support
