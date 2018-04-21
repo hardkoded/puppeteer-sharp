@@ -70,8 +70,10 @@ namespace PuppeteerSharp
             return await target.Page();
         }
 
+        public IEnumerable<Target> Targets() => _targets.Values.Where(target => target.IsInitialized);
+
         public async Task<IEnumerable<Page>> Pages()
-            => (await Task.WhenAll(this._targets.Select(x => x.Value.Page()))).Where(x => x != null);
+            => (await Task.WhenAll(Targets().Select(target => target.Page()))).Where(x => x != null);
 
         internal void ChangeTarget(TargetInfo targetInfo)
         {

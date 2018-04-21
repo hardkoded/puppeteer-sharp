@@ -9,8 +9,9 @@ namespace PuppeteerSharp
         #region Private members
         private Browser _browser;
         private TargetInfo _targetInfo;
-        private bool _isInitialized;
         #endregion
+
+        internal bool IsInitialized;
 
         public Target(Browser browser, TargetInfo targetInfo)
         {
@@ -18,9 +19,9 @@ namespace PuppeteerSharp
             _targetInfo = targetInfo;
 
             InitilizedTaskWrapper = new TaskCompletionSource<bool>();
-            _isInitialized = _targetInfo.Type != "page" || _targetInfo.Url != string.Empty;
+            IsInitialized = _targetInfo.Type != "page" || _targetInfo.Url != string.Empty;
 
-            if (_isInitialized)
+            if (IsInitialized)
             {
                 InitilizedTaskWrapper.SetResult(true);
             }
@@ -50,9 +51,9 @@ namespace PuppeteerSharp
             var previousUrl = _targetInfo.Url;
             _targetInfo = targetInfo;
 
-            if (!_isInitialized && (_targetInfo.Type != "page" || _targetInfo.Url != string.Empty))
+            if (!IsInitialized && (_targetInfo.Type != "page" || _targetInfo.Url != string.Empty))
             {
-                _isInitialized = true;
+                IsInitialized = true;
                 InitilizedTaskWrapper.SetResult(true);
             }
 
