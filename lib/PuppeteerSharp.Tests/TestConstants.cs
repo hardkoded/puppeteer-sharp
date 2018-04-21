@@ -14,10 +14,10 @@ namespace PuppeteerSharp.Tests
         public static readonly string CrossProcessHttpPrefix = "http://127.0.0.1:8907";
         public static readonly string EmptyPage = $"{ServerUrl}/empty.html";
         public static readonly string CrossProcessUrl = ServerIpUrl;
-        
+
         public static readonly DeviceDescriptor IPhone = DeviceDescriptors.Get(DeviceDescriptorName.IPhone6);
         public static readonly DeviceDescriptor IPhone6Landscape = DeviceDescriptors.Get(DeviceDescriptorName.IPhone6Landscape);
-
+        
         public static LaunchOptions DefaultBrowserOptions() => new LaunchOptions
         {
             SlowMo = Convert.ToInt32(Environment.GetEnvironmentVariable("SLOW_MO")),

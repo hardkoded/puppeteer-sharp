@@ -24,32 +24,26 @@ namespace PuppeteerSharp
         public string FrameId { get; internal set; }
         public bool IsDefault { get; internal set; }
 
-        public async Task<dynamic> EvaluateExpressionAsync(string script)
-        {
-            var handle = await EvaluateExpressionHandleAsync(script);
-            dynamic result = await handle.JsonValue();
-            await handle.Dispose();
-            return result;
-        }
+        public async Task<object> EvaluateExpressionAsync(string script)
+            => await EvaluateExpressionAsync<object>(script);
 
         public async Task<T> EvaluateExpressionAsync<T>(string script)
         {
-            var result = await EvaluateExpressionAsync(script);
-            return ((JToken)result).ToObject<T>();
-        }
-
-        public async Task<dynamic> EvaluateFunctionAsync(string script, params object[] args)
-        {
-            var handle = await EvaluateFunctionHandleAsync(script, args);
-            dynamic result = await handle.JsonValue();
+            var handle = await EvaluateExpressionHandleAsync(script);
+            var result = await handle.JsonValue<T>();
             await handle.Dispose();
             return result;
         }
 
+        public async Task<object> EvaluateFunctionAsync(string script, params object[] args)
+            => await EvaluateFunctionAsync<object>(script, args);
+
         public async Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
         {
-            var result = await EvaluateFunctionAsync(script, args);
-            return ((JToken)result).ToObject<T>();
+            var handle = await EvaluateFunctionHandleAsync(script, args);
+            var result = await handle.JsonValue<T>();
+            await handle.Dispose();
+            return result;
         }
 
         internal async Task<JSHandle> EvaluateExpressionHandleAsync(string script)

@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -36,7 +36,9 @@ namespace PuppeteerSharp
             return result;
         }
 
-        public async Task<object> JsonValue()
+        public async Task<object> JsonValue() => await JsonValue<object>();
+
+        public async Task<T> JsonValue<T>()
         {
             if (RemoteObject.objectId != null)
             {
@@ -47,10 +49,10 @@ namespace PuppeteerSharp
                     {"returnByValue", true},
                     {"awaitPromise", true}
                 });
-                return Helper.ValueFromRemoteObject(response.result);
+                return Helper.ValueFromRemoteObject<T>(response.result);
             }
 
-            return Helper.ValueFromRemoteObject(RemoteObject);
+            return Helper.ValueFromRemoteObject<T>(RemoteObject);
         }
 
         public virtual ElementHandle AsElement() => null;
@@ -68,13 +70,13 @@ namespace PuppeteerSharp
 
         public override string ToString()
         {
-            if (((IDictionary<string, object>)RemoteObject).ContainsKey("objectId"))
+            if (((JObject)RemoteObject)["objectId"] != null)
             {
                 var type = RemoteObject.subtype ?? RemoteObject.type;
                 return "JSHandle@" + type;
             }
 
-            return "JSHandle:" + Helper.ValueFromRemoteObject(RemoteObject);
+            return Helper.ValueFromRemoteObject<object>(RemoteObject)?.ToString();
         }
     }
 }

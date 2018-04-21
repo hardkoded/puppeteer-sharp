@@ -13,9 +13,10 @@ namespace PuppeteerSharp
         private string _defaultContextId = "<not-initialized>";
         private object _context = null;
         private string _url = string.Empty;
-        private List<WaitTask> _waitTasks;
         private bool _detached;
         private TaskCompletionSource<ElementHandle> _documentCompletionSource;
+
+        internal List<WaitTask> WaitTasks { get; }
 
         public Frame(Session client, Page page, Frame parentFrame, string frameId)
         {
@@ -31,7 +32,7 @@ namespace PuppeteerSharp
 
             SetDefaultContext(null);
 
-            _waitTasks = new List<WaitTask>();
+            WaitTasks = new List<WaitTask>();
             LifecycleEvents = new List<string>();
         }
 
@@ -163,7 +164,7 @@ namespace PuppeteerSharp
             {
                 ContextResolveTaskWrapper.SetResult(context);
 
-                foreach (var waitTask in _waitTasks)
+                foreach (var waitTask in WaitTasks)
                 {
                     waitTask.Rerun();
                 }
@@ -176,7 +177,7 @@ namespace PuppeteerSharp
 
         internal void Detach()
         {
-            foreach (var waitTask in _waitTasks)
+            foreach (var waitTask in WaitTasks)
             {
                 waitTask.Termiante(new Exception("waitForSelector failed: frame got detached."));
             }
@@ -188,10 +189,43 @@ namespace PuppeteerSharp
             _parentFrame = null;
         }
 
+        internal Task WaitForTimeoutAsync(int milliseconds) => Task.Delay(milliseconds);
+
+        internal Task<JSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args)
+            => new WaitTask(this, script, options.Polling, options.PollingInterval, options.Timeout, args).Task;
+
+        internal async Task<ElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options)
+        {
+            const string predicate = @"
+              function predicate(selector, waitForVisible, waitForHidden) {
+              const node = document.querySelector(selector);
+              if (!node)
+                return waitForHidden;
+              if (!waitForVisible && !waitForHidden)
+                return node;
+              const style = window.getComputedStyle(node);
+              const isVisible = style && style.visibility !== 'hidden' && hasVisibleBoundingBox();
+              const success = (waitForVisible === isVisible || waitForHidden === !isVisible);
+              return success ? node : null;
+
+              function hasVisibleBoundingBox() {
+                const rect = node.getBoundingClientRect();
+                return !!(rect.top || rect.bottom || rect.width || rect.height);
+              }
+            }";
+            var polling = options.Visible || options.Hidden ? WaitForFunctionPollingOption.Raf : WaitForFunctionPollingOption.Mutation;
+            var handle = await WaitForFunctionAsync(predicate, new WaitForFunctionOptions
+            {
+                Timeout = options.Timeout,
+                Polling = polling
+            }, selector, options.Visible, options.Hidden);
+            return handle.AsElement();
+        }
+
         #endregion
 
         #region Private Methods
-        
+
         private async Task<ElementHandle> GetDocument()
         {
             if (_documentCompletionSource == null)

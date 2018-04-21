@@ -10,24 +10,24 @@ namespace PuppeteerSharp
 {
     internal class NavigatorWatcher
     {
+        private static readonly Dictionary<WaitUntilNavigation, string> _puppeteerToProtocolLifecycle = new Dictionary<WaitUntilNavigation, string>()
+        {
+            [WaitUntilNavigation.Load] = "load",
+            [WaitUntilNavigation.DOMContentLoaded] = "DOMContentLoaded",
+            [WaitUntilNavigation.Networkidle0] = "networkIdle",
+            [WaitUntilNavigation.Networkidle2] = "networkAlmostIdle"
+        };
+
         private FrameManager _frameManager;
         private Frame _frame;
-        private dynamic _options;
-        private static readonly Dictionary<string, string> _puppeteerToProtocolLifecycle = new Dictionary<string, string>()
-        {
-            {"load", "load"},
-            {"domcontentloaded", "DOMContentLoaded"},
-            {"networkidle0", "networkIdle"},
-            {"networkidle2", "networkAlmostIdle"}
-        };
+        private NavigationOptions _options;
         private IEnumerable<string> _expectedLifecycle;
         private int _timeout;
         private string _initialLoaderId;
-        private Timer _timer = null;
 
         public NavigatorWatcher(FrameManager frameManager, Frame mainFrame, int timeout, NavigationOptions options)
         {
-            var waitUntil = new[] { "load" };
+            var waitUntil = new[] { WaitUntilNavigation.Load };
 
             if (options?.WaitUntil != null)
             {
@@ -58,11 +58,12 @@ namespace PuppeteerSharp
             }).ContinueWith((task) =>
             {
                 CleanUp();
+                return task.GetAwaiter().GetResult();
             });
         }
 
         #region Properties
-        public Task NavigationTask { get; internal set; }
+        public Task<Task> NavigationTask { get; internal set; }
         public Task<bool> LifeCycleCompleteTask => LifeCycleCompleteTaskWrapper.Task;
         public TaskCompletionSource<bool> LifeCycleCompleteTaskWrapper { get; }
 
@@ -117,30 +118,23 @@ namespace PuppeteerSharp
         {
             _frameManager.LifecycleEvent -= FrameManager_LifecycleEvent;
             _frameManager.FrameDetached -= FrameManager_LifecycleEvent;
-            _timer?.Dispose();
         }
 
-        private Task CreateTimeoutTask()
+        private async Task CreateTimeoutTask()
         {
             var wrapper = new TaskCompletionSource<bool>();
 
             if (_timeout == 0)
             {
-                wrapper.SetResult(true);
+                await Task.Delay(-1);
             }
             else
             {
-                _timer = new Timer((state) =>
-                {
-                    wrapper.SetException(
-                        new ChromeProcessException($"Navigation Timeout Exceeded: '{_timeout}'ms exceeded"));
-                    _timer.Dispose();
-                    _timer = null;
-                }, null, _timeout, 0);
+                await Task.Delay(_timeout);
+                throw new ChromeProcessException($"Navigation Timeout Exceeded: {_timeout}ms exceeded");
             }
-
-            return wrapper.Task;
         }
+
         #endregion
     }
 }
