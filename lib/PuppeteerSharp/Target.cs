@@ -62,5 +62,11 @@ namespace PuppeteerSharp
             }
         }
 
+        /// <summary>
+        /// Creates a Chrome Devtools Protocol session attached to the target.
+        /// </summary>
+        /// <returns>A task that returns a <see cref="Session"/></returns>
+        public Task<Session> CreateCDPSession() => _browser.Connection.CreateSession(TargetId);
+
     }
 }
