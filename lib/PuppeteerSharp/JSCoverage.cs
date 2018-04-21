@@ -71,7 +71,7 @@ namespace PuppeteerSharp
             switch (e.MessageID)
             {
                 case "Debugger.scriptParsed":
-                    OnScriptParsed(e.MessageData.ToObject<ScriptParsedResponse>());
+                    OnScriptParsed(e.MessageData.ToObject<DebuggerScriptParsedResponse>());
                     break;
                 case "Runtime.executionContextsCleared":
                     OnExecutionContextsCleared();
@@ -79,9 +79,9 @@ namespace PuppeteerSharp
             }
         }
 
-        private async void OnScriptParsed(ScriptParsedResponse scriptParseResponse)
+        private async void OnScriptParsed(DebuggerScriptParsedResponse scriptParseResponse)
         {
-            if (scriptParseResponse.Url != null)
+            if (scriptParseResponse.Url == null)
             {
                 return;
             }
