@@ -84,8 +84,7 @@ namespace PuppeteerSharp
 
         public async Task<Session> CreateSession(string targetId)
         {
-            var response = await SendAsync("Target.attachToTarget", new { targetId });
-            string sessionId = response.sessionId;
+            string sessionId = (await SendAsync("Target.attachToTarget", new { targetId })).sessionId;
             var session = new Session(this, targetId, sessionId);
             _sessions.Add(sessionId, session);
             return session;
