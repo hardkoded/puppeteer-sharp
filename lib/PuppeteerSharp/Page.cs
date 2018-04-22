@@ -23,7 +23,8 @@ namespace PuppeteerSharp
     {
         public int DefaultNavigationTimeout { get; set; } = 30000;
 
-        private readonly Session _client;
+        internal readonly Session _client;
+
         private readonly bool _ignoreHTTPSErrors;
         private readonly NetworkManager _networkManager;
         private readonly FrameManager _frameManager;

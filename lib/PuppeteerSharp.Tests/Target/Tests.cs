@@ -175,7 +175,7 @@ namespace PuppeteerSharp.Tests.Target
             serverResponse.Redirect("/injectedstyle.css");
             serverResponseEnd.SetResult(true);
             // Wait for the new page to load.            
-            // TODO: await waitForEvents(newPage, 'load');
+            await WaitForEvents(newPage._client, "Page.loadEventFired");
             // Cleanup.
             await newPage.CloseAsync();
         }
