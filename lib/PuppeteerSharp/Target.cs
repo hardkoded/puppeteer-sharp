@@ -10,6 +10,7 @@ namespace PuppeteerSharp
         #region Private members
         private Browser _browser;
         private TargetInfo _targetInfo;
+        private Task<Page> _pageTask;
         #endregion
 
         internal bool IsInitialized;
@@ -38,13 +39,15 @@ namespace PuppeteerSharp
 
         public async Task<Page> Page()
         {
-            if (_targetInfo.Type == "page")
+            if (_targetInfo.Type == "page" && _pageTask == null)
             {
+                _pageTask = await _browser.Connection.CreateSession(_targetInfo.TargetId)
+                    .ContinueWith(clientTask
+                    => PuppeteerSharp.Page.CreateAsync(clientTask.Result, this, _browser.IgnoreHTTPSErrors, _browser.AppMode, _browser.ScreenshotTaskQueue));
                 var client = await _browser.Connection.CreateSession(_targetInfo.TargetId);
-                return await PuppeteerSharp.Page.CreateAsync(client, this, _browser.IgnoreHTTPSErrors, _browser.AppMode, _browser.ScreenshotTaskQueue);
             }
 
-            return null;
+            return await (_pageTask ?? Task.FromResult<Page>(null));
         }
 
         public void TargetInfoChanged(TargetInfo targetInfo)

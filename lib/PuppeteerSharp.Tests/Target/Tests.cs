@@ -73,7 +73,7 @@ namespace PuppeteerSharp.Tests.Target
 
             allPages = await Task.WhenAll(Browser.Targets().Select(target => target.Page()));
             Assert.Contains(Page, allPages);
-            Assert.Contains(otherPage, allPages);
+            Assert.DoesNotContain(otherPage, allPages);
         }
 
         [Fact]
