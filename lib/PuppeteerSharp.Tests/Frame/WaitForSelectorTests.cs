@@ -61,11 +61,12 @@ namespace PuppeteerSharp.Tests.Frame
             await FrameUtils.AttachFrame(Page, "frame1", TestConstants.EmptyPage);
             var otherFrame = Page.Frames.ElementAt(1);
             var added = false;
-            Page.WaitForSelectorAsync("div").ContinueWith(_ => added = true);
+            var waitForSelectorTask = Page.WaitForSelectorAsync("div").ContinueWith(_ => added = true);
             await otherFrame.EvaluateFunctionAsync(AddElement, "div");
             Assert.False(added);
 
             await Page.EvaluateFunctionAsync(AddElement, "div");
+            Assert.True(await waitForSelectorTask);
             Assert.True(added);
         }
 
@@ -98,7 +99,7 @@ namespace PuppeteerSharp.Tests.Frame
             Assert.Contains("document.querySelector is not a function", exception.Message);
         }
 
-        [Fact(Skip = "FrameUtils.DetachFrame hangs :(")]
+        [Fact]
         public async Task ShouldThrowWhenFrameIsDetached()
         {
             await FrameUtils.AttachFrame(Page, "frame1", TestConstants.EmptyPage);

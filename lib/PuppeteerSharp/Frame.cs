@@ -177,9 +177,9 @@ namespace PuppeteerSharp
 
         internal void Detach()
         {
-            foreach (var waitTask in WaitTasks)
+            while (WaitTasks.Count > 0)
             {
-                waitTask.Termiante(new Exception("waitForSelector failed: frame got detached."));
+                WaitTasks[0].Termiante(new Exception("waitForSelector failed: frame got detached."));
             }
             _detached = true;
             if (_parentFrame != null)
