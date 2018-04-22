@@ -36,7 +36,7 @@ namespace PuppeteerSharp.Tests.Puppeteer
                 BrowserWSEndpoint = Browser.WebSocketEndpoint
             };
 
-            var url = TestConstants.CrossProcessHttpPrefix + "/frames/nested-frames.html";
+            var url = TestConstants.ServerUrl + "/frames/nested-frames.html";
             var page = await Browser.NewPageAsync();
             await page.GoToAsync(url);
 

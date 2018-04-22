@@ -153,7 +153,7 @@ namespace PuppeteerSharp
 
         internal void Navigated(FramePayload framePayload)
         {
-            Name = framePayload.Name;
+            Name = framePayload.Name ?? string.Empty;
             Url = framePayload.Url;
         }
 

@@ -18,11 +18,11 @@ namespace PuppeteerSharp.Tests
         public static readonly DeviceDescriptor IPhone = DeviceDescriptors.Get(DeviceDescriptorName.IPhone6);
         public static readonly DeviceDescriptor IPhone6Landscape = DeviceDescriptors.Get(DeviceDescriptorName.IPhone6Landscape);
 
-        public static readonly string NestedFramesDumpResult = @"http://127.0.0.1:<PORT>/frames/nested-frames.html
-    http://127.0.0.1:<PORT>/frames/two-frames.html
-        http://127.0.0.1:<PORT>/frames/frame.html
-        http://127.0.0.1:<PORT>/frames/frame.html
-    http://127.0.0.1:<PORT>/frames/frame.html";
+        public static readonly string NestedFramesDumpResult = @"http://localhost:<PORT>/frames/nested-frames.html
+    http://localhost:<PORT>/frames/two-frames.html
+        http://localhost:<PORT>/frames/frame.html
+        http://localhost:<PORT>/frames/frame.html
+    http://localhost:<PORT>/frames/frame.html";
 
         public static LaunchOptions DefaultBrowserOptions() => new LaunchOptions
         {

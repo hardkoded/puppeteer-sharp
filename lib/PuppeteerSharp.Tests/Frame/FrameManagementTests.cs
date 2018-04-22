@@ -24,24 +24,24 @@ namespace PuppeteerSharp.Tests.Frame
 
             Page.FrameAttached += (sender, e) => attachedFrames.Add(e.Frame);
 
-            await FrameUtils.AttachFrame(Page, "frame1", "./assets/frame.html");
+            await FrameUtils.AttachFrameAsync(Page, "frame1", "./assets/frame.html");
 
             Assert.Single(attachedFrames);
-            Assert.Equal("/assets/frame.html", attachedFrames[0].Url);
+            Assert.Contains("/assets/frame.html", attachedFrames[0].Url);
 
             // validate framenavigated events
             var navigatedFrames = new List<PuppeteerSharp.Frame>();
             Page.FrameNavigated += (sender, e) => navigatedFrames.Add(e.Frame);
 
-            await FrameUtils.NavigateFrame(Page, "frame1", "./empty.html");
+            await FrameUtils.NavigateFrameAsync(Page, "frame1", "./empty.html");
             Assert.Single(navigatedFrames);
-            Assert.Equal("/assets/frame.html", navigatedFrames[0].Url);
+            Assert.Equal(TestConstants.EmptyPage, navigatedFrames[0].Url);
 
             // validate framedetached events
             var detachedFrames = new List<PuppeteerSharp.Frame>();
             Page.FrameDetached += (sender, e) => detachedFrames.Add(e.Frame);
 
-            await FrameUtils.DetachFrame(Page, "frame1");
+            await FrameUtils.DetachFrameAsync(Page, "frame1");
             Assert.Single(navigatedFrames);
             Assert.True(navigatedFrames[0].Detached);
         }
@@ -95,9 +95,8 @@ namespace PuppeteerSharp.Tests.Frame
         [Fact]
         public async Task ShouldReportFrameName()
         {
-            await FrameUtils.AttachFrame(Page, "theFrameId", TestConstants.EmptyPage);
-            await Page.EvaluateFunctionAsync(@"url =>
-            {
+            await FrameUtils.AttachFrameAsync(Page, "theFrameId", TestConstants.EmptyPage);
+            await Page.EvaluateFunctionAsync(@"url => {
                 const frame = document.createElement('iframe');
                 frame.name = 'theFrameName';
                 frame.src = url;
@@ -113,8 +112,8 @@ namespace PuppeteerSharp.Tests.Frame
         [Fact]
         public async Task ShouldReportFrameParent()
         {
-            await FrameUtils.AttachFrame(Page, "frame1", TestConstants.EmptyPage);
-            await FrameUtils.AttachFrame(Page, "frame2", TestConstants.EmptyPage);
+            await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
+            await FrameUtils.AttachFrameAsync(Page, "frame2", TestConstants.EmptyPage);
 
             Assert.Null(Page.Frames.ElementAt(0).ParentFrame);
             Assert.Equal(Page.MainFrame, Page.Frames.ElementAt(1).ParentFrame);

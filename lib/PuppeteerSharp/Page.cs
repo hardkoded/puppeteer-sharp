@@ -96,7 +96,7 @@ namespace PuppeteerSharp
         public event EventHandler<RequestEventArgs> RequestFailed;
 
         public Frame MainFrame => _frameManager.MainFrame;
-        public IEnumerable<Frame> Frames => _frameManager.Frames.Values;
+        public Frame[] Frames => _frameManager.Frames.Values.ToArray();
         public string Url => MainFrame.Url;
 
         public Target Target { get; }

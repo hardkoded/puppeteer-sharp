@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests.Frame
         public async Task ShouldHaveDifferentExecutionContexts()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            await FrameUtils.AttachFrame(Page, "frame1", TestConstants.EmptyPage);
+            await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
             Assert.Equal(2, Page.Frames.Count());
 
             var frame1 = Page.Frames.ElementAt(0);
