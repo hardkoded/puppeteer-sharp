@@ -75,11 +75,11 @@ namespace PuppeteerSharp
         public async Task<IEnumerable<Page>> Pages()
             => (await Task.WhenAll(Targets().Select(target => target.Page()))).Where(x => x != null);
 
-        internal void ChangeTarget(TargetInfo targetInfo)
+        internal void ChangeTarget(Target target)
         {
-            TargetChanged?.Invoke(this, new TargetChangedArgs()
+            TargetChanged?.Invoke(this, new TargetChangedArgs
             {
-                TargetInfo = targetInfo
+                Target = target
             });
         }
 
@@ -134,7 +134,8 @@ namespace PuppeteerSharp
                 throw new InvalidTargetException("Target should exists before ChangeTargetInfo");
             }
 
-            var target = _targets[args.MessageData.targetInfo.targetId.Value];
+            string targetId = args.MessageData.targetInfo.targetId.Value;
+            var target = _targets[targetId];
             target.TargetInfoChanged(new TargetInfo(args.MessageData.targetInfo));
         }
 

@@ -133,7 +133,7 @@ namespace PuppeteerSharp.Tests.Target
         {
             var targetChanged = false;
             EventHandler<TargetChangedArgs> listener = (sender, e) => targetChanged = true;
-            Browser.TargetCreated += listener;
+            Browser.TargetChanged += listener;
             var targetCompletionTask = new TaskCompletionSource<PuppeteerSharp.Target>();
             void TargetCreatedEventHandler(object sender, TargetChangedArgs e)
             {
@@ -154,22 +154,22 @@ namespace PuppeteerSharp.Tests.Target
             await evaluateTask;
             await newPage.CloseAsync();
             Assert.False(targetChanged, "target should not be reported as changed");
-            Browser.TargetCreated -= listener;
+            Browser.TargetChanged -= listener;
         }
 
         [Fact]
         public async Task ShouldNotCrashWhileRedirectingIfOriginalRequestWasMissed()
         {
-            var serverResponseEnd = new TaskCompletionSource<bool>;
+            var serverResponseEnd = new TaskCompletionSource<bool>();
             var serverResponse = (HttpResponse)null;
             Server.SetRoute("/one-style.css", context => { serverResponse = context.Response; return serverResponseEnd.Task; });
             // Open a new page. Use window.open to connect to the page later.
-            await Task.WhenAll([
+            await Task.WhenAll(
               Page.EvaluateFunctionHandle("url => window.open(url)", TestConstants.ServerUrl + "/one-style.html"),
               Server.WaitForRequest("/one-style.css")
-            ]);
+            );
             // Connect to the opened page.
-            var target = Browser.Targets().First(target => target.Url.Contains("one-style.html"));
+            var target = Browser.Targets().First(t => t.Url.Contains("one-style.html"));
             var newPage = await target.Page();
             // Issue a redirect.
             serverResponse.Redirect("/injectedstyle.css");

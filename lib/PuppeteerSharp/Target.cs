@@ -56,11 +56,12 @@ namespace PuppeteerSharp
             {
                 IsInitialized = true;
                 InitilizedTaskWrapper.SetResult(true);
+                return;
             }
 
             if (previousUrl != targetInfo.Url)
             {
-                _browser.ChangeTarget(targetInfo);
+                _browser.ChangeTarget(this);
             }
         }
 
