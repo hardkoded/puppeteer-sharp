@@ -112,18 +112,18 @@ namespace PuppeteerSharp
             {
                 Console.WriteLine($"INTERNAL ERROR: missing context with id = {contextId}");
             }
-            
+
             if (remoteObject.subtype == "node")
             {
                 return new ElementHandle(storedContext, _client, remoteObject, _page);
             }
-            
+
             return new JSHandle(storedContext, _client, remoteObject);
         }
 
         private void OnExecutionContextCreated(ContextPayload contextPayload)
         {
-            var context = new ExecutionContext(_client, contextPayload, 
+            var context = new ExecutionContext(_client, contextPayload,
                 remoteObject => CreateJsHandle(contextPayload.Id, remoteObject));
 
             _contextIdToContext[contextPayload.Id] = context;

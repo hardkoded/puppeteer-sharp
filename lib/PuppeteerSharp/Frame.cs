@@ -104,7 +104,7 @@ namespace PuppeteerSharp
             throw new NotImplementedException();
         }
 
-        internal async Task<IEnumerable<ElementHandle>> GetElementsAsync(string selector)
+        internal Task<IEnumerable<ElementHandle>> GetElementsAsync(string selector)
         {
             throw new NotImplementedException();
         }

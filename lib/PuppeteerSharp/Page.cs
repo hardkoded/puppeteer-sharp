@@ -9,11 +9,6 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Input;
-using System.IO;
-using System.Globalization;
-using Newtonsoft.Json.Linq;
-using System.Dynamic;
-using Newtonsoft.Json;
 using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
