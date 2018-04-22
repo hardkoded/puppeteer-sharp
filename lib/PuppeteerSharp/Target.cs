@@ -1,10 +1,11 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp
 {
     [DebuggerDisplay("Target {Type} - {Url}")]
-    public class Target
+    public class Target : IEquatable<Target>
     {
         #region Private members
         private Browser _browser;
@@ -63,5 +64,6 @@ namespace PuppeteerSharp
             }
         }
 
+        public bool Equals(Target other) => TargetId.Equals(other.TargetId);
     }
 }
