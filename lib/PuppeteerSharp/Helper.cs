@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -6,6 +8,17 @@ namespace PuppeteerSharp
 {
     internal class Helper
     {
+        internal static string EvaluationString(string fun, params object[] args)
+        {
+            return $"({fun})({string.Join(",", args.Select(SerializeArgument))})";
+
+            string SerializeArgument(object arg)
+            {
+                if (arg == null) return "undefined";
+                return JsonConvert.SerializeObject(arg);
+            }
+        }
+
         internal static object ValueFromRemoteObject<T>(dynamic remoteObject)
         {
             if (remoteObject.unserializableValue != null)

@@ -176,9 +176,9 @@ namespace PuppeteerSharp
 
         internal void Detach()
         {
-            foreach (var waitTask in WaitTasks)
+            while (WaitTasks.Count > 0)
             {
-                waitTask.Termiante(new Exception("waitForSelector failed: frame got detached."));
+                WaitTasks[0].Termiante(new Exception("waitForSelector failed: frame got detached."));
             }
             Detached = true;
             if (ParentFrame != null)
@@ -193,8 +193,15 @@ namespace PuppeteerSharp
         internal Task<JSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args)
             => new WaitTask(this, script, options.Polling, options.PollingInterval, options.Timeout, args).Task;
 
-        internal async Task<ElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options)
+        /// <summary>
+        /// Waits for a selector to be added to the DOM
+        /// </summary>
+        /// <param name="selector">A selector of an element to wait for</param>
+        /// <param name="options">Optional waiting parameters</param>
+        /// <returns>A task that resolves when element specified by selector string is added to DOM</returns>
+        public async Task<ElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
         {
+            options = options ?? new WaitForSelectorOptions();
             const string predicate = @"
               function predicate(selector, waitForVisible, waitForHidden) {
               const node = document.querySelector(selector);
