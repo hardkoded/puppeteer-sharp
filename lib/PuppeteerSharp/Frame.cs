@@ -9,11 +9,9 @@ namespace PuppeteerSharp
     {
         private Session _client;
         private Page _page;
-        private Frame _parentFrame;
         private string _defaultContextId = "<not-initialized>";
         private object _context = null;
         private string _url = string.Empty;
-        private bool _detached;
         private TaskCompletionSource<ElementHandle> _documentCompletionSource;
 
         internal List<WaitTask> WaitTasks { get; }
@@ -22,12 +20,12 @@ namespace PuppeteerSharp
         {
             _client = client;
             _page = page;
-            _parentFrame = parentFrame;
+            ParentFrame = parentFrame;
             Id = frameId;
 
             if (parentFrame != null)
             {
-                _parentFrame.ChildFrames.Add(this);
+                ParentFrame.ChildFrames.Add(this);
             }
 
             SetDefaultContext(null);
@@ -46,7 +44,8 @@ namespace PuppeteerSharp
         public string LoaderId { get; set; }
         public TaskCompletionSource<ExecutionContext> ContextResolveTaskWrapper { get; internal set; }
         public List<string> LifecycleEvents { get; internal set; }
-
+        public bool Detached { get; set; }
+        public Frame ParentFrame { get; set; }
         #endregion
 
         #region Public Methods
@@ -181,12 +180,12 @@ namespace PuppeteerSharp
             {
                 waitTask.Termiante(new Exception("waitForSelector failed: frame got detached."));
             }
-            _detached = true;
-            if (_parentFrame != null)
+            Detached = true;
+            if (ParentFrame != null)
             {
-                _parentFrame.ChildFrames.Remove(this);
+                ParentFrame.ChildFrames.Remove(this);
             }
-            _parentFrame = null;
+            ParentFrame = null;
         }
 
         internal Task WaitForTimeoutAsync(int milliseconds) => Task.Delay(milliseconds);

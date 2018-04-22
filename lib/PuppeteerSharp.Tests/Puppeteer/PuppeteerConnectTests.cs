@@ -48,11 +48,7 @@ namespace PuppeteerSharp.Tests.Puppeteer
                 var restoredPage = pages.FirstOrDefault(x => x.Url == url);
                 Assert.NotNull(restoredPage);
                 var frameDump = FrameUtils.DumpFrames(restoredPage.MainFrame);
-                Assert.Equal(@"http://127.0.0.1:<PORT>/frames/nested-frames.html
-    http://127.0.0.1:<PORT>/frames/two-frames.html
-        http://127.0.0.1:<PORT>/frames/frame.html
-        http://127.0.0.1:<PORT>/frames/frame.html
-    http://127.0.0.1:<PORT>/frames/frame.html", frameDump);
+                Assert.Equal(TestConstants.NestedFramesDumpResult, frameDump);
                 var response = await restoredPage.EvaluateExpressionAsync<int>("7 * 8");
                 Assert.Equal(56, response);
             }

@@ -17,6 +17,14 @@ namespace PuppeteerSharp.Tests
             }", frameId, url);
         }
 
+        public static async Task DetachFrame(PuppeteerSharp.Page page, string frameId)
+        {
+            await page.EvaluateFunctionAsync(@"function detachFrame(frameId) {
+              const frame = document.getElementById(frameId);
+              frame.remove();
+            }", frameId);
+        }
+
         public static string DumpFrames(PuppeteerSharp.Frame frame, string indentation = "")
         {
             var result = indentation + Regex.Replace(frame.Url, @":\d{4}", ":<PORT>");
@@ -26,6 +34,15 @@ namespace PuppeteerSharp.Tests
             }
 
             return result;
+        }
+
+        internal static async Task NavigateFrame(PuppeteerSharp.Page page, string frameId, string url)
+        {
+            await page.EvaluateFunctionAsync(@"function navigateFrame(frameId, url) {
+              const frame = document.getElementById(frameId);
+              frame.src = url;
+              return new Promise(x => frame.onload = x);
+            }", frameId, url);
         }
     }
 }
