@@ -36,5 +36,24 @@ namespace PuppeteerSharp.Tests
         }
 
         public void Dispose() => DisposeAsync().GetAwaiter().GetResult();
+
+        protected static Task<dynamic> WaitForEvents(Session emitter, string eventName, int eventCount = 1)
+        {
+            var completion = new TaskCompletionSource<dynamic>();
+            void handler(object sender, MessageEventArgs e)
+            {
+                if (e.MessageID != eventName) return;
+
+                --eventCount;
+                if (eventCount > 0) return;
+
+                emitter.MessageReceived -= handler;
+                completion.SetResult(e.MessageData);
+            };
+
+            emitter.MessageReceived += handler;
+
+            return completion.Task;
+        }
     }
 }
