@@ -70,8 +70,16 @@ namespace PuppeteerSharp
             return await target.Page();
         }
 
+        /// <summary>
+        /// Returns An Array of all active targets
+        /// </summary>
+        /// <returns>An Array of all active targets</returns>
         public IEnumerable<Target> Targets() => _targets.Values.Where(target => target.IsInitialized);
 
+        /// <summary>
+        /// Returns a Task which resolves to an array of all open pages.
+        /// </summary>
+        /// <returns>Task which resolves to an array of all open pages.</returns>
         public async Task<IEnumerable<Page>> Pages()
             => (await Task.WhenAll(Targets().Select(target => target.Page()))).Where(x => x != null);
 
