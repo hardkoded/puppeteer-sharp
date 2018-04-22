@@ -249,9 +249,9 @@ namespace PuppeteerSharp
             }
         }
 
-        public async Task<ElementHandle> AddScriptTagAsync(dynamic options) => await MainFrame.AddScriptTag(options);
+        public async Task<ElementHandle> AddScriptTagAsync(AddTagOptions options) => await MainFrame.AddScriptTag(options);
 
-        public async Task<ElementHandle> AddStyleTagAsync(dynamic options) => await MainFrame.AddStyleTag(options);
+        public async Task<ElementHandle> AddStyleTagAsync(AddTagOptions options) => await MainFrame.AddStyleTag(options);
 
         public static async Task<Page> CreateAsync(Session client, Target target, bool ignoreHTTPSErrors, bool appMode,
                                                    TaskQueue screenshotTaskQueue)

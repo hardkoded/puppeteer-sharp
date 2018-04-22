@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using PuppeteerSharp.Input;
 
 namespace PuppeteerSharp
 {
@@ -109,12 +111,51 @@ namespace PuppeteerSharp
             throw new NotImplementedException();
         }
 
-        internal Task<ElementHandle> AddStyleTag(dynamic options)
+        internal async Task<ElementHandle> AddStyleTag(AddTagOptions options)
         {
-            throw new NotImplementedException();
+            const string addStyleUrl = @"async (url) => {
+                const link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = url;
+                document.head.appendChild(link);
+                await new Promise((res, rej) => {
+                    link.onload = res;
+                    link.onerror = rej;
+                });
+                return link;
+            }";
+
+            const string addStyleContent = @"(content) => {
+                const style = document.createElement('style');
+                style.type = 'text/css';
+                style.appendChild(document.createTextNode(content));
+                document.head.appendChild(style);
+                return style;
+            }";
+            
+            if (options.Url != null) {
+                try {
+                    return await EvaluateFunctionAsync<ElementHandle>(addStyleUrl, options.Url);
+                } catch (PuppeteerException) {
+                    throw new PuppeteerException($"Loading style from {options.Url} failed");
+                }
+            }
+            
+            if (options.Path != null) {
+                var contents = File.ReadAllText(options.Path, Encoding.UTF8);
+                contents += $"/*# sourceURL={Regex.Replace(options.Path, "\n", "")}*/";
+                
+                return await EvaluateFunctionAsync<ElementHandle>(addStyleContent, contents);
+            }
+            
+            if (options.Content != null) {
+                return await EvaluateFunctionAsync<ElementHandle>(addStyleContent, options.Content);
+            }
+            
+            throw new PuppeteerException("Provide an object with a `Url`, `Path` or `Content` property");
         }
 
-        internal Task<ElementHandle> AddScriptTag(dynamic options)
+        internal Task<ElementHandle> AddScriptTag(AddTagOptions options)
         {
             throw new NotImplementedException();
         }
