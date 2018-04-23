@@ -42,7 +42,7 @@ namespace PuppeteerSharp
 
         #region Public Methods
 
-        public Task<string> Buffer()
+        public Task<string> BufferAsync()
         {
             if (ContentTaskWrapper == null)
             {
@@ -69,15 +69,10 @@ namespace PuppeteerSharp
             return ContentTaskWrapper.Task;
         }
 
+        public Task<string> TextAsync() => BufferAsync();
 
-        public async Task<string> TextAsync() => await Buffer();
-
-        public async Task<JObject> Json()
-        {
-            var text = await TextAsync();
-            return JObject.Parse(text);
-        }
-
+        public async Task<JObject> JsonAsync() => JObject.Parse(await TextAsync());
+        public async Task<T> JsonAsync<T>() => (await JsonAsync()).ToObject<T>();
 
         #endregion
 

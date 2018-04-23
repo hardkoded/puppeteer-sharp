@@ -15,6 +15,7 @@ namespace PuppeteerSharp
 
         [JsonProperty("method")]
         public string Method { get; internal set; }
+        [JsonProperty("postData")]
         public object PostData { get; internal set; }
         [JsonProperty("headers")]
         public Dictionary<string, object> Headers { get; internal set; }

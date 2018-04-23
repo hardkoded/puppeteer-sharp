@@ -12,7 +12,7 @@ namespace PuppeteerSharp
         #region Private Members
         private Session _client;
         private bool _allowInterception;
-        private string _resourceType;
+
         private bool _interceptionHandled;
         private string _failureText;
 
@@ -42,7 +42,7 @@ namespace PuppeteerSharp
             _allowInterception = allowInterception;
             _interceptionHandled = false;
             Url = url;
-            _resourceType = resourceType.ToLower();
+            ResourceType = resourceType.ToLower();
             Method = payload.Method;
             PostData = payload.PostData;
             Frame = frame;
@@ -60,6 +60,7 @@ namespace PuppeteerSharp
         public Response Response { get; set; }
         public string Failure { get; set; }
         public string RequestId { get; internal set; }
+        public string ResourceType { get; internal set; }
         public string InterceptionId { get; internal set; }
         public Task<bool> CompleteTask => CompleteTaskWrapper.Task;
         public TaskCompletionSource<bool> CompleteTaskWrapper { get; internal set; }
@@ -68,8 +69,18 @@ namespace PuppeteerSharp
 
         #region Public Methods
 
-        public async Task Continue(Payload overrides)
+        public async Task Continue(Payload overrides = null)
         {
+            overrides = overrides ?? new Payload();
+            /*
+            if (!_allowInterception)
+            {
+                throw new PuppeteerException("Request interception is not enabled!");
+            }
+            if (_interceptionHandled)
+            {
+                throw new PuppeteerException("Request is already handled!");
+            }*/
             Contract.Requires(_allowInterception, "Request interception is not enabled!");
             Contract.Requires(!_interceptionHandled, "Request interception is already handled!");
 
@@ -77,20 +88,19 @@ namespace PuppeteerSharp
 
             try
             {
-                await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object>()
-                {
-                    {"interceptionId", InterceptionId},
-                    {"url", overrides.Url},
-                    {"method", overrides.Method},
-                    {"postData", overrides.PostData},
-                    {"headers", overrides.Headers}
-                });
+                var requestData = new Dictionary<string, object> { ["interceptionId"] = InterceptionId };
+                if (overrides.Url != null) requestData["url"] = overrides.Url;
+                if (overrides.Method != null) requestData["method"] = overrides.Method;
+                if (overrides.PostData != null) requestData["postData"] = overrides.PostData;
+                if (overrides.Headers != null) requestData["headers"] = overrides.Headers;
+
+                await _client.SendAsync("Network.continueInterceptedRequest", requestData);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 // In certain cases, protocol will return error if the request was already canceled
                 // or the page was closed. We should tolerate these errors
-                //TODO: Choose log mechanism
+                Console.WriteLine(ex.ToString());
             }
         }
 
@@ -168,26 +178,38 @@ namespace PuppeteerSharp
 
         public async Task Abort(string errorCode = "failed")
         {
-            Contract.Requires(_errorReasons.ContainsKey(errorCode), $"Unknown error code: {errorCode}");
-            Contract.Requires(_allowInterception, "Request interception is not enabled!");
-            Contract.Requires(!_interceptionHandled, "Request is already handled!");
+            if (!_errorReasons.ContainsKey(errorCode))
+            {
+                throw new ArgumentOutOfRangeException(nameof(errorCode), errorCode, "Unknown error code");
+            }
+            if (!_allowInterception)
+            {
+                throw new PuppeteerException("Request interception is not enabled!");
+            }
+            if (_interceptionHandled)
+            {
+                throw new PuppeteerException("Request is already handled!");
+            }
+            //Contract.Requires(_errorReasons.ContainsKey(errorCode), $"Unknown error code: {errorCode}");
+            //Contract.Requires(_allowInterception, "Request interception is not enabled!");
+            //Contract.Requires(!_interceptionHandled, "Request is already handled!");
             var errorReason = _errorReasons[errorCode];
 
             _interceptionHandled = true;
 
             try
             {
-                await _client.SendAsync("Network.continueInterceptedReques", new Dictionary<string, object>
+                await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object>
                 {
                     {"interceptionId", InterceptionId},
                     {"errorReason", errorReason}
                 });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 // In certain cases, protocol will return error if the request was already canceled
                 // or the page was closed. We should tolerate these errors
-                //TODO: Choose log mechanism
+                Console.WriteLine(ex.ToString());
             }
         }
         #endregion

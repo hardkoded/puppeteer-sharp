@@ -40,10 +40,8 @@ namespace PuppeteerSharp
         public event EventHandler<RequestEventArgs> RequestCreated;
         public event EventHandler<RequestEventArgs> RequestFinished;
         public event EventHandler<RequestEventArgs> RequestFailed;
-        public event EventHandler<ResponseReceivedArgs> ResponseReceivedFinished;
 
         #endregion
-
 
         #region Public Methods
 
@@ -155,10 +153,9 @@ namespace PuppeteerSharp
         {
             // For certain requestIds we never receive requestWillBeSent event.
             // @see https://crbug.com/750469
-            if (_requestIdToRequest.ContainsKey(e.MessageData.requestId.ToString()))
+            string requestId = e.MessageData.requestId.ToString();
+            if (_requestIdToRequest.TryGetValue(requestId, out var request))
             {
-                var request = _requestIdToRequest[e.MessageData.requestId.ToString()];
-
                 request.CompleteTaskWrapper.SetResult(true);
                 _requestIdToRequest.Remove(request.RequestId);
 
