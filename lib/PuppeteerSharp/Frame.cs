@@ -9,8 +9,6 @@ namespace PuppeteerSharp
     {
         private Session _client;
         private Page _page;
-        private string _defaultContextId = "<not-initialized>";
-        private object _context = null;
         private string _url = string.Empty;
         private TaskCompletionSource<ElementHandle> _documentCompletionSource;
 
@@ -74,6 +72,10 @@ namespace PuppeteerSharp
             return await context.EvaluateFunctionAsync<T>(script, args);
         }
 
+        /// <summary>
+        /// Gets the execution context associated with the frame.
+        /// </summary>
+        /// <returns>Execution context associated with the frame.</returns>
         public Task<ExecutionContext> GetExecutionContextAsync() => ContextResolveTaskWrapper.Task;
 
         internal async Task<ElementHandle> GetElementAsync(string selector)
