@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
-using Newtonsoft.Json.Linq;
 
 namespace PuppeteerSharp
 {
@@ -23,10 +22,7 @@ namespace PuppeteerSharp
         public Func<dynamic, JSHandle> ObjectHandleFactory { get; internal set; }
         public string FrameId { get; internal set; }
         public bool IsDefault { get; internal set; }
-
-        public async Task<object> EvaluateExpressionAsync(string script)
-            => await EvaluateExpressionAsync<object>(script);
-
+        
         public async Task<T> EvaluateExpressionAsync<T>(string script)
         {
             var handle = await EvaluateExpressionHandleAsync(script);
@@ -34,10 +30,7 @@ namespace PuppeteerSharp
             await handle.Dispose();
             return result;
         }
-
-        public async Task<object> EvaluateFunctionAsync(string script, params object[] args)
-            => await EvaluateFunctionAsync<object>(script, args);
-
+        
         public async Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
         {
             var handle = await EvaluateFunctionHandleAsync(script, args);
@@ -136,6 +129,5 @@ namespace PuppeteerSharp
 
             return ObjectHandleFactory(response.objects);
         }
-
     }
 }
