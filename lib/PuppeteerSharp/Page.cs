@@ -96,6 +96,10 @@ namespace PuppeteerSharp
         public event EventHandler<RequestEventArgs> RequestFailed;
 
         public Frame MainFrame => _frameManager.MainFrame;
+        /// <summary>
+        /// Gets all frames attached to the page.
+        /// </summary>
+        /// <value>An array of all frames attached to the page.</value>
         public Frame[] Frames => _frameManager.Frames.Values.ToArray();
         public string Url => MainFrame.Url;
 
