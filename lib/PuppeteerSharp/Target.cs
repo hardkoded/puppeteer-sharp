@@ -1,11 +1,10 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp
 {
     [DebuggerDisplay("Target {Type} - {Url}")]
-    public class Target : IEquatable<Target>
+    public class Target
     {
         #region Private members
         private Browser _browser;
@@ -73,7 +72,5 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>A task that returns a <see cref="Session"/></returns>
         public Task<Session> CreateCDPSession() => _browser.Connection.CreateSession(TargetId);
-
-        public bool Equals(Target other) => TargetId.Equals(other.TargetId);
     }
 }
