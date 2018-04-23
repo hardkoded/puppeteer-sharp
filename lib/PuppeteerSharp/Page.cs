@@ -171,7 +171,7 @@ namespace PuppeteerSharp
         public async Task EvaluateOnNewDocumentAsync(string pageFunction, params object[] args)
         {
             var source = Helper.EvaluationString(pageFunction, args);
-            await _client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new { source });
+            await Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new { source });
         }
 
         public async Task<JSHandle> QueryObjects(JSHandle prototypeHandle)
@@ -880,6 +880,7 @@ namespace PuppeteerSharp
         #region IDisposable
         public void Dispose() => CloseAsync();
         #endregion
+
         #region IEquatable
         public bool Equals(Page other) => MainFrame.Id == other.MainFrame.Id;
         #endregion
