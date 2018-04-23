@@ -16,7 +16,7 @@ namespace PuppeteerSharp.Tests.Page.Events
             Page.RequestCreated += (sender, e) => requests.Add(e.Request);
 
             await Page.GoToAsync(TestConstants.EmptyPage);
-            await FrameUtils.AttachFrame(Page, "frame1", TestConstants.EmptyPage);
+            await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
 
             Assert.Equal(2, requests.Count);
             Assert.Equal(TestConstants.EmptyPage, requests[0].Url);

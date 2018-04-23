@@ -9,11 +9,6 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Input;
-using System.IO;
-using System.Globalization;
-using Newtonsoft.Json.Linq;
-using System.Dynamic;
-using Newtonsoft.Json;
 using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
@@ -102,7 +97,11 @@ namespace PuppeteerSharp
         public event EventHandler<RequestEventArgs> RequestFailed;
 
         public Frame MainFrame => _frameManager.MainFrame;
-        public IEnumerable<Frame> Frames => _frameManager.Frames.Values;
+        /// <summary>
+        /// Gets all frames attached to the page.
+        /// </summary>
+        /// <value>An array of all frames attached to the page.</value>
+        public Frame[] Frames => _frameManager.Frames.Values.ToArray();
         public string Url => MainFrame.Url;
 
         public Target Target { get; }
@@ -167,6 +166,12 @@ namespace PuppeteerSharp
         {
             var context = await MainFrame.GetExecutionContextAsync();
             return await context.EvaluateFunctionHandleAsync(pageFunction, args);
+        }
+
+        public async Task EvaluateOnNewDocumentAsync(string pageFunction, params object[] args)
+        {
+            var source = Helper.EvaluationString(pageFunction, args);
+            await _client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new { source });
         }
 
         public async Task<JSHandle> QueryObjects(JSHandle prototypeHandle)
@@ -786,7 +791,7 @@ namespace PuppeteerSharp
                     OnDialog(e.MessageData.ToObject<PageJavascriptDialogOpeningResponse>());
                     break;
                 case "Runtime.exceptionThrown":
-                    HandleException(e.MessageData.exception.exceptionDetails);
+                    HandleException(e.MessageData.exceptionDetails);
                     break;
                 case "Security.certificateError":
                     await OnCertificateError(e);
@@ -827,7 +832,7 @@ namespace PuppeteerSharp
             }
         }
 
-        private void HandleException(string exceptionDetails)
+        private void HandleException(dynamic exceptionDetails)
         {
         }
 
