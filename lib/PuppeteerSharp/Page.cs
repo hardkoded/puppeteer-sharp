@@ -168,6 +168,12 @@ namespace PuppeteerSharp
             return await context.EvaluateFunctionHandleAsync(pageFunction, args);
         }
 
+        public async Task EvaluateOnNewDocumentAsync(string pageFunction, params object[] args)
+        {
+            var source = Helper.EvaluationString(pageFunction, args);
+            await _client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new { source });
+        }
+
         public async Task<JSHandle> QueryObjects(JSHandle prototypeHandle)
         {
             var context = await MainFrame.GetExecutionContextAsync();
@@ -779,7 +785,7 @@ namespace PuppeteerSharp
                     OnDialog(e.MessageData.ToObject<PageJavascriptDialogOpeningResponse>());
                     break;
                 case "Runtime.exceptionThrown":
-                    HandleException(e.MessageData.exception.exceptionDetails);
+                    HandleException(e.MessageData.exceptionDetails);
                     break;
                 case "Security.certificateError":
                     await OnCertificateError(e);
@@ -820,7 +826,7 @@ namespace PuppeteerSharp
             }
         }
 
-        private void HandleException(string exceptionDetails)
+        private void HandleException(dynamic exceptionDetails)
         {
         }
 
