@@ -74,14 +74,14 @@ namespace PuppeteerSharp
         /// Returns An Array of all active targets
         /// </summary>
         /// <returns>An Array of all active targets</returns>
-        public IEnumerable<Target> Targets() => _targets.Values.Where(target => target.IsInitialized);
+        public Target[] Targets() => _targets.Values.Where(target => target.IsInitialized).ToArray();
 
         /// <summary>
         /// Returns a Task which resolves to an array of all open pages.
         /// </summary>
         /// <returns>Task which resolves to an array of all open pages.</returns>
-        public async Task<IEnumerable<Page>> Pages()
-            => (await Task.WhenAll(Targets().Select(target => target.Page()))).Where(x => x != null);
+        public async Task<Page[]> PagesAsync()
+            => (await Task.WhenAll(Targets().Select(target => target.Page()))).Where(x => x != null).ToArray();
 
         internal void ChangeTarget(Target target)
         {

@@ -7,7 +7,7 @@ using Xunit;
 namespace PuppeteerSharp.Tests.Target
 {
     [Collection("PuppeteerLoaderFixture collection")]
-    public class Tests : PuppeteerPageBaseTest
+    public class TargetTests : PuppeteerPageBaseTest
     {
         [Fact]
         public void BrowserTargetsShouldReturnAllOfTheTargets()
@@ -24,7 +24,7 @@ namespace PuppeteerSharp.Tests.Target
         public async Task BrowserPagesShouldReturnAllOfThePages()
         {
             // The pages will be the testing page and the original newtab page
-            var allPages = (await Browser.Pages()).ToArray();
+            var allPages = (await Browser.PagesAsync()).ToArray();
             Assert.Equal(2, allPages.Length);
             Assert.Contains(Page, allPages);
             Assert.NotSame(allPages[0], allPages[1]);
@@ -34,7 +34,7 @@ namespace PuppeteerSharp.Tests.Target
         public async Task ShouldBeAbleToUseTheDefaultPageInTheBrowser()
         {
             // The pages will be the testing page and the original newtab page
-            var allPages = await Browser.Pages();
+            var allPages = await Browser.PagesAsync();
             var originalPage = allPages.First(p => p != Page);
             Assert.Equal("Hello world", await originalPage.EvaluateExpressionAsync<string>("['Hello', 'world'].join(' ')"));
             Assert.NotNull(await originalPage.GetElementAsync("body"));
@@ -50,14 +50,14 @@ namespace PuppeteerSharp.Tests.Target
                 Browser.TargetCreated -= TargetCreatedEventHandler;
             }
             Browser.TargetCreated += TargetCreatedEventHandler;
-            await Page.EvaluateFunctionHandle("url => window.open(url)", TestConstants.CrossProcessUrl);
+            await Page.EvaluateFunctionHandleAsync("url => window.open(url)", TestConstants.CrossProcessUrl);
             var otherPage = await otherPageTaskCompletion.Task;
             Assert.Contains(TestConstants.CrossProcessUrl, otherPage.Url);
 
             Assert.Equal("Hello world", await otherPage.EvaluateExpressionAsync<string>("['Hello', 'world'].join(' ')"));
             Assert.NotNull(await otherPage.GetElementAsync("body"));
 
-            var allPages = await Browser.Pages();
+            var allPages = await Browser.PagesAsync();
             Assert.Contains(Page, allPages);
             Assert.Contains(otherPage, allPages);
 
@@ -87,7 +87,7 @@ namespace PuppeteerSharp.Tests.Target
                 Browser.TargetCreated -= TargetCreatedEventHandler;
             }
             Browser.TargetCreated += TargetCreatedEventHandler;
-            var registration = await Page.EvaluateExpressionHandle("navigator.serviceWorker.register('sw.js')");
+            var registration = await Page.EvaluateExpressionHandleAsync("navigator.serviceWorker.register('sw.js')");
 
             var createdTarget = await createdTargetTaskCompletion.Task;
             Assert.Equal("service_worker", createdTarget.Type);
@@ -148,7 +148,7 @@ namespace PuppeteerSharp.Tests.Target
             var newPage = await newPageTask;
             targetCompletionTask = new TaskCompletionSource<PuppeteerSharp.Target>();
             Browser.TargetCreated += TargetCreatedEventHandler;
-            var evaluateTask = newPage.EvaluateExpressionHandle("window.open('about:blank')");
+            var evaluateTask = newPage.EvaluateExpressionHandleAsync("window.open('about:blank')");
             var target2 = await targetCompletionTask.Task;
             Assert.Equal(TestConstants.AboutBlank, target2.Url);
             await evaluateTask;
@@ -165,7 +165,7 @@ namespace PuppeteerSharp.Tests.Target
             Server.SetRoute("/one-style.css", context => { serverResponse = context.Response; return serverResponseEnd.Task; });
             // Open a new page. Use window.open to connect to the page later.
             await Task.WhenAll(
-              Page.EvaluateFunctionHandle("url => window.open(url)", TestConstants.ServerUrl + "/one-style.html"),
+              Page.EvaluateFunctionHandleAsync("url => window.open(url)", TestConstants.ServerUrl + "/one-style.html"),
               Server.WaitForRequest("/one-style.css")
             );
             // Connect to the opened page.
@@ -175,7 +175,7 @@ namespace PuppeteerSharp.Tests.Target
             serverResponse.Redirect("/injectedstyle.css");
             serverResponseEnd.SetResult(true);
             // Wait for the new page to load.            
-            await WaitForEvents(newPage._client, "Page.loadEventFired");
+            await WaitForEvents(newPage.Client, "Page.loadEventFired");
             // Cleanup.
             await newPage.CloseAsync();
         }
