@@ -58,7 +58,7 @@ namespace PuppeteerSharp.Tests.Frame
         public async Task PageWaitForSelectorAsyncIsShortcutForMainFrame()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            await FrameUtils.AttachFrame(Page, "frame1", TestConstants.EmptyPage);
+            await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
             var otherFrame = Page.Frames.ElementAt(1);
             var added = false;
             var waitForSelectorTask = Page.WaitForSelectorAsync("div").ContinueWith(_ => added = true);
@@ -73,12 +73,12 @@ namespace PuppeteerSharp.Tests.Frame
         [Fact]
         public async Task ShouldRunInSpecifiedFrame()
         {
-            await FrameUtils.AttachFrame(Page, "frame1", TestConstants.EmptyPage);
-            await FrameUtils.AttachFrame(Page, "frame2", TestConstants.EmptyPage);
+            await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
+            await FrameUtils.AttachFrameAsync(Page, "frame2", TestConstants.EmptyPage);
             var frame1 = Page.Frames.ElementAt(1);
             var frame2 = Page.Frames.ElementAt(2);
             var added = false;
-            frame2.WaitForSelectorAsync("div").ContinueWith(_ => added = true);
+            var selectorTask = frame2.WaitForSelectorAsync("div").ContinueWith(_ => added = true);
             Assert.False(added);
 
             await frame1.EvaluateFunctionAsync(AddElement, "div");
@@ -102,10 +102,10 @@ namespace PuppeteerSharp.Tests.Frame
         [Fact]
         public async Task ShouldThrowWhenFrameIsDetached()
         {
-            await FrameUtils.AttachFrame(Page, "frame1", TestConstants.EmptyPage);
+            await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
             var frame = Page.Frames.ElementAt(1);
             var waitTask = frame.WaitForSelectorAsync(".box").ContinueWith(task => task?.Exception?.InnerException);
-            await FrameUtils.DetachFrame(Page, "frame1");
+            await FrameUtils.DetachFrameAsync(Page, "frame1");
             var waitException = await waitTask;
             Assert.NotNull(waitException);
             Assert.Contains("waitForSelector failed: frame got detached", waitException.Message);
