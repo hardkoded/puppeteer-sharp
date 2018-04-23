@@ -19,7 +19,7 @@ namespace PuppeteerSharp.Tests
 
         public static async Task DetachFrame(PuppeteerSharp.Page page, string frameId)
         {
-            await page.EvaluateFunctionAsync(@"function detachFrame(frameId) {
+            await page.EvaluateFunctionHandleAsync(@"function detachFrame(frameId) {
               const frame = document.getElementById(frameId);
               frame.remove();
             }", frameId);
