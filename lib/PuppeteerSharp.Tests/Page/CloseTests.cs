@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.Page
         public async Task ShouldRejectAllPromisesWhenPageIsClosed()
         {
             var newPage = await Browser.NewPageAsync();
-            var neverResolves = newPage.EvaluateFunctionAsync("() => new Promise(r => {})");
+            var neverResolves = newPage.EvaluateFunctionHandleAsync("() => new Promise(r => {})");
             
             // Put into a var to avoid warning
             var t = newPage.CloseAsync();

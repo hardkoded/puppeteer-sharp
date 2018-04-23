@@ -51,28 +51,28 @@ namespace PuppeteerSharp
 
         #region Public Methods
 
-        public async Task<dynamic> EvaluateExpressionAsync(string script)
-        {
-            var context = await GetExecutionContextAsync();
-            return await context.EvaluateExpressionAsync(script);
-        }
-
         public async Task<T> EvaluateExpressionAsync<T>(string script)
         {
             var context = await GetExecutionContextAsync();
             return await context.EvaluateExpressionAsync<T>(script);
         }
 
-        public async Task<dynamic> EvaluateFunctionAsync(string script, params object[] args)
-        {
-            var context = await GetExecutionContextAsync();
-            return await context.EvaluateFunctionAsync(script, args);
-        }
-
         public async Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
         {
             var context = await GetExecutionContextAsync();
             return await context.EvaluateFunctionAsync<T>(script, args);
+        }
+
+        public async Task<JSHandle> EvaluateExpressionHandleAsync(string script)
+        {
+            var context = await GetExecutionContextAsync();
+            return await context.EvaluateExpressionHandleAsync(script);
+        }
+
+        public async Task<JSHandle> EvaluateFunctionHandleAsync(string script, params object[] args)
+        {
+            var context = await GetExecutionContextAsync();
+            return await context.EvaluateFunctionHandleAsync(script, args);
         }
 
         public Task<ExecutionContext> GetExecutionContextAsync() => ContextResolveTaskWrapper.Task;
@@ -133,14 +133,14 @@ namespace PuppeteerSharp
 
         internal async Task SetContentAsync(string html)
         {
-            await EvaluateFunctionAsync(@"html => {
+            await EvaluateFunctionHandleAsync(@"html => {
                 document.open();
                 document.write(html);
                 document.close();
             }", html);
         }
 
-        internal async Task<string> GetTitleAsync() => await EvaluateExpressionAsync<string>("document.title");
+        internal Task<string> GetTitleAsync() => EvaluateExpressionAsync<string>("document.title");
 
         internal void OnLifecycleEvent(string loaderId, string name)
         {

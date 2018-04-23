@@ -156,13 +156,13 @@ namespace PuppeteerSharp
         public async Task<IEnumerable<ElementHandle>> GetElementsAsync(string selector)
             => await MainFrame.GetElementsAsync(selector);
 
-        public async Task<JSHandle> EvaluateExpressionHandle(string script)
+        public async Task<JSHandle> EvaluateExpressionHandleAsync(string script)
         {
             var context = await MainFrame.GetExecutionContextAsync();
             return await context.EvaluateExpressionHandleAsync(script);
         }
 
-        public async Task<JSHandle> EvaluateFunctionHandle(string pageFunction, params object[] args)
+        public async Task<JSHandle> EvaluateFunctionHandleAsync(string pageFunction, params object[] args)
         {
             var context = await MainFrame.GetExecutionContextAsync();
             return await context.EvaluateFunctionHandleAsync(pageFunction, args);
@@ -516,16 +516,10 @@ namespace PuppeteerSharp
 
             return Task.CompletedTask;
         }
-
-        public Task<dynamic> EvaluateExpressionAsync(string script)
-            => _frameManager.MainFrame.EvaluateExpressionAsync(script);
-
+        
         public Task<T> EvaluateExpressionAsync<T>(string script)
             => _frameManager.MainFrame.EvaluateExpressionAsync<T>(script);
-
-        public Task<dynamic> EvaluateFunctionAsync(string script, params object[] args)
-            => _frameManager.MainFrame.EvaluateFunctionAsync(script, args);
-
+        
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
             => _frameManager.MainFrame.EvaluateFunctionAsync<T>(script, args);
 

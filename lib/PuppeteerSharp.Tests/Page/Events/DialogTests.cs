@@ -21,7 +21,7 @@ namespace PuppeteerSharp.Tests.Page.Events
                 await e.Dialog.Accept();
             };
 
-            await Page.EvaluateExpressionAsync("alert('yo');");
+            await Page.EvaluateExpressionHandleAsync("alert('yo');");
         }
 
         [Fact]

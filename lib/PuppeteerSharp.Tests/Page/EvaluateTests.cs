@@ -58,7 +58,7 @@ namespace PuppeteerSharp.Tests.Page
             {
                 foo = "bar!"
             };
-            dynamic result = await Page.EvaluateFunctionAsync("a => a", obj);
+            dynamic result = await Page.EvaluateFunctionAsync<dynamic>("a => a", obj);
             Assert.Equal("bar!", result.foo.ToString());
         }
 
@@ -69,7 +69,7 @@ namespace PuppeteerSharp.Tests.Page
         [InlineData("() => -Infinity", double.NegativeInfinity)] //ShouldReturnNegativeInfinty
         public async Task BasicEvaluationTest(string script, object expected)
         {
-            dynamic result = await Page.EvaluateFunctionAsync(script);
+            var result = await Page.EvaluateFunctionAsync<object>(script);
             Assert.Equal(expected, result);
         }
 

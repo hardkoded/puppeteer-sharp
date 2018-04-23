@@ -8,7 +8,7 @@ namespace PuppeteerSharp.Tests
     {
         public static async Task AttachFrame(PuppeteerSharp.Page page, string frameId, string url)
         {
-            await page.EvaluateFunctionAsync(@"(frameId, url) => {
+            await page.EvaluateFunctionHandleAsync(@"(frameId, url) => {
               const frame = document.createElement('iframe');
               frame.src = url;
               frame.id = frameId;
