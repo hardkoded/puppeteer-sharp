@@ -130,9 +130,8 @@ namespace PuppeteerSharp
             throw new NotImplementedException();
         }
 
-        internal async Task<string> GetContentAsync()
-        {
-            return await EvaluateFunctionAsync<string>(@"() => {
+        internal Task<string> GetContentAsync()
+            => EvaluateFunctionAsync<string>(@"() => {
                 let retVal = '';
                 if (document.doctype)
                     retVal = new XMLSerializer().serializeToString(document.doctype);
@@ -140,16 +139,14 @@ namespace PuppeteerSharp
                     retVal += document.documentElement.outerHTML;
                 return retVal;
             }");
-        }
 
-        internal async Task SetContentAsync(string html)
-        {
-            await EvaluateFunctionHandleAsync(@"html => {
+        internal Task SetContentAsync(string html)
+            => EvaluateFunctionAsync(@"html => {
                 document.open();
                 document.write(html);
                 document.close();
             }", html);
-        }
+
 
         internal Task<string> GetTitleAsync() => EvaluateExpressionAsync<string>("document.title");
 
