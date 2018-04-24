@@ -35,7 +35,7 @@ namespace PuppeteerSharp.Tests
             InitializeAsync().GetAwaiter().GetResult();
         }
 
-        public void Dispose() => DisposeAsync().GetAwaiter().GetResult();
+        public virtual void Dispose() => DisposeAsync().GetAwaiter().GetResult();
 
         protected static Task<dynamic> WaitForEvents(Session emitter, string eventName, int eventCount = 1)
         {
