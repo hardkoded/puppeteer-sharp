@@ -36,14 +36,17 @@ namespace PuppeteerSharp
         public string TargetId => _targetInfo.TargetId;
         #endregion
 
+        /// <summary>
+        /// Creates a new <see cref="Page"/>. If the target is not <c>"page"</c> returns <c>null</c>
+        /// </summary>
+        /// <returns>a task that returns a new <see cref="Page"/></returns>
         public async Task<Page> PageAsync()
         {
             if (_targetInfo.Type == "page" && _pageTask == null)
             {
                 _pageTask = await _browser.Connection.CreateSession(_targetInfo.TargetId)
                     .ContinueWith(clientTask
-                    => PuppeteerSharp.Page.CreateAsync(clientTask.Result, this, _browser.IgnoreHTTPSErrors, _browser.AppMode, _browser.ScreenshotTaskQueue));
-                var client = await _browser.Connection.CreateSession(_targetInfo.TargetId);
+                    => Page.CreateAsync(clientTask.Result, this, _browser.IgnoreHTTPSErrors, _browser.AppMode, _browser.ScreenshotTaskQueue));
             }
 
             return await (_pageTask ?? Task.FromResult<Page>(null));
