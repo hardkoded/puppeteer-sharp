@@ -67,7 +67,7 @@ namespace PuppeteerSharp
 
             var target = _targets[targetId];
             await target.InitializedTask;
-            return await target.Page();
+            return await target.PageAsync();
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>Task which resolves to an array of all open pages.</returns>
         public async Task<Page[]> PagesAsync()
-            => (await Task.WhenAll(Targets().Select(target => target.Page()))).Where(x => x != null).ToArray();
+            => (await Task.WhenAll(Targets().Select(target => target.PageAsync()))).Where(x => x != null).ToArray();
 
         internal void ChangeTarget(Target target)
         {

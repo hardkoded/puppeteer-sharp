@@ -36,7 +36,7 @@ namespace PuppeteerSharp
         public string TargetId => _targetInfo.TargetId;
         #endregion
 
-        public async Task<Page> Page()
+        public async Task<Page> PageAsync()
         {
             if (_targetInfo.Type == "page" && _pageTask == null)
             {

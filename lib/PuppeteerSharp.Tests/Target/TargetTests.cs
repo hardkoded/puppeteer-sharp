@@ -46,7 +46,7 @@ namespace PuppeteerSharp.Tests.Target
             var otherPageTaskCompletion = new TaskCompletionSource<PuppeteerSharp.Page>();
             async void TargetCreatedEventHandler(object sender, TargetChangedArgs e)
             {
-                otherPageTaskCompletion.SetResult(await e.Target.Page());
+                otherPageTaskCompletion.SetResult(await e.Target.PageAsync());
                 Browser.TargetCreated -= TargetCreatedEventHandler;
             }
             Browser.TargetCreated += TargetCreatedEventHandler;
@@ -64,14 +64,14 @@ namespace PuppeteerSharp.Tests.Target
             var closePageTaskCompletion = new TaskCompletionSource<PuppeteerSharp.Page>();
             async void TargetDestroyedEventHandler(object sender, TargetChangedArgs e)
             {
-                closePageTaskCompletion.SetResult(await e.Target.Page());
+                closePageTaskCompletion.SetResult(await e.Target.PageAsync());
                 Browser.TargetDestroyed -= TargetDestroyedEventHandler;
             }
             Browser.TargetDestroyed += TargetDestroyedEventHandler;
             await otherPage.CloseAsync();
             Assert.Equal(otherPage, await closePageTaskCompletion.Task);
 
-            allPages = await Task.WhenAll(Browser.Targets().Select(target => target.Page()));
+            allPages = await Task.WhenAll(Browser.Targets().Select(target => target.PageAsync()));
             Assert.Contains(Page, allPages);
             Assert.DoesNotContain(otherPage, allPages);
         }
@@ -170,7 +170,7 @@ namespace PuppeteerSharp.Tests.Target
             );
             // Connect to the opened page.
             var target = Browser.Targets().First(t => t.Url.Contains("one-style.html"));
-            var newPage = await target.Page();
+            var newPage = await target.PageAsync();
             // Issue a redirect.
             serverResponse.Redirect("/injectedstyle.css");
             serverResponseEnd.SetResult(true);
