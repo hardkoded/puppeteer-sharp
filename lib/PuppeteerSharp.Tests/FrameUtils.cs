@@ -6,7 +6,7 @@ namespace PuppeteerSharp.Tests
 {
     public static class FrameUtils
     {
-        public static async Task AttachFrame(PuppeteerSharp.Page page, string frameId, string url)
+        public static async Task AttachFrameAsync(PuppeteerSharp.Page page, string frameId, string url)
         {
             await page.EvaluateFunctionHandleAsync(@"(frameId, url) => {
               const frame = document.createElement('iframe');
@@ -17,7 +17,7 @@ namespace PuppeteerSharp.Tests
             }", frameId, url);
         }
 
-        public static async Task DetachFrame(PuppeteerSharp.Page page, string frameId)
+        public static async Task DetachFrameAsync(PuppeteerSharp.Page page, string frameId)
         {
             await page.EvaluateFunctionHandleAsync(@"function detachFrame(frameId) {
               const frame = document.getElementById(frameId);
@@ -34,6 +34,15 @@ namespace PuppeteerSharp.Tests
             }
 
             return result;
+        }
+
+        internal static async Task NavigateFrameAsync(PuppeteerSharp.Page page, string frameId, string url)
+        {
+            await page.EvaluateFunctionAsync(@"function navigateFrame(frameId, url) {
+              const frame = document.getElementById(frameId);
+              frame.src = url;
+              return new Promise(x => frame.onload = x);
+            }", frameId, url);
         }
     }
 }

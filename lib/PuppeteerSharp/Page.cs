@@ -9,11 +9,6 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Input;
-using System.IO;
-using System.Globalization;
-using Newtonsoft.Json.Linq;
-using System.Dynamic;
-using Newtonsoft.Json;
 using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
@@ -101,7 +96,11 @@ namespace PuppeteerSharp
         public event EventHandler<RequestEventArgs> RequestFailed;
 
         public Frame MainFrame => _frameManager.MainFrame;
-        public IEnumerable<Frame> Frames => _frameManager.Frames.Values;
+        /// <summary>
+        /// Gets all frames attached to the page.
+        /// </summary>
+        /// <value>An array of all frames attached to the page.</value>
+        public Frame[] Frames => _frameManager.Frames.Values.ToArray();
         public string Url => MainFrame.Url;
 
         public Target Target { get; }
