@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using PuppeteerSharp.Input;
 
 namespace PuppeteerSharp
 {
@@ -50,42 +49,64 @@ namespace PuppeteerSharp
 
         #region Public Methods
 
+        /// <summary>
+        /// Executes a script in browser context
+        /// </summary>
+        /// <param name="script">Script to be evaluated in browser context</param>
+        /// <remarks>
+        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+        /// </remarks>
+        /// <returns>Task which resolves to script return value</returns>
         public async Task<dynamic> EvaluateExpressionAsync(string script)
         {
             var context = await GetExecutionContextAsync();
             return await context.EvaluateExpressionAsync(script);
         }
 
+        /// <summary>
+        /// Executes a script in browser context
+        /// </summary>
+        /// <param name="script">Script to be evaluated in browser context</param>
+        /// <remarks>
+        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+        /// </remarks>
+        /// <returns>Task which resolves to script return value</returns>
         public async Task<T> EvaluateExpressionAsync<T>(string script)
         {
             var context = await GetExecutionContextAsync();
             return await context.EvaluateExpressionAsync<T>(script);
         }
 
+        /// <summary>
+        /// Executes a function in browser context
+        /// </summary>
+        /// <param name="script">Script to be evaluated in browser context</param>
+        /// <param name="args">Arguments to pass to script</param>
+        /// <remarks>
+        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+        /// </remarks>
+        /// <returns>Task which resolves to script return value</returns>
         public async Task<dynamic> EvaluateFunctionAsync(string script, params object[] args)
         {
             var context = await GetExecutionContextAsync();
             return await context.EvaluateFunctionAsync(script, args);
         }
 
+        /// <summary>
+        /// Executes a function in browser context
+        /// </summary>
+        /// <param name="script">Script to be evaluated in browser context</param>
+        /// <param name="args">Arguments to pass to script</param>
+        /// <remarks>
+        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+        /// </remarks>
+        /// <returns>Task which resolves to script return value</returns>
         public async Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
         {
             var context = await GetExecutionContextAsync();
             return await context.EvaluateFunctionAsync<T>(script, args);
         }
-
-        public async Task<JSHandle> EvaluateExpressionHandleAsync(string script)
-        {
-            var context = await GetExecutionContextAsync();
-            return await context.EvaluateExpressionHandleAsync(script);
-        }
-
-        public async Task<JSHandle> EvaluateFunctionHandleAsync(string script, params object[] args)
-        {
-            var context = await GetExecutionContextAsync();
-            return await context.EvaluateFunctionHandleAsync(script, args);
-        }
-
+        
         public Task<ExecutionContext> GetExecutionContextAsync() => ContextResolveTaskWrapper.Task;
 
         internal async Task<ElementHandle> GetElementAsync(string selector)
