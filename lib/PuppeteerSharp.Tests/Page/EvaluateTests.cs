@@ -58,7 +58,7 @@ namespace PuppeteerSharp.Tests.Page
             {
                 foo = "bar!"
             };
-            dynamic result = await Page.EvaluateFunctionAsync<dynamic>("a => a", obj);
+            dynamic result = await Page.EvaluateFunctionAsync("a => a", obj);
             Assert.Equal("bar!", result.foo.ToString());
         }
 
