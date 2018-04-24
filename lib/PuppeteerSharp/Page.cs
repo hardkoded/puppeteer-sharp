@@ -16,10 +16,6 @@ namespace PuppeteerSharp
     [DebuggerDisplay("Page {Url}")]
     public class Page : IDisposable
     {
-        public int DefaultNavigationTimeout { get; set; } = 30000;
-
-        internal Session Client { get; }
-
         private readonly bool _ignoreHTTPSErrors;
         private readonly NetworkManager _networkManager;
         private readonly FrameManager _frameManager;
@@ -96,6 +92,10 @@ namespace PuppeteerSharp
         public event EventHandler<RequestEventArgs> RequestFinished;
         public event EventHandler<RequestEventArgs> RequestFailed;
 
+        internal Session Client { get; }
+
+        public int DefaultNavigationTimeout { get; set; } = 30000;
+
         public Frame MainFrame => _frameManager.MainFrame;
         /// <summary>
         /// Gets all frames attached to the page.
@@ -103,7 +103,6 @@ namespace PuppeteerSharp
         /// <value>An array of all frames attached to the page.</value>
         public Frame[] Frames => _frameManager.Frames.Values.ToArray();
         public string Url => MainFrame.Url;
-
         public Target Target { get; }
         public Keyboard Keyboard { get; }
         public Touchscreen Touchscreen { get; }
