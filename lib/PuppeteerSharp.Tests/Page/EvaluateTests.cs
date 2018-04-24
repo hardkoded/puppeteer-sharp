@@ -94,5 +94,19 @@ namespace PuppeteerSharp.Tests.Page
             Assert.True(result.ContainsKey("a"));
             Assert.Null(result["a"]);
         }
+
+        [Fact]
+        public async Task EvaluateExpressionBigObject()
+        {
+            var window = await Page.EvaluateExpressionAsync("window");
+            Assert.Null(window);
+        }
+
+        [Fact]
+        public async Task EvaluateFunctionBigObject()
+        {
+            var window = await Page.EvaluateFunctionAsync("() => window");
+            Assert.Null(window);
+        }
     }
 }
