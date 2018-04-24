@@ -69,7 +69,7 @@ namespace PuppeteerSharp.Tests.Page
         [InlineData("() => -Infinity", double.NegativeInfinity)] //ShouldReturnNegativeInfinty
         public async Task BasicEvaluationTest(string script, object expected)
         {
-            var result = await Page.EvaluateFunctionAsync<object>(script);
+            dynamic result = await Page.EvaluateFunctionAsync(script);
             Assert.Equal(expected, result);
         }
 
