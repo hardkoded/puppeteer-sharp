@@ -22,7 +22,7 @@ namespace PuppeteerSharp.Tests.Page.Events
 
             Page.Console += EventHandler;
 
-            await Page.EvaluateExpressionHandleAsync("console.log('hello', 5, {foo: 'bar'})");
+            await Page.EvaluateExpressionAsync("console.log('hello', 5, {foo: 'bar'})");
             
             var obj = new Dictionary<string, object> {{"foo", "bar"}};
 
@@ -42,7 +42,7 @@ namespace PuppeteerSharp.Tests.Page.Events
 
             Page.Console += (sender, e) => messages.Add(e.Message);
 
-            await Page.EvaluateFunctionHandleAsync(@"() => {
+            await Page.EvaluateFunctionAsync(@"() => {
               // A pair of time/timeEnd generates only one Console API call.
               console.time('calling console.time');
               console.timeEnd('calling console.time');
@@ -93,7 +93,7 @@ namespace PuppeteerSharp.Tests.Page.Events
 
             Page.Console += EventHandler;
 
-            await Page.EvaluateExpressionHandleAsync("console.error(window)");
+            await Page.EvaluateExpressionAsync("console.error(window)");
 
             Assert.Equal("JSHandle@object", message.Text);
         }
