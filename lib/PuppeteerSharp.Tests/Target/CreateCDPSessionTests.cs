@@ -55,7 +55,7 @@ namespace PuppeteerSharp.Tests.Target
             var eventTask = WaitForEvents(client, "Debugger.scriptParsed");
             await Task.WhenAll(
                 eventTask,
-                Page.EvaluateExpressionHandleAsync("//# sourceURL=foo.js")
+                Page.EvaluateExpressionAsync("//# sourceURL=foo.js")
             );
             // expect events to be dispatched.
             Assert.Equal("foo.js", eventTask.Result.url.ToString());
