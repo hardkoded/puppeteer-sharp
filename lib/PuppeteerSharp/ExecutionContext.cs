@@ -23,8 +23,14 @@ namespace PuppeteerSharp
         public string FrameId { get; internal set; }
         public bool IsDefault { get; internal set; }
 
+        public Task<object> EvaluateExpressionAsync(string script)
+            => EvaluateExpressionAsync<object>(script);
+
         public Task<T> EvaluateExpressionAsync<T>(string script)
             => EvaluateAsync<T>(EvaluateExpressionHandleAsync(script));
+
+        public Task<object> EvaluateFunctionAsync(string script, params object[] args)
+            => EvaluateFunctionAsync<object>(script, args);
 
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
             => EvaluateAsync<T>(EvaluateFunctionHandleAsync(script, args));

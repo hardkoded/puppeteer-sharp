@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp.Tests
@@ -8,7 +7,7 @@ namespace PuppeteerSharp.Tests
     {
         public static async Task AttachFrameAsync(PuppeteerSharp.Page page, string frameId, string url)
         {
-            await page.EvaluateFunctionHandleAsync(@"(frameId, url) => {
+            await page.EvaluateFunctionAsync(@"(frameId, url) => {
               const frame = document.createElement('iframe');
               frame.src = url;
               frame.id = frameId;
@@ -19,7 +18,7 @@ namespace PuppeteerSharp.Tests
 
         public static async Task DetachFrameAsync(PuppeteerSharp.Page page, string frameId)
         {
-            await page.EvaluateFunctionHandleAsync(@"function detachFrame(frameId) {
+            await page.EvaluateFunctionAsync(@"function detachFrame(frameId) {
               const frame = document.getElementById(frameId);
               frame.remove();
             }", frameId);
