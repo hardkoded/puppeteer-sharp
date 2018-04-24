@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Tests.Page
             var metricsTaskWrapper = new TaskCompletionSource<MetricEventArgs>();
             Page.MetricsReceived += (sender, e) => metricsTaskWrapper.SetResult(e);
 
-            await Page.EvaluateExpressionHandleAsync("console.timeStamp('test42')");
+            await Page.EvaluateExpressionAsync("console.timeStamp('test42')");
             var result = await metricsTaskWrapper.Task;
 
             Assert.Equal("test42", result.Title);
