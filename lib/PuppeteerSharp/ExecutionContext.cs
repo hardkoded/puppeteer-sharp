@@ -22,22 +22,12 @@ namespace PuppeteerSharp
         public Func<dynamic, JSHandle> ObjectHandleFactory { get; internal set; }
         public string FrameId { get; internal set; }
         public bool IsDefault { get; internal set; }
-        
-        public async Task<T> EvaluateExpressionAsync<T>(string script)
-        {
-            var handle = await EvaluateExpressionHandleAsync(script);
-            var result = await handle.JsonValue<T>();
-            await handle.Dispose();
-            return result;
-        }
-        
-        public async Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
-        {
-            var handle = await EvaluateFunctionHandleAsync(script, args);
-            var result = await handle.JsonValue<T>();
-            await handle.Dispose();
-            return result;
-        }
+
+        public Task<T> EvaluateExpressionAsync<T>(string script)
+            => EvaluateAsync<T>(EvaluateExpressionHandleAsync(script));
+
+        public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
+            => EvaluateAsync<T>(EvaluateFunctionHandleAsync(script, args));
 
         internal async Task<JSHandle> EvaluateExpressionHandleAsync(string script)
         {
@@ -70,6 +60,16 @@ namespace PuppeteerSharp
                 {"returnByValue", false},
                 {"awaitPromise", true}
             });
+        }
+
+        private async Task<T> EvaluateAsync<T>(Task<JSHandle> handleEvaluator)
+        {
+            var handle = await handleEvaluator;
+            var result = await handle.JsonValue<T>()
+                .ContinueWith(jsonTask => jsonTask.Exception != null ? default(T) : jsonTask.Result);
+
+            await handle.Dispose();
+            return result;
         }
 
         private async Task<JSHandle> EvaluateHandleAsync(string method, dynamic args)
