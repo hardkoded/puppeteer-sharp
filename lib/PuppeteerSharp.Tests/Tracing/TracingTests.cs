@@ -56,7 +56,7 @@ namespace PuppeteerSharp.Tests.Tracing
                 Screenshots = true,
                 Path = _file
             });
-            await Page.GoToAsync(TestConstants.ServerUrl + '/grid.html');
+            await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             await Page.Tracing.StopAsync();
 
             Assert.True(File.Exists(_file));
