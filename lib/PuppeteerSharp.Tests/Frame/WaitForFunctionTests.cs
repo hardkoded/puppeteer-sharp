@@ -15,9 +15,9 @@ namespace PuppeteerSharp.Tests.Frame
             var polling = 100;
             var watchdog = Page.WaitForFunctionAsync("() => window.__FOO === 'hit'", new WaitForFunctionOptions { PollingInterval = polling })
                 .ContinueWith(_ => success = true);
-            await Page.EvaluateExpressionHandleAsync("window.__FOO = 'hit'");
+            await Page.EvaluateExpressionAsync("window.__FOO = 'hit'");
             Assert.False(success);
-            await Page.EvaluateExpressionHandleAsync("document.body.appendChild(document.createElement('div'))");
+            await Page.EvaluateExpressionAsync("document.body.appendChild(document.createElement('div'))");
             await watchdog;
             Assert.True((DateTime.Now - startTime).TotalMilliseconds > polling / 2);
         }
@@ -29,9 +29,9 @@ namespace PuppeteerSharp.Tests.Frame
             var watchdog = Page.WaitForFunctionAsync("() => window.__FOO === 'hit'",
                 new WaitForFunctionOptions { Polling = WaitForFunctionPollingOption.Mutation })
                 .ContinueWith(_ => success = true);
-            await Page.EvaluateExpressionHandleAsync("window.__FOO = 'hit'");
+            await Page.EvaluateExpressionAsync("window.__FOO = 'hit'");
             Assert.False(success);
-            await Page.EvaluateExpressionHandleAsync("document.body.appendChild(document.createElement('div'))");
+            await Page.EvaluateExpressionAsync("document.body.appendChild(document.createElement('div'))");
             await watchdog;
         }
 
@@ -40,7 +40,7 @@ namespace PuppeteerSharp.Tests.Frame
         {
             var watchdog = Page.WaitForFunctionAsync("() => window.__FOO === 'hit'",
                 new WaitForFunctionOptions { Polling = WaitForFunctionPollingOption.Raf });
-            await Page.EvaluateExpressionHandleAsync("window.__FOO = 'hit'");
+            await Page.EvaluateExpressionAsync("window.__FOO = 'hit'");
             await watchdog;
         }
 
@@ -74,7 +74,7 @@ namespace PuppeteerSharp.Tests.Frame
             var waitForFunction = Page.WaitForFunctionAsync("element => !element.parentElement", div)
                 .ContinueWith(_ => resolved = true);
             Assert.False(resolved);
-            await Page.EvaluateFunctionHandleAsync("element => element.remove()", div);
+            await Page.EvaluateFunctionAsync("element => element.remove()", div);
             await waitForFunction;
         }
     }

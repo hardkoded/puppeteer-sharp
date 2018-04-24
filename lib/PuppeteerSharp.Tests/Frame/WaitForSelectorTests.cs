@@ -19,7 +19,7 @@ namespace PuppeteerSharp.Tests.Frame
             Assert.True(added);
 
             added = false;
-            await frame.EvaluateFunctionHandleAsync(AddElement, "div");
+            await frame.EvaluateFunctionAsync(AddElement, "div");
             await frame.WaitForSelectorAsync("div").ContinueWith(_ => added = true);
             Assert.True(added);
         }
@@ -36,10 +36,10 @@ namespace PuppeteerSharp.Tests.Frame
             // .. to be sure that waitForSelector promise is not resolved yet.
             Assert.False(added);
 
-            await frame.EvaluateFunctionHandleAsync(AddElement, "br");
+            await frame.EvaluateFunctionAsync(AddElement, "br");
             Assert.False(added);
 
-            await frame.EvaluateFunctionHandleAsync(AddElement, "div");
+            await frame.EvaluateFunctionAsync(AddElement, "div");
             await watchdog;
             Assert.True(added);
         }
@@ -49,8 +49,8 @@ namespace PuppeteerSharp.Tests.Frame
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             var watchdog = Page.WaitForSelectorAsync("h3 div");
-            await Page.EvaluateFunctionHandleAsync(AddElement, "span");
-            await Page.EvaluateExpressionHandleAsync("document.querySelector('span').innerHTML = '<h3><div></div></h3>'");
+            await Page.EvaluateFunctionAsync(AddElement, "span");
+            await Page.EvaluateExpressionAsync("document.querySelector('span').innerHTML = '<h3><div></div></h3>'");
             await watchdog;
         }
 
@@ -62,10 +62,10 @@ namespace PuppeteerSharp.Tests.Frame
             var otherFrame = Page.Frames.ElementAt(1);
             var added = false;
             var waitForSelectorTask = Page.WaitForSelectorAsync("div").ContinueWith(_ => added = true);
-            await otherFrame.EvaluateFunctionHandleAsync(AddElement, "div");
+            await otherFrame.EvaluateFunctionAsync(AddElement, "div");
             Assert.False(added);
 
-            await Page.EvaluateFunctionHandleAsync(AddElement, "div");
+            await Page.EvaluateFunctionAsync(AddElement, "div");
             Assert.True(await waitForSelectorTask);
             Assert.True(added);
         }
@@ -81,10 +81,10 @@ namespace PuppeteerSharp.Tests.Frame
             var selectorTask = frame2.WaitForSelectorAsync("div").ContinueWith(_ => added = true);
             Assert.False(added);
 
-            await frame1.EvaluateFunctionHandleAsync(AddElement, "div");
+            await frame1.EvaluateFunctionAsync(AddElement, "div");
             Assert.False(added);
 
-            await frame2.EvaluateFunctionHandleAsync(AddElement, "div");
+            await frame2.EvaluateFunctionAsync(AddElement, "div");
             Assert.True(added);
         }
 
@@ -133,9 +133,9 @@ namespace PuppeteerSharp.Tests.Frame
                 .ContinueWith(_ => divFound = true);
             await Page.SetContentAsync("<div style='display: none; visibility: hidden;'>1</div>");
             Assert.False(divFound);
-            await Page.EvaluateExpressionHandleAsync("document.querySelector('div').style.removeProperty('display')");
+            await Page.EvaluateExpressionAsync("document.querySelector('div').style.removeProperty('display')");
             Assert.False(divFound);
-            await Page.EvaluateExpressionHandleAsync("document.querySelector('div').style.removeProperty('visibility')");
+            await Page.EvaluateExpressionAsync("document.querySelector('div').style.removeProperty('visibility')");
             Assert.True(await waitForSelector);
             Assert.True(divFound);
         }
@@ -148,9 +148,9 @@ namespace PuppeteerSharp.Tests.Frame
                 .ContinueWith(_ => divVisible = true);
             await Page.SetContentAsync("<div style='display: none; visibility: hidden;'><div id='inner'>hi</div></div>");
             Assert.False(divVisible);
-            await Page.EvaluateExpressionHandleAsync("document.querySelector('div').style.removeProperty('display')");
+            await Page.EvaluateExpressionAsync("document.querySelector('div').style.removeProperty('display')");
             Assert.False(divVisible);
-            await Page.EvaluateExpressionHandleAsync("document.querySelector('div').style.removeProperty('visibility')");
+            await Page.EvaluateExpressionAsync("document.querySelector('div').style.removeProperty('visibility')");
             Assert.True(await waitForSelector);
             Assert.True(divVisible);
         }
@@ -166,7 +166,7 @@ namespace PuppeteerSharp.Tests.Frame
                 .ContinueWith(_ => divHidden = true);
             await Page.WaitForSelectorAsync("div"); // do a round trip
             Assert.False(divHidden);
-            await Page.EvaluateExpressionHandleAsync($"document.querySelector('div').style.setProperty('{propertyName}', '{propertyValue}')");
+            await Page.EvaluateExpressionAsync($"document.querySelector('div').style.setProperty('{propertyName}', '{propertyValue}')");
             Assert.True(await waitForSelector);
             Assert.True(divHidden);
         }
@@ -180,7 +180,7 @@ namespace PuppeteerSharp.Tests.Frame
                 .ContinueWith(_ => divRemoved = true);
             await Page.WaitForSelectorAsync("div"); // do a round trip
             Assert.False(divRemoved);
-            await Page.EvaluateExpressionHandleAsync("document.querySelector('div').remove()");
+            await Page.EvaluateExpressionAsync("document.querySelector('div').remove()");
             Assert.True(await waitForSelector);
             Assert.True(divRemoved);
         }
@@ -202,7 +202,7 @@ namespace PuppeteerSharp.Tests.Frame
             var waitForSelector = Page.WaitForSelectorAsync(".zombo").ContinueWith(_ => divFound = true);
             await Page.SetContentAsync("<div class='notZombo'></div>");
             Assert.False(divFound);
-            await Page.EvaluateExpressionHandleAsync("document.querySelector('div').className = 'zombo'");
+            await Page.EvaluateExpressionAsync("document.querySelector('div').className = 'zombo'");
             Assert.True(await waitForSelector);
         }
 
