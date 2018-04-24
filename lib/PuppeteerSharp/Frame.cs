@@ -87,6 +87,7 @@ namespace PuppeteerSharp
         /// <param name="args">Arguments to pass to script</param>
         /// <remarks>
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+        /// <see cref="JSHandle"/> instances can be passed as arguments
         /// </remarks>
         /// <seealso cref="EvaluateExpressionAsync(string)"/>
         /// <returns>Task which resolves to script return value</returns>
@@ -104,6 +105,7 @@ namespace PuppeteerSharp
         /// <param name="args">Arguments to pass to script</param>
         /// <remarks>
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+        /// <see cref="JSHandle"/> instances can be passed as arguments
         /// </remarks>
         /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
         /// <returns>Task which resolves to script return value</returns>

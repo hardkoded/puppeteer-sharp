@@ -155,12 +155,29 @@ namespace PuppeteerSharp
         public async Task<IEnumerable<ElementHandle>> GetElementsAsync(string selector)
             => await MainFrame.GetElementsAsync(selector);
 
+        /// <summary>
+        /// Executes a script in browser context
+        /// </summary>
+        /// <param name="script">Script to be evaluated in browser context</param>
+        /// <remarks>
+        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+        /// </remarks>
+        /// <returns>Task which resolves to script return value</returns>
         public async Task<JSHandle> EvaluateExpressionHandleAsync(string script)
         {
             var context = await MainFrame.GetExecutionContextAsync();
             return await context.EvaluateExpressionHandleAsync(script);
         }
 
+        /// <summary>
+        /// Executes a script in browser context
+        /// </summary>
+        /// <param name="script">Script to be evaluated in browser context</param>
+        /// <remarks>
+        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+        /// <see cref="JSHandle"/> instances can be passed as arguments
+        /// </remarks>
+        /// <returns>Task which resolves to script return value</returns>
         public async Task<JSHandle> EvaluateFunctionHandleAsync(string pageFunction, params object[] args)
         {
             var context = await MainFrame.GetExecutionContextAsync();
