@@ -32,7 +32,7 @@ namespace PuppeteerSharp.Tests.Frame
             var added = false;
             var watchdog = frame.WaitForSelectorAsync("div").ContinueWith(_ => added = true);
             // run nop function..
-            await frame.EvaluateExpressionAsync<int>("42");
+            await frame.EvaluateExpressionAsync("42");
             // .. to be sure that waitForSelector promise is not resolved yet.
             Assert.False(added);
 
