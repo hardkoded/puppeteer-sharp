@@ -23,15 +23,59 @@ namespace PuppeteerSharp
         public string FrameId { get; internal set; }
         public bool IsDefault { get; internal set; }
 
+        /// <summary>
+        /// Executes a script in browser context
+        /// </summary>
+        /// <param name="script">Script to be evaluated in browser context</param>
+        /// <remarks>
+        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+        /// </remarks>
+        /// <seealso cref="EvaluateFunctionAsync(string, object[])"/>
+        /// <seealso cref="EvaluateExpressionHandleAsync(string)"/>
+        /// <returns>Task which resolves to script return value</returns>
         public Task<object> EvaluateExpressionAsync(string script)
             => EvaluateExpressionAsync<object>(script);
 
+        /// <summary>
+        /// Executes a script in browser context
+        /// </summary>
+        /// <typeparam name="T">The type to deserialize the result to</typeparam>
+        /// <param name="script">Script to be evaluated in browser context</param>
+        /// <remarks>
+        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+        /// </remarks>
+        /// <seealso cref="EvaluateFunctionAsync{T}(string, object[])"/>
+        /// <seealso cref="EvaluateExpressionHandleAsync(string)"/>
+        /// <returns>Task which resolves to script return value</returns>
         public Task<T> EvaluateExpressionAsync<T>(string script)
             => EvaluateAsync<T>(EvaluateExpressionHandleAsync(script));
 
+        /// <summary>
+        /// Executes a function in browser context
+        /// </summary>
+        /// <param name="script">Script to be evaluated in browser context</param>
+        /// <param name="args">Arguments to pass to script</param>
+        /// <remarks>
+        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+        /// </remarks>
+        /// <seealso cref="EvaluateExpressionAsync(string)"/>
+        /// <seealso cref="EvaluateFunctionHandleAsync(string, object[])"/>
+        /// <returns>Task which resolves to script return value</returns>
         public Task<object> EvaluateFunctionAsync(string script, params object[] args)
             => EvaluateFunctionAsync<object>(script, args);
 
+        /// <summary>
+        /// Executes a function in browser context
+        /// </summary>
+        /// <typeparam name="T">The type to deserialize the result to</typeparam>
+        /// <param name="script">Script to be evaluated in browser context</param>
+        /// <param name="args">Arguments to pass to script</param>
+        /// <remarks>
+        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+        /// </remarks>
+        /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
+        /// <seealso cref="EvaluateFunctionHandleAsync(string, object[])"/>
+        /// <returns>Task which resolves to script return value</returns>
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
             => EvaluateAsync<T>(EvaluateFunctionHandleAsync(script, args));
 

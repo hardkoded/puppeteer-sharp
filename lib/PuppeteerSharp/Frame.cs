@@ -56,6 +56,7 @@ namespace PuppeteerSharp
         /// <remarks>
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
         /// </remarks>
+        /// <seealso cref="EvaluateFunctionAsync(string, object[])"/>
         /// <returns>Task which resolves to script return value</returns>
         public async Task<dynamic> EvaluateExpressionAsync(string script)
         {
@@ -66,10 +67,12 @@ namespace PuppeteerSharp
         /// <summary>
         /// Executes a script in browser context
         /// </summary>
+        /// <typeparam name="T">The type to deserialize the result to</typeparam>
         /// <param name="script">Script to be evaluated in browser context</param>
         /// <remarks>
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
         /// </remarks>
+        /// <seealso cref="EvaluateFunctionAsync{T}(string, object[])"/>
         /// <returns>Task which resolves to script return value</returns>
         public async Task<T> EvaluateExpressionAsync<T>(string script)
         {
@@ -85,6 +88,7 @@ namespace PuppeteerSharp
         /// <remarks>
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
         /// </remarks>
+        /// <seealso cref="EvaluateExpressionAsync(string)"/>
         /// <returns>Task which resolves to script return value</returns>
         public async Task<dynamic> EvaluateFunctionAsync(string script, params object[] args)
         {
@@ -95,11 +99,13 @@ namespace PuppeteerSharp
         /// <summary>
         /// Executes a function in browser context
         /// </summary>
+        /// <typeparam name="T">The type to deserialize the result to</typeparam>
         /// <param name="script">Script to be evaluated in browser context</param>
         /// <param name="args">Arguments to pass to script</param>
         /// <remarks>
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
         /// </remarks>
+        /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
         /// <returns>Task which resolves to script return value</returns>
         public async Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
         {
