@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests.Page
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             Assert.Empty(await Page.GetCookiesAsync());
 
-            await Page.EvaluateExpressionHandleAsync("document.cookie = 'username=John Doe'");
+            await Page.EvaluateExpressionAsync("document.cookie = 'username=John Doe'");
             var cookie = Assert.Single(await Page.GetCookiesAsync());
             Assert.Equal("username", cookie.Name);
             Assert.Equal("John Doe", cookie.Value);
@@ -168,7 +168,7 @@ namespace PuppeteerSharp.Tests.Page
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             await Page.SetCookieAsync(new CookieParam { Name = "localhost-cookie", Value = "best" });
-            await Page.EvaluateFunctionHandleAsync(@"src => {
+            await Page.EvaluateFunctionAsync(@"src => {
                     let fulfill;
                     const promise = new Promise(x => fulfill = x);
                     const iframe = document.createElement('iframe');
