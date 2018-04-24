@@ -1,81 +1,36 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Xunit;
 
 namespace PuppeteerSharp.Tests.Frame
 {
     [Collection("PuppeteerLoaderFixture collection")]
-    public class WaitForFunctionTests : PuppeteerPageBaseTest
+    public class ContextTests : PuppeteerPageBaseTest
     {
         [Fact]
-        public async Task ShouldPollOnInterval()
+        public async Task ShouldWork()
         {
-            var success = false;
-            var startTime = DateTime.Now;
-            var polling = 100;
-            var watchdog = Page.WaitForFunctionAsync("() => window.__FOO === 'hit'", new WaitForFunctionOptions { PollingInterval = polling })
-                .ContinueWith(_ => success = true);
-            await Page.EvaluateExpressionAsync("window.__FOO = 'hit'");
-            Assert.False(success);
-            await Page.EvaluateExpressionAsync("document.body.appendChild(document.createElement('div'))");
-            await watchdog;
-            Assert.True((DateTime.Now - startTime).TotalMilliseconds > polling / 2);
-        }
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
+            Assert.Equal(2, Page.Frames.Length);
 
-        [Fact]
-        public async Task ShouldPollOnMutation()
-        {
-            var success = false;
-            var watchdog = Page.WaitForFunctionAsync("() => window.__FOO === 'hit'",
-                new WaitForFunctionOptions { Polling = WaitForFunctionPollingOption.Mutation })
-                .ContinueWith(_ => success = true);
-            await Page.EvaluateExpressionAsync("window.__FOO = 'hit'");
-            Assert.False(success);
-            await Page.EvaluateExpressionAsync("document.body.appendChild(document.createElement('div'))");
-            await watchdog;
-        }
+            var context1 = await Page.Frames[0].GetExecutionContextAsync();
+            var context2 = await Page.Frames[1].GetExecutionContextAsync();
+            Assert.NotNull(context1);
+            Assert.NotNull(context2);
+            Assert.NotEqual(context1, context2);
 
-        [Fact]
-        public async Task ShouldPollOnRaf()
-        {
-            var watchdog = Page.WaitForFunctionAsync("() => window.__FOO === 'hit'",
-                new WaitForFunctionOptions { Polling = WaitForFunctionPollingOption.Raf });
-            await Page.EvaluateExpressionAsync("window.__FOO = 'hit'");
-            await watchdog;
-        }
+            await Task.WhenAll(
+                context1.EvaluateExpressionAsync("window.a = 1"),
+                context2.EvaluateExpressionAsync("window.a = 2")
+            );
 
-        [Fact]
-        public async Task ShouldThrowNegativePollingInterval()
-        {
-            var exception = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(()
-                => Page.WaitForFunctionAsync("() => !!document.body", new WaitForFunctionOptions { PollingInterval = -10 }));
+            var a1 = context1.EvaluateExpressionAsync<int>("window.a");
+            var a2 = context2.EvaluateExpressionAsync<int>("window.a");
 
-            Assert.Contains("Cannot poll with non-positive interval", exception.Message);
-        }
+            await Task.WhenAll(a1, a2);
 
-        [Fact]
-        public async Task ShouldReturnTheSuccessValueAsAJSHandle()
-        {
-            Assert.Equal(5, await (await Page.WaitForFunctionAsync("() => 5")).JsonValue<int>());
-        }
-
-        [Fact]
-        public async Task ShouldReturnTheWindowAsASuccessValue()
-        {
-            Assert.NotNull(await Page.WaitForFunctionAsync("() => window"));
-        }
-
-        [Fact]
-        public async Task ShouldAcceptElementHandleArguments()
-        {
-            await Page.SetContentAsync("<div></div>");
-            var div = await Page.GetElementAsync("div");
-            var resolved = false;
-            var waitForFunction = Page.WaitForFunctionAsync("element => !element.parentElement", div)
-                .ContinueWith(_ => resolved = true);
-            Assert.False(resolved);
-            await Page.EvaluateFunctionAsync("element => element.remove()", div);
-            await waitForFunction;
+            Assert.Equal(1, a1.Result);
+            Assert.Equal(2, a2.Result);
         }
     }
 }

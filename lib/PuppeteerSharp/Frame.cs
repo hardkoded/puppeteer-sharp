@@ -75,9 +75,9 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Gets the execution context associated with the frame.
+        /// Gets the <see cref="ExecutionContext"/> associated with the frame.
         /// </summary>
-        /// <returns>Execution context associated with the frame.</returns>
+        /// <returns><see cref="ExecutionContext"/> associated with the frame.</returns>
         public Task<ExecutionContext> GetExecutionContextAsync() => ContextResolveTaskWrapper.Task;
 
         internal async Task<ElementHandle> GetElementAsync(string selector)
