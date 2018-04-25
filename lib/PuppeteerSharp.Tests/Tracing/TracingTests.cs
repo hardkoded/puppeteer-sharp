@@ -72,7 +72,10 @@ namespace PuppeteerSharp.Tests.Tracing
             {
                 Screenshots = true,
                 Path = _file,
-                Categories = new[] { "disabled-by-default-v8.cpu_profiler.hires" }
+                Categories = new List<string>
+                {
+                    "disabled-by-default-v8.cpu_profiler.hires"
+                }
             });
 
             await Page.Tracing.StopAsync();
