@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace PuppeteerSharp.Tests.Tracing
@@ -49,7 +51,7 @@ namespace PuppeteerSharp.Tests.Tracing
         }
 
         [Fact]
-        public async Task ShouldWork()
+        public async Task ShouldOutputATrace()
         {
             await Page.Tracing.StartAsync(new TracingOptions
             {
@@ -62,5 +64,45 @@ namespace PuppeteerSharp.Tests.Tracing
             Assert.True(File.Exists(_file));
         }
 
+
+        [Fact]
+        public async Task ShouldRunWithCustomCategoriesProvided()
+        {
+            await Page.Tracing.StartAsync(new TracingOptions
+            {
+                Screenshots = true,
+                Path = _file,
+                Categories = new[] { "disabled-by-default-v8.cpu_profiler.hires" }
+            });
+
+            await Page.Tracing.StopAsync();
+
+            using (var file = File.OpenText(_file))
+            using (var reader = new JsonTextReader(file))
+            {
+                dynamic traceJson = JToken.ReadFrom(reader);
+                Assert.Contains("disabled-by-default-v8.cpu_profiler.hires", traceJson.metadata["trace-config"]);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldThrowIfTracingOnTwoPages()
+        {
+            await Page.Tracing.StartAsync(new TracingOptions
+            {
+                Path = _file,
+            });
+            var page = await Browser.NewPageAsync();
+            var exception = await Assert.ThrowsAsync<ArgumentException>(async () =>
+            {
+                await Page.Tracing.StartAsync(new TracingOptions
+                {
+                    Path = _file,
+                });
+            });
+
+            await page.CloseAsync();
+            await page.Tracing.StopAsync();
+        }
     }
 }

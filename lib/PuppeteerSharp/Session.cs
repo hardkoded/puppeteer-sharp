@@ -30,6 +30,8 @@ namespace PuppeteerSharp
         public string SessionId { get; private set; }
         public Connection Connection { get; private set; }
         public event EventHandler<MessageEventArgs> MessageReceived;
+        public event EventHandler<TracingCompleteEventArgs> TracingComplete;
+
         #endregion
 
         #region Public Methods

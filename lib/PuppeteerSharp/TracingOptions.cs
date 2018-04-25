@@ -1,4 +1,5 @@
-﻿namespace PuppeteerSharp
+﻿using System.Collections.Generic;
+namespace PuppeteerSharp
 {
     public class TracingOptions
     {
@@ -16,6 +17,6 @@
         /// Specify custom categories to use instead of default.
         /// </summary>
         /// <value>The categories.</value>
-        public string[] Categories { get; set; }
+        public List<string> Categories { get; set; }
     }
 }
