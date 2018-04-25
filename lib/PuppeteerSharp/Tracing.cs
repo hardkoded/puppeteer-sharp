@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
@@ -73,18 +74,12 @@ namespace PuppeteerSharp
         {
             var taskWrapper = new TaskCompletionSource<bool>();
 
-            void EventHandler(object sender, TracingCompleteEventArgs e)
+            async void EventHandler(object sender, TracingCompleteEventArgs e)
             {
-                using (var fs = new FileStream(_path, FileMode.Create, FileAccess.Write))
-                {
-                    byte[] bytesInStream = new byte[e.Stream.Length];
-                    e.Stream.Read(bytesInStream, 0, bytesInStream.Length);
-                    fs.Write(bytesInStream, 0, bytesInStream.Length);
-                }
-
+                await ReadStream(e.Stream, _path);
                 _client.TracingComplete -= EventHandler;
                 taskWrapper.SetResult(true);
-            }
+            };
 
             _client.TracingComplete += EventHandler;
 
@@ -93,6 +88,30 @@ namespace PuppeteerSharp
             _recording = false;
 
             await taskWrapper.Task;
+        }
+
+        private async Task ReadStream(string stream, string path)
+        {
+            using (var fs = new StreamWriter(path))
+            {
+                bool eof = false;
+
+                while (!eof)
+                {
+                    var response = await _client.SendAsync<IOReadResponse>("IO.read", new
+                    {
+                        handle = stream
+                    });
+
+                    eof = response.Eof;
+
+                    await fs.WriteAsync(response.Data);
+                }
+            }
+            await _client.SendAsync("IO.close", new
+            {
+                handle = stream
+            });
         }
     }
 }

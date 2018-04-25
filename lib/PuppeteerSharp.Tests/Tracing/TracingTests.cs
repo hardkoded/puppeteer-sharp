@@ -83,8 +83,8 @@ namespace PuppeteerSharp.Tests.Tracing
             using (var file = File.OpenText(_file))
             using (var reader = new JsonTextReader(file))
             {
-                dynamic traceJson = JToken.ReadFrom(reader);
-                Assert.Contains("disabled-by-default-v8.cpu_profiler.hires", traceJson.metadata["trace-config"]);
+                var traceJson = JToken.ReadFrom(reader);
+                Assert.Contains("disabled-by-default-v8.cpu_profiler.hires", traceJson["metadata"]["trace-config"].ToString());
             }
         }
 
@@ -95,8 +95,8 @@ namespace PuppeteerSharp.Tests.Tracing
             {
                 Path = _file,
             });
-            var page = await Browser.NewPageAsync();
-            var exception = await Assert.ThrowsAsync<ArgumentException>(async () =>
+            var newPage = await Browser.NewPageAsync();
+            var exception = await Assert.ThrowsAsync<MessageException>(async () =>
             {
                 await Page.Tracing.StartAsync(new TracingOptions
                 {
@@ -104,8 +104,8 @@ namespace PuppeteerSharp.Tests.Tracing
                 });
             });
 
-            await page.CloseAsync();
-            await page.Tracing.StopAsync();
+            await newPage.CloseAsync();
+            await Page.Tracing.StopAsync();
         }
     }
 }

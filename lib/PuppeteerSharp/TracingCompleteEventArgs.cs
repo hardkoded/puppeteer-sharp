@@ -3,6 +3,6 @@ namespace PuppeteerSharp
 {
     public class TracingCompleteEventArgs
     {
-        public Stream Stream { get; internal set; }
+        public string Stream { get; internal set; }
     }
 }
