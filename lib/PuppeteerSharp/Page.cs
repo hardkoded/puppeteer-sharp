@@ -16,9 +16,6 @@ namespace PuppeteerSharp
     [DebuggerDisplay("Page {Url}")]
     public class Page : IDisposable
     {
-        public int DefaultNavigationTimeout { get; set; } = 30000;
-
-        private readonly Session _client;
         private readonly bool _ignoreHTTPSErrors;
         private readonly NetworkManager _networkManager;
         private readonly FrameManager _frameManager;
@@ -50,7 +47,7 @@ namespace PuppeteerSharp
 
         private Page(Session client, Target target, FrameTree frameTree, bool ignoreHTTPSErrors, TaskQueue screenshotTaskQueue)
         {
-            _client = client;
+            Client = client;
             Target = target;
             Keyboard = new Keyboard(client);
             Mouse = new Mouse(client, Keyboard);
@@ -76,7 +73,7 @@ namespace PuppeteerSharp
             _networkManager.ResponseCreated += (sender, e) => ResponseCreated?.Invoke(this, e);
             _networkManager.RequestFinished += (sender, e) => RequestFinished?.Invoke(this, e);
 
-            _client.MessageReceived += client_MessageReceived;
+            Client.MessageReceived += client_MessageReceived;
         }
 
         #region Public Properties
@@ -95,6 +92,10 @@ namespace PuppeteerSharp
         public event EventHandler<RequestEventArgs> RequestFinished;
         public event EventHandler<RequestEventArgs> RequestFailed;
 
+        internal Session Client { get; }
+
+        public int DefaultNavigationTimeout { get; set; } = 30000;
+
         public Frame MainFrame => _frameManager.MainFrame;
         /// <summary>
         /// Gets all frames attached to the page.
@@ -102,7 +103,6 @@ namespace PuppeteerSharp
         /// <value>An array of all frames attached to the page.</value>
         public Frame[] Frames => _frameManager.Frames.Values.ToArray();
         public string Url => MainFrame.Url;
-
         public Target Target { get; }
         public Keyboard Keyboard { get; }
         public Touchscreen Touchscreen { get; }
@@ -134,7 +134,7 @@ namespace PuppeteerSharp
 
         public async Task<Dictionary<string, decimal>> MetricsAsync()
         {
-            var response = await _client.SendAsync<PerformanceGetMetricsResponse>("Performance.getMetrics");
+            var response = await Client.SendAsync<PerformanceGetMetricsResponse>("Performance.getMetrics");
             return BuildMetricsObject(response.Metrics);
         }
 
@@ -155,13 +155,13 @@ namespace PuppeteerSharp
         public async Task<IEnumerable<ElementHandle>> GetElementsAsync(string selector)
             => await MainFrame.GetElementsAsync(selector);
 
-        public async Task<JSHandle> EvaluateExpressionHandle(string script)
+        public async Task<JSHandle> EvaluateExpressionHandleAsync(string script)
         {
             var context = await MainFrame.GetExecutionContextAsync();
             return await context.EvaluateExpressionHandleAsync(script);
         }
 
-        public async Task<JSHandle> EvaluateFunctionHandle(string pageFunction, params object[] args)
+        public async Task<JSHandle> EvaluateFunctionHandleAsync(string pageFunction, params object[] args)
         {
             var context = await MainFrame.GetExecutionContextAsync();
             return await context.EvaluateFunctionHandleAsync(pageFunction, args);
@@ -170,7 +170,7 @@ namespace PuppeteerSharp
         public async Task EvaluateOnNewDocumentAsync(string pageFunction, params object[] args)
         {
             var source = Helper.EvaluationString(pageFunction, args);
-            await _client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new { source });
+            await Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new { source });
         }
 
         public async Task<JSHandle> QueryObjects(JSHandle prototypeHandle)
@@ -203,7 +203,7 @@ namespace PuppeteerSharp
 
         public async Task<IEnumerable<CookieParam>> GetCookiesAsync(params string[] urls)
         {
-            var response = await _client.SendAsync("Network.getCookies", new Dictionary<string, object>
+            var response = await Client.SendAsync("Network.getCookies", new Dictionary<string, object>
             {
                 { "urls", urls.Length > 0 ? urls : new string[] { Url } }
             });
@@ -228,7 +228,7 @@ namespace PuppeteerSharp
 
             if (cookies.Length > 0)
             {
-                await _client.SendAsync("Network.setCookies", new Dictionary<string, object>
+                await Client.SendAsync("Network.setCookies", new Dictionary<string, object>
                 {
                     { "cookies", cookies}
                 });
@@ -244,7 +244,7 @@ namespace PuppeteerSharp
                 {
                     cookie.Url = pageURL;
                 }
-                await _client.SendAsync("Network.deleteCookies", cookie);
+                await Client.SendAsync("Network.deleteCookies", cookie);
             }
         }
 
@@ -313,7 +313,7 @@ namespace PuppeteerSharp
             var timeout = options?.Timeout ?? DefaultNavigationTimeout;
 
             var watcher = new NavigatorWatcher(_frameManager, mainFrame, timeout, options);
-            var navigateTask = Navigate(_client, url, referrer);
+            var navigateTask = Navigate(Client, url, referrer);
 
             await Task.WhenAny(
                 watcher.NavigationTask,
@@ -406,7 +406,7 @@ namespace PuppeteerSharp
             var marginBottom = ConvertPrintParameterToInches(options.MarginOptions.Bottom);
             var marginRight = ConvertPrintParameterToInches(options.MarginOptions.Right);
 
-            JObject result = await _client.SendAsync("Page.printToPDF", new
+            JObject result = await Client.SendAsync("Page.printToPDF", new
             {
                 landscape = options.Landscape,
                 displayHeaderFooter = options.DisplayHeaderFooter,
@@ -428,14 +428,14 @@ namespace PuppeteerSharp
         }
 
         public async Task SetJavaScriptEnabledAsync(bool enabled)
-            => await _client.SendAsync("Emulation.setScriptExecutionDisabled", new { value = !enabled });
+            => await Client.SendAsync("Emulation.setScriptExecutionDisabled", new { value = !enabled });
 
         public async Task EmulateMediaAsync(MediaType media)
-            => await _client.SendAsync("Emulation.setEmulatedMedia", new { media });
+            => await Client.SendAsync("Emulation.setEmulatedMedia", new { media });
 
         public async Task SetViewport(ViewPortOptions viewport)
         {
-            var needsReload = await _emulationManager.EmulateViewport(_client, viewport);
+            var needsReload = await _emulationManager.EmulateViewport(Client, viewport);
             Viewport = viewport;
 
             if (needsReload)
@@ -511,9 +511,9 @@ namespace PuppeteerSharp
 
         public Task CloseAsync()
         {
-            if (!(_client?.Connection?.IsClosed ?? true))
+            if (!(Client?.Connection?.IsClosed ?? true))
             {
-                return _client.Connection.SendAsync("Target.closeTarget", new
+                return Client.Connection.SendAsync("Target.closeTarget", new
                 {
                     targetId = Target.TargetId
                 });
@@ -548,7 +548,7 @@ namespace PuppeteerSharp
 
             await Task.WhenAll(
               navigationTask,
-              _client.SendAsync("Page.reload")
+              Client.SendAsync("Page.reload")
             );
 
             return navigationTask.Result;
@@ -635,7 +635,7 @@ namespace PuppeteerSharp
 
         private async Task<Stream> PerformScreenshot(string format, ScreenshotOptions options)
         {
-            await _client.SendAsync("Target.activateTarget", new
+            await Client.SendAsync("Target.activateTarget", new
             {
                 targetId = Target.TargetId
             });
@@ -648,7 +648,7 @@ namespace PuppeteerSharp
 
             if (options != null && options.FullPage)
             {
-                dynamic metrics = await _client.SendAsync("Page.getLayoutMetrics");
+                dynamic metrics = await Client.SendAsync("Page.getLayoutMetrics");
                 var width = Convert.ToInt32(Math.Ceiling(Convert.ToDecimal(metrics.contentSize.width.Value)));
                 var height = Convert.ToInt32(Math.Ceiling(Convert.ToDecimal(metrics.contentSize.height.Value)));
 
@@ -677,7 +677,7 @@ namespace PuppeteerSharp
                         Type = ScreenOrientationType.PortraitPrimary
                     };
 
-                await _client.SendAsync("Emulation.setDeviceMetricsOverride", new
+                await Client.SendAsync("Emulation.setDeviceMetricsOverride", new
                 {
                     mobile,
                     width,
@@ -689,7 +689,7 @@ namespace PuppeteerSharp
 
             if (options != null && options.OmitBackground)
             {
-                await _client.SendAsync("Emulation.setDefaultBackgroundColorOverride", new
+                await Client.SendAsync("Emulation.setDefaultBackgroundColorOverride", new
                 {
                     color = new
                     {
@@ -715,11 +715,11 @@ namespace PuppeteerSharp
                 screenMessage.clip = clip;
             }
 
-            JObject result = await _client.SendAsync("Page.captureScreenshot", screenMessage);
+            JObject result = await Client.SendAsync("Page.captureScreenshot", screenMessage);
 
             if (options != null && options.OmitBackground)
             {
-                await _client.SendAsync("Emulation.setDefaultBackgroundColorOverride");
+                await Client.SendAsync("Emulation.setDefaultBackgroundColorOverride");
             }
 
             if (options != null && options.FullPage)
@@ -822,7 +822,7 @@ namespace PuppeteerSharp
             if (_ignoreHTTPSErrors)
             {
                 //TODO: Puppeteer is silencing an error here, I don't know if that's necessary here
-                await _client.SendAsync("Security.handleCertificateError", new Dictionary<string, object>
+                await Client.SendAsync("Security.handleCertificateError", new Dictionary<string, object>
                 {
                     {"eventId", e.MessageData.eventId },
                     {"action", "continue"}
@@ -837,7 +837,7 @@ namespace PuppeteerSharp
 
         private void OnDialog(PageJavascriptDialogOpeningResponse message)
         {
-            var dialog = new Dialog(_client, message.Type, message.Message, message.DefaultPrompt);
+            var dialog = new Dialog(Client, message.Type, message.Message, message.DefaultPrompt);
             Dialog?.Invoke(this, new DialogEventArgs(dialog));
         }
 
@@ -847,7 +847,7 @@ namespace PuppeteerSharp
             {
                 foreach (var arg in message.Args)
                 {
-                    await Helper.ReleaseObject(_client, arg);
+                    await Helper.ReleaseObject(Client, arg);
                 }
 
                 return;
