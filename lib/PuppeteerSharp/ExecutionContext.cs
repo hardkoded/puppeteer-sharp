@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
-using Newtonsoft.Json.Linq;
 
 namespace PuppeteerSharp
 {
@@ -24,27 +23,63 @@ namespace PuppeteerSharp
         public string FrameId { get; internal set; }
         public bool IsDefault { get; internal set; }
 
-        public async Task<object> EvaluateExpressionAsync(string script)
-            => await EvaluateExpressionAsync<object>(script);
+        /// <summary>
+        /// Executes a script in browser context
+        /// </summary>
+        /// <param name="script">Script to be evaluated in browser context</param>
+        /// <remarks>
+        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+        /// </remarks>
+        /// <seealso cref="EvaluateFunctionAsync(string, object[])"/>
+        /// <seealso cref="EvaluateExpressionHandleAsync(string)"/>
+        /// <returns>Task which resolves to script return value</returns>
+        public Task<object> EvaluateExpressionAsync(string script)
+            => EvaluateExpressionAsync<object>(script);
 
-        public async Task<T> EvaluateExpressionAsync<T>(string script)
-        {
-            var handle = await EvaluateExpressionHandleAsync(script);
-            var result = await handle.JsonValue<T>();
-            await handle.Dispose();
-            return result;
-        }
+        /// <summary>
+        /// Executes a script in browser context
+        /// </summary>
+        /// <typeparam name="T">The type to deserialize the result to</typeparam>
+        /// <param name="script">Script to be evaluated in browser context</param>
+        /// <remarks>
+        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+        /// </remarks>
+        /// <seealso cref="EvaluateFunctionAsync{T}(string, object[])"/>
+        /// <seealso cref="EvaluateExpressionHandleAsync(string)"/>
+        /// <returns>Task which resolves to script return value</returns>
+        public Task<T> EvaluateExpressionAsync<T>(string script)
+            => EvaluateAsync<T>(EvaluateExpressionHandleAsync(script));
 
-        public async Task<object> EvaluateFunctionAsync(string script, params object[] args)
-            => await EvaluateFunctionAsync<object>(script, args);
+        /// <summary>
+        /// Executes a function in browser context
+        /// </summary>
+        /// <param name="script">Script to be evaluated in browser context</param>
+        /// <param name="args">Arguments to pass to script</param>
+        /// <remarks>
+        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+        /// <see cref="JSHandle"/> instances can be passed as arguments
+        /// </remarks>
+        /// <seealso cref="EvaluateExpressionAsync(string)"/>
+        /// <seealso cref="EvaluateFunctionHandleAsync(string, object[])"/>
+        /// <returns>Task which resolves to script return value</returns>
+        public Task<object> EvaluateFunctionAsync(string script, params object[] args)
+            => EvaluateFunctionAsync<object>(script, args);
 
-        public async Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
-        {
-            var handle = await EvaluateFunctionHandleAsync(script, args);
-            var result = await handle.JsonValue<T>();
-            await handle.Dispose();
-            return result;
-        }
+        /// <summary>
+        /// Executes a function in browser context
+        /// </summary>
+        /// <typeparam name="T">The type to deserialize the result to</typeparam>
+        /// <param name="script">Script to be evaluated in browser context</param>
+        /// <param name="args">Arguments to pass to script</param>
+        /// <remarks>
+        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+        /// <see cref="JSHandle"/> instances can be passed as arguments
+        /// </remarks>
+        /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
+        /// <seealso cref="EvaluateFunctionHandleAsync(string, object[])"/>
+        /// <returns>Task which resolves to script return value</returns>
+        public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
+            => EvaluateAsync<T>(EvaluateFunctionHandleAsync(script, args));
 
         internal async Task<JSHandle> EvaluateExpressionHandleAsync(string script)
         {
@@ -77,6 +112,16 @@ namespace PuppeteerSharp
                 {"returnByValue", false},
                 {"awaitPromise", true}
             });
+        }
+
+        private async Task<T> EvaluateAsync<T>(Task<JSHandle> handleEvaluator)
+        {
+            var handle = await handleEvaluator;
+            var result = await handle.JsonValue<T>()
+                .ContinueWith(jsonTask => jsonTask.Exception != null ? default(T) : jsonTask.Result);
+
+            await handle.Dispose();
+            return result;
         }
 
         private async Task<JSHandle> EvaluateHandleAsync(string method, dynamic args)
@@ -136,6 +181,5 @@ namespace PuppeteerSharp
 
             return ObjectHandleFactory(response.objects);
         }
-
     }
 }

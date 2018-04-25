@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using PuppeteerSharp.Input;
 
 namespace PuppeteerSharp
 {
@@ -50,24 +49,66 @@ namespace PuppeteerSharp
 
         #region Public Methods
 
+        /// <summary>
+        /// Executes a script in browser context
+        /// </summary>
+        /// <param name="script">Script to be evaluated in browser context</param>
+        /// <remarks>
+        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+        /// </remarks>
+        /// <seealso cref="EvaluateFunctionAsync(string, object[])"/>
+        /// <returns>Task which resolves to script return value</returns>
         public async Task<dynamic> EvaluateExpressionAsync(string script)
         {
             var context = await GetExecutionContextAsync();
             return await context.EvaluateExpressionAsync(script);
         }
 
+        /// <summary>
+        /// Executes a script in browser context
+        /// </summary>
+        /// <typeparam name="T">The type to deserialize the result to</typeparam>
+        /// <param name="script">Script to be evaluated in browser context</param>
+        /// <remarks>
+        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+        /// </remarks>
+        /// <seealso cref="EvaluateFunctionAsync{T}(string, object[])"/>
+        /// <returns>Task which resolves to script return value</returns>
         public async Task<T> EvaluateExpressionAsync<T>(string script)
         {
             var context = await GetExecutionContextAsync();
             return await context.EvaluateExpressionAsync<T>(script);
         }
 
+        /// <summary>
+        /// Executes a function in browser context
+        /// </summary>
+        /// <param name="script">Script to be evaluated in browser context</param>
+        /// <param name="args">Arguments to pass to script</param>
+        /// <remarks>
+        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+        /// <see cref="JSHandle"/> instances can be passed as arguments
+        /// </remarks>
+        /// <seealso cref="EvaluateExpressionAsync(string)"/>
+        /// <returns>Task which resolves to script return value</returns>
         public async Task<dynamic> EvaluateFunctionAsync(string script, params object[] args)
         {
             var context = await GetExecutionContextAsync();
             return await context.EvaluateFunctionAsync(script, args);
         }
 
+        /// <summary>
+        /// Executes a function in browser context
+        /// </summary>
+        /// <typeparam name="T">The type to deserialize the result to</typeparam>
+        /// <param name="script">Script to be evaluated in browser context</param>
+        /// <param name="args">Arguments to pass to script</param>
+        /// <remarks>
+        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+        /// <see cref="JSHandle"/> instances can be passed as arguments
+        /// </remarks>
+        /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
+        /// <returns>Task which resolves to script return value</returns>
         public async Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
         {
             var context = await GetExecutionContextAsync();
@@ -122,9 +163,8 @@ namespace PuppeteerSharp
             throw new NotImplementedException();
         }
 
-        internal async Task<string> GetContentAsync()
-        {
-            return await EvaluateFunctionAsync<string>(@"() => {
+        internal Task<string> GetContentAsync()
+            => EvaluateFunctionAsync<string>(@"() => {
                 let retVal = '';
                 if (document.doctype)
                     retVal = new XMLSerializer().serializeToString(document.doctype);
@@ -132,18 +172,16 @@ namespace PuppeteerSharp
                     retVal += document.documentElement.outerHTML;
                 return retVal;
             }");
-        }
 
-        internal async Task SetContentAsync(string html)
-        {
-            await EvaluateFunctionAsync(@"html => {
+        internal Task SetContentAsync(string html)
+            => EvaluateFunctionAsync(@"html => {
                 document.open();
                 document.write(html);
                 document.close();
             }", html);
-        }
 
-        internal async Task<string> GetTitleAsync() => await EvaluateExpressionAsync<string>("document.title");
+
+        internal Task<string> GetTitleAsync() => EvaluateExpressionAsync<string>("document.title");
 
         internal void OnLifecycleEvent(string loaderId, string name)
         {
