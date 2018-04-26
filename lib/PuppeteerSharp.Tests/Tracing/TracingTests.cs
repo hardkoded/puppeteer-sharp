@@ -20,12 +20,12 @@ namespace PuppeteerSharp.Tests.Tracing
             _file = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         }
 
-        public override void Dispose()
+        protected override async Task DisposeAsync()
         {
-            base.Dispose();
+            await base.DisposeAsync();
 
             int attempts = 0;
-            const int attemptTimes = 5;
+            const int maxAttempts = 5;
 
             while (true)
             {
@@ -40,12 +40,12 @@ namespace PuppeteerSharp.Tests.Tracing
                 }
                 catch (UnauthorizedAccessException)
                 {
-                    if (attempts == attemptTimes)
+                    if (attempts == maxAttempts)
                     {
                         break;
                     }
 
-                    Task.Delay(1000).GetAwaiter().GetResult();
+                    await Task.Delay(1000);
                 }
             }
         }
@@ -96,7 +96,7 @@ namespace PuppeteerSharp.Tests.Tracing
                 Path = _file,
             });
             var newPage = await Browser.NewPageAsync();
-            var exception = await Assert.ThrowsAsync<MessageException>(async () =>
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(async () =>
             {
                 await Page.Tracing.StartAsync(new TracingOptions
                 {

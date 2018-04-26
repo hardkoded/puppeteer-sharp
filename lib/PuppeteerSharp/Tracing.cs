@@ -40,12 +40,12 @@ namespace PuppeteerSharp
         {
             if (_recording)
             {
-                Console.WriteLine("Cannot start recording trace while already recording trace.");
+                throw new InvalidOperationException("Cannot start recording trace while already recording trace.");
             }
 
             if (string.IsNullOrEmpty(options.Path))
             {
-                Console.WriteLine("Must specify a path to write trace file to.");
+                throw new ArgumentException("Must specify a path to write trace file to.");
             }
 
 
@@ -62,7 +62,7 @@ namespace PuppeteerSharp
             await _client.SendAsync("Tracing.start", new
             {
                 transferMode = "ReturnAsStream",
-                categories = string.Join(", ", categories.ToArray())
+                categories = string.Join(", ", categories)
             });
         }
 

@@ -140,7 +140,7 @@ namespace PuppeteerSharp
             {
                 TracingComplete?.Invoke(this, new TracingCompleteEventArgs
                 {
-                    Stream = objAsJObject["params"]["stream"].ToString()
+                    Stream = objAsJObject["params"].Value<string>("stream")
                 });
             }
             else
