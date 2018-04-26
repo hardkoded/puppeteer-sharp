@@ -60,8 +60,8 @@ namespace PuppeteerSharp.Tests.Network
             Page.ResponseCreated += (sender, e) => response = e.Response;
             await Page.GoToAsync(TestConstants.ServerUrl + "/simple.json");
             Assert.NotNull(response);
-            Assert.Equal("{\"foo\": \"bar\"}\r\n", await response.TextAsync());
-            Assert.Equal(JObject.Parse("{\"foo\": \"bar\"}\r\n"), await response.JsonAsync());
+            Assert.Equal($"{{\"foo\": \"bar\"}}{Environment.NewLine}", await response.TextAsync());
+            Assert.Equal(JObject.Parse($"{{\"foo\": \"bar\"}}{Environment.NewLine}"), await response.JsonAsync());
         }
 
         [Fact]
