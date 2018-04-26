@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using Newtonsoft.Json.Linq;
+using System.IO;
 
 namespace PuppeteerSharp
 {
@@ -30,6 +31,8 @@ namespace PuppeteerSharp
         public string SessionId { get; private set; }
         public Connection Connection { get; private set; }
         public event EventHandler<MessageEventArgs> MessageReceived;
+        public event EventHandler<TracingCompleteEventArgs> TracingComplete;
+
         #endregion
 
         #region Public Methods
@@ -132,6 +135,13 @@ namespace PuppeteerSharp
                         callback.TaskWrapper.SetResult(obj.result);
                     }
                 }
+            }
+            else if (obj.method == "Tracing.tracingComplete")
+            {
+                TracingComplete?.Invoke(this, new TracingCompleteEventArgs
+                {
+                    Stream = objAsJObject["params"].Value<string>("stream")
+                });
             }
             else
             {

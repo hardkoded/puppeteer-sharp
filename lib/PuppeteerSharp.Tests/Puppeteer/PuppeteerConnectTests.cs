@@ -44,7 +44,7 @@ namespace PuppeteerSharp.Tests.Puppeteer
 
             using (var browser = await PuppeteerSharp.Puppeteer.ConnectAsync(options))
             {
-                var pages = (await browser.Pages()).ToList();
+                var pages = (await browser.PagesAsync()).ToList();
                 var restoredPage = pages.FirstOrDefault(x => x.Url == url);
                 Assert.NotNull(restoredPage);
                 var frameDump = FrameUtils.DumpFrames(restoredPage.MainFrame);
