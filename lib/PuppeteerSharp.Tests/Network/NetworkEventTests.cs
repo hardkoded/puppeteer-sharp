@@ -2,10 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -115,9 +112,9 @@ namespace PuppeteerSharp.Tests.Network
             Page.RequestCreated += async (sender, e) =>
             {
                 if (e.Request.Url.EndsWith("css"))
-                    await e.Request.Abort();
+                    await e.Request.AbortAsync();
                 else
-                    await e.Request.Continue();
+                    await e.Request.ContinueAsync();
             };
             var failedRequests = new List<Request>();
             Page.RequestFailed += (sender, e) => failedRequests.Add(e.Request);

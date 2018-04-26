@@ -10,26 +10,11 @@ namespace PuppeteerSharp
     public class Request : Payload
     {
         #region Private Members
-        private Session _client;
+        private readonly Session _client;
+
         private bool _allowInterception;
         private bool _interceptionHandled;
-        private string _failureText;
 
-        private readonly Dictionary<string, string> _errorReasons = new Dictionary<string, string>
-        {
-            {"aborted", "Aborted"},
-            {"accessdenied", "AccessDenied"},
-            {"addressunreachable", "AddressUnreachable"},
-            {"connectionaborted", "ConnectionAborted"},
-            {"connectionclosed", "ConnectionClosed"},
-            {"connectionfailed", "ConnectionFailed"},
-            {"connectionrefused", "ConnectionRefused"},
-            {"connectionreset", "ConnectionReset"},
-            {"internetdisconnected", "InternetDisconnected"},
-            {"namenotresolved", "NameNotResolved"},
-            {"timedout", "TimedOut"},
-            {"failed", "Failed"},
-        };
         #endregion
 
         public Request(Session client, string requestId, string interceptionId, bool allowInterception, string url,
@@ -68,7 +53,7 @@ namespace PuppeteerSharp
 
         #region Public Methods
 
-        public async Task Continue(Payload overrides = null)
+        public async Task ContinueAsync(Payload overrides = null)
         {
             overrides = overrides ?? new Payload();
             /*
@@ -103,16 +88,21 @@ namespace PuppeteerSharp
             }
         }
 
-
-        public async Task Respond(ResponseData response)
+        public async Task RespondAsync(ResponseData response)
         {
             if (Url.StartsWith("data:", StringComparison.Ordinal))
             {
                 return;
             }
 
-            Contract.Requires(_allowInterception, "Request interception is not enabled!");
-            Contract.Requires(!_interceptionHandled, "Request is already handled!");
+            if (!_allowInterception)
+            {
+                throw new InvalidOperationException("Request interception is not enabled!");
+            }
+            if (_interceptionHandled)
+            {
+                throw new InvalidOperationException("Request is already handled!");
+            }
 
             _interceptionHandled = true;
 
@@ -175,12 +165,8 @@ namespace PuppeteerSharp
             }
         }
 
-        public async Task Abort(string errorCode = "failed")
+        public async Task AbortAsync(RequestAbortErrorCode errorCode = RequestAbortErrorCode.Failed)
         {
-            if (!_errorReasons.ContainsKey(errorCode))
-            {
-                throw new ArgumentOutOfRangeException(nameof(errorCode), errorCode, "Unknown error code");
-            }
             if (!_allowInterception)
             {
                 throw new PuppeteerException("Request interception is not enabled!");
@@ -189,10 +175,8 @@ namespace PuppeteerSharp
             {
                 throw new PuppeteerException("Request is already handled!");
             }
-            //Contract.Requires(_errorReasons.ContainsKey(errorCode), $"Unknown error code: {errorCode}");
-            //Contract.Requires(_allowInterception, "Request interception is not enabled!");
-            //Contract.Requires(!_interceptionHandled, "Request is already handled!");
-            var errorReason = _errorReasons[errorCode];
+
+            var errorReason = errorCode.ToString();
 
             _interceptionHandled = true;
 
@@ -212,6 +196,5 @@ namespace PuppeteerSharp
             }
         }
         #endregion
-
     }
 }

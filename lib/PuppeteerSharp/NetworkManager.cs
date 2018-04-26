@@ -174,9 +174,9 @@ namespace PuppeteerSharp
         private void OnResponseReceived(MessageEventArgs e)
         {
             // FileUpload sends a response without a matching request.
-            if (_requestIdToRequest.ContainsKey(e.MessageData.requestId.ToString()))
+            string requestId = e.MessageData.requestId.ToString();
+            if (_requestIdToRequest.TryGetValue(requestId, out var request))
             {
-                var request = _requestIdToRequest[e.MessageData.requestId.ToString()];
                 var response = new Response(
                     _client,
                     request,
