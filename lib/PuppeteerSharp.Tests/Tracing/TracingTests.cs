@@ -64,7 +64,6 @@ namespace PuppeteerSharp.Tests.Tracing
             Assert.True(File.Exists(_file));
         }
 
-
         [Fact]
         public async Task ShouldRunWithCustomCategoriesProvided()
         {
