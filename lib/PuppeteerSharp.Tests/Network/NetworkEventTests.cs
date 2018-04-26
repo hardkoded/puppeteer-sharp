@@ -22,7 +22,7 @@ namespace PuppeteerSharp.Tests.Network
             await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.Single(requests);
             Assert.Equal(TestConstants.EmptyPage, requests[0].Url);
-            Assert.Equal("document", requests[0].ResourceType);
+            Assert.Equal(ResourceType.Document, requests[0].ResourceType);
             Assert.Equal("GET", requests[0].Method);
             Assert.NotNull(requests[0].Response);
             Assert.Equal(Page.MainFrame, requests[0].Frame);
@@ -126,7 +126,7 @@ namespace PuppeteerSharp.Tests.Network
             Assert.Single(failedRequests);
             Assert.Equal("one-style.css", failedRequests[0].Url);
             Assert.Null(failedRequests[0].Response);
-            Assert.Equal("stylesheet", failedRequests[0].ResourceType);
+            Assert.Equal(ResourceType.StyleSheet, failedRequests[0].ResourceType);
             Assert.Equal("net::ERR_FAILED", failedRequests[0].Failure);
             Assert.NotNull(failedRequests[0].Frame);
         }
