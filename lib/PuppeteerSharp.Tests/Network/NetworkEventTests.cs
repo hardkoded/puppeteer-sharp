@@ -134,19 +134,47 @@ namespace PuppeteerSharp.Tests.Network
         [Fact]
         public async Task PageEventsRequestFinished()
         {
-
+            var requests = new List<Request>();
+            Page.RequestFinished += (sender, e) => requests.Add(e.Request);
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            Assert.Single(requests);
+            Assert.Equal(TestConstants.EmptyPage, requests[0].Url);
+            Assert.NotNull(requests[0].Response);
+            Assert.Equal("GET", requests[0].Method);
+            Assert.Equal(Page.MainFrame, requests[0].Frame);
+            Assert.Equal(TestConstants.EmptyPage, requests[0].Frame.Url);
         }
 
         [Fact]
         public async Task ShouldFireEventsInProperOrder()
         {
-
+            var events = new List<string>();
+            Page.RequestCreated += (sender, e) => events.Add("request");
+            Page.ResponseCreated += (sender, e) => events.Add("response");
+            Page.RequestFinished += (sender, e) => events.Add("requestfinished");
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            Assert.Equal(new[] { "request", "response", "requestfinished" }, events);
         }
 
         [Fact]
         public async Task ShouldSupportRedirects()
         {
-
+            var events = new List<string>();
+            Page.RequestCreated += (sender, e) => events.Add($"{e.Request.Method} {e.Request.Url}");
+            Page.ResponseCreated += (sender, e) => events.Add($"{(int)e.Response.Status} {e.Response.Url}");
+            Page.RequestFinished += (sender, e) => events.Add($"DONE {e.Request.Url}");
+            Page.RequestFailed += (sender, e) => events.Add($"FAIL {e.Request.Url}");
+            Server.SetRedirect("/foo.html", "/empty.html");
+            const string FOO_URL = TestConstants.ServerUrl + "/foo.html";
+            await Page.GoToAsync(FOO_URL);
+            Assert.Equal(new[] {
+                $"GET {FOO_URL}",
+                $"302 {FOO_URL}",
+                $"DONE {FOO_URL}",
+                $"GET {TestConstants.EmptyPage}",
+                $"200 {TestConstants.EmptyPage}",
+                $"DONE {TestConstants.EmptyPage}"
+            }, events);
         }
     }
 }
