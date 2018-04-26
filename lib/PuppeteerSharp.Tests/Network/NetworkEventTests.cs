@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -57,8 +58,9 @@ namespace PuppeteerSharp.Tests.Network
             Page.ResponseCreated += (sender, e) => response = e.Response;
             await Page.GoToAsync(TestConstants.ServerUrl + "/simple.json");
             Assert.NotNull(response);
-            Assert.Equal($"{{\"foo\": \"bar\"}}{Environment.NewLine}", await response.TextAsync());
-            Assert.Equal(JObject.Parse($"{{\"foo\": \"bar\"}}{Environment.NewLine}"), await response.JsonAsync());
+            var responseText = await new HttpClient().GetStringAsync(TestConstants.ServerUrl + "/simple.json");
+            Assert.Equal(responseText, await response.TextAsync());
+            Assert.Equal(JObject.Parse(responseText), await response.JsonAsync());
         }
 
         [Fact]
