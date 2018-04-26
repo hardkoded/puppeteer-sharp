@@ -263,12 +263,12 @@ namespace PuppeteerSharp
                 requestId,
                 messageData.interceptionId?.ToString(),
                 messageData.request.url?.ToString(),
-                (messageData.resourceType ?? messageData.type)?.ToString(),
+                (messageData.resourceType ?? messageData.type)?.ToObject<ResourceType>(),
                 ((JObject)messageData.request).ToObject<Payload>(),
                 messageData.frameId?.ToString());
         }
 
-        private void HandleRequestStart(string requestId, string interceptionId, string url, string resourceType, Payload requestPayload, string frameId)
+        private void HandleRequestStart(string requestId, string interceptionId, string url, ResourceType resourceType, Payload requestPayload, string frameId)
         {
             Frame frame = null;
 

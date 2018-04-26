@@ -12,7 +12,6 @@ namespace PuppeteerSharp
         #region Private Members
         private Session _client;
         private bool _allowInterception;
-        private string _resourceType;
         private bool _interceptionHandled;
         private string _failureText;
 
@@ -34,7 +33,7 @@ namespace PuppeteerSharp
         #endregion
 
         public Request(Session client, string requestId, string interceptionId, bool allowInterception, string url,
-                      string resourceType, Payload payload, Frame frame)
+                      ResourceType resourceType, Payload payload, Frame frame)
         {
             _client = client;
             RequestId = requestId;
@@ -42,7 +41,7 @@ namespace PuppeteerSharp
             _allowInterception = allowInterception;
             _interceptionHandled = false;
             Url = url;
-            _resourceType = resourceType.ToLower();
+            ResourceType = resourceType;
             Method = payload.Method;
             PostData = payload.PostData;
             Frame = frame;
@@ -61,6 +60,7 @@ namespace PuppeteerSharp
         public string Failure { get; set; }
         public string RequestId { get; internal set; }
         public string InterceptionId { get; internal set; }
+        public ResourceType ResourceType { get; internal set; }
         public Task<bool> CompleteTask => CompleteTaskWrapper.Task;
         public TaskCompletionSource<bool> CompleteTaskWrapper { get; internal set; }
         public Frame Frame { get; }
