@@ -36,7 +36,7 @@ namespace PuppeteerSharp.Tests.Network
             Server.SetRoute("/post", context => Task.CompletedTask);
             Request request = null;
             Page.RequestCreated += (sender, e) => request = e.Request;
-            await Page.EvaluateExpressionHandle("fetch('./post', { method: 'POST', body: JSON.stringify({ foo: 'bar'})})");
+            await Page.EvaluateExpressionHandleAsync("fetch('./post', { method: 'POST', body: JSON.stringify({ foo: 'bar'})})");
             Assert.NotNull(request);
             Assert.Equal("{\"foo\":\"bar\"}", request.PostData);
         }
