@@ -21,7 +21,7 @@ namespace PuppeteerSharp.Tests.Network
             Assert.Single(requests);
             Assert.Equal(TestConstants.EmptyPage, requests[0].Url);
             Assert.Equal(ResourceType.Document, requests[0].ResourceType);
-            Assert.Equal("GET", requests[0].Method);
+            Assert.Equal(HttpMethod.Get , requests[0].Method);
             Assert.NotNull(requests[0].Response);
             Assert.Equal(Page.MainFrame, requests[0].Frame);
             Assert.Equal(TestConstants.EmptyPage, requests[0].Frame.Url);
@@ -139,7 +139,7 @@ namespace PuppeteerSharp.Tests.Network
             Assert.Single(requests);
             Assert.Equal(TestConstants.EmptyPage, requests[0].Url);
             Assert.NotNull(requests[0].Response);
-            Assert.Equal("GET", requests[0].Method);
+            Assert.Equal(HttpMethod.Get, requests[0].Method);
             Assert.Equal(Page.MainFrame, requests[0].Frame);
             Assert.Equal(TestConstants.EmptyPage, requests[0].Frame.Url);
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Web;
 using Newtonsoft.Json;
 
@@ -12,9 +13,9 @@ namespace PuppeteerSharp
         {
             Headers = new Dictionary<string, object>();
         }
-
-        [JsonProperty("method")]
-        public string Method { get; internal set; }
+        
+        [JsonProperty("method"), JsonConverter(typeof(HttpMethodConverter))]
+        public HttpMethod Method { get; set; }
         [JsonProperty("postData")]
         public object PostData { get; internal set; }
         [JsonProperty("headers")]
