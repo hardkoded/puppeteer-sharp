@@ -90,7 +90,7 @@ namespace PuppeteerSharp
 
                 await _client.SendAsync("Network.continueInterceptedRequest", requestData);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // In certain cases, protocol will return error if the request was already canceled
                 // or the page was closed. We should tolerate these errors
@@ -209,7 +209,7 @@ namespace PuppeteerSharp
                     {"errorReason", errorReason}
                 });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // In certain cases, protocol will return error if the request was already canceled
                 // or the page was closed. We should tolerate these errors
