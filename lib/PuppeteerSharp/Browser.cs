@@ -108,7 +108,13 @@ namespace PuppeteerSharp
 
             IsClosed = true;
 
-            await _closeCallBack();
+            var closeTask = _closeCallBack();
+
+            if (closeTask != null)
+            {
+                await closeTask;
+            }
+
             Disconnect();
             Closed?.Invoke(this, new EventArgs());
         }

@@ -195,7 +195,11 @@ namespace PuppeteerSharp
 
                 _connection = await Connection.Create(options.BrowserWSEndpoint, connectionDelay, keepAliveInterval);
 
-                return await Browser.CreateAsync(_connection, options, () => _connection.SendAsync("Browser.close", null));
+                return await Browser.CreateAsync(_connection, options, () =>
+                {
+                    var closeTask = _connection.SendAsync("Browser.close", null);
+                    return null;
+                });
             }
             catch (Exception ex)
             {
