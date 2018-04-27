@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Linq;
-using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -21,7 +20,7 @@ namespace PuppeteerSharp.Tests.Network
             Assert.Single(requests);
             Assert.Equal(TestConstants.EmptyPage, requests[0].Url);
             Assert.Equal(ResourceType.Document, requests[0].ResourceType);
-            Assert.Equal(HttpMethod.Get , requests[0].Method);
+            Assert.Equal(HttpMethod.Get, requests[0].Method);
             Assert.NotNull(requests[0].Response);
             Assert.Equal(Page.MainFrame, requests[0].Frame);
             Assert.Equal(TestConstants.EmptyPage, requests[0].Frame.Url);
