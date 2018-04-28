@@ -40,7 +40,7 @@ namespace PuppeteerSharp.Input
             }
         }
 
-        public async Task Click(decimal x, decimal y, ClickOptions options)
+        public async Task Click(decimal x, decimal y, ClickOptions options = null)
         {
             options = options ?? new ClickOptions();
 
@@ -54,7 +54,7 @@ namespace PuppeteerSharp.Input
             await Up(options);
         }
 
-        public async Task Down(ClickOptions options)
+        public async Task Down(ClickOptions options = null)
         {
             options = options ?? new ClickOptions();
 
@@ -70,7 +70,7 @@ namespace PuppeteerSharp.Input
             });
         }
 
-        public async Task Up(ClickOptions options)
+        public async Task Up(ClickOptions options = null)
         {
             options = options ?? new ClickOptions();
 

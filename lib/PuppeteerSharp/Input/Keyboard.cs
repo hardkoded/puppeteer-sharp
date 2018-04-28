@@ -8,7 +8,7 @@ namespace PuppeteerSharp.Input
     {
         private Session _client;
 
-        private List<string> _pressedKeys = new List<string>();
+        private HashSet<string> _pressedKeys = new HashSet<string>();
         private readonly Dictionary<string, int> _keys = new Dictionary<string, int>(){
             {"Cancel", 3},
             {"Help", 6},
@@ -121,31 +121,33 @@ namespace PuppeteerSharp.Input
             _client = client;
         }
 
-        public async Task Down(string key, Dictionary<string, object> options)
+        public async Task Down(string key, DownOptions options)
         {
-            var text = options["text"].ToString();
-            bool autoRepeat = _pressedKeys.Contains(key);
+            var description = KeyDescriptionForString(key);
 
-            if (!autoRepeat)
-            {
-                _pressedKeys.Add(key);
-            }
+            var autoRepeat = _pressedKeys.Contains(description.Code);
+            _pressedKeys.Add(key);
+            Modifiers |= ModifierBit(key);
 
-            Modifiers |= modifierBit(key);
+            var text = options.Text == null ? description.Text : options.Text;
+
             await _client.SendAsync("Input.dispatchKeyEvent", new Dictionary<string, object>(){
-                {"type", text.Length > 0 ? "keyDown" : "rawKeyDown"},
+                {"type", text != null ? "keyDown" : "rawKeyDown"},
                 {"modifiers", Modifiers},
-                {"windowsvirtualKeyCode", CodeForKey(key)},
-                {"key", key},
+                {"windowsvirtualKeyCode", description.KeyCode},
+                {"code", description.Code },
+                {"key", description.Key},
                 {"text", text},
                 {"unmodifiedText", text},
-                {"autoRepeat", autoRepeat}
+                {"autoRepeat", autoRepeat},
+                {"location", description.Location },
+                {"isKeypad", description.Location == 3 }
             });
         }
 
         public async Task Up(string key)
         {
-            Modifiers &= modifierBit(key);
+            Modifiers &= ModifierBit(key);
 
             if (_pressedKeys.Contains(key))
             {
@@ -170,6 +172,29 @@ namespace PuppeteerSharp.Input
             });
         }
 
+        public async Task SendAsync(string text, TypeOptions options = null)
+        {
+            var delay = 0;
+            if (options?.Delay != null)
+            {
+                delay = (int)options.Delay;
+            }
+            foreach (var letter in text)
+            {
+                if (KeyDefinitions.ContainsKey(letter.ToString()))
+                {
+                    await PressAsync(letter.ToString(), new PressOptions { Delay = delay });
+                }
+            }
+
+        }
+
+        public async Task PressAsync(string key, PressOptions options = null)
+        {
+            await Down(key, options);
+
+        }
+
         private int CodeForKey(string key)
         {
             if (_keys.ContainsKey(key))
@@ -183,7 +208,7 @@ namespace PuppeteerSharp.Input
             return 0;
         }
 
-        private int modifierBit(string key)
+        private int ModifierBit(string key)
         {
             if (key == "Alt")
             {
@@ -203,5 +228,60 @@ namespace PuppeteerSharp.Input
             }
             return 0;
         }
+
+        private KeyDefinition KeyDescriptionForString(string keyString)
+        {
+            var shift = Modifiers & 8;
+            var description = new KeyDefinition
+            {
+                Key = string.Empty,
+                KeyCode = 0,
+                Code = string.Empty,
+                Text = string.Empty,
+                Location = 0
+            };
+
+            var definition = KeyDefinitions.Get(keyString);
+
+            if (!string.IsNullOrEmpty(definition.Key))
+                description.Key = definition.Key;
+            if (shift > 0 && !string.IsNullOrEmpty(definition.ShiftKey))
+                description.Key = definition.ShiftKey;
+
+            if (definition.KeyCode > 0)
+                description.KeyCode = definition.KeyCode;
+            if (shift > 0 && definition.ShiftKeyCode != null)
+                description.KeyCode = (int)definition.ShiftKeyCode;
+
+            if (!string.IsNullOrEmpty(definition.Code))
+                description.Code = definition.Code;
+
+            if (definition.Location != null)
+                description.Location = definition.Location;
+
+            if (description.Key.Length == 1)
+                description.Text = description.Key;
+
+            if (!string.IsNullOrEmpty(definition.Text))
+                description.Text = definition.Text;
+            if (shift > 0 && !string.IsNullOrEmpty(definition.ShiftText))
+                description.Text = definition.ShiftText;
+
+            // if any modifiers besides shift are pressed, no text should be sent
+            if ((Modifiers & ~8) > 0)
+                description.Text = string.Empty;
+
+            return description;
+        }
+    }
+
+    public class PressOptions : DownOptions
+    {
+        public int? Delay { get; set; }
+    }
+
+    public class DownOptions
+    {
+        public string Text { get; set; }
     }
 }

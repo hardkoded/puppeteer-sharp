@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PuppeteerSharp.Input;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,6 +29,14 @@ namespace PuppeteerSharp
             throw new NotImplementedException();
         }
 
+        public Task FocusAsync() => ExecutionContext.EvaluateFunctionAsync("element => element.focus()", this);
+
+        public async Task TypeAsync(string text, TypeOptions options = null)
+        {
+            await FocusAsync();
+            await _page.Keyboard.SendAsync(text, options);
+        }
+
         internal async Task<ElementHandle> GetElementAsync(string selector)
         {
             var handle = await ExecutionContext.EvaluateFunctionHandleAsync(
@@ -43,7 +52,7 @@ namespace PuppeteerSharp
             await handle.DisposeAsync();
             return null;
         }
-        
+
         private async Task<(decimal x, decimal y)> VisibleCenterAsync()
         {
             await ScrollIntoViewIfNeededAsync();

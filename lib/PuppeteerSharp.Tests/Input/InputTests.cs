@@ -21,31 +21,64 @@ namespace PuppeteerSharp.Tests.Input
         [Fact]
         public async Task ShouldClickOnCheckboxInputAndToggle()
         {
-
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/checkbox.html");
+            Assert.Null(await Page.EvaluateExpressionAsync("result.check"));
+            await Page.ClickAsync("input#agree");
+            Assert.True(await Page.EvaluateExpressionAsync<bool>("result.check"));
+            Assert.Equal(new[] {
+               "mouseover",
+               "mouseenter",
+               "mousemove",
+               "mousedown",
+               "mouseup",
+               "click",
+               "change"
+            }, await Page.EvaluateExpressionAsync<string[]>("result.events"));
+            await Page.ClickAsync("input#agree");
+            Assert.False(await Page.EvaluateExpressionAsync<bool>("result.check"));
         }
 
         [Fact]
         public async Task ShouldClickOnCheckboxLabelAndToggle()
         {
-
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/checkbox.html");
+            Assert.Null(await Page.EvaluateExpressionAsync("result.check"));
+            await Page.ClickAsync("label[for=\"agree\"]");
+            Assert.Equal(new[] {
+                "click",
+                "change"
+            }, await Page.EvaluateExpressionAsync<string[]>("result.events"));
+            await Page.ClickAsync("label[for=\"agree\"]");
+            Assert.False(await Page.EvaluateExpressionAsync<bool>("result.check"));
         }
 
         [Fact]
         public async Task ShouldFailToClickAMissingButton()
         {
-
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
+            var exception = await Assert.ThrowsAsync<PuppeteerException>(()
+                => Page.ClickAsync("button.does-not-exist"));
+            Assert.Equal("No node found for selector: button.does-not-exist", exception.Message);
         }
 
+        // https://github.com/GoogleChrome/puppeteer/issues/161
         [Fact]
         public async Task ShouldNotHangWithTouchEnabledViewports()
         {
-
+            await Page.SetViewport(TestConstants.IPhone.ViewPort);
+            await Page.Mouse.Down();
+            await Page.Mouse.Move(100, 10);
+            await Page.Mouse.Up();
         }
 
         [Fact]
         public async Task ShouldTypeIntoTheTextarea()
         {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
 
+            var textarea = await Page.GetElementAsync("textarea");
+            await textarea.TypeAsync("Type in this text!");
+            Assert.Equal("Type in this text!", await Page.EvaluateExpressionAsync<string>("result"));
         }
 
         [Fact]
