@@ -34,7 +34,7 @@ namespace PuppeteerSharp
         public async Task TypeAsync(string text, TypeOptions options = null)
         {
             await FocusAsync();
-            await _page.Keyboard.SendAsync(text, options);
+            await _page.Keyboard.TypeAsync(text, options);
         }
 
         internal async Task<ElementHandle> GetElementAsync(string selector)
