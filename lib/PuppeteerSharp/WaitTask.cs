@@ -158,12 +158,12 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
 
             if (_terminated || runCount != _runCount)
             {
-                if (success != null) await success.Dispose();
+                if (success != null) await success.DisposeAsync();
                 return;
             }
             if (exception == null && await _frame.EvaluateFunctionAsync<bool>("s => !s", success))
             {
-                if (success != null) await success.Dispose();
+                if (success != null) await success.DisposeAsync();
                 return;
             }
 

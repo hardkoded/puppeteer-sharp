@@ -57,7 +57,7 @@ namespace PuppeteerSharp
 
         public virtual ElementHandle AsElement() => null;
 
-        public async Task Dispose()
+        public async Task DisposeAsync()
         {
             if (Disposed)
             {

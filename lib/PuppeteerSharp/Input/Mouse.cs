@@ -40,25 +40,25 @@ namespace PuppeteerSharp.Input
             }
         }
 
-        public async Task Click(decimal x, decimal y, Dictionary<string, object> options)
+        public async Task Click(decimal x, decimal y, ClickOptions options)
         {
-            options = options ?? new Dictionary<string, object>();
+            options = options ?? new ClickOptions();
 
             await Move(x, y);
             await Down(options);
 
-            if (options.ContainsKey("delay"))
+            if (options.Delay != null)
             {
-                await Task.Delay((int)options["delay"]);
+                await Task.Delay((int)options.Delay);
             }
             await Up(options);
         }
 
-        public async Task Down(Dictionary<string, object> options)
+        public async Task Down(ClickOptions options)
         {
-            options = options ?? new Dictionary<string, object>();
+            options = options ?? new ClickOptions();
 
-            _button = options.ContainsKey("button") ? options["button"].ToString() : "left";
+            _button = options.Button;
 
             await _client.SendAsync("Input.dispatchMouseEvent", new Dictionary<string, object>(){
                 {"type", "mousePressed"},
@@ -66,23 +66,23 @@ namespace PuppeteerSharp.Input
                 {"x", _x},
                 {"y", _y},
                 {"modifiers", _keyboard.Modifiers},
-                {"clickCount", options.ContainsKey("clickCount") ? (int)options["clickCount"]: 1}
+                {"clickCount", options.ClickCount }
             });
         }
 
-        public async Task Up(Dictionary<string, object> options)
+        public async Task Up(ClickOptions options)
         {
-            options = options ?? new Dictionary<string, object>();
+            options = options ?? new ClickOptions();
 
             _button = "none";
 
             await _client.SendAsync("Input.dispatchMouseEvent", new Dictionary<string, object>(){
                 {"type", "mouseReleased"},
-                {"button", options.ContainsKey("button") ? options["button"].ToString() : "left"},
+                {"button", options.Button},
                 {"x", _x},
                 {"y", _y},
                 {"modifiers", _keyboard.Modifiers},
-                {"clickCount", options.ContainsKey("clickCount") ? (int)options["clickCount"]: 1}
+                {"clickCount", options.ClickCount }
             });
         }
     }

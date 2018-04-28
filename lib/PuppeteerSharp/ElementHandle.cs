@@ -17,10 +17,10 @@ namespace PuppeteerSharp
 
         public override ElementHandle AsElement() => this;
 
-        public async Task ClickAsync(Dictionary<string, object> options = null)
+        public async Task ClickAsync(ClickOptions options = null)
         {
             var (x, y) = await VisibleCenterAsync();
-            await _page.Mouse.Click(x, y, options ?? new Dictionary<string, object>());
+            await _page.Mouse.Click(x, y, options ?? new ClickOptions());
         }
 
         internal Task TapAsync()
@@ -40,15 +40,10 @@ namespace PuppeteerSharp
                 return element;
             }
 
-            await handle.Dispose();
+            await handle.DisposeAsync();
             return null;
         }
-
-        internal Task DisposeAsync()
-        {
-            throw new NotImplementedException();
-        }
-
+        
         private async Task<(decimal x, decimal y)> VisibleCenterAsync()
         {
             await ScrollIntoViewIfNeededAsync();
