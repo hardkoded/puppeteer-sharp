@@ -122,7 +122,7 @@ namespace PuppeteerSharp.Tests.Network
             await Page.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
 
             Assert.Single(failedRequests);
-            Assert.Equal("one-style.css", failedRequests[0].Url);
+            Assert.Contains("one-style.css", failedRequests[0].Url);
             Assert.Null(failedRequests[0].Response);
             Assert.Equal(ResourceType.StyleSheet, failedRequests[0].ResourceType);
             Assert.Equal("net::ERR_FAILED", failedRequests[0].Failure);

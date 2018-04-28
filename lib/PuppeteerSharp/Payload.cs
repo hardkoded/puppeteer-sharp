@@ -48,7 +48,7 @@ namespace PuppeteerSharp
 
                 if (!normalizedUrl.StartsWith("data:", StringComparison.Ordinal))
                 {
-                    foreach (var item in Headers.Where(kv => kv.Key != "Accept" && kv.Key != "Referrer" &&
+                    foreach (var item in Headers.Where(kv => kv.Key != "Accept" && kv.Key != "Referer" &&
                                                                kv.Key != "X-DevTools-Emulate-Network-Conditions-Client-Id"))
                     {
                         hash.Headers[item.Key] = item.Value;
