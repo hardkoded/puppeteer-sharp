@@ -44,6 +44,12 @@ namespace PuppeteerSharp
             await _page.Keyboard.TypeAsync(text, options);
         }
 
+        public async Task PressAsync(string key, PressOptions options = null)
+        {
+            await FocusAsync();
+            await _page.Keyboard.PressAsync(key, options);
+        }
+
         internal async Task<ElementHandle> GetElementAsync(string selector)
         {
             var handle = await ExecutionContext.EvaluateFunctionHandleAsync(

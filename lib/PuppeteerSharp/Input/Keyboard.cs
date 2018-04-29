@@ -57,13 +57,14 @@ namespace PuppeteerSharp.Input
             });
         }
 
-        public async Task SendCharacter(string charText)
+        public async Task SendCharacterAsync(string charText)
         {
-            throw new NotImplementedException();
             await _client.SendAsync("Input.dispatchKeyEvent", new Dictionary<string, object>(){
                 {"type", "char"},
                 {"modifiers", Modifiers},
-                {"key", charText}
+                {"text", charText },
+                {"key", charText},
+                {"unmodifiedText", charText }
             });
         }
 
@@ -82,7 +83,7 @@ namespace PuppeteerSharp.Input
                 }
                 else
                 {
-                    await SendCharacter(letter.ToString());
+                    await SendCharacterAsync(letter.ToString());
                 }
                 if (delay > 0)
                 {

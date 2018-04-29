@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PuppeteerSharp.Input;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -129,13 +130,27 @@ namespace PuppeteerSharp.Tests.Input
         [Fact]
         public async Task ShouldSendACharacterWithElementHandlePress()
         {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
+            var textarea = await Page.GetElementAsync("textarea");
+            await textarea.PressAsync("a", new PressOptions { Text = "f" });
+            Assert.Equal("f", await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
 
+            await Page.EvaluateExpressionAsync("window.addEventListener('keydown', e => e.preventDefault(), true)");
+
+            await textarea.PressAsync("a", new PressOptions { Text = "y" });
+            Assert.Equal("f", await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
         }
 
         [Fact]
         public async Task ShouldSendACharacterWithSendCharacter()
         {
-
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
+            await Page.FocusAsync("textarea");
+            await Page.Keyboard.SendCharacterAsync("嗨");
+            Assert.Equal("嗨", await Page.EvaluateExpressionAsync("document.querySelector('textarea').value"));
+            await Page.EvaluateExpressionAsync("window.addEventListener('keydown', e => e.preventDefault(), true)");
+            await Page.Keyboard.SendCharacterAsync("a");
+            Assert.Equal("嗨a", await Page.EvaluateExpressionAsync("document.querySelector('textarea').value"));
         }
 
         [Fact]

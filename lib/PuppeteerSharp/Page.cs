@@ -550,6 +550,16 @@ namespace PuppeteerSharp
             await handle.DisposeAsync();
         }
 
+        public async Task FocusAsync(string selector)
+        {
+            var handle = await GetElementAsync(selector);
+            if (handle == null)
+            {
+                throw new PuppeteerException($"No node found for selector: {selector}");
+            }
+            await handle.FocusAsync();
+            await handle.DisposeAsync();
+        }
 
         public Task<dynamic> EvaluateExpressionAsync(string script)
             => _frameManager.MainFrame.EvaluateExpressionAsync(script);
