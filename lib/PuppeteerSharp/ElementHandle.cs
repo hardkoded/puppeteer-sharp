@@ -1,6 +1,6 @@
 ﻿using PuppeteerSharp.Input;
 using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -22,6 +22,13 @@ namespace PuppeteerSharp
         {
             var (x, y) = await VisibleCenterAsync();
             await _page.Mouse.Click(x, y, options ?? new ClickOptions());
+        }
+
+        public async Task UploadFileAsync(params string[] filePaths)
+        {
+            var files = filePaths.Select(Path.GetFullPath).ToArray();
+            var objectId = RemoteObject.objectId.ToString();
+            await _client.SendAsync("DOM.setFileInputFiles", new { objectId, files });
         }
 
         internal Task TapAsync()

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -84,19 +85,45 @@ namespace PuppeteerSharp.Tests.Input
         [Fact]
         public async Task ShouldClickTheButtonAfterNavigation()
         {
-
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
+            await Page.ClickAsync("button");
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
+            await Page.ClickAsync("button");
+            Assert.Equal("Clicked", await Page.EvaluateExpressionAsync<string>("result"));
         }
 
         [Fact]
         public async Task ShouldUploadTheFile()
         {
-
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/fileupload.html");
+            var filePath = "./assets/file-to-upload.txt";
+            var input = await Page.GetElementAsync("input");
+            await input.UploadFileAsync(filePath);
+            Assert.Equal("file-to-upload.txt", await Page.EvaluateFunctionAsync<string>("e => e.files[0].name", input));
+            Assert.Equal("contents of the file", await Page.EvaluateFunctionAsync(@"e => {
+                const reader = new FileReader();
+                const promise = new Promise(fulfill => reader.onload = fulfill);
+                reader.readAsText(e.files[0]);
+                return promise.then(() => reader.result);
+            }", input));
         }
 
         [Fact]
         public async Task ShouldMoveWithTheArrowKeys()
         {
-
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
+            await Page.TypeAsync("textarea", "Hello World!");
+            Assert.Equal("Hello World!", await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
+            for (var i = 0; i < "World!".Length; i++)
+                Page.Keyboard.PressAsync("ArrowLeft");
+            await Page.Keyboard.TypeAsync("inserted ");
+            Assert.Equal("Hello inserted World!", await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
+            Page.Keyboard.Down("Shift");
+            for (var i = 0; i < "inserted ".Length; i++)
+                Page.Keyboard.PressAsync("ArrowLeft");
+            Page.Keyboard.Up("Shift");
+            await Page.Keyboard.PressAsync("Backspace");
+            Assert.Equal("Hello World!", await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
         }
 
         [Fact]

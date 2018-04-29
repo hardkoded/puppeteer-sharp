@@ -16,7 +16,7 @@ namespace PuppeteerSharp.Input
             _client = client;
         }
 
-        public async Task Down(string key, DownOptions options)
+        public async Task Down(string key, DownOptions options = null)
         {
             var description = KeyDescriptionForString(key);
 
@@ -24,12 +24,12 @@ namespace PuppeteerSharp.Input
             _pressedKeys.Add(key);
             Modifiers |= ModifierBit(key);
 
-            var text = options.Text == null ? description.Text : options.Text;
+            var text = options?.Text == null ? description.Text : options.Text;
 
             await _client.SendAsync("Input.dispatchKeyEvent", new Dictionary<string, object>(){
                 {"type", text != null ? "keyDown" : "rawKeyDown"},
                 {"modifiers", Modifiers},
-                {"windowsvirtualKeyCode", description.KeyCode},
+                {"windowsVirtualKeyCode", description.KeyCode},
                 {"code", description.Code },
                 {"key", description.Key},
                 {"text", text},
@@ -44,14 +44,14 @@ namespace PuppeteerSharp.Input
         {
             var description = KeyDescriptionForString(key);
 
-            Modifiers &= ModifierBit(key);
+            Modifiers &= ~ModifierBit(key);
             _pressedKeys.Remove(description.Key);
 
             await _client.SendAsync("Input.dispatchKeyEvent", new Dictionary<string, object>(){
                 {"type", "keyUp"},
                 {"modifiers", Modifiers},
-                {"key", key},
-                {"windowsvirtualKeyCode", description.KeyCode},
+                {"key", description.Key},
+                {"windowsVirtualKeyCode", description.KeyCode},
                 {"code", description.Code },
                 {"location", description.Location }
             });
@@ -59,10 +59,10 @@ namespace PuppeteerSharp.Input
 
         public async Task SendCharacter(string charText)
         {
+            throw new NotImplementedException();
             await _client.SendAsync("Input.dispatchKeyEvent", new Dictionary<string, object>(){
                 {"type", "char"},
                 {"modifiers", Modifiers},
-                {"key", charText},
                 {"key", charText}
             });
         }
@@ -84,7 +84,7 @@ namespace PuppeteerSharp.Input
                 {
                     await SendCharacter(letter.ToString());
                 }
-                if(delay > 0)
+                if (delay > 0)
                 {
                     await Task.Delay(delay);
                 }
@@ -94,7 +94,11 @@ namespace PuppeteerSharp.Input
         public async Task PressAsync(string key, PressOptions options = null)
         {
             await Down(key, options);
-
+            if (options?.Delay > 0)
+            {
+                await Task.Delay((int)options.Delay);
+            }
+            await Up(key);
         }
 
         private int ModifierBit(string key)

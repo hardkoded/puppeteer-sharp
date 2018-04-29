@@ -583,6 +583,17 @@ namespace PuppeteerSharp
             return navigationTask.Result;
         }
 
+        public async Task TypeAsync(string selector, string text, TypeOptions options = null)
+        {
+            var handle = await GetElementAsync(selector);
+            if (handle == null)
+            {
+                throw new PuppeteerException($"No node found for selector: {selector}");
+            }
+            await handle.TypeAsync(text, options);
+            await handle.DisposeAsync();
+        }
+
         /// <summary>
         /// Waits for a timeout
         /// </summary>
