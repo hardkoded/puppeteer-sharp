@@ -18,23 +18,23 @@ namespace PuppeteerSharp.Input
             _keyboard = keyboard;
         }
 
-        public async Task Move(decimal x, decimal y, Dictionary<string, object> options = null)
+        public async Task Move(decimal x, decimal y, MoveOptions options = null)
         {
-            options = options ?? new Dictionary<string, object>();
+            options = options ?? new MoveOptions();
 
             decimal fromX = _x;
             decimal fromY = _y;
             _x = x;
             _y = y;
-            int steps = options.ContainsKey("steps") ? (int)options["steps"] : 1;
+            int steps = options.Steps != null ? (int)options.Steps : 1;
 
             for (var i = 1; i <= steps; i++)
             {
                 await _client.SendAsync("Input.dispatchMouseEvent", new Dictionary<string, object>(){
                     {"type", "mouseMoved"},
                     {"button", _button},
-                    {"x", fromX + (_x - fromX) * (i / steps)},
-                    {"y", fromY + (_y - fromY) * (i / steps)},
+                    {"x", fromX + (_x - fromX) * ((decimal)i / steps)},
+                    {"y", fromY + (_y - fromY) * ((decimal)i / steps)},
                     {"modifiers", _keyboard.Modifiers}
                 });
             }

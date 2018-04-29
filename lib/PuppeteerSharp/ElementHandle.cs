@@ -18,6 +18,12 @@ namespace PuppeteerSharp
 
         public override ElementHandle AsElement() => this;
 
+        public async Task HoverAsync()
+        {
+            var (x, y) = await VisibleCenterAsync();
+            await _page.Mouse.Move(x, y);
+        }
+
         public async Task ClickAsync(ClickOptions options = null)
         {
             var (x, y) = await VisibleCenterAsync();
@@ -31,9 +37,10 @@ namespace PuppeteerSharp
             await _client.SendAsync("DOM.setFileInputFiles", new { objectId, files });
         }
 
-        internal Task TapAsync()
+        public async Task TapAsync()
         {
-            throw new NotImplementedException();
+            var (x, y) = await VisibleCenterAsync();
+            await _page.Touchscreen.TapAsync(x, y);
         }
 
         public Task FocusAsync() => ExecutionContext.EvaluateFunctionAsync("element => element.focus()", this);

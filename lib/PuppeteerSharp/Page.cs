@@ -141,12 +141,12 @@ namespace PuppeteerSharp
         public async Task TapAsync(string selector)
         {
             var handle = await GetElementAsync(selector);
-
-            if (handle != null)
+            if (handle == null)
             {
-                await handle.TapAsync();
-                await handle.DisposeAsync();
+                throw new PuppeteerException($"No node found for selector: {selector}");
             }
+            await handle.TapAsync();
+            await handle.DisposeAsync();
         }
 
         public async Task<ElementHandle> GetElementAsync(string selector)
@@ -547,6 +547,17 @@ namespace PuppeteerSharp
                 throw new PuppeteerException($"No node found for selector: {selector}");
             }
             await handle.ClickAsync(options);
+            await handle.DisposeAsync();
+        }
+
+        public async Task HoverAsync(string selector)
+        {
+            var handle = await GetElementAsync(selector);
+            if (handle == null)
+            {
+                throw new PuppeteerException($"No node found for selector: {selector}");
+            }
+            await handle.HoverAsync();
             await handle.DisposeAsync();
         }
 

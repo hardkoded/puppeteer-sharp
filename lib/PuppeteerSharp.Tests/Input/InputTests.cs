@@ -333,9 +333,9 @@ namespace PuppeteerSharp.Tests.Input
             await Page.Keyboard.TypeAsync(text);
             await Page.EvaluateExpressionAsync("document.querySelector('textarea').scrollTop = 0");
             var dimensions = await Page.EvaluateFunctionAsync<Dimensions>(Dimensions);
-            await Page.Mouse.Move(dimensions.X + 2,dimensions.Y + 2);
+            await Page.Mouse.Move(dimensions.X + 2, dimensions.Y + 2);
             await Page.Mouse.Down();
-            await Page.Mouse.Move(100,100);
+            await Page.Mouse.Move(100, 100);
             await Page.Mouse.Up();
             Assert.Equal(text, await Page.EvaluateExpressionAsync<string>("window.getSelection().toString()"));
         }
@@ -343,61 +343,129 @@ namespace PuppeteerSharp.Tests.Input
         [Fact]
         public async Task ShouldSelectTheTextByTripleClicking()
         {
-
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
+            await Page.FocusAsync("textarea");
+            var text = "This is the text that we are going to try to select. Let's see how it goes.";
+            await Page.Keyboard.TypeAsync(text);
+            await Page.ClickAsync("textarea");
+            await Page.ClickAsync("textarea", new ClickOptions { ClickCount = 2 });
+            await Page.ClickAsync("textarea", new ClickOptions { ClickCount = 3 });
+            Assert.Equal(text, await Page.EvaluateExpressionAsync<string>("window.getSelection().toString()"));
         }
 
         [Fact]
         public async Task ShouldTriggerHoverState()
         {
-
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
+            await Page.HoverAsync("#button-6");
+            Assert.Equal("button-6", await Page.EvaluateExpressionAsync<string>("document.querySelector('button:hover').id"));
+            await Page.HoverAsync("#button-2");
+            Assert.Equal("button-2", await Page.EvaluateExpressionAsync<string>("document.querySelector('button:hover').id"));
+            await Page.HoverAsync("#button-91");
+            Assert.Equal("button-91", await Page.EvaluateExpressionAsync<string>("document.querySelector('button:hover').id"));
         }
 
         [Fact]
         public async Task ShouldFireContextmenuEventOnRightClick()
         {
-
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
+            await Page.ClickAsync("#button-8", new ClickOptions { Button = "right" });
+            Assert.Equal("context menu", await Page.EvaluateExpressionAsync<string>("document.querySelector('#button-8').textContent"));
         }
 
         [Fact]
         public async Task ShouldSetModifierKeysOnClick()
         {
-
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
+            await Page.EvaluateExpressionAsync("document.querySelector('#button-3').addEventListener('mousedown', e => window.lastEvent = e, true)");
+            var modifiers = new Dictionary<string, string> { ["Shift"] = "shiftKey", ["Control"] = "ctrlKey", ["Alt"] = "altKey", ["Meta"] = "metaKey" };
+            foreach (var modifier in modifiers)
+            {
+                await Page.Keyboard.Down(modifier.Key);
+                await Page.ClickAsync("#button-3");
+                if (!(await Page.EvaluateFunctionAsync<bool>("mod => window.lastEvent[mod]", modifier.Value)))
+                    Assert.True(false, $"{modifier.Value} should be true");
+                await Page.Keyboard.Up(modifier.Key);
+            }
+            await Page.ClickAsync("#button-3");
+            foreach (var modifier in modifiers)
+            {
+                if (await Page.EvaluateFunctionAsync<bool>("mod => window.lastEvent[mod]", modifier.Value))
+                    Assert.False(true, $"{modifiers.Values} should be false");
+            }
         }
 
         [Fact]
         public async Task ShouldSpecifyRepeatProperty()
         {
-
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
+            await Page.FocusAsync("textarea");
+            await Page.EvaluateExpressionAsync("document.querySelector('textarea').addEventListener('keydown', e => window.lastEvent = e, true)");
+            await Page.Keyboard.Down("a", new DownOptions { Text = "a" });
+            Assert.False(await Page.EvaluateExpressionAsync<bool>("window.lastEvent.repeat"));
+            await Page.Keyboard.PressAsync("a");
+            Assert.True(await Page.EvaluateExpressionAsync<bool>("window.lastEvent.repeat"));
         }
 
+        // @see https://github.com/GoogleChrome/puppeteer/issues/206
         [Fact]
         public async Task ShouldClickLinksWhichCauseNavigation()
         {
-
+            await Page.SetContentAsync($"<a href=\"{TestConstants.EmptyPage}\">empty.html</a>");
+            // This await should not hang.
+            await Page.ClickAsync("a");
         }
 
         [Fact]
         public async Task ShouldTweenMouseMovement()
         {
-
+            await Page.Mouse.Move(100, 100);
+            await Page.EvaluateExpressionAsync(@"{
+              window.result = [];
+              document.addEventListener('mousemove', event => {
+                window.result.push([event.clientX, event.clientY]);
+              });
+            }");
+            await Page.Mouse.Move(200, 300, new MoveOptions { Steps = 5 });
+            Assert.Equal(new[] {
+                new[]{ 120, 140 },
+                new[]{ 140, 180 },
+                new[]{ 160, 220 },
+                new[]{ 180, 260 },
+                new[]{ 200, 300 }
+            }, await Page.EvaluateExpressionAsync<int[][]>("result"));
         }
 
         [Fact]
         public async Task ShouldTapTheButton()
         {
-
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
+            await Page.TapAsync("button");
+            Assert.Equal("Clicked", await Page.EvaluateExpressionAsync<string>("result"));
         }
 
-        [Fact]
+        [Fact(Skip = "test is ignored")]
         public async Task ShouldReportTouches()
         {
-
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/touches.html");
+            var button = await Page.GetElementAsync("button");
+            await button.TapAsync();
+            Assert.Equal(new object[] {
+                new { Touchstart = 0 },
+                new { Touchend = 0 }
+            }, await Page.EvaluateExpressionAsync("getResult()"));
         }
 
         [Fact]
         public async Task ShouldClickTheButtonInsideAnIframe()
         {
-
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.SetContentAsync("<div style=\"width:100px;height:100px\">spacer</div>");
+            await FrameUtils.AttachFrameAsync(Page, "button-test", TestConstants.ServerUrl + "/input/button.html");
+            var frame = Page.Frames[1];
+            var button = await frame.GetElementAsync("button");
+            await button.ClickAsync();
+            Assert.Equal("Clicked", await frame.EvaluateExpressionAsync<string>("window.result"));
         }
 
         [Fact]
