@@ -1,9 +1,7 @@
-﻿using PuppeteerSharp.Input;
+﻿using Newtonsoft.Json;
+using PuppeteerSharp.Input;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -12,6 +10,16 @@ namespace PuppeteerSharp.Tests.Input
     [Collection("PuppeteerLoaderFixture collection")]
     public class InputTests : PuppeteerPageBaseTest
     {
+        const string Dimensions = @"function dimensions() {
+            const rect = document.querySelector('textarea').getBoundingClientRect();
+            return {
+                x: rect.left,
+                y: rect.top,
+                width: rect.width,
+                height: rect.height
+            };
+        }";
+
         [Fact]
         public async Task ShouldClickTheButton()
         {
@@ -156,67 +164,180 @@ namespace PuppeteerSharp.Tests.Input
         [Fact]
         public async Task ShouldReportShiftKey()
         {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/keyboard.html");
+            var keyboard = Page.Keyboard;
+            var codeForKey = new Dictionary<string, int> { ["Shift"] = 16, ["Alt"] = 18, ["Meta"] = 91, ["Control"] = 17 };
+            foreach (var modifier in codeForKey)
+            {
+                await keyboard.Down(modifier.Key);
+                Assert.Equal($"Keydown: {modifier.Key} {modifier.Key}Left {modifier.Value} [{modifier.Key}]", await Page.EvaluateExpressionAsync<string>("getResult()"));
+                await keyboard.Down("!");
+                // Shift+! will generate a keypress
+                if (modifier.Key == "Shift")
+                    Assert.Equal($"Keydown: ! Digit1 49 [{modifier.Key}]\nKeypress: ! Digit1 33 33 33 [{modifier.Key}]", await Page.EvaluateExpressionAsync<string>("getResult()"));
+                else
+                    Assert.Equal($"Keydown: ! Digit1 49 [{modifier.Key}]", await Page.EvaluateExpressionAsync<string>("getResult()"));
 
+                await keyboard.Up("!");
+                Assert.Equal($"Keyup: ! Digit1 49 [{modifier.Key}]", await Page.EvaluateExpressionAsync<string>("getResult()"));
+                await keyboard.Up(modifier.Key);
+                Assert.Equal($"Keyup: {modifier.Key} {modifier.Key}Left {modifier.Value} []", await Page.EvaluateExpressionAsync<string>("getResult()"));
+            }
         }
 
         [Fact]
         public async Task ShouldReportMultipleModifiers()
         {
-
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/keyboard.html");
+            var keyboard = Page.Keyboard;
+            await keyboard.Down("Control");
+            Assert.Equal("Keydown: Control ControlLeft 17 [Control]", await Page.EvaluateExpressionAsync<string>("getResult()"));
+            await keyboard.Down("Meta");
+            Assert.Equal("Keydown: Meta MetaLeft 91 [Control Meta]", await Page.EvaluateExpressionAsync<string>("getResult()"));
+            await keyboard.Down(";");
+            Assert.Equal("Keydown: ; Semicolon 186 [Control Meta]", await Page.EvaluateExpressionAsync<string>("getResult()"));
+            await keyboard.Up(";");
+            Assert.Equal("Keyup: ; Semicolon 186 [Control Meta]", await Page.EvaluateExpressionAsync<string>("getResult()"));
+            await keyboard.Up("Control");
+            Assert.Equal("Keyup: Control ControlLeft 17 [Meta]", await Page.EvaluateExpressionAsync<string>("getResult()"));
+            await keyboard.Up("Meta");
+            Assert.Equal("Keyup: Meta MetaLeft 91 []", await Page.EvaluateExpressionAsync<string>("getResult()"));
         }
 
         [Fact]
         public async Task ShouldSendProperCodesWhileTyping()
         {
-
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/keyboard.html");
+            await Page.Keyboard.TypeAsync("!");
+            Assert.Equal(string.Join("\n", new[] {
+                "Keydown: ! Digit1 49 []",
+                "Keypress: ! Digit1 33 33 33 []",
+                "Keyup: ! Digit1 49 []" }), await Page.EvaluateExpressionAsync<string>("getResult()"));
+            await Page.Keyboard.TypeAsync("^");
+            Assert.Equal(string.Join("\n", new[] {
+                "Keydown: ^ Digit6 54 []",
+                "Keypress: ^ Digit6 94 94 94 []",
+                "Keyup: ^ Digit6 54 []" }), await Page.EvaluateExpressionAsync<string>("getResult()"));
         }
 
         [Fact]
         public async Task ShouldSendProperCodesWhileTypingWithShift()
         {
-
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/keyboard.html");
+            var keyboard = Page.Keyboard;
+            await keyboard.Down("Shift");
+            await Page.Keyboard.TypeAsync("~");
+            Assert.Equal(string.Join("\n", new[] {
+                "Keydown: Shift ShiftLeft 16 [Shift]",
+                "Keydown: ~ Backquote 192 [Shift]", // 192 is ` keyCode
+                "Keypress: ~ Backquote 126 126 126 [Shift]", // 126 is ~ charCode
+                "Keyup: ~ Backquote 192 [Shift]" }), await Page.EvaluateExpressionAsync<string>("getResult()"));
+            await keyboard.Up("Shift");
         }
 
         [Fact]
         public async Task ShouldNotTypeCanceledEvents()
         {
-
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
+            await Page.FocusAsync("textarea");
+            await Page.EvaluateExpressionAsync(@"{
+              window.addEventListener('keydown', event => {
+                event.stopPropagation();
+                event.stopImmediatePropagation();
+                if (event.key === 'l')
+                  event.preventDefault();
+                if (event.key === 'o')
+                  Promise.resolve().then(() => event.preventDefault());
+              }, false);
+            }");
+            await Page.Keyboard.TypeAsync("Hello World!");
+            Assert.Equal("He Wrd!", await Page.EvaluateExpressionAsync<string>("textarea.value"));
         }
 
         [Fact]
-        public async Task KeyboardModifier()
+        public async Task KeyboardModifiers()
         {
-
+            var keyboard = Page.Keyboard;
+            Assert.Equal(0, keyboard.Modifiers);
+            await keyboard.Down("Shift");
+            Assert.Equal(8, keyboard.Modifiers);
+            await keyboard.Down("Alt");
+            Assert.Equal(9, keyboard.Modifiers);
+            await keyboard.Up("Shift");
+            await keyboard.Up("Alt");
+            Assert.Equal(0, keyboard.Modifiers);
         }
 
         [Fact]
         public async Task ShouldResizeTheTextarea()
         {
-
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
+            var dimensions = await Page.EvaluateFunctionAsync<Dimensions>(Dimensions);
+            var mouse = Page.Mouse;
+            await mouse.Move(dimensions.X + dimensions.Width - 4, dimensions.Y + dimensions.Height - 4);
+            await mouse.Down();
+            await mouse.Move(dimensions.X + dimensions.Width + 100, dimensions.Y + dimensions.Height + 100);
+            await mouse.Up();
+            var newDimensions = await Page.EvaluateFunctionAsync<Dimensions>(Dimensions);
+            Assert.Equal(dimensions.Width + 104, newDimensions.Width);
+            Assert.Equal(dimensions.Height + 104, newDimensions.Height);
         }
 
         [Fact]
         public async Task ShouldScrollAndClickTheButton()
         {
-
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
+            await Page.ClickAsync("#button-5");
+            Assert.Equal("clicked", await Page.EvaluateExpressionAsync<string>("document.querySelector(\"#button-5\").textContent"));
+            await Page.ClickAsync("#button-80");
+            Assert.Equal("clicked", await Page.EvaluateExpressionAsync<string>("document.querySelector(\"#button-80\").textContent"));
         }
 
         [Fact]
         public async Task ShouldDoubleClickTheButton()
         {
-
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
+            await Page.EvaluateExpressionAsync(@"{
+               window.double = false;
+               const button = document.querySelector('button');
+               button.addEventListener('dblclick', event => {
+                 window.double = true;
+               });
+            }");
+            var button = await Page.GetElementAsync("button");
+            await button.ClickAsync(new ClickOptions { ClickCount = 2 });
+            Assert.True(await Page.EvaluateExpressionAsync<bool>("double"));
+            Assert.Equal("Clicked", await Page.EvaluateExpressionAsync<string>("result"));
         }
 
         [Fact]
         public async Task ShouldClickAPartiallyObscuredButton()
         {
-
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
+            await Page.EvaluateExpressionAsync(@"{
+                const button = document.querySelector('button');
+                button.textContent = 'Some really long text that will go offscreen';
+                button.style.position = 'absolute';
+                button.style.left = '368px';
+            }");
+            await Page.ClickAsync("button");
+            Assert.Equal("Clicked", await Page.EvaluateExpressionAsync<string>("result"));
         }
 
         [Fact]
         public async Task ShouldSelectTheTextWithMouse()
         {
-
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
+            await Page.FocusAsync("textarea");
+            var text = "This is the text that we are going to try to select. Let's see how it goes.";
+            await Page.Keyboard.TypeAsync(text);
+            await Page.EvaluateExpressionAsync("document.querySelector('textarea').scrollTop = 0");
+            var dimensions = await Page.EvaluateFunctionAsync<Dimensions>(Dimensions);
+            await Page.Mouse.Move(dimensions.X + 2,dimensions.Y + 2);
+            await Page.Mouse.Down();
+            await Page.Mouse.Move(100,100);
+            await Page.Mouse.Up();
+            Assert.Equal(text, await Page.EvaluateExpressionAsync<string>("window.getSelection().toString()"));
         }
 
         [Fact]
@@ -302,5 +423,17 @@ namespace PuppeteerSharp.Tests.Input
         {
 
         }
+    }
+
+    class Dimensions
+    {
+        [JsonProperty("x")]
+        public decimal X { get; set; }
+        [JsonProperty("y")]
+        public decimal Y { get; set; }
+        [JsonProperty("width")]
+        public decimal Width { get; set; }
+        [JsonProperty("height")]
+        public decimal Height { get; set; }
     }
 }

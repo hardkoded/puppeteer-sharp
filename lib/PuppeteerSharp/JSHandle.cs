@@ -49,10 +49,10 @@ namespace PuppeteerSharp
                     {"returnByValue", true},
                     {"awaitPromise", true}
                 });
-                return Helper.ValueFromRemoteObject<T>(response.result);
+                return (T)Helper.ValueFromRemoteObject<T>(response.result);
             }
 
-            return Helper.ValueFromRemoteObject<T>(RemoteObject);
+            return (T)Helper.ValueFromRemoteObject<T>(RemoteObject);
         }
 
         public virtual ElementHandle AsElement() => null;
