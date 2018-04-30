@@ -66,9 +66,10 @@ namespace PuppeteerSharp.Tests.Input
         public async Task ShouldFailToClickAMissingButton()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
-            var exception = await Assert.ThrowsAsync<PuppeteerException>(()
+            var exception = await Assert.ThrowsAsync<SelectorException>(()
                 => Page.ClickAsync("button.does-not-exist"));
             Assert.Equal("No node found for selector: button.does-not-exist", exception.Message);
+            Assert.Equal("button.does-not-exist", exception.Selector);
         }
 
         // https://github.com/GoogleChrome/puppeteer/issues/161
