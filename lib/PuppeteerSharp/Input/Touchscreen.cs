@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Dynamic;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp.Input
@@ -16,25 +14,12 @@ namespace PuppeteerSharp.Input
             _keyboard = keyboard;
         }
 
-        public async Task Up(decimal x, decimal y)
-        {
-            var touchPoints = new[]{
-                new {x= Math.Round(x), y = Math.Round(y)}
-            };
-
-            await _client.SendAsync("Input.dispatchTouchEvent", new Dictionary<string, object>(){
-                {"type", "tochStart"},
-                {"touchPoints", touchPoints},
-                {"modifiers", _keyboard.Modifiers},
-            });
-
-            await _client.SendAsync("Input.dispatchTouchEvent", new Dictionary<string, object>(){
-                {"type", "touchEnd"},
-                {"touchPoints", touchPoints},
-                {"modifiers", _keyboard.Modifiers},
-            });
-        }
-
+        /// <summary>
+        /// Dispatches a <c>touchstart</c> and <c>touchend</c> event.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns>Task</returns>
         public async Task TapAsync(decimal x, decimal y)
         {
             // Touches appear to be lost during the first frame after navigation.
