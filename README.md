@@ -163,6 +163,6 @@ The 1.0 version will have all (or most) Puppeteer features implemented. I don't 
 # Progress
 
 * Tests on Google's Puppeteer: 405.
-* Tests on Puppeteer Sharp: 80.
-* Passing tests: 80.
+* Tests on Puppeteer Sharp: 171.
+* Passing tests: 168.
 
