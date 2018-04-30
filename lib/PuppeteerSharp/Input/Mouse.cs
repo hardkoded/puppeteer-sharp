@@ -18,6 +18,13 @@ namespace PuppeteerSharp.Input
             _keyboard = keyboard;
         }
 
+        /// <summary>
+        /// Dispatches a `mousemove` event.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="options"></param>
+        /// <returns>Task</returns>
         public async Task MoveAsync(decimal x, decimal y, MoveOptions options = null)
         {
             options = options ?? new MoveOptions();
@@ -46,7 +53,7 @@ namespace PuppeteerSharp.Input
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <param name="options"></param>
-        /// <returns></returns>
+        /// <returns>Task</returns>
         public async Task ClickAsync(decimal x, decimal y, ClickOptions options = null)
         {
             options = options ?? new ClickOptions();
@@ -61,6 +68,11 @@ namespace PuppeteerSharp.Input
             await UpAsync(options);
         }
 
+        /// <summary>
+        /// Dispatches a `mousedown` event.
+        /// </summary>
+        /// <param name="options"></param>
+        /// <returns>Task</returns>
         public async Task DownAsync(ClickOptions options = null)
         {
             options = options ?? new ClickOptions();
@@ -77,6 +89,11 @@ namespace PuppeteerSharp.Input
             });
         }
 
+        /// <summary>
+        /// Dispatches a `mouseup` event.
+        /// </summary>
+        /// <param name="options"></param>
+        /// <returns>Task</returns>
         public async Task UpAsync(ClickOptions options = null)
         {
             options = options ?? new ClickOptions();
