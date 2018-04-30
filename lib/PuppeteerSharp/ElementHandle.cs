@@ -21,13 +21,13 @@ namespace PuppeteerSharp
         public async Task HoverAsync()
         {
             var (x, y) = await VisibleCenterAsync();
-            await _page.Mouse.Move(x, y);
+            await _page.Mouse.MoveAsync(x, y);
         }
 
         public async Task ClickAsync(ClickOptions options = null)
         {
             var (x, y) = await VisibleCenterAsync();
-            await _page.Mouse.Click(x, y, options ?? new ClickOptions());
+            await _page.Mouse.ClickAsync(x, y, options);
         }
 
         public async Task UploadFileAsync(params string[] filePaths)

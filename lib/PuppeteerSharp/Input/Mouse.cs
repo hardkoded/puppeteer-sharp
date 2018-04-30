@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp.Input
 {
     public class Mouse
     {
-        private Session _client;
-        private Keyboard _keyboard;
+        private readonly Session _client;
+        private readonly Keyboard _keyboard;
+
         private decimal _x = 0;
         private decimal _y = 0;
-        private string _button = "none";
+        private MouseButton _button = MouseButton.None;
 
         public Mouse(Session client, Keyboard keyboard)
         {
@@ -18,7 +18,7 @@ namespace PuppeteerSharp.Input
             _keyboard = keyboard;
         }
 
-        public async Task Move(decimal x, decimal y, MoveOptions options = null)
+        public async Task MoveAsync(decimal x, decimal y, MoveOptions options = null)
         {
             options = options ?? new MoveOptions();
 
@@ -40,21 +40,28 @@ namespace PuppeteerSharp.Input
             }
         }
 
-        public async Task Click(decimal x, decimal y, ClickOptions options = null)
+        /// <summary>
+        /// Shortcut for <see cref="Mouse.MoveAsync(decimal, decimal, MoveOptions)"/>, <see cref="Mouse.DownAsync(ClickOptions)"/> and <see cref="Mouse.UpAsync(ClickOptions)"/>
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public async Task ClickAsync(decimal x, decimal y, ClickOptions options = null)
         {
             options = options ?? new ClickOptions();
 
-            await Move(x, y);
-            await Down(options);
+            await MoveAsync(x, y);
+            await DownAsync(options);
 
-            if (options.Delay != null)
+            if (options.Delay > 0)
             {
-                await Task.Delay((int)options.Delay);
+                await Task.Delay(options.Delay);
             }
-            await Up(options);
+            await UpAsync(options);
         }
 
-        public async Task Down(ClickOptions options = null)
+        public async Task DownAsync(ClickOptions options = null)
         {
             options = options ?? new ClickOptions();
 
@@ -70,11 +77,11 @@ namespace PuppeteerSharp.Input
             });
         }
 
-        public async Task Up(ClickOptions options = null)
+        public async Task UpAsync(ClickOptions options = null)
         {
             options = options ?? new ClickOptions();
 
-            _button = "none";
+            _button = MouseButton.None;
 
             await _client.SendAsync("Input.dispatchMouseEvent", new Dictionary<string, object>(){
                 {"type", "mouseReleased"},

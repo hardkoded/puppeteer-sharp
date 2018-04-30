@@ -76,9 +76,9 @@ namespace PuppeteerSharp.Tests.Input
         public async Task ShouldNotHangWithTouchEnabledViewports()
         {
             await Page.SetViewport(TestConstants.IPhone.ViewPort);
-            await Page.Mouse.Down();
-            await Page.Mouse.Move(100, 10);
-            await Page.Mouse.Up();
+            await Page.Mouse.DownAsync();
+            await Page.Mouse.MoveAsync(100, 10);
+            await Page.Mouse.UpAsync();
         }
 
         [Fact]
@@ -274,10 +274,10 @@ namespace PuppeteerSharp.Tests.Input
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
             var dimensions = await Page.EvaluateFunctionAsync<Dimensions>(Dimensions);
             var mouse = Page.Mouse;
-            await mouse.Move(dimensions.X + dimensions.Width - 4, dimensions.Y + dimensions.Height - 4);
-            await mouse.Down();
-            await mouse.Move(dimensions.X + dimensions.Width + 100, dimensions.Y + dimensions.Height + 100);
-            await mouse.Up();
+            await mouse.MoveAsync(dimensions.X + dimensions.Width - 4, dimensions.Y + dimensions.Height - 4);
+            await mouse.DownAsync();
+            await mouse.MoveAsync(dimensions.X + dimensions.Width + 100, dimensions.Y + dimensions.Height + 100);
+            await mouse.UpAsync();
             var newDimensions = await Page.EvaluateFunctionAsync<Dimensions>(Dimensions);
             Assert.Equal(dimensions.Width + 104, newDimensions.Width);
             Assert.Equal(dimensions.Height + 104, newDimensions.Height);
@@ -333,10 +333,10 @@ namespace PuppeteerSharp.Tests.Input
             await Page.Keyboard.TypeAsync(text);
             await Page.EvaluateExpressionAsync("document.querySelector('textarea').scrollTop = 0");
             var dimensions = await Page.EvaluateFunctionAsync<Dimensions>(Dimensions);
-            await Page.Mouse.Move(dimensions.X + 2, dimensions.Y + 2);
-            await Page.Mouse.Down();
-            await Page.Mouse.Move(100, 100);
-            await Page.Mouse.Up();
+            await Page.Mouse.MoveAsync(dimensions.X + 2, dimensions.Y + 2);
+            await Page.Mouse.DownAsync();
+            await Page.Mouse.MoveAsync(100, 100);
+            await Page.Mouse.UpAsync();
             Assert.Equal(text, await Page.EvaluateExpressionAsync<string>("window.getSelection().toString()"));
         }
 
@@ -369,7 +369,7 @@ namespace PuppeteerSharp.Tests.Input
         public async Task ShouldFireContextmenuEventOnRightClick()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
-            await Page.ClickAsync("#button-8", new ClickOptions { Button = "right" });
+            await Page.ClickAsync("#button-8", new ClickOptions { Button = MouseButton.Right });
             Assert.Equal("context menu", await Page.EvaluateExpressionAsync<string>("document.querySelector('#button-8').textContent"));
         }
 
@@ -419,14 +419,14 @@ namespace PuppeteerSharp.Tests.Input
         [Fact]
         public async Task ShouldTweenMouseMovement()
         {
-            await Page.Mouse.Move(100, 100);
+            await Page.Mouse.MoveAsync(100, 100);
             await Page.EvaluateExpressionAsync(@"{
               window.result = [];
               document.addEventListener('mousemove', event => {
                 window.result.push([event.clientX, event.clientY]);
               });
             }");
-            await Page.Mouse.Move(200, 300, new MoveOptions { Steps = 5 });
+            await Page.Mouse.MoveAsync(200, 300, new MoveOptions { Steps = 5 });
             Assert.Equal(new[] {
                 new[]{ 120, 140 },
                 new[]{ 140, 180 },
