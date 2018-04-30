@@ -329,7 +329,7 @@ namespace PuppeteerSharp.Tests.Input
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
             await Page.FocusAsync("textarea");
-            var text = "This is the text that we are going to try to select. Let's see how it goes.";
+            const string text = "This is the text that we are going to try to select. Let's see how it goes.";
             await Page.Keyboard.TypeAsync(text);
             await Page.EvaluateExpressionAsync("document.querySelector('textarea').scrollTop = 0");
             var dimensions = await Page.EvaluateFunctionAsync<Dimensions>(Dimensions);
@@ -345,7 +345,7 @@ namespace PuppeteerSharp.Tests.Input
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
             await Page.FocusAsync("textarea");
-            var text = "This is the text that we are going to try to select. Let's see how it goes.";
+            const string text = "This is the text that we are going to try to select. Let's see how it goes.";
             await Page.Keyboard.TypeAsync(text);
             await Page.ClickAsync("textarea");
             await Page.ClickAsync("textarea", new ClickOptions { ClickCount = 2 });
@@ -471,26 +471,61 @@ namespace PuppeteerSharp.Tests.Input
         [Fact]
         public async Task ShouldClickTheButtonWithDeviceScaleFactorSet()
         {
-
+            await Page.SetViewport(new ViewPortOptions { Width = 400, Height = 400, DeviceScaleFactor = 5 });
+            Assert.Equal(5, await Page.EvaluateExpressionAsync<int>("window.devicePixelRatio"));
+            await Page.SetContentAsync("<div style=\"width:100px;height:100px\">spacer</div>");
+            await FrameUtils.AttachFrameAsync(Page, "button-test", TestConstants.ServerUrl + "/input/button.html");
+            var frame = Page.Frames[1];
+            var button = await frame.GetElementAsync("button");
+            await button.ClickAsync();
+            Assert.Equal("Clicked", await frame.EvaluateExpressionAsync<string>("window.result"));
         }
 
         [Fact]
         public async Task ShouldTypeAllKindsOfCharacters()
         {
-
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
+            await Page.FocusAsync("textarea");
+            const string text = "This text goes onto two lines.\nThis character is 嗨.";
+            await Page.Keyboard.TypeAsync(text);
+            Assert.Equal(text, await Page.EvaluateExpressionAsync<string>("result"));
         }
 
         [Fact]
         public async Task ShouldSpecifyLocation()
         {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
+            await Page.EvaluateExpressionAsync(@"{
+              window.addEventListener('keydown', event => window.keyLocation = event.location, true);
+            }");
+            var textarea = await Page.GetElementAsync("textarea");
 
+            await textarea.PressAsync("Digit5");
+            Assert.Equal(0, await Page.EvaluateExpressionAsync<int>("keyLocation"));
+
+            await textarea.PressAsync("ControlLeft");
+            Assert.Equal(1, await Page.EvaluateExpressionAsync<int>("keyLocation"));
+
+            await textarea.PressAsync("ControlRight");
+            Assert.Equal(2, await Page.EvaluateExpressionAsync<int>("keyLocation"));
+
+            await textarea.PressAsync("NumpadSubtract");
+            Assert.Equal(3, await Page.EvaluateExpressionAsync<int>("keyLocation"));
         }
 
         [Fact]
         public async Task ShouldThrowOnUnknownKeys()
         {
+            var exception = Assert.ThrowsAsync<Exception>(() =>
+                await page.keyboard.press('NotARealKey');
+            expect(error.message).toBe('Unknown key: "NotARealKey"');
 
-        }
+            error = await page.keyboard.press('ё').catch (e => e);
+            expect(error && error.message).toBe('Unknown key: "ё"');
+
+            error = await page.keyboard.press('😊').catch (e => e);
+            expect(error && error.message).toBe('Unknown key: "😊"');
+            }
     }
 
     class Dimensions
