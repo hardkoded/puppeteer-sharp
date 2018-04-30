@@ -21,8 +21,8 @@ namespace PuppeteerSharp
         private bool _userRequestInterceptionEnabled;
         private bool _protocolRequestInterceptionEnabled;
 
-        private List<KeyValuePair<string, string>> _requestHashToRequestIds = new List<KeyValuePair<string, string>>();
-        private List<KeyValuePair<string, string>> _requestHashToInterceptionIds = new List<KeyValuePair<string, string>>();
+        private MultiMap<string, string> _requestHashToRequestIds = new MultiMap<string, string>();
+        private MultiMap<string, string> _requestHashToInterceptionIds = new MultiMap<string, string>();
         private FrameManager _frameManager;
         #endregion
 
@@ -40,10 +40,8 @@ namespace PuppeteerSharp
         public event EventHandler<RequestEventArgs> RequestCreated;
         public event EventHandler<RequestEventArgs> RequestFinished;
         public event EventHandler<RequestEventArgs> RequestFailed;
-        public event EventHandler<ResponseReceivedArgs> ResponseReceivedFinished;
 
         #endregion
-
 
         #region Public Methods
 
@@ -131,10 +129,9 @@ namespace PuppeteerSharp
         {
             // For certain requestIds we never receive requestWillBeSent event.
             // @see https://crbug.com/750469
-            if (_requestIdToRequest.ContainsKey(e.MessageData.requestId.ToString()))
+            string requestId = e.MessageData.requestId.ToString();
+            if (_requestIdToRequest.TryGetValue(requestId, out var request))
             {
-                var request = _requestIdToRequest[e.MessageData.requestId.ToString()];
-
                 request.Failure = e.MessageData.errorText.ToString();
                 request.CompleteTaskWrapper.SetResult(true);
                 _requestIdToRequest.Remove(request.RequestId);
@@ -155,10 +152,9 @@ namespace PuppeteerSharp
         {
             // For certain requestIds we never receive requestWillBeSent event.
             // @see https://crbug.com/750469
-            if (_requestIdToRequest.ContainsKey(e.MessageData.requestId.ToString()))
+            string requestId = e.MessageData.requestId.ToString();
+            if (_requestIdToRequest.TryGetValue(requestId, out var request))
             {
-                var request = _requestIdToRequest[e.MessageData.requestId.ToString()];
-
                 request.CompleteTaskWrapper.SetResult(true);
                 _requestIdToRequest.Remove(request.RequestId);
 
@@ -178,9 +174,9 @@ namespace PuppeteerSharp
         private void OnResponseReceived(MessageEventArgs e)
         {
             // FileUpload sends a response without a matching request.
-            if (_requestIdToRequest.ContainsKey(e.MessageData.requestId.ToString()))
+            string requestId = e.MessageData.requestId.ToString();
+            if (_requestIdToRequest.TryGetValue(requestId, out var request))
             {
-                var request = _requestIdToRequest[e.MessageData.requestId.ToString()];
                 var response = new Response(
                     _client,
                     request,
@@ -241,18 +237,16 @@ namespace PuppeteerSharp
                 return;
             }
 
-            var requestHash = e.MessageData.request.ToObject<Payload>().Hash;
-
-            if (_requestHashToRequestIds.Any(i => i.Key == requestHash))
+            string requestHash = e.MessageData.request.ToObject<Payload>().Hash;
+            var requestId = _requestHashToRequestIds.FirstValue(requestHash);
+            if (requestId != null)
             {
-                var item = _requestHashToRequestIds.FirstOrDefault(i => i.Key == requestHash);
-                var requestId = item.Value;
-                _requestHashToRequestIds.Remove(item);
+                _requestHashToRequestIds.Delete(requestHash, requestId);
                 HandleRequestStart(requestId, e.MessageData);
             }
             else
             {
-                _requestHashToInterceptionIds.Add(new KeyValuePair<string, string>(requestHash, e.MessageData.interceptionId.ToString()));
+                _requestHashToInterceptionIds.Add(requestHash, e.MessageData.interceptionId.ToString());
                 HandleRequestStart(null, e.MessageData);
             }
         }
@@ -323,31 +317,23 @@ namespace PuppeteerSharp
             if (_protocolRequestInterceptionEnabled)
             {
                 // All redirects are handled in requestIntercepted.
-                if (e.MessageData.redirectResponse == null)
+                if (e.MessageData.redirectResponse != null)
                 {
-                    var requestHash = e.MessageData.request.ToObject<Payload>().Hash;
-
-                    KeyValuePair<string, string>? interceptionItem = null;
-
-                    if (_requestHashToInterceptionIds.Any(i => i.Key == requestHash))
-                    {
-                        interceptionItem = _requestHashToInterceptionIds.First(i => i.Key == requestHash);
-                    }
-
-                    if (interceptionItem.HasValue && _interceptionIdToRequest.ContainsKey(interceptionItem.Value.Value))
-                    {
-                        var request = _interceptionIdToRequest[interceptionItem.Value.Value];
-
-                        request.RequestId = e.MessageData.requestId;
-                        _requestIdToRequest[e.MessageData.requestId.ToString()] = request;
-                        _requestHashToInterceptionIds.Remove(interceptionItem.Value);
-                    }
-                    else
-                    {
-                        _requestHashToRequestIds.Add(new KeyValuePair<string, string>(requestHash, e.MessageData.requestId.ToString()));
-                    }
                     return;
                 }
+                string requestHash = e.MessageData.request.ToObject<Payload>().Hash;
+                var interceptionId = _requestHashToInterceptionIds.FirstValue(requestHash);
+                if (interceptionId != null && _interceptionIdToRequest.TryGetValue(interceptionId, out var request))
+                {
+                    request.RequestId = e.MessageData.requestId.ToString();
+                    _requestIdToRequest[e.MessageData.requestId.ToString()] = request;
+                    _requestHashToInterceptionIds.Delete(requestHash, interceptionId);
+                }
+                else
+                {
+                    _requestHashToRequestIds.Add(requestHash, e.MessageData.requestId.ToString());
+                }
+                return;
             }
 
             if (e.MessageData.redirectResponse != null && _requestIdToRequest.ContainsKey(e.MessageData.requestId.ToString()))
