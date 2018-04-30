@@ -516,16 +516,12 @@ namespace PuppeteerSharp.Tests.Input
         [Fact]
         public async Task ShouldThrowOnUnknownKeys()
         {
-            var exception = Assert.ThrowsAsync<Exception>(() =>
-                await page.keyboard.press('NotARealKey');
-            expect(error.message).toBe('Unknown key: "NotARealKey"');
+            await Assert.ThrowsAsync<KeyNotFoundException>(() => Page.Keyboard.PressAsync("NotARealKey"));
 
-            error = await page.keyboard.press('ё').catch (e => e);
-            expect(error && error.message).toBe('Unknown key: "ё"');
+            await Assert.ThrowsAsync<KeyNotFoundException>(() => Page.Keyboard.PressAsync("ё"));
 
-            error = await page.keyboard.press('😊').catch (e => e);
-            expect(error && error.message).toBe('Unknown key: "😊"');
-            }
+            await Assert.ThrowsAsync<KeyNotFoundException>(() => Page.Keyboard.PressAsync("😊"));
+        }
     }
 
     class Dimensions
