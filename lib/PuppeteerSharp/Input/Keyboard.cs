@@ -16,7 +16,7 @@ namespace PuppeteerSharp.Input
             _client = client;
         }
 
-        public async Task Down(string key, DownOptions options = null)
+        public async Task DownAsync(string key, DownOptions options = null)
         {
             var description = KeyDescriptionForString(key);
 
@@ -40,7 +40,7 @@ namespace PuppeteerSharp.Input
             });
         }
 
-        public async Task Up(string key)
+        public async Task UpAsync(string key)
         {
             var description = KeyDescriptionForString(key);
 
@@ -94,12 +94,12 @@ namespace PuppeteerSharp.Input
 
         public async Task PressAsync(string key, PressOptions options = null)
         {
-            await Down(key, options);
+            await DownAsync(key, options);
             if (options?.Delay > 0)
             {
                 await Task.Delay((int)options.Delay);
             }
-            await Up(key);
+            await UpAsync(key);
         }
 
         private int ModifierBit(string key)

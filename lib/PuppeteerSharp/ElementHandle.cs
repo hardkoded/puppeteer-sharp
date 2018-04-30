@@ -97,7 +97,7 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Focuses the element, and then uses <see cref="Keyboard.Down(string, DownOptions)"/> and <see cref="Keyboard.Up(string)"/>.
+        /// Focuses the element, and then uses <see cref="Keyboard.DownAsync(string, DownOptions)"/> and <see cref="Keyboard.UpAsync(string)"/>.
         /// </summary>
         /// <param name="key">Name of key to press, such as <c>ArrowLeft</c>. See <see cref="KeyDefinitions"/> for a list of all key names.</param>
         /// <param name="options">press options</param>

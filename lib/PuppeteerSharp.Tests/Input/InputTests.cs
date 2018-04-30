@@ -128,10 +128,10 @@ namespace PuppeteerSharp.Tests.Input
                 Page.Keyboard.PressAsync("ArrowLeft");
             await Page.Keyboard.TypeAsync("inserted ");
             Assert.Equal("Hello inserted World!", await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
-            Page.Keyboard.Down("Shift");
+            Page.Keyboard.DownAsync("Shift");
             for (var i = 0; i < "inserted ".Length; i++)
                 Page.Keyboard.PressAsync("ArrowLeft");
-            Page.Keyboard.Up("Shift");
+            Page.Keyboard.UpAsync("Shift");
             await Page.Keyboard.PressAsync("Backspace");
             Assert.Equal("Hello World!", await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
         }
@@ -170,18 +170,18 @@ namespace PuppeteerSharp.Tests.Input
             var codeForKey = new Dictionary<string, int> { ["Shift"] = 16, ["Alt"] = 18, ["Meta"] = 91, ["Control"] = 17 };
             foreach (var modifier in codeForKey)
             {
-                await keyboard.Down(modifier.Key);
+                await keyboard.DownAsync(modifier.Key);
                 Assert.Equal($"Keydown: {modifier.Key} {modifier.Key}Left {modifier.Value} [{modifier.Key}]", await Page.EvaluateExpressionAsync<string>("getResult()"));
-                await keyboard.Down("!");
+                await keyboard.DownAsync("!");
                 // Shift+! will generate a keypress
                 if (modifier.Key == "Shift")
                     Assert.Equal($"Keydown: ! Digit1 49 [{modifier.Key}]\nKeypress: ! Digit1 33 33 33 [{modifier.Key}]", await Page.EvaluateExpressionAsync<string>("getResult()"));
                 else
                     Assert.Equal($"Keydown: ! Digit1 49 [{modifier.Key}]", await Page.EvaluateExpressionAsync<string>("getResult()"));
 
-                await keyboard.Up("!");
+                await keyboard.UpAsync("!");
                 Assert.Equal($"Keyup: ! Digit1 49 [{modifier.Key}]", await Page.EvaluateExpressionAsync<string>("getResult()"));
-                await keyboard.Up(modifier.Key);
+                await keyboard.UpAsync(modifier.Key);
                 Assert.Equal($"Keyup: {modifier.Key} {modifier.Key}Left {modifier.Value} []", await Page.EvaluateExpressionAsync<string>("getResult()"));
             }
         }
@@ -191,17 +191,17 @@ namespace PuppeteerSharp.Tests.Input
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/keyboard.html");
             var keyboard = Page.Keyboard;
-            await keyboard.Down("Control");
+            await keyboard.DownAsync("Control");
             Assert.Equal("Keydown: Control ControlLeft 17 [Control]", await Page.EvaluateExpressionAsync<string>("getResult()"));
-            await keyboard.Down("Meta");
+            await keyboard.DownAsync("Meta");
             Assert.Equal("Keydown: Meta MetaLeft 91 [Control Meta]", await Page.EvaluateExpressionAsync<string>("getResult()"));
-            await keyboard.Down(";");
+            await keyboard.DownAsync(";");
             Assert.Equal("Keydown: ; Semicolon 186 [Control Meta]", await Page.EvaluateExpressionAsync<string>("getResult()"));
-            await keyboard.Up(";");
+            await keyboard.UpAsync(";");
             Assert.Equal("Keyup: ; Semicolon 186 [Control Meta]", await Page.EvaluateExpressionAsync<string>("getResult()"));
-            await keyboard.Up("Control");
+            await keyboard.UpAsync("Control");
             Assert.Equal("Keyup: Control ControlLeft 17 [Meta]", await Page.EvaluateExpressionAsync<string>("getResult()"));
-            await keyboard.Up("Meta");
+            await keyboard.UpAsync("Meta");
             Assert.Equal("Keyup: Meta MetaLeft 91 []", await Page.EvaluateExpressionAsync<string>("getResult()"));
         }
 
@@ -226,14 +226,14 @@ namespace PuppeteerSharp.Tests.Input
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/keyboard.html");
             var keyboard = Page.Keyboard;
-            await keyboard.Down("Shift");
+            await keyboard.DownAsync("Shift");
             await Page.Keyboard.TypeAsync("~");
             Assert.Equal(string.Join("\n", new[] {
                 "Keydown: Shift ShiftLeft 16 [Shift]",
                 "Keydown: ~ Backquote 192 [Shift]", // 192 is ` keyCode
                 "Keypress: ~ Backquote 126 126 126 [Shift]", // 126 is ~ charCode
                 "Keyup: ~ Backquote 192 [Shift]" }), await Page.EvaluateExpressionAsync<string>("getResult()"));
-            await keyboard.Up("Shift");
+            await keyboard.UpAsync("Shift");
         }
 
         [Fact]
@@ -260,12 +260,12 @@ namespace PuppeteerSharp.Tests.Input
         {
             var keyboard = Page.Keyboard;
             Assert.Equal(0, keyboard.Modifiers);
-            await keyboard.Down("Shift");
+            await keyboard.DownAsync("Shift");
             Assert.Equal(8, keyboard.Modifiers);
-            await keyboard.Down("Alt");
+            await keyboard.DownAsync("Alt");
             Assert.Equal(9, keyboard.Modifiers);
-            await keyboard.Up("Shift");
-            await keyboard.Up("Alt");
+            await keyboard.UpAsync("Shift");
+            await keyboard.UpAsync("Alt");
             Assert.Equal(0, keyboard.Modifiers);
         }
 
@@ -382,11 +382,11 @@ namespace PuppeteerSharp.Tests.Input
             var modifiers = new Dictionary<string, string> { ["Shift"] = "shiftKey", ["Control"] = "ctrlKey", ["Alt"] = "altKey", ["Meta"] = "metaKey" };
             foreach (var modifier in modifiers)
             {
-                await Page.Keyboard.Down(modifier.Key);
+                await Page.Keyboard.DownAsync(modifier.Key);
                 await Page.ClickAsync("#button-3");
                 if (!(await Page.EvaluateFunctionAsync<bool>("mod => window.lastEvent[mod]", modifier.Value)))
                     Assert.True(false, $"{modifier.Value} should be true");
-                await Page.Keyboard.Up(modifier.Key);
+                await Page.Keyboard.UpAsync(modifier.Key);
             }
             await Page.ClickAsync("#button-3");
             foreach (var modifier in modifiers)
@@ -402,7 +402,7 @@ namespace PuppeteerSharp.Tests.Input
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
             await Page.FocusAsync("textarea");
             await Page.EvaluateExpressionAsync("document.querySelector('textarea').addEventListener('keydown', e => window.lastEvent = e, true)");
-            await Page.Keyboard.Down("a", new DownOptions { Text = "a" });
+            await Page.Keyboard.DownAsync("a", new DownOptions { Text = "a" });
             Assert.False(await Page.EvaluateExpressionAsync<bool>("window.lastEvent.repeat"));
             await Page.Keyboard.PressAsync("a");
             Assert.True(await Page.EvaluateExpressionAsync<bool>("window.lastEvent.repeat"));
