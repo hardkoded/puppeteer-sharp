@@ -11,7 +11,33 @@
     <Title>PuppeteerSharp</Title>
     <Description>Headless Chrome .NET API</Description>
     <PackageId>PuppeteerSharp</PackageId>
-    <PackageReleaseNotes>* 0.4.0: Page Features, are you ready?
+    <PackageReleaseNotes>* 0.5.0: Frames and Tracing
+  * Features
+    - Network Events
+    - Tracing
+    - Frames support
+  * fixes
+    - Fixed Browse.Close on Azure Functions
+  * New APIs
+    - Request.ContinueAsync
+    - Request.RespondAsync
+    - Request.AbortAsync
+    - Response.BufferAsync
+    - Response.TextAsync
+    - Response.JsonAsync
+    - Session.TracingComplete
+    - Session.DetachAsync
+    - Page.Tracing.StartAsync
+    - Page.Tracing.StopAsync
+    - Page.EvaluateOnNewDocumentAsync
+    - Page.Coverage
+    - Page.WaitForFunctionAsync
+    - Browser.Targets
+    - Browser.PagesAsync
+    - Frame.WaitForSelectorAsync
+    - Target.CreateCDPSession
+
+* 0.4.0: Page Features, are you ready?
     - Page.GoToAsync
     - Page.ReloadAsync
     - Page.EmulateMediaAsync
