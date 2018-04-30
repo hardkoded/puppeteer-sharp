@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>0.4.0</PackageVersion>
+    <PackageVersion>0.5.0</PackageVersion>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
@@ -11,7 +11,33 @@
     <Title>PuppeteerSharp</Title>
     <Description>Headless Chrome .NET API</Description>
     <PackageId>PuppeteerSharp</PackageId>
-    <PackageReleaseNotes>* 0.4.0: Page Features, are you ready?
+    <PackageReleaseNotes>* 0.5.0: Frames and Tracing
+  * Features
+    - Network Events
+    - Tracing
+    - Frames support
+  * fixes
+    - Fixed Browse.Close on Azure Functions
+  * New APIs
+    - Request.ContinueAsync
+    - Request.RespondAsync
+    - Request.AbortAsync
+    - Response.BufferAsync
+    - Response.TextAsync
+    - Response.JsonAsync
+    - Session.TracingComplete
+    - Session.DetachAsync
+    - Page.Tracing.StartAsync
+    - Page.Tracing.StopAsync
+    - Page.EvaluateOnNewDocumentAsync
+    - Page.Coverage
+    - Page.WaitForFunctionAsync
+    - Browser.Targets
+    - Browser.PagesAsync
+    - Frame.WaitForSelectorAsync
+    - Target.CreateCDPSession
+
+* 0.4.0: Page Features, are you ready?
     - Page.GoToAsync
     - Page.ReloadAsync
     - Page.EmulateMediaAsync
@@ -42,7 +68,7 @@
 * 0.3.1: .NET Framework Support
 * 0.3.0: Process improvements, User data dir support
 * 0.1.0: PDF and Screenshots support</PackageReleaseNotes>
-    <ReleaseVersion>0.4.0</ReleaseVersion>
+    <ReleaseVersion>0.5.0</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
   <ItemGroup>
