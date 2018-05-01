@@ -33,7 +33,7 @@ namespace PuppeteerSharp.Input
             decimal fromY = _y;
             _x = x;
             _y = y;
-            int steps = options.Steps != null ? (int)options.Steps : 1;
+            int steps = options.Steps;
 
             for (var i = 1; i <= steps; i++)
             {
