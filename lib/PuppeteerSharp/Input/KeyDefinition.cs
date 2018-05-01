@@ -1,14 +1,14 @@
 ﻿namespace PuppeteerSharp.Input
 {
-    public class KeyDefinition
+    internal class KeyDefinition
     {
-        public int KeyCode { get; set; }
-        public int? ShiftKeyCode { get; set; }
-        public string Key { get; set; }
-        public string ShiftKey { get; set; }
-        public string Code { get; set; }
-        public string Text { get; set; }
-        public string ShiftText { get; set; }
-        public int Location { get; set; }
+        internal int KeyCode { get; set; }
+        internal int? ShiftKeyCode { get; set; }
+        internal string Key { get; set; }
+        internal string ShiftKey { get; set; }
+        internal string Code { get; set; }
+        internal string Text { get; set; }
+        internal string ShiftText { get; set; }
+        internal int Location { get; set; }
     }
 }

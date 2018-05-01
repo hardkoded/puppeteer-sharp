@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace PuppeteerSharp.Input
 {
-    public static class KeyDefinitions
+    internal static class KeyDefinitions
     {
         private static readonly Dictionary<string, KeyDefinition> Definitions = new Dictionary<string, KeyDefinition>
         {
@@ -1588,10 +1588,8 @@ namespace PuppeteerSharp.Input
             },
         };
 
-        public static KeyDefinition Get(string key) => Definitions[key];
-
-        public static bool TryGet(string key, out KeyDefinition value) => Definitions.TryGetValue(key, out value);
-
-        public static bool ContainsKey(string key) => Definitions.ContainsKey(key);
+        internal static KeyDefinition Get(string key) => Definitions[key];
+        
+        internal static bool ContainsKey(string key) => Definitions.ContainsKey(key);
     }
 }
