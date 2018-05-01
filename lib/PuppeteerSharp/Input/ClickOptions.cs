@@ -1,4 +1,4 @@
-﻿namespace PuppeteerSharp
+﻿namespace PuppeteerSharp.Input
 {
     /// <summary>
     /// Options to use when clicking
