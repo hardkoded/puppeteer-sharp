@@ -182,32 +182,55 @@ namespace PuppeteerSharp.Input
             var definition = KeyDefinitions.Get(keyString);
 
             if (!string.IsNullOrEmpty(definition.Key))
+            {
                 description.Key = definition.Key;
+            }
+
             if (shift > 0 && !string.IsNullOrEmpty(definition.ShiftKey))
+            {
                 description.Key = definition.ShiftKey;
+            }
 
             if (definition.KeyCode > 0)
+            {
                 description.KeyCode = definition.KeyCode;
+            }
+
             if (shift > 0 && definition.ShiftKeyCode != null)
+            {
                 description.KeyCode = (int)definition.ShiftKeyCode;
+            }
 
             if (!string.IsNullOrEmpty(definition.Code))
+            {
                 description.Code = definition.Code;
+            }
 
             if (definition.Location != 0)
+            {
                 description.Location = definition.Location;
+            }
 
             if (description.Key.Length == 1)
+            {
                 description.Text = description.Key;
+            }
 
             if (!string.IsNullOrEmpty(definition.Text))
+            {
                 description.Text = definition.Text;
+            }
+
             if (shift > 0 && !string.IsNullOrEmpty(definition.ShiftText))
+            {
                 description.Text = definition.ShiftText;
+            }
 
             // if any modifiers besides shift are pressed, no text should be sent
             if ((Modifiers & ~8) > 0)
+            {
                 description.Text = string.Empty;
+            }
 
             return description;
         }
