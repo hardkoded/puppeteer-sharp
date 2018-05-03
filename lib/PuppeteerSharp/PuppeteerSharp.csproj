@@ -88,6 +88,7 @@
     - Page.WaitForTimeoutAsync
     - Page.WaitForFunctionAsync
     - Page.WaitForSelectorAsync
+    - Page.PageError
 * 0.3.3: Page.Dispose fixes. NavigationOptions properties were made public. Several Page features are included as pre-release.
 * 0.3.2: Frame/FrameManager and Page redirect fixes
 * 0.3.1: .NET Framework Support
