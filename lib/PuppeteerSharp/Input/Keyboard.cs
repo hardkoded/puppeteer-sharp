@@ -36,7 +36,7 @@ namespace PuppeteerSharp.Input
             var description = KeyDescriptionForString(key);
 
             var autoRepeat = _pressedKeys.Contains(description.Code);
-            _pressedKeys.Add(key);
+            _pressedKeys.Add(description.Code);
             Modifiers |= ModifierBit(key);
 
             var text = options?.Text == null ? description.Text : options.Text;
