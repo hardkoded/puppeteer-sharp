@@ -16,7 +16,7 @@ namespace PuppeteerSharp.Tests.Page.Events
             string error = null;
             void EventHandler(object sender, PageErrorEventArgs e)
             {
-                error = e.Error.Exception.Description;
+                error = e.Message;
                 Page.PageError -= EventHandler;
             }
 

@@ -4,8 +4,8 @@ namespace PuppeteerSharp
 {
     public class PageErrorEventArgs : EventArgs
     {
-        public PageError Error { get; set; }
+        public string Message { get; set; }
 
-        public PageErrorEventArgs(PageError error) => Error = error;
+        public PageErrorEventArgs(string message) => Message = message;
     }
 }

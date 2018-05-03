@@ -811,7 +811,7 @@ namespace PuppeteerSharp
                     OnDialog(e.MessageData.ToObject<PageJavascriptDialogOpeningResponse>());
                     break;
                 case "Runtime.exceptionThrown":
-                    HandleException(e.MessageData.exceptionDetails.ToObject<PageError>());
+                    HandleException(e.MessageData.exceptionDetails);
                     break;
                 case "Security.certificateError":
                     await OnCertificateError(e);
@@ -852,9 +852,26 @@ namespace PuppeteerSharp
             }
         }
 
-        private void HandleException(PageError pageError)
+        private void HandleException(dynamic exceptionDetails)
+            => PageError?.Invoke(this, new PageErrorEventArgs(GetExceptionMessage(exceptionDetails)));
+
+        private string GetExceptionMessage(dynamic exceptionDetails)
         {
-            PageError?.Invoke(this, new PageErrorEventArgs(pageError));
+            if (exceptionDetails.exception != null)
+            {
+                return exceptionDetails.exception.description;
+            }
+            var message = exceptionDetails.text;
+            if (exceptionDetails.stackTrace)
+            {
+                foreach (var callframe in exceptionDetails.stackTrace.callFrames)
+                {
+                    var location = $"{callframe.url}:{callframe.lineNumber}:{callframe.columnNumber}";
+                    var functionName = callframe.functionName || "<anonymous>";
+                    message += $"\n at {functionName} ({location})";
+                }
+            }
+            return message;
         }
 
         private void OnDialog(PageJavascriptDialogOpeningResponse message)
