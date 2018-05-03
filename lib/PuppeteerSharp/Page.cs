@@ -199,12 +199,9 @@ namespace PuppeteerSharp
             var context = await MainFrame.GetExecutionContextAsync();
             return await context.QueryObjects(prototypeHandle);
         }
-
-        public async Task<object> EvalAsync(string selector, Func<object> pageFunction, params object[] args)
-            => await MainFrame.Eval(selector, pageFunction, args);
-
-        public async Task<object> EvalAsync(string selector, string pageFunction, params object[] args)
-            => await MainFrame.Eval(selector, pageFunction, args);
+        
+        public Task<T> EvalAsync<T>(string selector, string pageFunction, params object[] args)
+            => MainFrame.EvalAsync<T>(selector, pageFunction, args);
 
         public async Task SetRequestInterceptionAsync(bool value)
             => await _networkManager.SetRequestInterceptionAsync(value);
