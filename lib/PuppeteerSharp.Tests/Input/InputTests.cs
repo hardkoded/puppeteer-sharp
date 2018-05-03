@@ -9,6 +9,7 @@ namespace PuppeteerSharp.Tests.Input
     [Collection("PuppeteerLoaderFixture collection")]
     public class InputTests : PuppeteerPageBaseTest
     {
+        private Task dummy;
         const string Dimensions = @"function dimensions() {
             const rect = document.querySelector('textarea').getBoundingClientRect();
             return {
@@ -126,18 +127,18 @@ namespace PuppeteerSharp.Tests.Input
             Assert.Equal("Hello World!", await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
             for (var i = 0; i < "World!".Length; i++)
             {
-                Page.Keyboard.PressAsync("ArrowLeft");
+                dummy = Page.Keyboard.PressAsync("ArrowLeft");
             }
 
             await Page.Keyboard.TypeAsync("inserted ");
             Assert.Equal("Hello inserted World!", await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
-            Page.Keyboard.DownAsync("Shift");
+            dummy = Page.Keyboard.DownAsync("Shift");
             for (var i = 0; i < "inserted ".Length; i++)
             {
-                Page.Keyboard.PressAsync("ArrowLeft");
+                dummy = Page.Keyboard.PressAsync("ArrowLeft");
             }
 
-            Page.Keyboard.UpAsync("Shift");
+            dummy = Page.Keyboard.UpAsync("Shift");
             await Page.Keyboard.PressAsync("Backspace");
             Assert.Equal("Hello World!", await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
         }
