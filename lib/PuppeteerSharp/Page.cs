@@ -91,6 +91,10 @@ namespace PuppeteerSharp
         public event EventHandler<RequestEventArgs> RequestCreated;
         public event EventHandler<RequestEventArgs> RequestFinished;
         public event EventHandler<RequestEventArgs> RequestFailed;
+        /// <summary>
+        /// Emitted when an uncaught exception happens within the page.
+        /// </summary>
+        public event EventHandler<PageErrorEventArgs> PageError;
 
         internal Session Client { get; }
 
@@ -172,7 +176,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Executes a script in browser context
         /// </summary>
-        /// <param name="script">Script to be evaluated in browser context</param>
+        /// <param name="pageFunction">Script to be evaluated in browser context</param>
         /// <remarks>
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
         /// <see cref="JSHandle"/> instances can be passed as arguments
@@ -538,7 +542,7 @@ namespace PuppeteerSharp
 
             return Task.CompletedTask;
         }
-        
+
         public Task<dynamic> EvaluateExpressionAsync(string script)
             => _frameManager.MainFrame.EvaluateExpressionAsync(script);
 
@@ -849,7 +853,25 @@ namespace PuppeteerSharp
         }
 
         private void HandleException(dynamic exceptionDetails)
+            => PageError?.Invoke(this, new PageErrorEventArgs(GetExceptionMessage(exceptionDetails)));
+
+        private string GetExceptionMessage(dynamic exceptionDetails)
         {
+            if (exceptionDetails.exception != null)
+            {
+                return exceptionDetails.exception.description;
+            }
+            var message = exceptionDetails.text;
+            if (exceptionDetails.stackTrace)
+            {
+                foreach (var callframe in exceptionDetails.stackTrace.callFrames)
+                {
+                    var location = $"{callframe.url}:{callframe.lineNumber}:{callframe.columnNumber}";
+                    var functionName = callframe.functionName || "<anonymous>";
+                    message += $"\n at {functionName} ({location})";
+                }
+            }
+            return message;
         }
 
         private void OnDialog(PageJavascriptDialogOpeningResponse message)
