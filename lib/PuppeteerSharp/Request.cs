@@ -1,35 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp
 {
+    /// <summary>
+    /// Whenever the page sends a request, the following events are emitted by puppeteer's page:
+    /// <see cref="Page.RequestCreated"/> emitted when the request is issued by the page.
+    /// <see cref="Page.ResponseCreated"/> emitted when/if the response is received for the request.
+    /// <see cref="Page.RequestFinished"/> emitted when the response body is downloaded and the request is complete.
+    /// 
+    /// If request fails at some point, then instead of <see cref="Page.RequestFinished"/> event (and possibly instead of <see cref="Page.ResponseCreated"/> event), the <see cref="Page.RequestFailed"/> event is emitted.
+    /// 
+    /// If request gets a 'redirect' response, the request is successfully finished with the <see cref="Page.RequestFinished"/> event, and a new request is issued to a redirected url.
+    /// </summary>
     public class Request : Payload
     {
         #region Private Members
-        private Session _client;
+        private readonly Session _client;
+
         private bool _allowInterception;
         private bool _interceptionHandled;
-        private string _failureText;
 
-        private readonly Dictionary<string, string> _errorReasons = new Dictionary<string, string>
-        {
-            {"aborted", "Aborted"},
-            {"accessdenied", "AccessDenied"},
-            {"addressunreachable", "AddressUnreachable"},
-            {"connectionaborted", "ConnectionAborted"},
-            {"connectionclosed", "ConnectionClosed"},
-            {"connectionfailed", "ConnectionFailed"},
-            {"connectionrefused", "ConnectionRefused"},
-            {"connectionreset", "ConnectionReset"},
-            {"internetdisconnected", "InternetDisconnected"},
-            {"namenotresolved", "NameNotResolved"},
-            {"timedout", "TimedOut"},
-            {"failed", "Failed"},
-        };
         #endregion
 
         public Request(Session client, string requestId, string interceptionId, bool allowInterception, string url,
@@ -68,23 +62,33 @@ namespace PuppeteerSharp
 
         #region Public Methods
 
-        public async Task Continue(Payload overrides)
+        /// <summary>
+        /// Continues request with optional request overrides. To use this, request interception should be enabled with <see cref="Page.SetRequestInterceptionAsync(bool)"/>. Exception is immediately thrown if the request interception is not enabled.
+        /// </summary>
+        /// <param name="overrides">Optional request overwrites.</param>
+        /// <returns>Task</returns>
+        public async Task ContinueAsync(Payload overrides = null)
         {
-            Contract.Requires(_allowInterception, "Request interception is not enabled!");
-            Contract.Requires(!_interceptionHandled, "Request interception is already handled!");
+            if (!_allowInterception)
+            {
+                throw new PuppeteerException("Request interception is not enabled!");
+            }
+            if (_interceptionHandled)
+            {
+                throw new PuppeteerException("Request is already handled!");
+            }
 
             _interceptionHandled = true;
 
             try
             {
-                await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object>()
-                {
-                    {"interceptionId", InterceptionId},
-                    {"url", overrides.Url},
-                    {"method", overrides.Method},
-                    {"postData", overrides.PostData},
-                    {"headers", overrides.Headers}
-                });
+                var requestData = new Dictionary<string, object> { ["interceptionId"] = InterceptionId };
+                if (overrides?.Url != null) requestData["url"] = overrides.Url;
+                if (overrides?.Method != null) requestData["method"] = overrides.Method;
+                if (overrides?.PostData != null) requestData["postData"] = overrides.PostData;
+                if (overrides?.Headers != null) requestData["headers"] = overrides.Headers;
+
+                await _client.SendAsync("Network.continueInterceptedRequest", requestData);
             }
             catch (Exception)
             {
@@ -94,16 +98,26 @@ namespace PuppeteerSharp
             }
         }
 
-
-        public async Task Respond(ResponseData response)
+        /// <summary>
+        /// Fulfills request with given response. To use this, request interception should be enabled with <see cref="Page.SetRequestInterceptionAsync(bool)"/>. Exception is thrown if request interception is not enabled.
+        /// </summary>
+        /// <param name="response">Response that will fulfill this request</param>
+        /// <returns>Task</returns>
+        public async Task RespondAsync(ResponseData response)
         {
             if (Url.StartsWith("data:", StringComparison.Ordinal))
             {
                 return;
             }
 
-            Contract.Requires(_allowInterception, "Request interception is not enabled!");
-            Contract.Requires(!_interceptionHandled, "Request is already handled!");
+            if (!_allowInterception)
+            {
+                throw new PuppeteerException("Request interception is not enabled!");
+            }
+            if (_interceptionHandled)
+            {
+                throw new PuppeteerException("Request is already handled!");
+            }
 
             _interceptionHandled = true;
 
@@ -166,18 +180,30 @@ namespace PuppeteerSharp
             }
         }
 
-        public async Task Abort(string errorCode = "failed")
+        /// <summary>
+        /// Aborts request. To use this, request interception should be enabled with <see cref="Page.SetRequestInterceptionAsync(bool)"/>.
+        /// Exception is immediately thrown if the request interception is not enabled.
+        /// </summary>
+        /// <param name="errorCode">Optional error code. Defaults to <see cref="RequestAbortErrorCode.Failed"/></param>
+        /// <returns>Task</returns>
+        public async Task AbortAsync(RequestAbortErrorCode errorCode = RequestAbortErrorCode.Failed)
         {
-            Contract.Requires(_errorReasons.ContainsKey(errorCode), $"Unknown error code: {errorCode}");
-            Contract.Requires(_allowInterception, "Request interception is not enabled!");
-            Contract.Requires(!_interceptionHandled, "Request is already handled!");
-            var errorReason = _errorReasons[errorCode];
+            if (!_allowInterception)
+            {
+                throw new PuppeteerException("Request interception is not enabled!");
+            }
+            if (_interceptionHandled)
+            {
+                throw new PuppeteerException("Request is already handled!");
+            }
+
+            var errorReason = errorCode.ToString();
 
             _interceptionHandled = true;
 
             try
             {
-                await _client.SendAsync("Network.continueInterceptedReques", new Dictionary<string, object>
+                await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object>
                 {
                     {"interceptionId", InterceptionId},
                     {"errorReason", errorReason}
@@ -191,6 +217,5 @@ namespace PuppeteerSharp
             }
         }
         #endregion
-
     }
 }
