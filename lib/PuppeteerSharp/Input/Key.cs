@@ -108,5 +108,6 @@
         public static readonly Key ZoomOut = new Key("ZoomOut");
 
         public override string ToString() => Value;
+        public static implicit operator string(Key key) => key.Value;
     }
 }

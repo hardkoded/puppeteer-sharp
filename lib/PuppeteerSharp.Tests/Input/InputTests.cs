@@ -271,12 +271,12 @@ namespace PuppeteerSharp.Tests.Input
         {
             var keyboard = Page.Keyboard;
             Assert.Equal(0, keyboard.Modifiers);
-            await keyboard.DownAsync("Shift");
+            await keyboard.DownAsync(Key.Shift);
             Assert.Equal(8, keyboard.Modifiers);
-            await keyboard.DownAsync("Alt");
+            await keyboard.DownAsync(Key.Alt);
             Assert.Equal(9, keyboard.Modifiers);
-            await keyboard.UpAsync("Shift");
-            await keyboard.UpAsync("Alt");
+            await keyboard.UpAsync(Key.Shift);
+            await keyboard.UpAsync(Key.Alt);
             Assert.Equal(0, keyboard.Modifiers);
         }
 
