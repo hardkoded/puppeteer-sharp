@@ -197,6 +197,28 @@ namespace PuppeteerSharp
             return await context.EvaluateFunctionHandleAsync(pageFunction, args);
         }
 
+        /// <summary>
+        /// Adds a function which would be invoked in one of the following scenarios:
+        /// - whenever the page is navigated
+        /// - whenever the child frame is attached or navigated. In this case, the function is invoked in the context of the newly attached frame
+        /// </summary>
+        /// <param name="pageFunction">Function to be evaluated in browser context</param>
+        /// <param name="args">Arguments to pass to <c>pageFunction</c></param>
+        /// <remarks>
+        /// The function is invoked after the document was created but before any of its scripts were run. This is useful to amend JavaScript environment, e.g. to seed <c>Math.random</c>.
+        /// </remarks>
+        /// <example>
+        /// An example of overriding the navigator.languages property before the page loads:
+        /// <code>
+        /// var overrideNavigatorLanguages = @"Object.defineProperty(navigator, 'languages', {
+        ///   get: function() {
+        ///     return ['en-US', 'en', 'bn'];
+        ///   };
+        /// });";
+        /// await page.EvaluateOnNewDocumentAsync(overrideNavigatorLanguages);
+        /// </code>
+        /// </example>
+        /// <returns>Task</returns>
         public async Task EvaluateOnNewDocumentAsync(string pageFunction, params object[] args)
         {
             var source = Helper.EvaluationString(pageFunction, args);
