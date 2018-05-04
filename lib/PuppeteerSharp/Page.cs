@@ -272,16 +272,88 @@ namespace PuppeteerSharp
 
         public async Task<ElementHandle> AddStyleTagAsync(dynamic options) => await MainFrame.AddStyleTag(options);
 
-        public Task ExposeFunctionAsync(string name, string puppeteerFunction) => throw new NotImplementedException();
-
+        /// <summary>
+        /// Adds a function called <c>name</c> on the page's <c>window</c> object.
+        /// When called, the function executes <paramref name="puppeteerFunction"/> in C# and returns a <see cref="Task"/> which resolves to the return value of <paramref name="puppeteerFunction"/>.
+        /// </summary>
+        /// <typeparam name="TResult">The result of <paramref name="puppeteerFunction"/></typeparam>
+        /// <param name="name">Name of the function on the window object</param>
+        /// <param name="puppeteerFunction">Callback function which will be called in Puppeteer's context.</param>
+        /// <remarks>
+        /// If the <paramref name="puppeteerFunction"/> returns a <see cref="Task"/>, it will be awaited.
+        /// Functions installed via <see cref="ExposeFunctionAsync{TResult}(string, Func{TResult})"/> survive navigations
+        /// </remarks>
+        /// <returns>Task</returns>
         public Task ExposeFunctionAsync<TResult>(string name, Func<TResult> puppeteerFunction)
             => ExposeFunctionAsync(name, (Delegate)puppeteerFunction);
+
+        /// <summary>
+        /// Adds a function called <c>name</c> on the page's <c>window</c> object.
+        /// When called, the function executes <paramref name="puppeteerFunction"/> in C# and returns a <see cref="Task"/> which resolves to the return value of <paramref name="puppeteerFunction"/>.
+        /// </summary>
+        /// <typeparam name="TResult">The result of <paramref name="puppeteerFunction"/></typeparam>
+        /// <typeparam name="T">The parameter of <paramref name="puppeteerFunction"/></typeparam>
+        /// <param name="name">Name of the function on the window object</param>
+        /// <param name="puppeteerFunction">Callback function which will be called in Puppeteer's context.</param>
+        /// <remarks>
+        /// If the <paramref name="puppeteerFunction"/> returns a <see cref="Task"/>, it will be awaited.
+        /// Functions installed via <see cref="ExposeFunctionAsync{T, TResult}(string, Func{T, TResult})"/> survive navigations
+        /// </remarks>
+        /// <returns>Task</returns>
         public Task ExposeFunctionAsync<T, TResult>(string name, Func<T, TResult> puppeteerFunction)
             => ExposeFunctionAsync(name, (Delegate)puppeteerFunction);
+
+        /// <summary>
+        /// Adds a function called <c>name</c> on the page's <c>window</c> object.
+        /// When called, the function executes <paramref name="puppeteerFunction"/> in C# and returns a <see cref="Task"/> which resolves to the return value of <paramref name="puppeteerFunction"/>.
+        /// </summary>
+        /// <typeparam name="TResult">The result of <paramref name="puppeteerFunction"/></typeparam>
+        /// <typeparam name="T1">The first parameter of <paramref name="puppeteerFunction"/></typeparam>
+        /// <typeparam name="T2">The second parameter of <paramref name="puppeteerFunction"/></typeparam>
+        /// <param name="name">Name of the function on the window object</param>
+        /// <param name="puppeteerFunction">Callback function which will be called in Puppeteer's context.</param>
+        /// <remarks>
+        /// If the <paramref name="puppeteerFunction"/> returns a <see cref="Task"/>, it will be awaited.
+        /// Functions installed via <see cref="ExposeFunctionAsync{T1, T2, TResult}(string, Func{T1, T2, TResult})"/> survive navigations
+        /// </remarks>
+        /// <returns>Task</returns>
         public Task ExposeFunctionAsync<T1, T2, TResult>(string name, Func<T1, T2, TResult> puppeteerFunction)
             => ExposeFunctionAsync(name, (Delegate)puppeteerFunction);
+
+        /// <summary>
+        /// Adds a function called <c>name</c> on the page's <c>window</c> object.
+        /// When called, the function executes <paramref name="puppeteerFunction"/> in C# and returns a <see cref="Task"/> which resolves to the return value of <paramref name="puppeteerFunction"/>.
+        /// </summary>
+        /// <typeparam name="TResult">The result of <paramref name="puppeteerFunction"/></typeparam>
+        /// <typeparam name="T1">The first parameter of <paramref name="puppeteerFunction"/></typeparam>
+        /// <typeparam name="T2">The second parameter of <paramref name="puppeteerFunction"/></typeparam>
+        /// <typeparam name="T3">The third parameter of <paramref name="puppeteerFunction"/></typeparam>
+        /// <param name="name">Name of the function on the window object</param>
+        /// <param name="puppeteerFunction">Callback function which will be called in Puppeteer's context.</param>
+        /// <remarks>
+        /// If the <paramref name="puppeteerFunction"/> returns a <see cref="Task"/>, it will be awaited.
+        /// Functions installed via <see cref="ExposeFunctionAsync{T1, T2, T3, TResult}(string, Func{TResult})"/> survive navigations
+        /// </remarks>
+        /// <returns>Task</returns>
         public Task ExposeFunctionAsync<T1, T2, T3, TResult>(string name, Func<TResult> puppeteerFunction)
             => ExposeFunctionAsync(name, (Delegate)puppeteerFunction);
+
+        /// <summary>
+        /// Adds a function called <c>name</c> on the page's <c>window</c> object.
+        /// When called, the function executes <paramref name="puppeteerFunction"/> in C# and returns a <see cref="Task"/> which resolves to the return value of <paramref name="puppeteerFunction"/>.
+        /// </summary>
+        /// <typeparam name="TResult">The result of <paramref name="puppeteerFunction"/></typeparam>
+        /// <typeparam name="T1">The first parameter of <paramref name="puppeteerFunction"/></typeparam>
+        /// <typeparam name="T2">The second parameter of <paramref name="puppeteerFunction"/></typeparam>
+        /// <typeparam name="T3">The third parameter of <paramref name="puppeteerFunction"/></typeparam>
+        /// <typeparam name="T4">The fourth parameter of <paramref name="puppeteerFunction"/></typeparam>
+        /// <param name="name">Name of the function on the window object</param>
+        /// <param name="puppeteerFunction">Callback function which will be called in Puppeteer's context.</param>
+        /// <remarks>
+        /// If the <paramref name="puppeteerFunction"/> returns a <see cref="Task"/>, it will be awaited.
+        /// Functions installed via <see cref="ExposeFunctionAsync{T1, T2, T3, T4, TResult}(string, Func{T1, T2, T3, T4, TResult})"/> survive navigations
+        /// </remarks>
+        /// <returns>Task</returns>
         public Task ExposeFunctionAsync<T1, T2, T3, T4, TResult>(string name, Func<T1, T2, T3, T4, TResult> puppeteerFunction)
             => ExposeFunctionAsync(name, (Delegate)puppeteerFunction);
 
