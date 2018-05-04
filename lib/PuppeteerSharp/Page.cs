@@ -285,44 +285,6 @@ namespace PuppeteerSharp
         public Task ExposeFunctionAsync<T1, T2, T3, T4, TResult>(string name, Func<T1, T2, T3, T4, TResult> puppeteerFunction)
             => ExposeFunctionAsync(name, (Delegate)puppeteerFunction);
 
-        public async Task ExposeFunctionAsync(string name, Delegate puppeteerFunction)
-        {
-            if (_pageBindings.ContainsKey(name))
-            {
-                throw new PuppeteerException($"Failed to add page binding with name {name}: window['{name}'] already exists!");
-            }
-            _pageBindings.Add(name, puppeteerFunction);
-
-            const string addPageBinding = @"function addPageBinding(bindingName) {
-                window[bindingName] = async(...args) => {
-                    const me = window[bindingName];
-                    let callbacks = me['callbacks'];
-                    if (!callbacks)
-                    {
-                        callbacks = new Map();
-                        me['callbacks'] = callbacks;
-                    }
-                    const seq = (me['lastSeq'] || 0) + 1;
-                    me['lastSeq'] = seq;
-                    const promise = new Promise(fulfill => callbacks.set(seq, fulfill));
-                    // eslint-disable-next-line no-console
-                    console.debug('driver:page-binding', JSON.stringify({ name: bindingName, seq, args}));
-                    return promise;
-                };
-            }";
-            var expression = Helper.EvaluationString(addPageBinding, name);
-            await Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new { source = expression });
-
-            await Task.WhenAll(Frames.Select(frame => frame.EvaluateExpressionAsync(expression)
-                .ContinueWith(task =>
-                {
-                    if (task.IsFaulted)
-                    {
-                        System.Console.WriteLine(task.Exception);
-                    }
-                })));
-        }
-
         public static async Task<Page> CreateAsync(Session client, Target target, bool ignoreHTTPSErrors, bool appMode,
                                                    TaskQueue screenshotTaskQueue)
         {
@@ -981,6 +943,44 @@ namespace PuppeteerSharp
 
             var consoleMessage = new ConsoleMessage(message.Type, string.Join(" ", handles), handles);
             Console?.Invoke(this, new ConsoleEventArgs(consoleMessage));
+        }
+
+        private async Task ExposeFunctionAsync(string name, Delegate puppeteerFunction)
+        {
+            if (_pageBindings.ContainsKey(name))
+            {
+                throw new PuppeteerException($"Failed to add page binding with name {name}: window['{name}'] already exists!");
+            }
+            _pageBindings.Add(name, puppeteerFunction);
+
+            const string addPageBinding = @"function addPageBinding(bindingName) {
+                window[bindingName] = async(...args) => {
+                    const me = window[bindingName];
+                    let callbacks = me['callbacks'];
+                    if (!callbacks)
+                    {
+                        callbacks = new Map();
+                        me['callbacks'] = callbacks;
+                    }
+                    const seq = (me['lastSeq'] || 0) + 1;
+                    me['lastSeq'] = seq;
+                    const promise = new Promise(fulfill => callbacks.set(seq, fulfill));
+                    // eslint-disable-next-line no-console
+                    console.debug('driver:page-binding', JSON.stringify({ name: bindingName, seq, args}));
+                    return promise;
+                };
+            }";
+            var expression = Helper.EvaluationString(addPageBinding, name);
+            await Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new { source = expression });
+
+            await Task.WhenAll(Frames.Select(frame => frame.EvaluateExpressionAsync(expression)
+                .ContinueWith(task =>
+                {
+                    if (task.IsFaulted)
+                    {
+                        System.Console.WriteLine(task.Exception);
+                    }
+                })));
         }
 
         private async Task Navigate(Session client, string url, string referrer)
