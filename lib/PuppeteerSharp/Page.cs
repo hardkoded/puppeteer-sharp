@@ -269,7 +269,7 @@ namespace PuppeteerSharp
             }
         }
 
-        public async Task<ElementHandle> AddScriptTagAsync(dynamic options) => await MainFrame.AddScriptTag(options);
+        public Task<ElementHandle> AddScriptTagAsync(AddScriptTagOptions options) => MainFrame.AddScriptTag(options);
 
         public async Task<ElementHandle> AddStyleTagAsync(dynamic options) => await MainFrame.AddStyleTag(options);
 
