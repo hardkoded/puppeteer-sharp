@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using PuppeteerSharp.Input;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -17,15 +17,98 @@ namespace PuppeteerSharp
 
         public override ElementHandle AsElement() => this;
 
-        public async Task ClickAsync(Dictionary<string, object> options = null)
+        /// <summary>
+        /// Scrolls element into view if needed, and then uses <see cref="Page.Mouse"/> to hover over the center of the element.
+        /// </summary>
+        /// <returns>Task which resolves when the element is successfully hovered</returns>
+        public async Task HoverAsync()
         {
             var (x, y) = await VisibleCenterAsync();
-            await _page.Mouse.Click(x, y, options ?? new Dictionary<string, object>());
+            await _page.Mouse.MoveAsync(x, y);
         }
 
-        internal Task TapAsync()
+        /// <summary>
+        /// Scrolls element into view if needed, and then uses <see cref="Page.Mouse"/> to click in the center of the element.
+        /// </summary>
+        /// <param name="options">click options</param>
+        /// <exception cref="PuppeteerException">if the element is detached from DOM</exception>
+        /// <returns>Task which resolves when the element is successfully clicked</returns>
+        public async Task ClickAsync(ClickOptions options = null)
         {
-            throw new NotImplementedException();
+            var (x, y) = await VisibleCenterAsync();
+            await _page.Mouse.ClickAsync(x, y, options);
+        }
+
+        /// <summary>
+        /// Uploads files
+        /// </summary>
+        /// <param name="filePaths">Sets the value of the file input these paths. paths are resolved using <see cref="Path.GetFullPath(string)"/></param>
+        /// <remarks>This method expects <c>elementHandle</c> to point to an <c>input element</c> <see cref="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input"/> </remarks>
+        /// <returns>Task</returns>
+        public async Task UploadFileAsync(params string[] filePaths)
+        {
+            var files = filePaths.Select(Path.GetFullPath).ToArray();
+            var objectId = RemoteObject.objectId.ToString();
+            await _client.SendAsync("DOM.setFileInputFiles", new { objectId, files });
+        }
+
+        /// <summary>
+        /// Scrolls element into view if needed, and then uses <see cref="Touchscreen.TapAsync(decimal, decimal)"/> to tap in the center of the element.
+        /// </summary>
+        /// <exception cref="PuppeteerException">if the element is detached from DOM</exception>
+        /// <returns>Task which resolves when the element is successfully tapped</returns>
+        public async Task TapAsync()
+        {
+            var (x, y) = await VisibleCenterAsync();
+            await _page.Touchscreen.TapAsync(x, y);
+        }
+
+        /// <summary>
+        /// Calls <c>focus</c> <see cref="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus"/> on the element.
+        /// </summary>
+        /// <returns>Task</returns>
+        public Task FocusAsync() => ExecutionContext.EvaluateFunctionAsync("element => element.focus()", this);
+
+        /// <summary>
+        /// Focuses the element, and sends a <c>keydown</c>, <c>keypress</c>/<c>input</c>, and <c>keyup</c> event for each character in the text.
+        /// </summary>
+        /// <param name="text">A text to type into a focused element</param>
+        /// <param name="options">type options</param>
+        /// <remarks>
+        /// To press a special key, like <c>Control</c> or <c>ArrowDown</c> use <see cref="ElementHandle.PressAsync(string, PressOptions)"/>
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// elementHandle.TypeAsync("#mytextarea", "Hello"); // Types instantly
+        /// elementHandle.TypeAsync("#mytextarea", "World", new TypeOptions { Delay = 100 }); // Types slower, like a user
+        /// </code>
+        /// An example of typing into a text field and then submitting the form:
+        /// <code>
+        /// var elementHandle = await page.GetElementAsync("input");
+        /// await elementHandle.TypeAsync("some text");
+        /// await elementHandle.PressAsync("Enter");
+        /// </code>
+        /// </example>
+        /// <returns>Task</returns>
+        public async Task TypeAsync(string text, TypeOptions options = null)
+        {
+            await FocusAsync();
+            await _page.Keyboard.TypeAsync(text, options);
+        }
+
+        /// <summary>
+        /// Focuses the element, and then uses <see cref="Keyboard.DownAsync(string, DownOptions)"/> and <see cref="Keyboard.UpAsync(string)"/>.
+        /// </summary>
+        /// <param name="key">Name of key to press, such as <c>ArrowLeft</c>. See <see cref="KeyDefinitions"/> for a list of all key names.</param>
+        /// <param name="options">press options</param>
+        /// <remarks>
+        /// If <c>key</c> is a single character and no modifier keys besides <c>Shift</c> are being held down, a <c>keypress</c>/<c>input</c> event will also be generated. The <see cref="DownOptions.Text"/> option can be specified to force an input event to be generated.
+        /// </remarks>
+        /// <returns></returns>
+        public async Task PressAsync(string key, PressOptions options = null)
+        {
+            await FocusAsync();
+            await _page.Keyboard.PressAsync(key, options);
         }
 
         internal async Task<ElementHandle> GetElementAsync(string selector)
@@ -40,13 +123,8 @@ namespace PuppeteerSharp
                 return element;
             }
 
-            await handle.Dispose();
+            await handle.DisposeAsync();
             return null;
-        }
-
-        internal Task DisposeAsync()
-        {
-            throw new NotImplementedException();
         }
 
         private async Task<(decimal x, decimal y)> VisibleCenterAsync()

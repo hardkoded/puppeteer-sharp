@@ -261,6 +261,7 @@ namespace PuppeteerSharp
             }
             else
             {
+                _documentCompletionSource = null;
                 ContextResolveTaskWrapper = new TaskCompletionSource<ExecutionContext>();
             }
         }

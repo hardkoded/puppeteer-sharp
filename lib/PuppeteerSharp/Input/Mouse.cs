@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp.Input
 {
     public class Mouse
     {
-        private Session _client;
-        private Keyboard _keyboard;
+        private readonly Session _client;
+        private readonly Keyboard _keyboard;
+
         private decimal _x = 0;
         private decimal _y = 0;
-        private string _button = "none";
+        private MouseButton _button = MouseButton.None;
 
         public Mouse(Session client, Keyboard keyboard)
         {
@@ -18,47 +18,66 @@ namespace PuppeteerSharp.Input
             _keyboard = keyboard;
         }
 
-        public async Task Move(decimal x, decimal y, Dictionary<string, object> options = null)
+        /// <summary>
+        /// Dispatches a `mousemove` event.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="options"></param>
+        /// <returns>Task</returns>
+        public async Task MoveAsync(decimal x, decimal y, MoveOptions options = null)
         {
-            options = options ?? new Dictionary<string, object>();
+            options = options ?? new MoveOptions();
 
             decimal fromX = _x;
             decimal fromY = _y;
             _x = x;
             _y = y;
-            int steps = options.ContainsKey("steps") ? (int)options["steps"] : 1;
+            int steps = options.Steps;
 
             for (var i = 1; i <= steps; i++)
             {
                 await _client.SendAsync("Input.dispatchMouseEvent", new Dictionary<string, object>(){
                     {"type", "mouseMoved"},
                     {"button", _button},
-                    {"x", fromX + (_x - fromX) * (i / steps)},
-                    {"y", fromY + (_y - fromY) * (i / steps)},
+                    {"x", fromX + (_x - fromX) * ((decimal)i / steps)},
+                    {"y", fromY + (_y - fromY) * ((decimal)i / steps)},
                     {"modifiers", _keyboard.Modifiers}
                 });
             }
         }
 
-        public async Task Click(decimal x, decimal y, Dictionary<string, object> options)
+        /// <summary>
+        /// Shortcut for <see cref="Mouse.MoveAsync(decimal, decimal, MoveOptions)"/>, <see cref="Mouse.DownAsync(ClickOptions)"/> and <see cref="Mouse.UpAsync(ClickOptions)"/>
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="options"></param>
+        /// <returns>Task</returns>
+        public async Task ClickAsync(decimal x, decimal y, ClickOptions options = null)
         {
-            options = options ?? new Dictionary<string, object>();
+            options = options ?? new ClickOptions();
 
-            await Move(x, y);
-            await Down(options);
+            await MoveAsync(x, y);
+            await DownAsync(options);
 
-            if (options.ContainsKey("delay"))
+            if (options.Delay > 0)
             {
-                await Task.Delay((int)options["delay"]);
+                await Task.Delay(options.Delay);
             }
-            await Up(options);
+            await UpAsync(options);
         }
 
-        public async Task Down(Dictionary<string, object> options)
+        /// <summary>
+        /// Dispatches a `mousedown` event.
+        /// </summary>
+        /// <param name="options"></param>
+        /// <returns>Task</returns>
+        public async Task DownAsync(ClickOptions options = null)
         {
-            options = options ?? new Dictionary<string, object>();
+            options = options ?? new ClickOptions();
 
-            _button = options.ContainsKey("button") ? options["button"].ToString() : "left";
+            _button = options.Button;
 
             await _client.SendAsync("Input.dispatchMouseEvent", new Dictionary<string, object>(){
                 {"type", "mousePressed"},
@@ -66,23 +85,28 @@ namespace PuppeteerSharp.Input
                 {"x", _x},
                 {"y", _y},
                 {"modifiers", _keyboard.Modifiers},
-                {"clickCount", options.ContainsKey("clickCount") ? (int)options["clickCount"]: 1}
+                {"clickCount", options.ClickCount }
             });
         }
 
-        public async Task Up(Dictionary<string, object> options)
+        /// <summary>
+        /// Dispatches a `mouseup` event.
+        /// </summary>
+        /// <param name="options"></param>
+        /// <returns>Task</returns>
+        public async Task UpAsync(ClickOptions options = null)
         {
-            options = options ?? new Dictionary<string, object>();
+            options = options ?? new ClickOptions();
 
-            _button = "none";
+            _button = MouseButton.None;
 
             await _client.SendAsync("Input.dispatchMouseEvent", new Dictionary<string, object>(){
                 {"type", "mouseReleased"},
-                {"button", options.ContainsKey("button") ? options["button"].ToString() : "left"},
+                {"button", options.Button},
                 {"x", _x},
                 {"y", _y},
                 {"modifiers", _keyboard.Modifiers},
-                {"clickCount", options.ContainsKey("clickCount") ? (int)options["clickCount"]: 1}
+                {"clickCount", options.ClickCount }
             });
         }
     }

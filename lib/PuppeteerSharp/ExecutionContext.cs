@@ -120,7 +120,7 @@ namespace PuppeteerSharp
             var result = await handle.JsonValue<T>()
                 .ContinueWith(jsonTask => jsonTask.Exception != null ? default(T) : jsonTask.Result);
 
-            await handle.Dispose();
+            await handle.DisposeAsync();
             return result;
         }
 
