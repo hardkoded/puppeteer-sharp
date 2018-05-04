@@ -274,6 +274,20 @@ namespace PuppeteerSharp
 
         /// <summary>
         /// Adds a function called <c>name</c> on the page's <c>window</c> object.
+        /// When called, the function executes <paramref name="puppeteerFunction"/> in C# and returns a <see cref="Task"/> which resolves when <paramref name="puppeteerFunction"/> completes.
+        /// </summary>
+        /// <param name="name">Name of the function on the window object</param>
+        /// <param name="puppeteerFunction">Callback function which will be called in Puppeteer's context.</param>
+        /// <remarks>
+        /// If the <paramref name="puppeteerFunction"/> returns a <see cref="Task"/>, it will be awaited.
+        /// Functions installed via <see cref="ExposeFunctionAsync(string, Action)"/> survive navigations
+        /// </remarks>
+        /// <returns>Task</returns>
+        public Task ExposeFunctionAsync(string name, Action puppeteerFunction)
+            => ExposeFunctionAsync(name, (Delegate)puppeteerFunction);
+
+        /// <summary>
+        /// Adds a function called <c>name</c> on the page's <c>window</c> object.
         /// When called, the function executes <paramref name="puppeteerFunction"/> in C# and returns a <see cref="Task"/> which resolves to the return value of <paramref name="puppeteerFunction"/>.
         /// </summary>
         /// <typeparam name="TResult">The result of <paramref name="puppeteerFunction"/></typeparam>
@@ -980,11 +994,18 @@ namespace PuppeteerSharp
                 var methodParams = binding.Method.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
 
                 var args = arg1Value.GetValue("args").Select((token, i) => token.ToObject(methodParams[i])).ToArray();
-                
+
                 var result = binding.DynamicInvoke(args);
                 if (result is Task taskResult)
                 {
-                    result = await (dynamic)result;
+                    if (taskResult.GetType().Name != nameof(Task)) // is Task<T>?
+                    {
+                        result = await (dynamic)taskResult;
+                    }
+                    else
+                    {
+                        await taskResult;
+                    }
                 }
 
                 var expression = Helper.EvaluationString(deliverResult, name, seq, result);

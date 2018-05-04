@@ -24,7 +24,7 @@ namespace PuppeteerSharp.Tests.Page
         }
 
         [Fact]
-        public async Task ShouldAwaitReturnedPromise()
+        public async Task ShouldAwaitReturnedValueTask()
         {
             await Page.ExposeFunctionAsync("compute", (int a, int b) => Task.FromResult(a * b));
             var result = await Page.EvaluateExpressionAsync<int>("compute(3, 5)");
@@ -50,6 +50,31 @@ namespace PuppeteerSharp.Tests.Page
             var frame = Page.Frames[1];
             var result = await frame.EvaluateExpressionAsync<int>("compute(3, 5)");
             Assert.Equal(15, result);
+        }
+
+        [Fact]
+        public async Task ShouldAwaitReturnedTask()
+        {
+            bool called = false;
+            await Page.ExposeFunctionAsync("changeFlag", () =>
+            {
+                called = true;
+                return Task.CompletedTask;
+            });
+            await Page.EvaluateExpressionAsync("changeFlag()");
+            Assert.True(called);
+        }
+
+        [Fact]
+        public async Task ShouldWorkWithAction()
+        {
+            bool called = false;
+            await Page.ExposeFunctionAsync("changeFlag", () =>
+            {
+                called = true;
+            });
+            await Page.EvaluateExpressionAsync("changeFlag()");
+            Assert.True(called);
         }
     }
 }
