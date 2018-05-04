@@ -200,18 +200,6 @@ namespace PuppeteerSharp
             return await context.QueryObjects(prototypeHandle);
         }
 
-        /// <summary>
-        /// Runs <c>document.querySelector</c> within the frame and passes it as the first argument to <c>pageFunction</c>
-        /// </summary>
-        /// <typeparam name="T">The type of the response</typeparam>
-        /// <param name="selector">A <c>selector</c> to query frame for</param>
-        /// <param name="pageFunction">Function to be evaluated in browser context</param>
-        /// <param name="args">Arguments to pass to <c>pageFunction</c></param>
-        /// <exception cref="PuppeteerException">If there's no element matching <paramref name="selector"/></exception>
-        /// <returns>Task which resolves to the return value of <c>pageFunction</c></returns>
-        public Task<T> EvalAsync<T>(string selector, string pageFunction, params object[] args)
-            => MainFrame.EvalAsync<T>(selector, pageFunction, args);
-
         public async Task SetRequestInterceptionAsync(bool value)
             => await _networkManager.SetRequestInterceptionAsync(value);
 

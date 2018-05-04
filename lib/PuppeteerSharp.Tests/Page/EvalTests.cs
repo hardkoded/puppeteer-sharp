@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.Page
         public async Task ShouldWork()
         {
             await Page.SetContentAsync("<section id='testAttribute'>43543</section>");
-            var idAttribute = await Page.EvalAsync<string>("section", "e => e.id");
+            var idAttribute = await Page.GetElementAsync("section").EvaluateFunctionAsync<string>("e => e.id");
             Assert.Equal("testAttribute", idAttribute);
         }
 
@@ -18,7 +18,7 @@ namespace PuppeteerSharp.Tests.Page
         public async Task ShouldAcceptArguments()
         {
             await Page.SetContentAsync("<section>hello</section>");
-            var text = await Page.EvalAsync<string>("section", "(e, suffix) => e.textContent + suffix", " world!");
+            var text = await Page.GetElementAsync("section").EvaluateFunctionAsync<string>("(e, suffix) => e.textContent + suffix", " world!");
             Assert.Equal("hello world!", text);
         }
 
@@ -27,7 +27,7 @@ namespace PuppeteerSharp.Tests.Page
         {
             await Page.SetContentAsync("<section>hello</section><div> world</div>");
             var divHandle = await Page.GetElementAsync("div");
-            var text = await Page.EvalAsync<string>("section", "(e, div) => e.textContent + div.textContent", divHandle);
+            var text = await Page.GetElementAsync("section").EvaluateFunctionAsync<string>("(e, div) => e.textContent + div.textContent", divHandle);
             Assert.Equal("hello world", text);
         }
 
@@ -35,8 +35,8 @@ namespace PuppeteerSharp.Tests.Page
         public async Task ShouldThrowErrorIfNoElementIsFound()
         {
             var exception = await Assert.ThrowsAsync<PuppeteerException>(()
-                => Page.EvalAsync<string>("section", "e => e.id"));
-            Assert.Contains("failed to find element matching selector \"section\"", exception.Message);
+                => Page.GetElementAsync("section").EvaluateFunctionAsync<string>("e => e.id"));
+            Assert.Contains("failed to find element matching selector", exception.Message);
         }
     }
 }

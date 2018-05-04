@@ -127,23 +127,7 @@ namespace PuppeteerSharp
             var value = await document.GetElementAsync(selector);
             return value;
         }
-
-        internal async Task<T> EvalAsync<T>(string selector, string pageFunction, object[] args)
-        {
-            var elementHandle = await GetElementAsync(selector);
-            if (elementHandle == null)
-            {
-                throw new PuppeteerException($"Error: failed to find element matching selector \"{selector}\"");
-            }
-
-            var newArgs = new object[args.Length + 1];
-            newArgs[0] = elementHandle;
-            args.CopyTo(newArgs, 1);
-            var result = await EvaluateFunctionAsync<T>(pageFunction, newArgs);
-            await elementHandle.Dispose();
-            return result;
-        }
-
+        
         internal Task<object> EvalMany(string selector, Func<object> pageFunction, object[] args)
         {
             throw new NotImplementedException();

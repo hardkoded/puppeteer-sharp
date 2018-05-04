@@ -7,12 +7,12 @@ namespace PuppeteerSharp
 {
     public class ElementHandle : JSHandle
     {
-        private readonly Page _page;
+        internal Page Page { get; }
 
         public ElementHandle(ExecutionContext context, Session client, object remoteObject, Page page) :
             base(context, client, remoteObject)
         {
-            _page = page;
+            Page = page;
         }
 
         public override ElementHandle AsElement() => this;
@@ -20,7 +20,7 @@ namespace PuppeteerSharp
         public async Task ClickAsync(Dictionary<string, object> options = null)
         {
             var (x, y) = await VisibleCenterAsync();
-            await _page.Mouse.Click(x, y, options ?? new Dictionary<string, object>());
+            await Page.Mouse.Click(x, y, options ?? new Dictionary<string, object>());
         }
 
         internal Task TapAsync()
