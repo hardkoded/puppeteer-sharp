@@ -22,7 +22,7 @@
     <ProjectReference Include="..\PuppeteerSharp\PuppeteerSharp.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="Assets\*.txt">
+    <None Update="Assets\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="test.runsettings">
