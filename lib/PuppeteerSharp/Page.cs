@@ -998,7 +998,7 @@ namespace PuppeteerSharp
                 var result = binding.DynamicInvoke(args);
                 if (result is Task taskResult)
                 {
-                    if (taskResult.GetType().Name != nameof(Task)) // is Task<T>?
+                    if (taskResult.GetType().IsGenericType)
                     {
                         result = await (dynamic)taskResult;
                     }
