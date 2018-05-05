@@ -164,7 +164,7 @@ namespace PuppeteerSharp
         public async Task<ElementHandle> GetElementAsync(string selector)
             => await MainFrame.GetElementAsync(selector);
 
-        public async Task<IEnumerable<ElementHandle>> GetElementsAsync(string selector)
+        public async Task<ElementHandle[]> GetElementsAsync(string selector)
             => await MainFrame.GetElementsAsync(selector);
 
         /// <summary>

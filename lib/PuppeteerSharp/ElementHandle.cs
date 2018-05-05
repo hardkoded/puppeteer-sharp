@@ -1,4 +1,5 @@
 ﻿using PuppeteerSharp.Input;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -125,6 +126,26 @@ namespace PuppeteerSharp
 
             await handle.DisposeAsync();
             return null;
+        }
+
+        internal async Task<ElementHandle[]> GetElementsAsync(string selector)
+        {
+            var arrayHandle = await ExecutionContext.EvaluateFunctionHandleAsync(
+                "(element, selector) => element.querySelectorAll(selector)",
+                this, selector);
+
+            var properties = await arrayHandle.GetPropertiesAsync();
+            await arrayHandle.DisposeAsync();
+            var result = new List<ElementHandle>();
+            foreach(var property in properties.Values)
+            {
+                var elementHandle = property.AsElement();
+                if(elementHandle != null)
+                {
+                    result.Add(elementHandle);
+                }
+            }
+            return result.ToArray();
         }
 
         private async Task<(decimal x, decimal y)> VisibleCenterAsync()
