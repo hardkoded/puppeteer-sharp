@@ -24,7 +24,7 @@ namespace PuppeteerSharp
         public async Task HoverAsync()
         {
             var (x, y) = await VisibleCenterAsync();
-            await _page.Mouse.MoveAsync(x, y);
+            await Page.Mouse.MoveAsync(x, y);
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace PuppeteerSharp
         public async Task ClickAsync(ClickOptions options = null)
         {
             var (x, y) = await VisibleCenterAsync();
-            await _page.Mouse.ClickAsync(x, y, options);
+            await Page.Mouse.ClickAsync(x, y, options);
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace PuppeteerSharp
         public async Task TapAsync()
         {
             var (x, y) = await VisibleCenterAsync();
-            await _page.Touchscreen.TapAsync(x, y);
+            await Page.Touchscreen.TapAsync(x, y);
         }
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace PuppeteerSharp
         public async Task TypeAsync(string text, TypeOptions options = null)
         {
             await FocusAsync();
-            await _page.Keyboard.TypeAsync(text, options);
+            await Page.Keyboard.TypeAsync(text, options);
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace PuppeteerSharp
         public async Task PressAsync(string key, PressOptions options = null)
         {
             await FocusAsync();
-            await _page.Keyboard.PressAsync(key, options);
+            await Page.Keyboard.PressAsync(key, options);
         }
 
         internal async Task<ElementHandle> GetElementAsync(string selector)

@@ -12,19 +12,20 @@ namespace PuppeteerSharp
         /// <param name="pageFunction">Function to be evaluated in browser context</param>
         /// <param name="args">Arguments to pass to <c>pageFunction</c></param>
         /// <returns>Task which resolves to the return value of <c>pageFunction</c></returns>
+        /// <exception cref="SelectorException">If <paramref name="elementHandleTask"/> resolves to <c>null</c></exception>
         public static async Task<T> EvaluateFunctionAsync<T>(this Task<ElementHandle> elementHandleTask, string pageFunction, params object[] args)
         {
             var elementHandle = await elementHandleTask;
             if (elementHandle == null)
             {
-                throw new PuppeteerException($"Error: failed to find element matching selector");
+                throw new SelectorException($"Error: failed to find element matching selector");
             }
 
             var newArgs = new object[args.Length + 1];
             newArgs[0] = elementHandle;
             args.CopyTo(newArgs, 1);
             var result = await elementHandle.Page.EvaluateFunctionAsync<T>(pageFunction, newArgs);
-            await elementHandle.Dispose();
+            await elementHandle.DisposeAsync();
             return result;
         }
     }
