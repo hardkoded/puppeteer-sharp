@@ -161,6 +161,14 @@ namespace PuppeteerSharp
             await handle.DisposeAsync();
         }
 
+        /// <summary>
+        /// The method runs <c>document.querySelector</c> within the page. If no element matches the selector, the return value resolve to <c>null</c>.
+        /// </summary>
+        /// <param name="selector">A selector to query page for</param>
+        /// <returns>Task which resolves to <see cref="ElementHandle"/> pointing to the frame element</returns>
+        /// <remarks>
+        /// Shortcut for <c>page.MainFrame.GetElementAsync(selector)</c>
+        /// </remarks>
         public async Task<ElementHandle> GetElementAsync(string selector)
             => await MainFrame.GetElementAsync(selector);
 
