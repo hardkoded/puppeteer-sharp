@@ -1,189 +1,152 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp.Input
 {
+    /// <summary>
+    /// Keyboard provides an api for managing a virtual keyboard. The high level api is <see cref="TypeAsync(string, TypeOptions)"/>, which takes raw characters and generates proper keydown, keypress/input, and keyup events on your page.
+    /// 
+    /// For finer control, you can use <see cref="Keyboard.DownAsync(string, DownOptions)"/>, <see cref="UpAsync(string)"/>, and <see cref="SendCharacterAsync(string)"/> to manually fire events as if they were generated from a real keyboard.
+    /// </summary>
     public class Keyboard
     {
-        private Session _client;
+        private readonly Session _client;
+        private readonly HashSet<string> _pressedKeys = new HashSet<string>();
 
-        private List<string> _pressedKeys = new List<string>();
-        private readonly Dictionary<string, int> _keys = new Dictionary<string, int>(){
-            {"Cancel", 3},
-            {"Help", 6},
-            {"Backspace", 8},
-            {"Tab", 9},
-            {"Clear", 12},
-            {"Enter", 13},
-            {"Shift", 16},
-            {"Control", 17},
-            {"Alt", 18},
-            {"Pause", 19},
-            {"CapsLock", 20},
-            {"Escape", 27},
-            {"Convert", 28},
-            {"NonConvert", 29},
-            {"Accept", 30},
-            {"ModeChange", 31},
-            {"PageUp", 33},
-            {"PageDown", 34},
-            {"End", 35},
-            {"Home", 36},
-            {"ArrowLeft", 37},
-            {"ArrowUp", 38},
-            {"ArrowRight", 39},
-            {"ArrowDown", 40},
-            {"Select", 41},
-            {"Print", 42},
-            {"Execute", 43},
-            {"PrintScreen", 44},
-            {"Insert", 45},
-            {"Delete", 46},
-            {")", 48},
-            {"!", 49},
-            {"@", 50},
-            {"#", 51},
-            {"$", 52},
-            {"%", 53},
-            {"^", 54},
-            {"&", 55},
-            {"*", 56},
-            {"(", 57},
-            {"Meta", 91},
-            {"ContextMenu", 93},
-            {"F1", 112},
-            {"F2", 113},
-            {"F3", 114},
-            {"F4", 115},
-            {"F5", 116},
-            {"F6", 117},
-            {"F7", 118},
-            {"F8", 119},
-            {"F9", 120},
-            {"F10", 121},
-            {"F11", 122},
-            {"F12", 123},
-            {"F13", 124},
-            {"F14", 125},
-            {"F15", 126},
-            {"F16", 127},
-            {"F17", 128},
-            {"F18", 129},
-            {"F19", 130},
-            {"F20", 131},
-            {"F21", 132},
-            {"F22", 133},
-            {"F23", 134},
-            {"F24", 135},
-            {"NumLock", 144},
-            {"ScrollLock", 145},
-            {"AudioVolumeMute", 173},
-            {"AudioVolumeDown", 174},
-            {"AudioVolumeUp", 175},
-            {"MediaTrackNext", 176},
-            {"MediaTrackPrevious", 177},
-            {"MediaStop", 178},
-            {"MediaPlayPause", 179},
-            {";", 186},
-            {",", 186},
-            {"=", 187},
-            {"+", 187},
-            {"<", 188},
-            {"-", 189},
-            {"_", 189},
-            {".", 190},
-            {">", 190},
-            {"/", 191},
-            {"?", 191},
-            {"`", 192},
-            {"~", 192},
-            {"[", 219},
-            {"{", 219},
-            {"\\", 220},
-            {"|", 220},
-            {"]", 221},
-            {"}", 221},
-            {"\"", 222},
-            {"AltGraph", 225},
-            {"Attn", 246},
-            {"CrSel", 247},
-            {"ExSel", 248},
-            {"EraseEof", 249},
-            {"Play", 250},
-            {"ZoomOut", 251}
-        };
-
-        public int Modifiers { get; set; }
+        internal int Modifiers { get; set; }
 
         public Keyboard(Session client)
         {
             _client = client;
         }
 
-        public async Task Down(string key, Dictionary<string, object> options)
+        /// <summary>
+        /// Dispatches a <c>keydown</c> event
+        /// </summary>
+        /// <param name="key">Name of key to press, such as <c>ArrowLeft</c>. <see cref="KeyDefinitions"/> for a list of all key names.</param>
+        /// <param name="options">down options</param>
+        /// <remarks>
+        /// If <c>key</c> is a single character and no modifier keys besides <c>Shift</c> are being held down, a <c>keypress</c>/<c>input</c> event will also generated. The <c>text</c> option can be specified to force an input event to be generated.
+        /// If <c>key</c> is a modifier key, <c>Shift</c>, <c>Meta</c>, <c>Control</c>, or <c>Alt</c>, subsequent key presses will be sent with that modifier active. To release the modifier key, use <see cref="UpAsync(string)"/>
+        /// After the key is pressed once, subsequent calls to <see cref="DownAsync(string, DownOptions)"/> will have <see cref="https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/repeat">repeat</see> set to <c>true</c>. To release the key, use <see cref="UpAsync(string)"/>
+        /// </remarks>
+        /// <returns>Task</returns>
+        public async Task DownAsync(string key, DownOptions options = null)
         {
-            var text = options["text"].ToString();
-            bool autoRepeat = _pressedKeys.Contains(key);
+            var description = KeyDescriptionForString(key);
 
-            if (!autoRepeat)
-            {
-                _pressedKeys.Add(key);
-            }
+            var autoRepeat = _pressedKeys.Contains(description.Code);
+            _pressedKeys.Add(description.Code);
+            Modifiers |= ModifierBit(key);
 
-            Modifiers |= modifierBit(key);
+            var text = options?.Text == null ? description.Text : options.Text;
+
             await _client.SendAsync("Input.dispatchKeyEvent", new Dictionary<string, object>(){
-                {"type", text.Length > 0 ? "keyDown" : "rawKeyDown"},
+                {"type", text != null ? "keyDown" : "rawKeyDown"},
                 {"modifiers", Modifiers},
-                {"windowsvirtualKeyCode", CodeForKey(key)},
-                {"key", key},
+                {"windowsVirtualKeyCode", description.KeyCode},
+                {"code", description.Code },
+                {"key", description.Key},
                 {"text", text},
                 {"unmodifiedText", text},
-                {"autoRepeat", autoRepeat}
+                {"autoRepeat", autoRepeat},
+                {"location", description.Location },
+                {"isKeypad", description.Location == 3 }
             });
         }
 
-        public async Task Up(string key)
+        /// <summary>
+        /// Dispatches a <c>keyup</c> event.
+        /// </summary>
+        /// <param name="key">Name of key to release, such as `ArrowLeft`. See <see cref="KeyDefinitions"/> for a list of all key names.</param>
+        /// <returns>Task</returns>
+        public async Task UpAsync(string key)
         {
-            Modifiers &= modifierBit(key);
+            var description = KeyDescriptionForString(key);
 
-            if (_pressedKeys.Contains(key))
-            {
-                _pressedKeys.Remove(key);
-            }
+            Modifiers &= ~ModifierBit(key);
+            _pressedKeys.Remove(description.Key);
 
             await _client.SendAsync("Input.dispatchKeyEvent", new Dictionary<string, object>(){
                 {"type", "keyUp"},
                 {"modifiers", Modifiers},
-                {"windowsvirtualKeyCode", CodeForKey(key)},
-                {"key", key}
+                {"key", description.Key},
+                {"windowsVirtualKeyCode", description.KeyCode},
+                {"code", description.Code },
+                {"location", description.Location }
             });
         }
 
-        public async Task SendCharacter(string charText)
+        /// <summary>
+        /// Dispatches a <c>keypress</c> and <c>input</c> event. This does not send a <c>keydown</c> or <c>keyup</c> event.
+        /// </summary>
+        /// <param name="charText">Character to send into the page</param>
+        /// <returns>Task</returns>
+        public async Task SendCharacterAsync(string charText)
         {
             await _client.SendAsync("Input.dispatchKeyEvent", new Dictionary<string, object>(){
                 {"type", "char"},
                 {"modifiers", Modifiers},
+                {"text", charText },
                 {"key", charText},
-                {"key", charText}
+                {"unmodifiedText", charText }
             });
         }
 
-        private int CodeForKey(string key)
+        /// <summary>
+        /// Sends a <c>keydown</c>, <c>keypress</c>/<c>input</c>, and <c>keyup</c> event for each character in the text.
+        /// </summary>
+        /// <param name="text">A text to type into a focused element</param>
+        /// <param name="options">type options</param>
+        /// <remarks>
+        /// To press a special key, like <c>Control</c> or <c>ArrowDown</c>, use <see cref="PressAsync(string, PressOptions)"/>
+        /// </remarks>
+        /// <returns>Task</returns>
+        public async Task TypeAsync(string text, TypeOptions options = null)
         {
-            if (_keys.ContainsKey(key))
+            var delay = 0;
+            if (options?.Delay != null)
             {
-                return _keys[key];
+                delay = (int)options.Delay;
             }
-            if (key.Length == 1)
+            foreach (var letter in text)
             {
-                return key.ToUpper().ToCharArray()[0];
+                if (KeyDefinitions.ContainsKey(letter.ToString()))
+                {
+                    await PressAsync(letter.ToString(), new PressOptions { Delay = delay });
+                }
+                else
+                {
+                    await SendCharacterAsync(letter.ToString());
+                }
+                if (delay > 0)
+                {
+                    await Task.Delay(delay);
+                }
             }
-            return 0;
         }
 
-        private int modifierBit(string key)
+        /// <summary>
+        /// Shortcut for <see cref="DownAsync(string, DownOptions)"/> and <see cref="UpAsync(string)"/>
+        /// </summary>
+        /// <param name="key">Name of key to press, such as <c>ArrowLeft</c>. <see cref="KeyDefinitions"/> for a list of all key names.</param>
+        /// <param name="options">press options</param>
+        /// <remarks>
+        /// If <paramref name="key"/> is a single character and no modifier keys besides <c>Shift</c> are being held down, a <c>keypress</c>/<c>input</c> event will also generated. The <see cref="DownOptions.Text"/> option can be specified to force an input event to be generated.
+        /// Modifier keys DO effect <see cref="ElementHandle.PressAsync(string, PressOptions)"/>. Holding down <c>Shift</c> will type the text in upper case.
+        /// </remarks>
+        /// <returns>Task</returns>
+        public async Task PressAsync(string key, PressOptions options = null)
+        {
+            await DownAsync(key, options);
+            if (options?.Delay > 0)
+            {
+                await Task.Delay((int)options.Delay);
+            }
+            await UpAsync(key);
+        }
+
+        private int ModifierBit(string key)
         {
             if (key == "Alt")
             {
@@ -202,6 +165,74 @@ namespace PuppeteerSharp.Input
                 return 8;
             }
             return 0;
+        }
+
+        private KeyDefinition KeyDescriptionForString(string keyString)
+        {
+            var shift = Modifiers & 8;
+            var description = new KeyDefinition
+            {
+                Key = string.Empty,
+                KeyCode = 0,
+                Code = string.Empty,
+                Text = string.Empty,
+                Location = 0
+            };
+
+            var definition = KeyDefinitions.Get(keyString);
+
+            if (!string.IsNullOrEmpty(definition.Key))
+            {
+                description.Key = definition.Key;
+            }
+
+            if (shift > 0 && !string.IsNullOrEmpty(definition.ShiftKey))
+            {
+                description.Key = definition.ShiftKey;
+            }
+
+            if (definition.KeyCode > 0)
+            {
+                description.KeyCode = definition.KeyCode;
+            }
+
+            if (shift > 0 && definition.ShiftKeyCode != null)
+            {
+                description.KeyCode = (int)definition.ShiftKeyCode;
+            }
+
+            if (!string.IsNullOrEmpty(definition.Code))
+            {
+                description.Code = definition.Code;
+            }
+
+            if (definition.Location != 0)
+            {
+                description.Location = definition.Location;
+            }
+
+            if (description.Key.Length == 1)
+            {
+                description.Text = description.Key;
+            }
+
+            if (!string.IsNullOrEmpty(definition.Text))
+            {
+                description.Text = definition.Text;
+            }
+
+            if (shift > 0 && !string.IsNullOrEmpty(definition.ShiftText))
+            {
+                description.Text = definition.ShiftText;
+            }
+
+            // if any modifiers besides shift are pressed, no text should be sent
+            if ((Modifiers & ~8) > 0)
+            {
+                description.Text = string.Empty;
+            }
+
+            return description;
         }
     }
 }

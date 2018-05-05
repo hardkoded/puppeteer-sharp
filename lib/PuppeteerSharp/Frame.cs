@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp
@@ -148,9 +151,55 @@ namespace PuppeteerSharp
             throw new NotImplementedException();
         }
 
-        internal Task<ElementHandle> AddScriptTag(dynamic options)
+        internal async Task<ElementHandle> AddScriptTag(AddScriptTagOptions options)
         {
-            throw new NotImplementedException();
+            const string addScriptUrl = @"async function addScriptUrl(url) {
+              const script = document.createElement('script');
+              script.src = url;
+              document.head.appendChild(script);
+              await new Promise((res, rej) => {
+                script.onload = res;
+                script.onerror = rej;
+              });
+              return script;
+            }";
+            const string addScriptContent = @"function addScriptContent(content) {
+              const script = document.createElement('script');
+              script.type = 'text/javascript';
+              script.text = content;
+              document.head.appendChild(script);
+              return script;
+            }";
+
+            if (!string.IsNullOrEmpty(options.Url))
+            {
+                var url = options.Url;
+                try
+                {
+                    var context = await GetExecutionContextAsync();
+                    return (await context.EvaluateFunctionHandleAsync(addScriptUrl, url)).AsElement();
+                }
+                catch (PuppeteerException)
+                {
+                    throw new PuppeteerException($"Loading script from {url} failed");
+                }
+            }
+
+            if (!string.IsNullOrEmpty(options.Path))
+            {
+                var contents = File.ReadAllText(options.Path, Encoding.UTF8);
+                contents += "//# sourceURL=" + options.Path.Replace("\n", string.Empty);
+                var context = await GetExecutionContextAsync();
+                return (await context.EvaluateFunctionHandleAsync(addScriptContent, contents)).AsElement();
+            }
+
+            if (!string.IsNullOrEmpty(options.Content))
+            {
+                var context = await GetExecutionContextAsync();
+                return (await context.EvaluateFunctionHandleAsync(addScriptContent, options.Content)).AsElement();
+            }
+
+            throw new ArgumentException("Provide options with a `Url`, `Path` or `Content` property");
         }
 
         internal Task<string> GetContentAsync()
@@ -202,6 +251,7 @@ namespace PuppeteerSharp
             }
             else
             {
+                _documentCompletionSource = null;
                 ContextResolveTaskWrapper = new TaskCompletionSource<ExecutionContext>();
             }
         }

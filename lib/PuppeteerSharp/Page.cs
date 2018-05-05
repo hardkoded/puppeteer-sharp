@@ -21,8 +21,7 @@ namespace PuppeteerSharp
         private readonly FrameManager _frameManager;
         private readonly TaskQueue _screenshotTaskQueue;
         private readonly EmulationManager _emulationManager;
-
-        private Dictionary<string, Func<object>> _pageBindings;
+        private readonly Dictionary<string, Delegate> _pageBindings;
 
         private static readonly Dictionary<string, PaperFormat> _paperFormats = new Dictionary<string, PaperFormat> {
             {"letter", new PaperFormat {Width = 8.5m, Height = 11}},
@@ -56,7 +55,7 @@ namespace PuppeteerSharp
             _networkManager = new NetworkManager(client, _frameManager);
             _emulationManager = new EmulationManager(client);
             Tracing = new Tracing(client);
-            _pageBindings = new Dictionary<string, Func<object>>();
+            _pageBindings = new Dictionary<string, Delegate>();
 
             _ignoreHTTPSErrors = ignoreHTTPSErrors;
             Coverage = new Coverage(client);
@@ -107,6 +106,9 @@ namespace PuppeteerSharp
         /// <value>An array of all frames attached to the page.</value>
         public Frame[] Frames => _frameManager.Frames.Values.ToArray();
         public string Url => MainFrame.Url;
+        /// <summary>
+        /// Gets that target this page was created from.
+        /// </summary>
         public Target Target { get; }
         public Keyboard Keyboard { get; }
         public Touchscreen Touchscreen { get; }
@@ -142,15 +144,21 @@ namespace PuppeteerSharp
             return BuildMetricsObject(response.Metrics);
         }
 
+        /// <summary>
+        /// Fetches an element with <paramref name="selector"/>, scrolls it into view if needed, and then uses <see cref="Touchscreen"/> to tap in the center of the element.
+        /// </summary>
+        /// <param name="selector">A selector to search for element to tap. If there are multiple elements satisfying the selector, the first will be clicked.</param>
+        /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
+        /// <returns>Task which resolves when the element matching <paramref name="selector"/> is successfully tapped</returns>
         public async Task TapAsync(string selector)
         {
             var handle = await GetElementAsync(selector);
-
-            if (handle != null)
+            if (handle == null)
             {
-                await handle.TapAsync();
-                await handle.DisposeAsync();
+                throw new SelectorException($"No node found for selector: {selector}", selector);
             }
+            await handle.TapAsync();
+            await handle.DisposeAsync();
         }
 
         public async Task<ElementHandle> GetElementAsync(string selector)
@@ -188,6 +196,28 @@ namespace PuppeteerSharp
             return await context.EvaluateFunctionHandleAsync(pageFunction, args);
         }
 
+        /// <summary>
+        /// Adds a function which would be invoked in one of the following scenarios:
+        /// - whenever the page is navigated
+        /// - whenever the child frame is attached or navigated. In this case, the function is invoked in the context of the newly attached frame
+        /// </summary>
+        /// <param name="pageFunction">Function to be evaluated in browser context</param>
+        /// <param name="args">Arguments to pass to <c>pageFunction</c></param>
+        /// <remarks>
+        /// The function is invoked after the document was created but before any of its scripts were run. This is useful to amend JavaScript environment, e.g. to seed <c>Math.random</c>.
+        /// </remarks>
+        /// <example>
+        /// An example of overriding the navigator.languages property before the page loads:
+        /// <code>
+        /// var overrideNavigatorLanguages = @"Object.defineProperty(navigator, 'languages', {
+        ///   get: function() {
+        ///     return ['en-US', 'en', 'bn'];
+        ///   };
+        /// });";
+        /// await page.EvaluateOnNewDocumentAsync(overrideNavigatorLanguages);
+        /// </code>
+        /// </example>
+        /// <returns>Task</returns>
         public async Task EvaluateOnNewDocumentAsync(string pageFunction, params object[] args)
         {
             var source = Helper.EvaluationString(pageFunction, args);
@@ -263,9 +293,116 @@ namespace PuppeteerSharp
             }
         }
 
-        public async Task<ElementHandle> AddScriptTagAsync(dynamic options) => await MainFrame.AddScriptTag(options);
+        /// <summary>
+        /// Adds a <c><script></c> tag into the page with the desired url or content
+        /// </summary>
+        /// <param name="options">add script tag options</param>
+        /// <remarks>
+        /// Shortcut for <c>page.MainFrame.AddScriptTagAsync(options)</c>
+        /// </remarks>
+        /// <returns>Task which resolves to the added tag when the script's onload fires or when the script content was injected into frame</returns>
+        public Task<ElementHandle> AddScriptTagAsync(AddScriptTagOptions options) => MainFrame.AddScriptTag(options);
 
         public async Task<ElementHandle> AddStyleTagAsync(dynamic options) => await MainFrame.AddStyleTag(options);
+
+        /// <summary>
+        /// Adds a function called <c>name</c> on the page's <c>window</c> object.
+        /// When called, the function executes <paramref name="puppeteerFunction"/> in C# and returns a <see cref="Task"/> which resolves when <paramref name="puppeteerFunction"/> completes.
+        /// </summary>
+        /// <param name="name">Name of the function on the window object</param>
+        /// <param name="puppeteerFunction">Callback function which will be called in Puppeteer's context.</param>
+        /// <remarks>
+        /// If the <paramref name="puppeteerFunction"/> returns a <see cref="Task"/>, it will be awaited.
+        /// Functions installed via <see cref="ExposeFunctionAsync(string, Action)"/> survive navigations
+        /// </remarks>
+        /// <returns>Task</returns>
+        public Task ExposeFunctionAsync(string name, Action puppeteerFunction)
+            => ExposeFunctionAsync(name, (Delegate)puppeteerFunction);
+
+        /// <summary>
+        /// Adds a function called <c>name</c> on the page's <c>window</c> object.
+        /// When called, the function executes <paramref name="puppeteerFunction"/> in C# and returns a <see cref="Task"/> which resolves to the return value of <paramref name="puppeteerFunction"/>.
+        /// </summary>
+        /// <typeparam name="TResult">The result of <paramref name="puppeteerFunction"/></typeparam>
+        /// <param name="name">Name of the function on the window object</param>
+        /// <param name="puppeteerFunction">Callback function which will be called in Puppeteer's context.</param>
+        /// <remarks>
+        /// If the <paramref name="puppeteerFunction"/> returns a <see cref="Task"/>, it will be awaited.
+        /// Functions installed via <see cref="ExposeFunctionAsync{TResult}(string, Func{TResult})"/> survive navigations
+        /// </remarks>
+        /// <returns>Task</returns>
+        public Task ExposeFunctionAsync<TResult>(string name, Func<TResult> puppeteerFunction)
+            => ExposeFunctionAsync(name, (Delegate)puppeteerFunction);
+
+        /// <summary>
+        /// Adds a function called <c>name</c> on the page's <c>window</c> object.
+        /// When called, the function executes <paramref name="puppeteerFunction"/> in C# and returns a <see cref="Task"/> which resolves to the return value of <paramref name="puppeteerFunction"/>.
+        /// </summary>
+        /// <typeparam name="TResult">The result of <paramref name="puppeteerFunction"/></typeparam>
+        /// <typeparam name="T">The parameter of <paramref name="puppeteerFunction"/></typeparam>
+        /// <param name="name">Name of the function on the window object</param>
+        /// <param name="puppeteerFunction">Callback function which will be called in Puppeteer's context.</param>
+        /// <remarks>
+        /// If the <paramref name="puppeteerFunction"/> returns a <see cref="Task"/>, it will be awaited.
+        /// Functions installed via <see cref="ExposeFunctionAsync{T, TResult}(string, Func{T, TResult})"/> survive navigations
+        /// </remarks>
+        /// <returns>Task</returns>
+        public Task ExposeFunctionAsync<T, TResult>(string name, Func<T, TResult> puppeteerFunction)
+            => ExposeFunctionAsync(name, (Delegate)puppeteerFunction);
+
+        /// <summary>
+        /// Adds a function called <c>name</c> on the page's <c>window</c> object.
+        /// When called, the function executes <paramref name="puppeteerFunction"/> in C# and returns a <see cref="Task"/> which resolves to the return value of <paramref name="puppeteerFunction"/>.
+        /// </summary>
+        /// <typeparam name="TResult">The result of <paramref name="puppeteerFunction"/></typeparam>
+        /// <typeparam name="T1">The first parameter of <paramref name="puppeteerFunction"/></typeparam>
+        /// <typeparam name="T2">The second parameter of <paramref name="puppeteerFunction"/></typeparam>
+        /// <param name="name">Name of the function on the window object</param>
+        /// <param name="puppeteerFunction">Callback function which will be called in Puppeteer's context.</param>
+        /// <remarks>
+        /// If the <paramref name="puppeteerFunction"/> returns a <see cref="Task"/>, it will be awaited.
+        /// Functions installed via <see cref="ExposeFunctionAsync{T1, T2, TResult}(string, Func{T1, T2, TResult})"/> survive navigations
+        /// </remarks>
+        /// <returns>Task</returns>
+        public Task ExposeFunctionAsync<T1, T2, TResult>(string name, Func<T1, T2, TResult> puppeteerFunction)
+            => ExposeFunctionAsync(name, (Delegate)puppeteerFunction);
+
+        /// <summary>
+        /// Adds a function called <c>name</c> on the page's <c>window</c> object.
+        /// When called, the function executes <paramref name="puppeteerFunction"/> in C# and returns a <see cref="Task"/> which resolves to the return value of <paramref name="puppeteerFunction"/>.
+        /// </summary>
+        /// <typeparam name="TResult">The result of <paramref name="puppeteerFunction"/></typeparam>
+        /// <typeparam name="T1">The first parameter of <paramref name="puppeteerFunction"/></typeparam>
+        /// <typeparam name="T2">The second parameter of <paramref name="puppeteerFunction"/></typeparam>
+        /// <typeparam name="T3">The third parameter of <paramref name="puppeteerFunction"/></typeparam>
+        /// <param name="name">Name of the function on the window object</param>
+        /// <param name="puppeteerFunction">Callback function which will be called in Puppeteer's context.</param>
+        /// <remarks>
+        /// If the <paramref name="puppeteerFunction"/> returns a <see cref="Task"/>, it will be awaited.
+        /// Functions installed via <see cref="ExposeFunctionAsync{T1, T2, T3, TResult}(string, Func{TResult})"/> survive navigations
+        /// </remarks>
+        /// <returns>Task</returns>
+        public Task ExposeFunctionAsync<T1, T2, T3, TResult>(string name, Func<TResult> puppeteerFunction)
+            => ExposeFunctionAsync(name, (Delegate)puppeteerFunction);
+
+        /// <summary>
+        /// Adds a function called <c>name</c> on the page's <c>window</c> object.
+        /// When called, the function executes <paramref name="puppeteerFunction"/> in C# and returns a <see cref="Task"/> which resolves to the return value of <paramref name="puppeteerFunction"/>.
+        /// </summary>
+        /// <typeparam name="TResult">The result of <paramref name="puppeteerFunction"/></typeparam>
+        /// <typeparam name="T1">The first parameter of <paramref name="puppeteerFunction"/></typeparam>
+        /// <typeparam name="T2">The second parameter of <paramref name="puppeteerFunction"/></typeparam>
+        /// <typeparam name="T3">The third parameter of <paramref name="puppeteerFunction"/></typeparam>
+        /// <typeparam name="T4">The fourth parameter of <paramref name="puppeteerFunction"/></typeparam>
+        /// <param name="name">Name of the function on the window object</param>
+        /// <param name="puppeteerFunction">Callback function which will be called in Puppeteer's context.</param>
+        /// <remarks>
+        /// If the <paramref name="puppeteerFunction"/> returns a <see cref="Task"/>, it will be awaited.
+        /// Functions installed via <see cref="ExposeFunctionAsync{T1, T2, T3, T4, TResult}(string, Func{T1, T2, T3, T4, TResult})"/> survive navigations
+        /// </remarks>
+        /// <returns>Task</returns>
+        public Task ExposeFunctionAsync<T1, T2, T3, T4, TResult>(string name, Func<T1, T2, T3, T4, TResult> puppeteerFunction)
+            => ExposeFunctionAsync(name, (Delegate)puppeteerFunction);
 
         public static async Task<Page> CreateAsync(Session client, Target target, bool ignoreHTTPSErrors, bool appMode,
                                                    TaskQueue screenshotTaskQueue)
@@ -522,6 +659,10 @@ namespace PuppeteerSharp
             return await _screenshotTaskQueue.Enqueue(() => PerformScreenshot(screenshotType, options));
         }
 
+        /// <summary>
+        /// Returns page's title
+        /// </summary>
+        /// <returns>page's title</returns>
         public Task<string> GetTitleAsync() => MainFrame.GetTitleAsync();
 
         public Task CloseAsync()
@@ -535,6 +676,58 @@ namespace PuppeteerSharp
             }
 
             return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Fetches an element with <paramref name="selector"/>, scrolls it into view if needed, and then uses <see cref="Page.Mouse"/> to click in the center of the element.
+        /// </summary>
+        /// <param name="selector">A selector to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.</param>
+        /// <param name="options">click options</param>
+        /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
+        /// <returns>Task which resolves when the element matching <paramref name="selector"/> is successfully clicked</returns>
+        public async Task ClickAsync(string selector, ClickOptions options = null)
+        {
+            var handle = await GetElementAsync(selector);
+            if (handle == null)
+            {
+                throw new SelectorException($"No node found for selector: {selector}", selector);
+            }
+            await handle.ClickAsync(options);
+            await handle.DisposeAsync();
+        }
+
+        /// <summary>
+        /// Fetches an element with <paramref name="selector"/>, scrolls it into view if needed, and then uses <see cref="Page.Mouse"/> to hover over the center of the element.
+        /// </summary>
+        /// <param name="selector">A selector to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered.</param>
+        /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
+        /// <returns>Task which resolves when the element matching <paramref name="selector"/> is successfully hovered</returns>
+        public async Task HoverAsync(string selector)
+        {
+            var handle = await GetElementAsync(selector);
+            if (handle == null)
+            {
+                throw new SelectorException($"No node found for selector: {selector}", selector);
+            }
+            await handle.HoverAsync();
+            await handle.DisposeAsync();
+        }
+
+        /// <summary>
+        /// Fetches an element with <paramref name="selector"/> and focuses it
+        /// </summary>
+        /// <param name="selector">A selector to search for element to focus. If there are multiple elements satisfying the selector, the first will be focused.</param>
+        /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
+        /// <returns>Task which resolves when the element matching <paramref name="selector"/> is successfully focused</returns>
+        public async Task FocusAsync(string selector)
+        {
+            var handle = await GetElementAsync(selector);
+            if (handle == null)
+            {
+                throw new SelectorException($"No node found for selector: {selector}", selector);
+            }
+            await handle.FocusAsync();
+            await handle.DisposeAsync();
         }
 
         public Task<dynamic> EvaluateExpressionAsync(string script)
@@ -567,6 +760,34 @@ namespace PuppeteerSharp
             );
 
             return navigationTask.Result;
+        }
+
+        /// <summary>
+        /// Sends a <c>keydown</c>, <c>keypress</c>/<c>input</c>, and <c>keyup</c> event for each character in the text.
+        /// </summary>
+        /// <param name="selector">A selector of an element to type into. If there are multiple elements satisfying the selector, the first will be used.</param>
+        /// <param name="text">A text to type into a focused element</param>
+        /// <param name="options"></param>
+        /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
+        /// <remarks>
+        /// To press a special key, like <c>Control</c> or <c>ArrowDown</c> use <see cref="Keyboard.PressAsync(string, PressOptions)"/>
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// page.TypeAsync("#mytextarea", "Hello"); // Types instantly
+        /// page.TypeAsync("#mytextarea", "World", new TypeOptions { Delay = 100 }); // Types slower, like a user
+        /// </code>
+        /// </example>
+        /// <returns>Task</returns>
+        public async Task TypeAsync(string selector, string text, TypeOptions options = null)
+        {
+            var handle = await GetElementAsync(selector);
+            if (handle == null)
+            {
+                throw new SelectorException($"No node found for selector: {selector}", selector);
+            }
+            await handle.TypeAsync(text, options);
+            await handle.DisposeAsync();
         }
 
         /// <summary>
@@ -876,6 +1097,46 @@ namespace PuppeteerSharp
 
         private async Task OnConsoleAPI(PageConsoleResponse message)
         {
+            if (message.Type == ConsoleType.Debug && message.Args.Length > 0 && message.Args[0].value == "driver:page-binding")
+            {
+                const string deliverResult = @"function deliverResult(name, seq, result) {
+                  window[name]['callbacks'].get(seq)(result);
+                  window[name]['callbacks'].delete(seq);
+                }";
+                JObject arg1Value = JObject.Parse(message.Args[1].value.ToString());
+                var name = arg1Value.Value<string>("name");
+                var seq = arg1Value.Value<int>("seq");
+
+                var binding = _pageBindings[name];
+                var methodParams = binding.Method.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
+
+                var args = arg1Value.GetValue("args").Select((token, i) => token.ToObject(methodParams[i])).ToArray();
+
+                var result = binding.DynamicInvoke(args);
+                if (result is Task taskResult)
+                {
+                    if (taskResult.GetType().IsGenericType)
+                    {
+                        result = await (dynamic)taskResult;
+                    }
+                    else
+                    {
+                        await taskResult;
+                    }
+                }
+
+                var expression = Helper.EvaluationString(deliverResult, name, seq, result);
+                var dummy = Client.SendAsync("Runtime.evaluate", new { expression, contextId = message.ExecutionContextId })
+                    .ContinueWith(task =>
+                    {
+                        if (task.IsFaulted)
+                        {
+                            System.Console.WriteLine(task.Exception);
+                        }
+                    });
+                return;
+            }
+
             if (Console?.GetInvocationList().Length == 0)
             {
                 foreach (var arg in message.Args)
@@ -892,6 +1153,44 @@ namespace PuppeteerSharp
 
             var consoleMessage = new ConsoleMessage(message.Type, string.Join(" ", handles), handles);
             Console?.Invoke(this, new ConsoleEventArgs(consoleMessage));
+        }
+
+        private async Task ExposeFunctionAsync(string name, Delegate puppeteerFunction)
+        {
+            if (_pageBindings.ContainsKey(name))
+            {
+                throw new PuppeteerException($"Failed to add page binding with name {name}: window['{name}'] already exists!");
+            }
+            _pageBindings.Add(name, puppeteerFunction);
+
+            const string addPageBinding = @"function addPageBinding(bindingName) {
+                window[bindingName] = async(...args) => {
+                    const me = window[bindingName];
+                    let callbacks = me['callbacks'];
+                    if (!callbacks)
+                    {
+                        callbacks = new Map();
+                        me['callbacks'] = callbacks;
+                    }
+                    const seq = (me['lastSeq'] || 0) + 1;
+                    me['lastSeq'] = seq;
+                    const promise = new Promise(fulfill => callbacks.set(seq, fulfill));
+                    // eslint-disable-next-line no-console
+                    console.debug('driver:page-binding', JSON.stringify({ name: bindingName, seq, args}));
+                    return promise;
+                };
+            }";
+            var expression = Helper.EvaluationString(addPageBinding, name);
+            await Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new { source = expression });
+
+            await Task.WhenAll(Frames.Select(frame => frame.EvaluateExpressionAsync(expression)
+                .ContinueWith(task =>
+                {
+                    if (task.IsFaulted)
+                    {
+                        System.Console.WriteLine(task.Exception);
+                    }
+                })));
         }
 
         private async Task Navigate(Session client, string url, string referrer)
