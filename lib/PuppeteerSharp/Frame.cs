@@ -129,10 +129,10 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="selector">Selector to query page for</param>
         /// <returns>Task which resolves to <see cref="ElementHandle"/> pointing to the frame element</returns>
-        internal async Task<ElementHandle> GetElementAsync(string selector)
+        internal async Task<ElementHandle> QuerySelectorAsync(string selector)
         {
             var document = await GetDocument();
-            var value = await document.GetElementAsync(selector);
+            var value = await document.QuerySelectorAsync(selector);
             return value;
         }
 

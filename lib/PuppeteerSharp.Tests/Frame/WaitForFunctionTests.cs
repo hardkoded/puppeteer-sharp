@@ -69,7 +69,7 @@ namespace PuppeteerSharp.Tests.Frame
         public async Task ShouldAcceptElementHandleArguments()
         {
             await Page.SetContentAsync("<div></div>");
-            var div = await Page.GetElementAsync("div");
+            var div = await Page.QuerySelectorAsync("div");
             var resolved = false;
             var waitForFunction = Page.WaitForFunctionAsync("element => !element.parentElement", div)
                 .ContinueWith(_ => resolved = true);
