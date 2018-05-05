@@ -164,6 +164,11 @@ namespace PuppeteerSharp
         public async Task<ElementHandle> GetElementAsync(string selector)
             => await MainFrame.GetElementAsync(selector);
 
+        /// <summary>
+        /// Runs <c>document.querySelectorAll</c> within the page. If no elements match the selector, the return value resolve to <see cref="Array.Empty{T}"/>.
+        /// </summary>
+        /// <param name="selector">A selector to query page for</param>
+        /// <returns>Task which resolves to ElementHandles pointing to the frame elements</returns>
         public async Task<ElementHandle[]> GetElementsAsync(string selector)
             => await MainFrame.GetElementsAsync(selector);
 
