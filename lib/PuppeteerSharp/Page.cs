@@ -169,8 +169,8 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="selector">A selector to query page for</param>
         /// <returns>Task which resolves to ElementHandles pointing to the frame elements</returns>
-        public async Task<ElementHandle[]> GetElementsAsync(string selector)
-            => await MainFrame.GetElementsAsync(selector);
+        public async Task<ElementHandle[]> QuerySelectorAllAsync(string selector)
+            => await MainFrame.QuerySelectorAllAsync(selector);
 
         /// <summary>
         /// Executes a script in browser context

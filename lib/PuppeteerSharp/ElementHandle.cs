@@ -128,7 +128,7 @@ namespace PuppeteerSharp
             return null;
         }
 
-        internal async Task<ElementHandle[]> GetElementsAsync(string selector)
+        internal async Task<ElementHandle[]> QuerySelectorAllAsync(string selector)
         {
             var arrayHandle = await ExecutionContext.EvaluateFunctionHandleAsync(
                 "(element, selector) => element.querySelectorAll(selector)",

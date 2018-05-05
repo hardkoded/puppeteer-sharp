@@ -151,10 +151,10 @@ namespace PuppeteerSharp
             throw new NotImplementedException();
         }
 
-        internal async Task<ElementHandle[]> GetElementsAsync(string selector)
+        internal async Task<ElementHandle[]> QuerySelectorAllAsync(string selector)
         {
             var document = await GetDocument();
-            var value = await document.GetElementsAsync(selector);
+            var value = await document.QuerySelectorAllAsync(selector);
             return value;
         }
 
