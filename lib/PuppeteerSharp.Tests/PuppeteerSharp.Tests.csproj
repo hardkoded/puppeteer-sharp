@@ -8,8 +8,8 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0" />
     <PackageReference Include="xunit" Version="2.3.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
-    <PackageReference Include="PdfSharp" Version="1.32.3057" />
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0002" />
+    <PackageReference Include="PdfSharp" Version="1.50.4845-RC2a" NoWarn="NU1701">
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Issues\" />
