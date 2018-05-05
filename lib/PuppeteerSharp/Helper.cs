@@ -2,7 +2,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace PuppeteerSharp
 {
@@ -42,12 +41,12 @@ namespace PuppeteerSharp
             // https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-RemoteObject
             string objectValue = remoteObject.value.ToString();
             string objectType = remoteObject.type.ToString();
-            
+
             switch (objectType)
             {
                 case "object":
                     return JsonConvert.DeserializeObject<T>(objectValue);
-                case "undefined": 
+                case "undefined":
                     return null;
                 case "number":
                     switch (Type.GetTypeCode(typeof(T)))
@@ -58,9 +57,9 @@ namespace PuppeteerSharp
                         default:
                             return float.Parse(objectValue);
                     }
-                case "boolean": 
+                case "boolean":
                     return bool.Parse(objectValue);
-                case "bigint": 
+                case "bigint":
                     return double.Parse(objectValue);
                 default: // string, symbol, function
                     return objectValue;
