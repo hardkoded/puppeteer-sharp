@@ -24,8 +24,28 @@ namespace PuppeteerSharp
             var newArgs = new object[args.Length + 1];
             newArgs[0] = elementHandle;
             args.CopyTo(newArgs, 1);
-            var result = await elementHandle.Page.EvaluateFunctionAsync<T>(pageFunction, newArgs);
+            var result = await elementHandle.ExecutionContext.EvaluateFunctionAsync<T>(pageFunction, newArgs);
             await elementHandle.DisposeAsync();
+            return result;
+        }
+
+        /// <summary>
+        /// Runs <paramref name="pageFunction"/> within the frame and passes it the outcome of <paramref name="arrayHandleTask"/> as the first argument. Use only after <see cref="Page.QuerySelectorAllHandleAsync(string)"/>
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="arrayHandleTask">A task that returns an <see cref="JSHandle"/> that represents an array of <see cref="ElementHandle"/> that will be used as the first argument in <paramref name="pageFunction"/></param>
+        /// <param name="pageFunction">Function to be evaluated in browser context</param>
+        /// <param name="args">Arguments to pass to <c>pageFunction</c></param>
+        /// <returns>Task which resolves to the return value of <c>pageFunction</c></returns>
+        public static async Task<T> EvaluateFunctionAsync<T>(this Task<JSHandle> arrayHandleTask, string pageFunction, params object[] args)
+        {
+            var arrayHandle = await arrayHandleTask;
+            
+            var newArgs = new object[args.Length + 1];
+            newArgs[0] = arrayHandle;
+            args.CopyTo(newArgs, 1);
+            var result = await arrayHandle.ExecutionContext.EvaluateFunctionAsync<T>(pageFunction, newArgs);
+            await arrayHandle.DisposeAsync();
             return result;
         }
     }
