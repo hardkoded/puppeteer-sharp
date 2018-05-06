@@ -777,9 +777,7 @@ namespace PuppeteerSharp
         /// <param name="args">Values of options to select. If the <select> has the multiple attribute, 
         /// all values are considered, otherwise only the first one is taken into account.</param>
         public Task<string[]> SelectAsync(string selector, params object[] args)
-        {
-            throw new NotImplementedException();
-        }
+            => MainFrame.SelectAsync(selector, args);
 
         /// <summary>
         /// Sends a <c>keydown</c>, <c>keypress</c>/<c>input</c>, and <c>keyup</c> event for each character in the text.
