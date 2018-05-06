@@ -20,6 +20,7 @@ namespace PuppeteerSharp.Tests.Page
         public async Task ShouldSelectMultipleOptions()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
+            await Page.EvaluateExpressionAsync("makeMultiple()");
             await Page.SelectAsync("select", "blue", "green", "red");
             Assert.Equal(new string[] { "blue", "green", "red" },
                          await Page.EvaluateExpressionAsync<string[]>("result.onInput"));
@@ -40,8 +41,8 @@ namespace PuppeteerSharp.Tests.Page
         public async Task ShouldThrowWhenElementIsNotASelect()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
-            var exception = await Assert.ThrowsAsync<SelectorException>(async () => await Page.SelectAsync("body", ""));
-            Assert.Equal("Element is not a <select> element.", exception.Message);
+            var exception = await Assert.ThrowsAsync<EvaluationFailedException>(async () => await Page.SelectAsync("body", ""));
+            Assert.Contains("Element is not a <select> element.", exception.Message);
         }
 
         [Fact]
@@ -82,8 +83,8 @@ namespace PuppeteerSharp.Tests.Page
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
             await Page.SelectAsync("select", "blue", "black", "magenta");
             await Page.SelectAsync("select");
-            Assert.True(await Page.GetElementAsync("select").EvaluateFunctionAsync<bool>(
-                "select => Array.from(select.options).every(option => !option.selected))"));
+            Assert.True(await Page.QuerySelectorAsync("select").EvaluateFunctionAsync<bool>(
+                "select => Array.from(select.options).every(option => !option.selected)"));
         }
     }
 }
