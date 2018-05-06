@@ -136,16 +136,28 @@ namespace PuppeteerSharp
 
             var properties = await arrayHandle.GetPropertiesAsync();
             await arrayHandle.DisposeAsync();
-            var result = new List<ElementHandle>();
-            foreach(var property in properties.Values)
-            {
-                var elementHandle = property.AsElement();
-                if(elementHandle != null)
-                {
-                    result.Add(elementHandle);
-                }
-            }
-            return result.ToArray();
+
+            return properties.Values.OfType<ElementHandle>().ToArray();
+        }
+
+        internal async Task<ElementHandle[]> XPathAsync(string expression)
+        {
+            var arrayHandle = await ExecutionContext.EvaluateFunctionHandleAsync(
+                @"(element, expression) => {
+                    const document = element.ownerDocument || element;
+                    const iterator = document.evaluate(expression, element, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE);
+                    const array = [];
+                    let item;
+                    while ((item = iterator.iterateNext()))
+                        array.push(item);
+                    return array;
+                }",
+                this, expression
+            );
+            var properties = await arrayHandle.GetPropertiesAsync();
+            await arrayHandle.DisposeAsync();
+
+            return properties.Values.OfType<ElementHandle>().ToArray();
         }
 
         private async Task<(decimal x, decimal y)> VisibleCenterAsync()

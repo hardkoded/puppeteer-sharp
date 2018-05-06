@@ -151,6 +151,13 @@ namespace PuppeteerSharp
             return value;
         }
 
+        internal async Task<ElementHandle[]> XPathAsync(string expression)
+        {
+            var document = await GetDocument();
+            var value = await document.XPathAsync(expression);
+            return value;
+        }
+
         internal Task<ElementHandle> AddStyleTag(dynamic options)
         {
             throw new NotImplementedException();

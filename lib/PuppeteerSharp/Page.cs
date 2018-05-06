@@ -180,8 +180,16 @@ namespace PuppeteerSharp
         public async Task<ElementHandle[]> QuerySelectorAllAsync(string selector)
             => await MainFrame.QuerySelectorAllAsync(selector);
 
-        public Task<ElementHandle[]> XPathAsync(string selector)
-            => MainFrame.XPathAsync(selector);
+        /// <summary>
+        /// Evaluates the XPath expression
+        /// </summary>
+        /// <param name="expression">Expression to evaluate <see cref="https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate"/></param>
+        /// <returns>Task which resolves to an array of <see cref="ElementHandle"/></returns>
+        /// <remarks>
+        /// Shortcut for <c>page.MainFrame.XPathAsync(expression)</c>
+        /// </remarks>
+        public Task<ElementHandle[]> XPathAsync(string expression)
+            => MainFrame.XPathAsync(expression);
 
         /// <summary>
         /// Executes a script in browser context
