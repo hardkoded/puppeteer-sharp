@@ -188,8 +188,7 @@ namespace PuppeteerSharp
         /// <remarks>
         /// Shortcut for <c>page.MainFrame.XPathAsync(expression)</c>
         /// </remarks>
-        public Task<ElementHandle[]> XPathAsync(string expression)
-            => MainFrame.XPathAsync(expression);
+        public Task<ElementHandle[]> XPathAsync(string expression) => MainFrame.XPathAsync(expression);
 
         /// <summary>
         /// Executes a script in browser context
