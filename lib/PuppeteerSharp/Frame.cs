@@ -122,10 +122,15 @@ namespace PuppeteerSharp
         /// <returns><see cref="ExecutionContext"/> associated with the frame.</returns>
         public Task<ExecutionContext> GetExecutionContextAsync() => ContextResolveTaskWrapper.Task;
 
-        internal async Task<ElementHandle> GetElementAsync(string selector)
+        /// <summary>
+        /// Queries frame for the selector. If there's no such element within the frame, the method will resolve to <c>null</c>.
+        /// </summary>
+        /// <param name="selector">Selector to query page for</param>
+        /// <returns>Task which resolves to <see cref="ElementHandle"/> pointing to the frame element</returns>
+        internal async Task<ElementHandle> QuerySelectorAsync(string selector)
         {
             var document = await GetDocument();
-            var value = await document.GetElementAsync(selector);
+            var value = await document.QuerySelectorAsync(selector);
             return value;
         }
 

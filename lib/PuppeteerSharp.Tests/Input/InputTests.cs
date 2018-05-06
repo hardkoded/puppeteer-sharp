@@ -88,7 +88,7 @@ namespace PuppeteerSharp.Tests.Input
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
 
-            var textarea = await Page.GetElementAsync("textarea");
+            var textarea = await Page.QuerySelectorAsync("textarea");
             await textarea.TypeAsync("Type in this text!");
             Assert.Equal("Type in this text!", await Page.EvaluateExpressionAsync<string>("result"));
         }
@@ -108,7 +108,7 @@ namespace PuppeteerSharp.Tests.Input
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/fileupload.html");
             var filePath = "./assets/file-to-upload.txt";
-            var input = await Page.GetElementAsync("input");
+            var input = await Page.QuerySelectorAsync("input");
             await input.UploadFileAsync(filePath);
             Assert.Equal("file-to-upload.txt", await Page.EvaluateFunctionAsync<string>("e => e.files[0].name", input));
             Assert.Equal("contents of the file", await Page.EvaluateFunctionAsync(@"e => {
@@ -147,7 +147,7 @@ namespace PuppeteerSharp.Tests.Input
         public async Task ShouldSendACharacterWithElementHandlePress()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
-            var textarea = await Page.GetElementAsync("textarea");
+            var textarea = await Page.QuerySelectorAsync("textarea");
             await textarea.PressAsync("a", new PressOptions { Text = "f" });
             Assert.Equal("f", await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
 
@@ -316,7 +316,7 @@ namespace PuppeteerSharp.Tests.Input
                  window.double = true;
                });
             }");
-            var button = await Page.GetElementAsync("button");
+            var button = await Page.QuerySelectorAsync("button");
             await button.ClickAsync(new ClickOptions { ClickCount = 2 });
             Assert.True(await Page.EvaluateExpressionAsync<bool>("double"));
             Assert.Equal("Clicked", await Page.EvaluateExpressionAsync<string>("result"));
@@ -465,7 +465,7 @@ namespace PuppeteerSharp.Tests.Input
         public async Task ShouldReportTouches()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/touches.html");
-            var button = await Page.GetElementAsync("button");
+            var button = await Page.QuerySelectorAsync("button");
             await button.TapAsync();
             Assert.Equal(new object[] {
                 new { Touchstart = 0 },
@@ -480,7 +480,7 @@ namespace PuppeteerSharp.Tests.Input
             await Page.SetContentAsync("<div style=\"width:100px;height:100px\">spacer</div>");
             await FrameUtils.AttachFrameAsync(Page, "button-test", TestConstants.ServerUrl + "/input/button.html");
             var frame = Page.Frames[1];
-            var button = await frame.GetElementAsync("button");
+            var button = await frame.QuerySelectorAsync("button");
             await button.ClickAsync();
             Assert.Equal("Clicked", await frame.EvaluateExpressionAsync<string>("window.result"));
         }
@@ -493,7 +493,7 @@ namespace PuppeteerSharp.Tests.Input
             await Page.SetContentAsync("<div style=\"width:100px;height:100px\">spacer</div>");
             await FrameUtils.AttachFrameAsync(Page, "button-test", TestConstants.ServerUrl + "/input/button.html");
             var frame = Page.Frames[1];
-            var button = await frame.GetElementAsync("button");
+            var button = await frame.QuerySelectorAsync("button");
             await button.ClickAsync();
             Assert.Equal("Clicked", await frame.EvaluateExpressionAsync<string>("window.result"));
         }
@@ -515,7 +515,7 @@ namespace PuppeteerSharp.Tests.Input
             await Page.EvaluateExpressionAsync(@"{
               window.addEventListener('keydown', event => window.keyLocation = event.location, true);
             }");
-            var textarea = await Page.GetElementAsync("textarea");
+            var textarea = await Page.QuerySelectorAsync("textarea");
 
             await textarea.PressAsync("Digit5");
             Assert.Equal(0, await Page.EvaluateExpressionAsync<int>("keyLocation"));

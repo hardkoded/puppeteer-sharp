@@ -152,7 +152,7 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves when the element matching <paramref name="selector"/> is successfully tapped</returns>
         public async Task TapAsync(string selector)
         {
-            var handle = await GetElementAsync(selector);
+            var handle = await QuerySelectorAsync(selector);
             if (handle == null)
             {
                 throw new SelectorException($"No node found for selector: {selector}", selector);
@@ -161,8 +161,16 @@ namespace PuppeteerSharp
             await handle.DisposeAsync();
         }
 
-        public async Task<ElementHandle> GetElementAsync(string selector)
-            => await MainFrame.GetElementAsync(selector);
+        /// <summary>
+        /// The method runs <c>document.querySelector</c> within the page. If no element matches the selector, the return value resolve to <c>null</c>.
+        /// </summary>
+        /// <param name="selector">A selector to query page for</param>
+        /// <returns>Task which resolves to <see cref="ElementHandle"/> pointing to the frame element</returns>
+        /// <remarks>
+        /// Shortcut for <c>page.MainFrame.QuerySelectorAsync(selector)</c>
+        /// </remarks>
+        public async Task<ElementHandle> QuerySelectorAsync(string selector)
+            => await MainFrame.QuerySelectorAsync(selector);
 
         /// <summary>
         /// Runs <c>document.querySelectorAll</c> within the page. If no elements match the selector, the return value resolve to <see cref="Array.Empty{T}"/>.
@@ -692,7 +700,7 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves when the element matching <paramref name="selector"/> is successfully clicked</returns>
         public async Task ClickAsync(string selector, ClickOptions options = null)
         {
-            var handle = await GetElementAsync(selector);
+            var handle = await QuerySelectorAsync(selector);
             if (handle == null)
             {
                 throw new SelectorException($"No node found for selector: {selector}", selector);
@@ -709,7 +717,7 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves when the element matching <paramref name="selector"/> is successfully hovered</returns>
         public async Task HoverAsync(string selector)
         {
-            var handle = await GetElementAsync(selector);
+            var handle = await QuerySelectorAsync(selector);
             if (handle == null)
             {
                 throw new SelectorException($"No node found for selector: {selector}", selector);
@@ -726,7 +734,7 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves when the element matching <paramref name="selector"/> is successfully focused</returns>
         public async Task FocusAsync(string selector)
         {
-            var handle = await GetElementAsync(selector);
+            var handle = await QuerySelectorAsync(selector);
             if (handle == null)
             {
                 throw new SelectorException($"No node found for selector: {selector}", selector);
@@ -798,7 +806,7 @@ namespace PuppeteerSharp
         /// <returns>Task</returns>
         public async Task TypeAsync(string selector, string text, TypeOptions options = null)
         {
-            var handle = await GetElementAsync(selector);
+            var handle = await QuerySelectorAsync(selector);
             if (handle == null)
             {
                 throw new SelectorException($"No node found for selector: {selector}", selector);
