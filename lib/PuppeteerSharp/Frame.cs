@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace PuppeteerSharp
 {
@@ -133,7 +134,7 @@ namespace PuppeteerSharp
             var value = await document.QuerySelectorAsync(selector);
             return value;
         }
-        
+
         internal Task<object> EvalMany(string selector, Func<object> pageFunction, object[] args)
         {
             throw new NotImplementedException();
@@ -314,6 +315,20 @@ namespace PuppeteerSharp
             }, selector, options.Visible, options.Hidden);
             return handle.AsElement();
         }
+
+        internal Task<string[]> SelectAsync(string selector, params string[] values)
+            => QuerySelectorAsync(selector).EvaluateFunctionAsync<string[]>(@"(element, values) => {
+                if (element.nodeName.toLowerCase() !== 'select')
+                    throw new Error('Element is not a <select> element.');
+
+                const options = Array.from(element.options);
+                element.value = undefined;
+                for (const option of options)
+                    option.selected = values.includes(option.value);
+                element.dispatchEvent(new Event('input', { 'bubbles': true }));
+                element.dispatchEvent(new Event('change', { 'bubbles': true }));
+                return options.filter(option => option.selected).map(option => option.value);
+            }", new[] { values });
 
         #endregion
 
