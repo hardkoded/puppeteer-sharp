@@ -180,6 +180,9 @@ namespace PuppeteerSharp
         public async Task<ElementHandle[]> QuerySelectorAllAsync(string selector)
             => await MainFrame.QuerySelectorAllAsync(selector);
 
+        public Task<ElementHandle[]> XPathAsync(string selector)
+            => MainFrame.XPathAsync(selector);
+
         /// <summary>
         /// Executes a script in browser context
         /// </summary>
