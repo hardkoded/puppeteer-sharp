@@ -20,19 +20,25 @@ namespace PuppeteerSharp
         public bool Disposed { get; set; }
         public dynamic RemoteObject { get; internal set; }
 
-        public async Task<Dictionary<string, object>> GetProperty(string propertyName)
+        public Task<Dictionary<string, object>> GetProperty(string propertyName)
         {
-            dynamic response = await _client.SendAsync("Runtime.getProperties", new Dictionary<string, object>()
+            throw new System.NotImplementedException();
+        }
+
+        public async Task<Dictionary<string, JSHandle>> GetPropertiesAsync()
+        {
+            var response = await _client.SendAsync("Runtime.getProperties", new
             {
-                {"objectId", RemoteObject.ObjectId},
-                {"ownProperties", true}
+                objectId = RemoteObject.objectId.ToString(),
+                ownProperties = true
             });
-            var result = new Dictionary<string, object>();
-            foreach (var property in response.result)
+            var result = new Dictionary<string, JSHandle>();
+            foreach(var property in response.result)
             {
+                if (property.enumerable == null)
+                    continue;
                 result.Add(property.name.ToString(), _context.ObjectHandleFactory(property.value));
             }
-
             return result;
         }
 

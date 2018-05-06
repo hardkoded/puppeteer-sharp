@@ -139,9 +139,11 @@ namespace PuppeteerSharp
             throw new NotImplementedException();
         }
 
-        internal Task<IEnumerable<ElementHandle>> GetElementsAsync(string selector)
+        internal async Task<ElementHandle[]> QuerySelectorAllAsync(string selector)
         {
-            throw new NotImplementedException();
+            var document = await GetDocument();
+            var value = await document.QuerySelectorAllAsync(selector);
+            return value;
         }
 
         internal Task<ElementHandle> AddStyleTag(dynamic options)
