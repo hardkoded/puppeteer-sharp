@@ -172,8 +172,13 @@ namespace PuppeteerSharp
         public async Task<ElementHandle> QuerySelectorAsync(string selector)
             => await MainFrame.QuerySelectorAsync(selector);
 
-        public async Task<IEnumerable<ElementHandle>> GetElementsAsync(string selector)
-            => await MainFrame.GetElementsAsync(selector);
+        /// <summary>
+        /// Runs <c>document.querySelectorAll</c> within the page. If no elements match the selector, the return value resolve to <see cref="Array.Empty{T}"/>.
+        /// </summary>
+        /// <param name="selector">A selector to query page for</param>
+        /// <returns>Task which resolves to ElementHandles pointing to the frame elements</returns>
+        public async Task<ElementHandle[]> QuerySelectorAllAsync(string selector)
+            => await MainFrame.QuerySelectorAllAsync(selector);
 
         /// <summary>
         /// Executes a script in browser context
@@ -237,12 +242,6 @@ namespace PuppeteerSharp
             var context = await MainFrame.GetExecutionContextAsync();
             return await context.QueryObjects(prototypeHandle);
         }
-
-        public async Task<object> EvalAsync(string selector, Func<object> pageFunction, params object[] args)
-            => await MainFrame.Eval(selector, pageFunction, args);
-
-        public async Task<object> EvalAsync(string selector, string pageFunction, params object[] args)
-            => await MainFrame.Eval(selector, pageFunction, args);
 
         public async Task SetRequestInterceptionAsync(bool value)
             => await _networkManager.SetRequestInterceptionAsync(value);

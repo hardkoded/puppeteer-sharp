@@ -108,5 +108,18 @@ namespace PuppeteerSharp.Tests.Page
             var window = await Page.EvaluateFunctionAsync("() => window");
             Assert.Null(window);
         }
+
+        [Fact]
+        public async Task ShouldWorkFromInsideAnExposedFunction()
+        {
+            await Page.ExposeFunctionAsync("callController", async (int a, int b) =>
+            {
+                return await Page.EvaluateFunctionAsync("(a, b) => a * b", a, b);
+            });
+            var result = await Page.EvaluateFunctionAsync<int>(@"async function() {
+                return await callController(9, 3);
+            }");
+            Assert.Equal(27, result);
+        }
     }
 }

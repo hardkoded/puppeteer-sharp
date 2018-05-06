@@ -11,8 +11,6 @@ namespace PuppeteerSharp
     {
         private Session _client;
         private Page _page;
-        private string _defaultContextId = "<not-initialized>";
-        private object _context = null;
         private string _url = string.Empty;
         private TaskCompletionSource<ElementHandle> _documentCompletionSource;
 
@@ -135,17 +133,7 @@ namespace PuppeteerSharp
             var value = await document.QuerySelectorAsync(selector);
             return value;
         }
-
-        internal Task<object> Eval(string selector, Func<object> pageFunction, object[] args)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal Task<object> Eval(string selector, string pageFunction, object[] args)
-        {
-            throw new NotImplementedException();
-        }
-
+        
         internal Task<object> EvalMany(string selector, Func<object> pageFunction, object[] args)
         {
             throw new NotImplementedException();
@@ -156,9 +144,11 @@ namespace PuppeteerSharp
             throw new NotImplementedException();
         }
 
-        internal Task<IEnumerable<ElementHandle>> GetElementsAsync(string selector)
+        internal async Task<ElementHandle[]> QuerySelectorAllAsync(string selector)
         {
-            throw new NotImplementedException();
+            var document = await GetDocument();
+            var value = await document.QuerySelectorAllAsync(selector);
+            return value;
         }
 
         internal Task<ElementHandle> AddStyleTag(dynamic options)
