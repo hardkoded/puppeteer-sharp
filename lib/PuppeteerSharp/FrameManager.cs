@@ -10,8 +10,6 @@ namespace PuppeteerSharp
     public class FrameManager
     {
         private Session _client;
-        private Mouse _mouse;
-        private Touchscreen _touchscreen;
         private Page _page;
         private Dictionary<int, ExecutionContext> _contextIdToContext;
 

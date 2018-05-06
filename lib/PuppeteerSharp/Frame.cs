@@ -11,8 +11,6 @@ namespace PuppeteerSharp
     {
         private Session _client;
         private Page _page;
-        private string _defaultContextId = "<not-initialized>";
-        private object _context = null;
         private string _url = string.Empty;
         private TaskCompletionSource<ElementHandle> _documentCompletionSource;
 
