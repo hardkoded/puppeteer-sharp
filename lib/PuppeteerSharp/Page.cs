@@ -169,16 +169,24 @@ namespace PuppeteerSharp
         /// <remarks>
         /// Shortcut for <c>page.MainFrame.QuerySelectorAsync(selector)</c>
         /// </remarks>
-        public async Task<ElementHandle> QuerySelectorAsync(string selector)
-            => await MainFrame.QuerySelectorAsync(selector);
+        public Task<ElementHandle> QuerySelectorAsync(string selector)
+            => MainFrame.QuerySelectorAsync(selector);
 
         /// <summary>
         /// Runs <c>document.querySelectorAll</c> within the page. If no elements match the selector, the return value resolve to <see cref="Array.Empty{T}"/>.
         /// </summary>
         /// <param name="selector">A selector to query page for</param>
         /// <returns>Task which resolves to ElementHandles pointing to the frame elements</returns>
-        public async Task<ElementHandle[]> QuerySelectorAllAsync(string selector)
-            => await MainFrame.QuerySelectorAllAsync(selector);
+        public Task<ElementHandle[]> QuerySelectorAllAsync(string selector)
+            => MainFrame.QuerySelectorAllAsync(selector);
+
+        /// <summary>
+        /// A utility function to based used with <see cref="Extensions.EvaluateFunctionAsync{T}(Task{JSHandle}, string, object[])"/>
+        /// </summary>
+        /// <param name="selector">A selector to query page for</param>
+        /// <returns>Task which resolves to a <see cref="JSHandle"/> of <c>document.querySelectorAll</c> result</returns>
+        public Task<JSHandle> QuerySelectorAllHandleAsync(string selector)
+            => EvaluateFunctionHandleAsync("selector => Array.from(document.querySelectorAll(selector))", selector);
 
         /// <summary>
         /// Executes a script in browser context
