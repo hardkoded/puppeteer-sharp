@@ -768,6 +768,20 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
+        /// Triggers a change and input event once all the provided options have been selected. 
+        /// If there's no <select> element matching selector, the method throws an error.
+        /// </summary>
+        /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
+        /// <returns>Returns an array of option values that have been successfully selected.</returns>
+        /// <param name="selector">A selector to query page for</param>
+        /// <param name="args">Values of options to select. If the <select> has the multiple attribute, 
+        /// all values are considered, otherwise only the first one is taken into account.</param>
+        public Task<string[]> SelectAsync(string selector, params object[] args)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
         /// Sends a <c>keydown</c>, <c>keypress</c>/<c>input</c>, and <c>keyup</c> event for each character in the text.
         /// </summary>
         /// <param name="selector">A selector of an element to type into. If there are multiple elements satisfying the selector, the first will be used.</param>
