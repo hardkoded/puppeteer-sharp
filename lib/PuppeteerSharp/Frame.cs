@@ -128,17 +128,7 @@ namespace PuppeteerSharp
             var value = await document.GetElementAsync(selector);
             return value;
         }
-
-        internal Task<object> Eval(string selector, Func<object> pageFunction, object[] args)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal Task<object> Eval(string selector, string pageFunction, object[] args)
-        {
-            throw new NotImplementedException();
-        }
-
+        
         internal Task<object> EvalMany(string selector, Func<object> pageFunction, object[] args)
         {
             throw new NotImplementedException();
