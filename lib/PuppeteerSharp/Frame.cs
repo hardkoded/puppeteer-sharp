@@ -316,9 +316,8 @@ namespace PuppeteerSharp
             return handle.AsElement();
         }
 
-        internal async Task<string[]> SelectAsync(string selector, object[] args)
-        {
-            return await QuerySelectorAsync(selector).EvaluateFunctionAsync<string[]>(@"(element, values) => {
+        internal Task<string[]> SelectAsync(string selector, params string[] values)
+            => QuerySelectorAsync(selector).EvaluateFunctionAsync<string[]>(@"(element, values) => {
                 if (element.nodeName.toLowerCase() !== 'select')
                     throw new Error('Element is not a <select> element.');
 
@@ -329,8 +328,7 @@ namespace PuppeteerSharp
                 element.dispatchEvent(new Event('input', { 'bubbles': true }));
                 element.dispatchEvent(new Event('change', { 'bubbles': true }));
                 return options.filter(option => option.selected).map(option => option.value);
-            }", args.Select(i => i.ToString()));
-        }
+            }", new[] { values });
 
         #endregion
 

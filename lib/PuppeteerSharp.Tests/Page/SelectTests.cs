@@ -81,6 +81,17 @@ namespace PuppeteerSharp.Tests.Page
         public async Task ShouldDeselectAllOptionsWhenPassedNoValuesForAMultipleSelect()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
+            await Page.EvaluateExpressionAsync("makeMultiple()");
+            await Page.SelectAsync("select", "blue", "black", "magenta");
+            await Page.SelectAsync("select");
+            Assert.True(await Page.QuerySelectorAsync("select").EvaluateFunctionAsync<bool>(
+                "select => Array.from(select.options).every(option => !option.selected)"));
+        }
+
+        [Fact]
+        public async Task ShouldDeselectAllOptionsWhenPassedNoValuesForASelectWithoutMultiple()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
             await Page.SelectAsync("select", "blue", "black", "magenta");
             await Page.SelectAsync("select");
             Assert.True(await Page.QuerySelectorAsync("select").EvaluateFunctionAsync<bool>(
