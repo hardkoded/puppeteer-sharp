@@ -37,7 +37,7 @@ namespace PuppeteerSharp.Tests.Target
             var allPages = await Browser.PagesAsync();
             var originalPage = allPages.First(p => p != Page);
             Assert.Equal("Hello world", await originalPage.EvaluateExpressionAsync<string>("['Hello', 'world'].join(' ')"));
-            Assert.NotNull(await originalPage.GetElementAsync("body"));
+            Assert.NotNull(await originalPage.QuerySelectorAsync("body"));
         }
 
         [Fact]
@@ -55,7 +55,7 @@ namespace PuppeteerSharp.Tests.Target
             Assert.Contains(TestConstants.CrossProcessUrl, otherPage.Url);
 
             Assert.Equal("Hello world", await otherPage.EvaluateExpressionAsync<string>("['Hello', 'world'].join(' ')"));
-            Assert.NotNull(await otherPage.GetElementAsync("body"));
+            Assert.NotNull(await otherPage.QuerySelectorAsync("body"));
 
             var allPages = await Browser.PagesAsync();
             Assert.Contains(Page, allPages);

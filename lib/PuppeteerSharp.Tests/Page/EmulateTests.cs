@@ -21,7 +21,7 @@ namespace PuppeteerSharp.Tests.Page
         {
             await Page.EmulateAsync(TestConstants.IPhone);
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
-            var button = await Page.GetElementAsync("button");
+            var button = await Page.QuerySelectorAsync("button");
             await Page.EvaluateFunctionAsync("button => button.style.marginTop = '200px'", button);
             await button.ClickAsync();
             Assert.Equal("Clicked", await Page.EvaluateExpressionAsync<string>("result"));

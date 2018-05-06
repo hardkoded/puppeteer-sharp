@@ -112,7 +112,7 @@ namespace PuppeteerSharp
             await Page.Keyboard.PressAsync(key, options);
         }
 
-        internal async Task<ElementHandle> GetElementAsync(string selector)
+        internal async Task<ElementHandle> QuerySelectorAsync(string selector)
         {
             var handle = await ExecutionContext.EvaluateFunctionHandleAsync(
                 "(element, selector) => element.querySelector(selector)",
