@@ -332,9 +332,9 @@ namespace PuppeteerSharp
         /// Shortcut for <c>page.MainFrame.AddScriptTagAsync(options)</c>
         /// </remarks>
         /// <returns>Task which resolves to the added tag when the script's onload fires or when the script content was injected into frame</returns>
-        public Task<ElementHandle> AddScriptTagAsync(AddScriptTagOptions options) => MainFrame.AddScriptTag(options);
+        public Task<ElementHandle> AddScriptTagAsync(AddTagOptions options) => MainFrame.AddScriptTag(options);
 
-        public async Task<ElementHandle> AddStyleTagAsync(dynamic options) => await MainFrame.AddStyleTag(options);
+        public Task<ElementHandle> AddStyleTagAsync(AddTagOptions options) => MainFrame.AddStyleTag(options);
 
         /// <summary>
         /// Adds a function called <c>name</c> on the page's <c>window</c> object.
