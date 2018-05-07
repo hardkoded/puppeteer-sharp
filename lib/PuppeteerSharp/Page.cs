@@ -334,6 +334,14 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to the added tag when the script's onload fires or when the script content was injected into frame</returns>
         public Task<ElementHandle> AddScriptTagAsync(AddTagOptions options) => MainFrame.AddScriptTag(options);
 
+        /// <summary>
+        /// Adds a <c><link rel="stylesheet"></c> tag into the page with the desired url or a <c><style type="text/css"></c> tag with the content
+        /// </summary>
+        /// <param name="options">add style tag options</param>
+        /// <remarks>
+        /// Shortcut for <c>page.MainFrame.AddStyleTagAsync(options)</c>
+        /// </remarks>
+        /// <returns>Task which resolves to the added tag when the stylesheet's onload fires or when the CSS content was injected into frame</returns>
         public Task<ElementHandle> AddStyleTagAsync(AddTagOptions options) => MainFrame.AddStyleTag(options);
 
         /// <summary>
@@ -452,7 +460,7 @@ namespace PuppeteerSharp
                 client.SendAsync("Security.enable", null),
                 client.SendAsync("Performance.enable", null)
             );
-
+            
             if (ignoreHTTPSErrors)
             {
                 await client.SendAsync("Security.setOverrideCertificateErrors", new Dictionary<string, object>
@@ -489,7 +497,7 @@ namespace PuppeteerSharp
                     requests.Add(e.Request.Url, e.Request);
                 }
             };
-
+            
             _networkManager.RequestCreated += createRequestEventListener;
 
             var mainFrame = _frameManager.MainFrame;
