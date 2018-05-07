@@ -108,21 +108,7 @@ namespace PuppeteerSharp.Tests.Page
             var window = await Page.EvaluateFunctionAsync("() => window");
             Assert.Null(window);
         }
-
-        [Fact]
-        public async Task ShouldAcceptAStringWithSemiColons()
-        {
-            var result = await Page.EvaluateExpressionAsync("1 + 5;");
-            Assert.Equal(6, result);
-        }
-
-        [Fact]
-        public async Task ShouldAcceptAStringWithComments()
-        {
-            var result = await Page.EvaluateExpressionAsync("2 + 5;\n// do some math!");
-            Assert.Equal(7, result);
-        }
-
+        
         [Fact]
         public async Task ShouldAcceptElementHandleAsAnArgument()
         {
