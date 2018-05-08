@@ -61,8 +61,6 @@ namespace PuppeteerSharp
             return (T)Helper.ValueFromRemoteObject<T>(RemoteObject);
         }
 
-        public virtual ElementHandle AsElement() => this as ElementHandle;
-
         public async Task DisposeAsync()
         {
             if (Disposed)

@@ -16,8 +16,6 @@ namespace PuppeteerSharp
             Page = page;
         }
 
-        public override ElementHandle AsElement() => this;
-
         /// <summary>
         /// Scrolls element into view if needed, and then uses <see cref="Page.Mouse"/> to hover over the center of the element.
         /// </summary>
@@ -118,7 +116,7 @@ namespace PuppeteerSharp
                 "(element, selector) => element.querySelector(selector)",
                 this, selector);
 
-            var element = handle.AsElement();
+            var element = handle as ElementHandle;
             if (element != null)
             {
                 return element;

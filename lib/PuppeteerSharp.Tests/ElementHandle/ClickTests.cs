@@ -20,7 +20,7 @@ namespace PuppeteerSharp.Tests.ElementHandle
         public async Task ShouldWorkForShadowDomV1()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/shadow.html");
-            var buttonHandle = (await Page.EvaluateExpressionHandleAsync("button")).AsElement();
+            var buttonHandle = (await Page.EvaluateExpressionHandleAsync("button")) as PuppeteerSharp.ElementHandle;
             await buttonHandle.ClickAsync();
             Assert.True(await Page.EvaluateExpressionAsync<bool>("clicked"));
         }
