@@ -86,17 +86,17 @@ namespace PuppeteerSharp
             return Helper.ValueFromRemoteObject<object>(RemoteObject)?.ToString();
         }
 
-        internal object FormatArgument()
+        internal object FormatArgument(ExecutionContext context)
         {
-            if (objectHandle.ExecutionContext != this)
+            if (ExecutionContext != context)
                 throw new PuppeteerException("JSHandles can be evaluated only in the context they were created!");
-            if (objectHandle.Disposed)
+            if (Disposed)
                 throw new PuppeteerException("JSHandle is disposed!");
-            if (objectHandle.RemoteObject.unserializableValue != null)
-                return new { objectHandle.RemoteObject.unserializableValue };
-            if (objectHandle.RemoteObject.objectId == null)
-                return new { objectHandle.RemoteObject.value };
-            return new { objectHandle.RemoteObject.objectId };
+            if (RemoteObject.unserializableValue != null)
+                return new { RemoteObject.unserializableValue };
+            if (RemoteObject.objectId == null)
+                return new { RemoteObject.value };
+            return new { RemoteObject.objectId };
         }
     }
 }

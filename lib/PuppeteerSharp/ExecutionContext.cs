@@ -160,7 +160,7 @@ namespace PuppeteerSharp
                     break;
 
                 case JSHandle objectHandle:
-                    return objectHandle.FormatArgument();
+                    return objectHandle.FormatArgument(this);
             }
             return new { value = arg };
         }
