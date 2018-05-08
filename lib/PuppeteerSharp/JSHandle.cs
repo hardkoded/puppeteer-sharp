@@ -20,9 +20,22 @@ namespace PuppeteerSharp
         public bool Disposed { get; set; }
         public dynamic RemoteObject { get; internal set; }
 
-        public Task<Dictionary<string, object>> GetProperty(string propertyName)
+        /// <summary>
+        /// Fetches a single property from the referenced object
+        /// </summary>
+        /// <param name="propertyName">property to get</param>
+        /// <returns>Task of <see cref="JSHandle"/></returns>
+        public async Task<JSHandle> GetPropertyAsync(string propertyName)
         {
-            throw new System.NotImplementedException();
+            var objectHandle = await ExecutionContext.EvaluateFunctionHandleAsync(@"(object, propertyName) => {
+              const result = { __proto__: null};
+              result[propertyName] = object[propertyName];
+              return result;
+            }", this, propertyName);
+            var properties = await objectHandle.GetPropertiesAsync();
+            properties.TryGetValue(propertyName, out var result);
+            await objectHandle.DisposeAsync();
+            return result;
         }
 
         public async Task<Dictionary<string, JSHandle>> GetPropertiesAsync()
@@ -33,7 +46,7 @@ namespace PuppeteerSharp
                 ownProperties = true
             });
             var result = new Dictionary<string, JSHandle>();
-            foreach(var property in response.result)
+            foreach (var property in response.result)
             {
                 if (property.enumerable == null)
                     continue;
@@ -82,7 +95,7 @@ namespace PuppeteerSharp
                 return "JSHandle@" + type;
             }
 
-            return Helper.ValueFromRemoteObject<object>(RemoteObject)?.ToString();
+            return "JSHandle:" + Helper.ValueFromRemoteObject<object>(RemoteObject)?.ToString();
         }
     }
 }
