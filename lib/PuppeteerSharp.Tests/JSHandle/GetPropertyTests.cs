@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Tests.JSHandle
               three: 3
             })");
             var twoHandle = await aHandle.GetPropertyAsync("two");
-            Assert.Equal(2, await twoHandle.JsonValue<int>());
+            Assert.Equal(2, await twoHandle.JsonValueAsync<int>());
         }
     }
 }

@@ -56,7 +56,7 @@ namespace PuppeteerSharp.Tests.Frame
         [Fact]
         public async Task ShouldReturnTheSuccessValueAsAJSHandle()
         {
-            Assert.Equal(5, await (await Page.WaitForFunctionAsync("() => 5")).JsonValue<int>());
+            Assert.Equal(5, await (await Page.WaitForFunctionAsync("() => 5")).JsonValueAsync<int>());
         }
 
         [Fact]
