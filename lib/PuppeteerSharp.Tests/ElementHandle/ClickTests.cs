@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Xunit;
 
-namespace PuppeteerSharp.Tests.Page
+namespace PuppeteerSharp.Tests.ElementHandle
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class ClickTests : PuppeteerPageBaseTest
@@ -20,9 +20,9 @@ namespace PuppeteerSharp.Tests.Page
         public async Task ShouldWorkForShadowDomV1()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/shadow.html");
-            var buttonHandle = (await Page.EvaluateFunctionHandleAsync("button")).AsElement();
+            var buttonHandle = (await Page.EvaluateExpressionHandleAsync("button")).AsElement();
             await buttonHandle.ClickAsync();
-            Assert.True(await Page.EvaluateFunctionAsync<bool>("clicked"));
+            Assert.True(await Page.EvaluateExpressionAsync<bool>("clicked"));
         }
     }
 }
