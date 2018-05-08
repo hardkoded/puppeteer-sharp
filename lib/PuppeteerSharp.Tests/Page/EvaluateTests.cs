@@ -96,17 +96,64 @@ namespace PuppeteerSharp.Tests.Page
         }
 
         [Fact]
-        public async Task EvaluateExpressionBigObject()
+        public async Task ShouldFailForWindowObjectUsingEvaluateExpression()
         {
             var window = await Page.EvaluateExpressionAsync("window");
             Assert.Null(window);
         }
 
         [Fact]
-        public async Task EvaluateFunctionBigObject()
+        public async Task ShouldFailForWindowObjectUsingEvaluateFunction()
         {
             var window = await Page.EvaluateFunctionAsync("() => window");
             Assert.Null(window);
+        }
+        
+        [Fact]
+        public async Task ShouldAcceptElementHandleAsAnArgument()
+        {
+            await Page.SetContentAsync("<section>42</section>");
+            var element = await Page.QuerySelectorAsync("section");
+            var text = await Page.EvaluateFunctionAsync<string>("e => e.textContent", element);
+            Assert.Equal("42", text);
+        }
+
+        [Fact]
+        public async Task ShouldThrowIfUnderlyingElementWasDisposed()
+        {
+            await Page.SetContentAsync("<section>39</section>");
+            var element = await Page.QuerySelectorAsync("section");
+            Assert.NotNull(element);
+            await element.DisposeAsync();
+            var exception = await Assert.ThrowsAsync<PuppeteerException>(()
+                => Page.EvaluateFunctionAsync<string>("e => e.textContent", element));
+            Assert.Contains("JSHandle is disposed", exception.Message);
+        }
+
+        [Fact]
+        public async Task ShouldThrowIfElementHandlesAreFromOtherFrames()
+        {
+            await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
+            var bodyHandle = await Page.Frames[1].QuerySelectorAsync("body");
+            var exception = await Assert.ThrowsAsync<PuppeteerException>(()
+                => Page.EvaluateFunctionAsync<string>("body => body.innerHTML", bodyHandle));
+            Assert.Contains("JSHandles can be evaluated only in the context they were created", exception.Message);
+        }
+
+        [Fact]
+        public async Task ShouldAcceptObjectHandleAsAnArgument()
+        {
+            var navigatorHandle = await Page.EvaluateExpressionHandleAsync("navigator");
+            var text = await Page.EvaluateFunctionAsync<string>("e => e.userAgent", navigatorHandle);
+            Assert.Contains("Mozilla", text);
+        }
+
+        [Fact]
+        public async Task ShouldAcceptObjectHandleToPrimitiveTypes()
+        {
+            var aHandle = await Page.EvaluateExpressionHandleAsync("5");
+            var isFive = await Page.EvaluateFunctionAsync<bool>("e => Object.is(e, 5)", aHandle);
+            Assert.True(isFive);
         }
 
         [Fact]
