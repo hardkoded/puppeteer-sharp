@@ -159,12 +159,59 @@ namespace PuppeteerSharp
             return value;
         }
 
-        internal Task<ElementHandle> AddStyleTag(dynamic options)
+        internal async Task<ElementHandle> AddStyleTag(AddTagOptions options)
         {
-            throw new NotImplementedException();
+            const string addStyleUrl = @"async function addStyleUrl(url) {
+              const link = document.createElement('link');
+              link.rel = 'stylesheet';
+              link.href = url;
+              document.head.appendChild(link);
+              await new Promise((res, rej) => {
+                link.onload = res;
+                link.onerror = rej;
+              });
+              return link;
+            }";
+            const string addStyleContent = @"function addStyleContent(content) {
+              const style = document.createElement('style');
+              style.type = 'text/css';
+              style.appendChild(document.createTextNode(content));
+              document.head.appendChild(style);
+              return style;
+            }";
+
+            if (!string.IsNullOrEmpty(options.Url))
+            {
+                var url = options.Url;
+                try
+                {
+                    var context = await GetExecutionContextAsync();
+                    return (await context.EvaluateFunctionHandleAsync(addStyleUrl, url)).AsElement();
+                }
+                catch (PuppeteerException)
+                {
+                    throw new PuppeteerException($"Loading style from {url} failed");
+                }
+            }
+
+            if (!string.IsNullOrEmpty(options.Path))
+            {
+                var contents = File.ReadAllText(options.Path, Encoding.UTF8);
+                contents += "//# sourceURL=" + options.Path.Replace("\n", string.Empty);
+                var context = await GetExecutionContextAsync();
+                return (await context.EvaluateFunctionHandleAsync(addStyleContent, contents)).AsElement();
+            }
+
+            if (!string.IsNullOrEmpty(options.Content))
+            {
+                var context = await GetExecutionContextAsync();
+                return (await context.EvaluateFunctionHandleAsync(addStyleContent, options.Content)).AsElement();
+            }
+
+            throw new ArgumentException("Provide options with a `Url`, `Path` or `Content` property");
         }
 
-        internal async Task<ElementHandle> AddScriptTag(AddScriptTagOptions options)
+        internal async Task<ElementHandle> AddScriptTag(AddTagOptions options)
         {
             const string addScriptUrl = @"async function addScriptUrl(url) {
               const script = document.createElement('script');
