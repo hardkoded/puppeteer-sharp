@@ -33,7 +33,7 @@ namespace PuppeteerSharp
                 ownProperties = true
             });
             var result = new Dictionary<string, JSHandle>();
-            foreach(var property in response.result)
+            foreach (var property in response.result)
             {
                 if (property.enumerable == null)
                     continue;
@@ -61,7 +61,7 @@ namespace PuppeteerSharp
             return (T)Helper.ValueFromRemoteObject<T>(RemoteObject);
         }
 
-        public virtual ElementHandle AsElement() => null;
+        public virtual ElementHandle AsElement() => this as ElementHandle;
 
         public async Task DisposeAsync()
         {
