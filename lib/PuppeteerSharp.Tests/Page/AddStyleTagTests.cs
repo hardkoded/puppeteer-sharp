@@ -22,7 +22,8 @@ namespace PuppeteerSharp.Tests.Page
             await Page.GoToAsync(TestConstants.EmptyPage);
             var styleHandle = await Page.AddStyleTagAsync(new AddTagOptions { Url = "/injectedstyle.css" });
             Assert.NotNull(styleHandle.AsElement());
-            Assert.Equal("rgb(255, 0, 0)", await Page.EvaluateExpressionAsync("window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')"));
+            Assert.Equal("rgb(255, 0, 0)", await Page.EvaluateExpressionAsync(
+                "window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')"));
         }
 
         [Fact]
@@ -40,14 +41,18 @@ namespace PuppeteerSharp.Tests.Page
             await Page.GoToAsync(TestConstants.EmptyPage);
             var styleHandle = await Page.AddStyleTagAsync(new AddTagOptions { Path = "assets/injectedstyle.css" });
             Assert.NotNull(styleHandle.AsElement());
-            Assert.Equal("rgb(255, 0, 0)", await Page.EvaluateExpressionAsync("window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')"));
+            Assert.Equal("rgb(255, 0, 0)", await Page.EvaluateExpressionAsync(
+                "window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')"));
         }
 
         [Fact]
         public async Task ShouldIncludeSourcemapWhenPathIsProvided()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            await Page.AddStyleTagAsync(new AddTagOptions { Path = Path.Combine(Directory.GetCurrentDirectory(), Path.Combine("assets", "injectedstyle.css")) });
+            await Page.AddStyleTagAsync(new AddTagOptions
+            {
+                Path = Path.Combine(Directory.GetCurrentDirectory(), Path.Combine("assets", "injectedstyle.css"))
+            });
             var styleHandle = await Page.QuerySelectorAsync("style");
             var styleContent = await Page.EvaluateFunctionAsync<string>("style => style.innerHTML", styleHandle);
             Assert.Contains(Path.Combine("assets", "injectedstyle.css"), styleContent);
@@ -59,7 +64,8 @@ namespace PuppeteerSharp.Tests.Page
             await Page.GoToAsync(TestConstants.EmptyPage);
             var styleHandle = await Page.AddStyleTagAsync(new AddTagOptions { Content = "body { background-color: green; }" });
             Assert.NotNull(styleHandle.AsElement());
-            Assert.Equal("rgb(0, 128, 0)", await Page.EvaluateExpressionAsync("window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')"));
+            Assert.Equal("rgb(0, 128, 0)", await Page.EvaluateExpressionAsync(
+                "window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')"));
         }
     }
 }

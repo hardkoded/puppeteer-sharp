@@ -335,6 +335,16 @@ namespace PuppeteerSharp
         public Task<ElementHandle> AddScriptTagAsync(AddTagOptions options) => MainFrame.AddScriptTag(options);
 
         /// <summary>
+        /// Adds a <c><script></c> tag into the page with the desired url or content
+        /// </summary>
+        /// <param name="url">script url</param>
+        /// <remarks>
+        /// Shortcut for <c>page.MainFrame.AddScriptTagAsync(new AddTagOptions { Url = url })</c>
+        /// </remarks>
+        /// <returns>Task which resolves to the added tag when the script's onload fires or when the script content was injected into frame</returns>
+        public Task<ElementHandle> AddScriptTagAsync(string url) => AddScriptTagAsync(new AddTagOptions { Url = url });
+
+        /// <summary>
         /// Adds a <c><link rel="stylesheet"></c> tag into the page with the desired url or a <c><style type="text/css"></c> tag with the content
         /// </summary>
         /// <param name="options">add style tag options</param>
@@ -343,6 +353,16 @@ namespace PuppeteerSharp
         /// </remarks>
         /// <returns>Task which resolves to the added tag when the stylesheet's onload fires or when the CSS content was injected into frame</returns>
         public Task<ElementHandle> AddStyleTagAsync(AddTagOptions options) => MainFrame.AddStyleTag(options);
+
+        /// <summary>
+        /// Adds a <c><link rel="stylesheet"></c> tag into the page with the desired url or a <c><style type="text/css"></c> tag with the content
+        /// </summary>
+        /// <param name="url">stylesheel url</param>
+        /// <remarks>
+        /// Shortcut for <c>page.MainFrame.AddStyleTagAsync(new AddTagOptions { Url = url })</c>
+        /// </remarks>
+        /// <returns>Task which resolves to the added tag when the stylesheet's onload fires or when the CSS content was injected into frame</returns>
+        public Task<ElementHandle> AddStyleTagAsync(string url) => AddStyleTagAsync(new AddTagOptions { Url = url });
 
         /// <summary>
         /// Adds a function called <c>name</c> on the page's <c>window</c> object.
