@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -124,6 +125,19 @@ namespace PuppeteerSharp
             }
 
             return "JSHandle:" + Helper.ValueFromRemoteObject<object>(RemoteObject)?.ToString();
+        }
+
+        internal object FormatArgument(ExecutionContext context)
+        {
+            if (ExecutionContext != context)
+                throw new PuppeteerException("JSHandles can be evaluated only in the context they were created!");
+            if (Disposed)
+                throw new PuppeteerException("JSHandle is disposed!");
+            if (RemoteObject.unserializableValue != null)
+                return new { RemoteObject.unserializableValue };
+            if (RemoteObject.objectId == null)
+                return new { RemoteObject.value };
+            return new { RemoteObject.objectId };
         }
     }
 }
