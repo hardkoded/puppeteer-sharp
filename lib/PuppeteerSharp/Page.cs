@@ -783,7 +783,7 @@ namespace PuppeteerSharp
 
         public async Task<Response> ReloadAsync(NavigationOptions options = null)
         {
-            var navigationTask = WaitForNavigation(options);
+            var navigationTask = WaitForNavigationAsync(options);
 
             await Task.WhenAll(
               navigationTask,
@@ -868,26 +868,7 @@ namespace PuppeteerSharp
         public Task<ElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
             => MainFrame.WaitForSelectorAsync(selector, options ?? new WaitForSelectorOptions());
 
-        #endregion
-
-        #region Private Method
-
-        private Dictionary<string, decimal> BuildMetricsObject(List<Metric> metrics)
-        {
-            var result = new Dictionary<string, decimal>();
-
-            foreach (var item in metrics)
-            {
-                if (SupportedMetrics.Contains(item.Name))
-                {
-                    result.Add(item.Name, item.Value);
-                }
-            }
-
-            return result;
-        }
-
-        private async Task<Response> WaitForNavigation(NavigationOptions options = null)
+        public async Task<Response> WaitForNavigationAsync(NavigationOptions options = null)
         {
             var mainFrame = _frameManager.MainFrame;
             var timeout = options?.Timeout ?? DefaultNavigationTimeout;
@@ -910,6 +891,25 @@ namespace PuppeteerSharp
             }
 
             return responses.GetValueOrDefault(_frameManager.MainFrame.Url);
+        }
+
+        #endregion
+
+        #region Private Method
+
+        private Dictionary<string, decimal> BuildMetricsObject(List<Metric> metrics)
+        {
+            var result = new Dictionary<string, decimal>();
+
+            foreach (var item in metrics)
+            {
+                if (SupportedMetrics.Contains(item.Name))
+                {
+                    result.Add(item.Name, item.Value);
+                }
+            }
+
+            return result;
         }
 
         private async Task<Stream> PerformScreenshot(string format, ScreenshotOptions options)
