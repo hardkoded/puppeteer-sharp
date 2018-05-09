@@ -173,51 +173,56 @@ namespace PuppeteerSharp
 
                 if (!string.IsNullOrEmpty(response))
                 {
-                    dynamic obj = JsonConvert.DeserializeObject(response);
-                    var objAsJObject = obj as JObject;
+                    ProcessResponse(response);
+                }
+            }
+        }
 
-                    if (objAsJObject["id"] != null)
+        private void ProcessResponse(string response)
+        {
+            dynamic obj = JsonConvert.DeserializeObject(response);
+            var objAsJObject = obj as JObject;
+
+            if (objAsJObject["id"] != null)
+            {
+                int id = (int)objAsJObject["id"];
+
+                //If we get the object we are waiting for we return if
+                //if not we add this to the list, sooner or later some one will come for it 
+                if (!_responses.ContainsKey(id))
+                {
+                    QueueId(id);
+                }
+
+                _responses[id].SetResult(obj.result);
+            }
+            else
+            {
+                if (obj.method == "Target.receivedMessageFromTarget")
+                {
+                    var session = _sessions.GetValueOrDefault(objAsJObject["params"]["sessionId"].ToString());
+                    if (session != null)
                     {
-                        int id = (int)objAsJObject["id"];
-
-                        //If we get the object we are waiting for we return if
-                        //if not we add this to the list, sooner or later some one will come for it 
-                        if (!_responses.ContainsKey(id))
-                        {
-                            QueueId(id);
-                        }
-
-                        _responses[id].SetResult(obj.result);
+                        session.OnMessage(objAsJObject["params"]["message"].ToString());
                     }
-                    else
+                }
+                else if (obj.method == "Target.detachedFromTarget")
+                {
+                    var session = _sessions.GetValueOrDefault(objAsJObject["params"]["sessionId"].ToString());
+                    if (session != null)
                     {
-                        if (obj.method == "Target.receivedMessageFromTarget")
-                        {
-                            var session = _sessions.GetValueOrDefault(objAsJObject["params"]["sessionId"].ToString());
-                            if (session != null)
-                            {
-                                session.OnMessage(objAsJObject["params"]["message"].ToString());
-                            }
-                        }
-                        else if (obj.method == "Target.detachedFromTarget")
-                        {
-                            var session = _sessions.GetValueOrDefault(objAsJObject["params"]["sessionId"].ToString());
-                            if (session != null)
-                            {
-                                session.Close();
-                            }
-
-                            _sessions.Remove(objAsJObject["params"]["sessionId"].ToString());
-                        }
-                        else
-                        {
-                            MessageReceived?.Invoke(this, new MessageEventArgs
-                            {
-                                MessageID = obj.method,
-                                MessageData = objAsJObject["params"] as dynamic
-                            });
-                        }
+                        session.Close();
                     }
+
+                    _sessions.Remove(objAsJObject["params"]["sessionId"].ToString());
+                }
+                else
+                {
+                    MessageReceived?.Invoke(this, new MessageEventArgs
+                    {
+                        MessageID = obj.method,
+                        MessageData = objAsJObject["params"] as dynamic
+                    });
                 }
             }
         }
