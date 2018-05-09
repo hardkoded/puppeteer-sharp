@@ -1165,7 +1165,6 @@ namespace PuppeteerSharp
                     {"eventId", e.MessageData.eventId },
                     {"action", "continue"}
                 });
-
             }
         }
 
@@ -1249,11 +1248,14 @@ namespace PuppeteerSharp
                 return;
             }
 
-            var handles = message.Args
+            var values = message.Args
                 .Select(_ => (JSHandle)_frameManager.CreateJsHandle(message.ExecutionContextId, _))
                 .ToList();
+            var handles = values
+                .ConvertAll(handle => handle.RemoteObject["objectId"] != null
+                ? handle.ToString() : Helper.ValueFromRemoteObject<object>(handle.RemoteObject));
 
-            var consoleMessage = new ConsoleMessage(message.Type, string.Join(" ", handles), handles);
+            var consoleMessage = new ConsoleMessage(message.Type, string.Join(" ", handles), values);
             Console?.Invoke(this, new ConsoleEventArgs(consoleMessage));
         }
 

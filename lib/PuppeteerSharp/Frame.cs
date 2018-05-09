@@ -279,7 +279,6 @@ namespace PuppeteerSharp
                 document.close();
             }", html);
 
-
         internal Task<string> GetTitleAsync() => EvaluateExpressionAsync<string>("document.title");
 
         internal void OnLifecycleEvent(string loaderId, string name)
