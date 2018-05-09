@@ -117,7 +117,7 @@ namespace PuppeteerSharp
         private async Task<T> EvaluateAsync<T>(Task<JSHandle> handleEvaluator)
         {
             var handle = await handleEvaluator;
-            var result = await handle.JsonValue<T>()
+            var result = await handle.JsonValueAsync<T>()
                 .ContinueWith(jsonTask => jsonTask.Exception != null ? default(T) : jsonTask.Result);
 
             await handle.DisposeAsync();
