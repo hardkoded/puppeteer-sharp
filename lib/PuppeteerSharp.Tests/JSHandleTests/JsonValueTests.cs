@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Xunit;
 
-namespace PuppeteerSharp.Tests.JSHandle
+namespace PuppeteerSharp.Tests.JSHandleTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class JsonValueTests : PuppeteerPageBaseTest
