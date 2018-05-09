@@ -868,6 +868,11 @@ namespace PuppeteerSharp
         public Task<ElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
             => MainFrame.WaitForSelectorAsync(selector, options ?? new WaitForSelectorOptions());
 
+        /// <summary>
+        /// Waits for navigation
+        /// </summary>
+        /// <param name="options">navigation options</param>
+        /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect</returns>
         public async Task<Response> WaitForNavigationAsync(NavigationOptions options = null)
         {
             var mainFrame = _frameManager.MainFrame;
