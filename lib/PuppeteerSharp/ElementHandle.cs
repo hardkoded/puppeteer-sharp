@@ -200,7 +200,7 @@ namespace PuppeteerSharp
                     objectId = RemoteObject.objectId.ToString()
                 });
             }
-            catch (Exception ex)
+            catch (PuppeteerException ex)
             {
                 Console.WriteLine(ex.Message);
             }
