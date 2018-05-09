@@ -480,7 +480,7 @@ namespace PuppeteerSharp
                 client.SendAsync("Security.enable", null),
                 client.SendAsync("Performance.enable", null)
             );
-            
+
             if (ignoreHTTPSErrors)
             {
                 await client.SendAsync("Security.setOverrideCertificateErrors", new Dictionary<string, object>
@@ -492,7 +492,7 @@ namespace PuppeteerSharp
             // Initialize default page size.
             if (!appMode)
             {
-                await page.SetViewport(new ViewPortOptions
+                await page.SetViewportAsync(new ViewPortOptions
                 {
                     Width = 800,
                     Height = 600
@@ -517,7 +517,7 @@ namespace PuppeteerSharp
                     requests.Add(e.Request.Url, e.Request);
                 }
             };
-            
+
             _networkManager.RequestCreated += createRequestEventListener;
 
             var mainFrame = _frameManager.MainFrame;
@@ -644,7 +644,14 @@ namespace PuppeteerSharp
         public async Task EmulateMediaAsync(MediaType media)
             => await Client.SendAsync("Emulation.setEmulatedMedia", new { media });
 
-        public async Task SetViewport(ViewPortOptions viewport)
+        /// <summary>
+        /// Sets the viewport.
+        /// In the case of multiple pages in a single browser, each page can have its own viewport size.
+        /// NOTE in certain cases, setting viewport will reload the page in order to set the isMobile or hasTouch properties.
+        /// </summary>
+        /// <returns>The viewport task.</returns>
+        /// <param name="viewport">Viewport options.</param>
+        public async Task SetViewportAsync(ViewPortOptions viewport)
         {
             var needsReload = await _emulationManager.EmulateViewport(Client, viewport);
             Viewport = viewport;
@@ -656,12 +663,27 @@ namespace PuppeteerSharp
         }
 
         public async Task EmulateAsync(DeviceDescriptor options) => await Task.WhenAll(
-            SetViewport(options.ViewPort),
+            SetViewportAsync(options.ViewPort),
             SetUserAgentAsync(options.UserAgent)
         );
 
+        /// <summary>
+        /// Takes a screenshot of the page
+        /// </summary>
+        /// <returns>The screenshot task.</returns>
+        /// <param name="file">The file path to save the image to. The screenshot type will be inferred from file extension. 
+        /// If path is a relative path, then it is resolved relative to current working directory. If no path is provided, 
+        /// the image won't be saved to the disk.</param>
         public async Task ScreenshotAsync(string file) => await ScreenshotAsync(file, new ScreenshotOptions());
 
+        /// <summary>
+        /// Takes a screenshot of the page
+        /// </summary>
+        /// <returns>The screenshot task.</returns>
+        /// <param name="file">The file path to save the image to. The screenshot type will be inferred from file extension. 
+        /// If path is a relative path, then it is resolved relative to current working directory. If no path is provided, 
+        /// the image won't be saved to the disk.</param>
+        /// <param name="options">Screenshot options.</param>
         public async Task ScreenshotAsync(string file, ScreenshotOptions options)
         {
             var fileInfo = new FileInfo(file);
@@ -677,8 +699,17 @@ namespace PuppeteerSharp
             }
         }
 
+        /// <summary>
+        /// Takes a screenshot of the page
+        /// </summary>
+        /// <returns>The screenshot task returning the image stream.</returns>
         public async Task<Stream> ScreenshotStreamAsync() => await ScreenshotStreamAsync(new ScreenshotOptions());
 
+        /// <summary>
+        /// Takes a screenshot of the page
+        /// </summary>
+        /// <returns>The screenshot task returning the image stream.</returns>
+        /// <param name="options">Screenshot options.</param>
         public async Task<Stream> ScreenshotStreamAsync(ScreenshotOptions options)
         {
             string screenshotType = null;
@@ -1031,7 +1062,7 @@ namespace PuppeteerSharp
 
             if (options != null && options.FullPage)
             {
-                await SetViewport(Viewport);
+                await SetViewportAsync(Viewport);
             }
 
             var buffer = Convert.FromBase64String(result.GetValue("data").Value<string>());

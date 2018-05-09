@@ -19,7 +19,7 @@ namespace PuppeteerSharp.Tests.Page
 
             using (var page = await Browser.NewPageAsync())
             {
-                await page.SetViewport(new ViewPortOptions
+                await page.SetViewportAsync(new ViewPortOptions
                 {
                     Width = 500,
                     Height = 500
@@ -36,7 +36,7 @@ namespace PuppeteerSharp.Tests.Page
 
                 fileInfo = new FileInfo(outputFile);
                 Assert.True(new FileInfo(outputFile).Length > 0);
-                Assert.True(PixelMatch("screenshot-sanity.png", outputFile));
+                Assert.True(ScreenshotHelper.PixelMatch("screenshot-sanity.png", outputFile));
 
                 if (fileInfo.Exists)
                 {
@@ -50,14 +50,14 @@ namespace PuppeteerSharp.Tests.Page
         {
             using (var page = await Browser.NewPageAsync())
             {
-                await page.SetViewport(new ViewPortOptions
+                await page.SetViewportAsync(new ViewPortOptions
                 {
                     Width = 500,
                     Height = 500
                 });
                 await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
                 var screenshot = await page.ScreenshotStreamAsync();
-                Assert.True(PixelMatch("screenshot-sanity.png", screenshot));
+                Assert.True(ScreenshotHelper.PixelMatch("screenshot-sanity.png", screenshot));
             }
         }
 
@@ -66,7 +66,7 @@ namespace PuppeteerSharp.Tests.Page
         {
             using (var page = await Browser.NewPageAsync())
             {
-                await page.SetViewport(new ViewPortOptions
+                await page.SetViewportAsync(new ViewPortOptions
                 {
                     Width = 500,
                     Height = 500
@@ -82,7 +82,7 @@ namespace PuppeteerSharp.Tests.Page
                         Height = 100
                     }
                 });
-                Assert.True(PixelMatch("screenshot-clip-rect.png", screenshot));
+                Assert.True(ScreenshotHelper.PixelMatch("screenshot-clip-rect.png", screenshot));
             }
         }
 
@@ -91,7 +91,7 @@ namespace PuppeteerSharp.Tests.Page
         {
             using (var page = await Browser.NewPageAsync())
             {
-                await page.SetViewport(new ViewPortOptions
+                await page.SetViewportAsync(new ViewPortOptions
                 {
                     Width = 500,
                     Height = 500
@@ -107,7 +107,7 @@ namespace PuppeteerSharp.Tests.Page
                         Height = 100
                     }
                 });
-                Assert.True(PixelMatch("screenshot-offscreen-clip.png", screenshot));
+                Assert.True(ScreenshotHelper.PixelMatch("screenshot-offscreen-clip.png", screenshot));
             }
         }
 
@@ -116,7 +116,7 @@ namespace PuppeteerSharp.Tests.Page
         {
             using (var page = await Browser.NewPageAsync())
             {
-                await page.SetViewport(new ViewPortOptions
+                await page.SetViewportAsync(new ViewPortOptions
                 {
                     Width = 500,
                     Height = 500
@@ -139,7 +139,7 @@ namespace PuppeteerSharp.Tests.Page
                 }
 
                 await Task.WhenAll(tasks);
-                Assert.True(PixelMatch("grid-cell-1.png", tasks[0].Result));
+                Assert.True(ScreenshotHelper.PixelMatch("grid-cell-1.png", tasks[0].Result));
             }
         }
 
@@ -148,7 +148,7 @@ namespace PuppeteerSharp.Tests.Page
         {
             using (var page = await Browser.NewPageAsync())
             {
-                await page.SetViewport(new ViewPortOptions
+                await page.SetViewportAsync(new ViewPortOptions
                 {
                     Width = 500,
                     Height = 500
@@ -158,7 +158,7 @@ namespace PuppeteerSharp.Tests.Page
                 {
                     FullPage = true
                 });
-                Assert.True(PixelMatch("screenshot-grid-fullpage.png", screenshot));
+                Assert.True(ScreenshotHelper.PixelMatch("screenshot-grid-fullpage.png", screenshot));
             }
         }
 
@@ -200,7 +200,7 @@ namespace PuppeteerSharp.Tests.Page
 
             for (var i = 0; i < n; i++)
             {
-                Assert.True(PixelMatch($"grid-cell-{i}.png", screenshotTasks[i].Result));
+                Assert.True(ScreenshotHelper.PixelMatch($"grid-cell-{i}.png", screenshotTasks[i].Result));
             }
 
             var closeTasks = new List<Task>();
@@ -217,7 +217,7 @@ namespace PuppeteerSharp.Tests.Page
         {
             using (var page = await Browser.NewPageAsync())
             {
-                await page.SetViewport(new ViewPortOptions
+                await page.SetViewportAsync(new ViewPortOptions
                 {
                     Width = 100,
                     Height = 100
@@ -228,7 +228,7 @@ namespace PuppeteerSharp.Tests.Page
                     OmitBackground = true
                 });
 
-                Assert.True(PixelMatch("transparent.png", screenshot));
+                Assert.True(ScreenshotHelper.PixelMatch("transparent.png", screenshot));
             }
         }
 
@@ -248,58 +248,9 @@ namespace PuppeteerSharp.Tests.Page
                     }
                 });
 
-                Assert.True(PixelMatch("screenshot-clip-odd-size.png", screenshot));
+                Assert.True(ScreenshotHelper.PixelMatch("screenshot-clip-odd-size.png", screenshot));
             }
         }
 
-        private bool PixelMatch(string screenShotFile, string fileName)
-        {
-            using (Stream stream = File.Open(fileName, FileMode.Open))
-            {
-                return PixelMatch(screenShotFile, stream);
-            }
-        }
-
-        private bool PixelMatch(string screenShotFile, Stream screenshot)
-        {
-            const int pixelThreshold = 10;
-            const decimal totalTolerance = 0.05m;
-
-            var baseImage = Image.Load(Path.Combine(TestUtils.FindParentDirectory("Screenshots"), screenShotFile));
-            var compareImage = Image.Load(screenshot);
-
-            //Just  for debugging purpose
-            compareImage.Save(Path.Combine(TestUtils.FindParentDirectory("Screenshots"), "test.png"));
-
-            if (baseImage.Width != compareImage.Width || baseImage.Height != compareImage.Height)
-            {
-                return false;
-            }
-
-            var rgb1 = default(Rgb24);
-            var rgb2 = default(Rgb24);
-            var invalidPixelsCount = 0;
-
-            for (int y = 0; y < baseImage.Height; y++)
-            {
-                for (int x = 0; x < baseImage.Width; x++)
-                {
-                    var pixelA = baseImage[x, y];
-                    var pixelB = compareImage[x, y];
-
-                    pixelA.ToRgb24(ref rgb1);
-                    pixelB.ToRgb24(ref rgb2);
-
-                    if (Math.Abs(rgb1.R - rgb2.R) > pixelThreshold ||
-                        Math.Abs(rgb1.G - rgb2.G) > pixelThreshold ||
-                        Math.Abs(rgb1.B - rgb2.B) > pixelThreshold)
-                    {
-                        invalidPixelsCount++;
-                    }
-                }
-            }
-
-            return (invalidPixelsCount / (baseImage.Height * baseImage.Width)) < totalTolerance;
-        }
     }
 }

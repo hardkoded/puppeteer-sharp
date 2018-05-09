@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.Page
             Assert.Equal(800, Page.Viewport.Width);
             Assert.Equal(600, Page.Viewport.Height);
 
-            await Page.SetViewport(new ViewPortOptions { Width = 123, Height = 456 });
+            await Page.SetViewportAsync(new ViewPortOptions { Width = 123, Height = 456 });
 
             Assert.Equal(123, Page.Viewport.Width);
             Assert.Equal(456, Page.Viewport.Height);
@@ -24,9 +24,9 @@ namespace PuppeteerSharp.Tests.Page
             await Page.GoToAsync(TestConstants.ServerUrl + "/mobile.html");
             Assert.Equal(800, await Page.EvaluateExpressionAsync<int>("window.innerWidth"));
 
-            await Page.SetViewport(TestConstants.IPhone.ViewPort);
+            await Page.SetViewportAsync(TestConstants.IPhone.ViewPort);
             Assert.Equal(375, await Page.EvaluateExpressionAsync<int>("window.innerWidth"));
-            await Page.SetViewport(new ViewPortOptions { Width = 400, Height = 300 });
+            await Page.SetViewportAsync(new ViewPortOptions { Width = 400, Height = 300 });
             Assert.Equal(400, await Page.EvaluateExpressionAsync<int>("window.innerWidth"));
         }
 
@@ -50,11 +50,11 @@ namespace PuppeteerSharp.Tests.Page
             await Page.GoToAsync(TestConstants.ServerUrl + "/mobile.html");
             Assert.False(await Page.EvaluateExpressionAsync<bool>("'ontouchstart' in window"));
 
-            await Page.SetViewport(TestConstants.IPhone.ViewPort);
+            await Page.SetViewportAsync(TestConstants.IPhone.ViewPort);
             Assert.True(await Page.EvaluateExpressionAsync<bool>("'ontouchstart' in window"));
             Assert.Equal("Recieved touch", await Page.EvaluateFunctionAsync<string>(dispatchTouch));
 
-            await Page.SetViewport(new ViewPortOptions { Width = 100, Height = 100 });
+            await Page.SetViewportAsync(new ViewPortOptions { Width = 100, Height = 100 });
             Assert.False(await Page.EvaluateExpressionAsync<bool>("'ontouchstart' in window"));
         }
 
@@ -63,7 +63,7 @@ namespace PuppeteerSharp.Tests.Page
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/detect-touch.html");
             Assert.Equal("NO", await Page.EvaluateExpressionAsync<string>("document.body.textContent.trim()"));
-            await Page.SetViewport(TestConstants.IPhone.ViewPort);
+            await Page.SetViewportAsync(TestConstants.IPhone.ViewPort);
             await Page.GoToAsync(TestConstants.ServerUrl + "/detect-touch.html");
             Assert.Equal("YES", await Page.EvaluateExpressionAsync<string>("document.body.textContent.trim()"));
         }
@@ -73,9 +73,9 @@ namespace PuppeteerSharp.Tests.Page
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/mobile.html");
             Assert.Equal("portrait-primary", await Page.EvaluateExpressionAsync<string>("screen.orientation.type"));
-            await Page.SetViewport(TestConstants.IPhone6Landscape.ViewPort);
+            await Page.SetViewportAsync(TestConstants.IPhone6Landscape.ViewPort);
             Assert.Equal("landscape-primary", await Page.EvaluateExpressionAsync<string>("screen.orientation.type"));
-            await Page.SetViewport(new ViewPortOptions { Width = 100, Height = 100 });
+            await Page.SetViewportAsync(new ViewPortOptions { Width = 100, Height = 100 });
             Assert.Equal("portrait-primary", await Page.EvaluateExpressionAsync<string>("screen.orientation.type"));
         }
     }
