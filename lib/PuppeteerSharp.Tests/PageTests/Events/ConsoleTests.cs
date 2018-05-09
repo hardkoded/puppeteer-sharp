@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace PuppeteerSharp.Tests.PageTests.Events

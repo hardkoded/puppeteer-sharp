@@ -3,7 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace PuppeteerSharp.Tests.Page
+namespace PuppeteerSharp.Tests.PageTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class AddStyleTagTests : PuppeteerPageBaseTest
