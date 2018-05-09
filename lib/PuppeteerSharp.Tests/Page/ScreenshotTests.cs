@@ -251,6 +251,5 @@ namespace PuppeteerSharp.Tests.Page
                 Assert.True(ScreenshotHelper.PixelMatch("screenshot-clip-odd-size.png", screenshot));
             }
         }
-
     }
 }
