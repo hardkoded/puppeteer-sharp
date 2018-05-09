@@ -253,7 +253,9 @@ namespace PuppeteerSharp
             }", this);
 
             if (errorMessage != null)
+            {
                 throw new PuppeteerException(errorMessage);
+            }
         }
 
         private async Task<BoundingBox> BoundingBoxAsync()
@@ -271,7 +273,6 @@ namespace PuppeteerSharp
             var height = new[] { quad[1], quad[3], quad[5], quad[7] }.Max() - y;
 
             return new BoundingBox(x, y, width, height);
-
         }
 
         private class BoundingBox
