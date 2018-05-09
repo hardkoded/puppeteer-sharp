@@ -28,10 +28,10 @@ namespace PuppeteerSharp.Tests.PageTests.Events
             Assert.Equal("hello 5 JSHandle@object", message.Text);
             Assert.Equal(ConsoleType.Log, message.Type);
 
-            Assert.Equal("hello", await message.Args[0].JsonValue());
-            Assert.Equal(5, await message.Args[1].JsonValue<float>());
-            Assert.Equal(obj, await message.Args[2].JsonValue<Dictionary<string, object>>());
-            Assert.Equal("bar", (await message.Args[2].JsonValue<dynamic>()).foo.ToString());
+            Assert.Equal("hello", await message.Args[0].JsonValueAsync());
+            Assert.Equal(5, await message.Args[1].JsonValueAsync<float>());
+            Assert.Equal(obj, await message.Args[2].JsonValueAsync<Dictionary<string, object>>());
+            Assert.Equal("bar", (await message.Args[2].JsonValueAsync<dynamic>()).foo.ToString());
         }
 
         [Fact]

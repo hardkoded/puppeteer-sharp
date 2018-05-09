@@ -21,11 +21,37 @@ namespace PuppeteerSharp
         public bool Disposed { get; set; }
         public dynamic RemoteObject { get; internal set; }
 
-        public Task<Dictionary<string, object>> GetProperty(string propertyName)
+        /// <summary>
+        /// Fetches a single property from the referenced object
+        /// </summary>
+        /// <param name="propertyName">property to get</param>
+        /// <returns>Task of <see cref="JSHandle"/></returns>
+        public async Task<JSHandle> GetPropertyAsync(string propertyName)
         {
-            throw new System.NotImplementedException();
+            var objectHandle = await ExecutionContext.EvaluateFunctionHandleAsync(@"(object, propertyName) => {
+              const result = { __proto__: null};
+              result[propertyName] = object[propertyName];
+              return result;
+            }", this, propertyName);
+            var properties = await objectHandle.GetPropertiesAsync();
+            properties.TryGetValue(propertyName, out var result);
+            await objectHandle.DisposeAsync();
+            return result;
         }
 
+        /// <summary>
+        /// Returns a <see cref="Dictionary{TKey, TValue}"/> with property names as keys and <see cref="JSHandle"/> instances for the property values.
+        /// </summary>
+        /// <returns>Task which resolves to a <see cref="Dictionary{TKey, TValue}"/></returns>
+        /// <example>
+        /// <code>
+        /// var handle = await page.EvaluateExpressionHandle("({window, document})");
+        /// var properties = await handle.GetPropertiesAsync();
+        /// var windowHandle = properties["window"];
+        /// var documentHandle = properties["document"];
+        /// await handle.DisposeAsync();
+        /// </code>
+        /// </example>
         public async Task<Dictionary<string, JSHandle>> GetPropertiesAsync()
         {
             var response = await _client.SendAsync("Runtime.getProperties", new
@@ -43,9 +69,24 @@ namespace PuppeteerSharp
             return result;
         }
 
-        public async Task<object> JsonValue() => await JsonValue<object>();
+        /// <summary>
+        /// Returns a JSON representation of the object
+        /// </summary>
+        /// <returns>Task</returns>
+        /// <remarks>
+        /// The method will return an empty JSON if the referenced object is not stringifiable. It will throw an error if the object has circular references
+        /// </remarks>
+        public async Task<object> JsonValueAsync() => await JsonValueAsync<object>();
 
-        public async Task<T> JsonValue<T>()
+        /// <summary>
+        /// Returns a JSON representation of the object
+        /// </summary>
+        /// <typeparam name="T">A strongly typed object to parse to</typeparam>
+        /// <returns>Task</returns>
+        /// <remarks>
+        /// The method will return an empty JSON if the referenced object is not stringifiable. It will throw an error if the object has circular references
+        /// </remarks>
+        public async Task<T> JsonValueAsync<T>()
         {
             if (RemoteObject.objectId != null)
             {
@@ -83,7 +124,7 @@ namespace PuppeteerSharp
                 return "JSHandle@" + type;
             }
 
-            return Helper.ValueFromRemoteObject<object>(RemoteObject)?.ToString();
+            return "JSHandle:" + Helper.ValueFromRemoteObject<object>(RemoteObject)?.ToString();
         }
 
         internal object FormatArgument(ExecutionContext context)
