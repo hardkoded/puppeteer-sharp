@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -15,7 +12,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldThrowAnErrorIfNoOptionsAreProvided()
         {
             var exception = await Assert.ThrowsAsync<ArgumentException>(()
-                => Page.AddScriptTagAsync(new AddScriptTagOptions()));
+                => Page.AddScriptTagAsync(new AddTagOptions()));
             Assert.Equal("Provide options with a `Url`, `Path` or `Content` property", exception.Message);
         }
 
@@ -23,7 +20,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldWorkWithAUrl()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var scriptHandle = await Page.AddScriptTagAsync(new AddScriptTagOptions { Url = "/injectedfile.js" });
+            var scriptHandle = await Page.AddScriptTagAsync(new AddTagOptions { Url = "/injectedfile.js" });
             Assert.NotNull(scriptHandle.AsElement());
             Assert.Equal(42, await Page.EvaluateExpressionAsync<int>("__injected"));
         }
@@ -33,7 +30,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             var exception = await Assert.ThrowsAsync<PuppeteerException>(()
-                => Page.AddScriptTagAsync(new AddScriptTagOptions { Url = "/nonexistfile.js" }));
+                => Page.AddScriptTagAsync(new AddTagOptions { Url = "/nonexistfile.js" }));
             Assert.Equal("Loading script from /nonexistfile.js failed", exception.Message);
         }
 
@@ -41,7 +38,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldWorkWithAPath()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var scriptHandle = await Page.AddScriptTagAsync(new AddScriptTagOptions
+            var scriptHandle = await Page.AddScriptTagAsync(new AddTagOptions
             {
                 Path = Path.Combine(Directory.GetCurrentDirectory(), Path.Combine("assets", "injectedfile.js"))
             });
@@ -53,7 +50,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldIncludeSourcemapWhenPathIsProvided()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            await Page.AddScriptTagAsync(new AddScriptTagOptions
+            await Page.AddScriptTagAsync(new AddTagOptions
             {
                 Path = Path.Combine(Directory.GetCurrentDirectory(), Path.Combine("assets", "injectedfile.js"))
             });
@@ -65,7 +62,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldWorkWithContent()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var scriptHandle = await Page.AddScriptTagAsync(new AddScriptTagOptions { Content = "window.__injected = 35;" });
+            var scriptHandle = await Page.AddScriptTagAsync(new AddTagOptions { Content = "window.__injected = 35;" });
             Assert.NotNull(scriptHandle.AsElement());
             Assert.Equal(35, await Page.EvaluateExpressionAsync<int>("__injected"));
         }
