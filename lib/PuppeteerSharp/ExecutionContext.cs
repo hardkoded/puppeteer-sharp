@@ -117,7 +117,7 @@ namespace PuppeteerSharp
         private async Task<T> EvaluateAsync<T>(Task<JSHandle> handleEvaluator)
         {
             var handle = await handleEvaluator;
-            var result = await handle.JsonValue<T>()
+            var result = await handle.JsonValueAsync<T>()
                 .ContinueWith(jsonTask => jsonTask.Exception != null ? default(T) : jsonTask.Result);
 
             await handle.DisposeAsync();
@@ -142,21 +142,25 @@ namespace PuppeteerSharp
             switch (arg)
             {
                 case double d:
-                    // no such thing as -0 in C# :)
-                    if (double.IsPositiveInfinity(d)) return new { unserializableValue = "Infinity" };
-                    if (double.IsNegativeInfinity(d)) return new { unserializableValue = "-Infinity" };
-                    if (double.IsNaN(d)) return new { unserializableValue = "NaN" };
+                    if (double.IsPositiveInfinity(d))
+                    {
+                        return new { unserializableValue = "Infinity" };
+                    }
+
+                    if (double.IsNegativeInfinity(d))
+                    {
+                        return new { unserializableValue = "-Infinity" };
+                    }
+
+                    if (double.IsNaN(d))
+                    {
+                        return new { unserializableValue = "NaN" };
+                    }
+
                     break;
+
                 case JSHandle objectHandle:
-                    if (objectHandle.ExecutionContext != this)
-                        throw new PuppeteerException("JSHandles can be evaluated only in the context they were created!");
-                    if (objectHandle.Disposed)
-                        throw new PuppeteerException("JSHandle is disposed!");
-                    if (objectHandle.RemoteObject.unserializableValue != null)
-                        return new { objectHandle.RemoteObject.unserializableValue };
-                    if (objectHandle.RemoteObject.objectId == null)
-                        return new { objectHandle.RemoteObject.value };
-                    return new { objectHandle.RemoteObject.objectId };
+                    return objectHandle.FormatArgument(this);
             }
             return new { value = arg };
         }
