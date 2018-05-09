@@ -17,5 +17,4 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
                          await Page.EvaluateExpressionAsync<string>("document.querySelector('button:hover').id"));
         }
     }
-
 }
