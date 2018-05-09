@@ -38,9 +38,11 @@ namespace PuppeteerSharp.Tests.PageTests
             var bothFired = false;
             var bothFiredTask = Page.WaitForNavigationAsync(new NavigationOptions
             {
-                WaitUntil = new[] {
+                WaitUntil = new[]
+                {
                     WaitUntilNavigation.Load,
-                    WaitUntilNavigation.DOMContentLoaded }
+                    WaitUntilNavigation.DOMContentLoaded
+                }
             }).ContinueWith(_ => bothFired = true);
 
             await Server.WaitForRequest("/one-style.css");
