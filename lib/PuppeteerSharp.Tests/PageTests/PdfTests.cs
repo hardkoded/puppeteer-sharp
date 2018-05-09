@@ -73,8 +73,8 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             // Define width and height in CSS pixels.
-            var width = 50 * 5 + 1;
-            var height = 50 * 5 + 1;
+            var width = (50 * 5) + 1;
+            var height = (50 * 5) + 1;
             var document = PdfReader.Open(await Page.PdfStreamAsync(new PdfOptions
             {
                 Width = width,
@@ -91,8 +91,8 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             // Define width and height in CSS pixels.
-            var width = 50 * 5 + 1;
-            var height = 50 * 5 + 1;
+            var width = (50 * 5) + 1;
+            var height = (50 * 5) + 1;
             var document = PdfReader.Open(await Page.PdfStreamAsync(new PdfOptions
             {
                 Width = width,
