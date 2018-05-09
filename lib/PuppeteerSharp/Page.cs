@@ -662,7 +662,7 @@ namespace PuppeteerSharp
             }
         }
 
-        public async Task EmulateAsync(DeviceDescriptor options) => await Task.WhenAll(
+        public Task EmulateAsync(DeviceDescriptor options) => Task.WhenAll(
             SetViewportAsync(options.ViewPort),
             SetUserAgentAsync(options.UserAgent)
         );
@@ -674,7 +674,7 @@ namespace PuppeteerSharp
         /// <param name="file">The file path to save the image to. The screenshot type will be inferred from file extension. 
         /// If path is a relative path, then it is resolved relative to current working directory. If no path is provided, 
         /// the image won't be saved to the disk.</param>
-        public async Task ScreenshotAsync(string file) => await ScreenshotAsync(file, new ScreenshotOptions());
+        public Task ScreenshotAsync(string file) => ScreenshotAsync(file, new ScreenshotOptions());
 
         /// <summary>
         /// Takes a screenshot of the page
@@ -694,8 +694,8 @@ namespace PuppeteerSharp
             using (var fs = new FileStream(file, FileMode.Create, FileAccess.Write))
             {
                 byte[] bytesInStream = new byte[stream.Length];
-                stream.Read(bytesInStream, 0, bytesInStream.Length);
-                fs.Write(bytesInStream, 0, bytesInStream.Length);
+                await stream.ReadAsync(bytesInStream, 0, bytesInStream.Length);
+                await fs.WriteAsync(bytesInStream, 0, bytesInStream.Length);
             }
         }
 
@@ -703,7 +703,7 @@ namespace PuppeteerSharp
         /// Takes a screenshot of the page
         /// </summary>
         /// <returns>The screenshot task returning the image stream.</returns>
-        public async Task<Stream> ScreenshotStreamAsync() => await ScreenshotStreamAsync(new ScreenshotOptions());
+        public Task<Stream> ScreenshotStreamAsync() => ScreenshotStreamAsync(new ScreenshotOptions());
 
         /// <summary>
         /// Takes a screenshot of the page

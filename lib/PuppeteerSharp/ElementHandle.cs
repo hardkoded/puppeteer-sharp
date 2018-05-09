@@ -28,7 +28,7 @@ namespace PuppeteerSharp
         /// <param name="file">The file path to save the image to. The screenshot type will be inferred from file extension. 
         /// If path is a relative path, then it is resolved relative to current working directory. If no path is provided, 
         /// the image won't be saved to the disk.</param>
-        public async Task ScreenshotAsync(string file) => await ScreenshotAsync(file, new ScreenshotOptions());
+        public Task ScreenshotAsync(string file) => ScreenshotAsync(file, new ScreenshotOptions());
 
         /// <summary>
         /// This method scrolls element into view if needed, and then uses <seealso cref="Page.ScreenshotStreamAsync(ScreenshotOptions)"/> to take a screenshot of the element. 
@@ -49,8 +49,8 @@ namespace PuppeteerSharp
             using (var fs = new FileStream(file, FileMode.Create, FileAccess.Write))
             {
                 byte[] bytesInStream = new byte[stream.Length];
-                stream.Read(bytesInStream, 0, bytesInStream.Length);
-                fs.Write(bytesInStream, 0, bytesInStream.Length);
+                await stream.ReadAsync(bytesInStream, 0, bytesInStream.Length);
+                await fs.WriteAsync(bytesInStream, 0, bytesInStream.Length);
             }
         }
 
@@ -59,7 +59,7 @@ namespace PuppeteerSharp
         /// If the element is detached from DOM, the method throws an error.
         /// </summary>
         /// <returns>The tas with the image streamk</returns>
-        public async Task<Stream> ScreenshotStreamAsync() => await ScreenshotStreamAsync(new ScreenshotOptions());
+        public Task<Stream> ScreenshotStreamAsync() => ScreenshotStreamAsync(new ScreenshotOptions());
 
         /// <summary>
         /// This method scrolls element into view if needed, and then uses <seealso cref="Page.ScreenshotStreamAsync(ScreenshotOptions)"/> to take a screenshot of the element. 
