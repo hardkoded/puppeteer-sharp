@@ -194,7 +194,12 @@ namespace PuppeteerSharp
                 throw new PuppeteerException(errorMessage);
         }
 
-        private async Task<BoundingBox> BoundingBoxAsync()
+        /// <summary>
+        /// This method returns the bounding box of the element (relative to the main frame), 
+        /// or null if the element is not visible.
+        /// </summary>
+        /// <returns>The BoundingBox task.</returns>
+        public async Task<BoundingBox> BoundingBoxAsync()
         {
             dynamic result = null;
 
@@ -223,22 +228,6 @@ namespace PuppeteerSharp
             var height = new[] { quad[1], quad[3], quad[5], quad[7] }.Max() - y;
 
             return new BoundingBox(x, y, width, height);
-        }
-
-        private class BoundingBox
-        {
-            public decimal X { get; }
-            public decimal Y { get; }
-            public decimal Width { get; }
-            public decimal Height { get; }
-
-            public BoundingBox(decimal x, decimal y, decimal width, decimal height)
-            {
-                X = x;
-                Y = y;
-                Width = width;
-                Height = height;
-            }
         }
     }
 }
