@@ -139,7 +139,12 @@ namespace PuppeteerSharp
             return properties.Values.OfType<ElementHandle>().ToArray();
         }
 
-        internal async Task<ElementHandle[]> XPathAsync(string expression)
+        /// <summary>
+        /// Evaluates the XPath expression relative to the elementHandle. If there's no such element, the method will resolve to <c>null</c>.
+        /// </summary>
+        /// <param name="expression">Expression to evaluate <see cref="https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate"/></param>
+        /// <returns>Task which resolves to an array of <see cref="ElementHandle"/></returns>
+        public async Task<ElementHandle[]> XPathAsync(string expression)
         {
             var arrayHandle = await ExecutionContext.EvaluateFunctionHandleAsync(
                 @"(element, expression) => {
