@@ -186,7 +186,7 @@ namespace PuppeteerSharp
                 try
                 {
                     var context = await GetExecutionContextAsync();
-                    return (await context.EvaluateFunctionHandleAsync(addStyleUrl, url)).AsElement();
+                    return (await context.EvaluateFunctionHandleAsync(addStyleUrl, url)) as ElementHandle;
                 }
                 catch (PuppeteerException)
                 {
@@ -199,13 +199,13 @@ namespace PuppeteerSharp
                 var contents = File.ReadAllText(options.Path, Encoding.UTF8);
                 contents += "//# sourceURL=" + options.Path.Replace("\n", string.Empty);
                 var context = await GetExecutionContextAsync();
-                return (await context.EvaluateFunctionHandleAsync(addStyleContent, contents)).AsElement();
+                return (await context.EvaluateFunctionHandleAsync(addStyleContent, contents)) as ElementHandle;
             }
 
             if (!string.IsNullOrEmpty(options.Content))
             {
                 var context = await GetExecutionContextAsync();
-                return (await context.EvaluateFunctionHandleAsync(addStyleContent, options.Content)).AsElement();
+                return (await context.EvaluateFunctionHandleAsync(addStyleContent, options.Content)) as ElementHandle;
             }
 
             throw new ArgumentException("Provide options with a `Url`, `Path` or `Content` property");
@@ -237,7 +237,7 @@ namespace PuppeteerSharp
                 try
                 {
                     var context = await GetExecutionContextAsync();
-                    return (await context.EvaluateFunctionHandleAsync(addScriptUrl, url)).AsElement();
+                    return (await context.EvaluateFunctionHandleAsync(addScriptUrl, url)) as ElementHandle;
                 }
                 catch (PuppeteerException)
                 {
@@ -250,13 +250,13 @@ namespace PuppeteerSharp
                 var contents = File.ReadAllText(options.Path, Encoding.UTF8);
                 contents += "//# sourceURL=" + options.Path.Replace("\n", string.Empty);
                 var context = await GetExecutionContextAsync();
-                return (await context.EvaluateFunctionHandleAsync(addScriptContent, contents)).AsElement();
+                return (await context.EvaluateFunctionHandleAsync(addScriptContent, contents)) as ElementHandle;
             }
 
             if (!string.IsNullOrEmpty(options.Content))
             {
                 var context = await GetExecutionContextAsync();
-                return (await context.EvaluateFunctionHandleAsync(addScriptContent, options.Content)).AsElement();
+                return (await context.EvaluateFunctionHandleAsync(addScriptContent, options.Content)) as ElementHandle;
             }
 
             throw new ArgumentException("Provide options with a `Url`, `Path` or `Content` property");
@@ -366,7 +366,7 @@ namespace PuppeteerSharp
                 Timeout = options.Timeout,
                 Polling = polling
             }, selector, options.Visible, options.Hidden);
-            return handle.AsElement();
+            return handle as ElementHandle;
         }
 
         internal Task<string[]> SelectAsync(string selector, params string[] values)
@@ -394,7 +394,7 @@ namespace PuppeteerSharp
                 _documentCompletionSource = new TaskCompletionSource<ElementHandle>();
                 var context = await GetExecutionContextAsync();
                 var document = await context.EvaluateExpressionHandleAsync("document");
-                _documentCompletionSource.SetResult(document.AsElement());
+                _documentCompletionSource.SetResult(document as ElementHandle);
             }
             return await _documentCompletionSource.Task;
         }
