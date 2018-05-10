@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         [Fact]
         public async Task ShouldWork()
         {
-            await Page.SetViewport(new ViewPortOptions
+            await Page.SetViewportAsync(new ViewPortOptions
             {
                 Width = 500,
                 Height = 500
@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         [Fact]
         public async Task ShouldHandleNestedFrames()
         {
-            await Page.SetViewport(new ViewPortOptions
+            await Page.SetViewportAsync(new ViewPortOptions
             {
                 Width = 500,
                 Height = 500
