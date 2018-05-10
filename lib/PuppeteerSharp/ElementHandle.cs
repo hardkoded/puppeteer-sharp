@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Input;
 using System;
 using System.Collections.Generic;
@@ -17,8 +17,6 @@ namespace PuppeteerSharp
         {
             Page = page;
         }
-
-        public override ElementHandle AsElement() => this;
 
         /// <summary>
         /// This method scrolls element into view if needed, and then uses <seealso cref="Page.ScreenshotStreamAsync(ScreenshotOptions)"/> to take a screenshot of the element. 
@@ -184,7 +182,7 @@ namespace PuppeteerSharp
                 "(element, selector) => element.querySelector(selector)",
                 this, selector);
 
-            var element = handle.AsElement();
+            var element = handle as ElementHandle;
             if (element != null)
             {
                 return element;
@@ -260,10 +258,24 @@ namespace PuppeteerSharp
 
         private async Task<BoundingBox> BoundingBoxAsync()
         {
-            var result = await _client.SendAsync("DOM.getBoxModel", new { objectId = RemoteObject.objectId.ToString() });
+            dynamic result = null;
+
+            try
+            {
+                result = await _client.SendAsync("DOM.getBoxModel", new
+                {
+                    objectId = RemoteObject.objectId.ToString()
+                });
+            }
+            catch (PuppeteerException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
 
             if (result == null)
+            {
                 return null;
+            }
 
             var quad = result.model.border.ToObject<decimal[]>();
 
