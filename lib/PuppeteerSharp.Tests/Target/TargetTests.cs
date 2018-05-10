@@ -43,7 +43,7 @@ namespace PuppeteerSharp.Tests.Target
         [Fact]
         public async Task ShouldReportWhenANewPageIsCreatedAndClosed()
         {
-            var otherPageTaskCompletion = new TaskCompletionSource<PuppeteerSharp.Page>();
+            var otherPageTaskCompletion = new TaskCompletionSource<Page>();
             async void TargetCreatedEventHandler(object sender, TargetChangedArgs e)
             {
                 otherPageTaskCompletion.SetResult(await e.Target.PageAsync());
@@ -61,7 +61,7 @@ namespace PuppeteerSharp.Tests.Target
             Assert.Contains(Page, allPages);
             Assert.Contains(otherPage, allPages);
 
-            var closePageTaskCompletion = new TaskCompletionSource<PuppeteerSharp.Page>();
+            var closePageTaskCompletion = new TaskCompletionSource<Page>();
             async void TargetDestroyedEventHandler(object sender, TargetChangedArgs e)
             {
                 closePageTaskCompletion.SetResult(await e.Target.PageAsync());

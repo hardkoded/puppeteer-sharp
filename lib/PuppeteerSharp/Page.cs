@@ -842,7 +842,7 @@ namespace PuppeteerSharp
 
         public async Task<Response> ReloadAsync(NavigationOptions options = null)
         {
-            var navigationTask = WaitForNavigation(options);
+            var navigationTask = WaitForNavigationAsync(options);
 
             await Task.WhenAll(
               navigationTask,
@@ -927,26 +927,12 @@ namespace PuppeteerSharp
         public Task<ElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
             => MainFrame.WaitForSelectorAsync(selector, options ?? new WaitForSelectorOptions());
 
-        #endregion
-
-        #region Private Method
-
-        private Dictionary<string, decimal> BuildMetricsObject(List<Metric> metrics)
-        {
-            var result = new Dictionary<string, decimal>();
-
-            foreach (var item in metrics)
-            {
-                if (SupportedMetrics.Contains(item.Name))
-                {
-                    result.Add(item.Name, item.Value);
-                }
-            }
-
-            return result;
-        }
-
-        private async Task<Response> WaitForNavigation(NavigationOptions options = null)
+        /// <summary>
+        /// Waits for navigation
+        /// </summary>
+        /// <param name="options">navigation options</param>
+        /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect</returns>
+        public async Task<Response> WaitForNavigationAsync(NavigationOptions options = null)
         {
             var mainFrame = _frameManager.MainFrame;
             var timeout = options?.Timeout ?? DefaultNavigationTimeout;
@@ -969,6 +955,25 @@ namespace PuppeteerSharp
             }
 
             return responses.GetValueOrDefault(_frameManager.MainFrame.Url);
+        }
+
+        #endregion
+
+        #region Private Method
+
+        private Dictionary<string, decimal> BuildMetricsObject(List<Metric> metrics)
+        {
+            var result = new Dictionary<string, decimal>();
+
+            foreach (var item in metrics)
+            {
+                if (SupportedMetrics.Contains(item.Name))
+                {
+                    result.Add(item.Name, item.Value);
+                }
+            }
+
+            return result;
         }
 
         private async Task<Stream> PerformScreenshot(string format, ScreenshotOptions options)
