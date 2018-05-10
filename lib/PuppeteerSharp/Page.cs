@@ -492,7 +492,7 @@ namespace PuppeteerSharp
             // Initialize default page size.
             if (!appMode)
             {
-                await page.SetViewport(new ViewPortOptions
+                await page.SetViewportAsync(new ViewPortOptions
                 {
                     Width = 800,
                     Height = 600
@@ -644,7 +644,14 @@ namespace PuppeteerSharp
         public async Task EmulateMediaAsync(MediaType media)
             => await Client.SendAsync("Emulation.setEmulatedMedia", new { media });
 
-        public async Task SetViewport(ViewPortOptions viewport)
+        /// <summary>
+        /// Sets the viewport.
+        /// In the case of multiple pages in a single browser, each page can have its own viewport size.
+        /// NOTE in certain cases, setting viewport will reload the page in order to set the isMobile or hasTouch properties.
+        /// </summary>
+        /// <returns>The viewport task.</returns>
+        /// <param name="viewport">Viewport options.</param>
+        public async Task SetViewportAsync(ViewPortOptions viewport)
         {
             var needsReload = await _emulationManager.EmulateViewport(Client, viewport);
             Viewport = viewport;
@@ -655,13 +662,28 @@ namespace PuppeteerSharp
             }
         }
 
-        public async Task EmulateAsync(DeviceDescriptor options) => await Task.WhenAll(
-            SetViewport(options.ViewPort),
+        public Task EmulateAsync(DeviceDescriptor options) => Task.WhenAll(
+            SetViewportAsync(options.ViewPort),
             SetUserAgentAsync(options.UserAgent)
         );
 
-        public async Task ScreenshotAsync(string file) => await ScreenshotAsync(file, new ScreenshotOptions());
+        /// <summary>
+        /// Takes a screenshot of the page
+        /// </summary>
+        /// <returns>The screenshot task.</returns>
+        /// <param name="file">The file path to save the image to. The screenshot type will be inferred from file extension. 
+        /// If path is a relative path, then it is resolved relative to current working directory. If no path is provided, 
+        /// the image won't be saved to the disk.</param>
+        public Task ScreenshotAsync(string file) => ScreenshotAsync(file, new ScreenshotOptions());
 
+        /// <summary>
+        /// Takes a screenshot of the page
+        /// </summary>
+        /// <returns>The screenshot task.</returns>
+        /// <param name="file">The file path to save the image to. The screenshot type will be inferred from file extension. 
+        /// If path is a relative path, then it is resolved relative to current working directory. If no path is provided, 
+        /// the image won't be saved to the disk.</param>
+        /// <param name="options">Screenshot options.</param>
         public async Task ScreenshotAsync(string file, ScreenshotOptions options)
         {
             var fileInfo = new FileInfo(file);
@@ -672,13 +694,22 @@ namespace PuppeteerSharp
             using (var fs = new FileStream(file, FileMode.Create, FileAccess.Write))
             {
                 byte[] bytesInStream = new byte[stream.Length];
-                stream.Read(bytesInStream, 0, bytesInStream.Length);
-                fs.Write(bytesInStream, 0, bytesInStream.Length);
+                await stream.ReadAsync(bytesInStream, 0, bytesInStream.Length);
+                await fs.WriteAsync(bytesInStream, 0, bytesInStream.Length);
             }
         }
 
-        public async Task<Stream> ScreenshotStreamAsync() => await ScreenshotStreamAsync(new ScreenshotOptions());
+        /// <summary>
+        /// Takes a screenshot of the page
+        /// </summary>
+        /// <returns>The screenshot task returning the image stream.</returns>
+        public Task<Stream> ScreenshotStreamAsync() => ScreenshotStreamAsync(new ScreenshotOptions());
 
+        /// <summary>
+        /// Takes a screenshot of the page
+        /// </summary>
+        /// <returns>The screenshot task returning the image stream.</returns>
+        /// <param name="options">Screenshot options.</param>
         public async Task<Stream> ScreenshotStreamAsync(ScreenshotOptions options)
         {
             string screenshotType = null;
@@ -811,7 +842,7 @@ namespace PuppeteerSharp
 
         public async Task<Response> ReloadAsync(NavigationOptions options = null)
         {
-            var navigationTask = WaitForNavigation(options);
+            var navigationTask = WaitForNavigationAsync(options);
 
             await Task.WhenAll(
               navigationTask,
@@ -896,26 +927,12 @@ namespace PuppeteerSharp
         public Task<ElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
             => MainFrame.WaitForSelectorAsync(selector, options ?? new WaitForSelectorOptions());
 
-        #endregion
-
-        #region Private Method
-
-        private Dictionary<string, decimal> BuildMetricsObject(List<Metric> metrics)
-        {
-            var result = new Dictionary<string, decimal>();
-
-            foreach (var item in metrics)
-            {
-                if (SupportedMetrics.Contains(item.Name))
-                {
-                    result.Add(item.Name, item.Value);
-                }
-            }
-
-            return result;
-        }
-
-        private async Task<Response> WaitForNavigation(NavigationOptions options = null)
+        /// <summary>
+        /// Waits for navigation
+        /// </summary>
+        /// <param name="options">navigation options</param>
+        /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect</returns>
+        public async Task<Response> WaitForNavigationAsync(NavigationOptions options = null)
         {
             var mainFrame = _frameManager.MainFrame;
             var timeout = options?.Timeout ?? DefaultNavigationTimeout;
@@ -938,6 +955,25 @@ namespace PuppeteerSharp
             }
 
             return responses.GetValueOrDefault(_frameManager.MainFrame.Url);
+        }
+
+        #endregion
+
+        #region Private Method
+
+        private Dictionary<string, decimal> BuildMetricsObject(List<Metric> metrics)
+        {
+            var result = new Dictionary<string, decimal>();
+
+            foreach (var item in metrics)
+            {
+                if (SupportedMetrics.Contains(item.Name))
+                {
+                    result.Add(item.Name, item.Value);
+                }
+            }
+
+            return result;
         }
 
         private async Task<Stream> PerformScreenshot(string format, ScreenshotOptions options)
@@ -1031,7 +1067,7 @@ namespace PuppeteerSharp
 
             if (options != null && options.FullPage)
             {
-                await SetViewport(Viewport);
+                await SetViewportAsync(Viewport);
             }
 
             var buffer = Convert.FromBase64String(result.GetValue("data").Value<string>());

@@ -32,6 +32,17 @@ namespace PuppeteerSharp
             Height = height;
         }
 
+        internal Clip ToClip()
+        {
+            return new Clip
+            {
+                X = X,
+                Y = Y,
+                Width = Width,
+                Height = Height
+            };
+        }
+
         public override bool Equals(object obj)
         {
             if (obj == null && GetType() != obj.GetType())
