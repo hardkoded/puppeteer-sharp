@@ -1,4 +1,5 @@
 ﻿using PuppeteerSharp.Input;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -15,8 +16,6 @@ namespace PuppeteerSharp
         {
             Page = page;
         }
-
-        public override ElementHandle AsElement() => this;
 
         /// <summary>
         /// Scrolls element into view if needed, and then uses <see cref="Page.Mouse"/> to hover over the center of the element.
@@ -118,7 +117,7 @@ namespace PuppeteerSharp
                 "(element, selector) => element.querySelector(selector)",
                 this, selector);
 
-            var element = handle.AsElement();
+            var element = handle as ElementHandle;
             if (element != null)
             {
                 return element;
@@ -192,10 +191,24 @@ namespace PuppeteerSharp
 
         private async Task<BoundingBox> BoundingBoxAsync()
         {
-            var result = await _client.SendAsync("DOM.getBoxModel", new { objectId = RemoteObject.objectId.ToString() });
+            dynamic result = null;
+
+            try
+            {
+                result = await _client.SendAsync("DOM.getBoxModel", new
+                {
+                    objectId = RemoteObject.objectId.ToString()
+                });
+            }
+            catch (PuppeteerException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
 
             if (result == null)
+            {
                 return null;
+            }
 
             var quad = result.model.border.ToObject<decimal[]>();
 
@@ -205,7 +218,6 @@ namespace PuppeteerSharp
             var height = new[] { quad[1], quad[3], quad[5], quad[7] }.Max() - y;
 
             return new BoundingBox(x, y, width, height);
-
         }
 
         private class BoundingBox

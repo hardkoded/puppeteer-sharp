@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         public async Task ShouldWork()
         {
             var aHandle = await Page.EvaluateExpressionHandleAsync("document.body");
-            var element = aHandle.AsElement();
+            var element = aHandle as ElementHandle;
             Assert.NotNull(element);
         }
 
@@ -18,7 +18,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         public async Task ShouldReturnNullForNonElements()
         {
             var aHandle = await Page.EvaluateExpressionHandleAsync("2");
-            var element = aHandle.AsElement();
+            var element = aHandle as ElementHandle;
             Assert.Null(element);
         }
 
@@ -27,7 +27,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         {
             await Page.SetContentAsync("<div>ee!</div>");
             var aHandle = await Page.EvaluateExpressionHandleAsync("document.querySelector('div').firstChild");
-            var element = aHandle.AsElement();
+            var element = aHandle as ElementHandle;
             Assert.NotNull(element);
             Assert.NotNull(await Page.EvaluateFunctionAsync("e => e.nodeType === HTMLElement.TEXT_NODE", element));
         }
