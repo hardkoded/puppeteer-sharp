@@ -13,6 +13,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Issues\" />
+    <Folder Include="ElementHandleTests\" />
   </ItemGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net471'">
     <RuntimeIdentifier>win7-x64</RuntimeIdentifier>

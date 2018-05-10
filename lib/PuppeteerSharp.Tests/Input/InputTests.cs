@@ -77,7 +77,7 @@ namespace PuppeteerSharp.Tests.Input
         [Fact]
         public async Task ShouldNotHangWithTouchEnabledViewports()
         {
-            await Page.SetViewport(TestConstants.IPhone.ViewPort);
+            await Page.SetViewportAsync(TestConstants.IPhone.ViewPort);
             await Page.Mouse.DownAsync();
             await Page.Mouse.MoveAsync(100, 10);
             await Page.Mouse.UpAsync();
@@ -488,7 +488,7 @@ namespace PuppeteerSharp.Tests.Input
         [Fact]
         public async Task ShouldClickTheButtonWithDeviceScaleFactorSet()
         {
-            await Page.SetViewport(new ViewPortOptions { Width = 400, Height = 400, DeviceScaleFactor = 5 });
+            await Page.SetViewportAsync(new ViewPortOptions { Width = 400, Height = 400, DeviceScaleFactor = 5 });
             Assert.Equal(5, await Page.EvaluateExpressionAsync<int>("window.devicePixelRatio"));
             await Page.SetContentAsync("<div style=\"width:100px;height:100px\">spacer</div>");
             await FrameUtils.AttachFrameAsync(Page, "button-test", TestConstants.ServerUrl + "/input/button.html");
@@ -539,17 +539,5 @@ namespace PuppeteerSharp.Tests.Input
 
             await Assert.ThrowsAsync<KeyNotFoundException>(() => Page.Keyboard.PressAsync("😊"));
         }
-    }
-
-    class Dimensions
-    {
-        [JsonProperty("x")]
-        public decimal X { get; set; }
-        [JsonProperty("y")]
-        public decimal Y { get; set; }
-        [JsonProperty("width")]
-        public decimal Width { get; set; }
-        [JsonProperty("height")]
-        public decimal Height { get; set; }
     }
 }

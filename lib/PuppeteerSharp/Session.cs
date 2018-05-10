@@ -114,7 +114,6 @@ namespace PuppeteerSharp
 
             if (objAsJObject["id"] != null && _callbacks.ContainsKey((int)obj.id))
             {
-
                 var callback = _callbacks[(int)obj.id];
                 _callbacks.Remove((int)obj.id);
 

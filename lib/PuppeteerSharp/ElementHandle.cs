@@ -1,4 +1,5 @@
-﻿using PuppeteerSharp.Input;
+using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Input;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,6 +16,70 @@ namespace PuppeteerSharp
             base(context, client, remoteObject)
         {
             Page = page;
+        }
+
+        /// <summary>
+        /// This method scrolls element into view if needed, and then uses <seealso cref="Page.ScreenshotStreamAsync(ScreenshotOptions)"/> to take a screenshot of the element. 
+        /// If the element is detached from DOM, the method throws an error.
+        /// </summary>
+        /// <returns>The task</returns>
+        /// <param name="file">The file path to save the image to. The screenshot type will be inferred from file extension. 
+        /// If path is a relative path, then it is resolved relative to current working directory. If no path is provided, 
+        /// the image won't be saved to the disk.</param>
+        public Task ScreenshotAsync(string file) => ScreenshotAsync(file, new ScreenshotOptions());
+
+        /// <summary>
+        /// This method scrolls element into view if needed, and then uses <seealso cref="Page.ScreenshotStreamAsync(ScreenshotOptions)"/> to take a screenshot of the element. 
+        /// If the element is detached from DOM, the method throws an error.
+        /// </summary>
+        /// <returns>The task</returns>
+        /// <param name="file">The file path to save the image to. The screenshot type will be inferred from file extension. 
+        /// If path is a relative path, then it is resolved relative to current working directory. If no path is provided, 
+        /// the image won't be saved to the disk.</param>
+        /// <param name="options">Screenshot options.</param>
+        public async Task ScreenshotAsync(string file, ScreenshotOptions options)
+        {
+            var fileInfo = new FileInfo(file);
+            options.Type = fileInfo.Extension.Replace(".", string.Empty);
+
+            var stream = await ScreenshotStreamAsync(options);
+
+            using (var fs = new FileStream(file, FileMode.Create, FileAccess.Write))
+            {
+                byte[] bytesInStream = new byte[stream.Length];
+                await stream.ReadAsync(bytesInStream, 0, bytesInStream.Length);
+                await fs.WriteAsync(bytesInStream, 0, bytesInStream.Length);
+            }
+        }
+
+        /// <summary>
+        /// This method scrolls element into view if needed, and then uses <seealso cref="Page.ScreenshotStreamAsync(ScreenshotOptions)"/> to take a screenshot of the element. 
+        /// If the element is detached from DOM, the method throws an error.
+        /// </summary>
+        /// <returns>The tas with the image streamk</returns>
+        public Task<Stream> ScreenshotStreamAsync() => ScreenshotStreamAsync(new ScreenshotOptions());
+
+        /// <summary>
+        /// This method scrolls element into view if needed, and then uses <seealso cref="Page.ScreenshotStreamAsync(ScreenshotOptions)"/> to take a screenshot of the element. 
+        /// If the element is detached from DOM, the method throws an error.
+        /// </summary>
+        /// <returns>The tas with the image streamk</returns>
+        /// <param name="options">Screenshot options.</param>
+        public async Task<Stream> ScreenshotStreamAsync(ScreenshotOptions options)
+        {
+            await ScrollIntoViewIfNeededAsync();
+            dynamic metrics = await _client.SendAsync("Page.getLayoutMetrics") as JObject;
+
+            var boundingBox = await BoundingBoxAsync();
+            if (boundingBox == null)
+            {
+                throw new PuppeteerException("Node is not visible");
+            }
+
+            boundingBox.X += metrics.layoutViewport.pageX.ToObject<decimal>();
+            boundingBox.Y += metrics.layoutViewport.pageY.ToObject<decimal>();
+            options.Clip = boundingBox.ToClip();
+            return await Page.ScreenshotStreamAsync(options);
         }
 
         /// <summary>
@@ -191,7 +256,9 @@ namespace PuppeteerSharp
             }", this);
 
             if (errorMessage != null)
+            {
                 throw new PuppeteerException(errorMessage);
+            }
         }
 
         private async Task<BoundingBox> BoundingBoxAsync()
@@ -227,8 +294,8 @@ namespace PuppeteerSharp
 
         private class BoundingBox
         {
-            public decimal X { get; }
-            public decimal Y { get; }
+            public decimal X { get; set; }
+            public decimal Y { get; set; }
             public decimal Width { get; }
             public decimal Height { get; }
 
@@ -238,6 +305,17 @@ namespace PuppeteerSharp
                 Y = y;
                 Width = width;
                 Height = height;
+            }
+
+            internal Clip ToClip()
+            {
+                return new Clip
+                {
+                    X = X,
+                    Y = Y,
+                    Width = Width,
+                    Height = Height
+                };
             }
         }
     }
