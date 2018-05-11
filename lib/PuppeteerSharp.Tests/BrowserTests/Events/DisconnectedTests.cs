@@ -22,13 +22,11 @@ namespace PuppeteerSharp.Tests.BrowserTests.Events
             remoteBrowser2.Disconnected += (sender, e) => ++disconnectedRemote2;
 
             remoteBrowser2.Disconnect();
-            await Task.Delay(150);
             Assert.Equal(0, disconnectedOriginal);
             Assert.Equal(0, disconnectedRemote1);
             Assert.Equal(1, disconnectedRemote2);
 
             await originalBrowser.CloseAsync();
-            await Task.Delay(150);
             Assert.Equal(1, disconnectedOriginal);
             Assert.Equal(1, disconnectedRemote1);
             Assert.Equal(1, disconnectedRemote2);
