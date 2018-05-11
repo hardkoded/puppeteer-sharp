@@ -171,7 +171,7 @@ namespace PuppeteerSharp
                     Console.WriteLine($"PROCESS COUNT: {Interlocked.Increment(ref _processCount)}");
                 }
 
-                return await Browser.CreateAsync(_connection, options, KillChrome);
+                return await Browser.CreateAsync(_connection, options, _chromeProcess, KillChrome);
             }
             catch (Exception ex)
             {
@@ -195,7 +195,7 @@ namespace PuppeteerSharp
 
                 _connection = await Connection.Create(options.BrowserWSEndpoint, connectionDelay, keepAliveInterval);
 
-                return await Browser.CreateAsync(_connection, options, () =>
+                return await Browser.CreateAsync(_connection, options, null, () =>
                 {
                     var closeTask = _connection.SendAsync("Browser.close", null);
                     return null;

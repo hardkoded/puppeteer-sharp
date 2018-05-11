@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,8 +9,9 @@ namespace PuppeteerSharp
 {
     public class Browser : IDisposable
     {
-        public Browser(Connection connection, IBrowserOptions options, Func<Task> closeCallBack)
+        public Browser(Connection connection, IBrowserOptions options, Process process, Func<Task> closeCallBack)
         {
+            Process = process;
             Connection = connection;
             IgnoreHTTPSErrors = options.IgnoreHTTPSErrors;
             AppMode = options.AppMode;
@@ -25,11 +27,14 @@ namespace PuppeteerSharp
 
         #region Private members
         private Dictionary<string, Target> _targets;
+
         #endregion
 
         #region Properties
-        public Connection Connection { get; set; }
-        public event EventHandler Closed;
+        public Process Process { get; }
+        public Connection Connection { get; }
+
+        
         public event EventHandler Disconnected;
         public event EventHandler<TargetChangedArgs> TargetChanged;
         public event EventHandler<TargetChangedArgs> TargetCreated;
@@ -97,6 +102,12 @@ namespace PuppeteerSharp
             return version.product.ToString();
         }
 
+        public async Task<string> GetUserAgentAsync()
+        {
+            dynamic version = await Connection.SendAsync("Browser.getVersion");
+            return version.userAgent.ToString();
+        }
+
         public void Disconnect() => Connection.Dispose();
 
         public async Task CloseAsync()
@@ -116,7 +127,6 @@ namespace PuppeteerSharp
             }
 
             Disconnect();
-            Closed?.Invoke(this, new EventArgs());
         }
 
         #endregion
@@ -189,10 +199,10 @@ namespace PuppeteerSharp
 
         }
 
-        internal static async Task<Browser> CreateAsync(Connection connection, IBrowserOptions options,
-                                                        Func<Task> closeCallBack)
+        internal static async Task<Browser> CreateAsync(
+            Connection connection, IBrowserOptions options, Process process, Func<Task> closeCallBack)
         {
-            var browser = new Browser(connection, options, closeCallBack);
+            var browser = new Browser(connection, options, process, closeCallBack);
             await connection.SendAsync("Target.setDiscoverTargets", new
             {
                 discover = true

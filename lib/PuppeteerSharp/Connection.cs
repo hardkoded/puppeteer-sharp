@@ -95,15 +95,16 @@ namespace PuppeteerSharp
 
         private void OnClose()
         {
-            if (IsClosed)
+            if (!IsClosed)
             {
-                return;
+                _connectionCloseTask.SetResult(true);
+                IsClosed = true;
             }
 
-            IsClosed = true;
-            _connectionCloseTask.SetResult(true);
-
-            Closed?.Invoke(this, new EventArgs());
+            foreach(var session in _sessions.Values)
+            {
+                session.OnClose();
+            }
 
             _responses.Clear();
             _sessions.Clear();
@@ -211,7 +212,7 @@ namespace PuppeteerSharp
                     var session = _sessions.GetValueOrDefault(objAsJObject["params"]["sessionId"].ToString());
                     if (session != null)
                     {
-                        session.Close();
+                        session.OnClose();
                     }
 
                     _sessions.Remove(objAsJObject["params"]["sessionId"].ToString());
