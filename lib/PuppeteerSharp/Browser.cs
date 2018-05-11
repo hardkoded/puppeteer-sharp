@@ -30,7 +30,8 @@ namespace PuppeteerSharp
         #endregion
 
         #region Properties
-        
+
+        public event EventHandler Closed;
         public event EventHandler Disconnected;
         public event EventHandler<TargetChangedArgs> TargetChanged;
         public event EventHandler<TargetChangedArgs> TargetCreated;
@@ -155,6 +156,7 @@ namespace PuppeteerSharp
             }
 
             Disconnect();
+            Closed?.Invoke(this, new EventArgs());
         }
 
         #endregion
