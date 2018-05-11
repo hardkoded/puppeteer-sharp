@@ -103,7 +103,7 @@ namespace PuppeteerSharp
 
             foreach(var session in _sessions.Values)
             {
-                session.OnClose();
+                session.OnClosed();
             }
 
             _responses.Clear();
@@ -212,7 +212,7 @@ namespace PuppeteerSharp
                     var session = _sessions.GetValueOrDefault(objAsJObject["params"]["sessionId"].ToString());
                     if (session != null)
                     {
-                        session.OnClose();
+                        session.OnClosed();
                     }
 
                     _sessions.Remove(objAsJObject["params"]["sessionId"].ToString());

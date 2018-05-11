@@ -148,7 +148,7 @@ namespace PuppeteerSharp
             }
         }
 
-        internal void OnClose()
+        internal void OnClosed()
         {
             foreach (var callback in _callbacks.Values)
             {
