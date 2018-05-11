@@ -176,7 +176,12 @@ namespace PuppeteerSharp
             await Page.Keyboard.PressAsync(key, options);
         }
 
-        internal async Task<ElementHandle> QuerySelectorAsync(string selector)
+        /// <summary>
+        /// The method runs <c>element.querySelector</c> within the page. If no element matches the selector, the return value resolve to <c>null</c>.
+        /// </summary>
+        /// <param name="selector">A selector to query element for</param>
+        /// <returns>Task which resolves to <see cref="ElementHandle"/> pointing to the frame element</returns>
+        public async Task<ElementHandle> QuerySelectorAsync(string selector)
         {
             var handle = await ExecutionContext.EvaluateFunctionHandleAsync(
                 "(element, selector) => element.querySelector(selector)",
@@ -192,7 +197,12 @@ namespace PuppeteerSharp
             return null;
         }
 
-        internal async Task<ElementHandle[]> QuerySelectorAllAsync(string selector)
+        /// <summary>
+        /// Runs <c>element.querySelectorAll</c> within the page. If no elements match the selector, the return value resolve to <see cref="Array.Empty{T}"/>.
+        /// </summary>
+        /// <param name="selector">A selector to query element for</param>
+        /// <returns>Task which resolves to ElementHandles pointing to the frame elements</returns>
+        public async Task<ElementHandle[]> QuerySelectorAllAsync(string selector)
         {
             var arrayHandle = await ExecutionContext.EvaluateFunctionHandleAsync(
                 "(element, selector) => element.querySelectorAll(selector)",
@@ -261,7 +271,12 @@ namespace PuppeteerSharp
             }
         }
 
-        private async Task<BoundingBox> BoundingBoxAsync()
+        /// <summary>
+        /// This method returns the bounding box of the element (relative to the main frame), 
+        /// or null if the element is not visible.
+        /// </summary>
+        /// <returns>The BoundingBox task.</returns>
+        public async Task<BoundingBox> BoundingBoxAsync()
         {
             dynamic result = null;
 
@@ -290,33 +305,6 @@ namespace PuppeteerSharp
             var height = new[] { quad[1], quad[3], quad[5], quad[7] }.Max() - y;
 
             return new BoundingBox(x, y, width, height);
-        }
-
-        private class BoundingBox
-        {
-            public decimal X { get; set; }
-            public decimal Y { get; set; }
-            public decimal Width { get; }
-            public decimal Height { get; }
-
-            public BoundingBox(decimal x, decimal y, decimal width, decimal height)
-            {
-                X = x;
-                Y = y;
-                Width = width;
-                Height = height;
-            }
-
-            internal Clip ToClip()
-            {
-                return new Clip
-                {
-                    X = X,
-                    Y = Y,
-                    Width = Width,
-                    Height = Height
-                };
-            }
         }
     }
 }
