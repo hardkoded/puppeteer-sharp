@@ -22,7 +22,6 @@ namespace PuppeteerSharp
             Connection.MessageReceived += Connect_MessageReceived;
 
             _closeCallBack = closeCallBack;
-
         }
 
         #region Private members
