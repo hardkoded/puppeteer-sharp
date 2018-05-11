@@ -197,7 +197,12 @@ namespace PuppeteerSharp
             return null;
         }
 
-        internal async Task<ElementHandle[]> QuerySelectorAllAsync(string selector)
+        /// <summary>
+        /// Runs <c>element.querySelectorAll</c> within the page. If no elements match the selector, the return value resolve to <see cref="Array.Empty{T}"/>.
+        /// </summary>
+        /// <param name="selector">A selector to query element for</param>
+        /// <returns>Task which resolves to ElementHandles pointing to the frame elements</returns>
+        public async Task<ElementHandle[]> QuerySelectorAllAsync(string selector)
         {
             var arrayHandle = await ExecutionContext.EvaluateFunctionHandleAsync(
                 "(element, selector) => element.querySelectorAll(selector)",
