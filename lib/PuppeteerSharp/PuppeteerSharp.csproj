@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>0.7.0</PackageVersion>
+    <PackageVersion>0.8.0</PackageVersion>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
@@ -11,23 +11,42 @@
     <Title>PuppeteerSharp</Title>
     <Description>Headless Chrome .NET API</Description>
     <PackageId>PuppeteerSharp</PackageId>
-    <PackageReleaseNotes>* 0.7.0: Page improvements
-    * Features
-      - Selectors and Expressions over Selectors
-      - Script and Style tags
-    * New APIs
-      - Page.XPathAsync
-      - Page.QuerySelectorAsync
-      - Page.QuerySelectorAllAsync
-      - Page.QuerySelectorAllHandleAsync
-      - Page.SelectAsync
-      - Page.ExposeFunctionAsync
-      - Page.EvaluateOnNewDocumentAsync
-      - Page.AddScriptTagAsync
-      - Page.AddStyleTagAsync
-      - Page.PageError
-      - JSHandle.EvaluateFunctionAsync
-      - ElementHandle.EvaluateFunctionAsync
+    <PackageReleaseNotes>* 0.8.0: ElementHandle
+  * Features:
+    - ElementHandle support
+  * API Changes
+    - Page.SetViewport renamed to Page.SetViewportAsync
+    - JSHandle.AsElement was dropped. Use JSHandle as ElementHandle instead
+    - JSHandle.JsonValue renamed to JSHandle.JsonValueAsync
+  * New APIs
+    - Page.WaitForNavigationAsync
+    - ElementHandle.QuerySelectorAsync
+    - ElementHandle.QuerySelectorAllAsync
+    - ElementHandle.XPathAsync
+    - ElementHandle.ScreenshotAsync
+    - ElementHandle.ScreenshotStreamAsync
+    - ElementHandle.ClickAsync
+    - ElementHandle.HoverAsync
+    - ElementHandle.BoundingBoxAsync
+    - JSHandle.GetPropertyAsync
+    - JSHandle.GetPropertiesAsync
+* 0.7.0: Page improvements
+  * Features
+    - Selectors and Expressions over Selectors
+    - Script and Style tags
+  * New APIs
+    - Page.XPathAsync
+    - Page.QuerySelectorAsync
+    - Page.QuerySelectorAllAsync
+    - Page.QuerySelectorAllHandleAsync
+    - Page.SelectAsync
+    - Page.ExposeFunctionAsync
+    - Page.EvaluateOnNewDocumentAsync
+    - Page.AddScriptTagAsync
+    - Page.AddStyleTagAsync
+    - Page.PageError
+    - JSHandle.EvaluateFunctionAsync
+    - ElementHandle.EvaluateFunctionAsync
 * 0.6.0: Input
   * Features
     - Input simulation
@@ -111,7 +130,7 @@
 * 0.3.1: .NET Framework Support
 * 0.3.0: Process improvements, User data dir support
 * 0.1.0: PDF and Screenshots support</PackageReleaseNotes>
-    <ReleaseVersion>0.7.0</ReleaseVersion>
+    <ReleaseVersion>0.8.0</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
   <ItemGroup>
