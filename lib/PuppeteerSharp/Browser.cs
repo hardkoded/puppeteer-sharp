@@ -33,7 +33,6 @@ namespace PuppeteerSharp
         #region Properties
         public Process Process { get; }
         public Connection Connection { get; }
-
         
         public event EventHandler Disconnected;
         public event EventHandler<TargetChangedArgs> TargetChanged;
@@ -196,7 +195,6 @@ namespace PuppeteerSharp
                     Target = target
                 });
             }
-
         }
 
         internal static async Task<Browser> CreateAsync(

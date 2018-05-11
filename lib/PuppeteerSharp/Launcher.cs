@@ -178,7 +178,6 @@ namespace PuppeteerSharp
                 ForceKillChrome();
                 throw new ChromeProcessException("Failed to create connection", ex);
             }
-
         }
 
         /// <summary>
@@ -322,7 +321,6 @@ namespace PuppeteerSharp
                         new ChromeProcessException($"Timed out after {timeout} ms while trying to connect to Chrome! "));
                     _timer.Dispose();
                 }, null, timeout, 0);
-
             }
 
             chromeProcess.Start();
@@ -360,7 +358,6 @@ namespace PuppeteerSharp
             {
                 _waitForChromeToClose.SetResult(true);
             }
-
         }
 
         private async Task KillChrome()
@@ -411,6 +408,5 @@ namespace PuppeteerSharp
         }
 
         #endregion
-
     }
 }
