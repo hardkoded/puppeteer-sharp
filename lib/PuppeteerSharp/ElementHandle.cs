@@ -176,7 +176,12 @@ namespace PuppeteerSharp
             await Page.Keyboard.PressAsync(key, options);
         }
 
-        internal async Task<ElementHandle> QuerySelectorAsync(string selector)
+        /// <summary>
+        /// The method runs <c>element.querySelector</c> within the page. If no element matches the selector, the return value resolve to <c>null</c>.
+        /// </summary>
+        /// <param name="selector">A selector to query element for</param>
+        /// <returns>Task which resolves to <see cref="ElementHandle"/> pointing to the frame element</returns>
+        public async Task<ElementHandle> QuerySelectorAsync(string selector)
         {
             var handle = await ExecutionContext.EvaluateFunctionHandleAsync(
                 "(element, selector) => element.querySelector(selector)",
