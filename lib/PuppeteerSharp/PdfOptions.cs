@@ -1,4 +1,6 @@
-﻿namespace PuppeteerSharp
+﻿using PuppeteerSharp.Media;
+
+namespace PuppeteerSharp
 {
     public class PdfOptions
     {
