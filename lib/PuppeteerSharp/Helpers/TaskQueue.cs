@@ -2,18 +2,18 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PuppeteerSharp
+namespace PuppeteerSharp.Helpers
 {
-    public class TaskQueue
+    internal class TaskQueue
     {
         private SemaphoreSlim _semaphore;
 
-        public TaskQueue()
+        internal TaskQueue()
         {
             _semaphore = new SemaphoreSlim(1);
         }
 
-        public async Task<T> Enqueue<T>(Func<Task<T>> taskGenerator)
+        internal async Task<T> Enqueue<T>(Func<Task<T>> taskGenerator)
         {
             await _semaphore.WaitAsync();
             try
@@ -26,7 +26,7 @@ namespace PuppeteerSharp
             }
         }
 
-        public async Task Enqueue(Func<Task> taskGenerator)
+        internal async Task Enqueue(Func<Task> taskGenerator)
         {
             await _semaphore.WaitAsync();
             try
