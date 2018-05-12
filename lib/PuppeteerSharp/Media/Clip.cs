@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace PuppeteerSharp
+namespace PuppeteerSharp.Media
 {
     public class Clip
     {
