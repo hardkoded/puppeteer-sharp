@@ -2,7 +2,7 @@
 using System.Net.Http;
 using Newtonsoft.Json;
 
-namespace PuppeteerSharp
+namespace PuppeteerSharp.Helpers
 {
     internal class HttpMethodConverter : JsonConverter
     {
