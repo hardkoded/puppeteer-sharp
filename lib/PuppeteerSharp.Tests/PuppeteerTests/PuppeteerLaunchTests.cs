@@ -6,7 +6,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace PuppeteerSharp.Tests.Puppeteer
+namespace PuppeteerSharp.Tests.PuppeteerTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class PuppeteerLaunchTests : PuppeteerBaseTest
@@ -17,7 +17,7 @@ namespace PuppeteerSharp.Tests.Puppeteer
             var options = TestConstants.DefaultBrowserOptions();
             options.IgnoreHTTPSErrors = true;
 
-            using (var browser = await PuppeteerSharp.Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision))
+            using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision))
             using (var page = await browser.NewPageAsync())
             {
                 var response = await page.GoToAsync(TestConstants.HttpsPrefix + "/empty.html");
@@ -30,7 +30,7 @@ namespace PuppeteerSharp.Tests.Puppeteer
         {
             var options = TestConstants.DefaultBrowserOptions();
 
-            using (var browser = await PuppeteerSharp.Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision))
+            using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision))
             using (var page = await browser.NewPageAsync())
             {
                 var response = await page.GoToAsync("https://www.google.com");
@@ -43,7 +43,7 @@ namespace PuppeteerSharp.Tests.Puppeteer
         {
             var options = TestConstants.DefaultBrowserOptions();
 
-            using (var browser = await PuppeteerSharp.Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision))
+            using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision))
             using (var page = await browser.NewPageAsync())
             {
                 var response = await page.GoToAsync(
@@ -63,7 +63,7 @@ namespace PuppeteerSharp.Tests.Puppeteer
             var options = TestConstants.DefaultBrowserOptions();
             options.IgnoreHTTPSErrors = true;
 
-            using (var browser = await PuppeteerSharp.Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision))
+            using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision))
             using (var page = await browser.NewPageAsync())
             {
                 var responses = new List<Response>();
@@ -80,8 +80,9 @@ namespace PuppeteerSharp.Tests.Puppeteer
         [Fact(Skip = "https://github.com/kblok/puppeteer-sharp/issues/76")]
         public async Task ShouldRejectAllPromisesWhenBrowserIsClosed()
         {
-            using (var browser = await PuppeteerSharp.Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(),
-                                                                            TestConstants.ChromiumRevision))
+            using (var browser = await Puppeteer.LaunchAsync(
+                TestConstants.DefaultBrowserOptions(),
+                TestConstants.ChromiumRevision))
             using (var page = await browser.NewPageAsync())
             {
                 var neverResolves = page.EvaluateFunctionHandleAsync("() => new Promise(r => {})");
@@ -101,7 +102,7 @@ namespace PuppeteerSharp.Tests.Puppeteer
 
             var exception = await Assert.ThrowsAsync<FileNotFoundException>(() =>
             {
-                return PuppeteerSharp.Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision);
+                return Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision);
             });
 
             Assert.Equal("Failed to launch chrome! path to executable does not exist", exception.Message);
@@ -145,7 +146,7 @@ namespace PuppeteerSharp.Tests.Puppeteer
         [Fact]
         public void ShouldReturnTheDefaultChromeArguments()
         {
-            var args = PuppeteerSharp.Puppeteer.DefaultArgs;
+            var args = Puppeteer.DefaultArgs;
             Assert.Contains("--no-first-run", args);
         }
 

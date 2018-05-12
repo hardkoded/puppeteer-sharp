@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using Xunit;
 
-namespace PuppeteerSharp.Tests.Puppeteer
+namespace PuppeteerSharp.Tests.PuppeteerTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class ExecutablePathTests
@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Tests.Puppeteer
         [Fact]
         public void ShouldWork()
         {
-            var executablePath = PuppeteerSharp.Puppeteer.GetExecutablePath();
+            var executablePath = Puppeteer.GetExecutablePath();
             Assert.True(File.Exists(executablePath));
         }
     }

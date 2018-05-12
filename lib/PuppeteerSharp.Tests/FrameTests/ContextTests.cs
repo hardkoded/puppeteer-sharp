@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Xunit;
 
-namespace PuppeteerSharp.Tests.Frame
+namespace PuppeteerSharp.Tests.FrameTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class ContextTests : PuppeteerPageBaseTest

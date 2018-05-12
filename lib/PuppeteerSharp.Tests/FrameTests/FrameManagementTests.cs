@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Xunit;
 using System.Linq;
 
-namespace PuppeteerSharp.Tests.Frame
+namespace PuppeteerSharp.Tests.FrameTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class FrameManagementTests : PuppeteerPageBaseTest
@@ -20,7 +20,7 @@ namespace PuppeteerSharp.Tests.Frame
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             // validate frameattached events
-            var attachedFrames = new List<PuppeteerSharp.Frame>();
+            var attachedFrames = new List<Frame>();
 
             Page.FrameAttached += (sender, e) => attachedFrames.Add(e.Frame);
 
@@ -30,7 +30,7 @@ namespace PuppeteerSharp.Tests.Frame
             Assert.Contains("/assets/frame.html", attachedFrames[0].Url);
 
             // validate framenavigated events
-            var navigatedFrames = new List<PuppeteerSharp.Frame>();
+            var navigatedFrames = new List<Frame>();
             Page.FrameNavigated += (sender, e) => navigatedFrames.Add(e.Frame);
 
             await FrameUtils.NavigateFrameAsync(Page, "frame1", "./empty.html");
@@ -38,7 +38,7 @@ namespace PuppeteerSharp.Tests.Frame
             Assert.Equal(TestConstants.EmptyPage, navigatedFrames[0].Url);
 
             // validate framedetached events
-            var detachedFrames = new List<PuppeteerSharp.Frame>();
+            var detachedFrames = new List<Frame>();
             Page.FrameDetached += (sender, e) => detachedFrames.Add(e.Frame);
 
             await FrameUtils.DetachFrameAsync(Page, "frame1");
@@ -69,9 +69,9 @@ namespace PuppeteerSharp.Tests.Frame
         [Fact]
         public async Task ShouldDetachChildFramesOnNavigation()
         {
-            var attachedFrames = new List<PuppeteerSharp.Frame>();
-            var detachedFrames = new List<PuppeteerSharp.Frame>();
-            var navigatedFrames = new List<PuppeteerSharp.Frame>();
+            var attachedFrames = new List<Frame>();
+            var detachedFrames = new List<Frame>();
+            var navigatedFrames = new List<Frame>();
 
             Page.FrameAttached += (sender, e) => attachedFrames.Add(e.Frame);
             Page.FrameDetached += (sender, e) => detachedFrames.Add(e.Frame);

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace PuppeteerSharp.Tests.Target
+namespace PuppeteerSharp.Tests.TargetTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class TargetTests : PuppeteerPageBaseTest
@@ -80,7 +80,7 @@ namespace PuppeteerSharp.Tests.Target
         public async Task ShouldReportWhenAServiceWorkerIsCreatedAndDestroyed()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var createdTargetTaskCompletion = new TaskCompletionSource<PuppeteerSharp.Target>();
+            var createdTargetTaskCompletion = new TaskCompletionSource<Target>();
             void TargetCreatedEventHandler(object sender, TargetChangedArgs e)
             {
                 createdTargetTaskCompletion.SetResult(e.Target);
@@ -93,7 +93,7 @@ namespace PuppeteerSharp.Tests.Target
             Assert.Equal("service_worker", createdTarget.Type);
             Assert.Equal(TestConstants.ServerUrl + "/sw.js", createdTarget.Url);
 
-            var targetDestroyedTaskCompletion = new TaskCompletionSource<PuppeteerSharp.Target>();
+            var targetDestroyedTaskCompletion = new TaskCompletionSource<Target>();
             void TargetDestroyedEventHandler(object sender, TargetChangedArgs e)
             {
                 targetDestroyedTaskCompletion.SetResult(e.Target);
@@ -109,7 +109,7 @@ namespace PuppeteerSharp.Tests.Target
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
 
-            var changedTargetTaskCompletion = new TaskCompletionSource<PuppeteerSharp.Target>();
+            var changedTargetTaskCompletion = new TaskCompletionSource<Target>();
             void ChangedTargetEventHandler(object sender, TargetChangedArgs e)
             {
                 changedTargetTaskCompletion.SetResult(e.Target);
@@ -121,7 +121,7 @@ namespace PuppeteerSharp.Tests.Target
             var changedTarget = await changedTargetTaskCompletion.Task;
             Assert.Equal(TestConstants.CrossProcessUrl + "/", changedTarget.Url);
 
-            changedTargetTaskCompletion = new TaskCompletionSource<PuppeteerSharp.Target>();
+            changedTargetTaskCompletion = new TaskCompletionSource<Target>();
             Browser.TargetChanged += ChangedTargetEventHandler;
             await Page.GoToAsync(TestConstants.EmptyPage);
             changedTarget = await changedTargetTaskCompletion.Task;
@@ -134,7 +134,7 @@ namespace PuppeteerSharp.Tests.Target
             var targetChanged = false;
             EventHandler<TargetChangedArgs> listener = (sender, e) => targetChanged = true;
             Browser.TargetChanged += listener;
-            var targetCompletionTask = new TaskCompletionSource<PuppeteerSharp.Target>();
+            var targetCompletionTask = new TaskCompletionSource<Target>();
             void TargetCreatedEventHandler(object sender, TargetChangedArgs e)
             {
                 targetCompletionTask.SetResult(e.Target);
@@ -146,7 +146,7 @@ namespace PuppeteerSharp.Tests.Target
             Assert.Equal(TestConstants.AboutBlank, target.Url);
 
             var newPage = await newPageTask;
-            targetCompletionTask = new TaskCompletionSource<PuppeteerSharp.Target>();
+            targetCompletionTask = new TaskCompletionSource<Target>();
             Browser.TargetCreated += TargetCreatedEventHandler;
             var evaluateTask = newPage.EvaluateExpressionHandleAsync("window.open('about:blank')");
             var target2 = await targetCompletionTask.Task;

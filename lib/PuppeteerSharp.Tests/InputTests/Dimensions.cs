@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace PuppeteerSharp.Tests.Input
+namespace PuppeteerSharp.Tests.InputTests
 {
     public class Dimensions
     {

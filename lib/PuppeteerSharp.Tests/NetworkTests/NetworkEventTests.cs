@@ -6,7 +6,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace PuppeteerSharp.Tests.Network
+namespace PuppeteerSharp.Tests.NetworkTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class NetworkEventTests : PuppeteerPageBaseTest

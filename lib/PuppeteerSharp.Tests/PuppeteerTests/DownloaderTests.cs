@@ -3,7 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace PuppeteerSharp.Tests.Puppeteer
+namespace PuppeteerSharp.Tests.PuppeteerTests
 {
     public class DownloaderTests
     {

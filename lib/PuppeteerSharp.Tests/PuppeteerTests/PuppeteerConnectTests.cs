@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Xunit;
 
-namespace PuppeteerSharp.Tests.Puppeteer
+namespace PuppeteerSharp.Tests.PuppeteerTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class PuppeteerConnectTests : PuppeteerBaseTest
@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests.Puppeteer
             {
                 BrowserWSEndpoint = Browser.WebSocketEndpoint
             };
-            var browser = await PuppeteerSharp.Puppeteer.ConnectAsync(options);
+            var browser = await Puppeteer.ConnectAsync(options);
             using (var page = await browser.NewPageAsync())
             {
                 var response = await page.EvaluateExpressionAsync<int>("7 * 8");
@@ -42,7 +42,7 @@ namespace PuppeteerSharp.Tests.Puppeteer
 
             Browser.Disconnect();
 
-            using (var browser = await PuppeteerSharp.Puppeteer.ConnectAsync(options))
+            using (var browser = await Puppeteer.ConnectAsync(options))
             {
                 var pages = (await browser.PagesAsync()).ToList();
                 var restoredPage = pages.FirstOrDefault(x => x.Url == url);

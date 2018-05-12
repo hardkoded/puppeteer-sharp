@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace PuppeteerSharp.Tests.Target
+namespace PuppeteerSharp.Tests.TargetTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class CreateCDPSessionTests : PuppeteerPageBaseTest

@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Xunit;
 
-namespace PuppeteerSharp.Tests.Frame
+namespace PuppeteerSharp.Tests.ConnectionsTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class ConnectionTests : PuppeteerPageBaseTest

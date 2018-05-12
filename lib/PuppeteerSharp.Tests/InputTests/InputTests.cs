@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace PuppeteerSharp.Tests.Input
+namespace PuppeteerSharp.Tests.InputTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class InputTests : PuppeteerPageBaseTest

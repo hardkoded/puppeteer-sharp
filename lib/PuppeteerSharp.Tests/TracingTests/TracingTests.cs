@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
-namespace PuppeteerSharp.Tests.Tracing
+namespace PuppeteerSharp.Tests.TracingTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class TracingTests : PuppeteerPageBaseTest
