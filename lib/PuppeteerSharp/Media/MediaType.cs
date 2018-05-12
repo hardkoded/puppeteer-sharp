@@ -2,7 +2,7 @@
 using Newtonsoft.Json.Converters;
 using System.Runtime.Serialization;
 
-namespace PuppeteerSharp
+namespace PuppeteerSharp.Media
 {
     [JsonConverter(typeof(StringEnumConverter), true)]
     public enum MediaType

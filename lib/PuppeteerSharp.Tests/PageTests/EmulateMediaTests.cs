@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using PuppeteerSharp.Media;
 using Xunit;
 
 namespace PuppeteerSharp.Tests.PageTests

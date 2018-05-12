@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Input;
+using PuppeteerSharp.Media;
 using PuppeteerSharp.Messaging;
 using PuppeteerSharp.Mobile;
 
