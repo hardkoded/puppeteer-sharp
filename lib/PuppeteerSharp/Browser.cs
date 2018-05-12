@@ -21,7 +21,6 @@ namespace PuppeteerSharp
             Connection.MessageReceived += Connect_MessageReceived;
 
             _closeCallBack = closeCallBack;
-
         }
 
         #region Private members
@@ -187,7 +186,6 @@ namespace PuppeteerSharp
                     Target = target
                 });
             }
-
         }
 
         internal static async Task<Browser> CreateAsync(Connection connection, IBrowserOptions options,

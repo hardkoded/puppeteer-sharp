@@ -42,14 +42,20 @@ namespace PuppeteerSharp.Tests
             var completion = new TaskCompletionSource<dynamic>();
             void handler(object sender, MessageEventArgs e)
             {
-                if (e.MessageID != eventName) return;
+                if (e.MessageID != eventName)
+                {
+                    return;
+                }
 
                 --eventCount;
-                if (eventCount > 0) return;
+                if (eventCount > 0)
+                {
+                    return;
+                }
 
                 emitter.MessageReceived -= handler;
                 completion.SetResult(e.MessageData);
-            };
+            }
 
             emitter.MessageReceived += handler;
 

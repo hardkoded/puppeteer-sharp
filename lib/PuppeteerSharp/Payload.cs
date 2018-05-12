@@ -38,7 +38,9 @@ namespace PuppeteerSharp
                     // consider URL to be normalized as-is.
                     normalizedUrl = HttpUtility.UrlDecode(Url);
                 }
-                catch { }
+                catch
+                {
+                }
 
                 var hash = new Payload()
                 {
