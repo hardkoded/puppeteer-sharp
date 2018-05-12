@@ -1,4 +1,5 @@
 ﻿using System;
+using PuppeteerSharp.Mobile;
 
 namespace PuppeteerSharp.Tests
 {

@@ -11,6 +11,7 @@ using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Input;
 using PuppeteerSharp.Messaging;
+using PuppeteerSharp.Mobile;
 
 namespace PuppeteerSharp
 {
