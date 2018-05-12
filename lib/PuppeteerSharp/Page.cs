@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Input;
@@ -251,7 +252,7 @@ namespace PuppeteerSharp
         /// <returns>Task</returns>
         public async Task EvaluateOnNewDocumentAsync(string pageFunction, params object[] args)
         {
-            var source = Helper.EvaluationString(pageFunction, args);
+            var source = EvaluationString(pageFunction, args);
             await Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new { source });
         }
 
@@ -1231,7 +1232,7 @@ namespace PuppeteerSharp
                     }
                 }
 
-                var expression = Helper.EvaluationString(deliverResult, name, seq, result);
+                var expression = EvaluationString(deliverResult, name, seq, result);
                 var dummy = Client.SendAsync("Runtime.evaluate", new { expression, contextId = message.ExecutionContextId })
                     .ContinueWith(task =>
                     {
@@ -1247,7 +1248,7 @@ namespace PuppeteerSharp
             {
                 foreach (var arg in message.Args)
                 {
-                    await Helper.ReleaseObject(Client, arg);
+                    await RemoteObjectHelper.ReleaseObject(Client, arg);
                 }
 
                 return;
@@ -1258,7 +1259,7 @@ namespace PuppeteerSharp
                 .ToList();
             var handles = values
                 .ConvertAll(handle => handle.RemoteObject["objectId"] != null
-                ? handle.ToString() : Helper.ValueFromRemoteObject<object>(handle.RemoteObject));
+                ? handle.ToString() : RemoteObjectHelper.ValueFromRemoteObject<object>(handle.RemoteObject));
 
             var consoleMessage = new ConsoleMessage(message.Type, string.Join(" ", handles), values);
             Console?.Invoke(this, new ConsoleEventArgs(consoleMessage));
@@ -1289,7 +1290,7 @@ namespace PuppeteerSharp
                     return promise;
                 };
             }";
-            var expression = Helper.EvaluationString(addPageBinding, name);
+            var expression = EvaluationString(addPageBinding, name);
             await Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new { source = expression });
 
             await Task.WhenAll(Frames.Select(frame => frame.EvaluateExpressionAsync(expression)
@@ -1313,6 +1314,17 @@ namespace PuppeteerSharp
             if (response.errorText != null)
             {
                 throw new NavigationException(response.errorText.ToString());
+            }
+        }
+
+        private static string EvaluationString(string fun, params object[] args)
+        {
+            return $"({fun})({string.Join(",", args.Select(SerializeArgument))})";
+
+            string SerializeArgument(object arg)
+            {
+                if (arg == null) return "undefined";
+                return JsonConvert.SerializeObject(arg);
             }
         }
         #endregion

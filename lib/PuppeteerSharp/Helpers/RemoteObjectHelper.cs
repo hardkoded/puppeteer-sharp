@@ -3,21 +3,10 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PuppeteerSharp
+namespace PuppeteerSharp.Helpers
 {
-    internal class Helper
+    internal class RemoteObjectHelper
     {
-        internal static string EvaluationString(string fun, params object[] args)
-        {
-            return $"({fun})({string.Join(",", args.Select(SerializeArgument))})";
-
-            string SerializeArgument(object arg)
-            {
-                if (arg == null) return "undefined";
-                return JsonConvert.SerializeObject(arg);
-            }
-        }
-
         internal static object ValueFromRemoteObject<T>(dynamic remoteObject)
         {
             if (remoteObject.unserializableValue != null)
@@ -80,25 +69,6 @@ namespace PuppeteerSharp
                 // Swallow these since they are harmless and we don't leak anything in this case.
                 Console.WriteLine(ex.ToString());
             }
-        }
-
-        internal static string GetExceptionMessage(EvaluateExceptionDetails exceptionDetails)
-        {
-            if (exceptionDetails.Exception != null)
-            {
-                return exceptionDetails.Exception.Description;
-            }
-            var message = exceptionDetails.Text;
-            if (exceptionDetails.StackTrace != null)
-            {
-                foreach (var callframe in exceptionDetails.StackTrace.CallFrames)
-                {
-                    var location = $"{callframe.Url}:{callframe.LineNumber}:{callframe.ColumnNumber}";
-                    var functionName = string.IsNullOrEmpty(callframe.FunctionName) ? "<anonymous>" : callframe.FunctionName;
-                    message += $"\n at ${functionName} (${location})";
-                }
-            }
-            return message;
         }
     }
 }

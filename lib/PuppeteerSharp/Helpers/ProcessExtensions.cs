@@ -5,9 +5,9 @@ using System.Reflection;
 
 namespace PuppeteerSharp.Helpers
 {
-    public static class ProcessExtensions
+    internal static class ProcessExtensions
     {
-        public static void RemoveExitedEvent(this Process process)
+        internal static void RemoveExitedEvent(this Process process)
         {
             RemoveHandler(process, "_onExited");
             RemoveHandler(process, "onExited");
