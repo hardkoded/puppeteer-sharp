@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace PuppeteerSharp
+namespace PuppeteerSharp.Input
 {
     [JsonConverter(typeof(StringEnumConverter), true)]
     public enum MouseButton
