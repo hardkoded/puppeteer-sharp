@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace PuppeteerSharp
+namespace PuppeteerSharp.Media
 {
     internal class ScreenOrientation
     {

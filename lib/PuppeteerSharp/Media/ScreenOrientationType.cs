@@ -1,5 +1,5 @@
 ﻿using System;
-namespace PuppeteerSharp
+namespace PuppeteerSharp.Media
 {
     public struct ScreenOrientationType
     {
