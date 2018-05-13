@@ -81,7 +81,12 @@ namespace PuppeteerSharp
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
             => EvaluateAsync<T>(EvaluateFunctionHandleAsync(script, args));
 
-        public async Task<dynamic> QueryObjects(JSHandle prototypeHandle)
+        /// <summary>
+        /// The method iterates JavaScript heap and finds all the objects with the given prototype.
+        /// </summary>
+        /// <returns>A task which resolves to a handle to an array of objects with this prototype.</returns>
+        /// <param name="prototypeHandle">A handle to the object prototype.</param>
+        public async Task<dynamic> QueryObjectsAsync(JSHandle prototypeHandle)
         {
             if (prototypeHandle.Disposed)
             {

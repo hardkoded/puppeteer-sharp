@@ -65,7 +65,6 @@ namespace PuppeteerSharp
 
             _screenshotTaskQueue = screenshotTaskQueue;
 
-            //TODO: Do we need this bubble?
             _frameManager.FrameAttached += (sender, e) => FrameAttached?.Invoke(this, e);
             _frameManager.FrameDetached += (sender, e) => FrameDetached?.Invoke(this, e);
             _frameManager.FrameNavigated += (sender, e) => FrameNavigated?.Invoke(this, e);
@@ -258,12 +257,24 @@ namespace PuppeteerSharp
             await Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new { source });
         }
 
-        public async Task<JSHandle> QueryObjects(JSHandle prototypeHandle)
+        /// <summary>
+        /// The method iterates JavaScript heap and finds all the objects with the given prototype.
+        /// Shortcut for <c>page.MainFrame.GetExecutionContextAsync().QueryObjectsAsync(prototypeHandle)</c>.
+        /// </summary>
+        /// <returns>A task which resolves to a handle to an array of objects with this prototype.</returns>
+        /// <param name="prototypeHandle">A handle to the object prototype.</param>
+        public async Task<JSHandle> QueryObjectsAsync(JSHandle prototypeHandle)
         {
             var context = await MainFrame.GetExecutionContextAsync();
-            return await context.QueryObjects(prototypeHandle);
+            return await context.QueryObjectsAsync(prototypeHandle);
         }
 
+        /// <summary>
+        /// Activating request interception enables <see cref="Request.AbortAsync(RequestAbortErrorCode)">request.AbortAsync</see>, 
+        /// <see cref="Request.ContinueAsync(Payload)">request.ContinueAsync</see> and <see cref="Request.RespondAsync(ResponseData)">request.RespondAsync</see> methods.
+        /// </summary>
+        /// <returns>The request interception task.</returns>
+        /// <param name="value">Whether to enable request interception..</param>
         public async Task SetRequestInterceptionAsync(bool value)
             => await _networkManager.SetRequestInterceptionAsync(value);
 
