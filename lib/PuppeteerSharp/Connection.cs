@@ -34,8 +34,6 @@ namespace PuppeteerSharp
         private Dictionary<int, TaskCompletionSource<dynamic>> _responses;
         private Dictionary<string, Session> _sessions;
         private TaskCompletionSource<bool> _connectionCloseTask;
-
-        private bool _closeMessageSent;
         private const string CloseMessage = "Browser.close";
         private TaskQueue _socketQueue;
         #endregion
@@ -67,13 +65,6 @@ namespace PuppeteerSharp
 
             await _socketQueue.Enqueue(() => WebSocket.SendAsync(buffer, WebSocketMessageType.Text, true, default(CancellationToken)));
 
-            //I don't know if this will be the final solution.
-            //For now this will prevent the WebSocket from failing after the process is killed by the close method.
-            if (method == CloseMessage)
-            {
-                _closeMessageSent = true;
-            }
-
             return await _responses[id].Task;
         }
 
@@ -97,11 +88,12 @@ namespace PuppeteerSharp
         {
             if (!IsClosed)
             {
+                Closed?.Invoke(this, new EventArgs());
                 _connectionCloseTask.SetResult(true);
                 IsClosed = true;
             }
 
-            foreach(var session in _sessions.Values)
+            foreach (var session in _sessions.Values)
             {
                 session.OnClosed();
             }
@@ -150,7 +142,10 @@ namespace PuppeteerSharp
                     {
                         result = socketTask.Result;
                     }
-                    catch (AggregateException) when (_closeMessageSent)
+                    catch (AggregateException ex) when (
+                        ex.InnerExceptions.Count > 0 &&
+                        ex.InnerExceptions[0] is WebSocketException &&
+                        ((WebSocketException)ex.InnerExceptions[0]).WebSocketErrorCode == WebSocketError.ConnectionClosedPrematurely)
                     {
                         if (!IsClosed)
                         {
