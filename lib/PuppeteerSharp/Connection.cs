@@ -143,9 +143,8 @@ namespace PuppeteerSharp
                         result = socketTask.Result;
                     }
                     catch (AggregateException ex) when (
-                        ex.InnerExceptions.Count > 0 &&
-                        ex.InnerExceptions[0] is WebSocketException &&
-                        ((WebSocketException)ex.InnerExceptions[0]).WebSocketErrorCode == WebSocketError.ConnectionClosedPrematurely)
+                        ex.InnerException is WebSocketException webSocketException &&
+                        webSocketException.WebSocketErrorCode == WebSocketError.ConnectionClosedPrematurely)
                     {
                         if (!IsClosed)
                         {
