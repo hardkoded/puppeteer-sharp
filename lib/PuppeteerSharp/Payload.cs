@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Web;
 using Newtonsoft.Json;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
 {
@@ -13,7 +14,7 @@ namespace PuppeteerSharp
         {
             Headers = new Dictionary<string, object>();
         }
-        
+
         [JsonProperty("method"), JsonConverter(typeof(HttpMethodConverter))]
         public HttpMethod Method { get; set; }
         [JsonProperty("postData")]
@@ -37,7 +38,9 @@ namespace PuppeteerSharp
                     // consider URL to be normalized as-is.
                     normalizedUrl = HttpUtility.UrlDecode(Url);
                 }
-                catch { }
+                catch
+                {
+                }
 
                 var hash = new Payload()
                 {

@@ -32,7 +32,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
         private void CheckMetrics(Dictionary<string, decimal> metrics)
         {
-            var metricsToCheck = PuppeteerSharp.Page.SupportedMetrics.ToList();
+            var metricsToCheck = Page.SupportedMetrics.ToList();
 
             foreach (var name in metrics.Keys)
             {

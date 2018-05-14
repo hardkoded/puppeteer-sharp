@@ -81,6 +81,32 @@ namespace PuppeteerSharp
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
             => EvaluateAsync<T>(EvaluateFunctionHandleAsync(script, args));
 
+        /// <summary>
+        /// The method iterates JavaScript heap and finds all the objects with the given prototype.
+        /// </summary>
+        /// <returns>A task which resolves to a handle to an array of objects with this prototype.</returns>
+        /// <param name="prototypeHandle">A handle to the object prototype.</param>
+        public async Task<dynamic> QueryObjectsAsync(JSHandle prototypeHandle)
+        {
+            if (prototypeHandle.Disposed)
+            {
+                throw new ArgumentException("prototypeHandle is disposed", nameof(prototypeHandle));
+            }
+
+            if (!((IDictionary<string, object>)prototypeHandle.RemoteObject).ContainsKey("objectId"))
+            {
+                throw new ArgumentException("Prototype JSHandle must not be referencing primitive value",
+                                            nameof(prototypeHandle));
+            }
+
+            dynamic response = await _client.SendAsync("Runtime.queryObjects", new Dictionary<string, object>()
+            {
+                {"prototypeObjectId", prototypeHandle.RemoteObject.objectId}
+            });
+
+            return ObjectHandleFactory(response.objects);
+        }
+
         internal async Task<JSHandle> EvaluateExpressionHandleAsync(string script)
         {
             if (string.IsNullOrEmpty(script))
@@ -131,7 +157,7 @@ namespace PuppeteerSharp
             if (response.exceptionDetails != null)
             {
                 throw new EvaluationFailedException("Evaluation failed: " +
-                    Helper.GetExceptionMessage(response.exceptionDetails.ToObject<EvaluateExceptionDetails>()));
+                    GetExceptionMessage(response.exceptionDetails.ToObject<EvaluateExceptionDetails>()));
             }
 
             return ObjectHandleFactory(response.result);
@@ -165,25 +191,23 @@ namespace PuppeteerSharp
             return new { value = arg };
         }
 
-        public async Task<dynamic> QueryObjects(JSHandle prototypeHandle)
+        private static string GetExceptionMessage(EvaluateExceptionDetails exceptionDetails)
         {
-            if (prototypeHandle.Disposed)
+            if (exceptionDetails.Exception != null)
             {
-                throw new ArgumentException("prototypeHandle is disposed", nameof(prototypeHandle));
+                return exceptionDetails.Exception.Description;
             }
-
-            if (!((IDictionary<string, object>)prototypeHandle.RemoteObject).ContainsKey("objectId"))
+            var message = exceptionDetails.Text;
+            if (exceptionDetails.StackTrace != null)
             {
-                throw new ArgumentException("Prototype JSHandle must not be referencing primitive value",
-                                            nameof(prototypeHandle));
+                foreach (var callframe in exceptionDetails.StackTrace.CallFrames)
+                {
+                    var location = $"{callframe.Url}:{callframe.LineNumber}:{callframe.ColumnNumber}";
+                    var functionName = string.IsNullOrEmpty(callframe.FunctionName) ? "<anonymous>" : callframe.FunctionName;
+                    message += $"\n at ${functionName} (${location})";
+                }
             }
-
-            dynamic response = await _client.SendAsync("Runtime.queryObjects", new Dictionary<string, object>()
-            {
-                {"prototypeObjectId", prototypeHandle.RemoteObject.objectId}
-            });
-
-            return ObjectHandleFactory(response.objects);
+            return message;
         }
     }
 }

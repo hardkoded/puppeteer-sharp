@@ -1,5 +1,6 @@
 ﻿using System;
 using Newtonsoft.Json;
+using PuppeteerSharp.Media;
 
 namespace PuppeteerSharp
 {

@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -97,10 +98,10 @@ namespace PuppeteerSharp
                     {"returnByValue", true},
                     {"awaitPromise", true}
                 });
-                return (T)Helper.ValueFromRemoteObject<T>(response.result);
+                return (T)RemoteObjectHelper.ValueFromRemoteObject<T>(response.result);
             }
 
-            return (T)Helper.ValueFromRemoteObject<T>(RemoteObject);
+            return (T)RemoteObjectHelper.ValueFromRemoteObject<T>(RemoteObject);
         }
 
         public async Task DisposeAsync()
@@ -111,7 +112,7 @@ namespace PuppeteerSharp
             }
 
             Disposed = true;
-            await Helper.ReleaseObject(_client, RemoteObject);
+            await RemoteObjectHelper.ReleaseObject(_client, RemoteObject);
         }
 
         public override string ToString()
@@ -122,7 +123,7 @@ namespace PuppeteerSharp
                 return "JSHandle@" + type;
             }
 
-            return "JSHandle:" + Helper.ValueFromRemoteObject<object>(RemoteObject)?.ToString();
+            return "JSHandle:" + RemoteObjectHelper.ValueFromRemoteObject<object>(RemoteObject)?.ToString();
         }
 
         internal object FormatArgument(ExecutionContext context)

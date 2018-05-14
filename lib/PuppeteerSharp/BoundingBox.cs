@@ -1,4 +1,6 @@
 ﻿using System;
+using PuppeteerSharp.Media;
+
 namespace PuppeteerSharp
 {
     public class BoundingBox

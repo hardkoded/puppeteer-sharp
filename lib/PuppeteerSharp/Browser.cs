@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
 {
@@ -20,7 +21,6 @@ namespace PuppeteerSharp
             Connection.MessageReceived += Connect_MessageReceived;
 
             _closeCallBack = closeCallBack;
-
         }
 
         #region Private members
@@ -186,7 +186,6 @@ namespace PuppeteerSharp
                     Target = target
                 });
             }
-
         }
 
         internal static async Task<Browser> CreateAsync(Connection connection, IBrowserOptions options,

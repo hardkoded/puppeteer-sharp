@@ -6,10 +6,13 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Input;
+using PuppeteerSharp.Media;
 using PuppeteerSharp.Messaging;
+using PuppeteerSharp.Mobile;
 
 namespace PuppeteerSharp
 {
@@ -62,7 +65,6 @@ namespace PuppeteerSharp
 
             _screenshotTaskQueue = screenshotTaskQueue;
 
-            //TODO: Do we need this bubble?
             _frameManager.FrameAttached += (sender, e) => FrameAttached?.Invoke(this, e);
             _frameManager.FrameDetached += (sender, e) => FrameDetached?.Invoke(this, e);
             _frameManager.FrameNavigated += (sender, e) => FrameNavigated?.Invoke(this, e);
@@ -251,16 +253,28 @@ namespace PuppeteerSharp
         /// <returns>Task</returns>
         public async Task EvaluateOnNewDocumentAsync(string pageFunction, params object[] args)
         {
-            var source = Helper.EvaluationString(pageFunction, args);
+            var source = EvaluationString(pageFunction, args);
             await Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new { source });
         }
 
-        public async Task<JSHandle> QueryObjects(JSHandle prototypeHandle)
+        /// <summary>
+        /// The method iterates JavaScript heap and finds all the objects with the given prototype.
+        /// Shortcut for <c>page.MainFrame.GetExecutionContextAsync().QueryObjectsAsync(prototypeHandle)</c>.
+        /// </summary>
+        /// <returns>A task which resolves to a handle to an array of objects with this prototype.</returns>
+        /// <param name="prototypeHandle">A handle to the object prototype.</param>
+        public async Task<JSHandle> QueryObjectsAsync(JSHandle prototypeHandle)
         {
             var context = await MainFrame.GetExecutionContextAsync();
-            return await context.QueryObjects(prototypeHandle);
+            return await context.QueryObjectsAsync(prototypeHandle);
         }
 
+        /// <summary>
+        /// Activating request interception enables <see cref="Request.AbortAsync(RequestAbortErrorCode)">request.AbortAsync</see>, 
+        /// <see cref="Request.ContinueAsync(Payload)">request.ContinueAsync</see> and <see cref="Request.RespondAsync(ResponseData)">request.RespondAsync</see> methods.
+        /// </summary>
+        /// <returns>The request interception task.</returns>
+        /// <param name="value">Whether to enable request interception..</param>
         public async Task SetRequestInterceptionAsync(bool value)
             => await _networkManager.SetRequestInterceptionAsync(value);
 
@@ -463,7 +477,7 @@ namespace PuppeteerSharp
         public Task ExposeFunctionAsync<T1, T2, T3, T4, TResult>(string name, Func<T1, T2, T3, T4, TResult> puppeteerFunction)
             => ExposeFunctionAsync(name, (Delegate)puppeteerFunction);
 
-        public static async Task<Page> CreateAsync(Session client, Target target, bool ignoreHTTPSErrors, bool appMode,
+        internal static async Task<Page> CreateAsync(Session client, Target target, bool ignoreHTTPSErrors, bool appMode,
                                                    TaskQueue screenshotTaskQueue)
         {
             await client.SendAsync("Page.enable", null);
@@ -1231,7 +1245,7 @@ namespace PuppeteerSharp
                     }
                 }
 
-                var expression = Helper.EvaluationString(deliverResult, name, seq, result);
+                var expression = EvaluationString(deliverResult, name, seq, result);
                 var dummy = Client.SendAsync("Runtime.evaluate", new { expression, contextId = message.ExecutionContextId })
                     .ContinueWith(task =>
                     {
@@ -1247,7 +1261,7 @@ namespace PuppeteerSharp
             {
                 foreach (var arg in message.Args)
                 {
-                    await Helper.ReleaseObject(Client, arg);
+                    await RemoteObjectHelper.ReleaseObject(Client, arg);
                 }
 
                 return;
@@ -1258,7 +1272,7 @@ namespace PuppeteerSharp
                 .ToList();
             var handles = values
                 .ConvertAll(handle => handle.RemoteObject["objectId"] != null
-                ? handle.ToString() : Helper.ValueFromRemoteObject<object>(handle.RemoteObject));
+                ? handle.ToString() : RemoteObjectHelper.ValueFromRemoteObject<object>(handle.RemoteObject));
 
             var consoleMessage = new ConsoleMessage(message.Type, string.Join(" ", handles), values);
             Console?.Invoke(this, new ConsoleEventArgs(consoleMessage));
@@ -1289,7 +1303,7 @@ namespace PuppeteerSharp
                     return promise;
                 };
             }";
-            var expression = Helper.EvaluationString(addPageBinding, name);
+            var expression = EvaluationString(addPageBinding, name);
             await Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new { source = expression });
 
             await Task.WhenAll(Frames.Select(frame => frame.EvaluateExpressionAsync(expression)
@@ -1313,6 +1327,17 @@ namespace PuppeteerSharp
             if (response.errorText != null)
             {
                 throw new NavigationException(response.errorText.ToString());
+            }
+        }
+
+        private static string EvaluationString(string fun, params object[] args)
+        {
+            return $"({fun})({string.Join(",", args.Select(SerializeArgument))})";
+
+            string SerializeArgument(object arg)
+            {
+                if (arg == null) return "undefined";
+                return JsonConvert.SerializeObject(arg);
             }
         }
         #endregion

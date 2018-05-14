@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Tests.Issues
             {
                 var options = TestConstants.DefaultBrowserOptions();
                 options.Args = new[] { "-remote-debugging-port=-2" };
-                await PuppeteerSharp.Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision);
+                await Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision);
             });
         }
     }
