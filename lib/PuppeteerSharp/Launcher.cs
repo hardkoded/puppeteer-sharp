@@ -48,6 +48,7 @@ namespace PuppeteerSharp
         private static int _processCount = 0;
         private bool _processLoaded;
         private const string UserDataDirArgument = "--user-data-dir";
+        private bool _chromiumLaunched = false;
         #endregion
 
         #region Properties
@@ -73,6 +74,12 @@ namespace PuppeteerSharp
         /// </remarks>
         public async Task<Browser> LaunchAsync(LaunchOptions options, int chromiumRevision)
         {
+            if (_chromiumLaunched)
+            {
+                throw new InvalidOperationException("You can create or connect to a chromium process only once");
+            }
+            _chromiumLaunched = true;
+
             var chromeArguments = new List<string>(DefaultArgs);
 
             _options = options;
@@ -189,6 +196,12 @@ namespace PuppeteerSharp
         {
             try
             {
+                if (_chromiumLaunched)
+                {
+                    throw new InvalidOperationException("You can create or connect to a chromium process only once");
+                }
+                _chromiumLaunched = true;
+
                 var connectionDelay = options.SlowMo;
                 var keepAliveInterval = options.KeepAliveInterval;
 
