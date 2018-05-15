@@ -156,7 +156,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 await page.EvaluateExpressionAsync("localStorage.hey = 'hello'");
             }
 
-            using (var browser2 = await new Launcher().LaunchAsync(options, TestConstants.ChromiumRevision))
+            using (var browser2 = await launcher.LaunchAsync(options, TestConstants.ChromiumRevision))
             {
                 var page2 = await browser2.NewPageAsync();
                 await page2.GoToAsync(TestConstants.EmptyPage);
@@ -182,7 +182,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                     "document.cookie = 'doSomethingOnlyOnce=true; expires=Fri, 31 Dec 9999 23:59:59 GMT'");
             }
 
-            using (var browser2 = await new Launcher().LaunchAsync(options, TestConstants.ChromiumRevision))
+            using (var browser2 = await launcher.LaunchAsync(options, TestConstants.ChromiumRevision))
             {
                 var page2 = await browser2.NewPageAsync();
                 await page2.GoToAsync(TestConstants.EmptyPage);
@@ -210,7 +210,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             }
 
             options.Headless = true;
-            using (var browser2 = await new Launcher().LaunchAsync(options, TestConstants.ChromiumRevision))
+            using (var browser2 = await launcher.LaunchAsync(options, TestConstants.ChromiumRevision))
             {
                 var page2 = await browser2.NewPageAsync();
                 await page2.GoToAsync(TestConstants.EmptyPage);
