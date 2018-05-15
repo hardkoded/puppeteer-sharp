@@ -275,7 +275,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                         TestConstants.DefaultBrowserOptions(),
                         TestConstants.ChromiumRevision);
                 });
-                Assert.Equal("There is an opened Chromium process attached to this launcher", exception.Message);
+                Assert.Equal("You can create or connect to a chromium process only once", exception.Message);
             };
         }
     }
