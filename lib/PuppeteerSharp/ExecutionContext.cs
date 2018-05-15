@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace PuppeteerSharp
 {
@@ -90,18 +91,18 @@ namespace PuppeteerSharp
         {
             if (prototypeHandle.Disposed)
             {
-                throw new ArgumentException("prototypeHandle is disposed", nameof(prototypeHandle));
+                throw new PuppeteerException("Prototype JSHandle is disposed!");
             }
 
-            if (!((IDictionary<string, object>)prototypeHandle.RemoteObject).ContainsKey("objectId"))
+
+            if (!((JObject)prototypeHandle.RemoteObject).TryGetValue("objectId", out var objectId))
             {
-                throw new ArgumentException("Prototype JSHandle must not be referencing primitive value",
-                                            nameof(prototypeHandle));
+                throw new PuppeteerException("Prototype JSHandle must not be referencing primitive value");
             }
 
             dynamic response = await _client.SendAsync("Runtime.queryObjects", new Dictionary<string, object>()
             {
-                {"prototypeObjectId", prototypeHandle.RemoteObject.objectId}
+                {"prototypeObjectId", objectId.ToString()}
             });
 
             return ObjectHandleFactory(response.objects);
