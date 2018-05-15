@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using System.Net.WebSockets;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading;
 using Newtonsoft.Json.Linq;
-using System.IO;
 
 namespace PuppeteerSharp
 {
@@ -21,7 +17,7 @@ namespace PuppeteerSharp
             _callbacks = new Dictionary<int, MessageTask>();
         }
 
-        #region Private Memebers
+        #region Private Members
         private int _lastId = 0;
         private Dictionary<int, MessageTask> _callbacks;
         #endregion
@@ -98,7 +94,7 @@ namespace PuppeteerSharp
 
         #endregion
 
-        #region Private Mathods
+        #region Private Methods
 
         public void Dispose()
         {
@@ -152,7 +148,7 @@ namespace PuppeteerSharp
             }
         }
 
-        internal void Close()
+        internal void OnClosed()
         {
             foreach (var callback in _callbacks.Values)
             {
