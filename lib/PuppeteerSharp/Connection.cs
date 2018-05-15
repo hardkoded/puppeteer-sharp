@@ -34,7 +34,6 @@ namespace PuppeteerSharp
         private Dictionary<int, TaskCompletionSource<dynamic>> _responses;
         private Dictionary<string, Session> _sessions;
         private TaskCompletionSource<bool> _connectionCloseTask;
-        private const string CloseMessage = "Browser.close";
         private TaskQueue _socketQueue;
         #endregion
 
@@ -144,11 +143,8 @@ namespace PuppeteerSharp
                     }
                     catch
                     {
-                        if (!IsClosed)
-                        {
-                            OnClose();
-                            return null;
-                        }
+                        OnClose();
+                        return null;
                     }
 
                     endOfMessage = result.EndOfMessage;
@@ -202,12 +198,11 @@ namespace PuppeteerSharp
                 else if (obj.method == "Target.detachedFromTarget")
                 {
                     var session = _sessions.GetValueOrDefault(objAsJObject["params"]["sessionId"].ToString());
-                    if (session != null)
+                    if (!(session?.IsClosed ?? true))
                     {
                         session.OnClosed();
+                        _sessions.Remove(objAsJObject["params"]["sessionId"].ToString());
                     }
-
-                    _sessions.Remove(objAsJObject["params"]["sessionId"].ToString());
                 }
                 else
                 {
