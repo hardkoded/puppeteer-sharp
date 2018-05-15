@@ -94,7 +94,6 @@ namespace PuppeteerSharp
                 throw new PuppeteerException("Prototype JSHandle is disposed!");
             }
 
-
             if (!((JObject)prototypeHandle.RemoteObject).TryGetValue("objectId", out var objectId))
             {
                 throw new PuppeteerException("Prototype JSHandle must not be referencing primitive value");
