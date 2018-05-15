@@ -76,7 +76,7 @@ namespace PuppeteerSharp
         {
             if (_chromiumLaunched)
             {
-                throw new InvalidOperationException("You can create or connect to a chromium process only once");
+                throw new InvalidOperationException("Unable to create or connect to another chromium process");
             }
             _chromiumLaunched = true;
 
@@ -198,7 +198,7 @@ namespace PuppeteerSharp
             {
                 if (_chromiumLaunched)
                 {
-                    throw new InvalidOperationException("You can create or connect to a chromium process only once");
+                    throw new InvalidOperationException("Unable to create or connect to another chromium process");
                 }
                 _chromiumLaunched = true;
 

@@ -77,7 +77,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             }
         }
 
-        [Fact(Skip = "https://github.com/kblok/puppeteer-sharp/issues/76")]
+        [Fact]
         public async Task ShouldRejectAllPromisesWhenBrowserIsClosed()
         {
             using (var browser = await Puppeteer.LaunchAsync(
@@ -85,14 +85,12 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 TestConstants.ChromiumRevision))
             using (var page = await browser.NewPageAsync())
             {
-                var neverResolves = page.EvaluateFunctionHandleAsync("() => new Promise(r => {})");
-                await browser.CloseAsync();
-
-                await neverResolves;
-                var exception = await Assert.ThrowsAsync<Exception>(() => neverResolves);
+				var neverResolves = page.EvaluateFunctionHandleAsync("() => new Promise(r => {})");
+				await browser.CloseAsync();
+				var exception = await Assert.ThrowsAsync<TargetClosedException>(() => neverResolves);
                 Assert.Contains("Protocol error", exception.Message);
-            }
-        }
+			}
+		}
 
         [Fact]
         public async Task ShouldRejectIfExecutablePathIsInvalid()
@@ -144,6 +142,85 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         }
 
         [Fact]
+        public async Task UserDataDirOptionShouldRestoreState()
+        {
+            var launcher = new Launcher();
+            var userDataDir = Launcher.GetTemporaryDirectory();
+            var options = TestConstants.DefaultBrowserOptions();
+            options.Args = options.Args.Concat(new[] { $"--user-data-dir={userDataDir}" }).ToArray();
+
+            using (var browser = await launcher.LaunchAsync(options, TestConstants.ChromiumRevision))
+            {
+                var page = await browser.NewPageAsync();
+                await page.GoToAsync(TestConstants.EmptyPage);
+                await page.EvaluateExpressionAsync("localStorage.hey = 'hello'");
+            }
+
+            using (var browser2 = await Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision))
+            {
+                var page2 = await browser2.NewPageAsync();
+                await page2.GoToAsync(TestConstants.EmptyPage);
+                Assert.Equal("hello", await page2.EvaluateExpressionAsync("localStorage.hey"));
+            }
+
+            await launcher.TryDeleteUserDataDir();
+        }
+
+        [Fact]
+        public async Task UserDataDirOptionShouldRestoreCookies()
+        {
+            var launcher = new Launcher();
+            var userDataDir = Launcher.GetTemporaryDirectory();
+            var options = TestConstants.DefaultBrowserOptions();
+            options.Args = options.Args.Concat(new[] { $"--user-data-dir={userDataDir}" }).ToArray();
+
+            using (var browser = await launcher.LaunchAsync(options, TestConstants.ChromiumRevision))
+            {
+                var page = await browser.NewPageAsync();
+                await page.GoToAsync(TestConstants.EmptyPage);
+                await page.EvaluateExpressionAsync(
+                    "document.cookie = 'doSomethingOnlyOnce=true; expires=Fri, 31 Dec 9999 23:59:59 GMT'");
+            }
+
+            using (var browser2 = await Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision))
+            {
+                var page2 = await browser2.NewPageAsync();
+                await page2.GoToAsync(TestConstants.EmptyPage);
+                Assert.Equal("doSomethingOnlyOnce=true", await page2.EvaluateExpressionAsync("document.cookie"));
+            }
+
+            await launcher.TryDeleteUserDataDir();
+        }
+
+        [Fact]
+        public async Task HeadlessShouldBeAbleToReadCookiesWrittenByHeadful()
+        {
+            var launcher = new Launcher();
+            var userDataDir = Launcher.GetTemporaryDirectory();
+            var options = TestConstants.DefaultBrowserOptions();
+            options.Args = options.Args.Concat(new[] { $"--user-data-dir={userDataDir}" }).ToArray();
+            options.Headless = false;
+
+            using (var browser = await launcher.LaunchAsync(options, TestConstants.ChromiumRevision))
+            {
+                var page = await browser.NewPageAsync();
+                await page.GoToAsync(TestConstants.EmptyPage);
+                await page.EvaluateExpressionAsync(
+                    "document.cookie = 'foo=true; expires=Fri, 31 Dec 9999 23:59:59 GMT'");
+            }
+
+            options.Headless = true;
+            using (var browser2 = await Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision))
+            {
+                var page2 = await browser2.NewPageAsync();
+                await page2.GoToAsync(TestConstants.EmptyPage);
+                Assert.Equal("foo=true", await page2.EvaluateExpressionAsync("document.cookie"));
+            }
+
+            await launcher.TryDeleteUserDataDir();
+        }
+
+        [Fact]
         public void ShouldReturnTheDefaultChromeArguments()
         {
             var args = Puppeteer.DefaultArgs;
@@ -183,5 +260,23 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
 
             Assert.True(launcher.IsChromeClosed);
         }
-    }
+
+		[Fact]
+		public async Task ShouldNotOpenTwoChromesUsingTheSameLauncher()
+		{
+			var launcher = new Launcher();
+			using (var browser = await launcher.LaunchAsync(
+				TestConstants.DefaultBrowserOptions(),
+				TestConstants.ChromiumRevision))
+			{
+				var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+				{
+					return launcher.LaunchAsync(
+						TestConstants.DefaultBrowserOptions(),
+						TestConstants.ChromiumRevision);
+				});
+				Assert.Equal("Unable to create or connect to another chromium process", exception.Message);
+			};
+		}
+	}
 }
