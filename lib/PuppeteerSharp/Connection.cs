@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
@@ -100,7 +101,7 @@ namespace PuppeteerSharp
                 session.OnClosed();
             }
 
-            foreach (var response in _responses.Values)
+            foreach (var response in _responses.Values.Where(r => !r.TaskWrapper.Task.IsCompleted))
             {
                 response.TaskWrapper.SetException(new TargetClosedException(
                     $"Protocol error({response.Method}): Target closed."
@@ -199,7 +200,6 @@ namespace PuppeteerSharp
                 }
 
                 _responses[id].TaskWrapper.SetResult(obj.result);
-                _responses.Remove(id);
             }
             else
             {
