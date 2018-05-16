@@ -5,7 +5,7 @@ using Xunit;
 namespace PuppeteerSharp.Tests.PuppeteerTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
-    public class PuppeteerConnectTests : PuppeteerBaseTest
+    public class PuppeteerConnectTests : PuppeteerBrowserBaseTest
     {
         [Fact]
         public async Task ShouldBeAbleToConnectMultipleTimesToSameBrowser()

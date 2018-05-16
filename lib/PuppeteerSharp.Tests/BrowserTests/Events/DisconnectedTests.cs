@@ -4,7 +4,7 @@ using Xunit;
 namespace PuppeteerSharp.Tests.BrowserTests.Events
 {
     [Collection("PuppeteerLoaderFixture collection")]
-    public class DisconnectedTests : PuppeteerBaseTest
+    public class DisconnectedTests : PuppeteerBrowserBaseTest
     {
         [Fact]
         public async Task ShouldEmittedWhenBrowserGetsClosedDisconnectedOrUnderlyingWebsocketGetsClosed()

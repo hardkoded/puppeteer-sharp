@@ -148,6 +148,7 @@ namespace PuppeteerSharp
             }
 
             IsClosed = true;
+            Connection.StopReading();
 
             var closeTask = _closeCallBack();
 

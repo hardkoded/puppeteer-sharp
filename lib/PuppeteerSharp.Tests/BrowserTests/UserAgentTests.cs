@@ -4,7 +4,7 @@ using Xunit;
 namespace PuppeteerSharp.Tests.BrowserTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
-    public class UserAgentTests : PuppeteerBaseTest
+    public class UserAgentTests : PuppeteerBrowserBaseTest
     {
         [Fact]
         public async Task ShouldIncludeWebKit()

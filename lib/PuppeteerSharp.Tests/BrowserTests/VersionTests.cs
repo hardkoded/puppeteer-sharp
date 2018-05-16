@@ -4,7 +4,7 @@ using Xunit;
 namespace PuppeteerSharp.Tests.BrowserTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
-    public class VersionTests : PuppeteerBaseTest
+    public class VersionTests : PuppeteerBrowserBaseTest
     {
         [Fact]
         public async Task ShouldReturnWhetherWeAreInHeadless()

@@ -5,22 +5,12 @@ using System.Threading.Tasks;
 
 namespace PuppeteerSharp.Tests
 {
-    public class PuppeteerBaseTest : IDisposable
+    public class PuppeteerBaseTest
     {
         protected string BaseDirectory { get; set; }
-        protected Browser Browser { get; set; }
 
         protected SimpleServer Server => PuppeteerLoaderFixture.Server;
         protected SimpleServer HttpsServer => PuppeteerLoaderFixture.HttpsServer;
-
-        protected virtual async Task InitializeAsync()
-        {
-            Browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.ChromiumRevision);
-            Server.Reset();
-            HttpsServer.Reset();
-        }
-
-        protected virtual async Task DisposeAsync() => await Browser.CloseAsync();
 
         public PuppeteerBaseTest()
         {
@@ -32,10 +22,14 @@ namespace PuppeteerSharp.Tests
                 dirInfo.Create();
             }
 
-            InitializeAsync().GetAwaiter().GetResult();
+            Initialize();
         }
 
-        public void Dispose() => DisposeAsync().GetAwaiter().GetResult();
+        protected void Initialize()
+        {
+            Server.Reset();
+            HttpsServer.Reset();
+        }
 
         protected static Task<dynamic> WaitForEvents(Session emitter, string eventName, int eventCount = 1)
         {
