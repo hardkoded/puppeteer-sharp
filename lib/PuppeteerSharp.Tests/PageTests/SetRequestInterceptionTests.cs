@@ -179,9 +179,13 @@ namespace PuppeteerSharp.Tests.PageTests
             Page.RequestCreated += async (sender, e) =>
             {
                 if (e.Request.Url.Contains("non-existing-2"))
+                {
                     await e.Request.AbortAsync();
+                }
                 else
+                {
                     await e.Request.ContinueAsync();
+                }
             };
             await Page.GoToAsync(TestConstants.EmptyPage);
             var result = await Page.EvaluateFunctionAsync<string>(@"async () => {
