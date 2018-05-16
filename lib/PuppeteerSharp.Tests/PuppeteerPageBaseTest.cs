@@ -2,7 +2,7 @@
 
 namespace PuppeteerSharp.Tests
 {
-    public class PuppeteerPageBaseTest : PuppeteerBaseTest
+    public class PuppeteerPageBaseTest : PuppeteerBrowserBaseTest
     {
         protected Page Page { get; set; }
 

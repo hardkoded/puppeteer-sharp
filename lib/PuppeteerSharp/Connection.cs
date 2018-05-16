@@ -73,7 +73,7 @@ namespace PuppeteerSharp
 
             if (method == CloseMessage)
             {
-                _stopReading = true;
+                StopReading();
             }
 
             return await _responses[id].TaskWrapper.Task;
