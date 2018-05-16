@@ -19,9 +19,9 @@ namespace PuppeteerSharp
             WebSocket = ws;
 
             _socketQueue = new TaskQueue();
-            _responses = new Dictionary<int, TaskCompletionSource<dynamic>>();
+            _responses = new Dictionary<int, MessageTask>();
             _sessions = new Dictionary<string, Session>();
-            _connectionCloseTask = new TaskCompletionSource<bool>();
+            _websocketReaderCancellationSource = new CancellationTokenSource();
 
             Task task = Task.Factory.StartNew(async () =>
             {
@@ -31,10 +31,12 @@ namespace PuppeteerSharp
 
         #region Private Members
         private int _lastId;
-        private Dictionary<int, TaskCompletionSource<dynamic>> _responses;
+        private Dictionary<int, MessageTask> _responses;
         private Dictionary<string, Session> _sessions;
-        private TaskCompletionSource<bool> _connectionCloseTask;
         private TaskQueue _socketQueue;
+        private const string CloseMessage = "Browser.close";
+        private bool _stopReading;
+        private CancellationTokenSource _websocketReaderCancellationSource;
         #endregion
 
         #region Properties
@@ -58,18 +60,23 @@ namespace PuppeteerSharp
                 {"params", args}
             });
 
+            _responses[id] = new MessageTask
+            {
+                TaskWrapper = new TaskCompletionSource<dynamic>(),
+                Method = method
+            };
+
             var encoded = Encoding.UTF8.GetBytes(message);
             var buffer = new ArraySegment<Byte>(encoded, 0, encoded.Length);
-            QueueId(id);
-
             await _socketQueue.Enqueue(() => WebSocket.SendAsync(buffer, WebSocketMessageType.Text, true, default(CancellationToken)));
 
-            return await _responses[id].Task;
-        }
 
-        private void QueueId(int id)
-        {
-            _responses[id] = new TaskCompletionSource<dynamic>();
+            if (method == CloseMessage)
+            {
+                _stopReading = true;
+            }
+
+            return await _responses[id].TaskWrapper.Task;
         }
 
         public async Task<Session> CreateSession(string targetId)
@@ -81,15 +88,12 @@ namespace PuppeteerSharp
         }
         #endregion
 
-        #region Private Methods
-
         private void OnClose()
         {
             if (!IsClosed)
             {
+                _websocketReaderCancellationSource.Cancel();
                 Closed?.Invoke(this, new EventArgs());
-                _connectionCloseTask.SetResult(true);
-                IsClosed = true;
             }
 
             foreach (var session in _sessions.Values)
@@ -97,9 +101,21 @@ namespace PuppeteerSharp
                 session.OnClosed();
             }
 
+            foreach (var response in _responses.Values)
+            {
+                response.TaskWrapper.SetException(new TargetClosedException(
+                    $"Protocol error({response.Method}): Target closed."
+                ));
+            }
+
             _responses.Clear();
             _sessions.Clear();
+            IsClosed = true;
         }
+
+        internal void StopReading() => _stopReading = true;
+
+        #region Private Methods
 
         /// <summary>
         /// Starts listening the socket
@@ -123,28 +139,28 @@ namespace PuppeteerSharp
 
                 while (!endOfMessage)
                 {
-                    var socketTask = WebSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
-
-                    await Task.WhenAny(
-                        _connectionCloseTask.Task,
-                        socketTask
-                    );
-
-                    if (IsClosed)
-                    {
-                        OnClose();
-                        return null;
-                    }
-
                     WebSocketReceiveResult result = null;
                     try
                     {
-                        result = socketTask.Result;
+                        result = await WebSocket.ReceiveAsync(
+                            new ArraySegment<byte>(buffer),
+                            _websocketReaderCancellationSource.Token);
                     }
-                    catch
+                    catch (Exception) when (_stopReading)
                     {
-                        OnClose();
                         return null;
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        return null;
+                    }
+                    catch (Exception)
+                    {
+                        if (!IsClosed)
+                        {
+                            OnClose();
+                            return null;
+                        }
                     }
 
                     endOfMessage = result.EndOfMessage;
@@ -180,10 +196,14 @@ namespace PuppeteerSharp
                 //if not we add this to the list, sooner or later some one will come for it 
                 if (!_responses.ContainsKey(id))
                 {
-                    QueueId(id);
+                    _responses[id] = new MessageTask
+                    {
+                        TaskWrapper = new TaskCompletionSource<dynamic>()
+                    };
                 }
 
-                _responses[id].SetResult(obj.result);
+                _responses[id].TaskWrapper.SetResult(obj.result);
+                _responses.Remove(id);
             }
             else
             {

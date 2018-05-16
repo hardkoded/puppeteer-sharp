@@ -85,12 +85,12 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 TestConstants.ChromiumRevision))
             using (var page = await browser.NewPageAsync())
             {
-				var neverResolves = page.EvaluateFunctionHandleAsync("() => new Promise(r => {})");
-				await browser.CloseAsync();
-				var exception = await Assert.ThrowsAsync<TargetClosedException>(() => neverResolves);
+                var neverResolves = page.EvaluateFunctionHandleAsync("() => new Promise(r => {})");
+                await browser.CloseAsync();
+                var exception = await Assert.ThrowsAsync<TargetClosedException>(() => neverResolves);
                 Assert.Contains("Protocol error", exception.Message);
-			}
-		}
+            }
+        }
 
         [Fact]
         public async Task ShouldRejectIfExecutablePathIsInvalid()
@@ -261,22 +261,22 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             Assert.True(launcher.IsChromeClosed);
         }
 
-		[Fact]
-		public async Task ShouldNotOpenTwoChromesUsingTheSameLauncher()
-		{
-			var launcher = new Launcher();
-			using (var browser = await launcher.LaunchAsync(
-				TestConstants.DefaultBrowserOptions(),
-				TestConstants.ChromiumRevision))
-			{
-				var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-				{
-					return launcher.LaunchAsync(
-						TestConstants.DefaultBrowserOptions(),
-						TestConstants.ChromiumRevision);
-				});
-				Assert.Equal("Unable to create or connect to another chromium process", exception.Message);
-			};
-		}
-	}
+        [Fact]
+        public async Task ShouldNotOpenTwoChromesUsingTheSameLauncher()
+        {
+            var launcher = new Launcher();
+            using (var browser = await launcher.LaunchAsync(
+                TestConstants.DefaultBrowserOptions(),
+                TestConstants.ChromiumRevision))
+            {
+                var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+                {
+                    return launcher.LaunchAsync(
+                        TestConstants.DefaultBrowserOptions(),
+                        TestConstants.ChromiumRevision);
+                });
+                Assert.Equal("Unable to create or connect to another chromium process", exception.Message);
+            };
+        }
+    }
 }
