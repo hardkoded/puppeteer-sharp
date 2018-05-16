@@ -276,7 +276,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                         TestConstants.ChromiumRevision);
                 });
                 Assert.Equal("Unable to create or connect to another chromium process", exception.Message);
-            };
+            }
         }
     }
 }

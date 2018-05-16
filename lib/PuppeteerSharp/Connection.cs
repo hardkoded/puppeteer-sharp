@@ -70,7 +70,6 @@ namespace PuppeteerSharp
             var buffer = new ArraySegment<Byte>(encoded, 0, encoded.Length);
             await _socketQueue.Enqueue(() => WebSocket.SendAsync(buffer, WebSocketMessageType.Text, true, default(CancellationToken)));
 
-
             if (method == CloseMessage)
             {
                 _stopReading = true;
@@ -196,10 +195,7 @@ namespace PuppeteerSharp
                 //if not we add this to the list, sooner or later some one will come for it 
                 if (!_responses.ContainsKey(id))
                 {
-                    _responses[id] = new MessageTask
-                    {
-                        TaskWrapper = new TaskCompletionSource<dynamic>()
-                    };
+                    _responses[id] = new MessageTask { TaskWrapper = new TaskCompletionSource<dynamic>() };
                 }
 
                 _responses[id].TaskWrapper.SetResult(obj.result);
