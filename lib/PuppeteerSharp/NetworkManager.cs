@@ -100,10 +100,8 @@ namespace PuppeteerSharp
 
         #region Private Methods
 
-
         private async void Client_MessageReceived(object sender, MessageEventArgs e)
         {
-
             switch (e.MessageID)
             {
                 case "Network.requestWillBeSent":
@@ -121,7 +119,6 @@ namespace PuppeteerSharp
                 case "Network.loadingFailed":
                     OnLoadingFailed(e);
                     break;
-
             }
         }
 
