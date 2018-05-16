@@ -81,7 +81,6 @@ namespace PuppeteerSharp
             }
         }
 
-
         public async Task SetUserAgentAsync(string userAgent)
         {
             await _client.SendAsync("Network.setUserAgentOverride", new Dictionary<string, object>
