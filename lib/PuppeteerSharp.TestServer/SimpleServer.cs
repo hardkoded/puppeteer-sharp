@@ -44,7 +44,7 @@ namespace PuppeteerSharp.TestServer
                         {
                             subscriber(context.Request);
                         }
-                        if (_routes.TryGetValue(context.Request.Path, out var handler))
+                        if (_routes.TryGetValue(context.Request.Path + context.Request.QueryString, out var handler))
                         {
                             return handler(context);
                         }
