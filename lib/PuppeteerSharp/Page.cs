@@ -572,12 +572,7 @@ namespace PuppeteerSharp
                 throw new NavigationException(exception.InnerException.Message, exception.InnerException);
             }
 
-            Request request = null;
-
-            if (requests.ContainsKey(_frameManager.MainFrame.Url))
-            {
-                request = requests[_frameManager.MainFrame.Url];
-            }
+            requests.TryGetValue(MainFrame.Url, out var request);
 
             return request?.Response;
         }

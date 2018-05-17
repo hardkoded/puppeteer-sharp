@@ -71,7 +71,7 @@ namespace PuppeteerSharp
         {
             if (!_allowInterception)
             {
-                throw new PuppeteerException("Request interception is not enabled!");
+                throw new PuppeteerException("Request Interception is not enabled!");
             }
             if (_interceptionHandled)
             {
@@ -112,7 +112,7 @@ namespace PuppeteerSharp
 
             if (!_allowInterception)
             {
-                throw new PuppeteerException("Request interception is not enabled!");
+                throw new PuppeteerException("Request Interception is not enabled!");
             }
             if (_interceptionHandled)
             {
@@ -190,7 +190,7 @@ namespace PuppeteerSharp
         {
             if (!_allowInterception)
             {
-                throw new PuppeteerException("Request interception is not enabled!");
+                throw new PuppeteerException("Request Interception is not enabled!");
             }
             if (_interceptionHandled)
             {
