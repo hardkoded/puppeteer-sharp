@@ -4,7 +4,7 @@ using Xunit;
 namespace PuppeteerSharp.Tests.PageTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
-    public class CloseTests : PuppeteerBaseTest
+    public class CloseTests : PuppeteerBrowserBaseTest
     {
         [Fact]
         public async Task ShouldRejectAllPromisesWhenPageIsClosed()

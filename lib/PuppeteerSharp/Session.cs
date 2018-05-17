@@ -28,7 +28,7 @@ namespace PuppeteerSharp
         public Connection Connection { get; private set; }
         public event EventHandler<MessageEventArgs> MessageReceived;
         public event EventHandler<TracingCompleteEventArgs> TracingComplete;
-
+        public bool IsClosed { get; internal set; }
         #endregion
 
         #region Public Methods
@@ -150,6 +150,7 @@ namespace PuppeteerSharp
 
         internal void OnClosed()
         {
+            IsClosed = true;
             foreach (var callback in _callbacks.Values)
             {
                 callback.TaskWrapper.SetException(new TargetClosedException(

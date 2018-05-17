@@ -4,7 +4,7 @@ using Xunit;
 namespace PuppeteerSharp.Tests.BrowserTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
-    public class ProcessTests : PuppeteerBaseTest
+    public class ProcessTests : PuppeteerBrowserBaseTest
     {
         [Fact]
         public async Task ShouldReturnProcessInstance()

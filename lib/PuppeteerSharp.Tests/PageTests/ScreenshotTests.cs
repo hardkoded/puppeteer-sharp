@@ -10,7 +10,7 @@ using Xunit;
 namespace PuppeteerSharp.Tests.PageTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
-    public class ScreenshotTests : PuppeteerBaseTest
+    public class ScreenshotTests : PuppeteerBrowserBaseTest
     {
         [Fact]
         public async Task ShouldWorkWithFile()

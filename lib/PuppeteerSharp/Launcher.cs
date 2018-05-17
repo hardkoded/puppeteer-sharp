@@ -48,6 +48,7 @@ namespace PuppeteerSharp
         private static int _processCount = 0;
         private bool _processLoaded;
         private const string UserDataDirArgument = "--user-data-dir";
+        private bool _chromiumLaunched = false;
         #endregion
 
         #region Properties
@@ -72,6 +73,74 @@ namespace PuppeteerSharp
         /// <a href="https://chromium.googlesource.com/chromium/src/+/lkcr/docs/chromium_browser_vs_google_chrome.md">This article</a> describes some differences for Linux users.
         /// </remarks>
         public async Task<Browser> LaunchAsync(LaunchOptions options, int chromiumRevision)
+        {
+            if (_chromiumLaunched)
+            {
+                throw new InvalidOperationException("Unable to create or connect to another chromium process");
+            }
+            _chromiumLaunched = true;
+            var chromeArguments = InitChromeArgument(options);
+            var chromeExecutable = options.ExecutablePath;
+
+            if (string.IsNullOrEmpty(chromeExecutable))
+            {
+                var downloader = Downloader.CreateDefault();
+                var revisionInfo = downloader.RevisionInfo(Downloader.CurrentPlatform, chromiumRevision);
+                chromeExecutable = revisionInfo.ExecutablePath;
+            }
+            if (!File.Exists(chromeExecutable))
+            {
+                throw new FileNotFoundException("Failed to launch chrome! path to executable does not exist", chromeExecutable);
+            }
+
+            CreateChromeProcess(options, chromeArguments, chromeExecutable);
+
+            try
+            {
+                var connectionDelay = options.SlowMo;
+                var browserWSEndpoint = await WaitForEndpoint(_chromeProcess, options.Timeout, options.DumpIO);
+                var keepAliveInterval = options.KeepAliveInterval;
+
+                _connection = await Connection.Create(browserWSEndpoint, connectionDelay, keepAliveInterval);
+                _processLoaded = true;
+
+                if (options.LogProcess)
+                {
+                    Console.WriteLine($"PROCESS COUNT: {Interlocked.Increment(ref _processCount)}");
+                }
+
+                return await Browser.CreateAsync(_connection, options, _chromeProcess, KillChrome);
+            }
+            catch (Exception ex)
+            {
+                ForceKillChrome();
+                throw new ChromeProcessException("Failed to create connection", ex);
+            }
+        }
+
+        private void CreateChromeProcess(LaunchOptions options, List<string> chromeArguments, string chromeExecutable)
+        {
+            _chromeProcess = new Process();
+            _chromeProcess.EnableRaisingEvents = true;
+            _chromeProcess.StartInfo.UseShellExecute = false;
+            _chromeProcess.StartInfo.FileName = chromeExecutable;
+            _chromeProcess.StartInfo.Arguments = string.Join(" ", chromeArguments);
+
+            SetEnvVariables(_chromeProcess.StartInfo.Environment, options.Env, Environment.GetEnvironmentVariables());
+
+            if (!options.DumpIO)
+            {
+                _chromeProcess.StartInfo.RedirectStandardOutput = false;
+                _chromeProcess.StartInfo.RedirectStandardError = false;
+            }
+
+            _chromeProcess.Exited += async (sender, e) =>
+            {
+                await AfterProcessExit();
+            };
+        }
+
+        private List<string> InitChromeArgument(LaunchOptions options)
         {
             var chromeArguments = new List<string>(DefaultArgs);
 
@@ -120,64 +189,12 @@ namespace PuppeteerSharp
                 });
             }
 
-            var chromeExecutable = options.ExecutablePath;
-
-            if (string.IsNullOrEmpty(chromeExecutable))
-            {
-                var downloader = Downloader.CreateDefault();
-                var revisionInfo = downloader.RevisionInfo(Downloader.CurrentPlatform, chromiumRevision);
-                chromeExecutable = revisionInfo.ExecutablePath;
-            }
-            if (!File.Exists(chromeExecutable))
-            {
-                throw new FileNotFoundException("Failed to launch chrome! path to executable does not exist", chromeExecutable);
-            }
-
             if (options.Args.Any())
             {
                 chromeArguments.AddRange(options.Args);
             }
 
-            _chromeProcess = new Process();
-            _chromeProcess.EnableRaisingEvents = true;
-            _chromeProcess.StartInfo.UseShellExecute = false;
-            _chromeProcess.StartInfo.FileName = chromeExecutable;
-            _chromeProcess.StartInfo.Arguments = string.Join(" ", chromeArguments);
-
-            SetEnvVariables(_chromeProcess.StartInfo.Environment, options.Env, Environment.GetEnvironmentVariables());
-
-            if (!options.DumpIO)
-            {
-                _chromeProcess.StartInfo.RedirectStandardOutput = false;
-                _chromeProcess.StartInfo.RedirectStandardError = false;
-            }
-
-            _chromeProcess.Exited += async (sender, e) =>
-            {
-                await AfterProcessExit();
-            };
-
-            try
-            {
-                var connectionDelay = options.SlowMo;
-                var browserWSEndpoint = await WaitForEndpoint(_chromeProcess, options.Timeout, options.DumpIO);
-                var keepAliveInterval = options.KeepAliveInterval;
-
-                _connection = await Connection.Create(browserWSEndpoint, connectionDelay, keepAliveInterval);
-                _processLoaded = true;
-
-                if (options.LogProcess)
-                {
-                    Console.WriteLine($"PROCESS COUNT: {Interlocked.Increment(ref _processCount)}");
-                }
-
-                return await Browser.CreateAsync(_connection, options, _chromeProcess, KillChrome);
-            }
-            catch (Exception ex)
-            {
-                ForceKillChrome();
-                throw new ChromeProcessException("Failed to create connection", ex);
-            }
+            return chromeArguments;
         }
 
         /// <summary>
@@ -189,6 +206,12 @@ namespace PuppeteerSharp
         {
             try
             {
+                if (_chromiumLaunched)
+                {
+                    throw new InvalidOperationException("Unable to create or connect to another chromium process");
+                }
+                _chromiumLaunched = true;
+
                 var connectionDelay = options.SlowMo;
                 var keepAliveInterval = options.KeepAliveInterval;
 

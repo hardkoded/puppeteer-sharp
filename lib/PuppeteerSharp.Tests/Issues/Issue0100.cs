@@ -5,7 +5,7 @@ using Xunit;
 namespace PuppeteerSharp.Tests.Issues
 {
     [Collection("PuppeteerLoaderFixture collection")]
-    public class Issue0100 : PuppeteerBaseTest
+    public class Issue0100 : PuppeteerBrowserBaseTest
     {
         [Fact]
         public async Task PdfDarkskyShouldWork()
