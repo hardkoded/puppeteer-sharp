@@ -971,9 +971,47 @@ namespace PuppeteerSharp
             return responses.GetValueOrDefault(_frameManager.MainFrame.Url);
         }
 
+        /// <summary>
+        /// Navigate to the previous page in history.
+        /// </summary>
+        /// <returns>Task which which resolves to the main resource response. In case of multiple redirects, 
+        /// the navigation will resolve with the response of the last redirect. If can not go back, resolves to null.</returns>
+        /// <param name="options">Navigation parameters.</param>
+        public Task<Response> GoBackAsync(NavigationOptions options = null) => GoAsync(-1, null);
+
+        /// <summary>
+        /// Navigate to the next page in history.
+        /// </summary>
+        /// <returns>Task which which resolves to the main resource response. In case of multiple redirects, 
+        /// the navigation will resolve with the response of the last redirect. If can not go forward, resolves to null.</returns>
+        /// <param name="options">Navigation parameters.</param>
+        public Task<Response> GoForwardAsync(NavigationOptions options = null) => GoAsync(1, null);
+
         #endregion
 
         #region Private Method
+
+        private async Task<Response> GoAsync(int delta, NavigationOptions options)
+        {
+            var history = await Client.SendAsync<PageGetNavigationHistoryResponse>("Page.getNavigationHistory");
+
+            if (history.Entries.Count <= history.CurrentIndex + delta)
+            {
+                return null;
+            }
+            var entry = history.Entries[history.CurrentIndex + delta];
+            var waitTask = WaitForNavigationAsync(options);
+
+            await Task.WhenAll(
+                waitTask,
+                Client.SendAsync("Page.navigateToHistoryEntry", new
+                {
+                    entryId = entry.Id
+                })
+            );
+
+            return waitTask.Result;
+        }
 
         private Dictionary<string, decimal> BuildMetricsObject(List<Metric> metrics)
         {
