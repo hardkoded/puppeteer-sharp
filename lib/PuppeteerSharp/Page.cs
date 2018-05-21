@@ -977,10 +977,7 @@ namespace PuppeteerSharp
         /// <returns>Task which which resolves to the main resource response. In case of multiple redirects, 
         /// the navigation will resolve with the response of the last redirect. If can not go back, resolves to null.</returns>
         /// <param name="options">Navigation parameters.</param>
-        public Task<Response> GoBackAsync(NavigationOptions options = null)
-        {
-            return GoAsync(-1, null);
-        }
+        public Task<Response> GoBackAsync(NavigationOptions options = null) => GoAsync(-1, null);
 
         /// <summary>
         /// Navigate to the next page in history.
@@ -988,10 +985,7 @@ namespace PuppeteerSharp
         /// <returns>Task which which resolves to the main resource response. In case of multiple redirects, 
         /// the navigation will resolve with the response of the last redirect. If can not go forward, resolves to null.</returns>
         /// <param name="options">Navigation parameters.</param>
-        public Task<Response> GoForwardAsync(NavigationOptions options = null)
-        {
-            return GoAsync(1, null);
-        }
+        public Task<Response> GoForwardAsync(NavigationOptions options = null) => GoAsync(1, null);
 
         #endregion
 
@@ -1010,7 +1004,7 @@ namespace PuppeteerSharp
 
             await Task.WhenAll(
                 waitTask,
-                Client.SendAsync<ResponseData>("Page.navigateToHistoryEntry", new
+                Client.SendAsync("Page.navigateToHistoryEntry", new
                 {
                     entryId = entry.Id
                 })
