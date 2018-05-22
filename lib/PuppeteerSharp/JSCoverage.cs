@@ -46,7 +46,7 @@ namespace PuppeteerSharp
             );
         }
 
-        internal async Task StopAsync()
+        internal async Task<CoverageEntry[]> StopAsync()
         {
             if (!_enabled)
             {
@@ -64,6 +64,7 @@ namespace PuppeteerSharp
             _client.MessageReceived -= client_MessageReceived;
 
             // TODO: return coverage;            
+            return null;
         }
 
         private void client_MessageReceived(object sender, MessageEventArgs e)
