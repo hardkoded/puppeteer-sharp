@@ -4,6 +4,10 @@ branches:
   - master
 image: Visual Studio 2017
 configuration: Release
+environment:
+  matrix:
+    - framework: net471
+    - framework: netcoreapp2.0
 before_build:
 - ps: >-
     dotnet restore .\lib\PuppeteerSharp.sln
@@ -21,4 +25,4 @@ test_script:
 - cmd: >-
     cd .\lib\PuppeteerSharp.Tests
 
-    dotnet test -s test.runsettings
+    dotnet test -f %framework% -s test.runsettings
