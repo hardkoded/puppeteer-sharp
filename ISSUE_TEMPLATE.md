@@ -1,6 +1,6 @@
 **Before you file a bug, have you:**
 
-* Tried upgrading to newest version of Fluent Assertions, to see if your issue has already been resolved and released?
+* Tried upgrading to newest version of PuppeteerSharp, to see if your issue has already been resolved and released?
 * Checked existing open *and* closed [issues](https://github.com/kblok/puppeteer-sharp/issues?utf8=%E2%9C%93&q=is%3Aissue), to see if the issue has already been reported?
 * Tried reproducing your problem in a new isolated project?
 * Considered if this is a general question and not a bug?. For general questions please use [StackOverflow](https://stackoverflow.com/search?q=puppeteer-sharp).
