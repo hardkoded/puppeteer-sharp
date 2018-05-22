@@ -224,12 +224,12 @@ namespace PuppeteerSharp
                 });
             }
 
-            if (!string.IsNullOrEmpty((string)(e.MessageData.redirectUrl?.ToString())))
+            if (!string.IsNullOrEmpty(e.MessageData.redirectUrl?.ToString()))
             {
                 var request = _interceptionIdToRequest[e.MessageData.interceptionId.ToString()];
 
                 HandleRequestRedirect(request, (HttpStatusCode)e.MessageData.responseStatusCode, e.MessageData.responseHeaders.ToObject<Dictionary<string, object>>());
-                HandleRequestStart(request.RequestId, e.MessageData);
+                HandleRequestStart(request.RequestId, e.MessageData, e.MessageData.redirectUrl.ToString());
                 return;
             }
 
@@ -247,12 +247,12 @@ namespace PuppeteerSharp
             }
         }
 
-        private void HandleRequestStart(string requestId, dynamic messageData)
+        private void HandleRequestStart(string requestId, dynamic messageData, string url = null)
         {
             HandleRequestStart(
                 requestId,
                 messageData.interceptionId?.ToString(),
-                messageData.request.url?.ToString(),
+                url ?? messageData.request.url?.ToString(),
                 (messageData.resourceType ?? messageData.type)?.ToObject<ResourceType>(),
                 ((JObject)messageData.request).ToObject<Payload>(),
                 messageData.frameId?.ToString());
