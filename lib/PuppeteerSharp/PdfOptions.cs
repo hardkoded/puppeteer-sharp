@@ -53,9 +53,9 @@ namespace PuppeteerSharp
         public string PageRanges { get; set; } = string.Empty;
 
         /// <summary>
-        /// Paper format. If set, takes priority over <see cref="Width"/> and <see cref="Height"/>. Defaults to <see cref="PaperFormat.Letter"/>
+        /// Paper format. If set, takes priority over <see cref="Width"/> and <see cref="Height"/>
         /// </summary>
-        public PaperFormat Format { get; set; } = PaperFormat.Letter;
+        public PaperFormat Format { get; set; };
 
         /// <summary>
         /// Paper width, accepts values labeled with units

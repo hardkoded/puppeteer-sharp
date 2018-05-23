@@ -25,7 +25,7 @@ namespace PuppeteerSharp
         private readonly TaskQueue _screenshotTaskQueue;
         private readonly EmulationManager _emulationManager;
         private readonly Dictionary<string, Delegate> _pageBindings;
-        
+
         private static readonly Dictionary<string, decimal> _unitToPixels = new Dictionary<string, decimal> {
             {"px", 1},
             {"in", 96},
@@ -568,26 +568,58 @@ namespace PuppeteerSharp
             return request?.Response;
         }
 
-        public async Task PdfAsync(string file) => await PdfAsync(file, new PdfOptions());
+        /// <summary>
+        /// generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaAsync(MediaType)"/> with <see cref="MediaType.Screen"/>
+        /// </summary>
+        /// <param name="file">The file path to save the PDF to. paths are resolved using <see cref="Path.GetFullPath(string)"/></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// Generating a pdf is currently only supported in Chrome headless
+        /// </remarks>
+        public Task PdfAsync(string file) => PdfAsync(file, new PdfOptions());
 
+        /// <summary>
+        ///  generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaAsync(MediaType)"/> with <see cref="MediaType.Screen"/>
+        /// </summary>
+        /// <param name="file">The file path to save the PDF to. paths are resolved using <see cref="Path.GetFullPath(string)"/></param>
+        /// <param name="options">pdf options</param>
+        /// <returns></returns>
+        /// <remarks>
+        /// Generating a pdf is currently only supported in Chrome headless
+        /// </remarks>
         public async Task PdfAsync(string file, PdfOptions options)
         {
             var stream = await PdfStreamAsync(options);
 
-            using (var fs = new FileStream(file, FileMode.Create, FileAccess.Write))
+            using (var fs = File.OpenWrite(file))
             {
                 byte[] bytesInStream = new byte[stream.Length];
-                stream.Read(bytesInStream, 0, bytesInStream.Length);
-                fs.Write(bytesInStream, 0, bytesInStream.Length);
+                await stream.ReadAsync(bytesInStream, 0, bytesInStream.Length);
+                await fs.WriteAsync(bytesInStream, 0, bytesInStream.Length);
             }
         }
 
-        public async Task<Stream> PdfStreamAsync() => await PdfStreamAsync(new PdfOptions());
+        /// <summary>
+        /// generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaAsync(MediaType)"/> with <see cref="MediaType.Screen"/>
+        /// </summary>
+        /// <returns></returns>
+        /// <remarks>
+        /// Generating a pdf is currently only supported in Chrome headless
+        /// </remarks>
+        public Task<Stream> PdfStreamAsync() => PdfStreamAsync(new PdfOptions());
 
+        /// <summary>
+        /// generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaAsync(MediaType)"/> with <see cref="MediaType.Screen"/>
+        /// </summary>
+        /// <param name="options">pdf options</param>
+        /// <returns></returns>
+        /// <remarks>
+        /// Generating a pdf is currently only supported in Chrome headless
+        /// </remarks>
         public async Task<Stream> PdfStreamAsync(PdfOptions options)
         {
-            var paperWidth = 8.5m;
-            var paperHeight = 11m;
+            var paperWidth = PaperFormat.Letter.Width;
+            var paperHeight = PaperFormat.Letter.Height;
 
             if (options.Format != null)
             {
