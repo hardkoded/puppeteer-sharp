@@ -318,19 +318,23 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(HttpStatusCode.NotFound, requests[1].Response.Status);
         }
 
-        [Fact(Skip = "weired")]
+        [Fact]
         public async Task ShouldNotThrowInvalidInterceptionIdIfTheRequestWasCancelled()
         {
             await Page.SetContentAsync("<iframe></iframe>");
             await Page.SetRequestInterceptionAsync(true);
             Request request = null;
-            Page.RequestCreated += (sender, e) => request = e.Request;
+            var requestIntercepted = new TaskCompletionSource<bool>();
+            Page.RequestCreated += (sender, e) => {
+                request = e.Request;
+                requestIntercepted.SetResult(true);
+            };
 
-            var _ = Page.QuerySelectorAsync("iframe").EvaluateFunctionAsync<object>("(frame, url) => { frame.src = url; return null; }", TestConstants.ServerUrl);
+            var _ = Page.QuerySelectorAsync("iframe").EvaluateFunctionAsync<object>("(frame, url) => frame.src = url", TestConstants.ServerUrl);
             // Wait for request interception.
-            await WaitForEvents(Page.Client, "request");
+            await requestIntercepted.Task;
             // Delete frame to cause request to be canceled.
-            _ = Page.QuerySelectorAsync("iframe").EvaluateFunctionAsync<object>("frame => { frame.remove(); return null; }");
+            _ = Page.QuerySelectorAsync("iframe").EvaluateFunctionAsync<object>("frame => frame.remove()");
             await request.ContinueAsync();
         }
 
