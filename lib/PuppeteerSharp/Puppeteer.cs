@@ -2,6 +2,18 @@
 
 namespace PuppeteerSharp
 {
+    /// <summary>
+    /// Provides a method to launch a Chromium instance.
+    /// </summary>
+    /// <example>
+    /// The following is a typical example of using a Puppeteer to drive automation:
+    /// <code>
+    /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions(), Downloader.DefaultRevision);
+    /// var page = await browser.NewPageAsync();
+    /// await page.GoToAsync("https://www.google.com");
+    /// await Browser.CloseAsync();
+    /// </code>
+    /// </example>
     public class Puppeteer
     {
         /// <summary>
