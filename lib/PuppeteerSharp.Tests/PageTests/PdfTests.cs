@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Xunit;
 using PdfSharp.Pdf.IO;
+using PuppeteerSharp.Media;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
@@ -46,7 +47,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             var document = PdfReader.Open(await Page.PdfStreamAsync(new PdfOptions
             {
-                Format = "a4"
+                Format = PaperFormat.A4
             }), PdfDocumentOpenMode.ReadOnly);
 
             Assert.Equal(1, document.Pages.Count);
@@ -101,20 +102,6 @@ namespace PuppeteerSharp.Tests.PageTests
             }));
 
             Assert.Equal(5, document.Pages.Count);
-        }
-
-        [Fact]
-        public async Task ShowThrowFormatIsUnknown()
-        {
-            var exception = await Assert.ThrowsAsync<ArgumentException>(async () =>
-            {
-                await Page.PdfStreamAsync(new PdfOptions
-                {
-                    Format = "something"
-                });
-            });
-
-            Assert.Equal("Unknown paper format", exception.Message);
         }
 
         [Fact]

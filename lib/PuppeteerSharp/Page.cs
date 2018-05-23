@@ -25,21 +25,7 @@ namespace PuppeteerSharp
         private readonly TaskQueue _screenshotTaskQueue;
         private readonly EmulationManager _emulationManager;
         private readonly Dictionary<string, Delegate> _pageBindings;
-
-        private static readonly Dictionary<string, PaperFormat> _paperFormats = new Dictionary<string, PaperFormat> {
-            {"letter", new PaperFormat {Width = 8.5m, Height = 11}},
-            {"legal", new PaperFormat {Width = 8.5m, Height = 14}},
-            {"tabloid", new PaperFormat {Width = 11, Height = 17}},
-            {"ledger", new PaperFormat {Width = 17, Height = 11}},
-            {"a0", new PaperFormat {Width = 33.1m, Height = 46.8m }},
-            {"a1", new PaperFormat {Width = 23.4m, Height = 33.1m }},
-            {"a2", new PaperFormat {Width = 16.5m, Height = 23.4m }},
-            {"a3", new PaperFormat {Width = 11.7m, Height = 16.5m }},
-            {"a4", new PaperFormat {Width = 8.27m, Height = 11.7m }},
-            {"a5", new PaperFormat {Width = 5.83m, Height = 8.27m }},
-            {"a6", new PaperFormat {Width = 4.13m, Height = 5.83m }},
-        };
-
+        
         private static readonly Dictionary<string, decimal> _unitToPixels = new Dictionary<string, decimal> {
             {"px", 1},
             {"in", 96},
@@ -603,16 +589,10 @@ namespace PuppeteerSharp
             var paperWidth = 8.5m;
             var paperHeight = 11m;
 
-            if (!string.IsNullOrEmpty(options.Format))
+            if (options.Format != null)
             {
-                if (!_paperFormats.ContainsKey(options.Format.ToLower()))
-                {
-                    throw new ArgumentException("Unknown paper format");
-                }
-
-                var format = _paperFormats[options.Format.ToLower()];
-                paperWidth = format.Width;
-                paperHeight = format.Height;
+                paperWidth = options.Format.Width;
+                paperHeight = options.Format.Height;
             }
             else
             {
