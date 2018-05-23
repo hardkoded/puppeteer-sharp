@@ -55,7 +55,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Paper format. If set, takes priority over <see cref="Width"/> and <see cref="Height"/>
         /// </summary>
-        public PaperFormat Format { get; set; };
+        public PaperFormat Format { get; set; }
 
         /// <summary>
         /// Paper width, accepts values labeled with units
