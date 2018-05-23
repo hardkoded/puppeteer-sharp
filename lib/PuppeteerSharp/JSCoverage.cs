@@ -1,7 +1,9 @@
 ﻿using PuppeteerSharp.Messaging;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
 {
@@ -54,7 +56,7 @@ namespace PuppeteerSharp
             }
             _enabled = false;
 
-            var profileResponseTask = _client.SendAsync("Profiler.takePreciseCoverage");
+            var profileResponseTask = _client.SendAsync<ProfilerTakePreciseCoverageResponse>("Profiler.takePreciseCoverage");
             await Task.WhenAll(
                profileResponseTask,
                _client.SendAsync("Profiler.stopPreciseCoverage"),
@@ -63,8 +65,92 @@ namespace PuppeteerSharp
            );
             _client.MessageReceived -= client_MessageReceived;
 
-            // TODO: return coverage;            
-            return null;
+            var coverage = new List<CoverageEntry>();
+            foreach (var entry in profileResponseTask.Result.Result)
+            {
+
+                _scriptURLs.TryGetValue(entry.ScriptId, out var url);
+                _scriptSources.TryGetValue(entry.ScriptId, out var text);
+
+                if (text == null || url == null)
+                {
+                    continue;
+                }
+
+                var flattenRanges = new List<ProfilerTakePreciseCoverageResponseRange>();
+                foreach (var func in entry.Functions)
+                {
+                    flattenRanges.Add(func.Ranges);
+                }
+                var ranges = ConvertToDisjointRanges(flattenRanges);
+                coverage.Add(new CoverageEntry
+                {
+                    Url = url,
+                    Ranges = ranges,
+                    Text = text
+                });
+            }
+            return coverage.ToArray();
+        }
+
+        internal static CoverageEntryRange[] ConvertToDisjointRanges(List<ProfilerTakePreciseCoverageResponseRange> nestedRanges)
+        {
+            var points = new List<CoverageEntryPoint>();
+            foreach (var range in nestedRanges)
+            {
+                points.Add(new CoverageEntryPoint
+                {
+                    Offset = range.StartOffset,
+                    Type = 0,
+                    Range = range
+                });
+
+                points.Add(new CoverageEntryPoint
+                {
+                    Offset = range.EndOffset,
+                    Type = 1,
+                    Range = range
+                });
+            }
+
+            points.Sort();
+
+            var hitCountStack = new List<int>();
+            var results = new List<CoverageEntryRange>();
+            var lastOffset = 0;
+
+            // Run scanning line to intersect all ranges.
+            foreach (var point in points)
+            {
+                if (hitCountStack.Count > 0 && lastOffset < point.Offset && hitCountStack[hitCountStack.Count - 1] > 0)
+                {
+                    var lastResult = results.Count > 0 ? results[results.Count - 1] : null;
+                    if (lastResult != null && lastResult.End == lastOffset)
+                    {
+                        lastResult.End = point.Offset;
+                    }
+                    else
+                    {
+                        results.Add(new CoverageEntryRange
+                        {
+                            Start = lastOffset,
+                            End = point.Offset
+                        });
+                    }
+                }
+
+                lastOffset = point.Offset;
+                if (point.Type == 0)
+                {
+                    hitCountStack.Add(point.Range.Count);
+                }
+                else
+                {
+                    hitCountStack.RemoveAt(0);
+                }
+            }
+            // Filter out empty ranges.
+            return results.Where(range => range.End - range.Start > 1).ToArray();
         }
 
         private void client_MessageReceived(object sender, MessageEventArgs e)
