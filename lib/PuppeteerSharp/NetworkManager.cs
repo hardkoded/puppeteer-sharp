@@ -81,7 +81,6 @@ namespace PuppeteerSharp
             }
         }
 
-
         public async Task SetUserAgentAsync(string userAgent)
         {
             await _client.SendAsync("Network.setUserAgentOverride", new Dictionary<string, object>
@@ -100,10 +99,8 @@ namespace PuppeteerSharp
 
         #region Private Methods
 
-
         private async void Client_MessageReceived(object sender, MessageEventArgs e)
         {
-
             switch (e.MessageID)
             {
                 case "Network.requestWillBeSent":
@@ -121,7 +118,6 @@ namespace PuppeteerSharp
                 case "Network.loadingFailed":
                     OnLoadingFailed(e);
                     break;
-
             }
         }
 
@@ -228,12 +224,12 @@ namespace PuppeteerSharp
                 });
             }
 
-            if (!string.IsNullOrEmpty(e.MessageData.redirectUrl))
+            if (!string.IsNullOrEmpty(e.MessageData.redirectUrl?.ToString()))
             {
                 var request = _interceptionIdToRequest[e.MessageData.interceptionId.ToString()];
 
-                HandleRequestRedirect(request, e.MessageData.responseStatusCode, e.MessageData.responseHeaders);
-                HandleRequestStart(request.RequestId, e.MessageData);
+                HandleRequestRedirect(request, (HttpStatusCode)e.MessageData.responseStatusCode, e.MessageData.responseHeaders.ToObject<Dictionary<string, object>>());
+                HandleRequestStart(request.RequestId, e.MessageData, e.MessageData.redirectUrl.ToString());
                 return;
             }
 
@@ -251,12 +247,12 @@ namespace PuppeteerSharp
             }
         }
 
-        private void HandleRequestStart(string requestId, dynamic messageData)
+        private void HandleRequestStart(string requestId, dynamic messageData, string url = null)
         {
             HandleRequestStart(
                 requestId,
                 messageData.interceptionId?.ToString(),
-                messageData.request.url?.ToString(),
+                url ?? messageData.request.url?.ToString(),
                 (messageData.resourceType ?? messageData.type)?.ToObject<ResourceType>(),
                 ((JObject)messageData.request).ToObject<Payload>(),
                 messageData.frameId?.ToString());
@@ -293,7 +289,10 @@ namespace PuppeteerSharp
         {
             var response = new Response(_client, request, redirectStatus, redirectHeaders, securityDetails);
             request.Response = response;
-            _requestIdToRequest.Remove(request.RequestId);
+            if (request.RequestId != null)
+            {
+                _requestIdToRequest.Remove(request.RequestId);
+            }
 
             if (request.InterceptionId != null)
             {

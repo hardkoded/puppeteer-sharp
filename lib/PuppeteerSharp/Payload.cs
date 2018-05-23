@@ -42,7 +42,7 @@ namespace PuppeteerSharp
                 {
                 }
 
-                var hash = new Payload()
+                var hash = new Payload
                 {
                     Url = Url,
                     Method = Method,
@@ -51,9 +51,14 @@ namespace PuppeteerSharp
 
                 if (!normalizedUrl.StartsWith("data:", StringComparison.Ordinal))
                 {
-                    foreach (var item in Headers.Where(kv => kv.Key != "Accept" && kv.Key != "Referer" &&
-                                                               kv.Key != "X-DevTools-Emulate-Network-Conditions-Client-Id"))
+                    foreach (var item in Headers.OrderBy(kv => kv.Key))
                     {
+                        if (item.Key.Equals("Accept", StringComparison.OrdinalIgnoreCase)
+                            || item.Key.Equals("Referer", StringComparison.OrdinalIgnoreCase)
+                            || item.Key.Equals("X-DevTools-Emulate-Network-Conditions-Client-Id", StringComparison.OrdinalIgnoreCase))
+                        {
+                            continue;
+                        }
                         hash.Headers[item.Key] = item.Value;
                     }
                 }
