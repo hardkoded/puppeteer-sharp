@@ -68,19 +68,14 @@ namespace PuppeteerSharp
             var coverage = new List<CoverageEntry>();
             foreach (var entry in profileResponseTask.Result.Result)
             {
-                _scriptURLs.TryGetValue(entry.ScriptId, out var url);
-                _scriptSources.TryGetValue(entry.ScriptId, out var text);
-
-                if (text == null || url == null)
+                if (!_scriptURLs.TryGetValue(entry.ScriptId, out var url) ||
+                    !_scriptSources.TryGetValue(entry.ScriptId, out var text))
                 {
+
                     continue;
                 }
 
-                var flattenRanges = new List<ProfilerTakePreciseCoverageResponseRange>();
-                foreach (var func in entry.Functions)
-                {
-                    flattenRanges.AddRange(func.Ranges);
-                }
+                var flattenRanges = entry.Functions.SelectMany(f => f.Ranges).ToList();
                 var ranges = ConvertToDisjointRanges(flattenRanges);
                 coverage.Add(new CoverageEntry
                 {
