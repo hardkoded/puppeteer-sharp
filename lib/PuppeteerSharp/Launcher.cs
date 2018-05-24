@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Collections;
+using Microsoft.Extensions.Logging;
 
 namespace PuppeteerSharp
 {
@@ -38,7 +39,7 @@ namespace PuppeteerSharp
         };
         #endregion
 
-        #region Private members
+        #region Private members        
         private Process _chromeProcess;
         private string _temporaryUserDataDir = null;
         private Connection _connection = null;
@@ -48,7 +49,7 @@ namespace PuppeteerSharp
         private static int _processCount = 0;
         private bool _processLoaded;
         private const string UserDataDirArgument = "--user-data-dir";
-        private bool _chromiumLaunched = false;
+        private bool _chromiumLaunched = false;        
         #endregion
 
         #region Properties
@@ -72,7 +73,7 @@ namespace PuppeteerSharp
         /// for a description of the differences between Chromium and Chrome.
         /// <a href="https://chromium.googlesource.com/chromium/src/+/lkcr/docs/chromium_browser_vs_google_chrome.md">This article</a> describes some differences for Linux users.
         /// </remarks>
-        public async Task<Browser> LaunchAsync(LaunchOptions options, int chromiumRevision)
+        public async Task<Browser> LaunchAsync(LaunchOptions options, int chromiumRevision, ILoggerFactory loggerFactory = null)
         {
             if (_chromiumLaunched)
             {
@@ -101,7 +102,7 @@ namespace PuppeteerSharp
                 var browserWSEndpoint = await WaitForEndpoint(_chromeProcess, options.Timeout, options.DumpIO);
                 var keepAliveInterval = options.KeepAliveInterval;
 
-                _connection = await Connection.Create(browserWSEndpoint, connectionDelay, keepAliveInterval);
+                _connection = await Connection.Create(browserWSEndpoint, connectionDelay, keepAliveInterval, loggerFactory);
                 _processLoaded = true;
 
                 if (options.LogProcess)
@@ -202,7 +203,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="options">Options for connecting.</param>
         /// <returns>A connected browser.</returns>
-        public async Task<Browser> ConnectAsync(ConnectOptions options)
+        public async Task<Browser> ConnectAsync(ConnectOptions options, params ILoggerProvider[] providers)
         {
             try
             {
@@ -215,7 +216,7 @@ namespace PuppeteerSharp
                 var connectionDelay = options.SlowMo;
                 var keepAliveInterval = options.KeepAliveInterval;
 
-                _connection = await Connection.Create(options.BrowserWSEndpoint, connectionDelay, keepAliveInterval);
+                _connection = await Connection.Create(options.BrowserWSEndpoint, connectionDelay, keepAliveInterval, providers);
 
                 return await Browser.CreateAsync(_connection, options, null, () =>
                 {

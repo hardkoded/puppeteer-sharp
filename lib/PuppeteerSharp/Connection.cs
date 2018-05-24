@@ -5,6 +5,7 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
@@ -13,12 +14,16 @@ namespace PuppeteerSharp
 {
     public class Connection : IDisposable
     {
-        public Connection(string url, int delay, ClientWebSocket ws)
+        private readonly ILogger _logger;
+
+        public Connection(string url, int delay, ClientWebSocket ws, params ILoggerProvider[] providers)
         {
+            LoggerFactory = new LoggerFactory(providers);
             Url = url;
             Delay = delay;
             WebSocket = ws;
 
+            _logger = LoggerFactory.CreateLogger<Connection>();
             _socketQueue = new TaskQueue();
             _responses = new Dictionary<int, MessageTask>();
             _sessions = new Dictionary<string, Session>();
@@ -48,6 +53,8 @@ namespace PuppeteerSharp
         public event EventHandler<MessageEventArgs> MessageReceived;
         public bool IsClosed { get; internal set; }
 
+        internal ILoggerFactory LoggerFactory { get; }
+
         #endregion
 
         #region Public Methods
@@ -60,6 +67,8 @@ namespace PuppeteerSharp
                 {"method", method},
                 {"params", args}
             });
+
+            _logger.LogTrace("Send", message);
 
             _responses[id] = new MessageTask
             {
@@ -233,12 +242,12 @@ namespace PuppeteerSharp
         #endregion
         #region Static Methods
 
-        public static async Task<Connection> Create(string url, int delay = 0, int keepAliveInterval = 60)
+        public static async Task<Connection> Create(string url, int delay = 0, int keepAliveInterval = 60, params ILoggerProvider[] providers)
         {
             var ws = new ClientWebSocket();
             ws.Options.KeepAliveInterval = new TimeSpan(0, 0, keepAliveInterval);
             await ws.ConnectAsync(new Uri(url), default(CancellationToken)).ConfigureAwait(false);
-            return new Connection(url, delay, ws);
+            return new Connection(url, delay, ws, providers);
         }
 
         public void Dispose()

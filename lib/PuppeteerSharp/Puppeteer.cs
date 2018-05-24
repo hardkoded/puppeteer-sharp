@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace PuppeteerSharp
 {
@@ -38,15 +39,15 @@ namespace PuppeteerSharp
         /// for a description of the differences between Chromium and Chrome.
         /// <a href="https://chromium.googlesource.com/chromium/src/+/lkcr/docs/chromium_browser_vs_google_chrome.md">This article</a> describes some differences for Linux users.
         /// </remarks>
-        public static Task<Browser> LaunchAsync(LaunchOptions options, int chromiumRevision)
-            => new Launcher().LaunchAsync(options, chromiumRevision);
+        public static Task<Browser> LaunchAsync(LaunchOptions options, int chromiumRevision, params ILoggerProvider[] providers) 
+            => new Launcher().LaunchAsync(options, chromiumRevision, providers);
 
         /// <summary>
         /// Attaches Puppeteer to an existing Chromium instance. The browser will be closed when the Browser is disposed.
         /// </summary>
         /// <param name="options">Options for connecting.</param>
         /// <returns>A connected browser.</returns>
-        public static Task<Browser> ConnectAsync(ConnectOptions options)
-            => new Launcher().ConnectAsync(options);
+        public static Task<Browser> ConnectAsync(ConnectOptions options, params ILoggerProvider[] providers)
+            => new Launcher().ConnectAsync(options, providers);
     }
 }
