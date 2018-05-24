@@ -319,6 +319,7 @@ namespace PuppeteerSharp
                     }
 
                     CleanUp();
+                    chromeProcess.Exited -= exitedEvent;
                     taskWrapper.SetResult(match.Groups[1].Value);
 
                     //Restore defaults for Redirects
@@ -327,8 +328,6 @@ namespace PuppeteerSharp
                         chromeProcess.StartInfo.RedirectStandardOutput = false;
                         chromeProcess.StartInfo.RedirectStandardError = false;
                     }
-
-                    chromeProcess.Exited -= exitedEvent;
                 }
             };
 
