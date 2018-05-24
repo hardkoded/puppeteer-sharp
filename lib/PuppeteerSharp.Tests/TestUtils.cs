@@ -13,5 +13,7 @@ namespace PuppeteerSharp.Tests
             }
             return Path.Combine(current, directory);
         }
+
+        public static string CompressText(string text) => text.Replace("\n", "").Replace("\t", "").Replace(" ", "");
     }
 }

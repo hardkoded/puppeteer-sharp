@@ -29,6 +29,6 @@ namespace PuppeteerSharp
         /// <remarks>
         /// JavaScript Coverage doesn't include anonymous scripts; however, scripts with sourceURLs are reported.
         /// </remarks>
-        public Task StopJSCoverageAsync() => _jsCoverage.StopAsync();
+        public Task<CoverageEntry[]> StopJSCoverageAsync() => _jsCoverage.StopAsync();
     }
 }
