@@ -20,7 +20,7 @@ var browser = await Puppeteer.LaunchAsync(new LaunchOptions
 }, chromiumRevision);
 var page = await browser.NewPageAsync();
 await page.GoToAsync("http://www.google.com");
-await page.ScreenshotAsync(outputFile));
+await page.ScreenshotAsync(outputFile);
 ```
 
 You can also change the view port before generating the screenshot
