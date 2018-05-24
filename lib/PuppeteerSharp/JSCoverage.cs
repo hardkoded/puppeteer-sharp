@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using PuppeteerSharp.Helpers;
+using static PuppeteerSharp.Messaging.ProfilerTakePreciseCoverageResponse;
 
 namespace PuppeteerSharp
 {
@@ -68,7 +68,6 @@ namespace PuppeteerSharp
             var coverage = new List<CoverageEntry>();
             foreach (var entry in profileResponseTask.Result.Result)
             {
-
                 _scriptURLs.TryGetValue(entry.ScriptId, out var url);
                 _scriptSources.TryGetValue(entry.ScriptId, out var text);
 

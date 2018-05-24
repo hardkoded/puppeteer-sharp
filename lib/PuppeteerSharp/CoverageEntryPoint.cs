@@ -1,5 +1,5 @@
 ﻿using System;
-using PuppeteerSharp.Messaging;
+using static PuppeteerSharp.Messaging.ProfilerTakePreciseCoverageResponse;
 
 namespace PuppeteerSharp
 {
