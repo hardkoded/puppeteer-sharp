@@ -68,9 +68,9 @@ namespace PuppeteerSharp
             _frameManager.FrameDetached += (sender, e) => FrameDetached?.Invoke(this, e);
             _frameManager.FrameNavigated += (sender, e) => FrameNavigated?.Invoke(this, e);
 
-            _networkManager.RequestCreated += (sender, e) => RequestCreated?.Invoke(this, e);
+            _networkManager.RequestCreated += (sender, e) => Request?.Invoke(this, e);
             _networkManager.RequestFailed += (sender, e) => RequestFailed?.Invoke(this, e);
-            _networkManager.ResponseCreated += (sender, e) => ResponseCreated?.Invoke(this, e);
+            _networkManager.ResponseCreated += (sender, e) => Response?.Invoke(this, e);
             _networkManager.RequestFinished += (sender, e) => RequestFinished?.Invoke(this, e);
 
             Client.MessageReceived += client_MessageReceived;
@@ -93,7 +93,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Emitted when the JavaScript code makes a call to <c>console.timeStamp</c>. For the list of metrics see <see cref="Page.MetricsAsync"/>.
         /// </summary>
-        public event EventHandler<MetricEventArgs> MetricsReceived;
+        public event EventHandler<MetricEventArgs> Metrics;
 
         /// <summary>
         /// Emitted when a JavaScript dialog appears, such as <c>alert</c>, <c>prompt</c>, <c>confirm</c> or <c>beforeunload</c>. Puppeteer can respond to the dialog via <see cref="PuppeteerSharp.Dialog"/>'s <see cref="Dialog.Accept(string)"/> or <see cref="Dialog.Dismiss"/> methods.
@@ -134,15 +134,15 @@ namespace PuppeteerSharp
         public event EventHandler<FrameEventArgs> FrameNavigated;
 
         /// <summary>
-        /// Emitted when a <see cref="Response"/> is received.
+        /// Emitted when a <see cref="PuppeteerSharp.Response"/> is received.
         /// </summary>
-        public event EventHandler<ResponseCreatedEventArgs> ResponseCreated;
+        public event EventHandler<ResponseCreatedEventArgs> Response;
 
         /// <summary>
-        /// Emitted when a page issues a request. The <see cref="Request"/> object is read-only.
+        /// Emitted when a page issues a request. The <see cref="PuppeteerSharp.Request"/> object is read-only.
         /// In order to intercept and mutate requests, see <see cref="SetRequestInterceptionAsync(bool)"/>
         /// </summary>
-        public event EventHandler<RequestEventArgs> RequestCreated;
+        public event EventHandler<RequestEventArgs> Request;
 
         /// <summary>
         /// Emitted when a request finishes successfully.
@@ -1355,7 +1355,7 @@ namespace PuppeteerSharp
         }
 
         private void EmitMetrics(PerformanceMetricsResponse metrics)
-            => MetricsReceived?.Invoke(this, new MetricEventArgs(metrics.Title, BuildMetricsObject(metrics.Metrics)));
+            => Metrics?.Invoke(this, new MetricEventArgs(metrics.Title, BuildMetricsObject(metrics.Metrics)));
 
         private async Task OnCertificateError(MessageEventArgs e)
         {

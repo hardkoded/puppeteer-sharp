@@ -13,7 +13,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
         public async Task ShouldFire()
         {
             List<Request> requests = new List<Request>();
-            Page.RequestCreated += (sender, e) => requests.Add(e.Request);
+            Page.Request += (sender, e) => requests.Add(e.Request);
 
             await Page.GoToAsync(TestConstants.EmptyPage);
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
