@@ -16,6 +16,19 @@ using PuppeteerSharp.Mobile;
 
 namespace PuppeteerSharp
 {
+    /// <summary>
+    /// Provides methods to interact with a single tab in Chromium. One <see cref="Browser"/> instance might have multiple <see cref="Page"/> instances.
+    /// </summary>
+    /// <example>
+    /// This example creates a page, navigates it to a URL, and then saves a screenshot:
+    /// <code>
+    /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions(), Downloader.DefaultRevision);
+    /// var page = await browser.NewPageAsync();
+    /// await page.GoToAsync("https://example.com");
+    /// await page.ScreenshotAsync("screenshot.png");
+    /// await browser.CloseAsync();
+    /// </code>
+    /// </example>
     [DebuggerDisplay("Page {Url}")]
     public class Page : IDisposable
     {
@@ -63,28 +76,97 @@ namespace PuppeteerSharp
             Client.MessageReceived += client_MessageReceived;
         }
 
+        internal Session Client { get; }
+
         #region Public Properties
+
+        /// <summary>
+        /// Emitted when the JavaScript <c>load</c> <see cref="https://developer.mozilla.org/en-US/docs/Web/Events/load"/> event is dispatched.
+        /// </summary>
         public event EventHandler<EventArgs> Load;
+
+        /// <summary>
+        /// Emitted when the page crashes
+        /// </summary>
         public event EventHandler<ErrorEventArgs> Error;
+
+        /// <summary>
+        /// Emitted when the JavaScript code makes a call to <c>console.timeStamp</c>. For the list of metrics see <see cref="Page.MetricsAsync"/>.
+        /// </summary>
         public event EventHandler<MetricEventArgs> MetricsReceived;
+
+        /// <summary>
+        /// Emitted when a JavaScript dialog appears, such as <c>alert</c>, <c>prompt</c>, <c>confirm</c> or <c>beforeunload</c>. Puppeteer can respond to the dialog via <see cref="PuppeteerSharp.Dialog"/>'s <see cref="Dialog.Accept(string)"/> or <see cref="Dialog.Dismiss"/> methods.
+        /// </summary>
         public event EventHandler<DialogEventArgs> Dialog;
+
+        /// <summary>
+        /// Emitted when JavaScript within the page calls one of console API methods, e.g. <c>console.log</c> or <c>console.dir</c>. Also emitted if the page throws an error or a warning.
+        /// The arguments passed into <c>console.log</c> appear as arguments on the event handler.
+        /// </summary>
+        /// <example>
+        /// An example of handling <see cref="Console"/> event:
+        /// <code>
+        /// page.Console += (sender, e) => 
+        /// {
+        ///     for (var i = 0; i < e.Message.Args.Count; ++i)
+        ///     {
+        ///         System.Console.WriteLine($"{i}: {e.Message.Args[i]}");
+        ///     }
+        /// }
+        /// </code>
+        /// </example>
         public event EventHandler<ConsoleEventArgs> Console;
 
+        /// <summary>
+        /// Emitted when a frame is attached.
+        /// </summary>
         public event EventHandler<FrameEventArgs> FrameAttached;
+
+        /// <summary>
+        /// Emitted when a frame is detached.
+        /// </summary>
         public event EventHandler<FrameEventArgs> FrameDetached;
+
+        /// <summary>
+        /// Emitted when a frame is navigated to a new url.
+        /// </summary>
         public event EventHandler<FrameEventArgs> FrameNavigated;
 
+        /// <summary>
+        /// Emitted when a <see cref="Response"/> is received.
+        /// </summary>
         public event EventHandler<ResponseCreatedEventArgs> ResponseCreated;
+
+        /// <summary>
+        /// Emitted when a page issues a request. The <see cref="Request"/> object is read-only.
+        /// In order to intercept and mutate requests, see <see cref="SetRequestInterceptionAsync(bool)"/>
+        /// </summary>
         public event EventHandler<RequestEventArgs> RequestCreated;
+
+        /// <summary>
+        /// Emitted when a request finishes successfully.
+        /// </summary>
         public event EventHandler<RequestEventArgs> RequestFinished;
+
+        /// <summary>
+        /// Emitted when a request fails, for example by timing out.
+        /// </summary>
         public event EventHandler<RequestEventArgs> RequestFailed;
+        
         /// <summary>
         /// Emitted when an uncaught exception happens within the page.
         /// </summary>
         public event EventHandler<PageErrorEventArgs> PageError;
 
-        internal Session Client { get; }
-
+        /// <summary>
+        /// This setting will change the default maximum navigation time of 30 seconds for the following methods:
+        /// - <see cref="GoToAsync(string, NavigationOptions)"/>
+        /// - <see cref="GoBackAsync(NavigationOptions)"/>
+        /// - <see cref="GoForwardAsync(NavigationOptions)"/>
+        /// - <see cref="ReloadAsync(NavigationOptions)"/>
+        /// - <see cref="WaitForNavigationAsync(NavigationOptions)"/>
+        /// </summary>
         public int DefaultNavigationTimeout { get; set; } = 30000;
 
         public Frame MainFrame => _frameManager.MainFrame;
