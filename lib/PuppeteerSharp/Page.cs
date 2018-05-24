@@ -169,22 +169,58 @@ namespace PuppeteerSharp
         /// </summary>
         public int DefaultNavigationTimeout { get; set; } = 30000;
 
+        /// <summary>
+        /// Gets page's main frame
+        /// </summary>
+        /// <remarks>
+        /// Page is guaranteed to have a main frame which persists during navigations.
+        /// </remarks>
         public Frame MainFrame => _frameManager.MainFrame;
+
         /// <summary>
         /// Gets all frames attached to the page.
         /// </summary>
         /// <value>An array of all frames attached to the page.</value>
         public Frame[] Frames => _frameManager.Frames.Values.ToArray();
+
+        /// <summary>
+        /// Shortcut for <c>page.MainFrame.Url</c>
+        /// </summary>
         public string Url => MainFrame.Url;
+
         /// <summary>
         /// Gets that target this page was created from.
         /// </summary>
         public Target Target { get; }
+
+        /// <summary>
+        /// Gets this page's keyboard
+        /// </summary>
         public Keyboard Keyboard { get; }
+
+        /// <summary>
+        /// Gets this page's touchscreen
+        /// </summary>
         public Touchscreen Touchscreen { get; }
+
+        /// <summary>
+        /// Gets this page's coverage
+        /// </summary>
         public Coverage Coverage { get; }
+
+        /// <summary>
+        /// Gets this page's tracing
+        /// </summary>
         public Tracing Tracing { get; }
+
+        /// <summary>
+        /// Gets this page's mouse
+        /// </summary>
         public Mouse Mouse { get; }
+
+        /// <summary>
+        /// Gets this page's viewport
+        /// </summary>
         public ViewPortOptions Viewport { get; private set; }
 
         public static readonly IEnumerable<string> SupportedMetrics = new List<string>
@@ -208,6 +244,13 @@ namespace PuppeteerSharp
 
         #region Public Methods
 
+        /// <summary>
+        /// Returns metrics
+        /// </summary>
+        /// <returns>metrics</returns>
+        /// <remarks>
+        /// All timestamps are in monotonic time: monotonically increasing time in seconds since an arbitrary point in the past.
+        /// </remarks>
         public async Task<Dictionary<string, decimal>> MetricsAsync()
         {
             var response = await Client.SendAsync<PerformanceGetMetricsResponse>("Performance.getMetrics");
@@ -353,13 +396,16 @@ namespace PuppeteerSharp
         /// <param name="value">When <c>true</c> enables offline mode for the page.</param>
         public async Task SetOfflineModeAsync(bool value) => await _networkManager.SetOfflineModeAsync(value);
 
-        public async Task<object> EvalManyAsync(string selector, Func<object> pageFunction, params object[] args)
-            => await MainFrame.EvalMany(selector, pageFunction, args);
-
-        public async Task<object> EvalManyAsync(string selector, string pageFunction, params object[] args)
-            => await MainFrame.EvalMany(selector, pageFunction, args);
-
-        public async Task<IEnumerable<CookieParam>> GetCookiesAsync(params string[] urls)
+        /// <summary>
+        /// Returns the page's cookies
+        /// </summary>
+        /// <param name="urls">Url's to return cookies for</param>
+        /// <returns>Array of cookies</returns>
+        /// <remarks>
+        /// If no URLs are specified, this method returns cookies for the current page URL.
+        /// If URLs are specified, only cookies for those URLs are returned.
+        /// </remarks>
+        public async Task<CookieParam[]> GetCookiesAsync(params string[] urls)
         {
             var response = await Client.SendAsync("Network.getCookies", new Dictionary<string, object>
             {
@@ -368,6 +414,11 @@ namespace PuppeteerSharp
             return response.cookies.ToObject<CookieParam[]>();
         }
 
+        /// <summary>
+        /// Clears all of the current cookies and then sets the cookies for the page
+        /// </summary>
+        /// <param name="cookies">Cookies to set</param>
+        /// <returns>Task</returns>
         public async Task SetCookieAsync(params CookieParam[] cookies)
         {
             foreach (var cookie in cookies)
@@ -393,6 +444,11 @@ namespace PuppeteerSharp
             }
         }
 
+        /// <summary>
+        /// Deletes cookies from the page
+        /// </summary>
+        /// <param name="cookies">Cookies to delete</param>
+        /// <returns>Task</returns>
         public async Task DeleteCookieAsync(params CookieParam[] cookies)
         {
             var pageURL = Url;
@@ -544,45 +600,7 @@ namespace PuppeteerSharp
         /// <returns>Task</returns>
         public Task ExposeFunctionAsync<T1, T2, T3, T4, TResult>(string name, Func<T1, T2, T3, T4, TResult> puppeteerFunction)
             => ExposeFunctionAsync(name, (Delegate)puppeteerFunction);
-
-        internal static async Task<Page> CreateAsync(Session client, Target target, bool ignoreHTTPSErrors, bool appMode,
-                                                   TaskQueue screenshotTaskQueue)
-        {
-            await client.SendAsync("Page.enable", null);
-            dynamic result = await client.SendAsync("Page.getFrameTree");
-            var page = new Page(client, target, new FrameTree(result.frameTree), ignoreHTTPSErrors, screenshotTaskQueue);
-
-            await Task.WhenAll(
-                client.SendAsync("Page.setLifecycleEventsEnabled", new Dictionary<string, object>
-                {
-                    {"enabled", true }
-                }),
-                client.SendAsync("Network.enable", null),
-                client.SendAsync("Runtime.enable", null),
-                client.SendAsync("Security.enable", null),
-                client.SendAsync("Performance.enable", null)
-            );
-
-            if (ignoreHTTPSErrors)
-            {
-                await client.SendAsync("Security.setOverrideCertificateErrors", new Dictionary<string, object>
-                {
-                    {"override", true}
-                });
-            }
-
-            // Initialize default page size.
-            if (!appMode)
-            {
-                await page.SetViewportAsync(new ViewPortOptions
-                {
-                    Width = 800,
-                    Height = 600
-                });
-            }
-            return page;
-        }
-
+        
         public async Task<string> GetContentAsync() => await _frameManager.MainFrame.GetContentAsync();
 
         public async Task SetContentAsync(string html) => await _frameManager.MainFrame.SetContentAsync(html);
@@ -1079,6 +1097,44 @@ namespace PuppeteerSharp
         #endregion
 
         #region Private Method
+
+        internal static async Task<Page> CreateAsync(Session client, Target target, bool ignoreHTTPSErrors, bool appMode,
+                                                   TaskQueue screenshotTaskQueue)
+        {
+            await client.SendAsync("Page.enable", null);
+            dynamic result = await client.SendAsync("Page.getFrameTree");
+            var page = new Page(client, target, new FrameTree(result.frameTree), ignoreHTTPSErrors, screenshotTaskQueue);
+
+            await Task.WhenAll(
+                client.SendAsync("Page.setLifecycleEventsEnabled", new Dictionary<string, object>
+                {
+                    {"enabled", true }
+                }),
+                client.SendAsync("Network.enable", null),
+                client.SendAsync("Runtime.enable", null),
+                client.SendAsync("Security.enable", null),
+                client.SendAsync("Performance.enable", null)
+            );
+
+            if (ignoreHTTPSErrors)
+            {
+                await client.SendAsync("Security.setOverrideCertificateErrors", new Dictionary<string, object>
+                {
+                    {"override", true}
+                });
+            }
+
+            // Initialize default page size.
+            if (!appMode)
+            {
+                await page.SetViewportAsync(new ViewPortOptions
+                {
+                    Width = 800,
+                    Height = 600
+                });
+            }
+            return page;
+        }
 
         private async Task<Response> GoAsync(int delta, NavigationOptions options)
         {
