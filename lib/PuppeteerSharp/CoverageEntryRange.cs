@@ -1,5 +1,8 @@
 ﻿namespace PuppeteerSharp
 {
+    /// <summary>
+    /// Script range.
+    /// </summary>
     public class CoverageEntryRange
     {
         /// <summary>
