@@ -13,7 +13,7 @@ namespace PuppeteerSharp.Messaging
     public class ProfilerTakePreciseCoverageResponseItem
     {
         [JsonProperty("scriptId")]
-        public string ScriptId { get; internal set; }
+        public string ScriptId { get; set; }
         [JsonProperty("functions")]
         public ProfilerTakePreciseCoverageResponseFunction[] Functions { get; set; }
     }
@@ -21,7 +21,7 @@ namespace PuppeteerSharp.Messaging
     public class ProfilerTakePreciseCoverageResponseFunction
     {
         [JsonProperty("ranges")]
-        public ProfilerTakePreciseCoverageResponseRange Ranges { get; set; }
+        public ProfilerTakePreciseCoverageResponseRange[] Ranges { get; set; }
     }
 
     public class ProfilerTakePreciseCoverageResponseRange

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Xunit;
@@ -26,8 +27,8 @@ namespace PuppeteerSharp.Tests.JSCoverageTests
                 },
                 new CoverageEntryRange
                 {
-                    Start = 0,
-                    End = 17
+                    Start = 35,
+                    End = 61
                 },
             }, coverage[0].Ranges);
         }
@@ -74,7 +75,7 @@ namespace PuppeteerSharp.Tests.JSCoverageTests
             var entry = coverage[0];
             Assert.Single(entry.Ranges);
             var range = entry.Ranges[0];
-            Assert.Equal("console.log('used!');", entry.Text.Substring(range.Start, range.End));
+            Assert.Equal("console.log('used!');", entry.Text.Substring(range.Start, range.End - range.Start));
         }
 
         [Fact]
@@ -94,30 +95,30 @@ namespace PuppeteerSharp.Tests.JSCoverageTests
         {
             const string involved = @"[
               {
-                ""url"": ""http://localhost:<PORT>/jscoverage/involved.html"",
-                ""ranges"": [
+                ""Url"": ""http://localhost:<PORT>/jscoverage/involved.html"",
+                ""Ranges"": [
                   {
-                    ""start"": 0,
-                    ""end"": 35
+                    ""Start"": 0,
+                    ""End"": 35
                   },
                   {
-                    ""start"": 50,
-                    ""end"": 100
+                    ""Start"": 50,
+                    ""End"": 100
                   },
                   {
-                    ""start"": 107,
-                    ""end"": 141
+                    ""Start"": 107,
+                    ""End"": 141
                   },
                   {
-                    ""start"": 148,
-                    ""end"": 160
+                    ""Start"": 148,
+                    ""End"": 160
                   },
                   {
-                    ""start"": 168,
-                    ""end"": 207
+                    ""Start"": 168,
+                    ""End"": 207
                   }
                 ],
-                ""text"": ""\\nfunction foo() {\\n  if (1 > 2)\\n    console.log(1);\\n  if (1 < 2)\\n    console.log(2);\\n  let x = 1 > 2 ? 'foo' : 'bar';\\n  let y = 1 < 2 ? 'foo' : 'bar';\\n  let z = () => {};\\n  let q = () => {};\\n  q();\\n}\\n\\nfoo();\\n""
+                ""Text"": ""\nfunction foo() {\n  if (1 > 2)\n    console.log(1);\n  if (1 < 2)\n    console.log(2);\n  let x = 1 > 2 ? 'foo' : 'bar';\n  let y = 1 < 2 ? 'foo' : 'bar';\n  let z = () => {};\n  let q = () => {};\n  q();\n}\n\nfoo();\n""
               }
             ]";
             await Page.Coverage.StartJSCoverageAsync();
@@ -125,7 +126,7 @@ namespace PuppeteerSharp.Tests.JSCoverageTests
             var coverage = await Page.Coverage.StopJSCoverageAsync();
             Assert.Equal(
                 TestUtils.CompressText(involved),
-                TestUtils.CompressText(JsonConvert.SerializeObject(coverage)));
+                Regex.Replace(TestUtils.CompressText(JsonConvert.SerializeObject(coverage)), @"\d{4}\/", "<PORT>/"));
         }
     }
 }

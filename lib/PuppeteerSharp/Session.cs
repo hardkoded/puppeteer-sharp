@@ -41,7 +41,7 @@ namespace PuppeteerSharp
 
         public Task<dynamic> SendAsync(string method, dynamic args = null)
         {
-            return SendAsync(method, false, args);
+            return SendAsync(method, false, args ?? new { });
         }
 
         public async Task<dynamic> SendAsync(string method, bool rawContent, dynamic args = null)

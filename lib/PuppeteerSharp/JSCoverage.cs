@@ -80,7 +80,7 @@ namespace PuppeteerSharp
                 var flattenRanges = new List<ProfilerTakePreciseCoverageResponseRange>();
                 foreach (var func in entry.Functions)
                 {
-                    flattenRanges.Add(func.Ranges);
+                    flattenRanges.AddRange(func.Ranges);
                 }
                 var ranges = ConvertToDisjointRanges(flattenRanges);
                 coverage.Add(new CoverageEntry
@@ -146,7 +146,7 @@ namespace PuppeteerSharp
                 }
                 else
                 {
-                    hitCountStack.RemoveAt(0);
+                    hitCountStack.RemoveAt(hitCountStack.Count - 1);
                 }
             }
             // Filter out empty ranges.
@@ -168,7 +168,7 @@ namespace PuppeteerSharp
 
         private async void OnScriptParsed(DebuggerScriptParsedResponse scriptParseResponse)
         {
-            if (scriptParseResponse.Url == null)
+            if (string.IsNullOrEmpty(scriptParseResponse.Url))
             {
                 return;
             }
