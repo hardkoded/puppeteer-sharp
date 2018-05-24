@@ -71,7 +71,6 @@ namespace PuppeteerSharp
                 if (!_scriptURLs.TryGetValue(entry.ScriptId, out var url) ||
                     !_scriptSources.TryGetValue(entry.ScriptId, out var text))
                 {
-
                     continue;
                 }
 
