@@ -2,6 +2,9 @@
 
 namespace PuppeteerSharp
 {
+    /// <summary>
+    /// Coverage report for all non-anonymous scripts.
+    /// </summary>
     public class CoverageEntry
     {
         /// <summary>
