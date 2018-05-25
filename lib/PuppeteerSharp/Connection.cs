@@ -68,7 +68,7 @@ namespace PuppeteerSharp
                 {"params", args}
             });
 
-            _logger.LogTrace("Send", message);
+            _logger.LogTrace("Sending Id {Id} Method {Method} Params {@Params}", id, method, args);
 
             _responses[id] = new MessageTask
             {
