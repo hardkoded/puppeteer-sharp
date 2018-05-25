@@ -36,8 +36,8 @@ namespace PuppeteerSharp
         #region Public Properties
         public Dictionary<string, string> ExtraHTTPHeaders => _extraHTTPHeaders?.Clone();
 
-        public event EventHandler<ResponseCreatedEventArgs> ResponseCreated;
-        public event EventHandler<RequestEventArgs> RequestCreated;
+        public event EventHandler<ResponseCreatedEventArgs> Response;
+        public event EventHandler<RequestEventArgs> Request;
         public event EventHandler<RequestEventArgs> RequestFinished;
         public event EventHandler<RequestEventArgs> RequestFailed;
 
@@ -182,7 +182,7 @@ namespace PuppeteerSharp
 
                 request.Response = response;
 
-                ResponseCreated?.Invoke(this, new ResponseCreatedEventArgs
+                Response?.Invoke(this, new ResponseCreatedEventArgs
                 {
                     Response = response
                 });
@@ -279,7 +279,7 @@ namespace PuppeteerSharp
                 _interceptionIdToRequest.Add(interceptionId, request);
             }
 
-            RequestCreated(this, new RequestEventArgs()
+            Request(this, new RequestEventArgs()
             {
                 Request = request
             });
@@ -300,7 +300,7 @@ namespace PuppeteerSharp
                 _attemptedAuthentications.Remove(request.InterceptionId);
             }
 
-            ResponseCreated(this, new ResponseCreatedEventArgs()
+            Response(this, new ResponseCreatedEventArgs()
             {
                 Response = response
             });

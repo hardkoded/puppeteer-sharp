@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task PageEventsRequest()
         {
             var requests = new List<Request>();
-            Page.RequestCreated += (sender, e) => requests.Add(e.Request);
+            Page.Request += (sender, e) => requests.Add(e.Request);
             await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.Single(requests);
             Assert.Equal(TestConstants.EmptyPage, requests[0].Url);
@@ -32,7 +32,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             await Page.GoToAsync(TestConstants.EmptyPage);
             Server.SetRoute("/post", context => Task.CompletedTask);
             Request request = null;
-            Page.RequestCreated += (sender, e) => request = e.Request;
+            Page.Request += (sender, e) => request = e.Request;
             await Page.EvaluateExpressionHandleAsync("fetch('./post', { method: 'POST', body: JSON.stringify({ foo: 'bar'})})");
             Assert.NotNull(request);
             Assert.Equal("{\"foo\":\"bar\"}", request.PostData);
@@ -42,7 +42,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task PageEventsResponse()
         {
             var responses = new List<Response>();
-            Page.ResponseCreated += (sender, e) => responses.Add(e.Response);
+            Page.Response += (sender, e) => responses.Add(e.Response);
             await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.Single(responses);
             Assert.Equal(TestConstants.EmptyPage, responses[0].Url);
@@ -54,7 +54,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task PageEventsResponseShouldProvideBody()
         {
             Response response = null;
-            Page.ResponseCreated += (sender, e) => response = e.Response;
+            Page.Response += (sender, e) => response = e.Response;
             await Page.GoToAsync(TestConstants.ServerUrl + "/simple.json");
             Assert.NotNull(response);
             var responseText = await new HttpClient().GetStringAsync(TestConstants.ServerUrl + "/simple.json");
@@ -78,13 +78,13 @@ namespace PuppeteerSharp.Tests.NetworkTests
             // Setup page to trap response.
             Response pageResponse = null;
             var requestFinished = false;
-            Page.ResponseCreated += (sender, e) => pageResponse = e.Response;
+            Page.Response += (sender, e) => pageResponse = e.Response;
             Page.RequestFinished += (sender, e) => requestFinished = true;
             // send request and wait for server response
             Task WaitForPageResponseEvent()
             {
                 var completion = new TaskCompletionSource<bool>();
-                Page.ResponseCreated += (sender, e) => completion.SetResult(true);
+                Page.Response += (sender, e) => completion.SetResult(true);
                 return completion.Task;
             }
             await Task.WhenAll(
@@ -110,7 +110,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task PageEventsRequestFailed()
         {
             await Page.SetRequestInterceptionAsync(true);
-            Page.RequestCreated += async (sender, e) =>
+            Page.Request += async (sender, e) =>
             {
                 if (e.Request.Url.EndsWith("css"))
                     await e.Request.AbortAsync();
@@ -147,8 +147,8 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldFireEventsInProperOrder()
         {
             var events = new List<string>();
-            Page.RequestCreated += (sender, e) => events.Add("request");
-            Page.ResponseCreated += (sender, e) => events.Add("response");
+            Page.Request += (sender, e) => events.Add("request");
+            Page.Response += (sender, e) => events.Add("response");
             Page.RequestFinished += (sender, e) => events.Add("requestfinished");
             await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.Equal(new[] { "request", "response", "requestfinished" }, events);
@@ -158,8 +158,8 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldSupportRedirects()
         {
             var events = new List<string>();
-            Page.RequestCreated += (sender, e) => events.Add($"{e.Request.Method} {e.Request.Url}");
-            Page.ResponseCreated += (sender, e) => events.Add($"{(int)e.Response.Status} {e.Response.Url}");
+            Page.Request += (sender, e) => events.Add($"{e.Request.Method} {e.Request.Url}");
+            Page.Response += (sender, e) => events.Add($"{(int)e.Response.Status} {e.Response.Url}");
             Page.RequestFinished += (sender, e) => events.Add($"DONE {e.Request.Url}");
             Page.RequestFailed += (sender, e) => events.Add($"FAIL {e.Request.Url}");
             Server.SetRedirect("/foo.html", "/empty.html");

@@ -16,6 +16,19 @@ using PuppeteerSharp.Mobile;
 
 namespace PuppeteerSharp
 {
+    /// <summary>
+    /// Provides methods to interact with a single tab in Chromium. One <see cref="Browser"/> instance might have multiple <see cref="Page"/> instances.
+    /// </summary>
+    /// <example>
+    /// This example creates a page, navigates it to a URL, and then saves a screenshot:
+    /// <code>
+    /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions(), Downloader.DefaultRevision);
+    /// var page = await browser.NewPageAsync();
+    /// await page.GoToAsync("https://example.com");
+    /// await page.ScreenshotAsync("screenshot.png");
+    /// await browser.CloseAsync();
+    /// </code>
+    /// </example>
     [DebuggerDisplay("Page {Url}")]
     public class Page : IDisposable
     {
@@ -55,54 +68,159 @@ namespace PuppeteerSharp
             _frameManager.FrameDetached += (sender, e) => FrameDetached?.Invoke(this, e);
             _frameManager.FrameNavigated += (sender, e) => FrameNavigated?.Invoke(this, e);
 
-            _networkManager.RequestCreated += (sender, e) => RequestCreated?.Invoke(this, e);
+            _networkManager.Request += (sender, e) => Request?.Invoke(this, e);
             _networkManager.RequestFailed += (sender, e) => RequestFailed?.Invoke(this, e);
-            _networkManager.ResponseCreated += (sender, e) => ResponseCreated?.Invoke(this, e);
+            _networkManager.Response += (sender, e) => Response?.Invoke(this, e);
             _networkManager.RequestFinished += (sender, e) => RequestFinished?.Invoke(this, e);
 
             Client.MessageReceived += client_MessageReceived;
         }
 
+        internal Session Client { get; }
+
         #region Public Properties
+
+        /// <summary>
+        /// Raised when the JavaScript <c>load</c> <see cref="https://developer.mozilla.org/en-US/docs/Web/Events/load"/> event is dispatched.
+        /// </summary>
         public event EventHandler<EventArgs> Load;
+
+        /// <summary>
+        /// Raised when the page crashes
+        /// </summary>
         public event EventHandler<ErrorEventArgs> Error;
-        public event EventHandler<MetricEventArgs> MetricsReceived;
+
+        /// <summary>
+        /// Raised when the JavaScript code makes a call to <c>console.timeStamp</c>. For the list of metrics see <see cref="Page.MetricsAsync"/>.
+        /// </summary>
+        public event EventHandler<MetricEventArgs> Metrics;
+
+        /// <summary>
+        /// Raised when a JavaScript dialog appears, such as <c>alert</c>, <c>prompt</c>, <c>confirm</c> or <c>beforeunload</c>. Puppeteer can respond to the dialog via <see cref="PuppeteerSharp.Dialog"/>'s <see cref="Dialog.Accept(string)"/> or <see cref="Dialog.Dismiss"/> methods.
+        /// </summary>
         public event EventHandler<DialogEventArgs> Dialog;
+
+        /// <summary>
+        /// Raised when JavaScript within the page calls one of console API methods, e.g. <c>console.log</c> or <c>console.dir</c>. Also emitted if the page throws an error or a warning.
+        /// The arguments passed into <c>console.log</c> appear as arguments on the event handler.
+        /// </summary>
+        /// <example>
+        /// An example of handling <see cref="Console"/> event:
+        /// <code>
+        /// page.Console += (sender, e) => 
+        /// {
+        ///     for (var i = 0; i < e.Message.Args.Count; ++i)
+        ///     {
+        ///         System.Console.WriteLine($"{i}: {e.Message.Args[i]}");
+        ///     }
+        /// }
+        /// </code>
+        /// </example>
         public event EventHandler<ConsoleEventArgs> Console;
 
+        /// <summary>
+        /// Raised when a frame is attached.
+        /// </summary>
         public event EventHandler<FrameEventArgs> FrameAttached;
+
+        /// <summary>
+        /// Raised when a frame is detached.
+        /// </summary>
         public event EventHandler<FrameEventArgs> FrameDetached;
+
+        /// <summary>
+        /// Raised when a frame is navigated to a new url.
+        /// </summary>
         public event EventHandler<FrameEventArgs> FrameNavigated;
 
-        public event EventHandler<ResponseCreatedEventArgs> ResponseCreated;
-        public event EventHandler<RequestEventArgs> RequestCreated;
-        public event EventHandler<RequestEventArgs> RequestFinished;
-        public event EventHandler<RequestEventArgs> RequestFailed;
         /// <summary>
-        /// Emitted when an uncaught exception happens within the page.
+        /// Raised when a <see cref="PuppeteerSharp.Response"/> is received.
+        /// </summary>
+        public event EventHandler<ResponseCreatedEventArgs> Response;
+
+        /// <summary>
+        /// Raised when a page issues a request. The <see cref="PuppeteerSharp.Request"/> object is read-only.
+        /// In order to intercept and mutate requests, see <see cref="SetRequestInterceptionAsync(bool)"/>
+        /// </summary>
+        public event EventHandler<RequestEventArgs> Request;
+
+        /// <summary>
+        /// Raised when a request finishes successfully.
+        /// </summary>
+        public event EventHandler<RequestEventArgs> RequestFinished;
+
+        /// <summary>
+        /// Raised when a request fails, for example by timing out.
+        /// </summary>
+        public event EventHandler<RequestEventArgs> RequestFailed;
+        
+        /// <summary>
+        /// Raised when an uncaught exception happens within the page.
         /// </summary>
         public event EventHandler<PageErrorEventArgs> PageError;
 
-        internal Session Client { get; }
-
+        /// <summary>
+        /// This setting will change the default maximum navigation time of 30 seconds for the following methods:
+        /// - <see cref="GoToAsync(string, NavigationOptions)"/>
+        /// - <see cref="GoBackAsync(NavigationOptions)"/>
+        /// - <see cref="GoForwardAsync(NavigationOptions)"/>
+        /// - <see cref="ReloadAsync(NavigationOptions)"/>
+        /// - <see cref="WaitForNavigationAsync(NavigationOptions)"/>
+        /// </summary>
         public int DefaultNavigationTimeout { get; set; } = 30000;
 
+        /// <summary>
+        /// Gets page's main frame
+        /// </summary>
+        /// <remarks>
+        /// Page is guaranteed to have a main frame which persists during navigations.
+        /// </remarks>
         public Frame MainFrame => _frameManager.MainFrame;
+
         /// <summary>
         /// Gets all frames attached to the page.
         /// </summary>
         /// <value>An array of all frames attached to the page.</value>
         public Frame[] Frames => _frameManager.Frames.Values.ToArray();
+
+        /// <summary>
+        /// Shortcut for <c>page.MainFrame.Url</c>
+        /// </summary>
         public string Url => MainFrame.Url;
+
         /// <summary>
         /// Gets that target this page was created from.
         /// </summary>
         public Target Target { get; }
+
+        /// <summary>
+        /// Gets this page's keyboard
+        /// </summary>
         public Keyboard Keyboard { get; }
+
+        /// <summary>
+        /// Gets this page's touchscreen
+        /// </summary>
         public Touchscreen Touchscreen { get; }
+
+        /// <summary>
+        /// Gets this page's coverage
+        /// </summary>
         public Coverage Coverage { get; }
+
+        /// <summary>
+        /// Gets this page's tracing
+        /// </summary>
         public Tracing Tracing { get; }
+
+        /// <summary>
+        /// Gets this page's mouse
+        /// </summary>
         public Mouse Mouse { get; }
+
+        /// <summary>
+        /// Gets this page's viewport
+        /// </summary>
         public ViewPortOptions Viewport { get; private set; }
 
         public static readonly IEnumerable<string> SupportedMetrics = new List<string>
@@ -126,6 +244,13 @@ namespace PuppeteerSharp
 
         #region Public Methods
 
+        /// <summary>
+        /// Returns metrics
+        /// </summary>
+        /// <returns>Task which resolves into a list of metrics</returns>
+        /// <remarks>
+        /// All timestamps are in monotonic time: monotonically increasing time in seconds since an arbitrary point in the past.
+        /// </remarks>
         public async Task<Dictionary<string, decimal>> MetricsAsync()
         {
             var response = await Client.SendAsync<PerformanceGetMetricsResponse>("Performance.getMetrics");
@@ -271,13 +396,16 @@ namespace PuppeteerSharp
         /// <param name="value">When <c>true</c> enables offline mode for the page.</param>
         public async Task SetOfflineModeAsync(bool value) => await _networkManager.SetOfflineModeAsync(value);
 
-        public async Task<object> EvalManyAsync(string selector, Func<object> pageFunction, params object[] args)
-            => await MainFrame.EvalMany(selector, pageFunction, args);
-
-        public async Task<object> EvalManyAsync(string selector, string pageFunction, params object[] args)
-            => await MainFrame.EvalMany(selector, pageFunction, args);
-
-        public async Task<IEnumerable<CookieParam>> GetCookiesAsync(params string[] urls)
+        /// <summary>
+        /// Returns the page's cookies
+        /// </summary>
+        /// <param name="urls">Url's to return cookies for</param>
+        /// <returns>Array of cookies</returns>
+        /// <remarks>
+        /// If no URLs are specified, this method returns cookies for the current page URL.
+        /// If URLs are specified, only cookies for those URLs are returned.
+        /// </remarks>
+        public async Task<CookieParam[]> GetCookiesAsync(params string[] urls)
         {
             var response = await Client.SendAsync("Network.getCookies", new Dictionary<string, object>
             {
@@ -286,6 +414,11 @@ namespace PuppeteerSharp
             return response.cookies.ToObject<CookieParam[]>();
         }
 
+        /// <summary>
+        /// Clears all of the current cookies and then sets the cookies for the page
+        /// </summary>
+        /// <param name="cookies">Cookies to set</param>
+        /// <returns>Task</returns>
         public async Task SetCookieAsync(params CookieParam[] cookies)
         {
             foreach (var cookie in cookies)
@@ -311,6 +444,11 @@ namespace PuppeteerSharp
             }
         }
 
+        /// <summary>
+        /// Deletes cookies from the page
+        /// </summary>
+        /// <param name="cookies">Cookies to delete</param>
+        /// <returns>Task</returns>
         public async Task DeleteCookieAsync(params CookieParam[] cookies)
         {
             var pageURL = Url;
@@ -462,45 +600,7 @@ namespace PuppeteerSharp
         /// <returns>Task</returns>
         public Task ExposeFunctionAsync<T1, T2, T3, T4, TResult>(string name, Func<T1, T2, T3, T4, TResult> puppeteerFunction)
             => ExposeFunctionAsync(name, (Delegate)puppeteerFunction);
-
-        internal static async Task<Page> CreateAsync(Session client, Target target, bool ignoreHTTPSErrors, bool appMode,
-                                                   TaskQueue screenshotTaskQueue)
-        {
-            await client.SendAsync("Page.enable", null);
-            dynamic result = await client.SendAsync("Page.getFrameTree");
-            var page = new Page(client, target, new FrameTree(result.frameTree), ignoreHTTPSErrors, screenshotTaskQueue);
-
-            await Task.WhenAll(
-                client.SendAsync("Page.setLifecycleEventsEnabled", new Dictionary<string, object>
-                {
-                    {"enabled", true }
-                }),
-                client.SendAsync("Network.enable", null),
-                client.SendAsync("Runtime.enable", null),
-                client.SendAsync("Security.enable", null),
-                client.SendAsync("Performance.enable", null)
-            );
-
-            if (ignoreHTTPSErrors)
-            {
-                await client.SendAsync("Security.setOverrideCertificateErrors", new Dictionary<string, object>
-                {
-                    {"override", true}
-                });
-            }
-
-            // Initialize default page size.
-            if (!appMode)
-            {
-                await page.SetViewportAsync(new ViewPortOptions
-                {
-                    Width = 800,
-                    Height = 600
-                });
-            }
-            return page;
-        }
-
+        
         public async Task<string> GetContentAsync() => await _frameManager.MainFrame.GetContentAsync();
 
         public async Task SetContentAsync(string html) => await _frameManager.MainFrame.SetContentAsync(html);
@@ -518,7 +618,7 @@ namespace PuppeteerSharp
                 }
             };
 
-            _networkManager.RequestCreated += createRequestEventListener;
+            _networkManager.Request += createRequestEventListener;
 
             var mainFrame = _frameManager.MainFrame;
             var timeout = options?.Timeout ?? DefaultNavigationTimeout;
@@ -551,7 +651,7 @@ namespace PuppeteerSharp
             }
 
             watcher.Cancel();
-            _networkManager.RequestCreated -= createRequestEventListener;
+            _networkManager.Request -= createRequestEventListener;
 
             if (exception != null)
             {
@@ -841,26 +941,91 @@ namespace PuppeteerSharp
             await handle.DisposeAsync();
         }
 
+        /// <summary>
+        /// Executes a script in browser context
+        /// </summary>
+        /// <param name="script">Script to be evaluated in browser context</param>
+        /// <remarks>
+        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+        /// </remarks>
+        /// <seealso cref="EvaluateFunctionAsync(string, object[])"/>
+        /// <returns>Task which resolves to script return value</returns>
         public Task<dynamic> EvaluateExpressionAsync(string script)
             => _frameManager.MainFrame.EvaluateExpressionAsync(script);
 
+        /// <summary>
+        /// Executes a script in browser context
+        /// </summary>
+        /// <typeparam name="T">The type to deserialize the result to</typeparam>
+        /// <param name="script">Script to be evaluated in browser context</param>
+        /// <remarks>
+        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+        /// </remarks>
+        /// <seealso cref="EvaluateFunctionAsync{T}(string, object[])"/>
+        /// <returns>Task which resolves to script return value</returns>
         public Task<T> EvaluateExpressionAsync<T>(string script)
             => _frameManager.MainFrame.EvaluateExpressionAsync<T>(script);
 
+        /// <summary>
+        /// Executes a function in browser context
+        /// </summary>
+        /// <param name="script">Script to be evaluated in browser context</param>
+        /// <param name="args">Arguments to pass to script</param>
+        /// <remarks>
+        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+        /// <see cref="JSHandle"/> instances can be passed as arguments
+        /// </remarks>
+        /// <seealso cref="EvaluateExpressionAsync(string)"/>
+        /// <returns>Task which resolves to script return value</returns>
         public Task<dynamic> EvaluateFunctionAsync(string script, params object[] args)
             => _frameManager.MainFrame.EvaluateFunctionAsync(script, args);
 
+        /// <summary>
+        /// Executes a function in browser context
+        /// </summary>
+        /// <typeparam name="T">The type to deserialize the result to</typeparam>
+        /// <param name="script">Script to be evaluated in browser context</param>
+        /// <param name="args">Arguments to pass to script</param>
+        /// <remarks>
+        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+        /// <see cref="JSHandle"/> instances can be passed as arguments
+        /// </remarks>
+        /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
+        /// <returns>Task which resolves to script return value</returns>
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
             => _frameManager.MainFrame.EvaluateFunctionAsync<T>(script, args);
 
-        public async Task SetUserAgentAsync(string userAgent)
-            => await _networkManager.SetUserAgentAsync(userAgent);
+        /// <summary>
+        /// Sets the user agent to be used in this page
+        /// </summary>
+        /// <param name="userAgent">Specific user agent to use in this page</param>
+        /// <returns>Task</returns>
+        public Task SetUserAgentAsync(string userAgent)
+            => _networkManager.SetUserAgentAsync(userAgent);
 
-        public async Task SetExtraHttpHeadersAsync(Dictionary<string, string> headers)
-            => await _networkManager.SetExtraHTTPHeadersAsync(headers);
+        /// <summary>
+        /// Sets extra HTTP headers that will be sent with every request the page initiates
+        /// </summary>
+        /// <param name="headers">Additional http headers to be sent with every request</param>
+        /// <returns>Task</returns>
+        public Task SetExtraHttpHeadersAsync(Dictionary<string, string> headers)
+            => _networkManager.SetExtraHTTPHeadersAsync(headers);
 
+        /// <summary>
+        /// Provide credentials for http authentication <see cref="https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication"/>
+        /// </summary>
+        /// <param name="credentials">The credentials</param>
+        /// <returns></returns>
+        /// <remarks>
+        /// To disable authentication, pass <c>null</c>
+        /// </remarks>
         public Task AuthenticateAsync(Credentials credentials) => _networkManager.AuthenticateAsync(credentials);
 
+        /// <summary>
+        /// Reloads the page
+        /// </summary>
+        /// <param name="options">Navigation options</param>
+        /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect</returns>
         public async Task<Response> ReloadAsync(NavigationOptions options = null)
         {
             var navigationTask = WaitForNavigationAsync(options);
@@ -963,11 +1128,11 @@ namespace PuppeteerSharp
             EventHandler<ResponseCreatedEventArgs> createResponseEventListener = (object sender, ResponseCreatedEventArgs e) =>
                 responses.Add(e.Response.Url, e.Response);
 
-            _networkManager.ResponseCreated += createResponseEventListener;
+            _networkManager.Response += createResponseEventListener;
 
             await watcher.NavigationTask;
 
-            _networkManager.ResponseCreated -= createResponseEventListener;
+            _networkManager.Response -= createResponseEventListener;
 
             var exception = watcher.NavigationTask.Exception;
             if (exception != null)
@@ -997,6 +1162,44 @@ namespace PuppeteerSharp
         #endregion
 
         #region Private Method
+
+        internal static async Task<Page> CreateAsync(Session client, Target target, bool ignoreHTTPSErrors, bool appMode,
+                                                   TaskQueue screenshotTaskQueue)
+        {
+            await client.SendAsync("Page.enable", null);
+            dynamic result = await client.SendAsync("Page.getFrameTree");
+            var page = new Page(client, target, new FrameTree(result.frameTree), ignoreHTTPSErrors, screenshotTaskQueue);
+
+            await Task.WhenAll(
+                client.SendAsync("Page.setLifecycleEventsEnabled", new Dictionary<string, object>
+                {
+                    {"enabled", true }
+                }),
+                client.SendAsync("Network.enable", null),
+                client.SendAsync("Runtime.enable", null),
+                client.SendAsync("Security.enable", null),
+                client.SendAsync("Performance.enable", null)
+            );
+
+            if (ignoreHTTPSErrors)
+            {
+                await client.SendAsync("Security.setOverrideCertificateErrors", new Dictionary<string, object>
+                {
+                    {"override", true}
+                });
+            }
+
+            // Initialize default page size.
+            if (!appMode)
+            {
+                await page.SetViewportAsync(new ViewPortOptions
+                {
+                    Width = 800,
+                    Height = 600
+                });
+            }
+            return page;
+        }
 
         private async Task<Response> GoAsync(int delta, NavigationOptions options)
         {
@@ -1217,7 +1420,7 @@ namespace PuppeteerSharp
         }
 
         private void EmitMetrics(PerformanceMetricsResponse metrics)
-            => MetricsReceived?.Invoke(this, new MetricEventArgs(metrics.Title, BuildMetricsObject(metrics.Metrics)));
+            => Metrics?.Invoke(this, new MetricEventArgs(metrics.Title, BuildMetricsObject(metrics.Metrics)));
 
         private async Task OnCertificateError(MessageEventArgs e)
         {

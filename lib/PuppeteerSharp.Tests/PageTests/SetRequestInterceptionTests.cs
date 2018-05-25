@@ -17,7 +17,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldIntercept()
         {
             await Page.SetRequestInterceptionAsync(true);
-            Page.RequestCreated += async (sender, e) =>
+            Page.Request += async (sender, e) =>
             {
                 Assert.Contains("empty.html", e.Request.Url);
                 Assert.NotNull(e.Request.Headers);
@@ -39,9 +39,9 @@ namespace PuppeteerSharp.Tests.PageTests
             async void EventHandler(object sender, RequestEventArgs e)
             {
                 await e.Request.ContinueAsync();
-                Page.RequestCreated -= EventHandler;
+                Page.Request -= EventHandler;
             }
-            Page.RequestCreated += EventHandler;
+            Page.Request += EventHandler;
             await Page.GoToAsync(TestConstants.EmptyPage);
             await Page.SetRequestInterceptionAsync(false);
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -55,7 +55,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 ["foo"] = "bar"
             });
             await Page.SetRequestInterceptionAsync(true);
-            Page.RequestCreated += async (sender, e) =>
+            Page.Request += async (sender, e) =>
             {
                 Assert.Equal("bar", e.Request.Headers["foo"]);
                 await e.Request.ContinueAsync();
@@ -72,7 +72,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 ["referer"] = TestConstants.EmptyPage
             });
             await Page.SetRequestInterceptionAsync(true);
-            Page.RequestCreated += async (sender, e) =>
+            Page.Request += async (sender, e) =>
             {
                 Assert.Equal(TestConstants.EmptyPage, e.Request.Headers["referer"]);
                 await e.Request.ContinueAsync();
@@ -85,7 +85,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldBeAbortable()
         {
             await Page.SetRequestInterceptionAsync(true);
-            Page.RequestCreated += async (sender, e) =>
+            Page.Request += async (sender, e) =>
             {
                 if (e.Request.Url.EndsWith(".css"))
                 {
@@ -108,7 +108,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldBeAbortableWithCustomErrorCodes()
         {
             await Page.SetRequestInterceptionAsync(true);
-            Page.RequestCreated += async (sender, e) =>
+            Page.Request += async (sender, e) =>
             {
                 await e.Request.AbortAsync(RequestAbortErrorCode.InternetDisconnected);
             };
@@ -123,7 +123,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldAmendHTTPHeaders()
         {
             await Page.SetRequestInterceptionAsync(true);
-            Page.RequestCreated += async (sender, e) =>
+            Page.Request += async (sender, e) =>
             {
                 var headers = new Dictionary<string, object>(e.Request.Headers);
                 headers["FOO"] = "bar";
@@ -142,7 +142,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldFailNavigationWhenAbortingMainResource()
         {
             await Page.SetRequestInterceptionAsync(true);
-            Page.RequestCreated += async (sender, e) => await e.Request.AbortAsync();
+            Page.Request += async (sender, e) => await e.Request.AbortAsync();
             var exception = await Assert.ThrowsAsync<NavigationException>(
                 () => Page.GoToAsync(TestConstants.EmptyPage));
             Assert.Contains("net::ERR_FAILED", exception.Message);
@@ -153,7 +153,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.SetRequestInterceptionAsync(true);
             var requests = new List<Request>();
-            Page.RequestCreated += async (sender, e) =>
+            Page.Request += async (sender, e) =>
             {
                 await e.Request.ContinueAsync();
                 requests.Add(e.Request);
@@ -176,7 +176,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.SetRequestInterceptionAsync(true);
             Server.SetRedirect("/non-existing.json", "/non-existing-2.json");
             Server.SetRedirect("/non-existing-2.json", "/simple.html");
-            Page.RequestCreated += async (sender, e) =>
+            Page.Request += async (sender, e) =>
             {
                 if (e.Request.Url.Contains("non-existing-2"))
                 {
@@ -211,7 +211,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
             var spinner = false;
             // Cancel 2nd request.
-            Page.RequestCreated += async (sender, e) =>
+            Page.Request += async (sender, e) =>
             {
                 if (spinner)
                 {
@@ -237,7 +237,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.SetRequestInterceptionAsync(true);
             var requests = new List<Request>();
-            Page.RequestCreated += async (sender, e) =>
+            Page.Request += async (sender, e) =>
             {
                 requests.Add(e.Request);
                 await e.Request.ContinueAsync();
@@ -253,7 +253,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldAbortDataServer()
         {
             await Page.SetRequestInterceptionAsync(true);
-            Page.RequestCreated += async (sender, e) =>
+            Page.Request += async (sender, e) =>
             {
                 await e.Request.AbortAsync();
             };
@@ -267,7 +267,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.SetRequestInterceptionAsync(true);
             var requests = new List<Request>();
-            Page.RequestCreated += async (sender, e) =>
+            Page.Request += async (sender, e) =>
             {
                 requests.Add(e.Request);
                 await e.Request.ContinueAsync();
@@ -285,7 +285,7 @@ namespace PuppeteerSharp.Tests.PageTests
             // The requestWillBeSent will report encoded URL, whereas interception will
             // report URL as-is. @see crbug.com/759388
             await Page.SetRequestInterceptionAsync(true);
-            Page.RequestCreated += async (sender, e) => await e.Request.ContinueAsync();
+            Page.Request += async (sender, e) => await e.Request.ContinueAsync();
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/some nonexisting page");
             Assert.Equal(HttpStatusCode.NotFound, response.Status);
         }
@@ -295,7 +295,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.SetRequestInterceptionAsync(true);
             Server.SetRoute("/malformed?rnd=%911", context => Task.CompletedTask);
-            Page.RequestCreated += async (sender, e) => await e.Request.ContinueAsync();
+            Page.Request += async (sender, e) => await e.Request.ContinueAsync();
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/malformed?rnd=%911");
             Assert.Equal(HttpStatusCode.OK, response.Status);
         }
@@ -307,7 +307,7 @@ namespace PuppeteerSharp.Tests.PageTests
             // report encoded URL for stylesheet. @see crbug.com/759388
             await Page.SetRequestInterceptionAsync(true);
             var requests = new List<Request>();
-            Page.RequestCreated += async (sender, e) =>
+            Page.Request += async (sender, e) =>
             {
                 requests.Add(e.Request);
                 await e.Request.ContinueAsync();
@@ -325,7 +325,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.SetRequestInterceptionAsync(true);
             Request request = null;
             var requestIntercepted = new TaskCompletionSource<bool>();
-            Page.RequestCreated += (sender, e) => {
+            Page.Request += (sender, e) => {
                 request = e.Request;
                 requestIntercepted.SetResult(true);
             };
@@ -342,7 +342,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldThrowIfInterceptionIsNotEnabled()
         {
             Exception exception = null;
-            Page.RequestCreated += async (sender, e) =>
+            Page.Request += async (sender, e) =>
             {
                 try
                 {

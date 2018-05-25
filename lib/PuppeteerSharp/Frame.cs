@@ -135,16 +135,6 @@ namespace PuppeteerSharp
             return value;
         }
 
-        internal Task<object> EvalMany(string selector, Func<object> pageFunction, object[] args)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal Task<object> EvalMany(string selector, string pageFunction, object[] args)
-        {
-            throw new NotImplementedException();
-        }
-
         internal async Task<ElementHandle[]> QuerySelectorAllAsync(string selector)
         {
             var document = await GetDocument();

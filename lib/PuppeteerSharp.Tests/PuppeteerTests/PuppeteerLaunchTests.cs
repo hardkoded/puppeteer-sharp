@@ -67,7 +67,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             using (var page = await browser.NewPageAsync())
             {
                 var responses = new List<Response>();
-                page.ResponseCreated += (sender, e) => responses.Add(e.Response);
+                page.Response += (sender, e) => responses.Add(e.Response);
 
                 await page.GoToAsync(TestConstants.HttpsPrefix + "/plzredirect");
                 Assert.Equal(2, responses.Count);
