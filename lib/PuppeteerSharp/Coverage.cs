@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace PuppeteerSharp
 {
@@ -30,5 +31,15 @@ namespace PuppeteerSharp
         /// JavaScript Coverage doesn't include anonymous scripts; however, scripts with sourceURLs are reported.
         /// </remarks>
         public Task<CoverageEntry[]> StopJSCoverageAsync() => _jsCoverage.StopAsync();
+
+        internal Task StartCSSCoverageAsync(JSCoverageStartOptions options = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal Task<CoverageEntry[]> StopCSSCoverageAsync()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
