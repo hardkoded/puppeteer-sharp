@@ -81,27 +81,27 @@ namespace PuppeteerSharp
         #region Public Properties
 
         /// <summary>
-        /// Emitted when the JavaScript <c>load</c> <see cref="https://developer.mozilla.org/en-US/docs/Web/Events/load"/> event is dispatched.
+        /// Raised when the JavaScript <c>load</c> <see cref="https://developer.mozilla.org/en-US/docs/Web/Events/load"/> event is dispatched.
         /// </summary>
         public event EventHandler<EventArgs> Load;
 
         /// <summary>
-        /// Emitted when the page crashes
+        /// Raised when the page crashes
         /// </summary>
         public event EventHandler<ErrorEventArgs> Error;
 
         /// <summary>
-        /// Emitted when the JavaScript code makes a call to <c>console.timeStamp</c>. For the list of metrics see <see cref="Page.MetricsAsync"/>.
+        /// Raised when the JavaScript code makes a call to <c>console.timeStamp</c>. For the list of metrics see <see cref="Page.MetricsAsync"/>.
         /// </summary>
         public event EventHandler<MetricEventArgs> Metrics;
 
         /// <summary>
-        /// Emitted when a JavaScript dialog appears, such as <c>alert</c>, <c>prompt</c>, <c>confirm</c> or <c>beforeunload</c>. Puppeteer can respond to the dialog via <see cref="PuppeteerSharp.Dialog"/>'s <see cref="Dialog.Accept(string)"/> or <see cref="Dialog.Dismiss"/> methods.
+        /// Raised when a JavaScript dialog appears, such as <c>alert</c>, <c>prompt</c>, <c>confirm</c> or <c>beforeunload</c>. Puppeteer can respond to the dialog via <see cref="PuppeteerSharp.Dialog"/>'s <see cref="Dialog.Accept(string)"/> or <see cref="Dialog.Dismiss"/> methods.
         /// </summary>
         public event EventHandler<DialogEventArgs> Dialog;
 
         /// <summary>
-        /// Emitted when JavaScript within the page calls one of console API methods, e.g. <c>console.log</c> or <c>console.dir</c>. Also emitted if the page throws an error or a warning.
+        /// Raised when JavaScript within the page calls one of console API methods, e.g. <c>console.log</c> or <c>console.dir</c>. Also emitted if the page throws an error or a warning.
         /// The arguments passed into <c>console.log</c> appear as arguments on the event handler.
         /// </summary>
         /// <example>
@@ -119,43 +119,43 @@ namespace PuppeteerSharp
         public event EventHandler<ConsoleEventArgs> Console;
 
         /// <summary>
-        /// Emitted when a frame is attached.
+        /// Raised when a frame is attached.
         /// </summary>
         public event EventHandler<FrameEventArgs> FrameAttached;
 
         /// <summary>
-        /// Emitted when a frame is detached.
+        /// Raised when a frame is detached.
         /// </summary>
         public event EventHandler<FrameEventArgs> FrameDetached;
 
         /// <summary>
-        /// Emitted when a frame is navigated to a new url.
+        /// Raised when a frame is navigated to a new url.
         /// </summary>
         public event EventHandler<FrameEventArgs> FrameNavigated;
 
         /// <summary>
-        /// Emitted when a <see cref="PuppeteerSharp.Response"/> is received.
+        /// Raised when a <see cref="PuppeteerSharp.Response"/> is received.
         /// </summary>
         public event EventHandler<ResponseCreatedEventArgs> Response;
 
         /// <summary>
-        /// Emitted when a page issues a request. The <see cref="PuppeteerSharp.Request"/> object is read-only.
+        /// Raised when a page issues a request. The <see cref="PuppeteerSharp.Request"/> object is read-only.
         /// In order to intercept and mutate requests, see <see cref="SetRequestInterceptionAsync(bool)"/>
         /// </summary>
         public event EventHandler<RequestEventArgs> Request;
 
         /// <summary>
-        /// Emitted when a request finishes successfully.
+        /// Raised when a request finishes successfully.
         /// </summary>
         public event EventHandler<RequestEventArgs> RequestFinished;
 
         /// <summary>
-        /// Emitted when a request fails, for example by timing out.
+        /// Raised when a request fails, for example by timing out.
         /// </summary>
         public event EventHandler<RequestEventArgs> RequestFailed;
         
         /// <summary>
-        /// Emitted when an uncaught exception happens within the page.
+        /// Raised when an uncaught exception happens within the page.
         /// </summary>
         public event EventHandler<PageErrorEventArgs> PageError;
 
@@ -247,7 +247,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Returns metrics
         /// </summary>
-        /// <returns>metrics</returns>
+        /// <returns>Task which resolves into a list of metrics</returns>
         /// <remarks>
         /// All timestamps are in monotonic time: monotonically increasing time in seconds since an arbitrary point in the past.
         /// </remarks>
