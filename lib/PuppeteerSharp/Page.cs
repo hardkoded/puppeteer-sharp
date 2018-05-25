@@ -68,9 +68,9 @@ namespace PuppeteerSharp
             _frameManager.FrameDetached += (sender, e) => FrameDetached?.Invoke(this, e);
             _frameManager.FrameNavigated += (sender, e) => FrameNavigated?.Invoke(this, e);
 
-            _networkManager.RequestCreated += (sender, e) => Request?.Invoke(this, e);
+            _networkManager.Request += (sender, e) => Request?.Invoke(this, e);
             _networkManager.RequestFailed += (sender, e) => RequestFailed?.Invoke(this, e);
-            _networkManager.ResponseCreated += (sender, e) => Response?.Invoke(this, e);
+            _networkManager.Response += (sender, e) => Response?.Invoke(this, e);
             _networkManager.RequestFinished += (sender, e) => RequestFinished?.Invoke(this, e);
 
             Client.MessageReceived += client_MessageReceived;
@@ -618,7 +618,7 @@ namespace PuppeteerSharp
                 }
             };
 
-            _networkManager.RequestCreated += createRequestEventListener;
+            _networkManager.Request += createRequestEventListener;
 
             var mainFrame = _frameManager.MainFrame;
             var timeout = options?.Timeout ?? DefaultNavigationTimeout;
@@ -651,7 +651,7 @@ namespace PuppeteerSharp
             }
 
             watcher.Cancel();
-            _networkManager.RequestCreated -= createRequestEventListener;
+            _networkManager.Request -= createRequestEventListener;
 
             if (exception != null)
             {
@@ -1128,11 +1128,11 @@ namespace PuppeteerSharp
             EventHandler<ResponseCreatedEventArgs> createResponseEventListener = (object sender, ResponseCreatedEventArgs e) =>
                 responses.Add(e.Response.Url, e.Response);
 
-            _networkManager.ResponseCreated += createResponseEventListener;
+            _networkManager.Response += createResponseEventListener;
 
             await watcher.NavigationTask;
 
-            _networkManager.ResponseCreated -= createResponseEventListener;
+            _networkManager.Response -= createResponseEventListener;
 
             var exception = watcher.NavigationTask.Exception;
             if (exception != null)
