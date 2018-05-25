@@ -16,9 +16,9 @@ namespace PuppeteerSharp
     {
         private readonly ILogger _logger;
 
-        public Connection(string url, int delay, ClientWebSocket ws, params ILoggerProvider[] providers)
+        public Connection(string url, int delay, ClientWebSocket ws, ILoggerFactory loggerFactory = null)
         {
-            LoggerFactory = new LoggerFactory(providers);
+            LoggerFactory = loggerFactory ?? new LoggerFactory();
             Url = url;
             Delay = delay;
             WebSocket = ws;
@@ -68,7 +68,7 @@ namespace PuppeteerSharp
                 {"params", args}
             });
 
-            _logger.LogTrace("Sending Id {Id} Method {Method} Params {@Params}", id, method, args);
+            _logger.LogTrace("Sending Id {Id} Method {Method} Params {@Params}", id, method, (object)args);
 
             _responses[id] = new MessageTask
             {
@@ -242,12 +242,12 @@ namespace PuppeteerSharp
         #endregion
         #region Static Methods
 
-        public static async Task<Connection> Create(string url, int delay = 0, int keepAliveInterval = 60, params ILoggerProvider[] providers)
+        public static async Task<Connection> Create(string url, int delay = 0, int keepAliveInterval = 60, ILoggerFactory loggerFactory = null)
         {
             var ws = new ClientWebSocket();
             ws.Options.KeepAliveInterval = new TimeSpan(0, 0, keepAliveInterval);
             await ws.ConnectAsync(new Uri(url), default(CancellationToken)).ConfigureAwait(false);
-            return new Connection(url, delay, ws, providers);
+            return new Connection(url, delay, ws, loggerFactory);
         }
 
         public void Dispose()

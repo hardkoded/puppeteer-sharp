@@ -33,21 +33,22 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="options">Options for launching Chrome</param>
         /// <param name="chromiumRevision">The revision of Chrome to launch.</param>
+        /// <param name="loggerFactory">The logger factory</param>
         /// <returns>A connected browser.</returns>
         /// <remarks>
         /// See <a href="https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/">this article</a>
         /// for a description of the differences between Chromium and Chrome.
         /// <a href="https://chromium.googlesource.com/chromium/src/+/lkcr/docs/chromium_browser_vs_google_chrome.md">This article</a> describes some differences for Linux users.
         /// </remarks>
-        public static Task<Browser> LaunchAsync(LaunchOptions options, int chromiumRevision, params ILoggerProvider[] providers) 
-            => new Launcher().LaunchAsync(options, chromiumRevision, providers);
+        public static Task<Browser> LaunchAsync(LaunchOptions options, int chromiumRevision, ILoggerFactory loggerFactory = null) 
+            => new Launcher().LaunchAsync(options, chromiumRevision, loggerFactory);
 
         /// <summary>
         /// Attaches Puppeteer to an existing Chromium instance. The browser will be closed when the Browser is disposed.
         /// </summary>
         /// <param name="options">Options for connecting.</param>
         /// <returns>A connected browser.</returns>
-        public static Task<Browser> ConnectAsync(ConnectOptions options, params ILoggerProvider[] providers)
-            => new Launcher().ConnectAsync(options, providers);
+        public static Task<Browser> ConnectAsync(ConnectOptions options, ILoggerFactory loggerFactory = null)
+            => new Launcher().ConnectAsync(options, loggerFactory);
     }
 }

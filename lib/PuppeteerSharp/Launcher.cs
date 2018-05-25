@@ -203,7 +203,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="options">Options for connecting.</param>
         /// <returns>A connected browser.</returns>
-        public async Task<Browser> ConnectAsync(ConnectOptions options, params ILoggerProvider[] providers)
+        public async Task<Browser> ConnectAsync(ConnectOptions options, ILoggerFactory loggerFactory = null)
         {
             try
             {
@@ -216,7 +216,7 @@ namespace PuppeteerSharp
                 var connectionDelay = options.SlowMo;
                 var keepAliveInterval = options.KeepAliveInterval;
 
-                _connection = await Connection.Create(options.BrowserWSEndpoint, connectionDelay, keepAliveInterval, providers);
+                _connection = await Connection.Create(options.BrowserWSEndpoint, connectionDelay, keepAliveInterval, loggerFactory);
 
                 return await Browser.CreateAsync(_connection, options, null, () =>
                 {
