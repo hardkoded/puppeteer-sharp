@@ -941,26 +941,91 @@ namespace PuppeteerSharp
             await handle.DisposeAsync();
         }
 
+        /// <summary>
+        /// Executes a script in browser context
+        /// </summary>
+        /// <param name="script">Script to be evaluated in browser context</param>
+        /// <remarks>
+        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+        /// </remarks>
+        /// <seealso cref="EvaluateFunctionAsync(string, object[])"/>
+        /// <returns>Task which resolves to script return value</returns>
         public Task<dynamic> EvaluateExpressionAsync(string script)
             => _frameManager.MainFrame.EvaluateExpressionAsync(script);
 
+        /// <summary>
+        /// Executes a script in browser context
+        /// </summary>
+        /// <typeparam name="T">The type to deserialize the result to</typeparam>
+        /// <param name="script">Script to be evaluated in browser context</param>
+        /// <remarks>
+        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+        /// </remarks>
+        /// <seealso cref="EvaluateFunctionAsync{T}(string, object[])"/>
+        /// <returns>Task which resolves to script return value</returns>
         public Task<T> EvaluateExpressionAsync<T>(string script)
             => _frameManager.MainFrame.EvaluateExpressionAsync<T>(script);
 
+        /// <summary>
+        /// Executes a function in browser context
+        /// </summary>
+        /// <param name="script">Script to be evaluated in browser context</param>
+        /// <param name="args">Arguments to pass to script</param>
+        /// <remarks>
+        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+        /// <see cref="JSHandle"/> instances can be passed as arguments
+        /// </remarks>
+        /// <seealso cref="EvaluateExpressionAsync(string)"/>
+        /// <returns>Task which resolves to script return value</returns>
         public Task<dynamic> EvaluateFunctionAsync(string script, params object[] args)
             => _frameManager.MainFrame.EvaluateFunctionAsync(script, args);
 
+        /// <summary>
+        /// Executes a function in browser context
+        /// </summary>
+        /// <typeparam name="T">The type to deserialize the result to</typeparam>
+        /// <param name="script">Script to be evaluated in browser context</param>
+        /// <param name="args">Arguments to pass to script</param>
+        /// <remarks>
+        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+        /// <see cref="JSHandle"/> instances can be passed as arguments
+        /// </remarks>
+        /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
+        /// <returns>Task which resolves to script return value</returns>
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
             => _frameManager.MainFrame.EvaluateFunctionAsync<T>(script, args);
 
-        public async Task SetUserAgentAsync(string userAgent)
-            => await _networkManager.SetUserAgentAsync(userAgent);
+        /// <summary>
+        /// Sets the user agent to be used in this page
+        /// </summary>
+        /// <param name="userAgent">Specific user agent to use in this page</param>
+        /// <returns>Task</returns>
+        public Task SetUserAgentAsync(string userAgent)
+            => _networkManager.SetUserAgentAsync(userAgent);
 
-        public async Task SetExtraHttpHeadersAsync(Dictionary<string, string> headers)
-            => await _networkManager.SetExtraHTTPHeadersAsync(headers);
+        /// <summary>
+        /// Sets extra HTTP headers that will be sent with every request the page initiates
+        /// </summary>
+        /// <param name="headers">Additional http headers to be sent with every request</param>
+        /// <returns>Task</returns>
+        public Task SetExtraHttpHeadersAsync(Dictionary<string, string> headers)
+            => _networkManager.SetExtraHTTPHeadersAsync(headers);
 
+        /// <summary>
+        /// Provide credentials for http authentication <see cref="https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication"/>
+        /// </summary>
+        /// <param name="credentials">The credentials</param>
+        /// <returns></returns>
+        /// <remarks>
+        /// To disable authentication, pass <c>null</c>
+        /// </remarks>
         public Task AuthenticateAsync(Credentials credentials) => _networkManager.AuthenticateAsync(credentials);
 
+        /// <summary>
+        /// Reloads the page
+        /// </summary>
+        /// <param name="options">Navigation options</param>
+        /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect</returns>
         public async Task<Response> ReloadAsync(NavigationOptions options = null)
         {
             var navigationTask = WaitForNavigationAsync(options);
