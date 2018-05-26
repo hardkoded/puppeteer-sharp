@@ -116,7 +116,7 @@ namespace PuppeteerSharp.Tests.CSSCoverageTests
             await Page.Coverage.StartCSSCoverageAsync();
             await Page.AddStyleTagAsync(new AddTagOptions
             {
-                Content = "{content: 'body { margin: 10px;}'}
+                Content = "{content: 'body { margin: 10px;}'}"
             });
             // trigger style recalc
             var margin = await Page.EvaluateExpressionAsync<string>("window.getComputedStyle(document.body).margin");
