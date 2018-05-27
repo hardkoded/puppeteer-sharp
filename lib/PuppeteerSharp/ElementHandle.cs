@@ -1,4 +1,4 @@
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Input;
 using System;
 using System.Collections.Generic;
@@ -108,7 +108,7 @@ namespace PuppeteerSharp
         /// Uploads files
         /// </summary>
         /// <param name="filePaths">Sets the value of the file input these paths. paths are resolved using <see cref="Path.GetFullPath(string)"/></param>
-        /// <remarks>This method expects <c>elementHandle</c> to point to an <c>input element</c> <see cref="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input"/> </remarks>
+        /// <remarks>This method expects <c>elementHandle</c> to point to an <c>input element</c> <see href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input"/> </remarks>
         /// <returns>Task</returns>
         public async Task UploadFileAsync(params string[] filePaths)
         {
@@ -129,7 +129,7 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Calls <c>focus</c> <see cref="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus"/> on the element.
+        /// Calls <c>focus</c> <see href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus"/> on the element.
         /// </summary>
         /// <returns>Task</returns>
         public Task FocusAsync() => ExecutionContext.EvaluateFunctionAsync("element => element.focus()", this);
@@ -217,7 +217,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Evaluates the XPath expression relative to the elementHandle. If there's no such element, the method will resolve to <c>null</c>.
         /// </summary>
-        /// <param name="expression">Expression to evaluate <see cref="https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate"/></param>
+        /// <param name="expression">Expression to evaluate <see href="https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate"/></param>
         /// <returns>Task which resolves to an array of <see cref="ElementHandle"/></returns>
         public async Task<ElementHandle[]> XPathAsync(string expression)
         {
