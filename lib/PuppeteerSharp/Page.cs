@@ -13,6 +13,7 @@ using PuppeteerSharp.Input;
 using PuppeteerSharp.Media;
 using PuppeteerSharp.Messaging;
 using PuppeteerSharp.Mobile;
+using PuppeteerSharp.PageCoverage;
 
 namespace PuppeteerSharp
 {
@@ -153,7 +154,7 @@ namespace PuppeteerSharp
         /// Raised when a request fails, for example by timing out.
         /// </summary>
         public event EventHandler<RequestEventArgs> RequestFailed;
-        
+
         /// <summary>
         /// Raised when an uncaught exception happens within the page.
         /// </summary>
@@ -600,7 +601,7 @@ namespace PuppeteerSharp
         /// <returns>Task</returns>
         public Task ExposeFunctionAsync<T1, T2, T3, T4, TResult>(string name, Func<T1, T2, T3, T4, TResult> puppeteerFunction)
             => ExposeFunctionAsync(name, (Delegate)puppeteerFunction);
-        
+
         public async Task<string> GetContentAsync() => await _frameManager.MainFrame.GetContentAsync();
 
         public async Task SetContentAsync(string html) => await _frameManager.MainFrame.SetContentAsync(html);

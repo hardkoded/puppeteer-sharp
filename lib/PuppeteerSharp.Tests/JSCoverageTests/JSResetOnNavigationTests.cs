@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using PuppeteerSharp.PageCoverage;
 using Xunit;
 
 namespace PuppeteerSharp.Tests.JSCoverageTests
@@ -12,7 +13,7 @@ namespace PuppeteerSharp.Tests.JSCoverageTests
         [Fact]
         public async Task ShouldReportScriptsAcrossNavigationsWhenDisabled()
         {
-            await Page.Coverage.StartJSCoverageAsync(new JSCoverageStartOptions
+            await Page.Coverage.StartJSCoverageAsync(new CoverageStartOptions
             {
                 ResetOnNavigation = false
             });

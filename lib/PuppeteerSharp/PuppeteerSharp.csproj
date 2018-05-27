@@ -140,5 +140,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Media\" />
+    <Folder Include="PageCoverage\" />
   </ItemGroup>
 </Project>

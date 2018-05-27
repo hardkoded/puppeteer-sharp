@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using PuppeteerSharp.PageCoverage;
 using Xunit;
 
 namespace PuppeteerSharp.Tests.CSSCoverageTests
@@ -17,12 +18,12 @@ namespace PuppeteerSharp.Tests.CSSCoverageTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/csscoverage/simple.html");
             var coverage = await Page.Coverage.StopCSSCoverageAsync();
             Assert.Single(coverage);
-            Assert.Contains("/jscoverage/simple.html", coverage[0].Url);
+            Assert.Contains("/csscoverage/simple.html", coverage[0].Url);
             Assert.Equal(new CoverageEntryRange[]
             {
                 new CoverageEntryRange
                 {
-                    Start = 0,
+                    Start = 1,
                     End = 22
                 }
             }, coverage[0].Ranges);
@@ -48,8 +49,8 @@ namespace PuppeteerSharp.Tests.CSSCoverageTests
             var coverage = await Page.Coverage.StopCSSCoverageAsync();
             Assert.Equal(2, coverage.Length);
             var orderedList = coverage.OrderBy(c => c.Url);
-            Assert.Contains("/csscoverage/stylesheet1.js", orderedList.ElementAt(0).Url);
-            Assert.Contains("/csscoverage/stylesheet2.js", orderedList.ElementAt(1).Url);
+            Assert.Contains("/csscoverage/stylesheet1.css", orderedList.ElementAt(0).Url);
+            Assert.Contains("/csscoverage/stylesheet2.css", orderedList.ElementAt(1).Url);
         }
 
         [Fact]
@@ -89,10 +90,10 @@ namespace PuppeteerSharp.Tests.CSSCoverageTests
             const string involved = @"[
               {
                 ""Url"": ""http://localhost:<PORT>/csscoverage/involved.html"",
-                        ""Ranges"": [
-                          {
-                    ""start"": 149,
-                            ""End"": 297
+                ""Ranges"": [
+                  {
+                    ""Start"": 149,
+                    ""End"": 297
                   },
                   {
                     ""Start"": 327,
@@ -107,7 +108,7 @@ namespace PuppeteerSharp.Tests.CSSCoverageTests
             var coverage = await Page.Coverage.StopCSSCoverageAsync();
             Assert.Equal(
                 TestUtils.CompressText(involved),
-                Regex.Replace(TestUtils.CompressText(JsonConvert.SerializeObject(coverage)), @"\d{4}\/", "<PORT>/"));
+                Regex.Replace(TestUtils.CompressText(JsonConvert.SerializeObject(coverage)), @":\d{4}\/", ":<PORT>/"));
         }
 
         [Fact]
@@ -116,7 +117,7 @@ namespace PuppeteerSharp.Tests.CSSCoverageTests
             await Page.Coverage.StartCSSCoverageAsync();
             await Page.AddStyleTagAsync(new AddTagOptions
             {
-                Content = "{content: 'body { margin: 10px;}'}"
+                Content = "body { margin: 10px;}"
             });
             // trigger style recalc
             var margin = await Page.EvaluateExpressionAsync<string>("window.getComputedStyle(document.body).margin");

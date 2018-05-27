@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using PuppeteerSharp.PageCoverage;
 using Xunit;
 
 namespace PuppeteerSharp.Tests.CSSCoverageTests
@@ -12,7 +13,7 @@ namespace PuppeteerSharp.Tests.CSSCoverageTests
         [Fact]
         public async Task ShouldReportStylesheetsAcrossNavigationsWhenDisabled()
         {
-            await Page.Coverage.StartCSSCoverageAsync(new JSCoverageStartOptions
+            await Page.Coverage.StartCSSCoverageAsync(new CoverageStartOptions
             {
                 ResetOnNavigation = false
             });
