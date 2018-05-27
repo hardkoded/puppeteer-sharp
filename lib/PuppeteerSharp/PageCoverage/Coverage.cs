@@ -53,7 +53,6 @@ namespace PuppeteerSharp.PageCoverage
         /// </remarks>
         public Task<CoverageEntry[]> StopCSSCoverageAsync() => _cssCoverage.StopAsync();
 
-
         internal static CoverageEntryRange[] ConvertToDisjointRanges(List<CoverageResponseRange> nestedRanges)
         {
             var points = new List<CoverageEntryPoint>();

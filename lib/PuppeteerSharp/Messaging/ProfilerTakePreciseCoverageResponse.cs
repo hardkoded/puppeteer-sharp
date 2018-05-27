@@ -20,6 +20,5 @@ namespace PuppeteerSharp.Messaging
             [JsonProperty("ranges")]
             public CoverageResponseRange[] Ranges { get; set; }
         }
-
     }
 }
