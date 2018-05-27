@@ -81,7 +81,7 @@ namespace PuppeteerSharp
         #region Public Properties
 
         /// <summary>
-        /// Raised when the JavaScript <c>load</c> <see Hef="https://developer.mozilla.org/en-US/docs/Web/Events/load"/> event is dispatched.
+        /// Raised when the JavaScript <c>load</c> <see href="https://developer.mozilla.org/en-US/docs/Web/Events/load"/> event is dispatched.
         /// </summary>
         public event EventHandler<EventArgs> Load;
 
@@ -368,10 +368,10 @@ namespace PuppeteerSharp
         /// </code>
         /// </example>
         /// <returns>Task</returns>
-        public async Task EvaluateOnNewDocumentAsync(string pageFunction, params object[] args)
+        public Task EvaluateOnNewDocumentAsync(string pageFunction, params object[] args)
         {
             var source = EvaluationString(pageFunction, args);
-            await Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new { source });
+            return Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new { source });
         }
 
         /// <summary>
@@ -392,15 +392,15 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>The request interception task.</returns>
         /// <param name="value">Whether to enable request interception..</param>
-        public async Task SetRequestInterceptionAsync(bool value)
-            => await _networkManager.SetRequestInterceptionAsync(value);
+        public Task SetRequestInterceptionAsync(bool value)
+            => _networkManager.SetRequestInterceptionAsync(value);
 
         /// <summary>
         /// Set offline mode for the page.
         /// </summary>
         /// <returns>Result task</returns>
         /// <param name="value">When <c>true</c> enables offline mode for the page.</param>
-        public async Task SetOfflineModeAsync(bool value) => await _networkManager.SetOfflineModeAsync(value);
+        public Task SetOfflineModeAsync(bool value) => _networkManager.SetOfflineModeAsync(value);
 
         /// <summary>
         /// Returns the page's cookies
@@ -611,14 +611,14 @@ namespace PuppeteerSharp
         /// Gets the full HTML contents of the page, including the doctype.
         /// </summary>
         /// <returns>Task which resolves to the HTML content.</returns>
-        public async Task<string> GetContentAsync() => await _frameManager.MainFrame.GetContentAsync();
+        public Task<string> GetContentAsync() => _frameManager.MainFrame.GetContentAsync();
 
         /// <summary>
         /// Sets the HTML markup to the page
         /// </summary>
         /// <returns>Task.</returns>
         /// <param name="html">HTML markup to assign to the page.</param>
-        public async Task SetContentAsync(string html) => await _frameManager.MainFrame.SetContentAsync(html);
+        public Task SetContentAsync(string html) => _frameManager.MainFrame.SetContentAsync(html);
 
         /// <summary>
         /// Navigates to an url
@@ -785,16 +785,16 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>Task.</returns>
         /// <param name="enabled">Whether or not to enable JavaScript on the page.</param>
-        public async Task SetJavaScriptEnabledAsync(bool enabled)
-            => await Client.SendAsync("Emulation.setScriptExecutionDisabled", new { value = !enabled });
+        public Task SetJavaScriptEnabledAsync(bool enabled)
+            => Client.SendAsync("Emulation.setScriptExecutionDisabled", new { value = !enabled });
 
         /// <summary>
         /// Emulates a media such as screen or print.
         /// </summary>
         /// <returns>Task.</returns>
         /// <param name="media">Media to set.</param>
-        public async Task EmulateMediaAsync(MediaType media)
-            => await Client.SendAsync("Emulation.setEmulatedMedia", new { media });
+        public Task EmulateMediaAsync(MediaType media)
+            => Client.SendAsync("Emulation.setEmulatedMedia", new { media });
 
         /// <summary>
         /// Sets the viewport.
@@ -819,8 +819,8 @@ namespace PuppeteerSharp
         /// </summary>
         /// <remarks>
         /// This method is a shortcut for calling two methods:
-        /// page.setUserAgent(userAgent)
-        /// page.setViewport(viewport)
+        /// page.SetViewportAsync(userAgent)
+        /// page.SetUserAgentAsync(viewport)
         /// </remarks>
         /// <returns>Task.</returns>
         /// <param name="options">Emulation options.</param>
@@ -1637,7 +1637,7 @@ namespace PuppeteerSharp
 
         #region IDisposable
         /// <summary>
-        /// Releases all resource used by the <see cref="T:PuppeteerSharp.Page"/> object by calling the <see cref="CloseAsync"/> method.
+        /// Releases all resource used by the <see cref="Page"/> object by calling the <see cref="CloseAsync"/> method.
         /// </summary>
         /// <remarks>Call <see cref="Dispose"/> when you are finished using the <see cref="T:PuppeteerSharp.Page"/>. The
         /// <see cref="Dispose"/> method leaves the <see cref="T:PuppeteerSharp.Page"/> in an unusable state. After
