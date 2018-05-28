@@ -723,7 +723,7 @@ namespace PuppeteerSharp
         public Task<Stream> PdfStreamAsync() => PdfStreamAsync(new PdfOptions());
 
         /// <summary>
-        /// generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaAsync(MediaType)"/> with <see cref="MediaType.Screen"/>
+        /// Generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaAsync(MediaType)"/> with <see cref="MediaType.Screen"/>
         /// </summary>
         /// <param name="options">pdf options</param>
         /// <returns>Task which resolves to a <see cref="Stream"/> containing the PDF data.</returns>
@@ -734,7 +734,7 @@ namespace PuppeteerSharp
         => new MemoryStream(await PdfDataAsync(options));
 
         /// <summary>
-        /// generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaAsync(MediaType)"/> with <see cref="MediaType.Screen"/>
+        /// Generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaAsync(MediaType)"/> with <see cref="MediaType.Screen"/>
         /// </summary>
         /// <returns>Task which resolves to a <see cref="byte"/>[] containing the PDF data.</returns>
         /// <remarks>
@@ -743,7 +743,7 @@ namespace PuppeteerSharp
         public Task<byte[]> PdfDataAsync() => PdfDataAsync(new PdfOptions());
 
         /// <summary>
-        /// generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaAsync(MediaType)"/> with <see cref="MediaType.Screen"/>
+        /// Generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaAsync(MediaType)"/> with <see cref="MediaType.Screen"/>
         /// </summary>
         /// <param name="options">pdf options</param>
         /// <returns>Task which resolves to a <see cref="byte"/>[] containing the PDF data.</returns>
