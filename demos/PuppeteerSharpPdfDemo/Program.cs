@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.IO;
 using System.Threading.Tasks;
 using PuppeteerSharp;
@@ -10,10 +10,10 @@ namespace PuppeteerSharpPdfDemo
     {
         public static void Main(string[] args)
         {
-            MainAsync().GetAwaiter().GetResult();
+            MainAsync(args).GetAwaiter().GetResult();
         }
 
-        public static async Task MainAsync()
+        public static async Task MainAsync(string[] args)
         {
             var options = new LaunchOptions
             {
@@ -33,7 +33,11 @@ namespace PuppeteerSharpPdfDemo
                 await page.PdfAsync(Path.Combine(Directory.GetCurrentDirectory(), "google.pdf"));
 
                 Console.WriteLine("Export completed");
-                Console.ReadLine();
+
+                if (!args.Any(arg => arg == "auto-exit"))
+                {
+                    Console.ReadLine();
+                }
             }
         }
     }
