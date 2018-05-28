@@ -4,12 +4,11 @@ using PuppeteerSharp.Media;
 
 namespace PuppeteerSharp
 {
+    /// <summary>
+    /// Options to be used in <see cref="Page.ScreenshotAsync(string, ScreenshotOptions)"/>, <see cref="Page.ScreenshotStreamAsync(ScreenshotOptions)"/> and <see cref="Page.ScreenshotDataAsync(ScreenshotOptions)"/>
+    /// </summary>
     public class ScreenshotOptions
     {
-        public ScreenshotOptions()
-        {
-        }
-
         /// <summary>
         /// Specifies clipping region of the page.
         /// </summary>
