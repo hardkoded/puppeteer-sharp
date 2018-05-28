@@ -68,7 +68,7 @@ namespace PuppeteerSharp
                 {"params", args}
             });
 
-            _logger.LogTrace("Sending Id {Id} Method {Method} Params {@Params}", id, method, (object)args);
+            _logger.LogTrace("Send ► {Id} Method {Method} Params {@Params}", id, method, (object)args);
 
             _responses[id] = new MessageTask
             {
@@ -196,6 +196,8 @@ namespace PuppeteerSharp
         {
             dynamic obj = JsonConvert.DeserializeObject(response);
             var objAsJObject = obj as JObject;
+
+            _logger.LogTrace("◀ Receive {Message}", response);
 
             if (objAsJObject["id"] != null)
             {
