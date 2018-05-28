@@ -21,7 +21,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task MetricsEventFiredOnConsoleTimespan()
         {
             var metricsTaskWrapper = new TaskCompletionSource<MetricEventArgs>();
-            Page.MetricsReceived += (sender, e) => metricsTaskWrapper.SetResult(e);
+            Page.Metrics += (sender, e) => metricsTaskWrapper.SetResult(e);
 
             await Page.EvaluateExpressionAsync("console.timeStamp('test42')");
             var result = await metricsTaskWrapper.Task;

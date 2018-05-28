@@ -109,7 +109,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             var exception = await Assert.ThrowsAsync<ArgumentException>(async () =>
             {
-                await Page.PdfStreamAsync(new PdfOptions
+                await Page.PdfDataAsync(new PdfOptions
                 {
                     Width = "10em"
                 });

@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Input;
 using System;
@@ -20,7 +20,7 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// This method scrolls element into view if needed, and then uses <seealso cref="Page.ScreenshotStreamAsync(ScreenshotOptions)"/> to take a screenshot of the element. 
+        /// This method scrolls element into view if needed, and then uses <seealso cref="Page.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element. 
         /// If the element is detached from DOM, the method throws an error.
         /// </summary>
         /// <returns>The task</returns>
@@ -30,7 +30,7 @@ namespace PuppeteerSharp
         public Task ScreenshotAsync(string file) => ScreenshotAsync(file, new ScreenshotOptions());
 
         /// <summary>
-        /// This method scrolls element into view if needed, and then uses <seealso cref="Page.ScreenshotStreamAsync(ScreenshotOptions)"/> to take a screenshot of the element. 
+        /// This method scrolls element into view if needed, and then uses <seealso cref="Page.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element. 
         /// If the element is detached from DOM, the method throws an error.
         /// </summary>
         /// <returns>The task</returns>
@@ -43,30 +43,44 @@ namespace PuppeteerSharp
             var fileInfo = new FileInfo(file);
             options.Type = fileInfo.Extension.Replace(".", string.Empty);
 
-            var stream = await ScreenshotStreamAsync(options);
+            var data = await ScreenshotDataAsync(options);
 
             using (var fs = new FileStream(file, FileMode.Create, FileAccess.Write))
             {
-                byte[] bytesInStream = new byte[stream.Length];
-                await stream.ReadAsync(bytesInStream, 0, bytesInStream.Length);
-                await fs.WriteAsync(bytesInStream, 0, bytesInStream.Length);
+                await fs.WriteAsync(data, 0, data.Length);
             }
         }
 
         /// <summary>
-        /// This method scrolls element into view if needed, and then uses <seealso cref="Page.ScreenshotStreamAsync(ScreenshotOptions)"/> to take a screenshot of the element. 
+        /// This method scrolls element into view if needed, and then uses <seealso cref="Page.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element. 
         /// If the element is detached from DOM, the method throws an error.
         /// </summary>
-        /// <returns>The tas with the image streamk</returns>
+        /// <returns>Task which resolves to a <see cref="Stream"/> containing the image data.</returns>
         public Task<Stream> ScreenshotStreamAsync() => ScreenshotStreamAsync(new ScreenshotOptions());
 
         /// <summary>
-        /// This method scrolls element into view if needed, and then uses <seealso cref="Page.ScreenshotStreamAsync(ScreenshotOptions)"/> to take a screenshot of the element. 
+        /// This method scrolls element into view if needed, and then uses <seealso cref="Page.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element. 
         /// If the element is detached from DOM, the method throws an error.
         /// </summary>
-        /// <returns>The tas with the image streamk</returns>
+        /// <returns>Task which resolves to a <see cref="Stream"/> containing the image data.</returns>
         /// <param name="options">Screenshot options.</param>
         public async Task<Stream> ScreenshotStreamAsync(ScreenshotOptions options)
+            => new MemoryStream(await ScreenshotDataAsync(options));
+
+        /// <summary>
+        /// This method scrolls element into view if needed, and then uses <seealso cref="Page.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element. 
+        /// If the element is detached from DOM, the method throws an error.
+        /// </summary>
+        /// <returns>Task which resolves to a <see cref="byte"/>[] containing the image data.</returns>
+        public Task<byte[]> ScreenshotDataAsync() => ScreenshotDataAsync(new ScreenshotOptions());
+
+        /// <summary>
+        /// This method scrolls element into view if needed, and then uses <seealso cref="Page.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element. 
+        /// If the element is detached from DOM, the method throws an error.
+        /// </summary>
+        /// <returns>Task which resolves to a <see cref="byte"/>[] containing the image data.</returns>
+        /// <param name="options">Screenshot options.</param>
+        public async Task<byte[]> ScreenshotDataAsync(ScreenshotOptions options)
         {
             await ScrollIntoViewIfNeededAsync();
             dynamic metrics = await _client.SendAsync("Page.getLayoutMetrics") as JObject;
@@ -80,7 +94,7 @@ namespace PuppeteerSharp
             boundingBox.X += metrics.layoutViewport.pageX.ToObject<decimal>();
             boundingBox.Y += metrics.layoutViewport.pageY.ToObject<decimal>();
             options.Clip = boundingBox.ToClip();
-            return await Page.ScreenshotStreamAsync(options);
+            return await Page.ScreenshotDataAsync(options);
         }
 
         /// <summary>
@@ -109,7 +123,7 @@ namespace PuppeteerSharp
         /// Uploads files
         /// </summary>
         /// <param name="filePaths">Sets the value of the file input these paths. paths are resolved using <see cref="Path.GetFullPath(string)"/></param>
-        /// <remarks>This method expects <c>elementHandle</c> to point to an <c>input element</c> <see cref="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input"/> </remarks>
+        /// <remarks>This method expects <c>elementHandle</c> to point to an <c>input element</c> <see href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input"/> </remarks>
         /// <returns>Task</returns>
         public async Task UploadFileAsync(params string[] filePaths)
         {
@@ -130,7 +144,7 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Calls <c>focus</c> <see cref="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus"/> on the element.
+        /// Calls <c>focus</c> <see href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus"/> on the element.
         /// </summary>
         /// <returns>Task</returns>
         public Task FocusAsync() => ExecutionContext.EvaluateFunctionAsync("element => element.focus()", this);
@@ -218,7 +232,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Evaluates the XPath expression relative to the elementHandle. If there's no such element, the method will resolve to <c>null</c>.
         /// </summary>
-        /// <param name="expression">Expression to evaluate <see cref="https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate"/></param>
+        /// <param name="expression">Expression to evaluate <see href="https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate"/></param>
         /// <returns>Task which resolves to an array of <see cref="ElementHandle"/></returns>
         public async Task<ElementHandle[]> XPathAsync(string expression)
         {

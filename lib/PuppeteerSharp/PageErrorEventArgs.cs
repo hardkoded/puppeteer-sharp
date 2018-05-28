@@ -2,10 +2,20 @@
 
 namespace PuppeteerSharp
 {
+    /// <summary>
+    /// Page error event arguments.
+    /// </summary>
     public class PageErrorEventArgs : EventArgs
     {
+        /// <summary>
+        /// Error Message
+        /// </summary>
+        /// <value>The message.</value>
         public string Message { get; set; }
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:PuppeteerSharp.PageErrorEventArgs"/> class.
+        /// </summary>
+        /// <param name="message">Message.</param>
         public PageErrorEventArgs(string message) => Message = message;
     }
 }

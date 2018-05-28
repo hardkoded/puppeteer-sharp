@@ -8,14 +8,9 @@ namespace PuppeteerSharp.Tests
     public class ScreenshotHelper
     {
         public static bool PixelMatch(string screenShotFile, string fileName)
-        {
-            using (Stream stream = File.Open(fileName, FileMode.Open))
-            {
-                return PixelMatch(screenShotFile, stream);
-            }
-        }
+            => PixelMatch(screenShotFile, File.ReadAllBytes(fileName));
 
-        public static bool PixelMatch(string screenShotFile, Stream screenshot)
+        public static bool PixelMatch(string screenShotFile, byte[] screenshot)
         {
             const int pixelThreshold = 10;
             const decimal totalTolerance = 0.05m;

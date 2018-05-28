@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace PuppeteerSharp
+namespace PuppeteerSharp.PageCoverage
 {
     /// <summary>
     /// Coverage report for all non-anonymous scripts.

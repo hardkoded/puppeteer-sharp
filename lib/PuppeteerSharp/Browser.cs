@@ -44,10 +44,10 @@ namespace PuppeteerSharp
         /// </summary>
         /// <remarks>
         /// Browser websocket endpoint which can be used as an argument to <see cref="Puppeteer.ConnectAsync(ConnectOptions)"/>.
-        /// The format is <c>ws://${host}:${port}/devtools/browser/<id></c>
+        /// The format is <c>ws://${host}:${port}/devtools/browser/[id]</c>
         /// You can find the <c>webSocketDebuggerUrl</c> from <c>http://${host}:${port}/json/version</c>.
-        /// Learn more about the devtools protocol <see cref="https://chromedevtools.github.io/devtools-protocol"> 
-        /// and the browser endpoint <see cref="https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target"/>
+        /// Learn more about the devtools protocol <see href="https://chromedevtools.github.io/devtools-protocol"/> 
+        /// and the browser endpoint <see href="https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target"/>
         /// </remarks>
         public string WebSocketEndpoint => Connection.Url;
 

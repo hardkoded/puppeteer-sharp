@@ -37,7 +37,7 @@ namespace PuppeteerSharp.Tests.PageTests
         [Fact]
         public async Task ShouldFailWhenNavigatingToBadSSL()
         {
-            Page.RequestCreated += (sender, e) => Assert.NotNull(e.Request);
+            Page.Request += (sender, e) => Assert.NotNull(e.Request);
             Page.RequestFinished += (sender, e) => Assert.NotNull(e.Request);
             Page.RequestFailed += (sender, e) => Assert.NotNull(e.Request);
 
@@ -219,7 +219,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldNavigateToDataURLAndFireDataURLRequests()
         {
             var requests = new List<Request>();
-            Page.RequestCreated += (sender, e) => requests.Add(e.Request);
+            Page.Request += (sender, e) => requests.Add(e.Request);
             var dataUrl = "data:text/html,<div>yo</div>";
             var response = await Page.GoToAsync(dataUrl);
             Assert.Equal(HttpStatusCode.OK, response.Status);
@@ -231,7 +231,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldNavigateToURLWithHashAndFireRequestsWithoutHash()
         {
             var requests = new List<Request>();
-            Page.RequestCreated += (sender, e) => requests.Add(e.Request);
+            Page.Request += (sender, e) => requests.Add(e.Request);
             var response = await Page.GoToAsync(TestConstants.EmptyPage + "#hash");
             Assert.Equal(HttpStatusCode.OK, response.Status);
             Assert.Equal(TestConstants.EmptyPage, response.Url);
