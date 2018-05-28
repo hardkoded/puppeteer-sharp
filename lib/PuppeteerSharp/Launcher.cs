@@ -42,6 +42,7 @@ namespace PuppeteerSharp
 
         #region Private members        
         private readonly ILoggerFactory _loggerFactory;
+        private readonly ILogger _logger;
         private Process _chromeProcess;
         private string _temporaryUserDataDir = null;
         private Connection _connection = null;
@@ -61,6 +62,7 @@ namespace PuppeteerSharp
         public Launcher(ILoggerFactory loggerFactory = null)
         {
             _loggerFactory = loggerFactory ?? new LoggerFactory();
+            _logger = _loggerFactory.CreateLogger<Launcher>();
             _waitForChromeToClose = new TaskCompletionSource<bool>();
         }
 
@@ -110,7 +112,7 @@ namespace PuppeteerSharp
 
                 if (options.LogProcess)
                 {
-                    Console.WriteLine($"PROCESS COUNT: {Interlocked.Increment(ref _processCount)}");
+                    _logger.LogInformation("Process Count: {ProcessCount}", Interlocked.Increment(ref _processCount));
                 }
 
                 return await Browser.CreateAsync(_connection, options, _chromeProcess, KillChrome);
@@ -302,7 +304,7 @@ namespace PuppeteerSharp
             {
                 if (_options.LogProcess && !_processLoaded)
                 {
-                    Console.WriteLine($"PROCESS COUNT: {Interlocked.Increment(ref _processCount)}");
+                    _logger.LogInformation("Process Count: {ProcessCount}", Interlocked.Increment(ref _processCount));
                 }
 
                 CleanUp();
@@ -371,7 +373,7 @@ namespace PuppeteerSharp
 
             if (_options.LogProcess)
             {
-                Console.WriteLine($"PROCESS COUNT: {Interlocked.Decrement(ref _processCount)}");
+                _logger.LogInformation("Process Count: {ProcessCount}", Interlocked.Decrement(ref _processCount));
             }
 
             IsChromeClosed = true;

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Input;
 using System;
@@ -289,7 +290,7 @@ namespace PuppeteerSharp
             }
             catch (PuppeteerException ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError(ex.Message);
             }
 
             if (result == null)

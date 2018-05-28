@@ -4,6 +4,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using static PuppeteerSharp.Messaging.ProfilerTakePreciseCoverageResponse;
+using Microsoft.Extensions.Logging;
 
 namespace PuppeteerSharp
 {
@@ -12,6 +13,7 @@ namespace PuppeteerSharp
         private readonly Session _client;
         private readonly Dictionary<string, string> _scriptURLs;
         private readonly Dictionary<string, string> _scriptSources;
+        private readonly ILogger _logger;
 
         private bool _enabled;
         private bool _resetOnNavigation;
@@ -22,6 +24,7 @@ namespace PuppeteerSharp
             _enabled = false;
             _scriptURLs = new Dictionary<string, string>();
             _scriptSources = new Dictionary<string, string>();
+            _logger = _client.Connection.LoggerFactory.CreateLogger<JSCoverage>();
 
             _resetOnNavigation = false;
         }
@@ -174,7 +177,7 @@ namespace PuppeteerSharp
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                _logger.LogError(ex.ToString());
             }
         }
 
