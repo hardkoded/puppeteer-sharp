@@ -705,34 +705,52 @@ namespace PuppeteerSharp
         /// </remarks>
         public async Task PdfAsync(string file, PdfOptions options)
         {
-            var stream = await PdfStreamAsync(options);
+            var data = await PdfDataAsync(options);
 
             using (var fs = File.OpenWrite(file))
             {
-                byte[] bytesInStream = new byte[stream.Length];
-                await stream.ReadAsync(bytesInStream, 0, bytesInStream.Length);
-                await fs.WriteAsync(bytesInStream, 0, bytesInStream.Length);
+                await fs.WriteAsync(data, 0, data.Length);
             }
         }
 
         /// <summary>
         /// generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaAsync(MediaType)"/> with <see cref="MediaType.Screen"/>
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Task which resolves to a <see cref="Stream"/> containing the PDF data.</returns>
         /// <remarks>
         /// Generating a pdf is currently only supported in Chrome headless
         /// </remarks>
         public Task<Stream> PdfStreamAsync() => PdfStreamAsync(new PdfOptions());
 
         /// <summary>
-        /// generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaAsync(MediaType)"/> with <see cref="MediaType.Screen"/>
+        /// Generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaAsync(MediaType)"/> with <see cref="MediaType.Screen"/>
         /// </summary>
         /// <param name="options">pdf options</param>
-        /// <returns></returns>
+        /// <returns>Task which resolves to a <see cref="Stream"/> containing the PDF data.</returns>
         /// <remarks>
         /// Generating a pdf is currently only supported in Chrome headless
         /// </remarks>
         public async Task<Stream> PdfStreamAsync(PdfOptions options)
+            => new MemoryStream(await PdfDataAsync(options));
+
+        /// <summary>
+        /// Generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaAsync(MediaType)"/> with <see cref="MediaType.Screen"/>
+        /// </summary>
+        /// <returns>Task which resolves to a <see cref="byte"/>[] containing the PDF data.</returns>
+        /// <remarks>
+        /// Generating a pdf is currently only supported in Chrome headless
+        /// </remarks>
+        public Task<byte[]> PdfDataAsync() => PdfDataAsync(new PdfOptions());
+
+        /// <summary>
+        /// Generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaAsync(MediaType)"/> with <see cref="MediaType.Screen"/>
+        /// </summary>
+        /// <param name="options">pdf options</param>
+        /// <returns>Task which resolves to a <see cref="byte"/>[] containing the PDF data.</returns>
+        /// <remarks>
+        /// Generating a pdf is currently only supported in Chrome headless
+        /// </remarks>
+        public async Task<byte[]> PdfDataAsync(PdfOptions options)
         {
             var paperWidth = PaperFormat.Letter.Width;
             var paperHeight = PaperFormat.Letter.Height;
@@ -777,7 +795,7 @@ namespace PuppeteerSharp
             });
 
             var buffer = Convert.FromBase64String(result.GetValue("data").Value<string>());
-            return new MemoryStream(buffer);
+            return buffer;
         }
 
         /// <summary>
@@ -851,28 +869,40 @@ namespace PuppeteerSharp
             var fileInfo = new FileInfo(file);
             options.Type = fileInfo.Extension.Replace(".", string.Empty);
 
-            var stream = await ScreenshotStreamAsync(options);
+            var data = await ScreenshotDataAsync(options);
 
             using (var fs = new FileStream(file, FileMode.Create, FileAccess.Write))
             {
-                byte[] bytesInStream = new byte[stream.Length];
-                await stream.ReadAsync(bytesInStream, 0, bytesInStream.Length);
-                await fs.WriteAsync(bytesInStream, 0, bytesInStream.Length);
+                await fs.WriteAsync(data, 0, data.Length);
             }
         }
 
         /// <summary>
         /// Takes a screenshot of the page
         /// </summary>
-        /// <returns>The screenshot task returning the image stream.</returns>
+        /// <returns>Task which resolves to a <see cref="Stream"/> containing the image data.</returns>
         public Task<Stream> ScreenshotStreamAsync() => ScreenshotStreamAsync(new ScreenshotOptions());
 
         /// <summary>
         /// Takes a screenshot of the page
         /// </summary>
-        /// <returns>The screenshot task returning the image stream.</returns>
+        /// <returns>Task which resolves to a <see cref="Stream"/> containing the image data.</returns>
         /// <param name="options">Screenshot options.</param>
         public async Task<Stream> ScreenshotStreamAsync(ScreenshotOptions options)
+            => new MemoryStream(await ScreenshotDataAsync(options));
+
+        /// <summary>
+        /// Takes a screenshot of the page
+        /// </summary>
+        /// <returns>Task which resolves to a <see cref="byte"/>[] containing the image data.</returns>
+        public Task<byte[]> ScreenshotDataAsync() => ScreenshotDataAsync(new ScreenshotOptions());
+
+        /// <summary>
+        /// Takes a screenshot of the page
+        /// </summary>
+        /// <returns>Task which resolves to a <see cref="byte"/>[] containing the image data.</returns>
+        /// <param name="options">Screenshot options.</param>
+        public async Task<byte[]> ScreenshotDataAsync(ScreenshotOptions options)
         {
             string screenshotType = null;
 
@@ -1283,7 +1313,7 @@ namespace PuppeteerSharp
             return result;
         }
 
-        private async Task<Stream> PerformScreenshot(string format, ScreenshotOptions options)
+        private async Task<byte[]> PerformScreenshot(string format, ScreenshotOptions options)
         {
             await Client.SendAsync("Target.activateTarget", new
             {
@@ -1379,7 +1409,7 @@ namespace PuppeteerSharp
 
             var buffer = Convert.FromBase64String(result.GetValue("data").Value<string>());
 
-            return new MemoryStream(buffer);
+            return buffer;
         }
 
         private decimal ConvertPrintParameterToInches(object parameter)

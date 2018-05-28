@@ -13,7 +13,7 @@ namespace PuppeteerSharp.Tests.Issues
             using (var page = await Browser.NewPageAsync())
             {
                 await page.GoToAsync("https://darksky.net/forecast/51.2211,4.3997/si12/en");
-                var pdf = await page.PdfStreamAsync();
+                var pdf = await page.PdfDataAsync();
                 Assert.NotNull(pdf);
             }
         }

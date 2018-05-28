@@ -57,7 +57,7 @@ namespace PuppeteerSharp.Tests.PageTests
                     Height = 500
                 });
                 await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
-                var screenshot = await page.ScreenshotStreamAsync();
+                var screenshot = await page.ScreenshotDataAsync();
                 Assert.True(ScreenshotHelper.PixelMatch("screenshot-sanity.png", screenshot));
             }
         }
@@ -73,7 +73,7 @@ namespace PuppeteerSharp.Tests.PageTests
                     Height = 500
                 });
                 await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
-                var screenshot = await page.ScreenshotStreamAsync(new ScreenshotOptions
+                var screenshot = await page.ScreenshotDataAsync(new ScreenshotOptions
                 {
                     Clip = new Clip
                     {
@@ -98,7 +98,7 @@ namespace PuppeteerSharp.Tests.PageTests
                     Height = 500
                 });
                 await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
-                var screenshot = await page.ScreenshotStreamAsync(new ScreenshotOptions
+                var screenshot = await page.ScreenshotDataAsync(new ScreenshotOptions
                 {
                     Clip = new Clip
                     {
@@ -124,10 +124,10 @@ namespace PuppeteerSharp.Tests.PageTests
                 });
                 await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
 
-                var tasks = new List<Task<Stream>>();
+                var tasks = new List<Task<byte[]>>();
                 for (var i = 0; i < 3; ++i)
                 {
-                    tasks.Add(page.ScreenshotStreamAsync(new ScreenshotOptions
+                    tasks.Add(page.ScreenshotDataAsync(new ScreenshotOptions
                     {
                         Clip = new Clip
                         {
@@ -155,7 +155,7 @@ namespace PuppeteerSharp.Tests.PageTests
                     Height = 500
                 });
                 await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
-                var screenshot = await page.ScreenshotStreamAsync(new ScreenshotOptions
+                var screenshot = await page.ScreenshotDataAsync(new ScreenshotOptions
                 {
                     FullPage = true
                 });
@@ -182,10 +182,10 @@ namespace PuppeteerSharp.Tests.PageTests
 
             await Task.WhenAll(pageTasks);
 
-            var screenshotTasks = new List<Task<Stream>>();
+            var screenshotTasks = new List<Task<byte[]>>();
             for (var i = 0; i < n; i++)
             {
-                screenshotTasks.Add(pageTasks[i].Result.ScreenshotStreamAsync(new ScreenshotOptions
+                screenshotTasks.Add(pageTasks[i].Result.ScreenshotDataAsync(new ScreenshotOptions
                 {
                     Clip = new Clip
                     {
@@ -224,7 +224,7 @@ namespace PuppeteerSharp.Tests.PageTests
                     Height = 100
                 });
                 await page.GoToAsync(TestConstants.EmptyPage);
-                var screenshot = await page.ScreenshotStreamAsync(new ScreenshotOptions
+                var screenshot = await page.ScreenshotDataAsync(new ScreenshotOptions
                 {
                     OmitBackground = true
                 });
@@ -238,7 +238,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             using (var page = await Browser.NewPageAsync())
             {
-                var screenshot = await page.ScreenshotStreamAsync(new ScreenshotOptions
+                var screenshot = await page.ScreenshotDataAsync(new ScreenshotOptions
                 {
                     Clip = new Clip
                     {
