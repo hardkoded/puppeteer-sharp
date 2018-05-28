@@ -6,6 +6,7 @@
 
 [NugetUrl]: https://www.nuget.org/packages/PuppeteerSharp/
 [BuildUrl]: https://ci.appveyor.com/project/kblok/puppeteer-sharp/branch/master
+[BuildDemoUrl]: https://ci.appveyor.com/project/kblok/puppeteer-sharp-0c8w9/branch/master
 
 Puppeteer Sharp is a .NET port of the official [Node.JS Puppeteer API](https://github.com/GoogleChrome/puppeteer). 
 
