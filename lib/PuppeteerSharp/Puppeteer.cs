@@ -41,7 +41,7 @@ namespace PuppeteerSharp
         /// <a href="https://chromium.googlesource.com/chromium/src/+/lkcr/docs/chromium_browser_vs_google_chrome.md">This article</a> describes some differences for Linux users.
         /// </remarks>
         public static Task<Browser> LaunchAsync(LaunchOptions options, int chromiumRevision, ILoggerFactory loggerFactory = null) 
-            => new Launcher().LaunchAsync(options, chromiumRevision, loggerFactory);
+            => new Launcher(loggerFactory).LaunchAsync(options, chromiumRevision);
 
         /// <summary>
         /// Attaches Puppeteer to an existing Chromium instance. The browser will be closed when the Browser is disposed.
@@ -49,6 +49,6 @@ namespace PuppeteerSharp
         /// <param name="options">Options for connecting.</param>
         /// <returns>A connected browser.</returns>
         public static Task<Browser> ConnectAsync(ConnectOptions options, ILoggerFactory loggerFactory = null)
-            => new Launcher().ConnectAsync(options, loggerFactory);
+            => new Launcher(loggerFactory).ConnectAsync(options);
     }
 }
