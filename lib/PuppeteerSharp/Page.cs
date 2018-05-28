@@ -82,7 +82,7 @@ namespace PuppeteerSharp
         #region Public Properties
 
         /// <summary>
-        /// Raised when the JavaScript <c>load</c> <see cref="https://developer.mozilla.org/en-US/docs/Web/Events/load"/> event is dispatched.
+        /// Raised when the JavaScript <c>load</c> <see href="https://developer.mozilla.org/en-US/docs/Web/Events/load"/> event is dispatched.
         /// </summary>
         public event EventHandler<EventArgs> Load;
 
@@ -108,6 +108,7 @@ namespace PuppeteerSharp
         /// <example>
         /// An example of handling <see cref="Console"/> event:
         /// <code>
+        /// <![CDATA[
         /// page.Console += (sender, e) => 
         /// {
         ///     for (var i = 0; i < e.Message.Args.Count; ++i)
@@ -115,6 +116,7 @@ namespace PuppeteerSharp
         ///         System.Console.WriteLine($"{i}: {e.Message.Args[i]}");
         ///     }
         /// }
+        /// ]]>
         /// </code>
         /// </example>
         public event EventHandler<ConsoleEventArgs> Console;
@@ -224,6 +226,9 @@ namespace PuppeteerSharp
         /// </summary>
         public ViewPortOptions Viewport { get; private set; }
 
+        /// <summary>
+        /// List of suported metrics provided by the <see cref="Metrics"/> event.
+        /// </summary>
         public static readonly IEnumerable<string> SupportedMetrics = new List<string>
         {
             "Timestamp",
@@ -305,7 +310,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Evaluates the XPath expression
         /// </summary>
-        /// <param name="expression">Expression to evaluate <see cref="https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate"/></param>
+        /// <param name="expression">Expression to evaluate <see href="https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate"/></param>
         /// <returns>Task which resolves to an array of <see cref="ElementHandle"/></returns>
         /// <remarks>
         /// Shortcut for <c>page.MainFrame.XPathAsync(expression)</c>
@@ -330,6 +335,7 @@ namespace PuppeteerSharp
         /// Executes a script in browser context
         /// </summary>
         /// <param name="pageFunction">Script to be evaluated in browser context</param>
+        /// <param name="args">Function arguments</param>
         /// <remarks>
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
         /// <see cref="JSHandle"/> instances can be passed as arguments
@@ -363,10 +369,10 @@ namespace PuppeteerSharp
         /// </code>
         /// </example>
         /// <returns>Task</returns>
-        public async Task EvaluateOnNewDocumentAsync(string pageFunction, params object[] args)
+        public Task EvaluateOnNewDocumentAsync(string pageFunction, params object[] args)
         {
             var source = EvaluationString(pageFunction, args);
-            await Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new { source });
+            return Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new { source });
         }
 
         /// <summary>
@@ -387,15 +393,15 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>The request interception task.</returns>
         /// <param name="value">Whether to enable request interception..</param>
-        public async Task SetRequestInterceptionAsync(bool value)
-            => await _networkManager.SetRequestInterceptionAsync(value);
+        public Task SetRequestInterceptionAsync(bool value)
+            => _networkManager.SetRequestInterceptionAsync(value);
 
         /// <summary>
         /// Set offline mode for the page.
         /// </summary>
         /// <returns>Result task</returns>
         /// <param name="value">When <c>true</c> enables offline mode for the page.</param>
-        public async Task SetOfflineModeAsync(bool value) => await _networkManager.SetOfflineModeAsync(value);
+        public Task SetOfflineModeAsync(bool value) => _networkManager.SetOfflineModeAsync(value);
 
         /// <summary>
         /// Returns the page's cookies
@@ -464,7 +470,7 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Adds a <c><script></c> tag into the page with the desired url or content
+        /// Adds a <c><![CDATA[<script>]]></c> tag into the page with the desired url or content
         /// </summary>
         /// <param name="options">add script tag options</param>
         /// <remarks>
@@ -474,7 +480,7 @@ namespace PuppeteerSharp
         public Task<ElementHandle> AddScriptTagAsync(AddTagOptions options) => MainFrame.AddScriptTag(options);
 
         /// <summary>
-        /// Adds a <c><script></c> tag into the page with the desired url or content
+        /// Adds a <c><![CDATA[<script>]]></c> tag into the page with the desired url or content
         /// </summary>
         /// <param name="url">script url</param>
         /// <remarks>
@@ -484,7 +490,7 @@ namespace PuppeteerSharp
         public Task<ElementHandle> AddScriptTagAsync(string url) => AddScriptTagAsync(new AddTagOptions { Url = url });
 
         /// <summary>
-        /// Adds a <c><link rel="stylesheet"></c> tag into the page with the desired url or a <c><style type="text/css"></c> tag with the content
+        /// Adds a <c><![CDATA[<link rel="stylesheet">]]></c> tag into the page with the desired url or a <c><![CDATA[<link rel="stylesheet">]]></c> tag with the content
         /// </summary>
         /// <param name="options">add style tag options</param>
         /// <remarks>
@@ -494,7 +500,7 @@ namespace PuppeteerSharp
         public Task<ElementHandle> AddStyleTagAsync(AddTagOptions options) => MainFrame.AddStyleTag(options);
 
         /// <summary>
-        /// Adds a <c><link rel="stylesheet"></c> tag into the page with the desired url or a <c><style type="text/css"></c> tag with the content
+        /// Adds a <c><![CDATA[<link rel="stylesheet">]]></c> tag into the page with the desired url or a <c><![CDATA[<link rel="stylesheet">]]></c> tag with the content
         /// </summary>
         /// <param name="url">stylesheel url</param>
         /// <remarks>
@@ -602,10 +608,25 @@ namespace PuppeteerSharp
         public Task ExposeFunctionAsync<T1, T2, T3, T4, TResult>(string name, Func<T1, T2, T3, T4, TResult> puppeteerFunction)
             => ExposeFunctionAsync(name, (Delegate)puppeteerFunction);
 
-        public async Task<string> GetContentAsync() => await _frameManager.MainFrame.GetContentAsync();
+        /// <summary>
+        /// Gets the full HTML contents of the page, including the doctype.
+        /// </summary>
+        /// <returns>Task which resolves to the HTML content.</returns>
+        public Task<string> GetContentAsync() => _frameManager.MainFrame.GetContentAsync();
 
-        public async Task SetContentAsync(string html) => await _frameManager.MainFrame.SetContentAsync(html);
+        /// <summary>
+        /// Sets the HTML markup to the page
+        /// </summary>
+        /// <returns>Task.</returns>
+        /// <param name="html">HTML markup to assign to the page.</param>
+        public Task SetContentAsync(string html) => _frameManager.MainFrame.SetContentAsync(html);
 
+        /// <summary>
+        /// Navigates to an url
+        /// </summary>
+        /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.</returns>
+        /// <param name="url">URL to navigate page to. The url should include scheme, e.g. https://.</param>
+        /// <param name="options">Navigation parameters.</param>
         public async Task<Response> GoToAsync(string url, NavigationOptions options = null)
         {
             var referrer = _networkManager.ExtraHTTPHeaders?.GetValueOrDefault("referer");
@@ -685,34 +706,52 @@ namespace PuppeteerSharp
         /// </remarks>
         public async Task PdfAsync(string file, PdfOptions options)
         {
-            var stream = await PdfStreamAsync(options);
+            var data = await PdfDataAsync(options);
 
             using (var fs = File.OpenWrite(file))
             {
-                byte[] bytesInStream = new byte[stream.Length];
-                await stream.ReadAsync(bytesInStream, 0, bytesInStream.Length);
-                await fs.WriteAsync(bytesInStream, 0, bytesInStream.Length);
+                await fs.WriteAsync(data, 0, data.Length);
             }
         }
 
         /// <summary>
         /// generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaAsync(MediaType)"/> with <see cref="MediaType.Screen"/>
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Task which resolves to a <see cref="Stream"/> containing the PDF data.</returns>
         /// <remarks>
         /// Generating a pdf is currently only supported in Chrome headless
         /// </remarks>
         public Task<Stream> PdfStreamAsync() => PdfStreamAsync(new PdfOptions());
 
         /// <summary>
-        /// generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaAsync(MediaType)"/> with <see cref="MediaType.Screen"/>
+        /// Generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaAsync(MediaType)"/> with <see cref="MediaType.Screen"/>
         /// </summary>
         /// <param name="options">pdf options</param>
-        /// <returns></returns>
+        /// <returns>Task which resolves to a <see cref="Stream"/> containing the PDF data.</returns>
         /// <remarks>
         /// Generating a pdf is currently only supported in Chrome headless
         /// </remarks>
         public async Task<Stream> PdfStreamAsync(PdfOptions options)
+            => new MemoryStream(await PdfDataAsync(options));
+
+        /// <summary>
+        /// Generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaAsync(MediaType)"/> with <see cref="MediaType.Screen"/>
+        /// </summary>
+        /// <returns>Task which resolves to a <see cref="byte"/>[] containing the PDF data.</returns>
+        /// <remarks>
+        /// Generating a pdf is currently only supported in Chrome headless
+        /// </remarks>
+        public Task<byte[]> PdfDataAsync() => PdfDataAsync(new PdfOptions());
+
+        /// <summary>
+        /// Generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaAsync(MediaType)"/> with <see cref="MediaType.Screen"/>
+        /// </summary>
+        /// <param name="options">pdf options</param>
+        /// <returns>Task which resolves to a <see cref="byte"/>[] containing the PDF data.</returns>
+        /// <remarks>
+        /// Generating a pdf is currently only supported in Chrome headless
+        /// </remarks>
+        public async Task<byte[]> PdfDataAsync(PdfOptions options)
         {
             var paperWidth = PaperFormat.Letter.Width;
             var paperHeight = PaperFormat.Letter.Height;
@@ -757,14 +796,24 @@ namespace PuppeteerSharp
             });
 
             var buffer = Convert.FromBase64String(result.GetValue("data").Value<string>());
-            return new MemoryStream(buffer);
+            return buffer;
         }
 
-        public async Task SetJavaScriptEnabledAsync(bool enabled)
-            => await Client.SendAsync("Emulation.setScriptExecutionDisabled", new { value = !enabled });
+        /// <summary>
+        /// Enables/Disables Javascript on the page
+        /// </summary>
+        /// <returns>Task.</returns>
+        /// <param name="enabled">Whether or not to enable JavaScript on the page.</param>
+        public Task SetJavaScriptEnabledAsync(bool enabled)
+            => Client.SendAsync("Emulation.setScriptExecutionDisabled", new { value = !enabled });
 
-        public async Task EmulateMediaAsync(MediaType media)
-            => await Client.SendAsync("Emulation.setEmulatedMedia", new { media });
+        /// <summary>
+        /// Emulates a media such as screen or print.
+        /// </summary>
+        /// <returns>Task.</returns>
+        /// <param name="media">Media to set.</param>
+        public Task EmulateMediaAsync(MediaType media)
+            => Client.SendAsync("Emulation.setEmulatedMedia", new { media });
 
         /// <summary>
         /// Sets the viewport.
@@ -784,6 +833,16 @@ namespace PuppeteerSharp
             }
         }
 
+        /// <summary>
+        /// Emulates given device metrics and user agent. 
+        /// </summary>
+        /// <remarks>
+        /// This method is a shortcut for calling two methods:
+        /// page.SetViewportAsync(userAgent)
+        /// page.SetUserAgentAsync(viewport)
+        /// </remarks>
+        /// <returns>Task.</returns>
+        /// <param name="options">Emulation options.</param>
         public Task EmulateAsync(DeviceDescriptor options) => Task.WhenAll(
             SetViewportAsync(options.ViewPort),
             SetUserAgentAsync(options.UserAgent)
@@ -811,28 +870,40 @@ namespace PuppeteerSharp
             var fileInfo = new FileInfo(file);
             options.Type = fileInfo.Extension.Replace(".", string.Empty);
 
-            var stream = await ScreenshotStreamAsync(options);
+            var data = await ScreenshotDataAsync(options);
 
             using (var fs = new FileStream(file, FileMode.Create, FileAccess.Write))
             {
-                byte[] bytesInStream = new byte[stream.Length];
-                await stream.ReadAsync(bytesInStream, 0, bytesInStream.Length);
-                await fs.WriteAsync(bytesInStream, 0, bytesInStream.Length);
+                await fs.WriteAsync(data, 0, data.Length);
             }
         }
 
         /// <summary>
         /// Takes a screenshot of the page
         /// </summary>
-        /// <returns>The screenshot task returning the image stream.</returns>
+        /// <returns>Task which resolves to a <see cref="Stream"/> containing the image data.</returns>
         public Task<Stream> ScreenshotStreamAsync() => ScreenshotStreamAsync(new ScreenshotOptions());
 
         /// <summary>
         /// Takes a screenshot of the page
         /// </summary>
-        /// <returns>The screenshot task returning the image stream.</returns>
+        /// <returns>Task which resolves to a <see cref="Stream"/> containing the image data.</returns>
         /// <param name="options">Screenshot options.</param>
         public async Task<Stream> ScreenshotStreamAsync(ScreenshotOptions options)
+            => new MemoryStream(await ScreenshotDataAsync(options));
+
+        /// <summary>
+        /// Takes a screenshot of the page
+        /// </summary>
+        /// <returns>Task which resolves to a <see cref="byte"/>[] containing the image data.</returns>
+        public Task<byte[]> ScreenshotDataAsync() => ScreenshotDataAsync(new ScreenshotOptions());
+
+        /// <summary>
+        /// Takes a screenshot of the page
+        /// </summary>
+        /// <returns>Task which resolves to a <see cref="byte"/>[] containing the image data.</returns>
+        /// <param name="options">Screenshot options.</param>
+        public async Task<byte[]> ScreenshotDataAsync(ScreenshotOptions options)
         {
             string screenshotType = null;
 
@@ -877,6 +948,10 @@ namespace PuppeteerSharp
         /// <returns>page's title</returns>
         public Task<string> GetTitleAsync() => MainFrame.GetTitleAsync();
 
+        /// <summary>
+        /// Closes the page.
+        /// </summary>
+        /// <returns>Task.</returns>
         public Task CloseAsync()
         {
             if (!(Client?.Connection?.IsClosed ?? true))
@@ -1013,7 +1088,7 @@ namespace PuppeteerSharp
             => _networkManager.SetExtraHTTPHeadersAsync(headers);
 
         /// <summary>
-        /// Provide credentials for http authentication <see cref="https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication"/>
+        /// Provide credentials for http authentication <see href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication"/>
         /// </summary>
         /// <param name="credentials">The credentials</param>
         /// <returns></returns>
@@ -1041,12 +1116,12 @@ namespace PuppeteerSharp
 
         /// <summary>
         /// Triggers a change and input event once all the provided options have been selected. 
-        /// If there's no <select> element matching selector, the method throws an error.
+        /// If there's no <![CDATA[<select>]]> element matching selector, the method throws an error.
         /// </summary>
         /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
         /// <returns>Returns an array of option values that have been successfully selected.</returns>
         /// <param name="selector">A selector to query page for</param>
-        /// <param name="values">Values of options to select. If the <select> has the multiple attribute, 
+        /// <param name="values">Values of options to select. If the <![CDATA[<select>]]> has the multiple attribute, 
         /// all values are considered, otherwise only the first one is taken into account.</param>
         public Task<string[]> SelectAsync(string selector, params string[] values)
             => MainFrame.SelectAsync(selector, values);
@@ -1239,7 +1314,7 @@ namespace PuppeteerSharp
             return result;
         }
 
-        private async Task<Stream> PerformScreenshot(string format, ScreenshotOptions options)
+        private async Task<byte[]> PerformScreenshot(string format, ScreenshotOptions options)
         {
             await Client.SendAsync("Target.activateTarget", new
             {
@@ -1335,7 +1410,7 @@ namespace PuppeteerSharp
 
             var buffer = Convert.FromBase64String(result.GetValue("data").Value<string>());
 
-            return new MemoryStream(buffer);
+            return buffer;
         }
 
         private decimal ConvertPrintParameterToInches(object parameter)
@@ -1592,6 +1667,13 @@ namespace PuppeteerSharp
         #endregion
 
         #region IDisposable
+        /// <summary>
+        /// Releases all resource used by the <see cref="Page"/> object by calling the <see cref="CloseAsync"/> method.
+        /// </summary>
+        /// <remarks>Call <see cref="Dispose"/> when you are finished using the <see cref="T:PuppeteerSharp.Page"/>. The
+        /// <see cref="Dispose"/> method leaves the <see cref="T:PuppeteerSharp.Page"/> in an unusable state. After
+        /// calling <see cref="Dispose"/>, you must release all references to the <see cref="T:PuppeteerSharp.Page"/> so
+        /// the garbage collector can reclaim the memory that the <see cref="T:PuppeteerSharp.Page"/> was occupying.</remarks>
         public void Dispose() => CloseAsync();
         #endregion
     }
