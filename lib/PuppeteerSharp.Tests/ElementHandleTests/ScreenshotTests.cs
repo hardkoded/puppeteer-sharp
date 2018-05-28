@@ -18,7 +18,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             await Page.EvaluateExpressionAsync("window.scrollBy(50, 100)");
             var elementHandle = await Page.QuerySelectorAsync(".box:nth-of-type(3)");
-            var screenshot = await elementHandle.ScreenshotStreamAsync();
+            var screenshot = await elementHandle.ScreenshotDataAsync();
             Assert.True(ScreenshotHelper.PixelMatch("screenshot-element-bounding-box.png", screenshot));
         }
 
@@ -42,7 +42,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
                 <div></div>
             ");
             var elementHandle = await Page.QuerySelectorAsync("div");
-            var screenshot = await elementHandle.ScreenshotStreamAsync();
+            var screenshot = await elementHandle.ScreenshotDataAsync();
             Assert.True(ScreenshotHelper.PixelMatch("screenshot-element-padding-border.png", screenshot));
         }
 
@@ -72,7 +72,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
                 <div class='to-screenshot'></div>
             ");
             var elementHandle = await Page.QuerySelectorAsync("div.to-screenshot");
-            var screenshot = await elementHandle.ScreenshotStreamAsync();
+            var screenshot = await elementHandle.ScreenshotDataAsync();
             Assert.True(ScreenshotHelper.PixelMatch("screenshot-element-scrolled-into-view.png", screenshot));
         }
 
@@ -94,7 +94,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
                 transform: rotateZ(200deg); '>&nbsp;</div>
             ");
             var elementHandle = await Page.QuerySelectorAsync("div");
-            var screenshot = await elementHandle.ScreenshotStreamAsync();
+            var screenshot = await elementHandle.ScreenshotDataAsync();
             Assert.True(ScreenshotHelper.PixelMatch("screenshot-element-rotate.png", screenshot));
         }
 
