@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace PuppeteerSharp.Messaging
 {
@@ -20,17 +18,7 @@ namespace PuppeteerSharp.Messaging
         internal class ProfilerTakePreciseCoverageResponseFunction
         {
             [JsonProperty("ranges")]
-            public ProfilerTakePreciseCoverageResponseRange[] Ranges { get; set; }
-        }
-
-        internal class ProfilerTakePreciseCoverageResponseRange
-        {
-            [JsonProperty("startOffset")]
-            public int StartOffset { get; set; }
-            [JsonProperty("endOffset")]
-            public int EndOffset { get; set; }
-            [JsonProperty("count")]
-            public int Count { get; set; }
+            public CoverageResponseRange[] Ranges { get; set; }
         }
     }
 }

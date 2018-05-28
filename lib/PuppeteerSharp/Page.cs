@@ -13,6 +13,7 @@ using PuppeteerSharp.Input;
 using PuppeteerSharp.Media;
 using PuppeteerSharp.Messaging;
 using PuppeteerSharp.Mobile;
+using PuppeteerSharp.PageCoverage;
 
 namespace PuppeteerSharp
 {
