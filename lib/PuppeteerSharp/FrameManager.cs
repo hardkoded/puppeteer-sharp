@@ -25,7 +25,6 @@ namespace PuppeteerSharp
 
             _client.MessageReceived += _client_MessageReceived;
             HandleFrameTree(frameTree);
-
         }
 
         #region Properties
@@ -71,7 +70,6 @@ namespace PuppeteerSharp
                     OnLifeCycleEvent(e);
                     break;
             }
-
         }
 
         private void OnLifeCycleEvent(MessageEventArgs e)

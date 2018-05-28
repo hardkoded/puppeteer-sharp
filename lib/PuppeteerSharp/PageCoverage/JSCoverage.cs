@@ -3,7 +3,6 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using static PuppeteerSharp.Messaging.ProfilerTakePreciseCoverageResponse;
 using Microsoft.Extensions.Logging;
 
 namespace PuppeteerSharp.PageCoverage
