@@ -1506,12 +1506,18 @@ namespace PuppeteerSharp
         {
             if (_ignoreHTTPSErrors)
             {
-                //TODO: Puppeteer is silencing an error here, I don't know if that's necessary here
-                await Client.SendAsync("Security.handleCertificateError", new Dictionary<string, object>
+                try
                 {
-                    {"eventId", e.MessageData.eventId },
-                    {"action", "continue"}
-                });
+                    await Client.SendAsync("Security.handleCertificateError", new Dictionary<string, object>
+                    {
+                        {"eventId", e.MessageData.eventId },
+                        {"action", "continue"}
+                    });
+                }
+                catch(PuppeteerException ex)
+                {
+                    _logger.LogError(ex.ToString());
+                }
             }
         }
 
