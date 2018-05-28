@@ -8,12 +8,7 @@ namespace PuppeteerSharpPdfDemo
 {
     class MainClass
     {
-        public static void Main(string[] args)
-        {
-            MainAsync(args).GetAwaiter().GetResult();
-        }
-
-        public static async Task MainAsync(string[] args)
+        public static async Task Main(string[] args)
         {
             var options = new LaunchOptions
             {
