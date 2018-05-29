@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Net;
+using System.Text;
 
 namespace PuppeteerSharp
 {
@@ -12,7 +13,12 @@ namespace PuppeteerSharp
         /// Response body (text content)
         /// </summary>
         /// <value>Body as text.</value>
-        public string Body { get; set; }
+        public string Body
+        {
+            get => Encoding.UTF8.GetString(BodyData);
+            set => BodyData = Encoding.UTF8.GetBytes(value);
+        }
+
         /// <summary>
         /// Response body (binary content)
         /// </summary>

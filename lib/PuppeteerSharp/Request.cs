@@ -130,7 +130,7 @@ namespace PuppeteerSharp
                     responseHeaders[keyValue.Key] = keyValue.Value;
                 }
             }
-
+            
             if (response.ContentType != null)
             {
                 responseHeaders["content-type"] = response.ContentType;
@@ -138,25 +138,19 @@ namespace PuppeteerSharp
 
             if (!responseHeaders.ContainsKey("content-length"))
             {
-                responseHeaders["content-length"] = response.BodyData != null ? response.BodyData.Length : response.Body.Length;
+                responseHeaders["content-length"] = response.BodyData.Length;
             }
 
-            var statusCode = response.Status ?? HttpStatusCode.Accepted;
+            var statusCode = response.Status ?? HttpStatusCode.OK;
             var statusText = statusCode.ToString();
-            var statusLine = $"HTTP / 1.1${(int)statusCode} ${statusText}";
-
-            var text = new StringBuilder(statusLine + "\n");
+            var text = new StringBuilder();
+            text.AppendLine($"HTTP / 1.1${(int)statusCode} ${statusText}");
 
             foreach (var header in responseHeaders)
             {
                 text.AppendLine($"{header.Key}: {header.Value}");
             }
             text.AppendLine(string.Empty);
-
-            if (!string.IsNullOrEmpty(response.Body))
-            {
-                text.Append(response.Body);
-            }
 
             var responseData = Encoding.UTF8.GetBytes(text.ToString());
 
@@ -165,6 +159,7 @@ namespace PuppeteerSharp
                 var concatenatedData = new byte[responseData.Length + response.BodyData.Length];
                 responseData.CopyTo(concatenatedData, 0);
                 response.BodyData.CopyTo(concatenatedData, responseData.Length);
+                responseData = concatenatedData;
             }
 
             var responseBase64 = Convert.ToBase64String(responseData);
