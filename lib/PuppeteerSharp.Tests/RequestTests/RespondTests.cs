@@ -17,6 +17,7 @@ namespace PuppeteerSharp.Tests.RequestTests
             {
                 await e.Request.RespondAsync(new ResponseData
                 {
+                    Status = HttpStatusCode.Created,
                     Headers = new Dictionary<string, object>
                     {
                         ["foo"] = "bar"
@@ -26,7 +27,7 @@ namespace PuppeteerSharp.Tests.RequestTests
             };
 
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Equal(HttpStatusCode.OK, response.Status);
+            Assert.Equal(HttpStatusCode.Created, response.Status);
             Assert.Equal("bar", response.Headers["foo"]);
             Assert.Equal("Yo, page!", await Page.EvaluateExpressionAsync<string>("document.body.textContent"));
         }

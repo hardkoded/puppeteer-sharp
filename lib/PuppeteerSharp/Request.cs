@@ -130,13 +130,13 @@ namespace PuppeteerSharp
                     responseHeaders[keyValue.Key] = keyValue.Value;
                 }
             }
-            
+
             if (response.ContentType != null)
             {
                 responseHeaders["content-type"] = response.ContentType;
             }
 
-            if (!responseHeaders.ContainsKey("content-length"))
+            if (!responseHeaders.ContainsKey("content-length") && response.BodyData != null)
             {
                 responseHeaders["content-length"] = response.BodyData.Length;
             }
@@ -162,14 +162,12 @@ namespace PuppeteerSharp
                 responseData = concatenatedData;
             }
 
-            var responseBase64 = Convert.ToBase64String(responseData);
-
             try
             {
                 await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object>
                 {
                     {"interceptionId", InterceptionId},
-                    {"rawResponse", responseBase64}
+                    {"rawResponse", Convert.ToBase64String(responseData)}
                 });
             }
             catch (Exception)
