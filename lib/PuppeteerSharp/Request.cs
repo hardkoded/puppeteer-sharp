@@ -144,7 +144,7 @@ namespace PuppeteerSharp
             var statusCode = response.Status ?? HttpStatusCode.OK;
             var statusText = statusCode.ToString();
             var text = new StringBuilder();
-            text.AppendLine($"HTTP / 1.1${(int)statusCode} ${statusText}");
+            text.AppendLine($"HTTP/1.1 {(int)statusCode} {statusText}");
 
             foreach (var header in responseHeaders)
             {
