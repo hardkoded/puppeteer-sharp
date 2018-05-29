@@ -39,6 +39,5 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>Status Code.</value>
         public HttpStatusCode? Status { get; set; }
-
     }
 }
