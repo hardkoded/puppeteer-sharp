@@ -121,9 +121,6 @@ namespace PuppeteerSharp
 
             _interceptionHandled = true;
 
-            //TODO: In puppeteer this is a buffer but as I don't know the real implementation yet
-            //I will consider this a string
-            var responseBody = response.Body;
             var responseHeaders = new Dictionary<string, object>();
 
             if (response.Headers != null)
@@ -139,9 +136,9 @@ namespace PuppeteerSharp
                 responseHeaders["content-type"] = response.ContentType;
             }
 
-            if (!string.IsNullOrEmpty(responseBody) && !responseHeaders.ContainsKey("content-length"))
+            if (!responseHeaders.ContainsKey("content-length"))
             {
-                responseHeaders["content-length"] = responseBody.Length;
+                responseHeaders["content-length"] = response.BodyData != null ? response.BodyData.Length : response.Body.Length;
             }
 
             var statusCode = response.Status ?? HttpStatusCode.Accepted;
@@ -156,20 +153,28 @@ namespace PuppeteerSharp
             }
             text.AppendLine(string.Empty);
 
-            //This is a buffer in puppeteer but I don't know the final implementation here
-            var responseBuffer = text.ToString();
-
-            if (!string.IsNullOrEmpty(responseBody))
+            if (!string.IsNullOrEmpty(response.Body))
             {
-                responseBuffer += responseBody;
+                text.Append(response.Body);
             }
+
+            var responseData = Encoding.UTF8.GetBytes(text.ToString());
+
+            if (response.BodyData != null)
+            {
+                var concatenatedData = new byte[responseData.Length + response.BodyData.Length];
+                responseData.CopyTo(concatenatedData, 0);
+                response.BodyData.CopyTo(concatenatedData, responseData.Length);
+            }
+
+            var responseBase64 = Convert.ToBase64String(responseData);
 
             try
             {
                 await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object>
                 {
                     {"interceptionId", InterceptionId},
-                    {"rawResponse", responseBuffer}
+                    {"rawResponse", responseBase64}
                 });
             }
             catch (Exception)
