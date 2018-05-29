@@ -52,13 +52,13 @@ namespace PuppeteerSharp
         private static int _processCount = 0;
         private bool _processLoaded;
         private const string UserDataDirArgument = "--user-data-dir";
-        private bool _chromiumLaunched = false;        
+        private bool _chromiumLaunched = false;
         #endregion
 
         #region Properties
         public bool IsChromeClosed { get; internal set; }
         #endregion
-        
+
         public Launcher(ILoggerFactory loggerFactory = null)
         {
             _loggerFactory = loggerFactory ?? new LoggerFactory();

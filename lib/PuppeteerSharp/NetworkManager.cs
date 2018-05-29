@@ -26,7 +26,6 @@ namespace PuppeteerSharp
         private List<string> _attemptedAuthentications = new List<string>();
         private bool _userRequestInterceptionEnabled;
         private bool _protocolRequestInterceptionEnabled;
-
         
         #endregion
 
