@@ -121,9 +121,6 @@ namespace PuppeteerSharp
 
             _interceptionHandled = true;
 
-            //TODO: In puppeteer this is a buffer but as I don't know the real implementation yet
-            //I will consider this a string
-            var responseBody = response.Body;
             var responseHeaders = new Dictionary<string, object>();
 
             if (response.Headers != null)
@@ -139,16 +136,15 @@ namespace PuppeteerSharp
                 responseHeaders["content-type"] = response.ContentType;
             }
 
-            if (!string.IsNullOrEmpty(responseBody) && !responseHeaders.ContainsKey("content-length"))
+            if (!responseHeaders.ContainsKey("content-length") && response.BodyData != null)
             {
-                responseHeaders["content-length"] = responseBody.Length;
+                responseHeaders["content-length"] = response.BodyData.Length;
             }
 
-            var statusCode = response.Status ?? HttpStatusCode.Accepted;
+            var statusCode = response.Status ?? HttpStatusCode.OK;
             var statusText = statusCode.ToString();
-            var statusLine = $"HTTP / 1.1${(int)statusCode} ${statusText}";
-
-            var text = new StringBuilder(statusLine + "\n");
+            var text = new StringBuilder();
+            text.AppendLine($"HTTP/1.1 {(int)statusCode} {statusText}");
 
             foreach (var header in responseHeaders)
             {
@@ -156,12 +152,14 @@ namespace PuppeteerSharp
             }
             text.AppendLine(string.Empty);
 
-            //This is a buffer in puppeteer but I don't know the final implementation here
-            var responseBuffer = text.ToString();
+            var responseData = Encoding.UTF8.GetBytes(text.ToString());
 
-            if (!string.IsNullOrEmpty(responseBody))
+            if (response.BodyData != null)
             {
-                responseBuffer += responseBody;
+                var concatenatedData = new byte[responseData.Length + response.BodyData.Length];
+                responseData.CopyTo(concatenatedData, 0);
+                response.BodyData.CopyTo(concatenatedData, responseData.Length);
+                responseData = concatenatedData;
             }
 
             try
@@ -169,7 +167,7 @@ namespace PuppeteerSharp
                 await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object>
                 {
                     {"interceptionId", InterceptionId},
-                    {"rawResponse", responseBuffer}
+                    {"rawResponse", Convert.ToBase64String(responseData)}
                 });
             }
             catch (Exception)
