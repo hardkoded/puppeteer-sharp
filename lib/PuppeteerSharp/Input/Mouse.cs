@@ -3,6 +3,9 @@ using System.Threading.Tasks;
 
 namespace PuppeteerSharp.Input
 {
+    /// <summary>
+    /// Provides methods to interact with the mouse
+    /// </summary>
     public class Mouse
     {
         private readonly Session _client;
@@ -12,6 +15,11 @@ namespace PuppeteerSharp.Input
         private decimal _y = 0;
         private MouseButton _button = MouseButton.None;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Mouse"/> class.
+        /// </summary>
+        /// <param name="client">The client</param>
+        /// <param name="keyboard">The keyboard</param>
         public Mouse(Session client, Keyboard keyboard)
         {
             _client = client;
@@ -19,7 +27,7 @@ namespace PuppeteerSharp.Input
         }
 
         /// <summary>
-        /// Dispatches a `mousemove` event.
+        /// Dispatches a <c>mousemove</c> event.
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
@@ -48,7 +56,7 @@ namespace PuppeteerSharp.Input
         }
 
         /// <summary>
-        /// Shortcut for <see cref="Mouse.MoveAsync(decimal, decimal, MoveOptions)"/>, <see cref="Mouse.DownAsync(ClickOptions)"/> and <see cref="Mouse.UpAsync(ClickOptions)"/>
+        /// Shortcut for <see cref="MoveAsync(decimal, decimal, MoveOptions)"/>, <see cref="DownAsync(ClickOptions)"/> and <see cref="UpAsync(ClickOptions)"/>
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
@@ -69,7 +77,7 @@ namespace PuppeteerSharp.Input
         }
 
         /// <summary>
-        /// Dispatches a `mousedown` event.
+        /// Dispatches a <c>mousedown</c> event.
         /// </summary>
         /// <param name="options"></param>
         /// <returns>Task</returns>
@@ -90,7 +98,7 @@ namespace PuppeteerSharp.Input
         }
 
         /// <summary>
-        /// Dispatches a `mouseup` event.
+        /// Dispatches a <c>mouseup</c> event.
         /// </summary>
         /// <param name="options"></param>
         /// <returns>Task</returns>
