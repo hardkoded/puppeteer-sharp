@@ -48,8 +48,8 @@ namespace PuppeteerSharp.Input
                 await _client.SendAsync("Input.dispatchMouseEvent", new Dictionary<string, object>(){
                     {"type", "mouseMoved"},
                     {"button", _button},
-                    {"x", fromX + (_x - fromX) * ((decimal)i / steps)},
-                    {"y", fromY + (_y - fromY) * ((decimal)i / steps)},
+                    {"x", fromX + ((_x - fromX) * ((decimal)i / steps))},
+                    {"y", fromY + ((_y - fromY) * ((decimal)i / steps))},
                     {"modifiers", _keyboard.Modifiers}
                 });
             }
