@@ -1,0 +1,20 @@
+language: csharp
+mono: none
+dotnet: 2.1.105
+matrix:
+  include:
+    - os: linux
+      dist: trusty
+      sudo: required
+      env: CONFIGURATION=Release
+    - os: osx
+      osx_image: xcode7.2
+      env: CONFIGURATION=Release
+install:
+ - cd lib
+ - dotnet restore
+script:
+ - cd lib
+ - dotnet restore
+ - cd PuppeteerSharp.Tests
+ - dotnet test -f netcoreapp2.0 -s test.runsettings
