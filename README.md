@@ -47,7 +47,7 @@ var browser = await Puppeteer.LaunchAsync(new LaunchOptions
 }, chromiumRevision);
 var page = await browser.NewPageAsync();
 await page.GoToAsync("http://www.google.com");
-await page.PdfAsync(outputFile));
+await page.PdfAsync(outputFile);
 ```
 
 ## Inject HTML
