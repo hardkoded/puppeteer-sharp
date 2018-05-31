@@ -14,7 +14,6 @@ install:
  - cd lib
  - dotnet restore
 script:
- - cd lib
  - dotnet restore
  - cd PuppeteerSharp.Tests
  - dotnet test -f netcoreapp2.0 -s test.runsettings
