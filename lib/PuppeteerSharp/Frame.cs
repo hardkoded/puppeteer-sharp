@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Linq;
 
 namespace PuppeteerSharp
 {
@@ -44,8 +42,12 @@ namespace PuppeteerSharp
         private readonly Page _page;
 
         private TaskCompletionSource<ElementHandle> _documentCompletionSource;
+        private TaskCompletionSource<ExecutionContext> _contextResolveTaskWrapper;
 
         internal List<WaitTask> WaitTasks { get; }
+        internal string Id { get; set; }
+        internal string LoaderId { get; set; }
+        internal List<string> LifecycleEvents { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Frame"/> class.
@@ -73,17 +75,31 @@ namespace PuppeteerSharp
         }
 
         #region Properties
-        public List<Frame> ChildFrames { get; set; } = new List<Frame>();
-        public string Name { get; set; }
+        /// <summary>
+        /// Gets the child frames of the this frame
+        /// </summary>
+        public List<Frame> ChildFrames { get; } = new List<Frame>();
 
-        public string Url { get; set; }
-        public string ParentId { get; internal set; }
-        public string Id { get; internal set; }
-        public string LoaderId { get; set; }
-        public TaskCompletionSource<ExecutionContext> ContextResolveTaskWrapper { get; internal set; }
-        public List<string> LifecycleEvents { get; internal set; }
+        /// <summary>
+        /// Gets the frame's name attribute as specified in the tag
+        /// If the name is empty, returns the id attribute instead
+        /// </summary>
+        public string Name { get; private set; }
+
+        /// <summary>
+        /// Gets the frame's url
+        /// </summary>
+        public string Url { get; private set; }
+        
+        /// <summary>
+        /// Gets a value indicating if the frame is detached or not
+        /// </summary>
         public bool Detached { get; set; }
-        public Frame ParentFrame { get; set; }
+
+        /// <summary>
+        /// Gets the parent frame, if any. Detached frames and main frames return <c>null</c>
+        /// </summary>
+        public Frame ParentFrame { get; private set; }
         #endregion
 
         #region Public Methods
@@ -158,7 +174,42 @@ namespace PuppeteerSharp
         /// Gets the <see cref="ExecutionContext"/> associated with the frame.
         /// </summary>
         /// <returns><see cref="ExecutionContext"/> associated with the frame.</returns>
-        public Task<ExecutionContext> GetExecutionContextAsync() => ContextResolveTaskWrapper.Task;
+        public Task<ExecutionContext> GetExecutionContextAsync() => _contextResolveTaskWrapper.Task;
+
+        /// <summary>
+        /// Waits for a selector to be added to the DOM
+        /// </summary>
+        /// <param name="selector">A selector of an element to wait for</param>
+        /// <param name="options">Optional waiting parameters</param>
+        /// <returns>A task that resolves when element specified by selector string is added to DOM</returns>
+        public async Task<ElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
+        {
+            options = options ?? new WaitForSelectorOptions();
+            const string predicate = @"
+              function predicate(selector, waitForVisible, waitForHidden) {
+              const node = document.querySelector(selector);
+              if (!node)
+                return waitForHidden;
+              if (!waitForVisible && !waitForHidden)
+                return node;
+              const style = window.getComputedStyle(node);
+              const isVisible = style && style.visibility !== 'hidden' && hasVisibleBoundingBox();
+              const success = (waitForVisible === isVisible || waitForHidden === !isVisible);
+              return success ? node : null;
+
+              function hasVisibleBoundingBox() {
+                const rect = node.getBoundingClientRect();
+                return !!(rect.top || rect.bottom || rect.width || rect.height);
+              }
+            }";
+            var polling = options.Visible || options.Hidden ? WaitForFunctionPollingOption.Raf : WaitForFunctionPollingOption.Mutation;
+            var handle = await WaitForFunctionAsync(predicate, new WaitForFunctionOptions
+            {
+                Timeout = options.Timeout,
+                Polling = polling
+            }, selector, options.Visible, options.Hidden);
+            return handle as ElementHandle;
+        }
 
         /// <summary>
         /// Queries frame for the selector. If there's no such element within the frame, the method will resolve to <c>null</c>.
@@ -328,7 +379,7 @@ namespace PuppeteerSharp
         {
             if (context != null)
             {
-                ContextResolveTaskWrapper.SetResult(context);
+                _contextResolveTaskWrapper.SetResult(context);
 
                 foreach (var waitTask in WaitTasks)
                 {
@@ -338,7 +389,7 @@ namespace PuppeteerSharp
             else
             {
                 _documentCompletionSource = null;
-                ContextResolveTaskWrapper = new TaskCompletionSource<ExecutionContext>();
+                _contextResolveTaskWrapper = new TaskCompletionSource<ExecutionContext>();
             }
         }
 
@@ -360,42 +411,7 @@ namespace PuppeteerSharp
 
         internal Task<JSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args)
             => new WaitTask(this, script, options.Polling, options.PollingInterval, options.Timeout, args).Task;
-
-        /// <summary>
-        /// Waits for a selector to be added to the DOM
-        /// </summary>
-        /// <param name="selector">A selector of an element to wait for</param>
-        /// <param name="options">Optional waiting parameters</param>
-        /// <returns>A task that resolves when element specified by selector string is added to DOM</returns>
-        public async Task<ElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
-        {
-            options = options ?? new WaitForSelectorOptions();
-            const string predicate = @"
-              function predicate(selector, waitForVisible, waitForHidden) {
-              const node = document.querySelector(selector);
-              if (!node)
-                return waitForHidden;
-              if (!waitForVisible && !waitForHidden)
-                return node;
-              const style = window.getComputedStyle(node);
-              const isVisible = style && style.visibility !== 'hidden' && hasVisibleBoundingBox();
-              const success = (waitForVisible === isVisible || waitForHidden === !isVisible);
-              return success ? node : null;
-
-              function hasVisibleBoundingBox() {
-                const rect = node.getBoundingClientRect();
-                return !!(rect.top || rect.bottom || rect.width || rect.height);
-              }
-            }";
-            var polling = options.Visible || options.Hidden ? WaitForFunctionPollingOption.Raf : WaitForFunctionPollingOption.Mutation;
-            var handle = await WaitForFunctionAsync(predicate, new WaitForFunctionOptions
-            {
-                Timeout = options.Timeout,
-                Polling = polling
-            }, selector, options.Visible, options.Hidden);
-            return handle as ElementHandle;
-        }
-
+        
         internal Task<string[]> SelectAsync(string selector, params string[] values)
             => QuerySelectorAsync(selector).EvaluateFunctionAsync<string[]>(@"(element, values) => {
                 if (element.nodeName.toLowerCase() !== 'select')
