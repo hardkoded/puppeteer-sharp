@@ -147,12 +147,12 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         [Fact]
         public async Task UserDataDirOptionShouldRestoreState()
         {
-            var launcher = new Launcher();
+            var launcher = new Launcher(TestConstants.LoggerFactory);
             var userDataDir = Launcher.GetTemporaryDirectory();
             var options = TestConstants.DefaultBrowserOptions();
             options.Args = options.Args.Concat(new[] { $"--user-data-dir={userDataDir}" }).ToArray();
 
-            using (var browser = await launcher.LaunchAsync(options, TestConstants.ChromiumRevision, TestConstants.LoggerFactory))
+            using (var browser = await launcher.LaunchAsync(options, TestConstants.ChromiumRevision))
             {
                 var page = await browser.NewPageAsync();
                 await page.GoToAsync(TestConstants.EmptyPage);
@@ -172,12 +172,12 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         [Fact]
         public async Task UserDataDirOptionShouldRestoreCookies()
         {
-            var launcher = new Launcher();
+            var launcher = new Launcher(TestConstants.LoggerFactory);
             var userDataDir = Launcher.GetTemporaryDirectory();
             var options = TestConstants.DefaultBrowserOptions();
             options.Args = options.Args.Concat(new[] { $"--user-data-dir={userDataDir}" }).ToArray();
 
-            using (var browser = await launcher.LaunchAsync(options, TestConstants.ChromiumRevision, TestConstants.LoggerFactory))
+            using (var browser = await launcher.LaunchAsync(options, TestConstants.ChromiumRevision))
             {
                 var page = await browser.NewPageAsync();
                 await page.GoToAsync(TestConstants.EmptyPage);
