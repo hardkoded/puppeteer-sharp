@@ -20,7 +20,7 @@ build:
   project: .\lib\PuppeteerSharp.sln
   publish_nuget: true
   include_nuget_references: true
-  verbosity: minimal
+  verbosity: normal
 test_script:
 - cmd: >-
     cd .\lib\PuppeteerSharp.Tests
