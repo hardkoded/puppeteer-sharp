@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Xunit;
 using PuppeteerSharp.Mobile;
@@ -42,7 +43,7 @@ namespace PuppeteerSharp.Tests
 
         public static void SetupLogging(ITestOutputHelper output)
         {
-            if (LoggerFactory == null)
+            if (Debugger.IsAttached && LoggerFactory == null)
             {
                 LoggerFactory = new LoggerFactory(new[] { new XunitLoggerProvider(output) });
             }
