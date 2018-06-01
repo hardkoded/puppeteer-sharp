@@ -111,8 +111,9 @@ namespace PuppeteerSharp
         /// <remarks>
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
         /// </remarks>
-        /// <seealso cref="EvaluateFunctionAsync(string, object[])"/>
         /// <returns>Task which resolves to script return value</returns>
+        /// <seealso cref="EvaluateFunctionAsync(string, object[])"/>
+        /// <seealso cref="Page.EvaluateExpressionAsync(string)"/>
         public async Task<dynamic> EvaluateExpressionAsync(string script)
         {
             var context = await GetExecutionContextAsync();
@@ -127,8 +128,9 @@ namespace PuppeteerSharp
         /// <remarks>
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
         /// </remarks>
-        /// <seealso cref="EvaluateFunctionAsync{T}(string, object[])"/>
         /// <returns>Task which resolves to script return value</returns>
+        /// <seealso cref="EvaluateFunctionAsync{T}(string, object[])"/>
+        /// <seealso cref="Page.EvaluateExpressionAsync{T}(string)"/>
         public async Task<T> EvaluateExpressionAsync<T>(string script)
         {
             var context = await GetExecutionContextAsync();
@@ -144,8 +146,9 @@ namespace PuppeteerSharp
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
         /// <see cref="JSHandle"/> instances can be passed as arguments
         /// </remarks>
-        /// <seealso cref="EvaluateExpressionAsync(string)"/>
         /// <returns>Task which resolves to script return value</returns>
+        /// <seealso cref="EvaluateExpressionAsync(string)"/>
+        /// <seealso cref="Page.EvaluateFunctionAsync(string, object[])"/>
         public async Task<dynamic> EvaluateFunctionAsync(string script, params object[] args)
         {
             var context = await GetExecutionContextAsync();
@@ -162,8 +165,9 @@ namespace PuppeteerSharp
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
         /// <see cref="JSHandle"/> instances can be passed as arguments
         /// </remarks>
-        /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
         /// <returns>Task which resolves to script return value</returns>
+        /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
+        /// <seealso cref="Page.EvaluateFunctionAsync{T}(string, object[])"/>
         public async Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
         {
             var context = await GetExecutionContextAsync();
@@ -182,6 +186,7 @@ namespace PuppeteerSharp
         /// <param name="selector">A selector of an element to wait for</param>
         /// <param name="options">Optional waiting parameters</param>
         /// <returns>A task that resolves when element specified by selector string is added to DOM</returns>
+        /// <seealso cref="Page.WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
         public async Task<ElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
         {
             options = options ?? new WaitForSelectorOptions();
@@ -210,34 +215,97 @@ namespace PuppeteerSharp
             }, selector, options.Visible, options.Hidden);
             return handle as ElementHandle;
         }
+        
+        /// <summary>
+        /// Waits for a timeout
+        /// </summary>
+        /// <param name="milliseconds"></param>
+        /// <returns>A task that resolves when after the timeout</returns>
+        /// <seealso cref="Page.WaitForTimeoutAsync(int)"/>
+        public Task WaitForTimeoutAsync(int milliseconds) => Task.Delay(milliseconds);
+
+        /// <summary>
+        /// Waits for a script to be evaluated to a truthy value
+        /// </summary>
+        /// <param name="script">Function to be evaluated in browser context</param>
+        /// <param name="options">Optional waiting parameters</param>
+        /// <param name="args">Arguments to pass to <c>script</c></param>
+        /// <returns>A task that resolves when the <c>script</c> returns a truthy value</returns>
+        /// <seealso cref="Page.WaitForFunctionAsync(string, WaitForFunctionOptions, object[])"/>
+        public Task<JSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args)
+            => new WaitTask(this, script, options.Polling, options.PollingInterval, options.Timeout, args).Task;
+
+        /// <summary>
+        /// Triggers a change and input event once all the provided options have been selected. 
+        /// If there's no <![CDATA[<select>]]> element matching selector, the method throws an error.
+        /// </summary>
+        /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>        
+        /// <param name="selector">A selector to query page for</param>
+        /// <param name="values">Values of options to select. If the <![CDATA[<select>]]> has the multiple attribute, 
+        /// all values are considered, otherwise only the first one is taken into account.</param>
+        /// <returns>Returns an array of option values that have been successfully selected.</returns>
+        /// <seealso cref="Page.SelectAsync(string, string[])"/>
+        public Task<string[]> SelectAsync(string selector, params string[] values)
+            => QuerySelectorAsync(selector).EvaluateFunctionAsync<string[]>(@"(element, values) => {
+                if (element.nodeName.toLowerCase() !== 'select')
+                    throw new Error('Element is not a <select> element.');
+
+                const options = Array.from(element.options);
+                element.value = undefined;
+                for (const option of options)
+                    option.selected = values.includes(option.value);
+                element.dispatchEvent(new Event('input', { 'bubbles': true }));
+                element.dispatchEvent(new Event('change', { 'bubbles': true }));
+                return options.filter(option => option.selected).map(option => option.value);
+            }", new[] { values });
 
         /// <summary>
         /// Queries frame for the selector. If there's no such element within the frame, the method will resolve to <c>null</c>.
         /// </summary>
-        /// <param name="selector">Selector to query page for</param>
+        /// <param name="selector">Selector to query frame for</param>
         /// <returns>Task which resolves to <see cref="ElementHandle"/> pointing to the frame element</returns>
-        internal async Task<ElementHandle> QuerySelectorAsync(string selector)
+        /// <seealso cref="Page.QuerySelectorAsync(string)"/>
+        public async Task<ElementHandle> QuerySelectorAsync(string selector)
         {
             var document = await GetDocument();
             var value = await document.QuerySelectorAsync(selector);
             return value;
         }
 
-        internal async Task<ElementHandle[]> QuerySelectorAllAsync(string selector)
+        /// <summary>
+        /// Queries frame for the selector. If no elements match the selector, the return value resolve to <see cref="Array.Empty{T}"/>.
+        /// </summary>
+        /// <param name="selector">A selector to query frame for</param>
+        /// <returns>Task which resolves to ElementHandles pointing to the frame elements</returns>
+        /// <seealso cref="Page.QuerySelectorAllAsync(string)"/>
+        public async Task<ElementHandle[]> QuerySelectorAllAsync(string selector)
         {
             var document = await GetDocument();
             var value = await document.QuerySelectorAllAsync(selector);
             return value;
         }
 
-        internal async Task<ElementHandle[]> XPathAsync(string expression)
+        /// <summary>
+        /// Evaluates the XPath expression
+        /// </summary>
+        /// <param name="expression">Expression to evaluate <see href="https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate"/></param>
+        /// <returns>Task which resolves to an array of <see cref="ElementHandle"/></returns>
+        /// <seealso cref="Page.XPathAsync(string)"/>
+        public async Task<ElementHandle[]> XPathAsync(string expression)
         {
             var document = await GetDocument();
             var value = await document.XPathAsync(expression);
             return value;
         }
 
-        internal async Task<ElementHandle> AddStyleTag(AddTagOptions options)
+        /// <summary>
+        /// Adds a <c><![CDATA[<link rel="stylesheet">]]></c> tag into the page with the desired url or a <c><![CDATA[<link rel="stylesheet">]]></c> tag with the content
+        /// </summary>
+        /// <param name="options">add style tag options</param>
+        /// <returns>Task which resolves to the added tag when the stylesheet's onload fires or when the CSS content was injected into frame</returns>
+        /// <seealso cref="Page.AddStyleTagAsync(AddTagOptions)"/>
+        /// <seealso cref="Page.AddStyleTagAsync(string)"/>
+        public async Task<ElementHandle> AddStyleTag(AddTagOptions options)
         {
             const string addStyleUrl = @"async function addStyleUrl(url) {
               const link = document.createElement('link');
@@ -289,7 +357,14 @@ namespace PuppeteerSharp
             throw new ArgumentException("Provide options with a `Url`, `Path` or `Content` property");
         }
 
-        internal async Task<ElementHandle> AddScriptTag(AddTagOptions options)
+        /// <summary>
+        /// Adds a <c><![CDATA[<script>]]></c> tag into the page with the desired url or content
+        /// </summary>
+        /// <param name="options">add script tag options</param>
+        /// <returns>Task which resolves to the added tag when the script's onload fires or when the script content was injected into frame</returns>
+        /// <seealso cref="Page.AddScriptTagAsync(AddTagOptions)"/>
+        /// <seealso cref="Page.AddScriptTagAsync(string)"/>
+        public async Task<ElementHandle> AddScriptTag(AddTagOptions options)
         {
             const string addScriptUrl = @"async function addScriptUrl(url) {
               const script = document.createElement('script');
@@ -340,7 +415,12 @@ namespace PuppeteerSharp
             throw new ArgumentException("Provide options with a `Url`, `Path` or `Content` property");
         }
 
-        internal Task<string> GetContentAsync()
+        /// <summary>
+        /// Gets the full HTML contents of the page, including the doctype.
+        /// </summary>
+        /// <returns>Task which resolves to the HTML content.</returns>
+        /// <seealso cref="Page.GetContentAsync"/>
+        public Task<string> GetContentAsync()
             => EvaluateFunctionAsync<string>(@"() => {
                 let retVal = '';
                 if (document.doctype)
@@ -350,14 +430,25 @@ namespace PuppeteerSharp
                 return retVal;
             }");
 
-        internal Task SetContentAsync(string html)
+        /// <summary>
+        /// Sets the HTML markup to the page
+        /// </summary>
+        /// <param name="html">HTML markup to assign to the page.</param>
+        /// <returns>Task.</returns>
+        /// <seealso cref="Page.SetContentAsync(string)"/>
+        public Task SetContentAsync(string html)
             => EvaluateFunctionAsync(@"html => {
                 document.open();
                 document.write(html);
                 document.close();
             }", html);
 
-        internal Task<string> GetTitleAsync() => EvaluateExpressionAsync<string>("document.title");
+        /// <summary>
+        /// Returns page's title
+        /// </summary>
+        /// <returns>page's title</returns>
+        /// <seealso cref="Page.GetTitleAsync"/>
+        public Task<string> GetTitleAsync() => EvaluateExpressionAsync<string>("document.title");
 
         internal void OnLifecycleEvent(string loaderId, string name)
         {
@@ -392,7 +483,7 @@ namespace PuppeteerSharp
                 _contextResolveTaskWrapper = new TaskCompletionSource<ExecutionContext>();
             }
         }
-
+        
         internal void Detach()
         {
             while (WaitTasks.Count > 0)
@@ -406,25 +497,6 @@ namespace PuppeteerSharp
             }
             ParentFrame = null;
         }
-
-        internal Task WaitForTimeoutAsync(int milliseconds) => Task.Delay(milliseconds);
-
-        internal Task<JSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args)
-            => new WaitTask(this, script, options.Polling, options.PollingInterval, options.Timeout, args).Task;
-        
-        internal Task<string[]> SelectAsync(string selector, params string[] values)
-            => QuerySelectorAsync(selector).EvaluateFunctionAsync<string[]>(@"(element, values) => {
-                if (element.nodeName.toLowerCase() !== 'select')
-                    throw new Error('Element is not a <select> element.');
-
-                const options = Array.from(element.options);
-                element.value = undefined;
-                for (const option of options)
-                    option.selected = values.includes(option.value);
-                element.dispatchEvent(new Event('input', { 'bubbles': true }));
-                element.dispatchEvent(new Event('change', { 'bubbles': true }));
-                return options.filter(option => option.selected).map(option => option.value);
-            }", new[] { values });
 
         #endregion
 

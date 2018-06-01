@@ -288,6 +288,7 @@ namespace PuppeteerSharp
         /// <remarks>
         /// Shortcut for <c>page.MainFrame.QuerySelectorAsync(selector)</c>
         /// </remarks>
+        /// <seealso cref="Frame.QuerySelectorAsync(string)"/>
         public Task<ElementHandle> QuerySelectorAsync(string selector)
             => MainFrame.QuerySelectorAsync(selector);
 
@@ -296,11 +297,12 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="selector">A selector to query page for</param>
         /// <returns>Task which resolves to ElementHandles pointing to the frame elements</returns>
+        /// <seealso cref="Frame.QuerySelectorAllAsync(string)"/>
         public Task<ElementHandle[]> QuerySelectorAllAsync(string selector)
             => MainFrame.QuerySelectorAllAsync(selector);
 
         /// <summary>
-        /// A utility function to based used with <see cref="Extensions.EvaluateFunctionAsync{T}(Task{JSHandle}, string, object[])"/>
+        /// A utility function to be used with <see cref="Extensions.EvaluateFunctionAsync{T}(Task{JSHandle}, string, object[])"/>
         /// </summary>
         /// <param name="selector">A selector to query page for</param>
         /// <returns>Task which resolves to a <see cref="JSHandle"/> of <c>document.querySelectorAll</c> result</returns>
@@ -315,6 +317,7 @@ namespace PuppeteerSharp
         /// <remarks>
         /// Shortcut for <c>page.MainFrame.XPathAsync(expression)</c>
         /// </remarks>
+        /// <seealso cref="Frame.XPathAsync(string)"/>
         public Task<ElementHandle[]> XPathAsync(string expression) => MainFrame.XPathAsync(expression);
 
         /// <summary>
@@ -477,6 +480,7 @@ namespace PuppeteerSharp
         /// Shortcut for <c>page.MainFrame.AddScriptTagAsync(options)</c>
         /// </remarks>
         /// <returns>Task which resolves to the added tag when the script's onload fires or when the script content was injected into frame</returns>
+        /// <seealso cref="Frame.AddScriptTag(AddTagOptions)"/>
         public Task<ElementHandle> AddScriptTagAsync(AddTagOptions options) => MainFrame.AddScriptTag(options);
 
         /// <summary>
@@ -497,6 +501,7 @@ namespace PuppeteerSharp
         /// Shortcut for <c>page.MainFrame.AddStyleTagAsync(options)</c>
         /// </remarks>
         /// <returns>Task which resolves to the added tag when the stylesheet's onload fires or when the CSS content was injected into frame</returns>
+        /// <seealso cref="Frame.AddStyleTag(AddTagOptions)"/>
         public Task<ElementHandle> AddStyleTagAsync(AddTagOptions options) => MainFrame.AddStyleTag(options);
 
         /// <summary>
@@ -612,13 +617,15 @@ namespace PuppeteerSharp
         /// Gets the full HTML contents of the page, including the doctype.
         /// </summary>
         /// <returns>Task which resolves to the HTML content.</returns>
+        /// <seealso cref="Frame.GetContentAsync"/>
         public Task<string> GetContentAsync() => _frameManager.MainFrame.GetContentAsync();
 
         /// <summary>
         /// Sets the HTML markup to the page
         /// </summary>
-        /// <returns>Task.</returns>
         /// <param name="html">HTML markup to assign to the page.</param>
+        /// <returns>Task.</returns>
+        /// <seealso cref="Frame.SetContentAsync(string)"/>
         public Task SetContentAsync(string html) => _frameManager.MainFrame.SetContentAsync(html);
 
         /// <summary>
@@ -946,6 +953,7 @@ namespace PuppeteerSharp
         /// Returns page's title
         /// </summary>
         /// <returns>page's title</returns>
+        /// <see cref="Frame.GetTitleAsync"/>
         public Task<string> GetTitleAsync() => MainFrame.GetTitleAsync();
 
         /// <summary>
@@ -1119,10 +1127,11 @@ namespace PuppeteerSharp
         /// If there's no <![CDATA[<select>]]> element matching selector, the method throws an error.
         /// </summary>
         /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
-        /// <returns>Returns an array of option values that have been successfully selected.</returns>
         /// <param name="selector">A selector to query page for</param>
         /// <param name="values">Values of options to select. If the <![CDATA[<select>]]> has the multiple attribute, 
         /// all values are considered, otherwise only the first one is taken into account.</param>
+        /// <returns>Returns an array of option values that have been successfully selected.</returns>
+        /// <seealso cref="Frame.SelectAsync(string, string[])"/>
         public Task<string[]> SelectAsync(string selector, params string[] values)
             => MainFrame.SelectAsync(selector, values);
 
@@ -1159,6 +1168,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="milliseconds"></param>
         /// <returns>A task that resolves when after the timeout</returns>
+        /// <seealso cref="Frame.WaitForTimeoutAsync(int)"/>
         public Task WaitForTimeoutAsync(int milliseconds)
             => MainFrame.WaitForTimeoutAsync(milliseconds);
 
@@ -1169,6 +1179,7 @@ namespace PuppeteerSharp
         /// <param name="options">Optional waiting parameters</param>
         /// <param name="args">Arguments to pass to <c>script</c></param>
         /// <returns>A task that resolves when the <c>script</c> returns a truthy value</returns>
+        /// <seealso cref="Frame.WaitForFunctionAsync(string, WaitForFunctionOptions, object[])"/>
         public Task<JSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options = null, params object[] args)
             => MainFrame.WaitForFunctionAsync(script, options ?? new WaitForFunctionOptions(), args);
 
