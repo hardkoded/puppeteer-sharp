@@ -47,6 +47,13 @@ namespace PuppeteerSharp
 
         internal List<WaitTask> WaitTasks { get; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Frame"/> class.
+        /// </summary>
+        /// <param name="client">The client</param>
+        /// <param name="page">The page containing the frame</param>
+        /// <param name="parentFrame">The parent frame</param>
+        /// <param name="frameId">The frameId</param>
         public Frame(Session client, Page page, Frame parentFrame, string frameId)
         {
             _client = client;
