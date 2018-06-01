@@ -8,11 +8,41 @@ using System.Linq;
 
 namespace PuppeteerSharp
 {
+    /// <summary>
+    /// Provides methods to interact with a single page frame in Chromium. One <see cref="Page"/> instance might have multiple <see cref="Frame"/> instances.
+    /// At every point of time, page exposes its current frame tree via the <see cref="Page.MainFrame"/> and <see cref="ChildFrames"/> properties.
+    /// 
+    /// <see cref="Frame"/> object's lifecycle is controlled by three events, dispatched on the page object
+    /// - <see cref="Page.FrameAttached"/> - fires when the frame gets attached to the page. A Frame can be attached to the page only once
+    /// - <see cref="Page.FrameNavigated"/> - fired when the frame commits navigation to a different URL
+    /// - <see cref="Page.FrameDetached"/> - fired when the frame gets detached from the page.  A Frame can be detached from the page only once
+    /// </summary>
+    /// <example>
+    /// An example of dumping frame tree
+    /// <code>
+    /// <![CDATA[
+    /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions(), Downloader.DefaultRevision);
+    /// var page = await browser.NewPageAsync();
+    /// await page.GoToAsync("https://www.google.com/chrome/browser/canary.html");
+    /// dumpFrameTree(page.MainFrame, string.Empty);
+    /// await browser.CloseAsync();
+    /// 
+    /// void dumpFrameTree(Frame frame, string indent)
+    /// {
+    ///     Console.WriteLine(indent + frame.Url);
+    ///     foreach (var child in frame.ChildFrames)
+    ///     {
+    ///         dumpFrameTree(child, indent + "  ");
+    ///     }
+    /// }
+    /// ]]>
+    /// </code>
+    /// </example>
     public class Frame
     {
-        private Session _client;
-        private Page _page;
-        private string _url = string.Empty;
+        private readonly Session _client;
+        private readonly Page _page;
+
         private TaskCompletionSource<ElementHandle> _documentCompletionSource;
 
         internal List<WaitTask> WaitTasks { get; }
