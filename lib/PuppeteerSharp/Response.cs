@@ -8,11 +8,11 @@ namespace PuppeteerSharp
 {
     public class Response
     {
-        private readonly Session _client;
+        private readonly CDPSession _client;
         //TODO: In puppeteer this is a buffer but as I don't know the real implementation yet
         //I will consider this a string
         
-        public Response(Session client, Request request, HttpStatusCode status, Dictionary<string, object> headers, SecurityDetails securityDetails)
+        public Response(CDPSession client, Request request, HttpStatusCode status, Dictionary<string, object> headers, SecurityDetails securityDetails)
         {
             _client = client;
             Request = request;

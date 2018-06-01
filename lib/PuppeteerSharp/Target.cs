@@ -44,7 +44,7 @@ namespace PuppeteerSharp
         {
             if (_targetInfo.Type == "page" && _pageTask == null)
             {
-                _pageTask = await _browser.Connection.CreateSession(_targetInfo.TargetId)
+                _pageTask = await _browser.Connection.CreateSessionAsync(_targetInfo.TargetId)
                     .ContinueWith(clientTask
                     => Page.CreateAsync(clientTask.Result, this, _browser.IgnoreHTTPSErrors, _browser.AppMode, _browser.ScreenshotTaskQueue));
             }
@@ -73,7 +73,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Creates a Chrome Devtools Protocol session attached to the target.
         /// </summary>
-        /// <returns>A task that returns a <see cref="Session"/></returns>
-        public Task<Session> CreateCDPSession() => _browser.Connection.CreateSession(TargetId);
+        /// <returns>A task that returns a <see cref="CDPSession"/></returns>
+        public Task<CDPSession> CreateCDPSessionAsync() => _browser.Connection.CreateSessionAsync(TargetId);
     }
 }

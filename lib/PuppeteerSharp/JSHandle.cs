@@ -9,9 +9,9 @@ namespace PuppeteerSharp
     public class JSHandle
     {
         private ExecutionContext _context;
-        protected readonly Session _client;
+        protected readonly CDPSession _client;
 
-        public JSHandle(ExecutionContext context, Session client, object remoteObject)
+        public JSHandle(ExecutionContext context, CDPSession client, object remoteObject)
         {
             _context = context;
             _client = client;

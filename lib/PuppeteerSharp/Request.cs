@@ -19,14 +19,14 @@ namespace PuppeteerSharp
     public class Request : Payload
     {
         #region Private Members
-        private readonly Session _client;
+        private readonly CDPSession _client;
 
         private bool _allowInterception;
         private bool _interceptionHandled;
 
         #endregion
 
-        public Request(Session client, string requestId, string interceptionId, bool allowInterception, string url,
+        public Request(CDPSession client, string requestId, string interceptionId, bool allowInterception, string url,
                       ResourceType resourceType, Payload payload, Frame frame)
         {
             _client = client;

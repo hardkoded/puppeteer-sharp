@@ -11,7 +11,7 @@ namespace PuppeteerSharp
     public class NetworkManager
     {
         #region Private members
-        private Session _client;
+        private CDPSession _client;
         private Dictionary<string, Request> _requestIdToRequest = new Dictionary<string, Request>();
         private Dictionary<string, Request> _interceptionIdToRequest = new Dictionary<string, Request>();
         private Dictionary<string, string> _extraHTTPHeaders;
@@ -26,7 +26,7 @@ namespace PuppeteerSharp
         private FrameManager _frameManager;
         #endregion
 
-        public NetworkManager(Session client, FrameManager frameManager)
+        public NetworkManager(CDPSession client, FrameManager frameManager)
         {
             _frameManager = frameManager;
             _client = client;

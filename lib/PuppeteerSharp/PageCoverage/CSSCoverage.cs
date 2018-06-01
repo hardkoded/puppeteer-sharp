@@ -7,14 +7,14 @@ namespace PuppeteerSharp.PageCoverage
 {
     internal class CSSCoverage
     {
-        private readonly Session _client;
+        private readonly CDPSession _client;
         private readonly Dictionary<string, string> _stylesheetURLs;
         private readonly Dictionary<string, string> _stylesheetSources;
 
         private bool _enabled;
         private bool _resetOnNavigation;
 
-        public CSSCoverage(Session client)
+        public CSSCoverage(CDPSession client)
         {
             _client = client;
             _enabled = false;

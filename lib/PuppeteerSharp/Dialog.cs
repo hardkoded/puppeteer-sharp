@@ -5,13 +5,13 @@ namespace PuppeteerSharp
 {
     public class Dialog
     {
-        private Session _client;
+        private CDPSession _client;
         
         public DialogType DialogType { get; set; }
         public string DefaultValue { get; set; }
         public string Message { get; set; }
 
-        public Dialog(Session client, DialogType type, string message, string defaultValue)
+        public Dialog(CDPSession client, DialogType type, string message, string defaultValue)
         {
             _client = client;
             DialogType = type;

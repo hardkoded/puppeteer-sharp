@@ -47,7 +47,7 @@ namespace PuppeteerSharp
             {"mm", 3.78m}
         };
 
-        private Page(Session client, Target target, FrameTree frameTree, bool ignoreHTTPSErrors, TaskQueue screenshotTaskQueue)
+        private Page(CDPSession client, Target target, FrameTree frameTree, bool ignoreHTTPSErrors, TaskQueue screenshotTaskQueue)
         {
             Client = client;
             Target = target;
@@ -77,7 +77,7 @@ namespace PuppeteerSharp
             Client.MessageReceived += client_MessageReceived;
         }
 
-        internal Session Client { get; }
+        internal CDPSession Client { get; }
 
         #region Public Properties
 
@@ -1239,7 +1239,7 @@ namespace PuppeteerSharp
 
         #region Private Method
 
-        internal static async Task<Page> CreateAsync(Session client, Target target, bool ignoreHTTPSErrors, bool appMode,
+        internal static async Task<Page> CreateAsync(CDPSession client, Target target, bool ignoreHTTPSErrors, bool appMode,
                                                    TaskQueue screenshotTaskQueue)
         {
             await client.SendAsync("Page.enable", null);
@@ -1640,7 +1640,7 @@ namespace PuppeteerSharp
                 })));
         }
 
-        private async Task Navigate(Session client, string url, string referrer)
+        private async Task Navigate(CDPSession client, string url, string referrer)
         {
             dynamic response = await client.SendAsync("Page.navigate", new
             {

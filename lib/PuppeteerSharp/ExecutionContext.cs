@@ -8,10 +8,10 @@ namespace PuppeteerSharp
 {
     public class ExecutionContext
     {
-        private readonly Session _client;
+        private readonly CDPSession _client;
         private readonly int _contextId;
 
-        public ExecutionContext(Session client, ContextPayload contextPayload, Func<dynamic, JSHandle> objectHandleFactory)
+        public ExecutionContext(CDPSession client, ContextPayload contextPayload, Func<dynamic, JSHandle> objectHandleFactory)
         {
             _client = client;
             _contextId = contextPayload.Id;

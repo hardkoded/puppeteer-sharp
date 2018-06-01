@@ -10,14 +10,14 @@ namespace PuppeteerSharp
 {
     public class Frame
     {
-        private Session _client;
+        private CDPSession _client;
         private Page _page;
         private string _url = string.Empty;
         private TaskCompletionSource<ElementHandle> _documentCompletionSource;
 
         internal List<WaitTask> WaitTasks { get; }
 
-        public Frame(Session client, Page page, Frame parentFrame, string frameId)
+        public Frame(CDPSession client, Page page, Frame parentFrame, string frameId)
         {
             _client = client;
             _page = page;

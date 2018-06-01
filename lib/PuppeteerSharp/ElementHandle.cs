@@ -12,7 +12,7 @@ namespace PuppeteerSharp
     {
         internal Page Page { get; }
 
-        public ElementHandle(ExecutionContext context, Session client, object remoteObject, Page page) :
+        public ElementHandle(ExecutionContext context, CDPSession client, object remoteObject, Page page) :
             base(context, client, remoteObject)
         {
             Page = page;

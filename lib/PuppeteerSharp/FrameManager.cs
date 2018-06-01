@@ -9,11 +9,11 @@ namespace PuppeteerSharp
 {
     public class FrameManager
     {
-        private Session _client;
+        private CDPSession _client;
         private Page _page;
         private Dictionary<int, ExecutionContext> _contextIdToContext;
 
-        public FrameManager(Session client, FrameTree frameTree, Page page)
+        public FrameManager(CDPSession client, FrameTree frameTree, Page page)
         {
             _client = client;
             _page = page;
