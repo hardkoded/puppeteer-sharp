@@ -1,15 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
 {
+    /// <summary>
+    /// Provides methods to interact with a browser in Chromium.
+    /// </summary>
+    /// <example>
+    /// An example of using a <see cref="Browser"/> to create a <see cref="Page"/>:
+    /// <code>
+    /// <![CDATA[
+    /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions(), Downloader.DefaultRevision);
+    /// var page = await browser.NewPageAsync();
+    /// await page.GoToAsync("https://example.com");
+    /// await browser.CloseAsync();
+    /// ]]>
+    /// </code>
+    /// An example of disconnecting from and reconnecting to a <see cref="Browser"/>:
+    /// <code>
+    /// <![CDATA[
+    /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions(), Downloader.DefaultRevision);
+    /// var browserWSEndpoint = browser.WebSocketEndpoint;
+    /// browser.Disconnect();
+    /// var browser2 = await Puppeteer.ConnectAsync(new ConnectOptions { BrowserWSEndpoint = browserWSEndpoint });
+    /// await browser2.CloseAsync();
+    /// ]]>
+    /// </code>
+    /// </example>
     public class Browser : IDisposable
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Browser"/> class.
+        /// </summary>
+        /// <param name="connection">The connection</param>
+        /// <param name="options">The browser options</param>
+        /// <param name="process">The chrome process</param>
+        /// <param name="closeCallBack">An async function called before closing</param>
         public Browser(Connection connection, IBrowserOptions options, Process process, Func<Task> closeCallBack)
         {
             Process = process;
@@ -26,18 +56,38 @@ namespace PuppeteerSharp
         }
 
         #region Private members
-        private Dictionary<string, Target> _targets;
-
+        private readonly Dictionary<string, Target> _targets;
+        private readonly Func<Task> _closeCallBack;
         #endregion
 
         #region Properties
 
+        /// <summary>
+        /// 
+        /// </summary>
         public event EventHandler Closed;
+
+        /// <summary>
+        /// Raised when puppeteer gets disconnected from the Chromium instance. This might happen because one of the following
+        /// - Chromium is closed or crashed
+        /// - <see cref="Disconnect"/> method was called
+        /// </summary>
         public event EventHandler Disconnected;
+
+        /// <summary>
+        /// Raised when the url of a target changes
+        /// </summary>
         public event EventHandler<TargetChangedArgs> TargetChanged;
+
+        /// <summary>
+        /// Raised when a target is created, for example when a new page is opened by <c>window.open</c> <see href="https://developer.mozilla.org/en-US/docs/Web/API/Window/open"/> or <see cref="NewPageAsync"/>.
+        /// </summary>
         public event EventHandler<TargetChangedArgs> TargetCreated;
-        public event EventHandler<TargetChangedArgs> TargetDestroyed;
-        private event Func<Task> _closeCallBack;
+
+        /// <summary>
+        /// Raised when a target is destroyed, for example when a page is closed
+        /// </summary>
+        public event EventHandler<TargetChangedArgs> TargetDestroyed;        
 
         /// <summary>
         /// Gets the Browser websocket url
@@ -55,8 +105,20 @@ namespace PuppeteerSharp
         /// Gets the spawned browser process. Returns <c>null</c> if the browser instance was created with <see cref="Puppeteer.ConnectAsync(ConnectOptions)"/> method.
         /// </summary>
         public Process Process { get; }
+
+        /// <summary>
+        /// Gets or Sets whether to ignore HTTPS errors during navigation
+        /// </summary>
         public bool IgnoreHTTPSErrors { get; set; }
+
+        /// <summary>
+        /// Gets or Sets whether to use appMode or not
+        /// </summary>
         public bool AppMode { get; set; }
+
+        /// <summary>
+        /// Gets a value indicating if the browser is closed
+        /// </summary>
         public bool IsClosed { get; internal set; }
 
         internal TaskQueue ScreenshotTaskQueue { get; set; }
@@ -66,13 +128,10 @@ namespace PuppeteerSharp
 
         #region Public Methods
 
-        public async Task Initialize()
-        {
-            dynamic args = new ExpandoObject();
-            args.discover = true;
-            await Connection.SendAsync("Target.setDiscoverTargets", args);
-        }
-
+        /// <summary>
+        /// Creates a new page
+        /// </summary>
+        /// <returns>Task which resolves to a new <see cref="Page"/> object</returns>
         public async Task<Page> NewPageAsync()
         {
             string targetId = (await Connection.SendAsync("Target.createTarget", new Dictionary<string, object>(){
@@ -96,15 +155,7 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to an array of all open pages.</returns>
         public async Task<Page[]> PagesAsync()
             => (await Task.WhenAll(Targets().Select(target => target.PageAsync()))).Where(x => x != null).ToArray();
-
-        internal void ChangeTarget(Target target)
-        {
-            TargetChanged?.Invoke(this, new TargetChangedArgs
-            {
-                Target = target
-            });
-        }
-
+        
         /// <summary>
         /// Gets the browser's version
         /// </summary>
@@ -165,7 +216,15 @@ namespace PuppeteerSharp
 
         #region Private Methods
 
-        public async void Connect_MessageReceived(object sender, MessageEventArgs args)
+        internal void ChangeTarget(Target target)
+        {
+            TargetChanged?.Invoke(this, new TargetChangedArgs
+            {
+                Target = target
+            });
+        }
+
+        private async void Connect_MessageReceived(object sender, MessageEventArgs args)
         {
             switch (args.MessageID)
             {
@@ -245,6 +304,7 @@ namespace PuppeteerSharp
         #endregion
 
         #region IDisposable
+        /// <inheritdoc />
         public void Dispose()
         {
             CloseAsync().GetAwaiter().GetResult();

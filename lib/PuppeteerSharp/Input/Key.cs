@@ -1,9 +1,12 @@
 ﻿namespace PuppeteerSharp.Input
 {
+    /// <summary>
+    /// Utility class to be used with <see cref="Keyboard"/> operations
+    /// </summary>
     public class Key
     {
-        public string Value { get; }
-        private Key(string value) => Value = value;
+        private readonly string _value;
+        private Key(string value) => _value = value;
 
         public static readonly Key Cancel = new Key("Cancel");
         public static readonly Key Help = new Key("Help");
@@ -107,7 +110,13 @@
         public static readonly Key Play = new Key("Play");
         public static readonly Key ZoomOut = new Key("ZoomOut");
 
-        public override string ToString() => Value;
-        public static implicit operator string(Key key) => key.Value;
+        /// <inheritdoc />
+        public override string ToString() => _value;
+
+        /// <summary>
+        /// Converts the <paramref name="key"/> to its underlining string value
+        /// </summary>
+        /// <param name="key">The key</param>
+        public static implicit operator string(Key key) => key._value;
     }
 }

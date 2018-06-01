@@ -3,11 +3,19 @@ using System.Threading.Tasks;
 
 namespace PuppeteerSharp.Input
 {
+    /// <summary>
+    /// Provides methods to interact with the touch screen
+    /// </summary>
     public class Touchscreen
     {
         private readonly Session _client;
         private readonly Keyboard _keyboard;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Touchscreen"/> class.
+        /// </summary>
+        /// <param name="client">The client</param>
+        /// <param name="keyboard">The keyboard</param>
         public Touchscreen(Session client, Keyboard keyboard)
         {
             _client = client;
@@ -20,6 +28,7 @@ namespace PuppeteerSharp.Input
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns>Task</returns>
+        /// <seealso cref="Page.TapAsync(string)"/>
         public async Task TapAsync(decimal x, decimal y)
         {
             // Touches appear to be lost during the first frame after navigation.
