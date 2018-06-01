@@ -1,12 +1,17 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.PuppeteerTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class PuppeteerConnectTests : PuppeteerBrowserBaseTest
     {
+        public PuppeteerConnectTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
         public async Task ShouldBeAbleToConnectMultipleTimesToSameBrowser()
         {
@@ -14,7 +19,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             {
                 BrowserWSEndpoint = Browser.WebSocketEndpoint
             };
-            var browser = await Puppeteer.ConnectAsync(options);
+            var browser = await Puppeteer.ConnectAsync(options, TestConstants.LoggerFactory);
             using (var page = await browser.NewPageAsync())
             {
                 var response = await page.EvaluateExpressionAsync<int>("7 * 8");
@@ -42,7 +47,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
 
             Browser.Disconnect();
 
-            using (var browser = await Puppeteer.ConnectAsync(options))
+            using (var browser = await Puppeteer.ConnectAsync(options, TestConstants.LoggerFactory))
             {
                 var pages = (await browser.PagesAsync()).ToList();
                 var restoredPage = pages.FirstOrDefault(x => x.Url == url);

@@ -1,11 +1,16 @@
 ﻿using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.ElementHandleTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class XPathTests : PuppeteerPageBaseTest
     {
+        public XPathTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
         public async Task ShouldQueryExistingElement()
         {

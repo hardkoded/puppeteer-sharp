@@ -47,6 +47,7 @@ namespace PuppeteerSharp
         /// Attaches Puppeteer to an existing Chromium instance. The browser will be closed when the Browser is disposed.
         /// </summary>
         /// <param name="options">Options for connecting.</param>
+        /// <param name="loggerFactory">The logger factory</param>
         /// <returns>A connected browser.</returns>
         public static Task<Browser> ConnectAsync(ConnectOptions options, ILoggerFactory loggerFactory = null)
             => new Launcher(loggerFactory).ConnectAsync(options);

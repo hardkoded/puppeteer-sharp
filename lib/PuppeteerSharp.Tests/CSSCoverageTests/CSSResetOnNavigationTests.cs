@@ -4,12 +4,17 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using PuppeteerSharp.PageCoverage;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.CSSCoverageTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class CSSResetOnNavigationTests : PuppeteerPageBaseTest
     {
+        public CSSResetOnNavigationTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
         public async Task ShouldReportStylesheetsAcrossNavigationsWhenDisabled()
         {

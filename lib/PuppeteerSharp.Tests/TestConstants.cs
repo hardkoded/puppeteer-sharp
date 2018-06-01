@@ -1,5 +1,8 @@
 ﻿using System;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Xunit;
 using PuppeteerSharp.Mobile;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests
 {
@@ -19,6 +22,8 @@ namespace PuppeteerSharp.Tests
         public static readonly DeviceDescriptor IPhone = DeviceDescriptors.Get(DeviceDescriptorName.IPhone6);
         public static readonly DeviceDescriptor IPhone6Landscape = DeviceDescriptors.Get(DeviceDescriptorName.IPhone6Landscape);
 
+        public static ILoggerFactory LoggerFactory { get; private set; }
+
         public static readonly string NestedFramesDumpResult = @"http://localhost:<PORT>/frames/nested-frames.html
     http://localhost:<PORT>/frames/two-frames.html
         http://localhost:<PORT>/frames/frame.html
@@ -34,5 +39,13 @@ namespace PuppeteerSharp.Tests
             KeepAliveInterval = 120,
             LogProcess = true
         };
+
+        public static void SetupLogging(ITestOutputHelper output)
+        {
+            if (LoggerFactory == null)
+            {
+                LoggerFactory = new LoggerFactory(new[] { new XunitLoggerProvider(output) });
+            }
+        }
     }
 }

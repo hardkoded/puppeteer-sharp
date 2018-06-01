@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
@@ -7,6 +8,10 @@ namespace PuppeteerSharp.Tests.PageTests
     public class SetContentTests : PuppeteerPageBaseTest
     {
         const string ExpectedOutput = "<html><head></head><body><div>hello</div></body></html>";
+
+        public SetContentTests(ITestOutputHelper output) : base(output)
+        {
+        }
 
         [Fact]
         public async Task ShouldWork()

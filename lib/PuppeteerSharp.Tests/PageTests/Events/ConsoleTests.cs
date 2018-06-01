@@ -2,12 +2,17 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.PageTests.Events
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class ConsoleTests : PuppeteerPageBaseTest
     {
+        public ConsoleTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
         public async Task ShouldWork()
         {

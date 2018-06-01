@@ -5,19 +5,22 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.PuppeteerTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class PuppeteerLaunchTests : PuppeteerBaseTest
     {
+        public PuppeteerLaunchTests(ITestOutputHelper output) : base(output) { }
+
         [Fact]
         public async Task ShouldSupportIgnoreHTTPSErrorsOption()
         {
             var options = TestConstants.DefaultBrowserOptions();
             options.IgnoreHTTPSErrors = true;
 
-            using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision))
+            using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision, TestConstants.LoggerFactory))
             using (var page = await browser.NewPageAsync())
             {
                 var response = await page.GoToAsync(TestConstants.HttpsPrefix + "/empty.html");
@@ -30,7 +33,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         {
             var options = TestConstants.DefaultBrowserOptions();
 
-            using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision))
+            using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision, TestConstants.LoggerFactory))
             using (var page = await browser.NewPageAsync())
             {
                 var response = await page.GoToAsync("https://www.google.com");
@@ -43,7 +46,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         {
             var options = TestConstants.DefaultBrowserOptions();
 
-            using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision))
+            using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision, TestConstants.LoggerFactory))
             using (var page = await browser.NewPageAsync())
             {
                 var response = await page.GoToAsync(
@@ -63,7 +66,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             var options = TestConstants.DefaultBrowserOptions();
             options.IgnoreHTTPSErrors = true;
 
-            using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision))
+            using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision, TestConstants.LoggerFactory))
             using (var page = await browser.NewPageAsync())
             {
                 var responses = new List<Response>();
@@ -82,7 +85,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         {
             using (var browser = await Puppeteer.LaunchAsync(
                 TestConstants.DefaultBrowserOptions(),
-                TestConstants.ChromiumRevision))
+                TestConstants.ChromiumRevision, TestConstants.LoggerFactory))
             using (var page = await browser.NewPageAsync())
             {
                 var neverResolves = page.EvaluateFunctionHandleAsync("() => new Promise(r => {})");
@@ -100,7 +103,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
 
             var exception = await Assert.ThrowsAsync<FileNotFoundException>(() =>
             {
-                return Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision);
+                return Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision, TestConstants.LoggerFactory);
             });
 
             Assert.Equal("Failed to launch chrome! path to executable does not exist", exception.Message);
@@ -110,7 +113,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         [Fact]
         public async Task UserDataDirOption()
         {
-            var launcher = new Launcher();
+            var launcher = new Launcher(TestConstants.LoggerFactory);
             var userDataDir = Launcher.GetTemporaryDirectory();
             var options = TestConstants.DefaultBrowserOptions();
             options.UserDataDir = userDataDir;
@@ -127,7 +130,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         [Fact]
         public async Task UserDataDirArgument()
         {
-            var launcher = new Launcher();
+            var launcher = new Launcher(TestConstants.LoggerFactory);
             var userDataDir = Launcher.GetTemporaryDirectory();
             var options = TestConstants.DefaultBrowserOptions();
             options.Args = options.Args.Concat(new[] { $"--user-data-dir={userDataDir}" }).ToArray();
@@ -149,14 +152,14 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             var options = TestConstants.DefaultBrowserOptions();
             options.Args = options.Args.Concat(new[] { $"--user-data-dir={userDataDir}" }).ToArray();
 
-            using (var browser = await launcher.LaunchAsync(options, TestConstants.ChromiumRevision))
+            using (var browser = await launcher.LaunchAsync(options, TestConstants.ChromiumRevision, TestConstants.LoggerFactory))
             {
                 var page = await browser.NewPageAsync();
                 await page.GoToAsync(TestConstants.EmptyPage);
                 await page.EvaluateExpressionAsync("localStorage.hey = 'hello'");
             }
 
-            using (var browser2 = await Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision))
+            using (var browser2 = await Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision, TestConstants.LoggerFactory))
             {
                 var page2 = await browser2.NewPageAsync();
                 await page2.GoToAsync(TestConstants.EmptyPage);
@@ -174,7 +177,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             var options = TestConstants.DefaultBrowserOptions();
             options.Args = options.Args.Concat(new[] { $"--user-data-dir={userDataDir}" }).ToArray();
 
-            using (var browser = await launcher.LaunchAsync(options, TestConstants.ChromiumRevision))
+            using (var browser = await launcher.LaunchAsync(options, TestConstants.ChromiumRevision, TestConstants.LoggerFactory))
             {
                 var page = await browser.NewPageAsync();
                 await page.GoToAsync(TestConstants.EmptyPage);
@@ -182,7 +185,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                     "document.cookie = 'doSomethingOnlyOnce=true; expires=Fri, 31 Dec 9999 23:59:59 GMT'");
             }
 
-            using (var browser2 = await Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision))
+            using (var browser2 = await Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision, TestConstants.LoggerFactory))
             {
                 var page2 = await browser2.NewPageAsync();
                 await page2.GoToAsync(TestConstants.EmptyPage);
@@ -195,7 +198,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         [Fact]
         public async Task HeadlessShouldBeAbleToReadCookiesWrittenByHeadful()
         {
-            var launcher = new Launcher();
+            var launcher = new Launcher(TestConstants.LoggerFactory);
             var userDataDir = Launcher.GetTemporaryDirectory();
             var options = TestConstants.DefaultBrowserOptions();
             options.Args = options.Args.Concat(new[] { $"--user-data-dir={userDataDir}" }).ToArray();
@@ -210,7 +213,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             }
 
             options.Headless = true;
-            using (var browser2 = await Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision))
+            using (var browser2 = await Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision, TestConstants.LoggerFactory))
             {
                 var page2 = await browser2.NewPageAsync();
                 await page2.GoToAsync(TestConstants.EmptyPage);
@@ -231,7 +234,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         public async Task ChromeShouldBeClosed()
         {
             var options = TestConstants.DefaultBrowserOptions();
-            var launcher = new Launcher();
+            var launcher = new Launcher(TestConstants.LoggerFactory);
 
             using (var browser = await launcher.LaunchAsync(options, TestConstants.ChromiumRevision))
             using (var page = await browser.NewPageAsync())
@@ -249,7 +252,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         public async Task ChromeShouldBeClosedOnDispose()
         {
             var options = TestConstants.DefaultBrowserOptions();
-            var launcher = new Launcher();
+            var launcher = new Launcher(TestConstants.LoggerFactory);
 
             using (var browser = await launcher.LaunchAsync(options, TestConstants.ChromiumRevision))
             using (var page = await browser.NewPageAsync())
@@ -264,7 +267,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         [Fact]
         public async Task ShouldNotOpenTwoChromesUsingTheSameLauncher()
         {
-            var launcher = new Launcher();
+            var launcher = new Launcher(TestConstants.LoggerFactory);
             using (var browser = await launcher.LaunchAsync(
                 TestConstants.DefaultBrowserOptions(),
                 TestConstants.ChromiumRevision))
