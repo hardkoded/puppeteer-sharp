@@ -19,14 +19,7 @@ namespace PuppeteerSharp
     {
         private readonly ILogger _logger;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PuppeteerSharp.Connection"/> class.
-        /// </summary>
-        /// <param name="url">WebSocket URL</param>
-        /// <param name="delay">Sleep time when a message is received.</param>
-        /// <param name="ws">Ws.</param>
-        /// <param name="loggerFactory">Logger factory.</param>
-        public Connection(string url, int delay, ClientWebSocket ws, ILoggerFactory loggerFactory = null)
+        internal Connection(string url, int delay, ClientWebSocket ws, ILoggerFactory loggerFactory = null)
         {
             LoggerFactory = loggerFactory ?? new LoggerFactory();
             Url = url;
