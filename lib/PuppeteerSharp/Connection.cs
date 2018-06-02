@@ -12,11 +12,14 @@ using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
 {
+    /// <summary>
+    /// A connection handles the communication with a Chromium browser
+    /// </summary>
     public class Connection : IDisposable
     {
         private readonly ILogger _logger;
 
-        public Connection(string url, int delay, ClientWebSocket ws, ILoggerFactory loggerFactory = null)
+        internal Connection(string url, int delay, ClientWebSocket ws, ILoggerFactory loggerFactory = null)
         {
             LoggerFactory = loggerFactory ?? new LoggerFactory();
             Url = url;
@@ -46,11 +49,33 @@ namespace PuppeteerSharp
         #endregion
 
         #region Properties
-        public string Url { get; set; }
-        public int Delay { get; set; }
-        public WebSocket WebSocket { get; set; }
+        /// <summary>
+        /// Gets the WebSocket URL.
+        /// </summary>
+        /// <value>The URL.</value>
+        public string Url { get; private set; }
+        /// <summary>
+        /// Gets the sleep time when a message is received.
+        /// </summary>
+        /// <value>The delay.</value>
+        public int Delay { get; private set; }
+        /// <summary>
+        /// Gets the WebSocket.
+        /// </summary>
+        /// <value>The web socket.</value>
+        public WebSocket WebSocket { get; private set; }
+        /// <summary>
+        /// Occurs when the connection is closed.
+        /// </summary>
         public event EventHandler Closed;
+        /// <summary>
+        /// Occurs when a message from chromium is received.
+        /// </summary>
         public event EventHandler<MessageEventArgs> MessageReceived;
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="PuppeteerSharp.Connection"/> is closed.
+        /// </summary>
+        /// <value><c>true</c> if is closed; otherwise, <c>false</c>.</value>
         public bool IsClosed { get; internal set; }
 
         internal ILoggerFactory LoggerFactory { get; }
@@ -59,7 +84,7 @@ namespace PuppeteerSharp
 
         #region Public Methods
 
-        public async Task<dynamic> SendAsync(string method, dynamic args = null)
+        internal async Task<dynamic> SendAsync(string method, dynamic args = null)
         {
             var id = ++_lastId;
             var message = JsonConvert.SerializeObject(new Dictionary<string, object>(){
@@ -88,7 +113,7 @@ namespace PuppeteerSharp
             return await _responses[id].TaskWrapper.Task;
         }
 
-        public async Task<Session> CreateSession(string targetId)
+        internal async Task<Session> CreateSession(string targetId)
         {
             string sessionId = (await SendAsync("Target.attachToTarget", new { targetId })).sessionId;
             var session = new Session(this, targetId, sessionId);
@@ -244,7 +269,7 @@ namespace PuppeteerSharp
         #endregion
         #region Static Methods
 
-        public static async Task<Connection> Create(string url, int delay = 0, int keepAliveInterval = 60, ILoggerFactory loggerFactory = null)
+        internal static async Task<Connection> Create(string url, int delay = 0, int keepAliveInterval = 60, ILoggerFactory loggerFactory = null)
         {
             var ws = new ClientWebSocket();
             ws.Options.KeepAliveInterval = new TimeSpan(0, 0, keepAliveInterval);
@@ -252,6 +277,15 @@ namespace PuppeteerSharp
             return new Connection(url, delay, ws, loggerFactory);
         }
 
+        /// <summary>
+        /// Releases all resource used by the <see cref="PuppeteerSharp.Connection"/> object.
+        /// It will raise the <see cref="Closed"/> event and call <see cref="WebSocket.CloseAsync(WebSocketCloseStatus, string, CancellationToken)"/>.
+        /// </summary>
+        /// <remarks>Call <see cref="Dispose"/> when you are finished using the <see cref="PuppeteerSharp.Connection"/>. The
+        /// <see cref="Dispose"/> method leaves the <see cref="T:PuppeteerSharp.Connection"/> in an unusable state.
+        /// After calling <see cref="Dispose"/>, you must release all references to the
+        /// <see cref="PuppeteerSharp.Connection"/> so the garbage collector can reclaim the memory that the
+        /// <see cref="PuppeteerSharp.Connection"/> was occupying.</remarks>
         public void Dispose()
         {
             OnClose();
