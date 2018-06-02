@@ -58,7 +58,7 @@ namespace PuppeteerSharp
             Touchscreen = new Touchscreen(client, Keyboard);
             Tracing = new Tracing(client);
             Coverage = new Coverage(client);
-            
+
             _frameManager = new FrameManager(client, frameTree, this);
             _networkManager = new NetworkManager(client, _frameManager);
             _emulationManager = new EmulationManager(client);
@@ -1514,7 +1514,7 @@ namespace PuppeteerSharp
                         {"action", "continue"}
                     });
                 }
-                catch(PuppeteerException ex)
+                catch (PuppeteerException ex)
                 {
                     _logger.LogError(ex.ToString());
                 }

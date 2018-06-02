@@ -27,7 +27,7 @@ namespace PuppeteerSharp
 
         #region Properties
         public string TargetId { get; }
-        public string SessionId { get; private set; }
+        public string SessionId { get; }
         public Connection Connection { get; private set; }
         public event EventHandler<MessageEventArgs> MessageReceived;
         public event EventHandler<TracingCompleteEventArgs> TracingComplete;

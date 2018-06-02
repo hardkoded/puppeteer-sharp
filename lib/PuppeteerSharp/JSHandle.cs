@@ -24,7 +24,7 @@ namespace PuppeteerSharp
         /// Gets the execution context.
         /// </summary>
         /// <value>The execution context.</value>
-        public ExecutionContext ExecutionContext { get; private set; }
+        public ExecutionContext ExecutionContext { get; }
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="PuppeteerSharp.JSHandle"/> is disposed.
         /// </summary>
@@ -39,12 +39,12 @@ namespace PuppeteerSharp
         /// Gets the client.
         /// </summary>
         /// <value>The client.</value>
-        protected Session Client { get; private set; }
+        protected Session Client { get; }
         /// <summary>
         /// Gets the logger.
         /// </summary>
         /// <value>The logger.</value>
-        protected ILogger Logger { get; private set; }
+        protected ILogger Logger { get; }
 
         /// <summary>
         /// Fetches a single property from the referenced object
