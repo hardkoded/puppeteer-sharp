@@ -29,12 +29,12 @@ namespace PuppeteerSharp
         /// Gets or sets a value indicating whether this <see cref="PuppeteerSharp.JSHandle"/> is disposed.
         /// </summary>
         /// <value><c>true</c> if disposed; otherwise, <c>false</c>.</value>
-        public bool Disposed { get; set; }
+        public bool Disposed { get; private set; }
         /// <summary>
         /// Gets or sets the remote object.
         /// </summary>
         /// <value>The remote object.</value>
-        public dynamic RemoteObject { get; internal set; }
+        public dynamic RemoteObject { get; }
         /// <summary>
         /// Gets the client.
         /// </summary>
