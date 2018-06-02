@@ -2,12 +2,17 @@
 using System.Threading.Tasks;
 using Xunit;
 using System.Linq;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.FrameTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class FrameManagementTests : PuppeteerPageBaseTest
     {
+        public FrameManagementTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
         public async Task ShouldHandleNestedFrames()
         {

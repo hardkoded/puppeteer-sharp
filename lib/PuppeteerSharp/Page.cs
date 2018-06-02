@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
@@ -39,6 +40,7 @@ namespace PuppeteerSharp
         private readonly TaskQueue _screenshotTaskQueue;
         private readonly EmulationManager _emulationManager;
         private readonly Dictionary<string, Delegate> _pageBindings;
+        private readonly ILogger _logger;
 
         private static readonly Dictionary<string, decimal> _unitToPixels = new Dictionary<string, decimal> {
             {"px", 1},
@@ -54,14 +56,16 @@ namespace PuppeteerSharp
             Keyboard = new Keyboard(client);
             Mouse = new Mouse(client, Keyboard);
             Touchscreen = new Touchscreen(client, Keyboard);
+            Tracing = new Tracing(client);
+            Coverage = new Coverage(client);
+            
             _frameManager = new FrameManager(client, frameTree, this);
             _networkManager = new NetworkManager(client, _frameManager);
             _emulationManager = new EmulationManager(client);
-            Tracing = new Tracing(client);
             _pageBindings = new Dictionary<string, Delegate>();
+            _logger = Client.Connection.LoggerFactory.CreateLogger<Page>();
 
             _ignoreHTTPSErrors = ignoreHTTPSErrors;
-            Coverage = new Coverage(client);
 
             _screenshotTaskQueue = screenshotTaskQueue;
 
@@ -1502,12 +1506,18 @@ namespace PuppeteerSharp
         {
             if (_ignoreHTTPSErrors)
             {
-                //TODO: Puppeteer is silencing an error here, I don't know if that's necessary here
-                await Client.SendAsync("Security.handleCertificateError", new Dictionary<string, object>
+                try
                 {
-                    {"eventId", e.MessageData.eventId },
-                    {"action", "continue"}
-                });
+                    await Client.SendAsync("Security.handleCertificateError", new Dictionary<string, object>
+                    {
+                        {"eventId", e.MessageData.eventId },
+                        {"action", "continue"}
+                    });
+                }
+                catch(PuppeteerException ex)
+                {
+                    _logger.LogError(ex.ToString());
+                }
             }
         }
 
@@ -1575,7 +1585,7 @@ namespace PuppeteerSharp
                     {
                         if (task.IsFaulted)
                         {
-                            System.Console.WriteLine(task.Exception);
+                            _logger.LogError(task.Exception.ToString());
                         }
                     });
                 return;
@@ -1585,7 +1595,7 @@ namespace PuppeteerSharp
             {
                 foreach (var arg in message.Args)
                 {
-                    await RemoteObjectHelper.ReleaseObject(Client, arg);
+                    await RemoteObjectHelper.ReleaseObject(Client, arg, _logger);
                 }
 
                 return;
@@ -1635,7 +1645,7 @@ namespace PuppeteerSharp
                 {
                     if (task.IsFaulted)
                     {
-                        System.Console.WriteLine(task.Exception);
+                        _logger.LogError(task.Exception.ToString());
                     }
                 })));
         }

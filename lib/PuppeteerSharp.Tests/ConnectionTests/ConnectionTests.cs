@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.ConnectionsTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class ConnectionTests : PuppeteerPageBaseTest
     {
+        public ConnectionTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
         public async Task ShouldThrowNiceErrors()
         {

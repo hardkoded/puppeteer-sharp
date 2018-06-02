@@ -2,12 +2,17 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class EvaluateTests : PuppeteerPageBaseTest
     {
+        public EvaluateTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Theory]
         [InlineData("1 + 5;", 6)] //ShouldAcceptSemiColons
         [InlineData("2 + 5\n// do some math!'", 7)] //ShouldAceptStringComments

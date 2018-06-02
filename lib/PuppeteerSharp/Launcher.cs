@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Collections;
+using Microsoft.Extensions.Logging;
 
 namespace PuppeteerSharp
 {
@@ -43,6 +44,8 @@ namespace PuppeteerSharp
 
         #region Private members
         private static int _processCount;
+        private readonly ILoggerFactory _loggerFactory;
+        private readonly ILogger _logger;
         private Process _chromeProcess;
         private string _temporaryUserDataDir;
         private Connection _connection;
@@ -64,8 +67,12 @@ namespace PuppeteerSharp
         /// <summary>
         /// Initializes a new instance of the <see cref="PuppeteerSharp.Launcher"/> class.
         /// </summary>
-        public Launcher()
+        /// <param name="loggerFactory">Logger factory.</param>
+        public Launcher(ILoggerFactory loggerFactory = null)
+
         {
+            _loggerFactory = loggerFactory ?? new LoggerFactory();
+            _logger = _loggerFactory.CreateLogger<Launcher>();
             _waitForChromeToClose = new TaskCompletionSource<bool>();
         }
 
@@ -110,12 +117,12 @@ namespace PuppeteerSharp
                 var browserWSEndpoint = await WaitForEndpoint(_chromeProcess, options.Timeout, options.DumpIO);
                 var keepAliveInterval = options.KeepAliveInterval;
 
-                _connection = await Connection.Create(browserWSEndpoint, connectionDelay, keepAliveInterval);
+                _connection = await Connection.Create(browserWSEndpoint, connectionDelay, keepAliveInterval, _loggerFactory);
                 _processLoaded = true;
 
                 if (options.LogProcess)
                 {
-                    Console.WriteLine($"PROCESS COUNT: {Interlocked.Increment(ref _processCount)}");
+                    _logger.LogInformation("Process Count: {ProcessCount}", Interlocked.Increment(ref _processCount));
                 }
 
                 return await Browser.CreateAsync(_connection, options, _chromeProcess, KillChrome);
@@ -125,87 +132,6 @@ namespace PuppeteerSharp
                 ForceKillChrome();
                 throw new ChromeProcessException("Failed to create connection", ex);
             }
-        }
-
-        private void CreateChromeProcess(LaunchOptions options, List<string> chromeArguments, string chromeExecutable)
-        {
-            _chromeProcess = new Process
-            {
-                EnableRaisingEvents = true
-            };
-            _chromeProcess.StartInfo.UseShellExecute = false;
-            _chromeProcess.StartInfo.FileName = chromeExecutable;
-            _chromeProcess.StartInfo.Arguments = string.Join(" ", chromeArguments);
-
-            SetEnvVariables(_chromeProcess.StartInfo.Environment, options.Env, Environment.GetEnvironmentVariables());
-
-            if (!options.DumpIO)
-            {
-                _chromeProcess.StartInfo.RedirectStandardOutput = false;
-                _chromeProcess.StartInfo.RedirectStandardError = false;
-            }
-
-            _chromeProcess.Exited += async (sender, e) =>
-            {
-                await AfterProcessExit();
-            };
-        }
-
-        private List<string> InitChromeArgument(LaunchOptions options)
-        {
-            var chromeArguments = new List<string>(DefaultArgs);
-
-            _options = options;
-
-            if (options.AppMode)
-            {
-                options.Headless = false;
-            }
-            else
-            {
-                chromeArguments.AddRange(AutomationArgs);
-            }
-
-            var userDataDirOption = options.Args.FirstOrDefault(i => i.StartsWith(UserDataDirArgument, StringComparison.Ordinal));
-            if (string.IsNullOrEmpty(userDataDirOption))
-            {
-                if (string.IsNullOrEmpty(options.UserDataDir))
-                {
-                    _temporaryUserDataDir = GetTemporaryDirectory();
-                    chromeArguments.Add($"{UserDataDirArgument}={_temporaryUserDataDir}");
-                }
-                else
-                {
-                    chromeArguments.Add($"{UserDataDirArgument}={options.UserDataDir}");
-                }
-            }
-            else
-            {
-                _options.UserDataDir = userDataDirOption.Replace($"{UserDataDirArgument}=", string.Empty);
-            }
-
-            if (options.Devtools)
-            {
-                chromeArguments.Add("--auto-open-devtools-for-tabs");
-                options.Headless = false;
-            }
-
-            if (options.Headless)
-            {
-                chromeArguments.AddRange(new[]{
-                    "--headless",
-                    "--disable-gpu",
-                    "--hide-scrollbars",
-                    "--mute-audio"
-                });
-            }
-
-            if (options.Args.Any())
-            {
-                chromeArguments.AddRange(options.Args);
-            }
-
-            return chromeArguments;
         }
 
         /// <summary>
@@ -226,7 +152,7 @@ namespace PuppeteerSharp
                 var connectionDelay = options.SlowMo;
                 var keepAliveInterval = options.KeepAliveInterval;
 
-                _connection = await Connection.Create(options.BrowserWSEndpoint, connectionDelay, keepAliveInterval);
+                _connection = await Connection.Create(options.BrowserWSEndpoint, connectionDelay, keepAliveInterval, _loggerFactory);
 
                 return await Browser.CreateAsync(_connection, options, null, () =>
                 {
@@ -311,6 +237,85 @@ namespace PuppeteerSharp
 
         #region Private methods
 
+        private void CreateChromeProcess(LaunchOptions options, List<string> chromeArguments, string chromeExecutable)
+        {
+            _chromeProcess = new Process();
+            _chromeProcess.EnableRaisingEvents = true;
+            _chromeProcess.StartInfo.UseShellExecute = false;
+            _chromeProcess.StartInfo.FileName = chromeExecutable;
+            _chromeProcess.StartInfo.Arguments = string.Join(" ", chromeArguments);
+
+            SetEnvVariables(_chromeProcess.StartInfo.Environment, options.Env, Environment.GetEnvironmentVariables());
+
+            if (!options.DumpIO)
+            {
+                _chromeProcess.StartInfo.RedirectStandardOutput = false;
+                _chromeProcess.StartInfo.RedirectStandardError = false;
+            }
+
+            _chromeProcess.Exited += async (sender, e) =>
+            {
+                await AfterProcessExit();
+            };
+        }
+
+        private List<string> InitChromeArgument(LaunchOptions options)
+        {
+            var chromeArguments = new List<string>(DefaultArgs);
+
+            _options = options;
+
+            if (options.AppMode)
+            {
+                options.Headless = false;
+            }
+            else
+            {
+                chromeArguments.AddRange(AutomationArgs);
+            }
+
+            var userDataDirOption = options.Args.FirstOrDefault(i => i.StartsWith(UserDataDirArgument, StringComparison.Ordinal));
+            if (string.IsNullOrEmpty(userDataDirOption))
+            {
+                if (string.IsNullOrEmpty(options.UserDataDir))
+                {
+                    _temporaryUserDataDir = GetTemporaryDirectory();
+                    chromeArguments.Add($"{UserDataDirArgument}={_temporaryUserDataDir}");
+                }
+                else
+                {
+                    chromeArguments.Add($"{UserDataDirArgument}={options.UserDataDir}");
+                }
+            }
+            else
+            {
+                _options.UserDataDir = userDataDirOption.Replace($"{UserDataDirArgument}=", string.Empty);
+            }
+
+            if (options.Devtools)
+            {
+                chromeArguments.Add("--auto-open-devtools-for-tabs");
+                options.Headless = false;
+            }
+
+            if (options.Headless)
+            {
+                chromeArguments.AddRange(new[]{
+                    "--headless",
+                    "--disable-gpu",
+                    "--hide-scrollbars",
+                    "--mute-audio"
+                });
+            }
+
+            if (options.Args.Any())
+            {
+                chromeArguments.AddRange(options.Args);
+            }
+
+            return chromeArguments;
+        }
+
         private Task<string> WaitForEndpoint(Process chromeProcess, int timeout, bool dumpio)
         {
             var taskWrapper = new TaskCompletionSource<string>();
@@ -323,7 +328,7 @@ namespace PuppeteerSharp
             {
                 if (_options.LogProcess && !_processLoaded)
                 {
-                    Console.WriteLine($"PROCESS COUNT: {Interlocked.Increment(ref _processCount)}");
+                    _logger.LogInformation("Process Count: {ProcessCount}", Interlocked.Increment(ref _processCount));
                 }
 
                 CleanUp();
@@ -391,7 +396,7 @@ namespace PuppeteerSharp
 
             if (_options.LogProcess)
             {
-                Console.WriteLine($"PROCESS COUNT: {Interlocked.Decrement(ref _processCount)}");
+                _logger.LogInformation("Process Count: {ProcessCount}", Interlocked.Decrement(ref _processCount));
             }
 
             IsChromeClosed = true;

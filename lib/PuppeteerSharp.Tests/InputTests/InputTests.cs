@@ -3,6 +3,7 @@ using PuppeteerSharp.Input;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.InputTests
 {
@@ -19,6 +20,10 @@ namespace PuppeteerSharp.Tests.InputTests
                 height: rect.height
             };
         }";
+
+        public InputTests(ITestOutputHelper output) : base(output)
+        {
+        }
 
         [Fact]
         public async Task ShouldClickTheButton()

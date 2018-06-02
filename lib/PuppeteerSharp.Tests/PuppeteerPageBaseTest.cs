@@ -1,9 +1,14 @@
 ﻿using System.Threading.Tasks;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests
 {
     public class PuppeteerPageBaseTest : PuppeteerBrowserBaseTest
     {
+        public PuppeteerPageBaseTest(ITestOutputHelper output) : base(output)
+        {
+        }
+
         protected Page Page { get; set; }
 
         protected override async Task InitializeAsync()

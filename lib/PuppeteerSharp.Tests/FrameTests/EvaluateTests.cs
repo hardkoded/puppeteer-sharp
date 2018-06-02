@@ -1,12 +1,17 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.FrameTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class EvaluateTests : PuppeteerPageBaseTest
     {
+        public EvaluateTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
         public async Task ShouldHaveDifferentExecutionContexts()
         {

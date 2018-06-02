@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
 using System;
 using System.Collections.Generic;
@@ -10,11 +11,13 @@ namespace PuppeteerSharp
     {
         private ExecutionContext _context;
         protected readonly Session _client;
+        protected readonly ILogger _logger;
 
         public JSHandle(ExecutionContext context, Session client, object remoteObject)
         {
             _context = context;
             _client = client;
+            _logger = _client.Connection.LoggerFactory.CreateLogger(this.GetType());
             RemoteObject = remoteObject;
         }
 
@@ -112,7 +115,7 @@ namespace PuppeteerSharp
             }
 
             Disposed = true;
-            await RemoteObjectHelper.ReleaseObject(_client, RemoteObject);
+            await RemoteObjectHelper.ReleaseObject(_client, RemoteObject, _logger);
         }
 
         public override string ToString()

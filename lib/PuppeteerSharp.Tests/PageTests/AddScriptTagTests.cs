@@ -2,12 +2,17 @@
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class AddScriptTagTests : PuppeteerPageBaseTest
     {
+        public AddScriptTagTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
         public async Task ShouldThrowAnErrorIfNoOptionsAreProvided()
         {
