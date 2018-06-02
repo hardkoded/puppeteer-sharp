@@ -7,23 +7,44 @@ using System.Threading.Tasks;
 
 namespace PuppeteerSharp
 {
+    /// <summary>
+    /// JSHandle represents an in-page JavaScript object. JSHandles can be created with the <see cref="Page.EvaluateExpressionHandleAsync(string)"/> and <see cref="Page.EvaluateFunctionHandleAsync(string, object[])"/> methods.
+    /// </summary>
     public class JSHandle
     {
-        private ExecutionContext _context;
-        protected readonly Session _client;
-        protected readonly ILogger _logger;
-
-        public JSHandle(ExecutionContext context, Session client, object remoteObject)
+        internal JSHandle(ExecutionContext context, Session client, object remoteObject)
         {
-            _context = context;
-            _client = client;
-            _logger = _client.Connection.LoggerFactory.CreateLogger(this.GetType());
+            ExecutionContext = context;
+            Client = client;
+            Logger = Client.Connection.LoggerFactory.CreateLogger(this.GetType());
             RemoteObject = remoteObject;
         }
 
-        public ExecutionContext ExecutionContext => _context;
-        public bool Disposed { get; set; }
-        public dynamic RemoteObject { get; internal set; }
+        /// <summary>
+        /// Gets the execution context.
+        /// </summary>
+        /// <value>The execution context.</value>
+        public ExecutionContext ExecutionContext { get; }
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="PuppeteerSharp.JSHandle"/> is disposed.
+        /// </summary>
+        /// <value><c>true</c> if disposed; otherwise, <c>false</c>.</value>
+        public bool Disposed { get; private set; }
+        /// <summary>
+        /// Gets or sets the remote object.
+        /// </summary>
+        /// <value>The remote object.</value>
+        public dynamic RemoteObject { get; }
+        /// <summary>
+        /// Gets the client.
+        /// </summary>
+        /// <value>The client.</value>
+        protected Session Client { get; }
+        /// <summary>
+        /// Gets the logger.
+        /// </summary>
+        /// <value>The logger.</value>
+        protected ILogger Logger { get; }
 
         /// <summary>
         /// Fetches a single property from the referenced object
@@ -58,7 +79,7 @@ namespace PuppeteerSharp
         /// </example>
         public async Task<Dictionary<string, JSHandle>> GetPropertiesAsync()
         {
-            var response = await _client.SendAsync("Runtime.getProperties", new
+            var response = await Client.SendAsync("Runtime.getProperties", new
             {
                 objectId = RemoteObject.objectId.ToString(),
                 ownProperties = true
@@ -67,8 +88,11 @@ namespace PuppeteerSharp
             foreach (var property in response.result)
             {
                 if (property.enumerable == null)
+                {
                     continue;
-                result.Add(property.name.ToString(), _context.ObjectHandleFactory(property.value));
+                }
+
+                result.Add(property.name.ToString(), ExecutionContext.ObjectHandleFactory(property.value));
             }
             return result;
         }
@@ -94,12 +118,12 @@ namespace PuppeteerSharp
         {
             if (RemoteObject.objectId != null)
             {
-                dynamic response = await _client.SendAsync("Runtime.callFunctionOn", new Dictionary<string, object>()
+                dynamic response = await Client.SendAsync("Runtime.callFunctionOn", new Dictionary<string, object>
                 {
-                    {"functionDeclaration", "function() { return this; }"},
-                    {"objectId", RemoteObject.objectId},
-                    {"returnByValue", true},
-                    {"awaitPromise", true}
+                    ["functionDeclaration"] = "function() { return this; }",
+                    ["objectId"] = RemoteObject.objectId,
+                    ["returnByValue"] = true,
+                    ["awaitPromise"] = true
                 });
                 return (T)RemoteObjectHelper.ValueFromRemoteObject<T>(response.result);
             }
@@ -107,6 +131,10 @@ namespace PuppeteerSharp
             return (T)RemoteObjectHelper.ValueFromRemoteObject<T>(RemoteObject);
         }
 
+        /// <summary>
+        /// Disposes the Handle. It will mark the JSHandle as disposed and release the <see cref="JSHandle.RemoteObject"/>
+        /// </summary>
+        /// <returns>The async.</returns>
         public async Task DisposeAsync()
         {
             if (Disposed)
@@ -115,9 +143,10 @@ namespace PuppeteerSharp
             }
 
             Disposed = true;
-            await RemoteObjectHelper.ReleaseObject(_client, RemoteObject, _logger);
+            await RemoteObjectHelper.ReleaseObject(Client, RemoteObject, Logger);
         }
 
+        /// <inheritdoc/>
         public override string ToString()
         {
             if (((JObject)RemoteObject)["objectId"] != null)
@@ -132,13 +161,25 @@ namespace PuppeteerSharp
         internal object FormatArgument(ExecutionContext context)
         {
             if (ExecutionContext != context)
+            {
                 throw new PuppeteerException("JSHandles can be evaluated only in the context they were created!");
+            }
+
             if (Disposed)
+            {
                 throw new PuppeteerException("JSHandle is disposed!");
+            }
+
             if (RemoteObject.unserializableValue != null)
+            {
                 return new { RemoteObject.unserializableValue };
+            }
+
             if (RemoteObject.objectId == null)
+            {
                 return new { RemoteObject.value };
+            }
+
             return new { RemoteObject.objectId };
         }
     }
