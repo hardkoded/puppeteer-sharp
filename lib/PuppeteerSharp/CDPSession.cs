@@ -184,11 +184,11 @@ namespace PuppeteerSharp
         /// Releases all resource used by the <see cref="T:PuppeteerSharp.CDPSession"/> object by sending a ""Target.closeTarget"
         /// using the <see cref="Connection.SendAsync(string, dynamic)"/> method.
         /// </summary>
-        /// <remarks>Call <see cref="Dispose"/> when you are finished using the <see cref="T:PuppeteerSharp.CDPSession"/>. The
-        /// <see cref="Dispose"/> method leaves the <see cref="T:PuppeteerSharp.CDPSession"/> in an unusable state.
+        /// <remarks>Call <see cref="Dispose"/> when you are finished using the <see cref="PuppeteerSharp.CDPSession"/>. The
+        /// <see cref="Dispose"/> method leaves the <see cref="PuppeteerSharp.CDPSession"/> in an unusable state.
         /// After calling <see cref="Dispose"/>, you must release all references to the
-        /// <see cref="T:PuppeteerSharp.CDPSession"/> so the garbage collector can reclaim the memory that the
-        /// <see cref="T:PuppeteerSharp.CDPSession"/> was occupying.</remarks>
+        /// <see cref="PuppeteerSharp.CDPSession"/> so the garbage collector can reclaim the memory that the
+        /// <see cref="PuppeteerSharp.CDPSession"/> was occupying.</remarks>
         public void Dispose()
         {
             Connection.SendAsync("Target.closeTarget", new Dictionary<string, object>
