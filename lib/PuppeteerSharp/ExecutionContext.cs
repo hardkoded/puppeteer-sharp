@@ -6,12 +6,17 @@ using Newtonsoft.Json.Linq;
 
 namespace PuppeteerSharp
 {
+    /// <summary>
+    /// The class represents a context for JavaScript execution. Examples of JavaScript contexts are:
+    /// Each <see cref="Frame"/> has a separate <see cref="ExecutionContext"/>
+    /// All kind of web workers have their own contexts
+    /// </summary>
     public class ExecutionContext
     {
         private readonly Session _client;
         private readonly int _contextId;
 
-        public ExecutionContext(Session client, ContextPayload contextPayload, Func<dynamic, JSHandle> objectHandleFactory)
+        internal ExecutionContext(Session client, ContextPayload contextPayload, Func<dynamic, JSHandle> objectHandleFactory)
         {
             _client = client;
             _contextId = contextPayload.Id;
@@ -20,8 +25,17 @@ namespace PuppeteerSharp
             ObjectHandleFactory = objectHandleFactory;
         }
 
-        public Func<dynamic, JSHandle> ObjectHandleFactory { get; internal set; }
+        internal Func<dynamic, JSHandle> ObjectHandleFactory { get; set; }
+        /// <summary>
+        /// Gets or sets the frame identifier.
+        /// </summary>
+        /// <value>The frame identifier.</value>
         public string FrameId { get; internal set; }
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="ExecutionContext"/> is the 
+        /// default context of a <see cref="Frame"/>
+        /// </summary>
+        /// <value><c>true</c> if is default; otherwise, <c>false</c>.</value>
         public bool IsDefault { get; internal set; }
 
         /// <summary>
