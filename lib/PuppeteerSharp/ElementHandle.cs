@@ -83,7 +83,7 @@ namespace PuppeteerSharp
         public async Task<byte[]> ScreenshotDataAsync(ScreenshotOptions options)
         {
             await ScrollIntoViewIfNeededAsync();
-            dynamic metrics = await _client.SendAsync("Page.getLayoutMetrics") as JObject;
+            dynamic metrics = await Client.SendAsync("Page.getLayoutMetrics") as JObject;
 
             var boundingBox = await BoundingBoxAsync();
             if (boundingBox == null)
@@ -129,7 +129,7 @@ namespace PuppeteerSharp
         {
             var files = filePaths.Select(Path.GetFullPath).ToArray();
             var objectId = RemoteObject.objectId.ToString();
-            await _client.SendAsync("DOM.setFileInputFiles", new { objectId, files });
+            await Client.SendAsync("DOM.setFileInputFiles", new { objectId, files });
         }
 
         /// <summary>
@@ -297,14 +297,14 @@ namespace PuppeteerSharp
 
             try
             {
-                result = await _client.SendAsync("DOM.getBoxModel", new
+                result = await Client.SendAsync("DOM.getBoxModel", new
                 {
                     objectId = RemoteObject.objectId.ToString()
                 });
             }
             catch (PuppeteerException ex)
             {
-                _logger.LogError(ex.Message);
+                Logger.LogError(ex.Message);
             }
 
             if (result == null)
