@@ -33,24 +33,23 @@ namespace PuppeteerSharp
             "--remote-debugging-port=0",
             "--safebrowsing-disable-auto-update"
         };
-
         internal static readonly string[] AutomationArgs = {
             "--enable-automation",
             "--password-store=basic",
             "--use-mock-keychain"
         };
+        private const string UserDataDirArgument = "--user-data-dir";
         #endregion
 
         #region Private members
+        private static int _processCount;
         private Process _chromeProcess;
         private string _temporaryUserDataDir;
         private Connection _connection;
         private Timer _timer;
         private LaunchOptions _options;
         private TaskCompletionSource<bool> _waitForChromeToClose;
-        private static int _processCount;
         private bool _processLoaded;
-        private const string UserDataDirArgument = "--user-data-dir";
         private bool _chromiumLaunched;
         #endregion
 
@@ -63,7 +62,7 @@ namespace PuppeteerSharp
         #endregion
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:PuppeteerSharp.Launcher"/> class.
+        /// Initializes a new instance of the <see cref="PuppeteerSharp.Launcher"/> class.
         /// </summary>
         public Launcher()
         {
