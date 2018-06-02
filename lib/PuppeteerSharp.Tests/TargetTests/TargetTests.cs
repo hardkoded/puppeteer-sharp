@@ -23,7 +23,6 @@ namespace PuppeteerSharp.Tests.TargetTests
                 && target.Url == TestConstants.AboutBlank);
             Assert.Contains(targets, target => target.Type == "other"
                 && target.Url == string.Empty);
-
         }
 
         [Fact]

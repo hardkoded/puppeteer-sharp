@@ -35,13 +35,7 @@ namespace PuppeteerSharp
     /// </summary>
     public class CDPSession : IDisposable
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:PuppeteerSharp.CDPSession"/> class.
-        /// </summary>
-        /// <param name="connection">Connection.</param>
-        /// <param name="targetId">Target identifier.</param>
-        /// <param name="sessionId">Session identifier.</param>
-        public CDPSession(Connection connection, string targetId, string sessionId)
+        internal CDPSession(Connection connection, string targetId, string sessionId)
         {
             Connection = connection;
             TargetId = targetId;
@@ -90,42 +84,18 @@ namespace PuppeteerSharp
 
         #region Public Methods
 
-        /// <summary>
-        /// Sends a message using <see cref="Connection.SendAsync(string, dynamic)"/>.
-        /// </summary>
-        /// <returns>A task which resolves to the response casted to <typeparamref name="T"/>.</returns>
-        /// <param name="method">Method name to send.</param>
-        /// <param name="args">Method arguments rguments.</param>
-        /// <typeparam name="T">The type used to convert the result.</typeparam>
-        public async Task<T> SendAsync<T>(string method, dynamic args = null)
+        internal async Task<T> SendAsync<T>(string method, dynamic args = null)
         {
             var content = await SendAsync(method, true, args);
             return JsonConvert.DeserializeObject<T>(content);
         }
 
-        /// <summary>
-        /// Sends a message using a <see cref="Connection"/>.
-        /// </summary>
-        /// <returns>A task which resolves to the response received from the <see cref="Connection"/>.</returns>
-        /// <param name="method">Method name to send.</param>
-        /// <param name="args">Method arguments rguments.</param>
-        public Task<dynamic> SendAsync(string method, dynamic args = null)
+        internal Task<dynamic> SendAsync(string method, dynamic args = null)
         {
             return SendAsync(method, false, args ?? new { });
         }
 
-        /// <summary>
-        /// Sends a message using a <see cref="Connection"/>.
-        /// </summary>
-        /// <returns>A task which resolves to the response received from the <see cref="Connection"/>.</returns>
-        /// <param name="method">Method name to send.</param>
-        /// <param name="rawContent">
-        /// If true the result will be the entire JSON converted to a dynamic object.
-        /// If false (which is most of the time) it will be the JSON data inside the <c>result</c> property of the
-        /// JSON we got from Chromium.
-        /// </param>
-        /// <param name="args">Method arguments rguments.</param>
-        public async Task<dynamic> SendAsync(string method, bool rawContent, dynamic args = null)
+        internal async Task<dynamic> SendAsync(string method, bool rawContent, dynamic args = null)
         {
             if (Connection == null)
             {
