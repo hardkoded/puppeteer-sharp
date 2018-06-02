@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
 
@@ -11,9 +12,14 @@ namespace PuppeteerSharp
     public class NetworkManager
     {
         #region Private members
+
         private CDPSession _client;
         private Dictionary<string, Request> _requestIdToRequest = new Dictionary<string, Request>();
         private Dictionary<string, Request> _interceptionIdToRequest = new Dictionary<string, Request>();
+        private readonly MultiMap<string, string> _requestHashToRequestIds = new MultiMap<string, string>();
+        private readonly MultiMap<string, string> _requestHashToInterceptionIds = new MultiMap<string, string>();
+        private readonly FrameManager _frameManager;
+        private readonly ILogger _logger;
         private Dictionary<string, string> _extraHTTPHeaders;
         private bool _offine;
         private Credentials _credentials;
@@ -21,9 +27,6 @@ namespace PuppeteerSharp
         private bool _userRequestInterceptionEnabled;
         private bool _protocolRequestInterceptionEnabled;
 
-        private MultiMap<string, string> _requestHashToRequestIds = new MultiMap<string, string>();
-        private MultiMap<string, string> _requestHashToInterceptionIds = new MultiMap<string, string>();
-        private FrameManager _frameManager;
         #endregion
 
         public NetworkManager(CDPSession client, FrameManager frameManager)
@@ -31,6 +34,7 @@ namespace PuppeteerSharp
             _frameManager = frameManager;
             _client = client;
             _client.MessageReceived += Client_MessageReceived;
+            _logger = _client.Connection.LoggerFactory.CreateLogger<NetworkManager>();
         }
 
         #region Public Properties
@@ -204,24 +208,39 @@ namespace PuppeteerSharp
                     _attemptedAuthentications.Add(e.MessageData.interceptionId.ToString());
                 }
                 var credentials = _credentials ?? new Credentials();
-                await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object>
+                try
                 {
-                    {"interceptionId", e.MessageData.interceptionId.ToString()},
-                    {"authChallengeResponse", new
-                        {
-                            response,
-                            username = credentials.Username,
-                            password = credentials.Password
+                    await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object>
+                    {
+                        {"interceptionId", e.MessageData.interceptionId.ToString()},
+                        {"authChallengeResponse", new
+                            {
+                                response,
+                                username = credentials.Username,
+                                password = credentials.Password
+                            }
                         }
-                    }
-                });
+                    });
+                }
+                catch (PuppeteerException ex)
+                {
+                    _logger.LogError(ex.ToString());
+                }
                 return;
             }
             if (!_userRequestInterceptionEnabled && _protocolRequestInterceptionEnabled)
             {
-                await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object> {
-                    { "interceptionId", e.MessageData.interceptionId.ToString()}
-                });
+                try
+                {
+                    await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object>
+                    {
+                        { "interceptionId", e.MessageData.interceptionId.ToString()}
+                    });
+                }
+                catch (PuppeteerException ex)
+                {
+                    _logger.LogError(ex.ToString());
+                }
             }
 
             if (!string.IsNullOrEmpty(e.MessageData.redirectUrl?.ToString()))

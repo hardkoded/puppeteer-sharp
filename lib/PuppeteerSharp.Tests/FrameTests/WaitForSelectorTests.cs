@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.FrameTests
 {
@@ -8,6 +9,10 @@ namespace PuppeteerSharp.Tests.FrameTests
     public class WaitForSelectorTests : PuppeteerPageBaseTest
     {
         const string AddElement = "tag => document.body.appendChild(document.createElement(tag))";
+
+        public WaitForSelectorTests(ITestOutputHelper output) : base(output)
+        {
+        }
 
         [Fact]
         public async Task ShouldImmediatelyResolveTaskIfNodeExists()

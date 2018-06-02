@@ -5,6 +5,7 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
@@ -13,12 +14,16 @@ namespace PuppeteerSharp
 {
     public class Connection : IDisposable
     {
-        public Connection(string url, int delay, ClientWebSocket ws)
+        private readonly ILogger _logger;
+
+        public Connection(string url, int delay, ClientWebSocket ws, ILoggerFactory loggerFactory = null)
         {
+            LoggerFactory = loggerFactory ?? new LoggerFactory();
             Url = url;
             Delay = delay;
             WebSocket = ws;
 
+            _logger = LoggerFactory.CreateLogger<Connection>();
             _socketQueue = new TaskQueue();
             _responses = new Dictionary<int, MessageTask>();
             _sessions = new Dictionary<string, CDPSession>();
@@ -48,6 +53,8 @@ namespace PuppeteerSharp
         public event EventHandler<MessageEventArgs> MessageReceived;
         public bool IsClosed { get; internal set; }
 
+        internal ILoggerFactory LoggerFactory { get; }
+
         #endregion
 
         #region Public Methods
@@ -60,6 +67,8 @@ namespace PuppeteerSharp
                 {"method", method},
                 {"params", args}
             });
+
+            _logger.LogTrace("Send ► {Id} Method {Method} Params {@Params}", id, method, (object)args);
 
             _responses[id] = new MessageTask
             {
@@ -188,6 +197,8 @@ namespace PuppeteerSharp
             dynamic obj = JsonConvert.DeserializeObject(response);
             var objAsJObject = obj as JObject;
 
+            _logger.LogTrace("◀ Receive {Message}", response);
+
             if (objAsJObject["id"] != null)
             {
                 int id = (int)objAsJObject["id"];
@@ -233,12 +244,12 @@ namespace PuppeteerSharp
         #endregion
         #region Static Methods
 
-        public static async Task<Connection> Create(string url, int delay = 0, int keepAliveInterval = 60)
+        public static async Task<Connection> Create(string url, int delay = 0, int keepAliveInterval = 60, ILoggerFactory loggerFactory = null)
         {
             var ws = new ClientWebSocket();
             ws.Options.KeepAliveInterval = new TimeSpan(0, 0, keepAliveInterval);
             await ws.ConnectAsync(new Uri(url), default(CancellationToken)).ConfigureAwait(false);
-            return new Connection(url, delay, ws);
+            return new Connection(url, delay, ws, loggerFactory);
         }
 
         public void Dispose()

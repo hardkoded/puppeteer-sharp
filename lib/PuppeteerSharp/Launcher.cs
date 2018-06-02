@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Collections;
+using Microsoft.Extensions.Logging;
 
 namespace PuppeteerSharp
 {
@@ -36,9 +37,12 @@ namespace PuppeteerSharp
             "--password-store=basic",
             "--use-mock-keychain"
         };
+
         #endregion
 
-        #region Private members
+        #region Private members        
+        private readonly ILoggerFactory _loggerFactory;
+        private readonly ILogger _logger;
         private Process _chromeProcess;
         private string _temporaryUserDataDir = null;
         private Connection _connection = null;
@@ -55,8 +59,10 @@ namespace PuppeteerSharp
         public bool IsChromeClosed { get; internal set; }
         #endregion
 
-        public Launcher()
+        public Launcher(ILoggerFactory loggerFactory = null)
         {
+            _loggerFactory = loggerFactory ?? new LoggerFactory();
+            _logger = _loggerFactory.CreateLogger<Launcher>();
             _waitForChromeToClose = new TaskCompletionSource<bool>();
         }
 
@@ -101,12 +107,12 @@ namespace PuppeteerSharp
                 var browserWSEndpoint = await WaitForEndpoint(_chromeProcess, options.Timeout, options.DumpIO);
                 var keepAliveInterval = options.KeepAliveInterval;
 
-                _connection = await Connection.Create(browserWSEndpoint, connectionDelay, keepAliveInterval);
+                _connection = await Connection.Create(browserWSEndpoint, connectionDelay, keepAliveInterval, _loggerFactory);
                 _processLoaded = true;
 
                 if (options.LogProcess)
                 {
-                    Console.WriteLine($"PROCESS COUNT: {Interlocked.Increment(ref _processCount)}");
+                    _logger.LogInformation("Process Count: {ProcessCount}", Interlocked.Increment(ref _processCount));
                 }
 
                 return await Browser.CreateAsync(_connection, options, _chromeProcess, KillChrome);
@@ -117,6 +123,95 @@ namespace PuppeteerSharp
                 throw new ChromeProcessException("Failed to create connection", ex);
             }
         }
+
+        /// <summary>
+        /// Attaches Puppeteer to an existing Chromium instance. The browser will be closed when the Browser is disposed.
+        /// </summary>
+        /// <param name="options">Options for connecting.</param>
+        /// <returns>A connected browser.</returns>
+        public async Task<Browser> ConnectAsync(ConnectOptions options)
+        {
+            try
+            {
+                if (_chromiumLaunched)
+                {
+                    throw new InvalidOperationException("Unable to create or connect to another chromium process");
+                }
+                _chromiumLaunched = true;
+
+                var connectionDelay = options.SlowMo;
+                var keepAliveInterval = options.KeepAliveInterval;
+
+                _connection = await Connection.Create(options.BrowserWSEndpoint, connectionDelay, keepAliveInterval, _loggerFactory);
+
+                return await Browser.CreateAsync(_connection, options, null, () =>
+                {
+                    var closeTask = _connection.SendAsync("Browser.close", null);
+                    return null;
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to create connection", ex);
+            }
+        }
+
+        public async Task TryDeleteUserDataDir(int times = 10, TimeSpan? delay = null)
+        {
+            if (!IsChromeClosed)
+            {
+                throw new InvalidOperationException("Unable to delete user data dir, Chorme is still open");
+            }
+
+            if (times <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(times));
+            }
+
+            if (delay == null)
+            {
+                delay = new TimeSpan(0, 0, 0, 0, 100);
+            }
+
+            string folder = string.IsNullOrEmpty(_temporaryUserDataDir) ? _options.UserDataDir : _temporaryUserDataDir;
+            int attempts = 0;
+            while (true)
+            {
+                try
+                {
+                    attempts++;
+                    Directory.Delete(folder, true);
+                    break;
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    if (attempts == times)
+                    {
+                        throw;
+                    }
+
+                    await Task.Delay(delay.Value);
+                }
+            }
+        }
+
+        public static string GetExecutablePath()
+        {
+            var downloader = Downloader.CreateDefault();
+            var revisionInfo = downloader.RevisionInfo(Downloader.CurrentPlatform, Downloader.DefaultRevision);
+            return revisionInfo.ExecutablePath;
+        }
+
+        public static string GetTemporaryDirectory()
+        {
+            string tempDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            Directory.CreateDirectory(tempDirectory);
+            return tempDirectory;
+        }
+
+        #endregion
+
+        #region Private methods
 
         private void CreateChromeProcess(LaunchOptions options, List<string> chromeArguments, string chromeExecutable)
         {
@@ -197,95 +292,6 @@ namespace PuppeteerSharp
             return chromeArguments;
         }
 
-        /// <summary>
-        /// Attaches Puppeteer to an existing Chromium instance. The browser will be closed when the Browser is disposed.
-        /// </summary>
-        /// <param name="options">Options for connecting.</param>
-        /// <returns>A connected browser.</returns>
-        public async Task<Browser> ConnectAsync(ConnectOptions options)
-        {
-            try
-            {
-                if (_chromiumLaunched)
-                {
-                    throw new InvalidOperationException("Unable to create or connect to another chromium process");
-                }
-                _chromiumLaunched = true;
-
-                var connectionDelay = options.SlowMo;
-                var keepAliveInterval = options.KeepAliveInterval;
-
-                _connection = await Connection.Create(options.BrowserWSEndpoint, connectionDelay, keepAliveInterval);
-
-                return await Browser.CreateAsync(_connection, options, null, () =>
-                {
-                    var closeTask = _connection.SendAsync("Browser.close", null);
-                    return null;
-                });
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Failed to create connection", ex);
-            }
-        }
-
-        public async Task TryDeleteUserDataDir(int times = 10, TimeSpan? delay = null)
-        {
-            if (!IsChromeClosed)
-            {
-                throw new InvalidOperationException("Unable to delete user data dir, Chorme is still open");
-            }
-
-            if (times <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(times));
-            }
-
-            if (delay == null)
-            {
-                delay = new TimeSpan(0, 0, 0, 0, 100);
-            }
-
-            string folder = string.IsNullOrEmpty(_temporaryUserDataDir) ? _options.UserDataDir : _temporaryUserDataDir;
-            int attempts = 0;
-            while (true)
-            {
-                try
-                {
-                    attempts++;
-                    Directory.Delete(folder, true);
-                    break;
-                }
-                catch (UnauthorizedAccessException)
-                {
-                    if (attempts == times)
-                    {
-                        throw;
-                    }
-
-                    await Task.Delay(delay.Value);
-                }
-            }
-        }
-
-        public static string GetExecutablePath()
-        {
-            var downloader = Downloader.CreateDefault();
-            var revisionInfo = downloader.RevisionInfo(Downloader.CurrentPlatform, Downloader.DefaultRevision);
-            return revisionInfo.ExecutablePath;
-        }
-
-        public static string GetTemporaryDirectory()
-        {
-            string tempDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-            Directory.CreateDirectory(tempDirectory);
-            return tempDirectory;
-        }
-
-        #endregion
-
-        #region Private methods
-
         private Task<string> WaitForEndpoint(Process chromeProcess, int timeout, bool dumpio)
         {
             var taskWrapper = new TaskCompletionSource<string>();
@@ -298,7 +304,7 @@ namespace PuppeteerSharp
             {
                 if (_options.LogProcess && !_processLoaded)
                 {
-                    Console.WriteLine($"PROCESS COUNT: {Interlocked.Increment(ref _processCount)}");
+                    _logger.LogInformation("Process Count: {ProcessCount}", Interlocked.Increment(ref _processCount));
                 }
 
                 CleanUp();
@@ -366,7 +372,7 @@ namespace PuppeteerSharp
 
             if (_options.LogProcess)
             {
-                Console.WriteLine($"PROCESS COUNT: {Interlocked.Decrement(ref _processCount)}");
+                _logger.LogInformation("Process Count: {ProcessCount}", Interlocked.Decrement(ref _processCount));
             }
 
             IsChromeClosed = true;

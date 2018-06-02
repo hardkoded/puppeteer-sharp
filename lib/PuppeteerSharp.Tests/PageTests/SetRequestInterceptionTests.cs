@@ -7,12 +7,17 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class SetRequestInterceptionTests : PuppeteerPageBaseTest
     {
+        public SetRequestInterceptionTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
         public async Task ShouldIntercept()
         {

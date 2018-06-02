@@ -1,11 +1,16 @@
 ﻿using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class QuerySelectorTests : PuppeteerPageBaseTest
     {
+        public QuerySelectorTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
         public async Task ShouldQueryExistingElement()
         {

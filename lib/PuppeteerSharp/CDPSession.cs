@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace PuppeteerSharp
 {
@@ -47,11 +48,13 @@ namespace PuppeteerSharp
             SessionId = sessionId;
 
             _callbacks = new Dictionary<int, MessageTask>();
+            _logger = Connection.LoggerFactory.CreateLogger<CDPSession>();
         }
 
         #region Private Members
         private int _lastId;
         private readonly Dictionary<int, MessageTask> _callbacks;
+        private readonly ILogger _logger;
         #endregion
 
         #region Properties
@@ -135,6 +138,7 @@ namespace PuppeteerSharp
                 {"method", method},
                 {"params", args}
             });
+            _logger.LogTrace("Send ► {Id} Method {Method} Params {@Params}", id, method, (object)args);
 
             var callback = new MessageTask
             {
@@ -197,6 +201,8 @@ namespace PuppeteerSharp
         {
             dynamic obj = JsonConvert.DeserializeObject(message);
             var objAsJObject = obj as JObject;
+
+            _logger.LogTrace("◀ Receive {Message}", message);
 
             if (objAsJObject["id"] != null && _callbacks.ContainsKey((int)obj.id))
             {

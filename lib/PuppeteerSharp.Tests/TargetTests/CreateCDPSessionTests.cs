@@ -4,12 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.TargetTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class CreateCDPSessionTests : PuppeteerPageBaseTest
     {
+        public CreateCDPSessionTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
         public async Task ShouldWork()
         {

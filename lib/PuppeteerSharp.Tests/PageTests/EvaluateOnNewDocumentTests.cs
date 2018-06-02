@@ -4,12 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class EvaluateOnNewDocumentTests : PuppeteerPageBaseTest
     {
+        public EvaluateOnNewDocumentTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
         public async Task ShouldEvaluateBeforeAnythingElseOnThePage()
         {

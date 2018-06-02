@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.TracingTests
 {
@@ -14,8 +15,8 @@ namespace PuppeteerSharp.Tests.TracingTests
     public class TracingTests : PuppeteerPageBaseTest
     {
         private string _file;
-
-        public TracingTests()
+        
+        public TracingTests(ITestOutputHelper output) : base(output)
         {
             _file = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         }

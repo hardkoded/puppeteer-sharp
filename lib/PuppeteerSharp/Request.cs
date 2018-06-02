@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
@@ -20,20 +21,21 @@ namespace PuppeteerSharp
     {
         #region Private Members
         private readonly CDPSession _client;
-
-        private bool _allowInterception;
+        private readonly bool _allowInterception;
+        private readonly ILogger _logger;
         private bool _interceptionHandled;
-
         #endregion
 
         public Request(CDPSession client, string requestId, string interceptionId, bool allowInterception, string url,
                       ResourceType resourceType, Payload payload, Frame frame)
         {
             _client = client;
-            RequestId = requestId;
-            InterceptionId = interceptionId;
             _allowInterception = allowInterception;
             _interceptionHandled = false;
+            _logger = _client.Connection.LoggerFactory.CreateLogger<Request>();
+
+            RequestId = requestId;
+            InterceptionId = interceptionId;
             Url = url;
             ResourceType = resourceType;
             Method = payload.Method;
@@ -90,11 +92,11 @@ namespace PuppeteerSharp
 
                 await _client.SendAsync("Network.continueInterceptedRequest", requestData);
             }
-            catch (Exception)
+            catch (PuppeteerException ex)
             {
                 // In certain cases, protocol will return error if the request was already canceled
                 // or the page was closed. We should tolerate these errors
-                //TODO: Choose log mechanism
+                _logger.LogError(ex.ToString());
             }
         }
 
@@ -170,11 +172,11 @@ namespace PuppeteerSharp
                     {"rawResponse", Convert.ToBase64String(responseData)}
                 });
             }
-            catch (Exception)
+            catch (PuppeteerException ex)
             {
                 // In certain cases, protocol will return error if the request was already canceled
                 // or the page was closed. We should tolerate these errors
-                //TODO: Choose log mechanism
+                _logger.LogError(ex.ToString());
             }
         }
 
@@ -207,11 +209,11 @@ namespace PuppeteerSharp
                     {"errorReason", errorReason}
                 });
             }
-            catch (Exception)
+            catch (PuppeteerException ex)
             {
                 // In certain cases, protocol will return error if the request was already canceled
                 // or the page was closed. We should tolerate these errors
-                //TODO: Choose log mechanism
+                _logger.LogError(ex.ToString());
             }
         }
         #endregion

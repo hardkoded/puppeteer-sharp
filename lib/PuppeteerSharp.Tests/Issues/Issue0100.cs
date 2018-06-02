@@ -1,12 +1,16 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.Issues
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class Issue0100 : PuppeteerBrowserBaseTest
     {
+        public Issue0100(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
         public async Task PdfDarkskyShouldWork()
         {

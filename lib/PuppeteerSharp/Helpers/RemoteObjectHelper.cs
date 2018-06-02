@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -55,7 +56,7 @@ namespace PuppeteerSharp.Helpers
             }
         }
 
-        internal static async Task ReleaseObject(CDPSession client, dynamic remoteObject)
+        internal static async Task ReleaseObject(CDPSession client, dynamic remoteObject, ILogger logger)
         {
             if (remoteObject.objectId == null)
                 return;
@@ -67,7 +68,7 @@ namespace PuppeteerSharp.Helpers
             {
                 // Exceptions might happen in case of a page been navigated or closed.
                 // Swallow these since they are harmless and we don't leak anything in this case.
-                Console.WriteLine(ex.ToString());
+                logger.LogWarning(ex.ToString());
             }
         }
     }

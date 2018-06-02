@@ -3,12 +3,17 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.TargetTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class TargetTests : PuppeteerPageBaseTest
     {
+        public TargetTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
         public void BrowserTargetsShouldReturnAllOfTheTargets()
         {
