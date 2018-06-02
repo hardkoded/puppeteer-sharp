@@ -12,11 +12,9 @@ namespace PuppeteerSharp
     /// </summary>
     public class JSHandle
     {
-        private ExecutionContext _context;
-
         internal JSHandle(ExecutionContext context, Session client, object remoteObject)
         {
-            _context = context;
+            ExecutionContext = context;
             Client = client;
             Logger = Client.Connection.LoggerFactory.CreateLogger(this.GetType());
             RemoteObject = remoteObject;
@@ -26,7 +24,7 @@ namespace PuppeteerSharp
         /// Gets the execution context.
         /// </summary>
         /// <value>The execution context.</value>
-        public ExecutionContext ExecutionContext => _context;
+        public ExecutionContext ExecutionContext { get; private set; }
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="PuppeteerSharp.JSHandle"/> is disposed.
         /// </summary>
@@ -94,7 +92,7 @@ namespace PuppeteerSharp
                     continue;
                 }
 
-                result.Add(property.name.ToString(), _context.ObjectHandleFactory(property.value));
+                result.Add(property.name.ToString(), ExecutionContext.ObjectHandleFactory(property.value));
             }
             return result;
         }
