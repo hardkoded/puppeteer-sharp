@@ -1,11 +1,16 @@
 ﻿using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.BrowserTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class VersionTests : PuppeteerBrowserBaseTest
     {
+        public VersionTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
         public async Task ShouldReturnWhetherWeAreInHeadless()
         {

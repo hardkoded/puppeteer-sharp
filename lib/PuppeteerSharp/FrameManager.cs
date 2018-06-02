@@ -4,14 +4,16 @@ using System.Diagnostics.Contracts;
 using PuppeteerSharp.Input;
 using Newtonsoft.Json.Linq;
 using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 
 namespace PuppeteerSharp
 {
     public class FrameManager
     {
-        private Session _client;
-        private Page _page;
-        private Dictionary<int, ExecutionContext> _contextIdToContext;
+        private readonly Session _client;
+        private readonly Page _page;
+        private readonly Dictionary<int, ExecutionContext> _contextIdToContext;
+        private readonly ILogger _logger;
 
         public FrameManager(Session client, FrameTree frameTree, Page page)
         {
@@ -19,10 +21,10 @@ namespace PuppeteerSharp
             _page = page;
             Frames = new Dictionary<string, Frame>();
             _contextIdToContext = new Dictionary<int, ExecutionContext>();
+            _logger = _client.Connection.LoggerFactory.CreateLogger<FrameManager>();
 
             _client.MessageReceived += _client_MessageReceived;
             HandleFrameTree(frameTree);
-
         }
 
         #region Properties
@@ -68,7 +70,6 @@ namespace PuppeteerSharp
                     OnLifeCycleEvent(e);
                     break;
             }
-
         }
 
         private void OnLifeCycleEvent(MessageEventArgs e)
@@ -108,7 +109,7 @@ namespace PuppeteerSharp
 
             if (storedContext == null)
             {
-                Console.WriteLine($"INTERNAL ERROR: missing context with id = {contextId}");
+                _logger.LogError("INTERNAL ERROR: missing context with id = {ContextId}", contextId);
             }
 
             if (remoteObject.subtype == "node")

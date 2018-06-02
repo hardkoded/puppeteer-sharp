@@ -5,12 +5,17 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using PuppeteerSharp.PageCoverage;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.JSCoverageTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class JSCoverageTests : PuppeteerPageBaseTest
     {
+        public JSCoverageTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
         public async Task ShouldWork()
         {

@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class WaitForTests : PuppeteerPageBaseTest
     {
+        public WaitForTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
         public async Task ShouldWaitForSelector()
         {

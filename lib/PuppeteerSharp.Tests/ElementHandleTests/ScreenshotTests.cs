@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.ElementHandleTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class ScreenshotTests : PuppeteerPageBaseTest
     {
+        public ScreenshotTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
         public async Task ShouldFire()
         {

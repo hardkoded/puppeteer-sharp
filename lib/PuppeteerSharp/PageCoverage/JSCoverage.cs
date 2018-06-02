@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace PuppeteerSharp.PageCoverage
 {
@@ -11,6 +12,7 @@ namespace PuppeteerSharp.PageCoverage
         private readonly Session _client;
         private readonly Dictionary<string, string> _scriptURLs;
         private readonly Dictionary<string, string> _scriptSources;
+        private readonly ILogger _logger;
 
         private bool _enabled;
         private bool _resetOnNavigation;
@@ -21,6 +23,7 @@ namespace PuppeteerSharp.PageCoverage
             _enabled = false;
             _scriptURLs = new Dictionary<string, string>();
             _scriptSources = new Dictionary<string, string>();
+            _logger = _client.Connection.LoggerFactory.CreateLogger<JSCoverage>();
 
             _resetOnNavigation = false;
         }
@@ -113,7 +116,7 @@ namespace PuppeteerSharp.PageCoverage
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                _logger.LogError(ex.ToString());
             }
         }
 

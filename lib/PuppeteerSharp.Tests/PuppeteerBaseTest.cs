@@ -1,7 +1,7 @@
 ﻿using PuppeteerSharp.TestServer;
-using System;
 using System.IO;
 using System.Threading.Tasks;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests
 {
@@ -12,8 +12,10 @@ namespace PuppeteerSharp.Tests
         protected SimpleServer Server => PuppeteerLoaderFixture.Server;
         protected SimpleServer HttpsServer => PuppeteerLoaderFixture.HttpsServer;
 
-        public PuppeteerBaseTest()
+        public PuppeteerBaseTest(ITestOutputHelper output)
         {
+            TestConstants.SetupLogging(output);
+
             BaseDirectory = Path.Combine(Directory.GetCurrentDirectory(), "workspace");
             var dirInfo = new DirectoryInfo(BaseDirectory);
 

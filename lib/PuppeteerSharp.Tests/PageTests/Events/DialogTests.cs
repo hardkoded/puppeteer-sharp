@@ -3,12 +3,17 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.PageTests.Events
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class DialogTests : PuppeteerPageBaseTest
     {
+        public DialogTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
         public async Task ShouldFire()
         {

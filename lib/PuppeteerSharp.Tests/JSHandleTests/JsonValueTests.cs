@@ -1,12 +1,17 @@
 ﻿using Newtonsoft.Json.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.JSHandleTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class JsonValueTests : PuppeteerPageBaseTest
     {
+        public JsonValueTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
         public async Task ShouldWork()
         {

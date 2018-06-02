@@ -1,11 +1,14 @@
 ﻿using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class CloseTests : PuppeteerBrowserBaseTest
     {
+        public CloseTests(ITestOutputHelper output) : base(output) { }
+
         [Fact]
         public async Task ShouldRejectAllPromisesWhenPageIsClosed()
         {
