@@ -8,7 +8,7 @@ namespace PuppeteerSharp
 {
     public class Tracing
     {
-        private CDPSession _client;
+        private readonly CDPSession _client;
         private bool _recording;
         private string _path;
         private static readonly List<string> _defaultCategories = new List<string>()

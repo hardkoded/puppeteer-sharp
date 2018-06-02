@@ -13,7 +13,7 @@ namespace PuppeteerSharp
     {
         #region Private members
 
-        private CDPSession _client;
+        private readonly CDPSession _client;
         private Dictionary<string, Request> _requestIdToRequest = new Dictionary<string, Request>();
         private Dictionary<string, Request> _interceptionIdToRequest = new Dictionary<string, Request>();
         private readonly MultiMap<string, string> _requestHashToRequestIds = new MultiMap<string, string>();

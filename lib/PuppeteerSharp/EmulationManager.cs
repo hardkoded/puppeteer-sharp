@@ -6,7 +6,7 @@ namespace PuppeteerSharp
 {
     internal class EmulationManager
     {
-        private CDPSession _client;
+        private readonly CDPSession _client;
         private string _injectedTouchScriptId;
         private bool _emulatingMobile;
 

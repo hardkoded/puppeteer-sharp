@@ -39,8 +39,8 @@ namespace PuppeteerSharp
     public class Frame
     {
 
-        private CDPSession _client;
-        private Page _page;
+        private readonly CDPSession _client;
+        private readonly Page _page;
         private TaskCompletionSource<ElementHandle> _documentCompletionSource;
         private TaskCompletionSource<ExecutionContext> _contextResolveTaskWrapper;
 
