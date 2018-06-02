@@ -14,13 +14,7 @@ namespace PuppeteerSharp
     {
         private ExecutionContext _context;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PuppeteerSharp.JSHandle"/> class.
-        /// </summary>
-        /// <param name="context">Context.</param>
-        /// <param name="client">Client.</param>
-        /// <param name="remoteObject">Remote object.</param>
-        public JSHandle(ExecutionContext context, Session client, object remoteObject)
+        internal JSHandle(ExecutionContext context, Session client, object remoteObject)
         {
             _context = context;
             Client = client;
