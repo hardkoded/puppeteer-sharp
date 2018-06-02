@@ -32,7 +32,7 @@ namespace PuppeteerSharp
         /// <value>The frame identifier.</value>
         public string FrameId { get; internal set; }
         /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="PuppeteerSharp.ExecutionContext"/> is the 
+        /// Gets or sets a value indicating whether this <see cref="ExecutionContext"/> is the 
         /// default context of a <see cref="Frame"/>
         /// </summary>
         /// <value><c>true</c> if is default; otherwise, <c>false</c>.</value>
