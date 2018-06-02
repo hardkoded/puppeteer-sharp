@@ -16,13 +16,7 @@ namespace PuppeteerSharp
         private readonly Session _client;
         private readonly int _contextId;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PuppeteerSharp.ExecutionContext"/> class.
-        /// </summary>
-        /// <param name="client">Client.</param>
-        /// <param name="contextPayload">Context payload.</param>
-        /// <param name="objectHandleFactory">Object handle factory.</param>
-        public ExecutionContext(Session client, ContextPayload contextPayload, Func<dynamic, JSHandle> objectHandleFactory)
+        internal ExecutionContext(Session client, ContextPayload contextPayload, Func<dynamic, JSHandle> objectHandleFactory)
         {
             _client = client;
             _contextId = contextPayload.Id;
