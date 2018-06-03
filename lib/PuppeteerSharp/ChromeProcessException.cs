@@ -22,7 +22,6 @@ namespace PuppeteerSharp
         /// <param name="innerException">Inner exception.</param>
         public ChromeProcessException(string message, Exception innerException) : base(message, innerException)
         {
-
         }
     }
 }

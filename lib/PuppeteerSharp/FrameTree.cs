@@ -6,7 +6,6 @@ namespace PuppeteerSharp
 {
     internal class FrameTree
     {
-
         internal FrameTree()
         {
             Childs = new List<FrameTree>();

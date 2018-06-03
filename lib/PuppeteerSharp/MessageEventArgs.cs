@@ -19,5 +19,4 @@ namespace PuppeteerSharp
         /// <value>The message data.</value>
         public dynamic MessageData { get; internal set; }
     }
-
 }

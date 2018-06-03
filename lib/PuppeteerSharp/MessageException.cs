@@ -21,7 +21,6 @@ namespace PuppeteerSharp
         /// <param name="innerException">Inner exception.</param>
         public MessageException(string message, Exception innerException) : base(message, innerException)
         {
-
         }
     }
 }

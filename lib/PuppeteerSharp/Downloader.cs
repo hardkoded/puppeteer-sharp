@@ -120,7 +120,6 @@ namespace PuppeteerSharp
             }
 
             new FileInfo(zipPath).Delete();
-
         }
 
         /// <summary>
