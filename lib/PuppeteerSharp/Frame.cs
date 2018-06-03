@@ -38,7 +38,6 @@ namespace PuppeteerSharp
     /// </example>
     public class Frame
     {
-
         private readonly CDPSession _client;
         private readonly Page _page;
         private TaskCompletionSource<ElementHandle> _documentCompletionSource;
