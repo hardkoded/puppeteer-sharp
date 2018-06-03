@@ -12,6 +12,9 @@ using Microsoft.Extensions.Logging;
 
 namespace PuppeteerSharp
 {
+    /// <summary>
+    /// Launcher controls the creation of Chromium processes or the connection remote ones.
+    /// </summary>
     public class Launcher
     {
         #region Constants
@@ -29,37 +32,44 @@ namespace PuppeteerSharp
             "--metrics-recording-only",
             "--no-first-run",
             "--remote-debugging-port=0",
-            "--safebrowsing-disable-auto-update",
+            "--safebrowsing-disable-auto-update"
         };
-
         internal static readonly string[] AutomationArgs = {
             "--enable-automation",
             "--password-store=basic",
             "--use-mock-keychain"
         };
-
+        private const string UserDataDirArgument = "--user-data-dir";
         #endregion
 
-        #region Private members        
+        #region Private members
+        private static int _processCount;
         private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger _logger;
         private Process _chromeProcess;
-        private string _temporaryUserDataDir = null;
-        private Connection _connection = null;
-        private Timer _timer = null;
+        private string _temporaryUserDataDir;
+        private Connection _connection;
+        private Timer _timer;
         private LaunchOptions _options;
         private TaskCompletionSource<bool> _waitForChromeToClose;
-        private static int _processCount = 0;
         private bool _processLoaded;
-        private const string UserDataDirArgument = "--user-data-dir";
-        private bool _chromiumLaunched = false;
+        private bool _chromiumLaunched;
         #endregion
 
         #region Properties
+        /// <summary>
+        /// Gets or sets a value indicating whether the process created by the instance is closed.
+        /// </summary>
+        /// <value><c>true</c> if is the process is closed; otherwise, <c>false</c>.</value>
         public bool IsChromeClosed { get; internal set; }
         #endregion
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PuppeteerSharp.Launcher"/> class.
+        /// </summary>
+        /// <param name="loggerFactory">Logger factory.</param>
         public Launcher(ILoggerFactory loggerFactory = null)
+
         {
             _loggerFactory = loggerFactory ?? new LoggerFactory();
             _logger = _loggerFactory.CreateLogger<Launcher>();
@@ -156,6 +166,12 @@ namespace PuppeteerSharp
             }
         }
 
+        /// <summary>
+        /// Tries the delete user data dir.
+        /// </summary>
+        /// <returns>The task.</returns>
+        /// <param name="times">How many times it should try to delete the folder</param>
+        /// <param name="delay">Time to wait between tries.</param>
         public async Task TryDeleteUserDataDir(int times = 10, TimeSpan? delay = null)
         {
             if (!IsChromeClosed)
@@ -195,6 +211,10 @@ namespace PuppeteerSharp
             }
         }
 
+        /// <summary>
+        /// Gets the executable path.
+        /// </summary>
+        /// <returns>The executable path.</returns>
         public static string GetExecutablePath()
         {
             var downloader = Downloader.CreateDefault();
@@ -202,6 +222,10 @@ namespace PuppeteerSharp
             return revisionInfo.ExecutablePath;
         }
 
+        /// <summary>
+        /// Gets a temporary directory using <see cref="Path.GetTempPath"/> and <see cref="Path.GetRandomFileName"/>.
+        /// </summary>
+        /// <returns>A temporary directory.</returns>
         public static string GetTemporaryDirectory()
         {
             string tempDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
@@ -300,7 +324,7 @@ namespace PuppeteerSharp
             chromeProcess.StartInfo.RedirectStandardOutput = true;
             chromeProcess.StartInfo.RedirectStandardError = true;
 
-            EventHandler exitedEvent = (sender, e) =>
+            void exitedEvent(object sender, EventArgs e)
             {
                 if (_options.LogProcess && !_processLoaded)
                 {
@@ -310,7 +334,7 @@ namespace PuppeteerSharp
                 CleanUp();
 
                 taskWrapper.SetException(new ChromeProcessException($"Failed to launch chrome! {output}"));
-            };
+            }
 
             chromeProcess.ErrorDataReceived += (sender, e) =>
             {

@@ -61,7 +61,7 @@ namespace PuppeteerSharp
         /// Gets the session identifier.
         /// </summary>
         /// <value>The session identifier.</value>
-        public string SessionId { get; private set; }
+        public string SessionId { get; }
         /// <summary>
         /// Gets the connection.
         /// </summary>
