@@ -9,7 +9,7 @@ using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
 {
-    public class NetworkManager
+    internal class NetworkManager
     {
         #region Private members
 
@@ -29,7 +29,7 @@ namespace PuppeteerSharp
 
         #endregion
 
-        public NetworkManager(CDPSession client, FrameManager frameManager)
+        internal NetworkManager(CDPSession client, FrameManager frameManager)
         {
             _frameManager = frameManager;
             _client = client;
@@ -38,24 +38,22 @@ namespace PuppeteerSharp
         }
 
         #region Public Properties
-        public Dictionary<string, string> ExtraHTTPHeaders => _extraHTTPHeaders?.Clone();
-
-        public event EventHandler<ResponseCreatedEventArgs> Response;
-        public event EventHandler<RequestEventArgs> Request;
-        public event EventHandler<RequestEventArgs> RequestFinished;
-        public event EventHandler<RequestEventArgs> RequestFailed;
-
+        internal Dictionary<string, string> ExtraHTTPHeaders => _extraHTTPHeaders?.Clone();
+        internal event EventHandler<ResponseCreatedEventArgs> Response;
+        internal event EventHandler<RequestEventArgs> Request;
+        internal event EventHandler<RequestEventArgs> RequestFinished;
+        internal event EventHandler<RequestEventArgs> RequestFailed;
         #endregion
 
         #region Public Methods
 
-        public async Task AuthenticateAsync(Credentials credentials)
+        internal async Task AuthenticateAsync(Credentials credentials)
         {
             _credentials = credentials;
             await UpdateProtocolRequestInterceptionAsync();
         }
 
-        public async Task SetExtraHTTPHeadersAsync(Dictionary<string, string> extraHTTPHeaders)
+        internal async Task SetExtraHTTPHeadersAsync(Dictionary<string, string> extraHTTPHeaders)
         {
             _extraHTTPHeaders = new Dictionary<string, string>();
 
@@ -69,7 +67,7 @@ namespace PuppeteerSharp
             });
         }
 
-        public async Task SetOfflineModeAsync(bool value)
+        internal async Task SetOfflineModeAsync(bool value)
         {
             if (_offine != value)
             {
@@ -85,7 +83,7 @@ namespace PuppeteerSharp
             }
         }
 
-        public async Task SetUserAgentAsync(string userAgent)
+        internal async Task SetUserAgentAsync(string userAgent)
         {
             await _client.SendAsync("Network.setUserAgentOverride", new Dictionary<string, object>
             {
@@ -93,7 +91,7 @@ namespace PuppeteerSharp
             });
         }
 
-        public async Task SetRequestInterceptionAsync(bool value)
+        internal async Task SetRequestInterceptionAsync(bool value)
         {
             _userRequestInterceptionEnabled = value;
             await UpdateProtocolRequestInterceptionAsync();
@@ -141,7 +139,7 @@ namespace PuppeteerSharp
                     _interceptionIdToRequest.Remove(request.InterceptionId);
                     _attemptedAuthentications.Remove(request.InterceptionId);
                 }
-                RequestFailed(this, new RequestEventArgs()
+                RequestFailed(this, new RequestEventArgs
                 {
                     Request = request
                 });
@@ -164,7 +162,7 @@ namespace PuppeteerSharp
                     _attemptedAuthentications.Remove(request.InterceptionId);
                 }
 
-                RequestFinished?.Invoke(this, new RequestEventArgs()
+                RequestFinished?.Invoke(this, new RequestEventArgs
                 {
                     Request = request
                 });
@@ -298,7 +296,7 @@ namespace PuppeteerSharp
                 _interceptionIdToRequest.Add(interceptionId, request);
             }
 
-            Request(this, new RequestEventArgs()
+            Request(this, new RequestEventArgs
             {
                 Request = request
             });
@@ -319,12 +317,12 @@ namespace PuppeteerSharp
                 _attemptedAuthentications.Remove(request.InterceptionId);
             }
 
-            Response(this, new ResponseCreatedEventArgs()
+            Response(this, new ResponseCreatedEventArgs
             {
                 Response = response
             });
 
-            RequestFinished(this, new RequestEventArgs()
+            RequestFinished(this, new RequestEventArgs
             {
                 Request = request
             });

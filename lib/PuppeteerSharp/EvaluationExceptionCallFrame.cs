@@ -2,15 +2,15 @@
 
 namespace PuppeteerSharp
 {
-    public class EvaluationExceptionCallFrame
+    internal class EvaluationExceptionCallFrame
     {
         [JsonProperty("columnNumber")]
-        public int ColumnNumber { get; internal set; }
+        internal int ColumnNumber { get; set; }
         [JsonProperty("lineNumber")]
-        public int LineNumber { get; internal set; }
+        internal int LineNumber { get; set; }
         [JsonProperty("url")]
-        public string Url { get; internal set; }
+        internal string Url { get; set; }
         [JsonProperty("functionName")]
-        public string FunctionName { get; internal set; }
+        internal string FunctionName { get; set; }
     }
 }

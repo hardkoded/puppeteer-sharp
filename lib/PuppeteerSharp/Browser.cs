@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
@@ -87,13 +88,13 @@ namespace PuppeteerSharp
         /// <summary>
         /// Raised when a target is destroyed, for example when a page is closed
         /// </summary>
-        public event EventHandler<TargetChangedArgs> TargetDestroyed;        
+        public event EventHandler<TargetChangedArgs> TargetDestroyed;
 
         /// <summary>
         /// Gets the Browser websocket url
         /// </summary>
         /// <remarks>
-        /// Browser websocket endpoint which can be used as an argument to <see cref="Puppeteer.ConnectAsync(ConnectOptions)"/>.
+        /// Browser websocket endpoint which can be used as an argument to <see cref="Puppeteer.ConnectAsync(ConnectOptions, ILoggerFactory)"/>.
         /// The format is <c>ws://${host}:${port}/devtools/browser/[id]</c>
         /// You can find the <c>webSocketDebuggerUrl</c> from <c>http://${host}:${port}/json/version</c>.
         /// Learn more about the devtools protocol <see href="https://chromedevtools.github.io/devtools-protocol"/> 
@@ -102,7 +103,7 @@ namespace PuppeteerSharp
         public string WebSocketEndpoint => Connection.Url;
 
         /// <summary>
-        /// Gets the spawned browser process. Returns <c>null</c> if the browser instance was created with <see cref="Puppeteer.ConnectAsync(ConnectOptions)"/> method.
+        /// Gets the spawned browser process. Returns <c>null</c> if the browser instance was created with <see cref="Puppeteer.ConnectAsync(ConnectOptions, ILoggerFactory)"/> method.
         /// </summary>
         public Process Process { get; }
 
@@ -155,7 +156,7 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to an array of all open pages.</returns>
         public async Task<Page[]> PagesAsync()
             => (await Task.WhenAll(Targets().Select(target => target.PageAsync()))).Where(x => x != null).ToArray();
-        
+
         /// <summary>
         /// Gets the browser's version
         /// </summary>

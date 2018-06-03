@@ -2,13 +2,13 @@
 
 namespace PuppeteerSharp
 {
-    public class EvaluateExceptionDetails
+    internal class EvaluateExceptionDetails
     {
         [JsonProperty("exception")]
-        public EvaluateExceptionInfo Exception { get; internal set; }
+        internal EvaluateExceptionInfo Exception { get; set; }
         [JsonProperty("text")]
-        public string Text { get; internal set; }
+        internal string Text { get; set; }
         [JsonProperty("stackTrace")]
-        public EvaluateExceptionStackTrace StackTrace { get; internal set; }
+        internal EvaluateExceptionStackTrace StackTrace { get; set; }
     }
 }

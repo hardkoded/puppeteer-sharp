@@ -1,9 +1,8 @@
-﻿using System;
-namespace PuppeteerSharp.Media
+﻿namespace PuppeteerSharp.Media
 {
-    public struct ScreenOrientationType
+    internal class ScreenOrientationType
     {
-        public static string LandscapePrimary = "landscapePrimary";
-        public static string PortraitPrimary = "portraitPrimary";
+        internal static string LandscapePrimary = "landscapePrimary";
+        internal static string PortraitPrimary = "portraitPrimary";
     }
 }

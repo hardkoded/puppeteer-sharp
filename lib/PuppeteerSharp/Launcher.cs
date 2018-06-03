@@ -65,7 +65,7 @@ namespace PuppeteerSharp
         #endregion
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PuppeteerSharp.Launcher"/> class.
+        /// Initializes a new instance of the <see cref="Launcher"/> class.
         /// </summary>
         /// <param name="loggerFactory">Logger factory.</param>
         public Launcher(ILoggerFactory loggerFactory = null)

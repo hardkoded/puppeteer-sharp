@@ -2,15 +2,15 @@
 
 namespace PuppeteerSharp.Messaging
 {
-    public class PageJavascriptDialogOpeningResponse
+    internal class PageJavascriptDialogOpeningResponse
     {
         [JsonProperty("type")]
-        public DialogType Type { get; set; }
-        
+        internal DialogType Type { get; set; }
+
         [JsonProperty("defaultPrompt")]
-        public string DefaultPrompt { get; set; }
-        
+        internal string DefaultPrompt { get; set; }
+
         [JsonProperty("message")]
-        public string Message { get; set; }
+        internal string Message { get; set; }
     }
 }

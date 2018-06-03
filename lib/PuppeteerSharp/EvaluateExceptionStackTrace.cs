@@ -3,9 +3,9 @@ using Newtonsoft.Json;
 
 namespace PuppeteerSharp
 {
-    public class EvaluateExceptionStackTrace
+    internal class EvaluateExceptionStackTrace
     {
         [JsonProperty("callFrames")]
-        public EvaluationExceptionCallFrame[] CallFrames { get; internal set; }
+        internal EvaluationExceptionCallFrame[] CallFrames { get; set; }
     }
 }

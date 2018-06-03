@@ -1,15 +1,14 @@
 ﻿namespace PuppeteerSharp
 {
-    public class ContextPayload
+    internal class ContextPayload
     {
-        public ContextPayload(dynamic context)
+        internal ContextPayload(dynamic context)
         {
             Id = context.id;
             AuxData = context.auxData.ToObject<ContextPayloadAuxData>();
         }
 
-        public int Id { get; internal set; }
-
-        public ContextPayloadAuxData AuxData { get; internal set; }
+        internal int Id { get; }
+        internal ContextPayloadAuxData AuxData { get; }
     }
 }

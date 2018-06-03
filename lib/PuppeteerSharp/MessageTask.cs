@@ -3,16 +3,16 @@ using System.Threading.Tasks;
 
 namespace PuppeteerSharp
 {
-    public class MessageTask
+    internal class MessageTask
     {
-        public MessageTask()
+        internal MessageTask()
         {
         }
 
         #region public Properties
-        public TaskCompletionSource<dynamic> TaskWrapper { get; set; }
-        public string Method { get; set; }
-        public bool RawContent { get; set; }
+        internal TaskCompletionSource<dynamic> TaskWrapper { get; set; }
+        internal string Method { get; set; }
+        internal bool RawContent { get; set; }
         #endregion
     }
 }

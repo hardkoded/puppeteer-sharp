@@ -8,14 +8,14 @@ using Microsoft.Extensions.Logging;
 
 namespace PuppeteerSharp
 {
-    public class FrameManager
+    internal class FrameManager
     {
         private readonly CDPSession _client;
         private readonly Page _page;
         private Dictionary<int, ExecutionContext> _contextIdToContext;
         private readonly ILogger _logger;
 
-        public FrameManager(CDPSession client, FrameTree frameTree, Page page)
+        internal FrameManager(CDPSession client, FrameTree frameTree, Page page)
         {
             _client = client;
             _page = page;
@@ -28,13 +28,13 @@ namespace PuppeteerSharp
         }
 
         #region Properties
-        public event EventHandler<FrameEventArgs> FrameAttached;
-        public event EventHandler<FrameEventArgs> FrameDetached;
-        public event EventHandler<FrameEventArgs> FrameNavigated;
-        public event EventHandler<FrameEventArgs> LifecycleEvent;
+        internal event EventHandler<FrameEventArgs> FrameAttached;
+        internal event EventHandler<FrameEventArgs> FrameDetached;
+        internal event EventHandler<FrameEventArgs> FrameNavigated;
+        internal event EventHandler<FrameEventArgs> LifecycleEvent;
 
-        public Dictionary<string, Frame> Frames { get; internal set; }
-        public Frame MainFrame { get; internal set; }
+        internal Dictionary<string, Frame> Frames { get; set; }
+        internal Frame MainFrame { get; set; }
 
         #endregion
 
@@ -68,6 +68,8 @@ namespace PuppeteerSharp
                     break;
                 case "Page.lifecycleEvent":
                     OnLifeCycleEvent(e);
+                    break;
+                default:
                     break;
             }
         }

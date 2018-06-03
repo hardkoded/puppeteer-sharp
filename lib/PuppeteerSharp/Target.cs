@@ -3,6 +3,9 @@ using System.Threading.Tasks;
 
 namespace PuppeteerSharp
 {
+    /// <summary>
+    /// Target.
+    /// </summary>
     [DebuggerDisplay("Target {Type} - {Url}")]
     public class Target
     {
@@ -14,7 +17,7 @@ namespace PuppeteerSharp
 
         internal bool IsInitialized;
 
-        public Target(Browser browser, TargetInfo targetInfo)
+        internal Target(Browser browser, TargetInfo targetInfo)
         {
             _browser = browser;
             _targetInfo = targetInfo;
@@ -29,11 +32,23 @@ namespace PuppeteerSharp
         }
 
         #region Properties
+        /// <summary>
+        /// Gets the URL.
+        /// </summary>
+        /// <value>The URL.</value>
         public string Url => _targetInfo.Url;
+        /// <summary>
+        /// Gets the type. It will be <see cref="TargetInfo.Type"/> if it's "page" or "service_worker". Otherwise it will be "other"
+        /// </summary>
+        /// <value>The type.</value>
         public string Type => _targetInfo.Type == "page" || _targetInfo.Type == "service_worker" ? _targetInfo.Type : "other";
-        public Task<bool> InitializedTask => InitilizedTaskWrapper.Task;
-        public TaskCompletionSource<bool> InitilizedTaskWrapper { get; }
+        /// <summary>
+        /// Gets the target identifier.
+        /// </summary>
+        /// <value>The target identifier.</value>
         public string TargetId => _targetInfo.TargetId;
+        internal Task<bool> InitializedTask => InitilizedTaskWrapper.Task;
+        internal TaskCompletionSource<bool> InitilizedTaskWrapper { get; }
         #endregion
 
         /// <summary>
@@ -52,7 +67,7 @@ namespace PuppeteerSharp
             return await (_pageTask ?? Task.FromResult<Page>(null));
         }
 
-        public void TargetInfoChanged(TargetInfo targetInfo)
+        internal void TargetInfoChanged(TargetInfo targetInfo)
         {
             var previousUrl = _targetInfo.Url;
             _targetInfo = targetInfo;

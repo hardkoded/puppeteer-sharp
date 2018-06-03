@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace PuppeteerSharp
 {
+    /// <summary>
+    /// Downloader class used to download a chromium version from Google.
+    /// </summary>
     public class Downloader
     {
         private readonly string _downloadsFolder;
@@ -21,8 +24,15 @@ namespace PuppeteerSharp
         };
         private string _downloadHost;
 
+        /// <summary>
+        /// Default chromiumg revision.
+        /// </summary>
         public const int DefaultRevision = 526987;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Downloader"/> class.
+        /// </summary>
+        /// <param name="downloadsFolder">Downloads folder.</param>
         public Downloader(string downloadsFolder)
         {
             _downloadsFolder = downloadsFolder;
@@ -31,6 +41,10 @@ namespace PuppeteerSharp
 
         #region Public Methods
 
+        /// <summary>
+        /// Creates a <see cref="Downloader"/> class specifing a default download folder.
+        /// </summary>
+        /// <returns>A new downloader.</returns>
         public static Downloader CreateDefault()
         {
             var downloadsFolder = Path.Combine(Directory.GetCurrentDirectory(), ".local-chromium");
@@ -42,11 +56,18 @@ namespace PuppeteerSharp
             get
             {
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
                     return Platform.MacOS;
+                }
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
                     return Platform.Linux;
+                }
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
                     return IntPtr.Size == 8 ? Platform.Win64 : Platform.Win32;
+                }
+
                 return Platform.Unknown;
             }
         }
@@ -62,6 +83,11 @@ namespace PuppeteerSharp
             return result;
         }
 
+        /// <summary>
+        /// Downloads the revision.
+        /// </summary>
+        /// <returns>Task which resolves to the completed download.</returns>
+        /// <param name="revision">Revision.</param>
         public async Task DownloadRevisionAsync(int revision)
         {
             var url = string.Format(_downloadUrls[CurrentPlatform], _downloadHost, revision);
@@ -97,11 +123,22 @@ namespace PuppeteerSharp
 
         }
 
+        /// <summary>
+        /// Gets the executable path for a revision.
+        /// </summary>
+        /// <returns>The executable path.</returns>
+        /// <param name="revision">Revision.</param>
         public string GetExecutablePath(int revision)
         {
             return GetExecutablePath(CurrentPlatform, GetFolderPath(CurrentPlatform, revision));
         }
 
+        /// <summary>
+        /// Gets the executable path.
+        /// </summary>
+        /// <returns>The executable path.</returns>
+        /// <param name="platform">Platform.</param>
+        /// <param name="folderPath">Folder path.</param>
         public static string GetExecutablePath(Platform platform, string folderPath)
         {
             switch (platform)

@@ -13,7 +13,7 @@ namespace PuppeteerSharp
         /// <value>The message.</value>
         public string Message { get; set; }
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:PuppeteerSharp.PageErrorEventArgs"/> class.
+        /// Initializes a new instance of the <see cref="PageErrorEventArgs"/> class.
         /// </summary>
         /// <param name="message">Message.</param>
         public PageErrorEventArgs(string message) => Message = message;

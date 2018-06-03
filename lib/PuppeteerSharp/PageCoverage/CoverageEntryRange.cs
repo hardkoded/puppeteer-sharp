@@ -16,6 +16,7 @@
         /// <value>End offset.</value>
         public int End { get; internal set; }
 
+        /// <inheritdoc/>
         public override bool Equals(object obj)
         {
             if (obj == null && GetType() != obj.GetType())
@@ -29,6 +30,7 @@
                range.End == End;
         }
 
+        /// <inheritdoc/>
         public override int GetHashCode() => Start.GetHashCode() * 397 ^ End.GetHashCode() * 397;
     }
 }

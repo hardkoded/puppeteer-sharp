@@ -6,6 +6,20 @@ using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
+    /// <summary>
+    /// You can use <see cref="Tracing.StartAsync(TracingOptions)"/> and <see cref="Tracing.StopAsync"/> to create a trace file which can be opened in Chrome DevTools or timeline viewer.
+    /// </summary>
+    /// <example>
+    /// <code>
+    /// await Page.Tracing.StartAsync(new TracingOptions
+    /// {
+    ///     Screenshots = true,
+    ///     Path = _file
+    /// });
+    /// await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+    /// await Page.Tracing.StopAsync();
+    /// </code>
+    /// </example>
     public class Tracing
     {
         private readonly CDPSession _client;
@@ -26,7 +40,7 @@ namespace PuppeteerSharp
             "disabled-by-default-v8.cpu_profiler"
         };
 
-        public Tracing(CDPSession client)
+        internal Tracing(CDPSession client)
         {
             _client = client;
         }
@@ -79,7 +93,7 @@ namespace PuppeteerSharp
                 await ReadStream(e.Stream, _path);
                 _client.TracingComplete -= EventHandler;
                 taskWrapper.SetResult(true);
-            };
+            }
 
             _client.TracingComplete += EventHandler;
 

@@ -142,4 +142,7 @@
     <PackageReference Include="System.Net.Http" Version="4.3.3" />
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.0.2" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="FrameInfo.cs" />
+  </ItemGroup>
 </Project>

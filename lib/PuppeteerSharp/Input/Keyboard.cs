@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Input
 
         internal int Modifiers { get; set; }
 
-        public Keyboard(CDPSession client)
+        internal Keyboard(CDPSession client)
         {
             _client = client;
         }

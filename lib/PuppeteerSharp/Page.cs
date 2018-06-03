@@ -101,7 +101,7 @@ namespace PuppeteerSharp
         public event EventHandler<MetricEventArgs> Metrics;
 
         /// <summary>
-        /// Raised when a JavaScript dialog appears, such as <c>alert</c>, <c>prompt</c>, <c>confirm</c> or <c>beforeunload</c>. Puppeteer can respond to the dialog via <see cref="PuppeteerSharp.Dialog"/>'s <see cref="Dialog.Accept(string)"/> or <see cref="Dialog.Dismiss"/> methods.
+        /// Raised when a JavaScript dialog appears, such as <c>alert</c>, <c>prompt</c>, <c>confirm</c> or <c>beforeunload</c>. Puppeteer can respond to the dialog via <see cref="Dialog"/>'s <see cref="Dialog.Accept(string)"/> or <see cref="Dialog.Dismiss"/> methods.
         /// </summary>
         public event EventHandler<DialogEventArgs> Dialog;
 
@@ -141,12 +141,12 @@ namespace PuppeteerSharp
         public event EventHandler<FrameEventArgs> FrameNavigated;
 
         /// <summary>
-        /// Raised when a <see cref="PuppeteerSharp.Response"/> is received.
+        /// Raised when a <see cref="Response"/> is received.
         /// </summary>
         public event EventHandler<ResponseCreatedEventArgs> Response;
 
         /// <summary>
-        /// Raised when a page issues a request. The <see cref="PuppeteerSharp.Request"/> object is read-only.
+        /// Raised when a page issues a request. The <see cref="Request"/> object is read-only.
         /// In order to intercept and mutate requests, see <see cref="SetRequestInterceptionAsync(bool)"/>
         /// </summary>
         public event EventHandler<RequestEventArgs> Request;
@@ -1691,10 +1691,10 @@ namespace PuppeteerSharp
         /// <summary>
         /// Releases all resource used by the <see cref="Page"/> object by calling the <see cref="CloseAsync"/> method.
         /// </summary>
-        /// <remarks>Call <see cref="Dispose"/> when you are finished using the <see cref="T:PuppeteerSharp.Page"/>. The
-        /// <see cref="Dispose"/> method leaves the <see cref="T:PuppeteerSharp.Page"/> in an unusable state. After
-        /// calling <see cref="Dispose"/>, you must release all references to the <see cref="T:PuppeteerSharp.Page"/> so
-        /// the garbage collector can reclaim the memory that the <see cref="T:PuppeteerSharp.Page"/> was occupying.</remarks>
+        /// <remarks>Call <see cref="Dispose"/> when you are finished using the <see cref="Page"/>. The
+        /// <see cref="Dispose"/> method leaves the <see cref="Page"/> in an unusable state. After
+        /// calling <see cref="Dispose"/>, you must release all references to the <see cref="Page"/> so
+        /// the garbage collector can reclaim the memory that the <see cref="Page"/> was occupying.</remarks>
         public void Dispose() => CloseAsync();
         #endregion
     }

@@ -1,8 +1,8 @@
 namespace PuppeteerSharp
 {
-    public struct ContextPayloadAuxData
+    internal struct ContextPayloadAuxData
     {
-        public string FrameId { get; set; }
-        public bool IsDefault { get; set; }
+        internal string FrameId { get; set; }
+        internal bool IsDefault { get; set; }
     }
 }

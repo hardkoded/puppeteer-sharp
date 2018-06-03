@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 namespace PuppeteerSharp
 {
+    /// <summary>
+    /// Tracing options used on <see cref="Tracing.StartAsync(TracingOptions)"/>.
+    /// </summary>
     public class TracingOptions
     {
         /// <summary>

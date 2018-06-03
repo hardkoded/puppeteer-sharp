@@ -76,7 +76,7 @@ namespace PuppeteerSharp
         /// </summary>
         public event EventHandler<TracingCompleteEventArgs> TracingComplete;
         /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="T:PuppeteerSharp.CDPSession"/> is closed.
+        /// Gets or sets a value indicating whether this <see cref="CDPSession"/> is closed.
         /// </summary>
         /// <value><c>true</c> if is closed; otherwise, <c>false</c>.</value>
         public bool IsClosed { get; internal set; }
@@ -151,14 +151,14 @@ namespace PuppeteerSharp
         #region Private Methods
 
         /// <summary>
-        /// Releases all resource used by the <see cref="T:PuppeteerSharp.CDPSession"/> object by sending a ""Target.closeTarget"
+        /// Releases all resource used by the <see cref="CDPSession"/> object by sending a ""Target.closeTarget"
         /// using the <see cref="Connection.SendAsync(string, dynamic)"/> method.
         /// </summary>
-        /// <remarks>Call <see cref="Dispose"/> when you are finished using the <see cref="PuppeteerSharp.CDPSession"/>. The
-        /// <see cref="Dispose"/> method leaves the <see cref="PuppeteerSharp.CDPSession"/> in an unusable state.
+        /// <remarks>Call <see cref="Dispose"/> when you are finished using the <see cref="CDPSession"/>. The
+        /// <see cref="Dispose"/> method leaves the <see cref="CDPSession"/> in an unusable state.
         /// After calling <see cref="Dispose"/>, you must release all references to the
-        /// <see cref="PuppeteerSharp.CDPSession"/> so the garbage collector can reclaim the memory that the
-        /// <see cref="PuppeteerSharp.CDPSession"/> was occupying.</remarks>
+        /// <see cref="CDPSession"/> so the garbage collector can reclaim the memory that the
+        /// <see cref="CDPSession"/> was occupying.</remarks>
         public void Dispose()
         {
             Connection.SendAsync("Target.closeTarget", new Dictionary<string, object>
