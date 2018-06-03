@@ -26,7 +26,7 @@ namespace PuppeteerSharp
         private bool _interceptionHandled;
         #endregion
 
-        public Request(CDPSession client, string requestId, string interceptionId, bool allowInterception, string url,
+        internal Request(CDPSession client, string requestId, string interceptionId, bool allowInterception, string url,
                       ResourceType resourceType, Payload payload, Frame frame)
         {
             _client = client;
@@ -52,14 +52,38 @@ namespace PuppeteerSharp
         }
 
         #region Properties
-        public Response Response { get; set; }
-        public string Failure { get; set; }
+        /// <summary>
+        /// Responsed attached to the request.
+        /// </summary>
+        /// <value>The response.</value>
+        public Response Response { get; internal set; }
+        /// <summary>
+        /// Gets or sets the failure.
+        /// </summary>
+        /// <value>The failure.</value>
+        public string Failure { get; internal set; }
+        /// <summary>
+        /// Gets or sets the request identifier.
+        /// </summary>
+        /// <value>The request identifier.</value>
         public string RequestId { get; internal set; }
+        /// <summary>
+        /// Gets or sets the interception identifier.
+        /// </summary>
+        /// <value>The interception identifier.</value>
         public string InterceptionId { get; internal set; }
+        /// <summary>
+        /// Gets or sets the type of the resource.
+        /// </summary>
+        /// <value>The type of the resource.</value>
         public ResourceType ResourceType { get; internal set; }
-        public Task<bool> CompleteTask => CompleteTaskWrapper.Task;
-        public TaskCompletionSource<bool> CompleteTaskWrapper { get; internal set; }
+        /// <summary>
+        /// Gets the frame.
+        /// </summary>
+        /// <value>The frame.</value>
         public Frame Frame { get; }
+        internal Task<bool> CompleteTask => CompleteTaskWrapper.Task;
+        internal TaskCompletionSource<bool> CompleteTaskWrapper { get; set; }
         #endregion
 
         #region Public Methods

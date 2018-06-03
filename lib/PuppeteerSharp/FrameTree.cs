@@ -4,15 +4,14 @@ using Newtonsoft.Json.Linq;
 
 namespace PuppeteerSharp
 {
-    public class FrameTree
+    internal class FrameTree
     {
-
-        public FrameTree()
+        internal FrameTree()
         {
             Childs = new List<FrameTree>();
         }
 
-        public FrameTree(dynamic frameTree)
+        internal FrameTree(dynamic frameTree)
         {
             Frame = new FramePayload
             {
@@ -27,8 +26,8 @@ namespace PuppeteerSharp
         }
 
         #region Properties
-        public FramePayload Frame { get; set; }
-        public List<FrameTree> Childs { get; set; }
+        internal FramePayload Frame { get; set; }
+        internal List<FrameTree> Childs { get; set; }
         #endregion
 
         #region Private Functions
@@ -39,13 +38,14 @@ namespace PuppeteerSharp
             {
                 foreach (dynamic item in frameTree.childFrames)
                 {
-                    var newFrame = new FrameTree();
-
-                    newFrame.Frame = new FramePayload
+                    var newFrame = new FrameTree
                     {
-                        Id = item.frame.id,
-                        ParentId = item.frame.parentId,
-                        Url = item.frame.url
+                        Frame = new FramePayload
+                        {
+                            Id = item.frame.id,
+                            ParentId = item.frame.parentId,
+                            Url = item.frame.url
+                        }
                     };
 
                     if ((item as JObject)["childFrames"] != null)

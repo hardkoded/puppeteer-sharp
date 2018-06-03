@@ -2,11 +2,11 @@
 
 namespace PuppeteerSharp
 {
-    public struct Metric
+    internal struct Metric
     {
         [JsonProperty("name")]
-        public string Name { get; set; }
+        internal string Name { get; set; }
         [JsonProperty("value")]
-        public decimal Value { get; set; }
+        internal decimal Value { get; set; }
     }
 }

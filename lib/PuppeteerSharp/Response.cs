@@ -6,11 +6,14 @@ using Newtonsoft.Json.Linq;
 
 namespace PuppeteerSharp
 {
+    /// <summary>
+    /// <see cref="Response"/> class represents responses which are received by page.
+    /// </summary>
     public class Response
     {
         private readonly CDPSession _client;
 
-        public Response(CDPSession client, Request request, HttpStatusCode status, Dictionary<string, object> headers, SecurityDetails securityDetails)
+        internal Response(CDPSession client, Request request, HttpStatusCode status, Dictionary<string, object> headers, SecurityDetails securityDetails)
         {
             _client = client;
             Request = request;
@@ -32,13 +35,34 @@ namespace PuppeteerSharp
         /// Contains the URL of the response.
         /// </summary>
         public string Url { get; internal set; }
+        /// <summary>
+        /// An object with HTTP headers associated with the response. All header names are lower-case.
+        /// </summary>
+        /// <value>The headers.</value>
         public Dictionary<string, object> Headers { get; internal set; }
+        /// <summary>
+        /// Contains the status code of the response
+        /// </summary>
+        /// <value>The status.</value>
         public HttpStatusCode? Status { get; internal set; }
+        /// <summary>
+        /// Contains a boolean stating whether the response was successful (status in the range 200-299) or not.
+        /// </summary>
+        /// <value><c>true</c> if ok; otherwise, <c>false</c>.</value>
         public bool Ok { get; }
-        public Task<string> ContentTask => ContentTaskWrapper.Task;
-        public TaskCompletionSource<string> ContentTaskWrapper { get; internal set; }
+        /// <summary>
+        /// A matching <see cref="Request"/> object.
+        /// </summary>
+        /// <value>The request.</value>
         public Request Request { get; internal set; }
+        /// <summary>
+        /// Gets or sets the security details.
+        /// </summary>
+        /// <value>The security details.</value>
         public SecurityDetails SecurityDetails { get; internal set; }
+
+        internal Task<string> ContentTask => ContentTaskWrapper.Task;
+        internal TaskCompletionSource<string> ContentTaskWrapper { get; set; }
         #endregion
 
         #region Public Methods

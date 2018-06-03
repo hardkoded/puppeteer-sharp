@@ -1,5 +1,8 @@
 ﻿namespace PuppeteerSharp
 {
+    /// <summary>
+    /// Wait until navigation.
+    /// </summary>
     public enum WaitUntilNavigation
     {
         /// <summary>

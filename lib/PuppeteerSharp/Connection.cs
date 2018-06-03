@@ -73,7 +73,7 @@ namespace PuppeteerSharp
         /// </summary>
         public event EventHandler<MessageEventArgs> MessageReceived;
         /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="PuppeteerSharp.Connection"/> is closed.
+        /// Gets or sets a value indicating whether this <see cref="Connection"/> is closed.
         /// </summary>
         /// <value><c>true</c> if is closed; otherwise, <c>false</c>.</value>
         public bool IsClosed { get; internal set; }
@@ -278,14 +278,14 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Releases all resource used by the <see cref="PuppeteerSharp.Connection"/> object.
+        /// Releases all resource used by the <see cref="Connection"/> object.
         /// It will raise the <see cref="Closed"/> event and call <see cref="WebSocket.CloseAsync(WebSocketCloseStatus, string, CancellationToken)"/>.
         /// </summary>
-        /// <remarks>Call <see cref="Dispose"/> when you are finished using the <see cref="PuppeteerSharp.Connection"/>. The
-        /// <see cref="Dispose"/> method leaves the <see cref="T:PuppeteerSharp.Connection"/> in an unusable state.
+        /// <remarks>Call <see cref="Dispose"/> when you are finished using the <see cref="Connection"/>. The
+        /// <see cref="Dispose"/> method leaves the <see cref="Connection"/> in an unusable state.
         /// After calling <see cref="Dispose"/>, you must release all references to the
-        /// <see cref="PuppeteerSharp.Connection"/> so the garbage collector can reclaim the memory that the
-        /// <see cref="PuppeteerSharp.Connection"/> was occupying.</remarks>
+        /// <see cref="Connection"/> so the garbage collector can reclaim the memory that the
+        /// <see cref="Connection"/> was occupying.</remarks>
         public void Dispose()
         {
             OnClose();

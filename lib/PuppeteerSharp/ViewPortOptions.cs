@@ -1,7 +1,13 @@
 ﻿namespace PuppeteerSharp
 {
+    /// <summary>
+    /// View port options used on <see cref="Page.SetViewportAsync(ViewPortOptions)"/>.
+    /// </summary>
     public class ViewPortOptions
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ViewPortOptions"/> class.
+        /// </summary>
         public ViewPortOptions()
         {
             IsMobile = false;

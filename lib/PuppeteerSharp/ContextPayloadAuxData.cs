@@ -1,8 +1,12 @@
+using Newtonsoft.Json;
+
 namespace PuppeteerSharp
 {
-    public struct ContextPayloadAuxData
+    internal struct ContextPayloadAuxData
     {
-        public string FrameId { get; set; }
-        public bool IsDefault { get; set; }
+        [JsonProperty("frameId")]
+        internal string FrameId { get; set; }
+        [JsonProperty("isDefault")]
+        internal bool IsDefault { get; set; }
     }
 }

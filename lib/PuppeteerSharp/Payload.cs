@@ -8,24 +8,43 @@ using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
 {
+    /// <summary>
+    /// Payload information.
+    /// </summary>
     public class Payload
     {
-        public Payload()
+        internal Payload()
         {
             Headers = new Dictionary<string, object>();
         }
 
+        /// <summary>
+        /// Gets or sets the HTTP method.
+        /// </summary>
+        /// <value>HTTP method.</value>
         [JsonProperty("method"), JsonConverter(typeof(HttpMethodConverter))]
-        public HttpMethod Method { get; set; }
+        public HttpMethod Method { get; internal set; }
+        /// <summary>
+        /// Gets or sets the post data.
+        /// </summary>
+        /// <value>The post data.</value>
         [JsonProperty("postData")]
         public object PostData { get; internal set; }
+        /// <summary>
+        /// Gets or sets the HTTP headers.
+        /// </summary>
+        /// <value>HTTP headers.</value>
         [JsonProperty("headers")]
         public Dictionary<string, object> Headers { get; internal set; }
+        /// <summary>
+        /// Gets or sets the URL.
+        /// </summary>
+        /// <value>The URL.</value>
         [JsonProperty("url")]
         public string Url { get; internal set; }
 
         [JsonIgnore]
-        public string Hash
+        internal string Hash
         {
             get
             {

@@ -1,5 +1,8 @@
 ﻿namespace PuppeteerSharp
 {
+    /// <summary>
+    /// Browser options.
+    /// </summary>
     public interface IBrowserOptions
     {
         /// <summary>

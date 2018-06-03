@@ -131,7 +131,7 @@ namespace PuppeteerSharp
             else
             {
                 await Task.Delay(_timeout);
-                throw new ChromeProcessException($"Navigation Timeout Exceeded: {_timeout}ms exceeded");
+                throw new NavigationException($"Navigation Timeout Exceeded: {_timeout}ms exceeded");
             }
         }
 
