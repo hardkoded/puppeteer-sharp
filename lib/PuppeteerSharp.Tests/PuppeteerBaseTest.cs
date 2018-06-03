@@ -33,7 +33,7 @@ namespace PuppeteerSharp.Tests
             HttpsServer.Reset();
         }
 
-        protected static Task<dynamic> WaitForEvents(Session emitter, string eventName, int eventCount = 1)
+        protected static Task<dynamic> WaitForEvents(CDPSession emitter, string eventName, int eventCount = 1)
         {
             var completion = new TaskCompletionSource<dynamic>();
             void handler(object sender, MessageEventArgs e)

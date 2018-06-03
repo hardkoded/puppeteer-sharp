@@ -9,7 +9,7 @@ namespace PuppeteerSharp.PageCoverage
 {
     internal class JSCoverage
     {
-        private readonly Session _client;
+        private readonly CDPSession _client;
         private readonly Dictionary<string, string> _scriptURLs;
         private readonly Dictionary<string, string> _scriptSources;
         private readonly ILogger _logger;
@@ -17,7 +17,7 @@ namespace PuppeteerSharp.PageCoverage
         private bool _enabled;
         private bool _resetOnNavigation;
 
-        public JSCoverage(Session client)
+        public JSCoverage(CDPSession client)
         {
             _client = client;
             _enabled = false;

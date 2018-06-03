@@ -12,7 +12,7 @@ namespace PuppeteerSharp
     /// </summary>
     public class JSHandle
     {
-        internal JSHandle(ExecutionContext context, Session client, object remoteObject)
+        internal JSHandle(ExecutionContext context, CDPSession client, object remoteObject)
         {
             ExecutionContext = context;
             Client = client;
@@ -39,7 +39,7 @@ namespace PuppeteerSharp
         /// Gets the client.
         /// </summary>
         /// <value>The client.</value>
-        protected Session Client { get; }
+        protected CDPSession Client { get; }
         /// <summary>
         /// Gets the logger.
         /// </summary>

@@ -18,7 +18,7 @@ namespace PuppeteerSharp.Tests.TargetTests
         [Fact]
         public async Task ShouldWork()
         {
-            var client = await Page.Target.CreateCDPSession();
+            var client = await Page.Target.CreateCDPSessionAsync();
 
             await Task.WhenAll(
               client.SendAsync("Runtime.enable"),
@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Tests.TargetTests
         [Fact]
         public async Task ShouldSendEvents()
         {
-            var client = await Page.Target.CreateCDPSession();
+            var client = await Page.Target.CreateCDPSessionAsync();
             await client.SendAsync("Network.enable");
             var events = new List<object>();
 
@@ -50,7 +50,7 @@ namespace PuppeteerSharp.Tests.TargetTests
         [Fact]
         public async Task ShouldEnableAndDisableDomainsIndependently()
         {
-            var client = await Page.Target.CreateCDPSession();
+            var client = await Page.Target.CreateCDPSessionAsync();
             await client.SendAsync("Runtime.enable");
             await client.SendAsync("Debugger.enable");
             // JS coverage enables and then disables Debugger domain.
@@ -69,7 +69,7 @@ namespace PuppeteerSharp.Tests.TargetTests
         [Fact]
         public async Task ShouldBeAbleToDetachSession()
         {
-            var client = await Page.Target.CreateCDPSession();
+            var client = await Page.Target.CreateCDPSessionAsync();
             await client.SendAsync("Runtime.enable");
             var evalResponse = await client.SendAsync("Runtime.evaluate", new { expression = "1 + 2", returnByValue = true });
             Assert.Equal(3, evalResponse.result.value.ToObject<int>());

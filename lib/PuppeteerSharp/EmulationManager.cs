@@ -6,16 +6,16 @@ namespace PuppeteerSharp
 {
     internal class EmulationManager
     {
-        private Session _client;
+        private readonly CDPSession _client;
         private string _injectedTouchScriptId;
         private bool _emulatingMobile;
 
-        public EmulationManager(Session client)
+        public EmulationManager(CDPSession client)
         {
             _client = client;
         }
 
-        internal async Task<bool> EmulateViewport(Session client, ViewPortOptions viewport)
+        internal async Task<bool> EmulateViewport(CDPSession client, ViewPortOptions viewport)
         {
             var mobile = viewport.IsMobile;
             var width = viewport.Width;

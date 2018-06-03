@@ -8,7 +8,7 @@ namespace PuppeteerSharp.Input
     /// </summary>
     public class Touchscreen
     {
-        private readonly Session _client;
+        private readonly CDPSession _client;
         private readonly Keyboard _keyboard;
 
         /// <summary>
@@ -16,7 +16,7 @@ namespace PuppeteerSharp.Input
         /// </summary>
         /// <param name="client">The client</param>
         /// <param name="keyboard">The keyboard</param>
-        public Touchscreen(Session client, Keyboard keyboard)
+        public Touchscreen(CDPSession client, Keyboard keyboard)
         {
             _client = client;
             _keyboard = keyboard;

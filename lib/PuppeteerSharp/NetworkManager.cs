@@ -12,24 +12,24 @@ namespace PuppeteerSharp
     public class NetworkManager
     {
         #region Private members
-        private readonly Session _client;
-        private readonly Dictionary<string, Request> _requestIdToRequest = new Dictionary<string, Request>();
-        private readonly Dictionary<string, Request> _interceptionIdToRequest = new Dictionary<string, Request>();
+
+        private readonly CDPSession _client;
+        private Dictionary<string, Request> _requestIdToRequest = new Dictionary<string, Request>();
+        private Dictionary<string, Request> _interceptionIdToRequest = new Dictionary<string, Request>();
         private readonly MultiMap<string, string> _requestHashToRequestIds = new MultiMap<string, string>();
         private readonly MultiMap<string, string> _requestHashToInterceptionIds = new MultiMap<string, string>();
         private readonly FrameManager _frameManager;
         private readonly ILogger _logger;
-
         private Dictionary<string, string> _extraHTTPHeaders;
         private bool _offine;
         private Credentials _credentials;
         private List<string> _attemptedAuthentications = new List<string>();
         private bool _userRequestInterceptionEnabled;
         private bool _protocolRequestInterceptionEnabled;
-        
+
         #endregion
 
-        public NetworkManager(Session client, FrameManager frameManager)
+        public NetworkManager(CDPSession client, FrameManager frameManager)
         {
             _frameManager = frameManager;
             _client = client;

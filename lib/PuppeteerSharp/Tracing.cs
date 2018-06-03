@@ -8,7 +8,7 @@ namespace PuppeteerSharp
 {
     public class Tracing
     {
-        private Session _client;
+        private readonly CDPSession _client;
         private bool _recording;
         private string _path;
         private static readonly List<string> _defaultCategories = new List<string>()
@@ -26,7 +26,7 @@ namespace PuppeteerSharp
             "disabled-by-default-v8.cpu_profiler"
         };
 
-        public Tracing(Session client)
+        public Tracing(CDPSession client)
         {
             _client = client;
         }

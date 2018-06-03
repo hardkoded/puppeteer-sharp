@@ -38,9 +38,8 @@ namespace PuppeteerSharp
     /// </example>
     public class Frame
     {
-        private readonly Session _client;
+        private readonly CDPSession _client;
         private readonly Page _page;
-
         private TaskCompletionSource<ElementHandle> _documentCompletionSource;
         private TaskCompletionSource<ExecutionContext> _contextResolveTaskWrapper;
 
@@ -49,14 +48,7 @@ namespace PuppeteerSharp
         internal string LoaderId { get; set; }
         internal List<string> LifecycleEvents { get; }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Frame"/> class.
-        /// </summary>
-        /// <param name="client">The client</param>
-        /// <param name="page">The page containing the frame</param>
-        /// <param name="parentFrame">The parent frame</param>
-        /// <param name="frameId">The frameId</param>
-        public Frame(Session client, Page page, Frame parentFrame, string frameId)
+        internal Frame(CDPSession client, Page page, Frame parentFrame, string frameId)
         {
             _client = client;
             _page = page;
@@ -90,7 +82,7 @@ namespace PuppeteerSharp
         /// Gets the frame's url
         /// </summary>
         public string Url { get; private set; }
-        
+
         /// <summary>
         /// Gets a value indicating if the frame is detached or not
         /// </summary>
@@ -215,7 +207,7 @@ namespace PuppeteerSharp
             }, selector, options.Visible, options.Hidden);
             return handle as ElementHandle;
         }
-        
+
         /// <summary>
         /// Waits for a timeout
         /// </summary>
@@ -483,7 +475,7 @@ namespace PuppeteerSharp
                 _contextResolveTaskWrapper = new TaskCompletionSource<ExecutionContext>();
             }
         }
-        
+
         internal void Detach()
         {
             while (WaitTasks.Count > 0)

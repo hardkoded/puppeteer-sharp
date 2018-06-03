@@ -10,12 +10,12 @@ namespace PuppeteerSharp
 {
     public class FrameManager
     {
-        private readonly Session _client;
+        private readonly CDPSession _client;
         private readonly Page _page;
-        private readonly Dictionary<int, ExecutionContext> _contextIdToContext;
+        private Dictionary<int, ExecutionContext> _contextIdToContext;
         private readonly ILogger _logger;
 
-        public FrameManager(Session client, FrameTree frameTree, Page page)
+        public FrameManager(CDPSession client, FrameTree frameTree, Page page)
         {
             _client = client;
             _page = page;

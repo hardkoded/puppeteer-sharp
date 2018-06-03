@@ -13,7 +13,7 @@ namespace PuppeteerSharp.PageCoverage
         private readonly JSCoverage _jsCoverage;
         private readonly CSSCoverage _cssCoverage;
 
-        internal Coverage(Session client)
+        internal Coverage(CDPSession client)
         {
             _jsCoverage = new JSCoverage(client);
             _cssCoverage = new CSSCoverage(client);

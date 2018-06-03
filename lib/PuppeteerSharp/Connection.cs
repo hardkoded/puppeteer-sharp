@@ -29,7 +29,7 @@ namespace PuppeteerSharp
             _logger = LoggerFactory.CreateLogger<Connection>();
             _socketQueue = new TaskQueue();
             _responses = new Dictionary<int, MessageTask>();
-            _sessions = new Dictionary<string, Session>();
+            _sessions = new Dictionary<string, CDPSession>();
             _websocketReaderCancellationSource = new CancellationTokenSource();
 
             Task task = Task.Factory.StartNew(async () =>
@@ -41,7 +41,7 @@ namespace PuppeteerSharp
         #region Private Members
         private int _lastId;
         private Dictionary<int, MessageTask> _responses;
-        private Dictionary<string, Session> _sessions;
+        private Dictionary<string, CDPSession> _sessions;
         private TaskQueue _socketQueue;
         private const string CloseMessage = "Browser.close";
         private bool _stopReading;
@@ -113,10 +113,10 @@ namespace PuppeteerSharp
             return await _responses[id].TaskWrapper.Task;
         }
 
-        internal async Task<Session> CreateSession(string targetId)
+        internal async Task<CDPSession> CreateSessionAsync(string targetId)
         {
             string sessionId = (await SendAsync("Target.attachToTarget", new { targetId })).sessionId;
-            var session = new Session(this, targetId, sessionId);
+            var session = new CDPSession(this, targetId, sessionId);
             _sessions.Add(sessionId, session);
             return session;
         }

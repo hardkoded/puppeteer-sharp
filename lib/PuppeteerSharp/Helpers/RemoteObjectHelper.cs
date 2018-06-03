@@ -56,7 +56,7 @@ namespace PuppeteerSharp.Helpers
             }
         }
 
-        internal static async Task ReleaseObject(Session client, dynamic remoteObject, ILogger logger)
+        internal static async Task ReleaseObject(CDPSession client, dynamic remoteObject, ILogger logger)
         {
             if (remoteObject.objectId == null)
                 return;
