@@ -9,11 +9,15 @@ using System.Threading.Tasks;
 
 namespace PuppeteerSharp
 {
+    /// <summary>
+    /// Inherits from <see cref="JSHandle"/>. It represents an in-page DOM element. 
+    /// ElementHandles can be created by <see cref="Page.QuerySelectorAsync(string)"/> or <see cref="Page.QuerySelectorAllAsync(string)"/>.
+    /// </summary>
     public class ElementHandle : JSHandle
     {
         internal Page Page { get; }
 
-        public ElementHandle(ExecutionContext context, Session client, object remoteObject, Page page) :
+        internal ElementHandle(ExecutionContext context, Session client, object remoteObject, Page page) :
             base(context, client, remoteObject)
         {
             Page = page;
@@ -202,8 +206,7 @@ namespace PuppeteerSharp
                 "(element, selector) => element.querySelector(selector)",
                 this, selector);
 
-            var element = handle as ElementHandle;
-            if (element != null)
+            if (handle is ElementHandle element)
             {
                 return element;
             }
