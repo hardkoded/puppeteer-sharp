@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>0.8.0</PackageVersion>
+    <PackageVersion>1.0.0</PackageVersion>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
@@ -11,126 +11,51 @@
     <Title>PuppeteerSharp</Title>
     <Description>Headless Chrome .NET API</Description>
     <PackageId>PuppeteerSharp</PackageId>
-    <PackageReleaseNotes>* 0.8.0: ElementHandle
-  * Features:
-    - ElementHandle support
-  * API Changes
-    - Page.SetViewport renamed to Page.SetViewportAsync
-    - JSHandle.AsElement was dropped. Use JSHandle as ElementHandle instead
-    - JSHandle.JsonValue renamed to JSHandle.JsonValueAsync
-  * New APIs
-    - Page.WaitForNavigationAsync
-    - ElementHandle.QuerySelectorAsync
-    - ElementHandle.QuerySelectorAllAsync
-    - ElementHandle.XPathAsync
-    - ElementHandle.ScreenshotAsync
-    - ElementHandle.ScreenshotStreamAsync
-    - ElementHandle.ClickAsync
-    - ElementHandle.HoverAsync
-    - ElementHandle.BoundingBoxAsync
-    - JSHandle.GetPropertyAsync
-    - JSHandle.GetPropertiesAsync
-* 0.7.0: Page improvements
-  * Features
-    - Selectors and Expressions over Selectors
-    - Script and Style tags
-  * New APIs
-    - Page.XPathAsync
-    - Page.QuerySelectorAsync
-    - Page.QuerySelectorAllAsync
-    - Page.QuerySelectorAllHandleAsync
-    - Page.SelectAsync
-    - Page.ExposeFunctionAsync
-    - Page.EvaluateOnNewDocumentAsync
-    - Page.AddScriptTagAsync
-    - Page.AddStyleTagAsync
-    - Page.PageError
-    - JSHandle.EvaluateFunctionAsync
-    - ElementHandle.EvaluateFunctionAsync
-* 0.6.0: Input
-  * Features
-    - Input simulation
-  * New APIs
-    - ElementHandle.HoverAsync
-    - ElementHandle.ClickAsync
-    - ElementHandle.UploadFileAsync
-    - ElementHandle.TapAsync
-    - ElementHandle.FocusAsync
-    - ElementHandle.TypeAsync
-    - ElementHandle.PressAsync
-    - Keyboard.DownAsync
-    - Keyboard.UpAsync
-    - Keyboard.SendCharacterAsync
-    - Keyboard.TypeAsync
-    - Keyboard.PressAsync
-    - Mouse.MoveAsync
-    - Mouse.ClickAsync
-    - Mouse.DownAsync
-    - Mouse.UpAsync
-    - TouchScreen.TapAsync
-    - Page.ClickAsync
-    - Page.HoverAsync
-    - Page.FocusAsync
-    - Page.TypeAsync
-* 0.5.0: Frames and Tracing
-  * Features
-    - Network Events
-    - Tracing
-    - Frames support
-  * fixes
-    - Fixed Browse.Close on Azure Functions
-  * New APIs
-    - Request.ContinueAsync
-    - Request.RespondAsync
-    - Request.AbortAsync
-    - Response.BufferAsync
-    - Response.TextAsync
-    - Response.JsonAsync
-    - Session.TracingComplete
-    - Session.DetachAsync
-    - Page.Tracing.StartAsync
-    - Page.Tracing.StopAsync
-    - Page.EvaluateOnNewDocumentAsync
-    - Page.Coverage
-    - Page.WaitForFunctionAsync
-    - Browser.Targets
-    - Browser.PagesAsync
-    - Frame.WaitForSelectorAsync
-    - Target.CreateCDPSession
+    <PackageReleaseNotes>
+* New Features
+ * Request.RespondAsync support.
+ * CSS and JS Coverage.
+ * Request Interception.
 
-* 0.4.0: Page Features, are you ready?
-    - Page.GoToAsync
-    - Page.ReloadAsync
-    - Page.EmulateMediaAsync
-    - Page.SetViewport
-    - Page.EmulateAsync
-    - Page.SetUserAgentAsync
-    - Page.MetricsAsync
-    - Page.Dialog
-    - Page.Error
-    - Page.RequestCreated
-    - Page.GetCookiesAsync
-    - Page.SetCookieAsync
-    - Page.SetExtraHttpHeadersAsync
-    - Page.AuthenticateAsync
-    - Page.SetJavaScriptEnabledAsync
-    - Page.SetContentAsync
-    - Page.EvaluateFunctionAsync
-    - Page.EvaluateExpressionAsync
-    - Page.GetTitleAsync
-    - Page.SetOfflineModeAsync
-    - Page.CloseAsync
-    - Page.Console
-    - Page.WaitForTimeoutAsync
-    - Page.WaitForFunctionAsync
-    - Page.WaitForSelectorAsync
-    - Page.PageError
-* 0.3.3: Page.Dispose fixes. NavigationOptions properties were made public. Several Page features are included as pre-release.
-* 0.3.2: Frame/FrameManager and Page redirect fixes
-* 0.3.1: .NET Framework Support
-* 0.3.0: Process improvements, User data dir support
-* 0.1.0: PDF and Screenshots support</PackageReleaseNotes>
-    <ReleaseVersion>0.8.0</ReleaseVersion>
+* New APIs
+ * Request.RespondAsync
+ * Page.Coverage.StartJSCoverageAsync
+ * Page.Coverage.StopJSCoverageAsync
+ * Page.Coverage.StartCSSCoverageAsync
+ * Page.Coverage.StopCSSCoverageAsync
+ * Page.ScreenshotDataAsync
+ * Page.PdfDataAsync
+ * Page.SetRequestInterceptionAsync
+ * Page.GoBackAsync
+ * Page.GoForwardAsync
+ * Page.QueryObjectsAsync
+ * ElementHandle.ScreenshotDataAsync
+ * ElementHandle.PdfDataAsync
+ * Browser.WebSocketEndpoint
+ * Browser.Process
+
+* Namespace Changes
+ * PuppeteerSharp.ClickOptions PuppeteerSharp.Input.ClickOptions
+ * PuppeteerSharp.Key => PuppeteerSharp.Input.Key
+ * PuppeteerSharp.Keyboard => PuppeteerSharp.Input.Keyboard
+ * PuppeteerSharp.KeyDefinition => PuppeteerSharp.Input.KeyDefinition
+ * PuppeteerSharp.KeyDefinitions => PuppeteerSharp.Input.KeyDefinitions
+ * PuppeteerSharp.Mouse => PuppeteerSharp.Input.Mouse
+ * PuppeteerSharp.MouseButton => PuppeteerSharp.Input.MouseButton
+ * PuppeteerSharp.MoveOptions => PuppeteerSharp.Input.MoveOptions
+ * PuppeteerSharp.PressOption => PuppeteerSharp.Input.PresspPtions
+ * PuppeteerSharp.Touchscreen => PuppeteerSharp.Input.TouchScreen
+ * PuppeteerSharp.Clip => PuppeteerSharp.Media.Clip
+ * PuppeteerSharp.MarginOptions => PuppeteerSharp.Media.MarginOptions
+ * PuppeteerSharp.MediaType => PuppeteerSharp.Media.MediaType
+ * PuppeteerSharp.PaperFormat => PuppeteerSharp.Media.PaperFormat
+ * PuppeteerSharp.ScreenOrientation => PuppeteerSharp.Media.ScreenOrientation
+ * PuppeteerSharp.ScreenOrientationType => PuppeteerSharp.Media.ScreenOrientationType
+ * PuppeteerSharp.DeviceDescriptor => PuppeteerSharp.Mobile.DeviceDescriptor
+ * PuppeteerSharp.DeviceDescriptors => PuppeteerSharp.Mobile.DeviceDescriptors
+ * PuppeteerSharp.DeviceDescriptorName => PuppeteerSharp.Mobile.DeviceDescriptorName
+    </PackageReleaseNotes>
+    <ReleaseVersion>1.0.0</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>
