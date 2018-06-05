@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>1.0.0</PackageVersion>
+    <PackageVersion>1.0.1</PackageVersion>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
@@ -12,6 +12,11 @@
     <Description>Headless Chrome .NET API</Description>
     <PackageId>PuppeteerSharp</PackageId>
     <PackageReleaseNotes>
+1.0.1
+==============
+* Fix Chromium downloader on 32bits apps runnning on a x64 platform
+1.0.0
+==============
 * New Features
  * Request.RespondAsync support.
  * CSS and JS Coverage.
@@ -55,7 +60,7 @@
  * PuppeteerSharp.DeviceDescriptors => PuppeteerSharp.Mobile.DeviceDescriptors
  * PuppeteerSharp.DeviceDescriptorName => PuppeteerSharp.Mobile.DeviceDescriptorName
     </PackageReleaseNotes>
-    <ReleaseVersion>1.0.0</ReleaseVersion>
+    <ReleaseVersion>1.0.1</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>

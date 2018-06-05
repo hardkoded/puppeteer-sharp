@@ -65,7 +65,7 @@ namespace PuppeteerSharp
                 }
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
-                    return IntPtr.Size == 8 ? Platform.Win64 : Platform.Win32;
+                    return RuntimeInformation.OSArchitecture == Architecture.X64 ? Platform.Win64 : Platform.Win32;
                 }
 
                 return Platform.Unknown;
