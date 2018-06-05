@@ -12,7 +12,7 @@
     <LangVersion>7.2</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="PuppeteerSharp" Version="0.8.0" />
+    <PackageReference Include="PuppeteerSharp" Version="1.0.1" />
   </ItemGroup>
 
 </Project>
