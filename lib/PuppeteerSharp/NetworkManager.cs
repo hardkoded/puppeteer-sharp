@@ -111,6 +111,9 @@ namespace PuppeteerSharp
                 case "Network.requestIntercepted":
                     await OnRequestInterceptedAsync(e);
                     break;
+                case "Network.requestServedFromCache":
+                    OnRequestServedFromCache(e);
+                    break;
                 case "Network.responseReceived":
                     OnResponseReceived(e);
                     break;
@@ -180,6 +183,7 @@ namespace PuppeteerSharp
                     request,
                     (HttpStatusCode)e.MessageData.response.status,
                     ((JObject)e.MessageData.response.headers).ToObject<Dictionary<string, object>>(),
+                    (bool)e.MessageData.response?.fromDiskCache,
                     e.MessageData.response.securityDetails?.ToObject<SecurityDetails>());
 
                 request.Response = response;
@@ -245,7 +249,8 @@ namespace PuppeteerSharp
             {
                 var request = _interceptionIdToRequest[e.MessageData.interceptionId.ToString()];
 
-                HandleRequestRedirect(request, (HttpStatusCode)e.MessageData.responseStatusCode, e.MessageData.responseHeaders.ToObject<Dictionary<string, object>>());
+                HandleRequestRedirect(request, (HttpStatusCode)e.MessageData.responseStatusCode,
+                    e.MessageData.responseHeaders.ToObject<Dictionary<string, object>>(), fromDiskCache: false);
                 HandleRequestStart(request.RequestId, e.MessageData, e.MessageData.redirectUrl.ToString());
                 return;
             }
@@ -261,6 +266,15 @@ namespace PuppeteerSharp
             {
                 _requestHashToInterceptionIds.Add(requestHash, e.MessageData.interceptionId.ToString());
                 HandleRequestStart(null, e.MessageData);
+            }
+        }
+
+        private void OnRequestServedFromCache(MessageEventArgs e)
+        {
+            string requestId = e.MessageData.requestId;
+            if (_requestIdToRequest.TryGetValue(requestId, out var request))
+            {
+                request.FromMemoryCache = true;
             }
         }
 
@@ -302,9 +316,9 @@ namespace PuppeteerSharp
             });
         }
 
-        private void HandleRequestRedirect(Request request, HttpStatusCode redirectStatus, Dictionary<string, object> redirectHeaders, SecurityDetails securityDetails = null)
+        private void HandleRequestRedirect(Request request, HttpStatusCode redirectStatus, Dictionary<string, object> redirectHeaders, bool fromDiskCache, SecurityDetails securityDetails = null)
         {
-            var response = new Response(_client, request, redirectStatus, redirectHeaders, securityDetails);
+            var response = new Response(_client, request, redirectStatus, redirectHeaders, fromDiskCache, securityDetails);
             request.Response = response;
             if (request.RequestId != null)
             {
@@ -360,6 +374,7 @@ namespace PuppeteerSharp
                     request,
                     (HttpStatusCode)e.MessageData.redirectResponse.status,
                     e.MessageData.redirectResponse.headers.ToObject<Dictionary<string, object>>(),
+                    false,
                     e.MessageData.redirectResponse.securityDetails?.ToObject<SecurityDetails>());
             }
 

@@ -48,6 +48,7 @@ namespace PuppeteerSharp
                 Headers[keyValue.Key] = keyValue.Value;
             }
 
+            FromMemoryCache = false;
             CompleteTaskWrapper = new TaskCompletionSource<bool>();
         }
 
@@ -82,6 +83,8 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The frame.</value>
         public Frame Frame { get; }
+
+        internal bool FromMemoryCache { get; set; }
         internal Task<bool> CompleteTask => CompleteTaskWrapper.Task;
         internal TaskCompletionSource<bool> CompleteTaskWrapper { get; set; }
         #endregion

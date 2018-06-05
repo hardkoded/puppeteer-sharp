@@ -634,11 +634,12 @@ namespace PuppeteerSharp
 
         /// <summary>
         /// Navigates to an url
-        /// </summary>
-        /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.</returns>
+        /// </summary>        
         /// <param name="url">URL to navigate page to. The url should include scheme, e.g. https://.</param>
         /// <param name="options">Navigation parameters.</param>
-        public async Task<Response> GoToAsync(string url, NavigationOptions options = null)
+        /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.</returns>
+        /// <seealso cref="GoToAsync(string, int?, WaitUntilNavigation[])"/>
+        public async Task<Response> GoToAsync(string url, NavigationOptions options)
         {
             var referrer = _networkManager.ExtraHTTPHeaders?.GetValueOrDefault("referer");
             var requests = new Dictionary<string, Request>();
@@ -695,6 +696,17 @@ namespace PuppeteerSharp
 
             return request?.Response;
         }
+
+        /// <summary>
+        /// Navigates to an url
+        /// </summary>
+        /// <param name="url">URL to navigate page to. The url should include scheme, e.g. https://.</param>
+        /// <param name="timeout">Maximum navigation time in milliseconds, defaults to 30 seconds, pass <c>0</c> to disable timeout. </param>
+        /// <param name="waitUntil">When to consider navigation succeeded, defaults to <see cref="WaitUntilNavigation.Load"/>. Given an array of <see cref="WaitUntilNavigation"/>, navigation is considered to be successful after all events have been fired</param>
+        /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect</returns>
+        /// <seealso cref="GoToAsync(string, NavigationOptions)"/>
+        public Task<Response> GoToAsync(string url, int? timeout = null, WaitUntilNavigation[] waitUntil = null)
+            => GoToAsync(url, new NavigationOptions { Timeout = timeout, WaitUntil = waitUntil });
 
         /// <summary>
         /// generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaAsync(MediaType)"/> with <see cref="MediaType.Screen"/>
@@ -978,6 +990,14 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
+        /// Toggles ignoring cache for each request based on the enabled state. By default, caching is enabled.
+        /// </summary>
+        /// <param name="enabled">sets the <c>enabled</c> state of the cache</param>
+        /// <returns>Task</returns>
+        public Task SetCacheEnabledAsync(bool enabled = true)
+            => Client.SendAsync("Network.setCacheDisabled", new { cacheDisabled = !enabled });
+
+        /// <summary>
         /// Fetches an element with <paramref name="selector"/>, scrolls it into view if needed, and then uses <see cref="Page.Mouse"/> to click in the center of the element.
         /// </summary>
         /// <param name="selector">A selector to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.</param>
@@ -1114,7 +1134,9 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="options">Navigation options</param>
         /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect</returns>
-        public async Task<Response> ReloadAsync(NavigationOptions options = null)
+        /// <seealso cref="ReloadAsync(int?, WaitUntilNavigation?)"/>
+        /// <seealso cref="ReloadAsync(int?, WaitUntilNavigation[])"/>
+        public async Task<Response> ReloadAsync(NavigationOptions options)
         {
             var navigationTask = WaitForNavigationAsync(options);
 
@@ -1125,6 +1147,16 @@ namespace PuppeteerSharp
 
             return navigationTask.Result;
         }
+
+        /// <summary>
+        /// Reloads the page
+        /// </summary>
+        /// <param name="timeout">Maximum navigation time in milliseconds, defaults to 30 seconds, pass <c>0</c> to disable timeout. </param>
+        /// <param name="waitUntil">When to consider navigation succeeded, defaults to <see cref="WaitUntilNavigation.Load"/>. Given an array of <see cref="WaitUntilNavigation"/>, navigation is considered to be successful after all events have been fired</param>
+        /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect</returns>
+        /// <seealso cref="ReloadAsync(NavigationOptions)"/>
+        public Task<Response> ReloadAsync(int? timeout = null, WaitUntilNavigation[] waitUntil = null)
+            => ReloadAsync(new NavigationOptions { Timeout = timeout, WaitUntil = waitUntil });
 
         /// <summary>
         /// Triggers a change and input event once all the provided options have been selected. 
