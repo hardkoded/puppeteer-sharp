@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
@@ -106,16 +107,16 @@ namespace PuppeteerSharp
             switch (e.MessageID)
             {
                 case "Network.requestWillBeSent":
-                    OnRequestWillBeSent(e);
+                    OnRequestWillBeSent(e.MessageData.ToObject<RequestWillBeSentResponse>());
                     break;
                 case "Network.requestIntercepted":
-                    await OnRequestInterceptedAsync(e);
+                    await OnRequestInterceptedAsync(e.MessageData.ToObject<RequestInterceptedResponse>());
                     break;
                 case "Network.requestServedFromCache":
-                    OnRequestServedFromCache(e);
+                    OnRequestServedFromCache(e.MessageData.ToObject<RequestServedFromCacheResponse>());
                     break;
                 case "Network.responseReceived":
-                    OnResponseReceived(e);
+                    OnResponseReceived(e.MessageData.ToObject<ResponseReceivedResponse>());
                     break;
                 case "Network.loadingFinished":
                     OnLoadingFinished(e);
@@ -172,19 +173,18 @@ namespace PuppeteerSharp
             }
         }
 
-        private void OnResponseReceived(MessageEventArgs e)
+        private void OnResponseReceived(ResponseReceivedResponse e)
         {
             // FileUpload sends a response without a matching request.
-            string requestId = e.MessageData.requestId.ToString();
-            if (_requestIdToRequest.TryGetValue(requestId, out var request))
+            if (_requestIdToRequest.TryGetValue(e.RequestId, out var request))
             {
                 var response = new Response(
                     _client,
                     request,
-                    (HttpStatusCode)e.MessageData.response.status,
-                    ((JObject)e.MessageData.response.headers).ToObject<Dictionary<string, object>>(),
-                    (bool)e.MessageData.response?.fromDiskCache,
-                    e.MessageData.response.securityDetails?.ToObject<SecurityDetails>());
+                    e.Response.Status,
+                    e.Response.Headers,
+                    e.Response.FromDiskCache,
+                    e.Response.SecurityDetails);
 
                 request.Response = response;
 
@@ -195,26 +195,26 @@ namespace PuppeteerSharp
             }
         }
 
-        private async Task OnRequestInterceptedAsync(MessageEventArgs e)
+        private async Task OnRequestInterceptedAsync(RequestInterceptedResponse e)
         {
-            if (e.MessageData.authChallenge != null)
+            if (e.AuthChallenge != null)
             {
                 var response = "Default";
-                if (_attemptedAuthentications.Contains(e.MessageData.interceptionId.ToString()))
+                if (_attemptedAuthentications.Contains(e.InterceptionId))
                 {
                     response = "CancelAuth";
                 }
                 else if (_credentials != null)
                 {
                     response = "ProvideCredentials";
-                    _attemptedAuthentications.Add(e.MessageData.interceptionId.ToString());
+                    _attemptedAuthentications.Add(e.InterceptionId);
                 }
                 var credentials = _credentials ?? new Credentials();
                 try
                 {
                     await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object>
                     {
-                        {"interceptionId", e.MessageData.interceptionId.ToString()},
+                        {"interceptionId", e.InterceptionId},
                         {"authChallengeResponse", new
                             {
                                 response,
@@ -236,7 +236,7 @@ namespace PuppeteerSharp
                 {
                     await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object>
                     {
-                        { "interceptionId", e.MessageData.interceptionId.ToString()}
+                        { "interceptionId", e.InterceptionId}
                     });
                 }
                 catch (PuppeteerException ex)
@@ -245,48 +245,36 @@ namespace PuppeteerSharp
                 }
             }
 
-            if (!string.IsNullOrEmpty(e.MessageData.redirectUrl?.ToString()))
+            if (!string.IsNullOrEmpty(e.RedirectUrl))
             {
-                var request = _interceptionIdToRequest[e.MessageData.interceptionId.ToString()];
+                var request = _interceptionIdToRequest[e.InterceptionId];
 
-                HandleRequestRedirect(request, (HttpStatusCode)e.MessageData.responseStatusCode,
-                    e.MessageData.responseHeaders.ToObject<Dictionary<string, object>>(), fromDiskCache: false);
-                HandleRequestStart(request.RequestId, e.MessageData, e.MessageData.redirectUrl.ToString());
+                HandleRequestRedirect(request, e.ResponseStatusCode,
+                    e.ResponseHeaders, fromDiskCache: false);
+                HandleRequestStart(request.RequestId, e.InterceptionId, e.RedirectUrl, e.ResourceType, e.Request, e.FrameId);
                 return;
             }
 
-            string requestHash = e.MessageData.request.ToObject<Payload>().Hash;
+            string requestHash = e.Request.Hash;
             var requestId = _requestHashToRequestIds.FirstValue(requestHash);
             if (requestId != null)
             {
                 _requestHashToRequestIds.Delete(requestHash, requestId);
-                HandleRequestStart(requestId, e.MessageData);
+                HandleRequestStart(requestId, e.InterceptionId, e.Request.Url, e.ResourceType, e.Request, e.FrameId);
             }
             else
             {
-                _requestHashToInterceptionIds.Add(requestHash, e.MessageData.interceptionId.ToString());
-                HandleRequestStart(null, e.MessageData);
+                _requestHashToInterceptionIds.Add(requestHash, e.InterceptionId);
+                HandleRequestStart(null, e.InterceptionId, e.Request.Url, e.ResourceType, e.Request, e.FrameId);
             }
         }
 
-        private void OnRequestServedFromCache(MessageEventArgs e)
+        private void OnRequestServedFromCache(RequestServedFromCacheResponse response)
         {
-            string requestId = e.MessageData.requestId;
-            if (_requestIdToRequest.TryGetValue(requestId, out var request))
+            if (_requestIdToRequest.TryGetValue(response.RequestId, out var request))
             {
                 request.FromMemoryCache = true;
             }
-        }
-
-        private void HandleRequestStart(string requestId, dynamic messageData, string url = null)
-        {
-            HandleRequestStart(
-                requestId,
-                messageData.interceptionId?.ToString(),
-                url ?? messageData.request.url?.ToString(),
-                (messageData.resourceType ?? messageData.type)?.ToObject<ResourceType>(),
-                ((JObject)messageData.request).ToObject<Payload>(),
-                messageData.frameId?.ToString());
         }
 
         private void HandleRequestStart(string requestId, string interceptionId, string url, ResourceType resourceType, Payload requestPayload, string frameId)
@@ -342,43 +330,43 @@ namespace PuppeteerSharp
             });
         }
 
-        private void OnRequestWillBeSent(MessageEventArgs e)
+        private void OnRequestWillBeSent(RequestWillBeSentResponse e)
         {
             if (_protocolRequestInterceptionEnabled)
             {
                 // All redirects are handled in requestIntercepted.
-                if (e.MessageData.redirectResponse != null)
+                if (e.RedirectResponse != null)
                 {
                     return;
                 }
-                string requestHash = e.MessageData.request.ToObject<Payload>().Hash;
+                string requestHash = e.Request.Hash;
                 var interceptionId = _requestHashToInterceptionIds.FirstValue(requestHash);
                 if (interceptionId != null && _interceptionIdToRequest.TryGetValue(interceptionId, out var request))
                 {
-                    request.RequestId = e.MessageData.requestId.ToString();
-                    _requestIdToRequest[e.MessageData.requestId.ToString()] = request;
+                    request.RequestId = e.RequestId;
+                    _requestIdToRequest[e.RequestId] = request;
                     _requestHashToInterceptionIds.Delete(requestHash, interceptionId);
                 }
                 else
                 {
-                    _requestHashToRequestIds.Add(requestHash, e.MessageData.requestId.ToString());
+                    _requestHashToRequestIds.Add(requestHash, e.RequestId);
                 }
                 return;
             }
 
-            if (e.MessageData.redirectResponse != null && _requestIdToRequest.ContainsKey(e.MessageData.requestId.ToString()))
+            if (e.RedirectResponse != null && _requestIdToRequest.ContainsKey(e.RequestId))
             {
-                var request = _requestIdToRequest[e.MessageData.requestId.ToString()];
+                var request = _requestIdToRequest[e.RequestId];
                 // If we connect late to the target, we could have missed the requestWillBeSent event.
                 HandleRequestRedirect(
                     request,
-                    (HttpStatusCode)e.MessageData.redirectResponse.status,
-                    e.MessageData.redirectResponse.headers.ToObject<Dictionary<string, object>>(),
+                    e.RedirectResponse.Status,
+                    e.RedirectResponse.Headers,
                     false,
-                    e.MessageData.redirectResponse.securityDetails?.ToObject<SecurityDetails>());
+                    e.RedirectResponse.SecurityDetails);
             }
 
-            HandleRequestStart(e.MessageData.requestId?.ToString(), e.MessageData);
+            HandleRequestStart(e.RequestId, null, e.Request.Url, e.Type, e.Request, e.FrameId);
         }
 
         private async Task UpdateProtocolRequestInterceptionAsync()
@@ -407,5 +395,14 @@ namespace PuppeteerSharp
             );
         }
         #endregion
+    }
+
+    internal interface IRequestStartData
+    {
+        string InterceptionId { get; }
+        Request Request { get; }
+        ResourceType? ResourceType { get; }
+        ResourceType? Type { get; }
+        string FrameId { get; }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace PuppeteerSharp
@@ -12,21 +13,25 @@ namespace PuppeteerSharp
     public class Response
     {
         private readonly CDPSession _client;
-        private readonly bool _fromDiskCache;
 
+        internal Response()
+        {
+        }
         internal Response(CDPSession client, Request request, HttpStatusCode status, Dictionary<string, object> headers, bool fromDiskCache, SecurityDetails securityDetails)
         {
             _client = client;
             Request = request;
-            Status = status;
-            Ok = (int)status >= 200 && (int)status <= 299;
+            Status = status;            
             Url = request.Url;
-            _fromDiskCache = fromDiskCache;
+            FromDiskCache = fromDiskCache;
 
             Headers = new Dictionary<string, object>();
-            foreach (KeyValuePair<string, object> keyValue in headers)
+            if (headers != null)
             {
-                Headers[keyValue.Key] = keyValue.Value;
+                foreach (KeyValuePair<string, object> keyValue in headers)
+                {
+                    Headers[keyValue.Key] = keyValue.Value;
+                }
             }
             SecurityDetails = securityDetails;
         }
@@ -36,39 +41,45 @@ namespace PuppeteerSharp
         /// <summary>
         /// Contains the URL of the response.
         /// </summary>
+        [JsonProperty("url")]
         public string Url { get; internal set; }
         /// <summary>
         /// An object with HTTP headers associated with the response. All header names are lower-case.
         /// </summary>
         /// <value>The headers.</value>
+        [JsonProperty("headers")]
         public Dictionary<string, object> Headers { get; internal set; }
         /// <summary>
         /// Contains the status code of the response
         /// </summary>
         /// <value>The status.</value>
-        public HttpStatusCode? Status { get; internal set; }
+        [JsonProperty("status")]
+        public HttpStatusCode Status { get; internal set; }
         /// <summary>
         /// Contains a boolean stating whether the response was successful (status in the range 200-299) or not.
         /// </summary>
         /// <value><c>true</c> if ok; otherwise, <c>false</c>.</value>
-        public bool Ok { get; }
+        public bool Ok => (int)Status >= 200 && (int)Status <= 299;
         /// <summary>
         /// A matching <see cref="Request"/> object.
         /// </summary>
         /// <value>The request.</value>
+        [JsonProperty("request")]
         public Request Request { get; internal set; }
         /// <summary>
         /// True if the response was served from either the browser's disk cache or memory cache.
         /// </summary>
-        public bool FromCache => _fromDiskCache || Request.FromMemoryCache;
+        public bool FromCache => FromDiskCache || (Request?.FromMemoryCache ?? false);
         /// <summary>
         /// Gets or sets the security details.
         /// </summary>
         /// <value>The security details.</value>
+        [JsonProperty("securityDetails")]
         public SecurityDetails SecurityDetails { get; internal set; }
 
         internal Task<string> ContentTask => ContentTaskWrapper.Task;
         internal TaskCompletionSource<string> ContentTaskWrapper { get; set; }
+        internal bool FromDiskCache { get; set; }
         #endregion
 
         #region Public Methods

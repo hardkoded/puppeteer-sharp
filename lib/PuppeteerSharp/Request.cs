@@ -26,6 +26,9 @@ namespace PuppeteerSharp
         private bool _interceptionHandled;
         #endregion
 
+        internal Request()
+        {
+        }
         internal Request(CDPSession client, string requestId, string interceptionId, bool allowInterception, string url,
                       ResourceType resourceType, Payload payload, Frame frame)
         {
