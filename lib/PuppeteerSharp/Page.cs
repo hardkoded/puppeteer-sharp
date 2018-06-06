@@ -1134,7 +1134,6 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="options">Navigation options</param>
         /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect</returns>
-        /// <seealso cref="ReloadAsync(int?, WaitUntilNavigation?)"/>
         /// <seealso cref="ReloadAsync(int?, WaitUntilNavigation[])"/>
         public async Task<Response> ReloadAsync(NavigationOptions options)
         {
