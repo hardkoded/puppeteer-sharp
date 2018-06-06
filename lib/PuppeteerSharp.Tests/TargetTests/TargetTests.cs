@@ -21,8 +21,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             var targets = Browser.Targets();
             Assert.Contains(targets, target => target.Type == "page"
                 && target.Url == TestConstants.AboutBlank);
-            Assert.Contains(targets, target => target.Type == "other"
-                && target.Url == string.Empty);
+            Assert.Contains(targets, target => target.Type == "browser");
         }
 
         [Fact]
@@ -33,6 +32,14 @@ namespace PuppeteerSharp.Tests.TargetTests
             Assert.Equal(2, allPages.Length);
             Assert.Contains(Page, allPages);
             Assert.NotSame(allPages[0], allPages[1]);
+        }
+
+        [Fact]
+        public void ShouldContainBrowserTarget()
+        {
+            var targets = Browser.Targets();
+            var browserTarget = targets.FirstOrDefault(target => target.Type == "browser");
+            Assert.NotNull(browserTarget);
         }
 
         [Fact]
@@ -92,11 +99,11 @@ namespace PuppeteerSharp.Tests.TargetTests
                 Browser.TargetCreated -= TargetCreatedEventHandler;
             }
             Browser.TargetCreated += TargetCreatedEventHandler;
-            var registration = await Page.EvaluateExpressionHandleAsync("navigator.serviceWorker.register('sw.js')");
+            await Page.GoToAsync(TestConstants.ServerUrl + "/serviceworkers/empty/sw.html");
 
             var createdTarget = await createdTargetTaskCompletion.Task;
             Assert.Equal("service_worker", createdTarget.Type);
-            Assert.Equal(TestConstants.ServerUrl + "/sw.js", createdTarget.Url);
+            Assert.Equal(TestConstants.ServerUrl + "/serviceworkers/empty/sw.js", createdTarget.Url);
 
             var targetDestroyedTaskCompletion = new TaskCompletionSource<Target>();
             void TargetDestroyedEventHandler(object sender, TargetChangedArgs e)
@@ -105,7 +112,7 @@ namespace PuppeteerSharp.Tests.TargetTests
                 Browser.TargetDestroyed -= TargetDestroyedEventHandler;
             }
             Browser.TargetDestroyed += TargetDestroyedEventHandler;
-            await Page.EvaluateFunctionAsync("registration => registration.unregister()", registration);
+            await Page.EvaluateExpressionAsync("window.registrationPromise.then(registration => registration.unregister())");
             Assert.Equal(createdTarget, await targetDestroyedTaskCompletion.Task);
         }
 
