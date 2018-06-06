@@ -1517,10 +1517,10 @@ namespace PuppeteerSharp
                     OnDialog(e.MessageData.ToObject<PageJavascriptDialogOpeningResponse>());
                     break;
                 case "Runtime.exceptionThrown":
-                    HandleException(e.MessageData.exceptionDetails);
+                    HandleException(e.MessageData.Value<EvaluateExceptionDetails>("exceptionDetails"));
                     break;
                 case "Security.certificateError":
-                    await OnCertificateError(e);
+                    await OnCertificateError(e.MessageData.ToObject<CertificateErrorResponse>());
                     break;
                 case "Inspector.targetCrashed":
                     OnTargetCrashed();
@@ -1544,7 +1544,7 @@ namespace PuppeteerSharp
         private void EmitMetrics(PerformanceMetricsResponse metrics)
             => Metrics?.Invoke(this, new MetricEventArgs(metrics.Title, BuildMetricsObject(metrics.Metrics)));
 
-        private async Task OnCertificateError(MessageEventArgs e)
+        private async Task OnCertificateError(CertificateErrorResponse e)
         {
             if (_ignoreHTTPSErrors)
             {
@@ -1552,7 +1552,7 @@ namespace PuppeteerSharp
                 {
                     await Client.SendAsync("Security.handleCertificateError", new Dictionary<string, object>
                     {
-                        {"eventId", e.MessageData.eventId },
+                        {"eventId", e.EventId },
                         {"action", "continue"}
                     });
                 }
@@ -1563,22 +1563,22 @@ namespace PuppeteerSharp
             }
         }
 
-        private void HandleException(dynamic exceptionDetails)
+        private void HandleException(EvaluateExceptionDetails exceptionDetails)
             => PageError?.Invoke(this, new PageErrorEventArgs(GetExceptionMessage(exceptionDetails)));
 
-        private string GetExceptionMessage(dynamic exceptionDetails)
+        private string GetExceptionMessage(EvaluateExceptionDetails exceptionDetails)
         {
-            if (exceptionDetails.exception != null)
+            if (exceptionDetails.Exception != null)
             {
-                return exceptionDetails.exception.description;
+                return exceptionDetails.Exception.Description;
             }
-            var message = exceptionDetails.text;
-            if (exceptionDetails.stackTrace)
+            var message = exceptionDetails.Text;
+            if (exceptionDetails.StackTrace != null)
             {
-                foreach (var callframe in exceptionDetails.stackTrace.callFrames)
+                foreach (var callframe in exceptionDetails.StackTrace.CallFrames)
                 {
-                    var location = $"{callframe.url}:{callframe.lineNumber}:{callframe.columnNumber}";
-                    var functionName = callframe.functionName || "<anonymous>";
+                    var location = $"{callframe.Url}:{callframe.LineNumber}:{callframe.ColumnNumber}";
+                    var functionName = callframe.FunctionName ?? "<anonymous>";
                     message += $"\n at {functionName} ({location})";
                 }
             }

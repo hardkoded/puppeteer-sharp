@@ -5,6 +5,7 @@ using PuppeteerSharp.Input;
 using Newtonsoft.Json.Linq;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
@@ -40,47 +41,47 @@ namespace PuppeteerSharp
 
         #region Private Methods
 
-        void _client_MessageReceived(object sender, PuppeteerSharp.MessageEventArgs e)
+        void _client_MessageReceived(object sender, MessageEventArgs e)
         {
             switch (e.MessageID)
             {
                 case "Page.frameAttached":
-                    OnFrameAttached(e.MessageData.frameId.ToString(), e.MessageData.parentFrameId.ToString());
+                    OnFrameAttached(
+                        e.MessageData.SelectToken("frameId").ToObject<string>(),
+                        e.MessageData.SelectToken("parentFrameId").ToObject<string>());
                     break;
 
                 case "Page.frameNavigated":
-                    OnFrameNavigated(((JObject)e.MessageData.frame).ToObject<FramePayload>());
+                    OnFrameNavigated(e.MessageData.SelectToken("frame").ToObject<FramePayload>());
                     break;
 
                 case "Page.frameDetached":
-                    OnFrameDetached(e.MessageData.frameId.ToString());
+                    OnFrameDetached(e.MessageData.SelectToken("frameId").ToObject<string>());
                     break;
 
                 case "Runtime.executionContextCreated":
-                    OnExecutionContextCreated(new ContextPayload(e.MessageData.context));
+                    OnExecutionContextCreated(e.MessageData.SelectToken("context").ToObject<ContextPayload>());
                     break;
 
                 case "Runtime.executionContextDestroyed":
-                    OnExecutionContextDestroyed((int)e.MessageData.executionContextId);
+                    OnExecutionContextDestroyed(e.MessageData.SelectToken("executionContextId").ToObject<int>());
                     break;
                 case "Runtime.executionContextsCleared":
                     OnExecutionContextsCleared();
                     break;
                 case "Page.lifecycleEvent":
-                    OnLifeCycleEvent(e);
+                    OnLifeCycleEvent(e.MessageData.ToObject<LifecycleEventResponse>());
                     break;
                 default:
                     break;
             }
         }
 
-        private void OnLifeCycleEvent(MessageEventArgs e)
+        private void OnLifeCycleEvent(LifecycleEventResponse e)
         {
-            if (Frames.ContainsKey(e.MessageData.frameId.ToString()))
+            if (Frames.TryGetValue(e.FrameId, out var frame))
             {
-                Frame frame = Frames[e.MessageData.frameId.ToString()];
-
-                frame.OnLifecycleEvent(e.MessageData.loaderId.ToString(), e.MessageData.name.ToString());
+                frame.OnLifecycleEvent(e.LoaderId, e.Name);
                 LifecycleEvent?.Invoke(this, new FrameEventArgs(frame));
             }
         }

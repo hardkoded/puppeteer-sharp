@@ -14,9 +14,6 @@ namespace PuppeteerSharp
     {
         private readonly CDPSession _client;
 
-        internal Response()
-        {
-        }
         internal Response(CDPSession client, Request request, HttpStatusCode status, Dictionary<string, object> headers, bool fromDiskCache, SecurityDetails securityDetails)
         {
             _client = client;

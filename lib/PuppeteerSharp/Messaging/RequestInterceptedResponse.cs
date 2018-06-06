@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Messaging
         public string InterceptionId { get; set; }
         
         [JsonProperty("request")]
-        public Request Request { get; set; }
+        public Payload Request { get; set; }
 
         [JsonProperty("frameId")]
         public string FrameId { get; set; }

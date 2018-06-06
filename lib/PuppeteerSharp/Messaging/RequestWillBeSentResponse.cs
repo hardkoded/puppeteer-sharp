@@ -8,10 +8,10 @@ namespace PuppeteerSharp.Messaging
         public string RequestId { get; set; }
 
         [JsonProperty("request")]
-        public Request Request { get; set; }
+        public Payload Request { get; set; }
 
         [JsonProperty("redirectResponse", NullValueHandling = NullValueHandling.Ignore)]
-        public Response RedirectResponse { get; set; }
+        public ResponseData RedirectResponse { get; set; }
 
         [JsonProperty("type")]
         public ResourceType Type { get; set; }

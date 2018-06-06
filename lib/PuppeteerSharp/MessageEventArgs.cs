@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 using System.Net;
 
 namespace PuppeteerSharp
@@ -17,6 +18,6 @@ namespace PuppeteerSharp
         /// Gets or sets the message data.
         /// </summary>
         /// <value>The message data.</value>
-        public dynamic MessageData { get; internal set; }
+        public JToken MessageData { get; internal set; }
     }
 }

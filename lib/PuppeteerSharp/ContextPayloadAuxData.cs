@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 
 namespace PuppeteerSharp
 {
-    internal struct ContextPayloadAuxData
+    internal class ContextPayloadAuxData
     {
         [JsonProperty("frameId")]
         internal string FrameId { get; set; }

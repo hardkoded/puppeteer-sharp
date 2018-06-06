@@ -2,12 +2,12 @@
 
 namespace PuppeteerSharp.Messaging
 {
-    internal class ResponseReceivedResponse
+    internal class LoadingFailedResponse
     {
         [JsonProperty("requestId")]
         public string RequestId { get; set; }
 
-        [JsonProperty("response")]
-        public ResponseData Response { get; set; }
+        [JsonProperty("errorText")]
+        public string ErrorText { get; set; }        
     }
 }

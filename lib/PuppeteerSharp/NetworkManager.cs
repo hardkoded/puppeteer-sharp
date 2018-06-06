@@ -119,22 +119,21 @@ namespace PuppeteerSharp
                     OnResponseReceived(e.MessageData.ToObject<ResponseReceivedResponse>());
                     break;
                 case "Network.loadingFinished":
-                    OnLoadingFinished(e);
+                    OnLoadingFinished(e.MessageData.ToObject<LoadingFinishedResponse>());
                     break;
                 case "Network.loadingFailed":
-                    OnLoadingFailed(e);
+                    OnLoadingFailed(e.MessageData.ToObject<LoadingFailedResponse>());
                     break;
             }
         }
 
-        private void OnLoadingFailed(MessageEventArgs e)
+        private void OnLoadingFailed(LoadingFailedResponse e)
         {
             // For certain requestIds we never receive requestWillBeSent event.
             // @see https://crbug.com/750469
-            string requestId = e.MessageData.requestId.ToString();
-            if (_requestIdToRequest.TryGetValue(requestId, out var request))
+            if (_requestIdToRequest.TryGetValue(e.RequestId, out var request))
             {
-                request.Failure = e.MessageData.errorText.ToString();
+                request.Failure = e.ErrorText;
                 request.CompleteTaskWrapper.SetResult(true);
                 _requestIdToRequest.Remove(request.RequestId);
 
@@ -150,12 +149,11 @@ namespace PuppeteerSharp
             }
         }
 
-        private void OnLoadingFinished(MessageEventArgs e)
+        private void OnLoadingFinished(LoadingFinishedResponse e)
         {
             // For certain requestIds we never receive requestWillBeSent event.
             // @see https://crbug.com/750469
-            string requestId = e.MessageData.requestId.ToString();
-            if (_requestIdToRequest.TryGetValue(requestId, out var request))
+            if (_requestIdToRequest.TryGetValue(e.RequestId, out var request))
             {
                 request.CompleteTaskWrapper.SetResult(true);
                 _requestIdToRequest.Remove(request.RequestId);
@@ -395,14 +393,5 @@ namespace PuppeteerSharp
             );
         }
         #endregion
-    }
-
-    internal interface IRequestStartData
-    {
-        string InterceptionId { get; }
-        Request Request { get; }
-        ResourceType? ResourceType { get; }
-        ResourceType? Type { get; }
-        string FrameId { get; }
     }
 }
