@@ -26,6 +26,9 @@ namespace PuppeteerSharp
         private bool _interceptionHandled;
         #endregion
 
+        internal Request()
+        {
+        }
         internal Request(CDPSession client, string requestId, string interceptionId, bool allowInterception, string url,
                       ResourceType resourceType, Payload payload, Frame frame)
         {
@@ -48,6 +51,7 @@ namespace PuppeteerSharp
                 Headers[keyValue.Key] = keyValue.Value;
             }
 
+            FromMemoryCache = false;
             CompleteTaskWrapper = new TaskCompletionSource<bool>();
         }
 
@@ -82,6 +86,8 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The frame.</value>
         public Frame Frame { get; }
+
+        internal bool FromMemoryCache { get; set; }
         internal Task<bool> CompleteTask => CompleteTaskWrapper.Task;
         internal TaskCompletionSource<bool> CompleteTaskWrapper { get; set; }
         #endregion

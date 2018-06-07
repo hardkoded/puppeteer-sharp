@@ -12,19 +12,23 @@ namespace PuppeteerSharp
     public class Response
     {
         private readonly CDPSession _client;
+        private bool _fromDiskCache;
 
-        internal Response(CDPSession client, Request request, HttpStatusCode status, Dictionary<string, object> headers, SecurityDetails securityDetails)
+        internal Response(CDPSession client, Request request, HttpStatusCode status, Dictionary<string, object> headers, bool fromDiskCache, SecurityDetails securityDetails)
         {
             _client = client;
             Request = request;
-            Status = status;
-            Ok = (int)status >= 200 && (int)status <= 299;
+            Status = status;            
             Url = request.Url;
+            _fromDiskCache = fromDiskCache;
 
             Headers = new Dictionary<string, object>();
-            foreach (KeyValuePair<string, object> keyValue in headers)
+            if (headers != null)
             {
-                Headers[keyValue.Key] = keyValue.Value;
+                foreach (KeyValuePair<string, object> keyValue in headers)
+                {
+                    Headers[keyValue.Key] = keyValue.Value;
+                }
             }
             SecurityDetails = securityDetails;
         }
@@ -44,17 +48,21 @@ namespace PuppeteerSharp
         /// Contains the status code of the response
         /// </summary>
         /// <value>The status.</value>
-        public HttpStatusCode? Status { get; internal set; }
+        public HttpStatusCode Status { get; internal set; }
         /// <summary>
         /// Contains a boolean stating whether the response was successful (status in the range 200-299) or not.
         /// </summary>
         /// <value><c>true</c> if ok; otherwise, <c>false</c>.</value>
-        public bool Ok { get; }
+        public bool Ok => (int)Status >= 200 && (int)Status <= 299;
         /// <summary>
         /// A matching <see cref="Request"/> object.
         /// </summary>
         /// <value>The request.</value>
         public Request Request { get; internal set; }
+        /// <summary>
+        /// True if the response was served from either the browser's disk cache or memory cache.
+        /// </summary>
+        public bool FromCache => _fromDiskCache || (Request?.FromMemoryCache ?? false);
         /// <summary>
         /// Gets or sets the security details.
         /// </summary>
@@ -63,6 +71,7 @@ namespace PuppeteerSharp
 
         internal Task<string> ContentTask => ContentTaskWrapper.Task;
         internal TaskCompletionSource<string> ContentTaskWrapper { get; set; }
+        
         #endregion
 
         #region Public Methods

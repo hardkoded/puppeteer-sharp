@@ -1,14 +1,12 @@
-﻿namespace PuppeteerSharp
+﻿using Newtonsoft.Json;
+
+namespace PuppeteerSharp
 {
     internal class ContextPayload
     {
-        internal ContextPayload(dynamic context)
-        {
-            Id = context.id;
-            AuxData = context.auxData.ToObject<ContextPayloadAuxData>();
-        }
-
-        internal int Id { get; }
-        internal ContextPayloadAuxData AuxData { get; }
+        [JsonProperty("id")]
+        internal int Id { get; set; }
+        [JsonProperty("auxData")]
+        internal ContextPayloadAuxData AuxData { get; set; }
     }
 }

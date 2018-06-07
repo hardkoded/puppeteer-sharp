@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
@@ -225,49 +226,48 @@ namespace PuppeteerSharp
             });
         }
 
-        private async void Connect_MessageReceived(object sender, MessageEventArgs args)
+        private async void Connect_MessageReceived(object sender, MessageEventArgs e)
         {
-            switch (args.MessageID)
+            switch (e.MessageID)
             {
                 case "Target.targetCreated":
-                    await CreateTarget(args);
+                    await CreateTarget(e.MessageData.ToObject<TargetCreatedResponse>());
                     return;
 
                 case "Target.targetDestroyed":
-                    DestroyTarget(args);
+                    DestroyTarget(e.MessageData.ToObject<TargetDestroyedResponse>());
                     return;
 
                 case "Target.targetInfoChanged":
-                    ChangeTargetInfo(args);
+                    ChangeTargetInfo(e.MessageData.ToObject<TargetCreatedResponse>());
                     return;
             }
         }
 
-        private void ChangeTargetInfo(MessageEventArgs args)
+        private void ChangeTargetInfo(TargetCreatedResponse e)
         {
-            if (!_targets.ContainsKey(args.MessageData.targetInfo.targetId.Value))
+            if (!_targets.ContainsKey(e.TargetInfo.TargetId))
             {
                 throw new InvalidTargetException("Target should exists before ChangeTargetInfo");
             }
-
-            string targetId = args.MessageData.targetInfo.targetId.Value;
-            var target = _targets[targetId];
-            target.TargetInfoChanged(new TargetInfo(args.MessageData.targetInfo));
+            
+            var target = _targets[e.TargetInfo.TargetId];
+            target.TargetInfoChanged(e.TargetInfo);
         }
 
-        private void DestroyTarget(MessageEventArgs args)
+        private void DestroyTarget(TargetDestroyedResponse e)
         {
-            if (!_targets.ContainsKey(args.MessageData.targetId.ToString()))
+            if (!_targets.ContainsKey(e.TargetId))
             {
                 throw new InvalidTargetException("Target should exists before DestroyTarget");
             }
 
-            var target = _targets[args.MessageData.targetId.ToString()];
+            var target = _targets[e.TargetId];
             if (!target.InitilizedTaskWrapper.Task.IsCompleted)
             {
                 target.InitilizedTaskWrapper.SetResult(false);
             }
-            _targets.Remove(args.MessageData.targetId.ToString());
+            _targets.Remove(e.TargetId);
 
             TargetDestroyed?.Invoke(this, new TargetChangedArgs()
             {
@@ -275,11 +275,10 @@ namespace PuppeteerSharp
             });
         }
 
-        private async Task CreateTarget(MessageEventArgs args)
+        private async Task CreateTarget(TargetCreatedResponse e)
         {
-            var targetInfo = new TargetInfo(args.MessageData.targetInfo);
-            var target = new Target(this, targetInfo);
-            _targets[targetInfo.TargetId] = target;
+            var target = new Target(this, e.TargetInfo);
+            _targets[e.TargetInfo.TargetId] = target;
 
             if (await target.InitializedTask)
             {
