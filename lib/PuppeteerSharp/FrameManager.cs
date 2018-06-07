@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using PuppeteerSharp.Input;
-using Newtonsoft.Json.Linq;
-using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Messaging;
 
@@ -39,9 +36,30 @@ namespace PuppeteerSharp
 
         #endregion
 
+        #region Public Methods
+
+        public JSHandle CreateJsHandle(int contextId, dynamic remoteObject)
+        {
+            _contextIdToContext.TryGetValue(contextId, out var storedContext);
+
+            if (storedContext == null)
+            {
+                _logger.LogError("INTERNAL ERROR: missing context with id = {ContextId}", contextId);
+            }
+
+            if (remoteObject.subtype == "node")
+            {
+                return new ElementHandle(storedContext, _client, remoteObject, _page);
+            }
+
+            return new JSHandle(storedContext, _client, remoteObject);
+        }
+
+        #endregion
+
         #region Private Methods
 
-        void _client_MessageReceived(object sender, MessageEventArgs e)
+        private void _client_MessageReceived(object sender, MessageEventArgs e)
         {
             switch (e.MessageID)
             {
@@ -105,24 +123,7 @@ namespace PuppeteerSharp
                 RemoveContext(context);
             }
         }
-
-        public JSHandle CreateJsHandle(int contextId, dynamic remoteObject)
-        {
-            _contextIdToContext.TryGetValue(contextId, out var storedContext);
-
-            if (storedContext == null)
-            {
-                _logger.LogError("INTERNAL ERROR: missing context with id = {ContextId}", contextId);
-            }
-
-            if (remoteObject.subtype == "node")
-            {
-                return new ElementHandle(storedContext, _client, remoteObject, _page);
-            }
-
-            return new JSHandle(storedContext, _client, remoteObject);
-        }
-
+        
         private void OnExecutionContextCreated(ContextPayload contextPayload)
         {
             var context = new ExecutionContext(_client, contextPayload,

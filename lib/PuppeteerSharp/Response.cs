@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace PuppeteerSharp
@@ -13,6 +12,7 @@ namespace PuppeteerSharp
     public class Response
     {
         private readonly CDPSession _client;
+        private bool _fromDiskCache;
 
         internal Response(CDPSession client, Request request, HttpStatusCode status, Dictionary<string, object> headers, bool fromDiskCache, SecurityDetails securityDetails)
         {
@@ -20,7 +20,7 @@ namespace PuppeteerSharp
             Request = request;
             Status = status;            
             Url = request.Url;
-            FromDiskCache = fromDiskCache;
+            _fromDiskCache = fromDiskCache;
 
             Headers = new Dictionary<string, object>();
             if (headers != null)
@@ -38,19 +38,16 @@ namespace PuppeteerSharp
         /// <summary>
         /// Contains the URL of the response.
         /// </summary>
-        [JsonProperty("url")]
         public string Url { get; internal set; }
         /// <summary>
         /// An object with HTTP headers associated with the response. All header names are lower-case.
         /// </summary>
         /// <value>The headers.</value>
-        [JsonProperty("headers")]
         public Dictionary<string, object> Headers { get; internal set; }
         /// <summary>
         /// Contains the status code of the response
         /// </summary>
         /// <value>The status.</value>
-        [JsonProperty("status")]
         public HttpStatusCode Status { get; internal set; }
         /// <summary>
         /// Contains a boolean stating whether the response was successful (status in the range 200-299) or not.
@@ -61,22 +58,20 @@ namespace PuppeteerSharp
         /// A matching <see cref="Request"/> object.
         /// </summary>
         /// <value>The request.</value>
-        [JsonProperty("request")]
         public Request Request { get; internal set; }
         /// <summary>
         /// True if the response was served from either the browser's disk cache or memory cache.
         /// </summary>
-        public bool FromCache => FromDiskCache || (Request?.FromMemoryCache ?? false);
+        public bool FromCache => _fromDiskCache || (Request?.FromMemoryCache ?? false);
         /// <summary>
         /// Gets or sets the security details.
         /// </summary>
         /// <value>The security details.</value>
-        [JsonProperty("securityDetails")]
         public SecurityDetails SecurityDetails { get; internal set; }
 
         internal Task<string> ContentTask => ContentTaskWrapper.Task;
         internal TaskCompletionSource<string> ContentTaskWrapper { get; set; }
-        internal bool FromDiskCache { get; set; }
+        
         #endregion
 
         #region Public Methods
