@@ -28,21 +28,21 @@ namespace PuppeteerSharp.Messaging
         public string RedirectUrl { get; set; }
 
         [JsonProperty("authChallenge", NullValueHandling = NullValueHandling.Ignore)]
-        public AuthChallenge AuthChallenge { get; set; }
-    }
+        public AuthChallengeData AuthChallenge { get; set; }
 
-    internal class AuthChallenge
-    {
-        [JsonProperty("source", NullValueHandling = NullValueHandling.Ignore)]
-        public string Source { get; set; }
+        internal class AuthChallengeData
+        {
+            [JsonProperty("source", NullValueHandling = NullValueHandling.Ignore)]
+            public string Source { get; set; }
 
-        [JsonProperty("origin")]
-        public string Origin { get; set; }
+            [JsonProperty("origin")]
+            public string Origin { get; set; }
 
-        [JsonProperty("scheme")]
-        public string Scheme { get; set; }
+            [JsonProperty("scheme")]
+            public string Scheme { get; set; }
 
-        [JsonProperty("realm")]
-        public string Realm { get; set; }
+            [JsonProperty("realm")]
+            public string Realm { get; set; }
+        }
     }
 }
