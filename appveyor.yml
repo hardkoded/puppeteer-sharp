@@ -28,5 +28,4 @@ test_script:
     dotnet test -f %framework% -s test.runsettings
     
 cache:
-  directories:
-    - $HOME/.nuget/packages
+  - $HOME/.nuget/packages
