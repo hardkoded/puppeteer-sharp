@@ -26,3 +26,6 @@ test_script:
     cd .\lib\PuppeteerSharp.Tests
 
     dotnet test -f %framework% -s test.runsettings
+
+cache:
+  - $HOME/.nuget/packages
