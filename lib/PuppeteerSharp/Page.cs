@@ -847,7 +847,7 @@ namespace PuppeteerSharp
         /// <param name="viewport">Viewport options.</param>
         public async Task SetViewportAsync(ViewPortOptions viewport)
         {
-            var needsReload = await _emulationManager.EmulateViewport(Client, viewport);
+            var needsReload = await _emulationManager.EmulateViewport(viewport);
             Viewport = viewport;
 
             if (needsReload)
