@@ -15,7 +15,7 @@ namespace PuppeteerSharp
             _client = client;
         }
 
-        internal async Task<bool> EmulateViewport(CDPSession client, ViewPortOptions viewport)
+        internal async Task<bool> EmulateViewport(ViewPortOptions viewport)
         {
             var mobile = viewport.IsMobile;
             var width = viewport.Width;
