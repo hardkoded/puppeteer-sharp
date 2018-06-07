@@ -1517,7 +1517,7 @@ namespace PuppeteerSharp
                     OnDialog(e.MessageData.ToObject<PageJavascriptDialogOpeningResponse>());
                     break;
                 case "Runtime.exceptionThrown":
-                    HandleException(e.MessageData.Value<EvaluateExceptionDetails>("exceptionDetails"));
+                    HandleException(e.MessageData.SelectToken("exceptionDetails").ToObject<EvaluateExceptionDetails>());
                     break;
                 case "Security.certificateError":
                     await OnCertificateError(e.MessageData.ToObject<CertificateErrorResponse>());
