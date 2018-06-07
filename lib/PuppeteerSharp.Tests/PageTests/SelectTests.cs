@@ -22,6 +22,15 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Fact]
+        public async Task ShouldSelectOnlyFirstOption()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
+            await Page.SelectAsync("select", "blue", "green", "red");            
+            Assert.Equal(new string[] { "blue" }, await Page.EvaluateExpressionAsync<string[]>("result.onInput"));
+            Assert.Equal(new string[] { "blue" }, await Page.EvaluateExpressionAsync<string[]>("result.onChange"));
+        }
+
+        [Fact]
         public async Task ShouldSelectMultipleOptions()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");

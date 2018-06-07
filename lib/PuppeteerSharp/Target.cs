@@ -41,7 +41,7 @@ namespace PuppeteerSharp
         /// Gets the type. It will be <see cref="TargetInfo.Type"/> if it's "page" or "service_worker". Otherwise it will be "other"
         /// </summary>
         /// <value>The type.</value>
-        public string Type => _targetInfo.Type == "page" || _targetInfo.Type == "service_worker" ? _targetInfo.Type : "other";
+        public string Type => _targetInfo.Type == "page" || _targetInfo.Type == "service_worker" || _targetInfo.Type == "browser" ? _targetInfo.Type : "other";
         /// <summary>
         /// Gets the target identifier.
         /// </summary>
