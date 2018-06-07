@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Messaging;
 
@@ -15,8 +13,8 @@ namespace PuppeteerSharp
         #region Private members
 
         private readonly CDPSession _client;
-        private Dictionary<string, Request> _requestIdToRequest = new Dictionary<string, Request>();
-        private Dictionary<string, Request> _interceptionIdToRequest = new Dictionary<string, Request>();
+        private readonly Dictionary<string, Request> _requestIdToRequest = new Dictionary<string, Request>();
+        private readonly Dictionary<string, Request> _interceptionIdToRequest = new Dictionary<string, Request>();
         private readonly MultiMap<string, string> _requestHashToRequestIds = new MultiMap<string, string>();
         private readonly MultiMap<string, string> _requestHashToInterceptionIds = new MultiMap<string, string>();
         private readonly FrameManager _frameManager;
@@ -275,7 +273,13 @@ namespace PuppeteerSharp
             }
         }
 
-        private void HandleRequestStart(string requestId, string interceptionId, string url, ResourceType resourceType, Payload requestPayload, string frameId)
+        private void HandleRequestStart(
+            string requestId, 
+            string interceptionId, 
+            string url,
+            ResourceType resourceType, 
+            Payload requestPayload, 
+            string frameId)
         {
             Frame frame = null;
 
@@ -302,7 +306,12 @@ namespace PuppeteerSharp
             });
         }
 
-        private void HandleRequestRedirect(Request request, HttpStatusCode redirectStatus, Dictionary<string, object> redirectHeaders, bool fromDiskCache, SecurityDetails securityDetails = null)
+        private void HandleRequestRedirect(
+            Request request, 
+            HttpStatusCode redirectStatus, 
+            Dictionary<string, object> redirectHeaders,
+            bool fromDiskCache, 
+            SecurityDetails securityDetails = null)
         {
             var response = new Response(_client, request, redirectStatus, redirectHeaders, fromDiskCache, securityDetails);
             request.Response = response;
