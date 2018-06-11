@@ -1,0 +1,419 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class Dialog
+   </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class Dialog
+   ">
+    <meta name="generator" content="docfx 2.36.1.0">
+    
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="PuppeteerSharp.Dialog">
+  
+  
+  <h1 id="PuppeteerSharp_Dialog" data-uid="PuppeteerSharp.Dialog" class="text-break">Class Dialog
+  </h1>
+  <div class="markdown level0 summary"><p><a class="xref" href="PuppeteerSharp.Dialog.html">Dialog</a> objects are dispatched by page via the 'dialog' event.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><span class="xref">System.Object</span></div>
+    <div class="level1"><span class="xref">Dialog</span></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object, System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.GetHashCode()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.GetType()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.MemberwiseClone()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.ReferenceEquals(System.Object, System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.ToString()</span>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="PuppeteerSharp.html">PuppeteerSharp</a></h6>
+  <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
+  <h5 id="PuppeteerSharp_Dialog_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public class Dialog</code></pre>
+  </div>
+  <h5 id="PuppeteerSharp_Dialog_examples"><strong>Examples</strong></h5>
+  <p>An example of using Dialog class:</p>
+<pre><code> Page.Dialog += async (sender, e) =>
+ {
+     await e.Dialog.Accept();
+ }
+ await Page.EvaluateExpressionAsync(&quot;alert(&apos;yo&apos;);&quot;);</code></pre>
+
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Dialog__ctor_PuppeteerSharp_CDPSession_PuppeteerSharp_DialogType_System_String_System_String_.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Dialog.%23ctor(PuppeteerSharp.CDPSession%2CPuppeteerSharp.DialogType%2CSystem.String%2CSystem.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Dialog.cs/#L46">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Dialog__ctor_" data-uid="PuppeteerSharp.Dialog.#ctor*"></a>
+  <h4 id="PuppeteerSharp_Dialog__ctor_PuppeteerSharp_CDPSession_PuppeteerSharp_DialogType_System_String_System_String_" data-uid="PuppeteerSharp.Dialog.#ctor(PuppeteerSharp.CDPSession,PuppeteerSharp.DialogType,System.String,System.String)">Dialog(CDPSession, DialogType, String, String)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="PuppeteerSharp.Dialog.html">Dialog</a> class.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Dialog(CDPSession client, DialogType type, string message, string defaultValue)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.CDPSession.html">CDPSession</a></td>
+        <td><span class="parametername">client</span></td>
+        <td><p>Client.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.DialogType.html">DialogType</a></td>
+        <td><span class="parametername">type</span></td>
+        <td><p>Type.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">message</span></td>
+        <td><p>Message.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">defaultValue</span></td>
+        <td><p>Default value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Dialog_DefaultValue.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Dialog.DefaultValue%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Dialog.cs/#L32">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Dialog_DefaultValue_" data-uid="PuppeteerSharp.Dialog.DefaultValue*"></a>
+  <h4 id="PuppeteerSharp_Dialog_DefaultValue" data-uid="PuppeteerSharp.Dialog.DefaultValue">DefaultValue</h4>
+  <div class="markdown level1 summary"><p>If dialog is prompt, returns default prompt value. Otherwise, returns empty string.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string DefaultValue { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><p>The default value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Dialog_DialogType.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Dialog.DialogType%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Dialog.cs/#L27">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Dialog_DialogType_" data-uid="PuppeteerSharp.Dialog.DialogType*"></a>
+  <h4 id="PuppeteerSharp_Dialog_DialogType" data-uid="PuppeteerSharp.Dialog.DialogType">DialogType</h4>
+  <div class="markdown level1 summary"><p>Dialog's type, can be one of alert, beforeunload, confirm or prompt.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public DialogType DialogType { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.DialogType.html">DialogType</a></td>
+        <td><p>The type of the dialog.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Dialog_Message.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Dialog.Message%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Dialog.cs/#L37">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Dialog_Message_" data-uid="PuppeteerSharp.Dialog.Message*"></a>
+  <h4 id="PuppeteerSharp_Dialog_Message" data-uid="PuppeteerSharp.Dialog.Message">Message</h4>
+  <div class="markdown level1 summary"><p>A message displayed in the dialog.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string Message { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><p>The message.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Dialog_Accept_System_String_.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Dialog.Accept(System.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Dialog.cs/#L59">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Dialog_Accept_" data-uid="PuppeteerSharp.Dialog.Accept*"></a>
+  <h4 id="PuppeteerSharp_Dialog_Accept_System_String_" data-uid="PuppeteerSharp.Dialog.Accept(System.String)">Accept(String)</h4>
+  <div class="markdown level1 summary"><p>Accept the Dialog.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task Accept(string promptText = &quot;&quot;)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">promptText</span></td>
+        <td><p>A text to enter in prompt. Does not cause any effects if the dialog's type is not prompt.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td><p>Task which resolves when the dialog has been accepted.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Dialog_Dismiss.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Dialog.Dismiss%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Dialog.cs/#L72">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Dialog_Dismiss_" data-uid="PuppeteerSharp.Dialog.Dismiss*"></a>
+  <h4 id="PuppeteerSharp_Dialog_Dismiss" data-uid="PuppeteerSharp.Dialog.Dismiss">Dismiss()</h4>
+  <div class="markdown level1 summary"><p>Dismiss the dialog.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task Dismiss()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td><p>Task which resolves when the dialog has been dismissed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Dialog.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Dialog%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Dialog.cs/#L19" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <div class="row">
+              <div class="col-md-4">
+                
+                <span>Generated by <strong>DocFX</strong></span>
+              </div>
+              <div class="col-md-4">
+                <p class="text-center">
+                  <a href="https://www.hardkoded.com">www.hardkoded.com</a>
+                </p>
+              </div>
+              <div class="col-md-4">
+                <span class="pull-right">
+                  <a href="#top">Back to top</a>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-586295-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'UA-586295-9');
+    </script>
+  </body>
+</html>

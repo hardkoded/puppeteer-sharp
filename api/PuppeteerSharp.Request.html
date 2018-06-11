@@ -1,0 +1,540 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class Request
+   </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class Request
+   ">
+    <meta name="generator" content="docfx 2.36.1.0">
+    
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="PuppeteerSharp.Request">
+  
+  
+  <h1 id="PuppeteerSharp_Request" data-uid="PuppeteerSharp.Request" class="text-break">Class Request
+  </h1>
+  <div class="markdown level0 summary"><p>Whenever the page sends a request, the following events are emitted by puppeteer's page:
+<a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_Request">Request</a> emitted when the request is issued by the page.
+<a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_Response">Response</a> emitted when/if the response is received for the request.
+<a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_RequestFinished">RequestFinished</a> emitted when the response body is downloaded and the request is complete.</p>
+<p>If request fails at some point, then instead of <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_RequestFinished">RequestFinished</a> event (and possibly instead of <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_Response">Response</a> event), the <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_RequestFailed">RequestFailed</a> event is emitted.</p>
+<p>If request gets a 'redirect' response, the request is successfully finished with the <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_RequestFinished">RequestFinished</a> event, and a new request is issued to a redirected url.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><span class="xref">System.Object</span></div>
+    <div class="level1"><a class="xref" href="PuppeteerSharp.Payload.html">Payload</a></div>
+    <div class="level2"><span class="xref">Request</span></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="PuppeteerSharp.Payload.html#PuppeteerSharp_Payload_Method">Payload.Method</a>
+    </div>
+    <div>
+      <a class="xref" href="PuppeteerSharp.Payload.html#PuppeteerSharp_Payload_PostData">Payload.PostData</a>
+    </div>
+    <div>
+      <a class="xref" href="PuppeteerSharp.Payload.html#PuppeteerSharp_Payload_Headers">Payload.Headers</a>
+    </div>
+    <div>
+      <a class="xref" href="PuppeteerSharp.Payload.html#PuppeteerSharp_Payload_Url">Payload.Url</a>
+    </div>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object, System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.GetHashCode()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.GetType()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.MemberwiseClone()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.ReferenceEquals(System.Object, System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.ToString()</span>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="PuppeteerSharp.html">PuppeteerSharp</a></h6>
+  <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
+  <h5 id="PuppeteerSharp_Request_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public class Request : Payload</code></pre>
+  </div>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Request_Failure.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Request.Failure%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Request.cs/#L68">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Request_Failure_" data-uid="PuppeteerSharp.Request.Failure*"></a>
+  <h4 id="PuppeteerSharp_Request_Failure" data-uid="PuppeteerSharp.Request.Failure">Failure</h4>
+  <div class="markdown level1 summary"><p>Gets or sets the failure.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string Failure { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><p>The failure.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Request_Frame.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Request.Frame%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Request.cs/#L88">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Request_Frame_" data-uid="PuppeteerSharp.Request.Frame*"></a>
+  <h4 id="PuppeteerSharp_Request_Frame" data-uid="PuppeteerSharp.Request.Frame">Frame</h4>
+  <div class="markdown level1 summary"><p>Gets the frame.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Frame Frame { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.Frame.html">Frame</a></td>
+        <td><p>The frame.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Request_InterceptionId.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Request.InterceptionId%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Request.cs/#L78">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Request_InterceptionId_" data-uid="PuppeteerSharp.Request.InterceptionId*"></a>
+  <h4 id="PuppeteerSharp_Request_InterceptionId" data-uid="PuppeteerSharp.Request.InterceptionId">InterceptionId</h4>
+  <div class="markdown level1 summary"><p>Gets or sets the interception identifier.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string InterceptionId { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><p>The interception identifier.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Request_RequestId.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Request.RequestId%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Request.cs/#L73">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Request_RequestId_" data-uid="PuppeteerSharp.Request.RequestId*"></a>
+  <h4 id="PuppeteerSharp_Request_RequestId" data-uid="PuppeteerSharp.Request.RequestId">RequestId</h4>
+  <div class="markdown level1 summary"><p>Gets or sets the request identifier.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string RequestId { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><p>The request identifier.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Request_ResourceType.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Request.ResourceType%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Request.cs/#L83">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Request_ResourceType_" data-uid="PuppeteerSharp.Request.ResourceType*"></a>
+  <h4 id="PuppeteerSharp_Request_ResourceType" data-uid="PuppeteerSharp.Request.ResourceType">ResourceType</h4>
+  <div class="markdown level1 summary"><p>Gets or sets the type of the resource.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ResourceType ResourceType { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.ResourceType.html">ResourceType</a></td>
+        <td><p>The type of the resource.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Request_Response.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Request.Response%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Request.cs/#L63">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Request_Response_" data-uid="PuppeteerSharp.Request.Response*"></a>
+  <h4 id="PuppeteerSharp_Request_Response" data-uid="PuppeteerSharp.Request.Response">Response</h4>
+  <div class="markdown level1 summary"><p>Responsed attached to the request.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Response Response { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.Response.html">Response</a></td>
+        <td><p>The response.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Request_AbortAsync_PuppeteerSharp_RequestAbortErrorCode_.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Request.AbortAsync(PuppeteerSharp.RequestAbortErrorCode)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Request.cs/#L219">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Request_AbortAsync_" data-uid="PuppeteerSharp.Request.AbortAsync*"></a>
+  <h4 id="PuppeteerSharp_Request_AbortAsync_PuppeteerSharp_RequestAbortErrorCode_" data-uid="PuppeteerSharp.Request.AbortAsync(PuppeteerSharp.RequestAbortErrorCode)">AbortAsync(RequestAbortErrorCode)</h4>
+  <div class="markdown level1 summary"><p>Aborts request. To use this, request interception should be enabled with <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_SetRequestInterceptionAsync_System_Boolean_">SetRequestInterceptionAsync(Boolean)</a>.
+Exception is immediately thrown if the request interception is not enabled.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task AbortAsync(RequestAbortErrorCode errorCode = RequestAbortErrorCode.Failed)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.RequestAbortErrorCode.html">RequestAbortErrorCode</a></td>
+        <td><span class="parametername">errorCode</span></td>
+        <td><p>Optional error code. Defaults to <a class="xref" href="PuppeteerSharp.RequestAbortErrorCode.html#PuppeteerSharp_RequestAbortErrorCode_Failed">Failed</a></p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td><p>Task</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Request_ContinueAsync_PuppeteerSharp_Payload_.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Request.ContinueAsync(PuppeteerSharp.Payload)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Request.cs/#L102">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Request_ContinueAsync_" data-uid="PuppeteerSharp.Request.ContinueAsync*"></a>
+  <h4 id="PuppeteerSharp_Request_ContinueAsync_PuppeteerSharp_Payload_" data-uid="PuppeteerSharp.Request.ContinueAsync(PuppeteerSharp.Payload)">ContinueAsync(Payload)</h4>
+  <div class="markdown level1 summary"><p>Continues request with optional request overrides. To use this, request interception should be enabled with <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_SetRequestInterceptionAsync_System_Boolean_">SetRequestInterceptionAsync(Boolean)</a>. Exception is immediately thrown if the request interception is not enabled.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task ContinueAsync(Payload overrides = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.Payload.html">Payload</a></td>
+        <td><span class="parametername">overrides</span></td>
+        <td><p>Optional request overwrites.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td><p>Task</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Request_RespondAsync_PuppeteerSharp_ResponseData_.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Request.RespondAsync(PuppeteerSharp.ResponseData)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Request.cs/#L138">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Request_RespondAsync_" data-uid="PuppeteerSharp.Request.RespondAsync*"></a>
+  <h4 id="PuppeteerSharp_Request_RespondAsync_PuppeteerSharp_ResponseData_" data-uid="PuppeteerSharp.Request.RespondAsync(PuppeteerSharp.ResponseData)">RespondAsync(ResponseData)</h4>
+  <div class="markdown level1 summary"><p>Fulfills request with given response. To use this, request interception should be enabled with <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_SetRequestInterceptionAsync_System_Boolean_">SetRequestInterceptionAsync(Boolean)</a>. Exception is thrown if request interception is not enabled.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task RespondAsync(ResponseData response)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.ResponseData.html">ResponseData</a></td>
+        <td><span class="parametername">response</span></td>
+        <td><p>Response that will fulfill this request</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td><p>Task</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Request.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Request%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Request.cs/#L20" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <div class="row">
+              <div class="col-md-4">
+                
+                <span>Generated by <strong>DocFX</strong></span>
+              </div>
+              <div class="col-md-4">
+                <p class="text-center">
+                  <a href="https://www.hardkoded.com">www.hardkoded.com</a>
+                </p>
+              </div>
+              <div class="col-md-4">
+                <span class="pull-right">
+                  <a href="#top">Back to top</a>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-586295-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'UA-586295-9');
+    </script>
+  </body>
+</html>

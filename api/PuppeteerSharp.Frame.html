@@ -1,0 +1,1324 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class Frame
+   </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class Frame
+   ">
+    <meta name="generator" content="docfx 2.36.1.0">
+    
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="PuppeteerSharp.Frame">
+  
+  
+  <h1 id="PuppeteerSharp_Frame" data-uid="PuppeteerSharp.Frame" class="text-break">Class Frame
+  </h1>
+  <div class="markdown level0 summary"><p>Provides methods to interact with a single page frame in Chromium. One <a class="xref" href="PuppeteerSharp.Page.html">Page</a> instance might have multiple <a class="xref" href="PuppeteerSharp.Frame.html">Frame</a> instances.
+At every point of time, page exposes its current frame tree via the <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_MainFrame">MainFrame</a> and <a class="xref" href="PuppeteerSharp.Frame.html#PuppeteerSharp_Frame_ChildFrames">ChildFrames</a> properties.</p>
+<p><a class="xref" href="PuppeteerSharp.Frame.html">Frame</a> object's lifecycle is controlled by three events, dispatched on the page object</p>
+<ul>
+<li><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_FrameAttached">FrameAttached</a> - fires when the frame gets attached to the page. A Frame can be attached to the page only once</li>
+<li><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_FrameNavigated">FrameNavigated</a> - fired when the frame commits navigation to a different URL</li>
+<li><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_FrameDetached">FrameDetached</a> - fired when the frame gets detached from the page.  A Frame can be detached from the page only once</li>
+</ul>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><span class="xref">System.Object</span></div>
+    <div class="level1"><span class="xref">Frame</span></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object, System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.GetHashCode()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.GetType()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.MemberwiseClone()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.ReferenceEquals(System.Object, System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.ToString()</span>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="PuppeteerSharp.html">PuppeteerSharp</a></h6>
+  <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
+  <h5 id="PuppeteerSharp_Frame_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public class Frame</code></pre>
+  </div>
+  <h5 id="PuppeteerSharp_Frame_examples"><strong>Examples</strong></h5>
+  <p>An example of dumping frame tree</p>
+<pre><code>var browser = await Puppeteer.LaunchAsync(new LaunchOptions(), Downloader.DefaultRevision);
+var page = await browser.NewPageAsync();
+await page.GoToAsync(&quot;https://www.google.com/chrome/browser/canary.html&quot;);
+dumpFrameTree(page.MainFrame, string.Empty);
+await browser.CloseAsync();
+
+void dumpFrameTree(Frame frame, string indent)
+{
+    Console.WriteLine(indent + frame.Url);
+    foreach (var child in frame.ChildFrames)
+    {
+        dumpFrameTree(child, indent + &quot;  &quot;);
+    }
+}</code></pre>
+
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Frame_ChildFrames.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Frame.ChildFrames%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L73">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Frame_ChildFrames_" data-uid="PuppeteerSharp.Frame.ChildFrames*"></a>
+  <h4 id="PuppeteerSharp_Frame_ChildFrames" data-uid="PuppeteerSharp.Frame.ChildFrames">ChildFrames</h4>
+  <div class="markdown level1 summary"><p>Gets the child frames of the this frame</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public List&lt;Frame&gt; ChildFrames { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Collections.Generic.List</span>&lt;<a class="xref" href="PuppeteerSharp.Frame.html">Frame</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Frame_Detached.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Frame.Detached%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L89">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Frame_Detached_" data-uid="PuppeteerSharp.Frame.Detached*"></a>
+  <h4 id="PuppeteerSharp_Frame_Detached" data-uid="PuppeteerSharp.Frame.Detached">Detached</h4>
+  <div class="markdown level1 summary"><p>Gets a value indicating if the frame is detached or not</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool Detached { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Frame_Name.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Frame.Name%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L79">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Frame_Name_" data-uid="PuppeteerSharp.Frame.Name*"></a>
+  <h4 id="PuppeteerSharp_Frame_Name" data-uid="PuppeteerSharp.Frame.Name">Name</h4>
+  <div class="markdown level1 summary"><p>Gets the frame's name attribute as specified in the tag
+If the name is empty, returns the id attribute instead</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string Name { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Frame_ParentFrame.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Frame.ParentFrame%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L94">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Frame_ParentFrame_" data-uid="PuppeteerSharp.Frame.ParentFrame*"></a>
+  <h4 id="PuppeteerSharp_Frame_ParentFrame" data-uid="PuppeteerSharp.Frame.ParentFrame">ParentFrame</h4>
+  <div class="markdown level1 summary"><p>Gets the parent frame, if any. Detached frames and main frames return <code>null</code></p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Frame ParentFrame { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.Frame.html">Frame</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Frame_Url.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Frame.Url%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L84">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Frame_Url_" data-uid="PuppeteerSharp.Frame.Url*"></a>
+  <h4 id="PuppeteerSharp_Frame_Url" data-uid="PuppeteerSharp.Frame.Url">Url</h4>
+  <div class="markdown level1 summary"><p>Gets the frame's url</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string Url { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Frame_AddScriptTag_PuppeteerSharp_AddTagOptions_.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Frame.AddScriptTag(PuppeteerSharp.AddTagOptions)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L362">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Frame_AddScriptTag_" data-uid="PuppeteerSharp.Frame.AddScriptTag*"></a>
+  <h4 id="PuppeteerSharp_Frame_AddScriptTag_PuppeteerSharp_AddTagOptions_" data-uid="PuppeteerSharp.Frame.AddScriptTag(PuppeteerSharp.AddTagOptions)">AddScriptTag(AddTagOptions)</h4>
+  <div class="markdown level1 summary"><p>Adds a <code>&lt;script&gt;</code> tag into the page with the desired url or content</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;ElementHandle&gt; AddScriptTag(AddTagOptions options)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.AddTagOptions.html">AddTagOptions</a></td>
+        <td><span class="parametername">options</span></td>
+        <td><p>add script tag options</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a>&gt;</td>
+        <td><p>Task which resolves to the added tag when the script's onload fires or when the script content was injected into frame</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_Frame_AddScriptTag_PuppeteerSharp_AddTagOptions__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_AddScriptTagAsync_PuppeteerSharp_AddTagOptions_">AddScriptTagAsync(AddTagOptions)</a></div>
+      <div><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_AddScriptTagAsync_System_String_">AddScriptTagAsync(String)</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Frame_AddStyleTag_PuppeteerSharp_AddTagOptions_.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Frame.AddStyleTag(PuppeteerSharp.AddTagOptions)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L303">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Frame_AddStyleTag_" data-uid="PuppeteerSharp.Frame.AddStyleTag*"></a>
+  <h4 id="PuppeteerSharp_Frame_AddStyleTag_PuppeteerSharp_AddTagOptions_" data-uid="PuppeteerSharp.Frame.AddStyleTag(PuppeteerSharp.AddTagOptions)">AddStyleTag(AddTagOptions)</h4>
+  <div class="markdown level1 summary"><p>Adds a <code>&lt;link rel=&quot;stylesheet&quot;&gt;</code> tag into the page with the desired url or a <code>&lt;link rel=&quot;stylesheet&quot;&gt;</code> tag with the content</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;ElementHandle&gt; AddStyleTag(AddTagOptions options)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.AddTagOptions.html">AddTagOptions</a></td>
+        <td><span class="parametername">options</span></td>
+        <td><p>add style tag options</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a>&gt;</td>
+        <td><p>Task which resolves to the added tag when the stylesheet's onload fires or when the CSS content was injected into frame</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_Frame_AddStyleTag_PuppeteerSharp_AddTagOptions__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_AddStyleTagAsync_PuppeteerSharp_AddTagOptions_">AddStyleTagAsync(AddTagOptions)</a></div>
+      <div><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_AddStyleTagAsync_System_String_">AddStyleTagAsync(String)</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Frame_EvaluateExpressionAsync_System_String_.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Frame.EvaluateExpressionAsync(System.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L109">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Frame_EvaluateExpressionAsync_" data-uid="PuppeteerSharp.Frame.EvaluateExpressionAsync*"></a>
+  <h4 id="PuppeteerSharp_Frame_EvaluateExpressionAsync_System_String_" data-uid="PuppeteerSharp.Frame.EvaluateExpressionAsync(System.String)">EvaluateExpressionAsync(String)</h4>
+  <div class="markdown level1 summary"><p>Executes a script in browser context</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;dynamic&gt; EvaluateExpressionAsync(string script)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">script</span></td>
+        <td><p>Script to be evaluated in browser context</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">System.Object</span>&gt;</td>
+        <td><p>Task which resolves to script return value</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_Frame_EvaluateExpressionAsync_System_String__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.</p>
+</div>
+  <h5 id="PuppeteerSharp_Frame_EvaluateExpressionAsync_System_String__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="PuppeteerSharp.Frame.html#PuppeteerSharp_Frame_EvaluateFunctionAsync_System_String_System_Object___">EvaluateFunctionAsync(String, Object[])</a></div>
+      <div><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_EvaluateExpressionAsync_System_String_">EvaluateExpressionAsync(String)</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Frame_EvaluateExpressionAsync__1_System_String_.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Frame.EvaluateExpressionAsync%60%601(System.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L126">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Frame_EvaluateExpressionAsync_" data-uid="PuppeteerSharp.Frame.EvaluateExpressionAsync*"></a>
+  <h4 id="PuppeteerSharp_Frame_EvaluateExpressionAsync__1_System_String_" data-uid="PuppeteerSharp.Frame.EvaluateExpressionAsync``1(System.String)">EvaluateExpressionAsync&lt;T&gt;(String)</h4>
+  <div class="markdown level1 summary"><p>Executes a script in browser context</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;T&gt; EvaluateExpressionAsync&lt;T&gt;(string script)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">script</span></td>
+        <td><p>Script to be evaluated in browser context</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;T&gt;</td>
+        <td><p>Task which resolves to script return value</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type to deserialize the result to</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_Frame_EvaluateExpressionAsync__1_System_String__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.</p>
+</div>
+  <h5 id="PuppeteerSharp_Frame_EvaluateExpressionAsync__1_System_String__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="PuppeteerSharp.Frame.html#PuppeteerSharp_Frame_EvaluateFunctionAsync__1_System_String_System_Object___">EvaluateFunctionAsync&lt;T&gt;(String, Object[])</a></div>
+      <div><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_EvaluateExpressionAsync__1_System_String_">EvaluateExpressionAsync&lt;T&gt;(String)</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Frame_EvaluateFunctionAsync_System_String_System_Object___.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Frame.EvaluateFunctionAsync(System.String%2CSystem.Object%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L144">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Frame_EvaluateFunctionAsync_" data-uid="PuppeteerSharp.Frame.EvaluateFunctionAsync*"></a>
+  <h4 id="PuppeteerSharp_Frame_EvaluateFunctionAsync_System_String_System_Object___" data-uid="PuppeteerSharp.Frame.EvaluateFunctionAsync(System.String,System.Object[])">EvaluateFunctionAsync(String, Object[])</h4>
+  <div class="markdown level1 summary"><p>Executes a function in browser context</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;dynamic&gt; EvaluateFunctionAsync(string script, params object[] args)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">script</span></td>
+        <td><p>Script to be evaluated in browser context</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Object</span>[]</td>
+        <td><span class="parametername">args</span></td>
+        <td><p>Arguments to pass to script</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">System.Object</span>&gt;</td>
+        <td><p>Task which resolves to script return value</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_Frame_EvaluateFunctionAsync_System_String_System_Object____remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+<a class="xref" href="PuppeteerSharp.JSHandle.html">JSHandle</a> instances can be passed as arguments</p>
+</div>
+  <h5 id="PuppeteerSharp_Frame_EvaluateFunctionAsync_System_String_System_Object____seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="PuppeteerSharp.Frame.html#PuppeteerSharp_Frame_EvaluateExpressionAsync_System_String_">EvaluateExpressionAsync(String)</a></div>
+      <div><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_EvaluateFunctionAsync_System_String_System_Object___">EvaluateFunctionAsync(String, Object[])</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Frame_EvaluateFunctionAsync__1_System_String_System_Object___.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Frame.EvaluateFunctionAsync%60%601(System.String%2CSystem.Object%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L163">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Frame_EvaluateFunctionAsync_" data-uid="PuppeteerSharp.Frame.EvaluateFunctionAsync*"></a>
+  <h4 id="PuppeteerSharp_Frame_EvaluateFunctionAsync__1_System_String_System_Object___" data-uid="PuppeteerSharp.Frame.EvaluateFunctionAsync``1(System.String,System.Object[])">EvaluateFunctionAsync&lt;T&gt;(String, Object[])</h4>
+  <div class="markdown level1 summary"><p>Executes a function in browser context</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;T&gt; EvaluateFunctionAsync&lt;T&gt;(string script, params object[] args)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">script</span></td>
+        <td><p>Script to be evaluated in browser context</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Object</span>[]</td>
+        <td><span class="parametername">args</span></td>
+        <td><p>Arguments to pass to script</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;T&gt;</td>
+        <td><p>Task which resolves to script return value</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type to deserialize the result to</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_Frame_EvaluateFunctionAsync__1_System_String_System_Object____remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+<a class="xref" href="PuppeteerSharp.JSHandle.html">JSHandle</a> instances can be passed as arguments</p>
+</div>
+  <h5 id="PuppeteerSharp_Frame_EvaluateFunctionAsync__1_System_String_System_Object____seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="PuppeteerSharp.Frame.html#PuppeteerSharp_Frame_EvaluateExpressionAsync__1_System_String_">EvaluateExpressionAsync&lt;T&gt;(String)</a></div>
+      <div><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_EvaluateFunctionAsync__1_System_String_System_Object___">EvaluateFunctionAsync&lt;T&gt;(String, Object[])</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Frame_GetContentAsync.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Frame.GetContentAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L418">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Frame_GetContentAsync_" data-uid="PuppeteerSharp.Frame.GetContentAsync*"></a>
+  <h4 id="PuppeteerSharp_Frame_GetContentAsync" data-uid="PuppeteerSharp.Frame.GetContentAsync">GetContentAsync()</h4>
+  <div class="markdown level1 summary"><p>Gets the full HTML contents of the page, including the doctype.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;string&gt; GetContentAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">System.String</span>&gt;</td>
+        <td><p>Task which resolves to the HTML content.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_Frame_GetContentAsync_seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_GetContentAsync">GetContentAsync()</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Frame_GetExecutionContextAsync.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Frame.GetExecutionContextAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L173">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Frame_GetExecutionContextAsync_" data-uid="PuppeteerSharp.Frame.GetExecutionContextAsync*"></a>
+  <h4 id="PuppeteerSharp_Frame_GetExecutionContextAsync" data-uid="PuppeteerSharp.Frame.GetExecutionContextAsync">GetExecutionContextAsync()</h4>
+  <div class="markdown level1 summary"><p>Gets the <a class="xref" href="PuppeteerSharp.ExecutionContext.html">ExecutionContext</a> associated with the frame.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;ExecutionContext&gt; GetExecutionContextAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="PuppeteerSharp.ExecutionContext.html">ExecutionContext</a>&gt;</td>
+        <td><p><a class="xref" href="PuppeteerSharp.ExecutionContext.html">ExecutionContext</a> associated with the frame.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Frame_GetTitleAsync.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Frame.GetTitleAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L446">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Frame_GetTitleAsync_" data-uid="PuppeteerSharp.Frame.GetTitleAsync*"></a>
+  <h4 id="PuppeteerSharp_Frame_GetTitleAsync" data-uid="PuppeteerSharp.Frame.GetTitleAsync">GetTitleAsync()</h4>
+  <div class="markdown level1 summary"><p>Returns page's title</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;string&gt; GetTitleAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">System.String</span>&gt;</td>
+        <td><p>page's title</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_Frame_GetTitleAsync_seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_GetTitleAsync">GetTitleAsync()</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Frame_QuerySelectorAllAsync_System_String_.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Frame.QuerySelectorAllAsync(System.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L276">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Frame_QuerySelectorAllAsync_" data-uid="PuppeteerSharp.Frame.QuerySelectorAllAsync*"></a>
+  <h4 id="PuppeteerSharp_Frame_QuerySelectorAllAsync_System_String_" data-uid="PuppeteerSharp.Frame.QuerySelectorAllAsync(System.String)">QuerySelectorAllAsync(String)</h4>
+  <div class="markdown level1 summary"><p>Queries frame for the selector. If no elements match the selector, the return value resolve to <span class="xref">System.Array.Empty``1</span>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;ElementHandle[]&gt; QuerySelectorAllAsync(string selector)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">selector</span></td>
+        <td><p>A selector to query frame for</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a>[]&gt;</td>
+        <td><p>Task which resolves to ElementHandles pointing to the frame elements</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_Frame_QuerySelectorAllAsync_System_String__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_QuerySelectorAllAsync_System_String_">QuerySelectorAllAsync(String)</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Frame_QuerySelectorAsync_System_String_.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Frame.QuerySelectorAsync(System.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L263">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Frame_QuerySelectorAsync_" data-uid="PuppeteerSharp.Frame.QuerySelectorAsync*"></a>
+  <h4 id="PuppeteerSharp_Frame_QuerySelectorAsync_System_String_" data-uid="PuppeteerSharp.Frame.QuerySelectorAsync(System.String)">QuerySelectorAsync(String)</h4>
+  <div class="markdown level1 summary"><p>Queries frame for the selector. If there's no such element within the frame, the method will resolve to <code>null</code>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;ElementHandle&gt; QuerySelectorAsync(string selector)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">selector</span></td>
+        <td><p>Selector to query frame for</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a>&gt;</td>
+        <td><p>Task which resolves to <a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a> pointing to the frame element</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_Frame_QuerySelectorAsync_System_String__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_QuerySelectorAsync_System_String_">QuerySelectorAsync(String)</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Frame_SelectAsync_System_String_System_String___.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Frame.SelectAsync(System.String%2CSystem.String%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L240">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Frame_SelectAsync_" data-uid="PuppeteerSharp.Frame.SelectAsync*"></a>
+  <h4 id="PuppeteerSharp_Frame_SelectAsync_System_String_System_String___" data-uid="PuppeteerSharp.Frame.SelectAsync(System.String,System.String[])">SelectAsync(String, String[])</h4>
+  <div class="markdown level1 summary"><p>Triggers a change and input event once all the provided options have been selected.
+If there's no &lt;select&gt; element matching selector, the method throws an error.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;string[]&gt; SelectAsync(string selector, params string[] values)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">selector</span></td>
+        <td><p>A selector to query page for</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.String</span>[]</td>
+        <td><span class="parametername">values</span></td>
+        <td><p>Values of options to select. If the &lt;select&gt; has the multiple attribute,
+all values are considered, otherwise only the first one is taken into account.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">System.String</span>[]&gt;</td>
+        <td><p>Returns an array of option values that have been successfully selected.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.SelectorException.html">SelectorException</a></td>
+        <td><p>If there's no element matching <code data-dev-comment-type="paramref" class="paramref">selector</code></p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_Frame_SelectAsync_System_String_System_String____seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_SelectAsync_System_String_System_String___">SelectAsync(String, String[])</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Frame_SetContentAsync_System_String_.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Frame.SetContentAsync(System.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L434">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Frame_SetContentAsync_" data-uid="PuppeteerSharp.Frame.SetContentAsync*"></a>
+  <h4 id="PuppeteerSharp_Frame_SetContentAsync_System_String_" data-uid="PuppeteerSharp.Frame.SetContentAsync(System.String)">SetContentAsync(String)</h4>
+  <div class="markdown level1 summary"><p>Sets the HTML markup to the page</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task SetContentAsync(string html)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">html</span></td>
+        <td><p>HTML markup to assign to the page.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td><p>Task.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_Frame_SetContentAsync_System_String__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_SetContentAsync_System_String_">SetContentAsync(String)</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Frame_WaitForFunctionAsync_System_String_PuppeteerSharp_WaitForFunctionOptions_System_Object___.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Frame.WaitForFunctionAsync(System.String%2CPuppeteerSharp.WaitForFunctionOptions%2CSystem.Object%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L227">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Frame_WaitForFunctionAsync_" data-uid="PuppeteerSharp.Frame.WaitForFunctionAsync*"></a>
+  <h4 id="PuppeteerSharp_Frame_WaitForFunctionAsync_System_String_PuppeteerSharp_WaitForFunctionOptions_System_Object___" data-uid="PuppeteerSharp.Frame.WaitForFunctionAsync(System.String,PuppeteerSharp.WaitForFunctionOptions,System.Object[])">WaitForFunctionAsync(String, WaitForFunctionOptions, Object[])</h4>
+  <div class="markdown level1 summary"><p>Waits for a script to be evaluated to a truthy value</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;JSHandle&gt; WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">script</span></td>
+        <td><p>Function to be evaluated in browser context</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.WaitForFunctionOptions.html">WaitForFunctionOptions</a></td>
+        <td><span class="parametername">options</span></td>
+        <td><p>Optional waiting parameters</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Object</span>[]</td>
+        <td><span class="parametername">args</span></td>
+        <td><p>Arguments to pass to <code>script</code></p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="PuppeteerSharp.JSHandle.html">JSHandle</a>&gt;</td>
+        <td><p>A task that resolves when the <code>script</code> returns a truthy value</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_Frame_WaitForFunctionAsync_System_String_PuppeteerSharp_WaitForFunctionOptions_System_Object____seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_WaitForFunctionAsync_System_String_PuppeteerSharp_WaitForFunctionOptions_System_Object___">WaitForFunctionAsync(String, WaitForFunctionOptions, Object[])</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Frame_WaitForSelectorAsync_System_String_PuppeteerSharp_WaitForSelectorOptions_.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Frame.WaitForSelectorAsync(System.String%2CPuppeteerSharp.WaitForSelectorOptions)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L182">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Frame_WaitForSelectorAsync_" data-uid="PuppeteerSharp.Frame.WaitForSelectorAsync*"></a>
+  <h4 id="PuppeteerSharp_Frame_WaitForSelectorAsync_System_String_PuppeteerSharp_WaitForSelectorOptions_" data-uid="PuppeteerSharp.Frame.WaitForSelectorAsync(System.String,PuppeteerSharp.WaitForSelectorOptions)">WaitForSelectorAsync(String, WaitForSelectorOptions)</h4>
+  <div class="markdown level1 summary"><p>Waits for a selector to be added to the DOM</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;ElementHandle&gt; WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">selector</span></td>
+        <td><p>A selector of an element to wait for</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.WaitForSelectorOptions.html">WaitForSelectorOptions</a></td>
+        <td><span class="parametername">options</span></td>
+        <td><p>Optional waiting parameters</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a>&gt;</td>
+        <td><p>A task that resolves when element specified by selector string is added to DOM</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_Frame_WaitForSelectorAsync_System_String_PuppeteerSharp_WaitForSelectorOptions__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_WaitForSelectorAsync_System_String_PuppeteerSharp_WaitForSelectorOptions_">WaitForSelectorAsync(String, WaitForSelectorOptions)</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Frame_WaitForTimeoutAsync_System_Int32_.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Frame.WaitForTimeoutAsync(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L217">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Frame_WaitForTimeoutAsync_" data-uid="PuppeteerSharp.Frame.WaitForTimeoutAsync*"></a>
+  <h4 id="PuppeteerSharp_Frame_WaitForTimeoutAsync_System_Int32_" data-uid="PuppeteerSharp.Frame.WaitForTimeoutAsync(System.Int32)">WaitForTimeoutAsync(Int32)</h4>
+  <div class="markdown level1 summary"><p>Waits for a timeout</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task WaitForTimeoutAsync(int milliseconds)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td><span class="parametername">milliseconds</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td><p>A task that resolves when after the timeout</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_Frame_WaitForTimeoutAsync_System_Int32__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_WaitForTimeoutAsync_System_Int32_">WaitForTimeoutAsync(Int32)</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Frame_XPathAsync_System_String_.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Frame.XPathAsync(System.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L289">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Frame_XPathAsync_" data-uid="PuppeteerSharp.Frame.XPathAsync*"></a>
+  <h4 id="PuppeteerSharp_Frame_XPathAsync_System_String_" data-uid="PuppeteerSharp.Frame.XPathAsync(System.String)">XPathAsync(String)</h4>
+  <div class="markdown level1 summary"><p>Evaluates the XPath expression</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;ElementHandle[]&gt; XPathAsync(string expression)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">expression</span></td>
+        <td><p>Expression to evaluate <a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate">https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate</a></p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a>[]&gt;</td>
+        <td><p>Task which resolves to an array of <a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a></p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_Frame_XPathAsync_System_String__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_XPathAsync_System_String_">XPathAsync(String)</a></div>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Frame.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Frame%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L39" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <div class="row">
+              <div class="col-md-4">
+                
+                <span>Generated by <strong>DocFX</strong></span>
+              </div>
+              <div class="col-md-4">
+                <p class="text-center">
+                  <a href="https://www.hardkoded.com">www.hardkoded.com</a>
+                </p>
+              </div>
+              <div class="col-md-4">
+                <span class="pull-right">
+                  <a href="#top">Back to top</a>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-586295-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'UA-586295-9');
+    </script>
+  </body>
+</html>

@@ -1,0 +1,452 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class CDPSession
+   </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class CDPSession
+   ">
+    <meta name="generator" content="docfx 2.36.1.0">
+    
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="PuppeteerSharp.CDPSession">
+  
+  
+  <h1 id="PuppeteerSharp_CDPSession" data-uid="PuppeteerSharp.CDPSession" class="text-break">Class CDPSession
+  </h1>
+  <div class="markdown level0 summary"><p>The CDPSession instances are used to talk raw Chrome Devtools Protocol:</p>
+<ul>
+<li>Protocol methods can be called with <span class="xref">PuppeteerSharp.CDPSession.SendAsync(System.String,System.Boolean,System.Object)</span> method.</li>
+<li>Protocol events, using the <a class="xref" href="PuppeteerSharp.CDPSession.html#PuppeteerSharp_CDPSession_MessageReceived">MessageReceived</a> event.</li>
+</ul>
+<p>Documentation on DevTools Protocol can be found here: <a href="https://chromedevtools.github.io/devtools-protocol/">https://chromedevtools.github.io/devtools-protocol/</a>.</p>
+<pre><code>var client = await Page.Target.CreateCDPSessionAsync();
+await client.SendAsync(&quot;Animation.enable&quot;);
+client.MessageReceived += (sender, e) =>
+{
+     if (e.MessageID == &quot;Animation.animationCreated&quot;)
+     {
+         Console.WriteLine(&quot;Animation created!&quot;);
+     }
+};
+dynamic response = await client.SendAsync(&quot;Animation.getPlaybackRate&quot;);
+Console.WriteLine(&quot;playback rate is &quot; + response.playbackRate);
+await client.SendAsync(&quot;Animation.setPlaybackRate&quot;, new
+{
+    playbackRate = Convert.ToInt32(response.playbackRate / 2)
+});</code></pre>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><span class="xref">System.Object</span></div>
+    <div class="level1"><span class="xref">CDPSession</span></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><span class="xref">System.IDisposable</span></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object, System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.GetHashCode()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.GetType()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.MemberwiseClone()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.ReferenceEquals(System.Object, System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.ToString()</span>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="PuppeteerSharp.html">PuppeteerSharp</a></h6>
+  <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
+  <h5 id="PuppeteerSharp_CDPSession_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public class CDPSession : IDisposable</code></pre>
+  </div>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_CDPSession_Connection.md&amp;value=---%0Auid%3A%20PuppeteerSharp.CDPSession.Connection%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/CDPSession.cs/#L69">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_CDPSession_Connection_" data-uid="PuppeteerSharp.CDPSession.Connection*"></a>
+  <h4 id="PuppeteerSharp_CDPSession_Connection" data-uid="PuppeteerSharp.CDPSession.Connection">Connection</h4>
+  <div class="markdown level1 summary"><p>Gets the connection.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Connection Connection { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.Connection.html">Connection</a></td>
+        <td><p>The connection.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_CDPSession_IsClosed.md&amp;value=---%0Auid%3A%20PuppeteerSharp.CDPSession.IsClosed%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/CDPSession.cs/#L82">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_CDPSession_IsClosed_" data-uid="PuppeteerSharp.CDPSession.IsClosed*"></a>
+  <h4 id="PuppeteerSharp_CDPSession_IsClosed" data-uid="PuppeteerSharp.CDPSession.IsClosed">IsClosed</h4>
+  <div class="markdown level1 summary"><p>Gets or sets a value indicating whether this <a class="xref" href="PuppeteerSharp.CDPSession.html">CDPSession</a> is closed.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsClosed { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><p><code>true</code> if is closed; otherwise, <code>false</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_CDPSession_SessionId.md&amp;value=---%0Auid%3A%20PuppeteerSharp.CDPSession.SessionId%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/CDPSession.cs/#L64">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_CDPSession_SessionId_" data-uid="PuppeteerSharp.CDPSession.SessionId*"></a>
+  <h4 id="PuppeteerSharp_CDPSession_SessionId" data-uid="PuppeteerSharp.CDPSession.SessionId">SessionId</h4>
+  <div class="markdown level1 summary"><p>Gets the session identifier.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string SessionId { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><p>The session identifier.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_CDPSession_TargetId.md&amp;value=---%0Auid%3A%20PuppeteerSharp.CDPSession.TargetId%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/CDPSession.cs/#L59">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_CDPSession_TargetId_" data-uid="PuppeteerSharp.CDPSession.TargetId*"></a>
+  <h4 id="PuppeteerSharp_CDPSession_TargetId" data-uid="PuppeteerSharp.CDPSession.TargetId">TargetId</h4>
+  <div class="markdown level1 summary"><p>Gets the target identifier.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string TargetId { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><p>The target identifier.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_CDPSession_DetachAsync.md&amp;value=---%0Auid%3A%20PuppeteerSharp.CDPSession.DetachAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/CDPSession.cs/#L146">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_CDPSession_DetachAsync_" data-uid="PuppeteerSharp.CDPSession.DetachAsync*"></a>
+  <h4 id="PuppeteerSharp_CDPSession_DetachAsync" data-uid="PuppeteerSharp.CDPSession.DetachAsync">DetachAsync()</h4>
+  <div class="markdown level1 summary"><p>Detaches session from target. Once detached, session won't emit any events and can't be used to send messages.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task DetachAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_CDPSession_Dispose.md&amp;value=---%0Auid%3A%20PuppeteerSharp.CDPSession.Dispose%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/CDPSession.cs/#L162">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_CDPSession_Dispose_" data-uid="PuppeteerSharp.CDPSession.Dispose*"></a>
+  <h4 id="PuppeteerSharp_CDPSession_Dispose" data-uid="PuppeteerSharp.CDPSession.Dispose">Dispose()</h4>
+  <div class="markdown level1 summary"><p>Releases all resource used by the <a class="xref" href="PuppeteerSharp.CDPSession.html">CDPSession</a> object by sending a &quot;&quot;Target.closeTarget&quot;
+using the <span class="xref">PuppeteerSharp.Connection.SendAsync(System.String,System.Object)</span> method.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
+  </div>
+  <h5 id="PuppeteerSharp_CDPSession_Dispose_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Call <a class="xref" href="PuppeteerSharp.CDPSession.html#PuppeteerSharp_CDPSession_Dispose">Dispose()</a> when you are finished using the <a class="xref" href="PuppeteerSharp.CDPSession.html">CDPSession</a>. The
+<a class="xref" href="PuppeteerSharp.CDPSession.html#PuppeteerSharp_CDPSession_Dispose">Dispose()</a> method leaves the <a class="xref" href="PuppeteerSharp.CDPSession.html">CDPSession</a> in an unusable state.
+After calling <a class="xref" href="PuppeteerSharp.CDPSession.html#PuppeteerSharp_CDPSession_Dispose">Dispose()</a>, you must release all references to the
+<a class="xref" href="PuppeteerSharp.CDPSession.html">CDPSession</a> so the garbage collector can reclaim the memory that the
+<a class="xref" href="PuppeteerSharp.CDPSession.html">CDPSession</a> was occupying.</p>
+</div>
+  <h3 id="events">Events
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_CDPSession_MessageReceived.md&amp;value=---%0Auid%3A%20PuppeteerSharp.CDPSession.MessageReceived%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/CDPSession.cs/#L73">View Source</a>
+  </span>
+  <h4 id="PuppeteerSharp_CDPSession_MessageReceived" data-uid="PuppeteerSharp.CDPSession.MessageReceived">MessageReceived</h4>
+  <div class="markdown level1 summary"><p>Occurs when message received from Chromium.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public event EventHandler&lt;MessageEventArgs&gt; MessageReceived</code></pre>
+  </div>
+  <h5 class="eventType">Event Type</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.EventHandler</span>&lt;<a class="xref" href="PuppeteerSharp.MessageEventArgs.html">MessageEventArgs</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_CDPSession_TracingComplete.md&amp;value=---%0Auid%3A%20PuppeteerSharp.CDPSession.TracingComplete%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/CDPSession.cs/#L77">View Source</a>
+  </span>
+  <h4 id="PuppeteerSharp_CDPSession_TracingComplete" data-uid="PuppeteerSharp.CDPSession.TracingComplete">TracingComplete</h4>
+  <div class="markdown level1 summary"><p>Occurs when tracing is completed.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public event EventHandler&lt;TracingCompleteEventArgs&gt; TracingComplete</code></pre>
+  </div>
+  <h5 class="eventType">Event Type</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.EventHandler</span>&lt;<a class="xref" href="PuppeteerSharp.TracingCompleteEventArgs.html">TracingCompleteEventArgs</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <span class="xref">System.IDisposable</span>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_CDPSession.md&amp;value=---%0Auid%3A%20PuppeteerSharp.CDPSession%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/CDPSession.cs/#L36" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <div class="row">
+              <div class="col-md-4">
+                
+                <span>Generated by <strong>DocFX</strong></span>
+              </div>
+              <div class="col-md-4">
+                <p class="text-center">
+                  <a href="https://www.hardkoded.com">www.hardkoded.com</a>
+                </p>
+              </div>
+              <div class="col-md-4">
+                <span class="pull-right">
+                  <a href="#top">Back to top</a>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-586295-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'UA-586295-9');
+    </script>
+  </body>
+</html>

@@ -1,0 +1,800 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class Browser
+   </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class Browser
+   ">
+    <meta name="generator" content="docfx 2.36.1.0">
+    
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="PuppeteerSharp.Browser">
+  
+  
+  <h1 id="PuppeteerSharp_Browser" data-uid="PuppeteerSharp.Browser" class="text-break">Class Browser
+  </h1>
+  <div class="markdown level0 summary"><p>Provides methods to interact with a browser in Chromium.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><span class="xref">System.Object</span></div>
+    <div class="level1"><span class="xref">Browser</span></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><span class="xref">System.IDisposable</span></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object, System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.GetHashCode()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.GetType()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.MemberwiseClone()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.ReferenceEquals(System.Object, System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.ToString()</span>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="PuppeteerSharp.html">PuppeteerSharp</a></h6>
+  <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
+  <h5 id="PuppeteerSharp_Browser_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public class Browser : IDisposable</code></pre>
+  </div>
+  <h5 id="PuppeteerSharp_Browser_examples"><strong>Examples</strong></h5>
+  <p>An example of using a <a class="xref" href="PuppeteerSharp.Browser.html">Browser</a> to create a <a class="xref" href="PuppeteerSharp.Page.html">Page</a>:</p>
+<pre><code>var browser = await Puppeteer.LaunchAsync(new LaunchOptions(), Downloader.DefaultRevision);
+var page = await browser.NewPageAsync();
+await page.GoToAsync(&quot;https://example.com&quot;);
+await browser.CloseAsync();</code></pre>
+<p>An example of disconnecting from and reconnecting to a <a class="xref" href="PuppeteerSharp.Browser.html">Browser</a>:</p>
+<pre><code>var browser = await Puppeteer.LaunchAsync(new LaunchOptions(), Downloader.DefaultRevision);
+var browserWSEndpoint = browser.WebSocketEndpoint;
+browser.Disconnect();
+var browser2 = await Puppeteer.ConnectAsync(new ConnectOptions { BrowserWSEndpoint = browserWSEndpoint });
+await browser2.CloseAsync();</code></pre>
+
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Browser__ctor_PuppeteerSharp_Connection_PuppeteerSharp_IBrowserOptions_System_Diagnostics_Process_System_Func_System_Threading_Tasks_Task__.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Browser.%23ctor(PuppeteerSharp.Connection%2CPuppeteerSharp.IBrowserOptions%2CSystem.Diagnostics.Process%2CSystem.Func%7BSystem.Threading.Tasks.Task%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Browser.cs/#L45">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Browser__ctor_" data-uid="PuppeteerSharp.Browser.#ctor*"></a>
+  <h4 id="PuppeteerSharp_Browser__ctor_PuppeteerSharp_Connection_PuppeteerSharp_IBrowserOptions_System_Diagnostics_Process_System_Func_System_Threading_Tasks_Task__" data-uid="PuppeteerSharp.Browser.#ctor(PuppeteerSharp.Connection,PuppeteerSharp.IBrowserOptions,System.Diagnostics.Process,System.Func{System.Threading.Tasks.Task})">Browser(Connection, IBrowserOptions, Process, Func&lt;Task&gt;)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="PuppeteerSharp.Browser.html">Browser</a> class.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Browser(Connection connection, IBrowserOptions options, Process process, Func&lt;Task&gt; closeCallBack)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.Connection.html">Connection</a></td>
+        <td><span class="parametername">connection</span></td>
+        <td><p>The connection</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.IBrowserOptions.html">IBrowserOptions</a></td>
+        <td><span class="parametername">options</span></td>
+        <td><p>The browser options</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Diagnostics.Process</span></td>
+        <td><span class="parametername">process</span></td>
+        <td><p>The chrome process</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Func</span>&lt;<span class="xref">System.Threading.Tasks.Task</span>&gt;</td>
+        <td><span class="parametername">closeCallBack</span></td>
+        <td><p>An async function called before closing</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Browser_AppMode.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Browser.AppMode%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Browser.cs/#L119">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Browser_AppMode_" data-uid="PuppeteerSharp.Browser.AppMode*"></a>
+  <h4 id="PuppeteerSharp_Browser_AppMode" data-uid="PuppeteerSharp.Browser.AppMode">AppMode</h4>
+  <div class="markdown level1 summary"><p>Gets or Sets whether to use appMode or not</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool AppMode { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Browser_IgnoreHTTPSErrors.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Browser.IgnoreHTTPSErrors%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Browser.cs/#L114">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Browser_IgnoreHTTPSErrors_" data-uid="PuppeteerSharp.Browser.IgnoreHTTPSErrors*"></a>
+  <h4 id="PuppeteerSharp_Browser_IgnoreHTTPSErrors" data-uid="PuppeteerSharp.Browser.IgnoreHTTPSErrors">IgnoreHTTPSErrors</h4>
+  <div class="markdown level1 summary"><p>Gets or Sets whether to ignore HTTPS errors during navigation</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IgnoreHTTPSErrors { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Browser_IsClosed.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Browser.IsClosed%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Browser.cs/#L124">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Browser_IsClosed_" data-uid="PuppeteerSharp.Browser.IsClosed*"></a>
+  <h4 id="PuppeteerSharp_Browser_IsClosed" data-uid="PuppeteerSharp.Browser.IsClosed">IsClosed</h4>
+  <div class="markdown level1 summary"><p>Gets a value indicating if the browser is closed</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsClosed { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Browser_Process.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Browser.Process%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Browser.cs/#L109">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Browser_Process_" data-uid="PuppeteerSharp.Browser.Process*"></a>
+  <h4 id="PuppeteerSharp_Browser_Process" data-uid="PuppeteerSharp.Browser.Process">Process</h4>
+  <div class="markdown level1 summary"><p>Gets the spawned browser process. Returns <code>null</code> if the browser instance was created with <a class="xref" href="PuppeteerSharp.Puppeteer.html#PuppeteerSharp_Puppeteer_ConnectAsync_PuppeteerSharp_ConnectOptions_ILoggerFactory_">ConnectAsync(ConnectOptions, ILoggerFactory)</a> method.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Process Process { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Diagnostics.Process</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Browser_WebSocketEndpoint.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Browser.WebSocketEndpoint%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Browser.cs/#L104">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Browser_WebSocketEndpoint_" data-uid="PuppeteerSharp.Browser.WebSocketEndpoint*"></a>
+  <h4 id="PuppeteerSharp_Browser_WebSocketEndpoint" data-uid="PuppeteerSharp.Browser.WebSocketEndpoint">WebSocketEndpoint</h4>
+  <div class="markdown level1 summary"><p>Gets the Browser websocket url</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string WebSocketEndpoint { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_Browser_WebSocketEndpoint_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Browser websocket endpoint which can be used as an argument to <a class="xref" href="PuppeteerSharp.Puppeteer.html#PuppeteerSharp_Puppeteer_ConnectAsync_PuppeteerSharp_ConnectOptions_ILoggerFactory_">ConnectAsync(ConnectOptions, ILoggerFactory)</a>.
+The format is <code>ws://${host}:${port}/devtools/browser/[id]</code>
+You can find the <code>webSocketDebuggerUrl</code> from <code>http://${host}:${port}/json/version</code>.
+Learn more about the devtools protocol <a href="https://chromedevtools.github.io/devtools-protocol">https://chromedevtools.github.io/devtools-protocol</a>
+and the browser endpoint <a href="https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target">https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target</a></p>
+</div>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Browser_CloseAsync.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Browser.CloseAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Browser.cs/#L196">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Browser_CloseAsync_" data-uid="PuppeteerSharp.Browser.CloseAsync*"></a>
+  <h4 id="PuppeteerSharp_Browser_CloseAsync" data-uid="PuppeteerSharp.Browser.CloseAsync">CloseAsync()</h4>
+  <div class="markdown level1 summary"><p>Closes Chromium and all of its pages (if any were opened). The browser object itself is considered disposed and cannot be used anymore</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task CloseAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td><p>Task</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Browser_Disconnect.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Browser.Disconnect%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Browser.cs/#L190">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Browser_Disconnect_" data-uid="PuppeteerSharp.Browser.Disconnect*"></a>
+  <h4 id="PuppeteerSharp_Browser_Disconnect" data-uid="PuppeteerSharp.Browser.Disconnect">Disconnect()</h4>
+  <div class="markdown level1 summary"><p>Disconnects Puppeteer from the browser, but leaves the Chromium process running. After calling <a class="xref" href="PuppeteerSharp.Browser.html#PuppeteerSharp_Browser_Disconnect">Disconnect()</a>, the browser object is considered disposed and cannot be used anymore</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Disconnect()</code></pre>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Browser_Dispose.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Browser.Dispose%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Browser.cs/#L308">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Browser_Dispose_" data-uid="PuppeteerSharp.Browser.Dispose*"></a>
+  <h4 id="PuppeteerSharp_Browser_Dispose" data-uid="PuppeteerSharp.Browser.Dispose">Dispose()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Browser_GetUserAgentAsync.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Browser.GetUserAgentAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Browser.cs/#L181">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Browser_GetUserAgentAsync_" data-uid="PuppeteerSharp.Browser.GetUserAgentAsync*"></a>
+  <h4 id="PuppeteerSharp_Browser_GetUserAgentAsync" data-uid="PuppeteerSharp.Browser.GetUserAgentAsync">GetUserAgentAsync()</h4>
+  <div class="markdown level1 summary"><p>Gets the browser's original user agent</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;string&gt; GetUserAgentAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">System.String</span>&gt;</td>
+        <td><p>Task which resolves to the browser's original user agent</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_Browser_GetUserAgentAsync_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Pages can override browser user agent with <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_SetUserAgentAsync_System_String_">SetUserAgentAsync(String)</a></p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Browser_GetVersionAsync.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Browser.GetVersionAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Browser.cs/#L168">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Browser_GetVersionAsync_" data-uid="PuppeteerSharp.Browser.GetVersionAsync*"></a>
+  <h4 id="PuppeteerSharp_Browser_GetVersionAsync" data-uid="PuppeteerSharp.Browser.GetVersionAsync">GetVersionAsync()</h4>
+  <div class="markdown level1 summary"><p>Gets the browser's version</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;string&gt; GetVersionAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">System.String</span>&gt;</td>
+        <td><p>For headless Chromium, this is similar to <code>HeadlessChrome/61.0.3153.0</code>. For non-headless, this is similar to <code>Chrome/61.0.3153.0</code></p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_Browser_GetVersionAsync_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>the format of <a class="xref" href="PuppeteerSharp.Browser.html#PuppeteerSharp_Browser_GetVersionAsync">GetVersionAsync()</a> might change with future releases of Chromium</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Browser_NewPageAsync.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Browser.NewPageAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Browser.cs/#L137">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Browser_NewPageAsync_" data-uid="PuppeteerSharp.Browser.NewPageAsync*"></a>
+  <h4 id="PuppeteerSharp_Browser_NewPageAsync" data-uid="PuppeteerSharp.Browser.NewPageAsync">NewPageAsync()</h4>
+  <div class="markdown level1 summary"><p>Creates a new page</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;Page&gt; NewPageAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="PuppeteerSharp.Page.html">Page</a>&gt;</td>
+        <td><p>Task which resolves to a new <a class="xref" href="PuppeteerSharp.Page.html">Page</a> object</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Browser_PagesAsync.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Browser.PagesAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Browser.cs/#L158">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Browser_PagesAsync_" data-uid="PuppeteerSharp.Browser.PagesAsync*"></a>
+  <h4 id="PuppeteerSharp_Browser_PagesAsync" data-uid="PuppeteerSharp.Browser.PagesAsync">PagesAsync()</h4>
+  <div class="markdown level1 summary"><p>Returns a Task which resolves to an array of all open pages.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;Page[]&gt; PagesAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="PuppeteerSharp.Page.html">Page</a>[]&gt;</td>
+        <td><p>Task which resolves to an array of all open pages.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Browser_Targets.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Browser.Targets%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Browser.cs/#L152">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Browser_Targets_" data-uid="PuppeteerSharp.Browser.Targets*"></a>
+  <h4 id="PuppeteerSharp_Browser_Targets" data-uid="PuppeteerSharp.Browser.Targets">Targets()</h4>
+  <div class="markdown level1 summary"><p>Returns An Array of all active targets</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Target[] Targets()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.Target.html">Target</a>[]</td>
+        <td><p>An Array of all active targets</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="events">Events
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Browser_Closed.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Browser.Closed%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Browser.cs/#L70">View Source</a>
+  </span>
+  <h4 id="PuppeteerSharp_Browser_Closed" data-uid="PuppeteerSharp.Browser.Closed">Closed</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public event EventHandler Closed</code></pre>
+  </div>
+  <h5 class="eventType">Event Type</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.EventHandler</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Browser_Disconnected.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Browser.Disconnected%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Browser.cs/#L77">View Source</a>
+  </span>
+  <h4 id="PuppeteerSharp_Browser_Disconnected" data-uid="PuppeteerSharp.Browser.Disconnected">Disconnected</h4>
+  <div class="markdown level1 summary"><p>Raised when puppeteer gets disconnected from the Chromium instance. This might happen because one of the following</p>
+<ul>
+<li>Chromium is closed or crashed</li>
+<li><a class="xref" href="PuppeteerSharp.Browser.html#PuppeteerSharp_Browser_Disconnect">Disconnect()</a> method was called</li>
+</ul>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public event EventHandler Disconnected</code></pre>
+  </div>
+  <h5 class="eventType">Event Type</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.EventHandler</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Browser_TargetChanged.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Browser.TargetChanged%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Browser.cs/#L82">View Source</a>
+  </span>
+  <h4 id="PuppeteerSharp_Browser_TargetChanged" data-uid="PuppeteerSharp.Browser.TargetChanged">TargetChanged</h4>
+  <div class="markdown level1 summary"><p>Raised when the url of a target changes</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public event EventHandler&lt;TargetChangedArgs&gt; TargetChanged</code></pre>
+  </div>
+  <h5 class="eventType">Event Type</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.EventHandler</span>&lt;<a class="xref" href="PuppeteerSharp.TargetChangedArgs.html">TargetChangedArgs</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Browser_TargetCreated.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Browser.TargetCreated%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Browser.cs/#L87">View Source</a>
+  </span>
+  <h4 id="PuppeteerSharp_Browser_TargetCreated" data-uid="PuppeteerSharp.Browser.TargetCreated">TargetCreated</h4>
+  <div class="markdown level1 summary"><p>Raised when a target is created, for example when a new page is opened by <code>window.open</code> <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/open">https://developer.mozilla.org/en-US/docs/Web/API/Window/open</a> or <a class="xref" href="PuppeteerSharp.Browser.html#PuppeteerSharp_Browser_NewPageAsync">NewPageAsync()</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public event EventHandler&lt;TargetChangedArgs&gt; TargetCreated</code></pre>
+  </div>
+  <h5 class="eventType">Event Type</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.EventHandler</span>&lt;<a class="xref" href="PuppeteerSharp.TargetChangedArgs.html">TargetChangedArgs</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Browser_TargetDestroyed.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Browser.TargetDestroyed%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Browser.cs/#L92">View Source</a>
+  </span>
+  <h4 id="PuppeteerSharp_Browser_TargetDestroyed" data-uid="PuppeteerSharp.Browser.TargetDestroyed">TargetDestroyed</h4>
+  <div class="markdown level1 summary"><p>Raised when a target is destroyed, for example when a page is closed</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public event EventHandler&lt;TargetChangedArgs&gt; TargetDestroyed</code></pre>
+  </div>
+  <h5 class="eventType">Event Type</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.EventHandler</span>&lt;<a class="xref" href="PuppeteerSharp.TargetChangedArgs.html">TargetChangedArgs</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <span class="xref">System.IDisposable</span>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_Browser.md&amp;value=---%0Auid%3A%20PuppeteerSharp.Browser%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Browser.cs/#L36" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <div class="row">
+              <div class="col-md-4">
+                
+                <span>Generated by <strong>DocFX</strong></span>
+              </div>
+              <div class="col-md-4">
+                <p class="text-center">
+                  <a href="https://www.hardkoded.com">www.hardkoded.com</a>
+                </p>
+              </div>
+              <div class="col-md-4">
+                <span class="pull-right">
+                  <a href="#top">Back to top</a>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-586295-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'UA-586295-9');
+    </script>
+  </body>
+</html>

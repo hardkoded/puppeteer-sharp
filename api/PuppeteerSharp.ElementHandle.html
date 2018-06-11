@@ -1,0 +1,1028 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class ElementHandle
+   </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class ElementHandle
+   ">
+    <meta name="generator" content="docfx 2.36.1.0">
+    
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="PuppeteerSharp.ElementHandle">
+  
+  
+  <h1 id="PuppeteerSharp_ElementHandle" data-uid="PuppeteerSharp.ElementHandle" class="text-break">Class ElementHandle
+  </h1>
+  <div class="markdown level0 summary"><p>Inherits from <a class="xref" href="PuppeteerSharp.JSHandle.html">JSHandle</a>. It represents an in-page DOM element.
+ElementHandles can be created by <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_QuerySelectorAsync_System_String_">QuerySelectorAsync(String)</a> or <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_QuerySelectorAllAsync_System_String_">QuerySelectorAllAsync(String)</a>.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><span class="xref">System.Object</span></div>
+    <div class="level1"><a class="xref" href="PuppeteerSharp.JSHandle.html">JSHandle</a></div>
+    <div class="level2"><span class="xref">ElementHandle</span></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="PuppeteerSharp.JSHandle.html#PuppeteerSharp_JSHandle_ExecutionContext">JSHandle.ExecutionContext</a>
+    </div>
+    <div>
+      <a class="xref" href="PuppeteerSharp.JSHandle.html#PuppeteerSharp_JSHandle_Disposed">JSHandle.Disposed</a>
+    </div>
+    <div>
+      <a class="xref" href="PuppeteerSharp.JSHandle.html#PuppeteerSharp_JSHandle_RemoteObject">JSHandle.RemoteObject</a>
+    </div>
+    <div>
+      <a class="xref" href="PuppeteerSharp.JSHandle.html#PuppeteerSharp_JSHandle_Client">JSHandle.Client</a>
+    </div>
+    <div>
+      <a class="xref" href="PuppeteerSharp.JSHandle.html#PuppeteerSharp_JSHandle_Logger">JSHandle.Logger</a>
+    </div>
+    <div>
+      <a class="xref" href="PuppeteerSharp.JSHandle.html#PuppeteerSharp_JSHandle_GetPropertyAsync_System_String_">JSHandle.GetPropertyAsync(String)</a>
+    </div>
+    <div>
+      <a class="xref" href="PuppeteerSharp.JSHandle.html#PuppeteerSharp_JSHandle_GetPropertiesAsync">JSHandle.GetPropertiesAsync()</a>
+    </div>
+    <div>
+      <a class="xref" href="PuppeteerSharp.JSHandle.html#PuppeteerSharp_JSHandle_JsonValueAsync">JSHandle.JsonValueAsync()</a>
+    </div>
+    <div>
+      <a class="xref" href="PuppeteerSharp.JSHandle.html#PuppeteerSharp_JSHandle_JsonValueAsync__1">JSHandle.JsonValueAsync&lt;T&gt;()</a>
+    </div>
+    <div>
+      <a class="xref" href="PuppeteerSharp.JSHandle.html#PuppeteerSharp_JSHandle_DisposeAsync">JSHandle.DisposeAsync()</a>
+    </div>
+    <div>
+      <a class="xref" href="PuppeteerSharp.JSHandle.html#PuppeteerSharp_JSHandle_ToString">JSHandle.ToString()</a>
+    </div>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object, System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.GetHashCode()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.GetType()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.MemberwiseClone()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.ReferenceEquals(System.Object, System.Object)</span>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="PuppeteerSharp.html">PuppeteerSharp</a></h6>
+  <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
+  <h5 id="PuppeteerSharp_ElementHandle_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public class ElementHandle : JSHandle</code></pre>
+  </div>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_ElementHandle_BoundingBoxAsync.md&amp;value=---%0Auid%3A%20PuppeteerSharp.ElementHandle.BoundingBoxAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/ElementHandle.cs/#L297">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_ElementHandle_BoundingBoxAsync_" data-uid="PuppeteerSharp.ElementHandle.BoundingBoxAsync*"></a>
+  <h4 id="PuppeteerSharp_ElementHandle_BoundingBoxAsync" data-uid="PuppeteerSharp.ElementHandle.BoundingBoxAsync">BoundingBoxAsync()</h4>
+  <div class="markdown level1 summary"><p>This method returns the bounding box of the element (relative to the main frame),
+or null if the element is not visible.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;BoundingBox&gt; BoundingBoxAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="PuppeteerSharp.BoundingBox.html">BoundingBox</a>&gt;</td>
+        <td><p>The BoundingBox task.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_ElementHandle_ClickAsync_PuppeteerSharp_Input_ClickOptions_.md&amp;value=---%0Auid%3A%20PuppeteerSharp.ElementHandle.ClickAsync(PuppeteerSharp.Input.ClickOptions)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/ElementHandle.cs/#L120">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_ElementHandle_ClickAsync_" data-uid="PuppeteerSharp.ElementHandle.ClickAsync*"></a>
+  <h4 id="PuppeteerSharp_ElementHandle_ClickAsync_PuppeteerSharp_Input_ClickOptions_" data-uid="PuppeteerSharp.ElementHandle.ClickAsync(PuppeteerSharp.Input.ClickOptions)">ClickAsync(ClickOptions)</h4>
+  <div class="markdown level1 summary"><p>Scrolls element into view if needed, and then uses <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_Mouse">Mouse</a> to click in the center of the element.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task ClickAsync(ClickOptions options = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.Input.ClickOptions.html">ClickOptions</a></td>
+        <td><span class="parametername">options</span></td>
+        <td><p>click options</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td><p>Task which resolves when the element is successfully clicked</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.PuppeteerException.html">PuppeteerException</a></td>
+        <td><p>if the element is detached from DOM</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_ElementHandle_FocusAsync.md&amp;value=---%0Auid%3A%20PuppeteerSharp.ElementHandle.FocusAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/ElementHandle.cs/#L154">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_ElementHandle_FocusAsync_" data-uid="PuppeteerSharp.ElementHandle.FocusAsync*"></a>
+  <h4 id="PuppeteerSharp_ElementHandle_FocusAsync" data-uid="PuppeteerSharp.ElementHandle.FocusAsync">FocusAsync()</h4>
+  <div class="markdown level1 summary"><p>Calls <code>focus</code> <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus">https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus</a> on the element.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task FocusAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td><p>Task</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_ElementHandle_HoverAsync.md&amp;value=---%0Auid%3A%20PuppeteerSharp.ElementHandle.HoverAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/ElementHandle.cs/#L108">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_ElementHandle_HoverAsync_" data-uid="PuppeteerSharp.ElementHandle.HoverAsync*"></a>
+  <h4 id="PuppeteerSharp_ElementHandle_HoverAsync" data-uid="PuppeteerSharp.ElementHandle.HoverAsync">HoverAsync()</h4>
+  <div class="markdown level1 summary"><p>Scrolls element into view if needed, and then uses <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_Mouse">Mouse</a> to hover over the center of the element.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task HoverAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td><p>Task which resolves when the element is successfully hovered</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_ElementHandle_PressAsync_System_String_PuppeteerSharp_Input_PressOptions_.md&amp;value=---%0Auid%3A%20PuppeteerSharp.ElementHandle.PressAsync(System.String%2CPuppeteerSharp.Input.PressOptions)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/ElementHandle.cs/#L192">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_ElementHandle_PressAsync_" data-uid="PuppeteerSharp.ElementHandle.PressAsync*"></a>
+  <h4 id="PuppeteerSharp_ElementHandle_PressAsync_System_String_PuppeteerSharp_Input_PressOptions_" data-uid="PuppeteerSharp.ElementHandle.PressAsync(System.String,PuppeteerSharp.Input.PressOptions)">PressAsync(String, PressOptions)</h4>
+  <div class="markdown level1 summary"><p>Focuses the element, and then uses <a class="xref" href="PuppeteerSharp.Input.Keyboard.html#PuppeteerSharp_Input_Keyboard_DownAsync_System_String_PuppeteerSharp_Input_DownOptions_">DownAsync(String, DownOptions)</a> and <a class="xref" href="PuppeteerSharp.Input.Keyboard.html#PuppeteerSharp_Input_Keyboard_UpAsync_System_String_">UpAsync(String)</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task PressAsync(string key, PressOptions options = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">key</span></td>
+        <td><p>Name of key to press, such as <code>ArrowLeft</code>. See <span class="xref">PuppeteerSharp.Input.KeyDefinitions</span> for a list of all key names.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.Input.PressOptions.html">PressOptions</a></td>
+        <td><span class="parametername">options</span></td>
+        <td><p>press options</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_ElementHandle_PressAsync_System_String_PuppeteerSharp_Input_PressOptions__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>If <code>key</code> is a single character and no modifier keys besides <code>Shift</code> are being held down, a <code>keypress</code>/<code>input</code> event will also be generated. The <a class="xref" href="PuppeteerSharp.Input.DownOptions.html#PuppeteerSharp_Input_DownOptions_Text">Text</a> option can be specified to force an input event to be generated.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_ElementHandle_QuerySelectorAllAsync_System_String_.md&amp;value=---%0Auid%3A%20PuppeteerSharp.ElementHandle.QuerySelectorAllAsync(System.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/ElementHandle.cs/#L223">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_ElementHandle_QuerySelectorAllAsync_" data-uid="PuppeteerSharp.ElementHandle.QuerySelectorAllAsync*"></a>
+  <h4 id="PuppeteerSharp_ElementHandle_QuerySelectorAllAsync_System_String_" data-uid="PuppeteerSharp.ElementHandle.QuerySelectorAllAsync(System.String)">QuerySelectorAllAsync(String)</h4>
+  <div class="markdown level1 summary"><p>Runs <code>element.querySelectorAll</code> within the page. If no elements match the selector, the return value resolve to <span class="xref">System.Array.Empty``1</span>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;ElementHandle[]&gt; QuerySelectorAllAsync(string selector)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">selector</span></td>
+        <td><p>A selector to query element for</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a>[]&gt;</td>
+        <td><p>Task which resolves to ElementHandles pointing to the frame elements</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_ElementHandle_QuerySelectorAsync_System_String_.md&amp;value=---%0Auid%3A%20PuppeteerSharp.ElementHandle.QuerySelectorAsync(System.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/ElementHandle.cs/#L203">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_ElementHandle_QuerySelectorAsync_" data-uid="PuppeteerSharp.ElementHandle.QuerySelectorAsync*"></a>
+  <h4 id="PuppeteerSharp_ElementHandle_QuerySelectorAsync_System_String_" data-uid="PuppeteerSharp.ElementHandle.QuerySelectorAsync(System.String)">QuerySelectorAsync(String)</h4>
+  <div class="markdown level1 summary"><p>The method runs <code>element.querySelector</code> within the page. If no element matches the selector, the return value resolve to <code>null</code>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;ElementHandle&gt; QuerySelectorAsync(string selector)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">selector</span></td>
+        <td><p>A selector to query element for</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a>&gt;</td>
+        <td><p>Task which resolves to <a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a> pointing to the frame element</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_ElementHandle_ScreenshotAsync_System_String_.md&amp;value=---%0Auid%3A%20PuppeteerSharp.ElementHandle.ScreenshotAsync(System.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/ElementHandle.cs/#L34">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_ElementHandle_ScreenshotAsync_" data-uid="PuppeteerSharp.ElementHandle.ScreenshotAsync*"></a>
+  <h4 id="PuppeteerSharp_ElementHandle_ScreenshotAsync_System_String_" data-uid="PuppeteerSharp.ElementHandle.ScreenshotAsync(System.String)">ScreenshotAsync(String)</h4>
+  <div class="markdown level1 summary"><p>This method scrolls element into view if needed, and then uses <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_ScreenshotDataAsync_PuppeteerSharp_ScreenshotOptions_">ScreenshotDataAsync(ScreenshotOptions)</a> to take a screenshot of the element.
+If the element is detached from DOM, the method throws an error.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task ScreenshotAsync(string file)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">file</span></td>
+        <td><p>The file path to save the image to. The screenshot type will be inferred from file extension.
+If path is a relative path, then it is resolved relative to current working directory. If no path is provided,
+the image won't be saved to the disk.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td><p>The task</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_ElementHandle_ScreenshotAsync_System_String_PuppeteerSharp_ScreenshotOptions_.md&amp;value=---%0Auid%3A%20PuppeteerSharp.ElementHandle.ScreenshotAsync(System.String%2CPuppeteerSharp.ScreenshotOptions)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/ElementHandle.cs/#L45">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_ElementHandle_ScreenshotAsync_" data-uid="PuppeteerSharp.ElementHandle.ScreenshotAsync*"></a>
+  <h4 id="PuppeteerSharp_ElementHandle_ScreenshotAsync_System_String_PuppeteerSharp_ScreenshotOptions_" data-uid="PuppeteerSharp.ElementHandle.ScreenshotAsync(System.String,PuppeteerSharp.ScreenshotOptions)">ScreenshotAsync(String, ScreenshotOptions)</h4>
+  <div class="markdown level1 summary"><p>This method scrolls element into view if needed, and then uses <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_ScreenshotDataAsync_PuppeteerSharp_ScreenshotOptions_">ScreenshotDataAsync(ScreenshotOptions)</a> to take a screenshot of the element.
+If the element is detached from DOM, the method throws an error.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task ScreenshotAsync(string file, ScreenshotOptions options)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">file</span></td>
+        <td><p>The file path to save the image to. The screenshot type will be inferred from file extension.
+If path is a relative path, then it is resolved relative to current working directory. If no path is provided,
+the image won't be saved to the disk.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.ScreenshotOptions.html">ScreenshotOptions</a></td>
+        <td><span class="parametername">options</span></td>
+        <td><p>Screenshot options.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td><p>The task</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_ElementHandle_ScreenshotDataAsync.md&amp;value=---%0Auid%3A%20PuppeteerSharp.ElementHandle.ScreenshotDataAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/ElementHandle.cs/#L79">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_ElementHandle_ScreenshotDataAsync_" data-uid="PuppeteerSharp.ElementHandle.ScreenshotDataAsync*"></a>
+  <h4 id="PuppeteerSharp_ElementHandle_ScreenshotDataAsync" data-uid="PuppeteerSharp.ElementHandle.ScreenshotDataAsync">ScreenshotDataAsync()</h4>
+  <div class="markdown level1 summary"><p>This method scrolls element into view if needed, and then uses <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_ScreenshotDataAsync_PuppeteerSharp_ScreenshotOptions_">ScreenshotDataAsync(ScreenshotOptions)</a> to take a screenshot of the element.
+If the element is detached from DOM, the method throws an error.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;byte[]&gt; ScreenshotDataAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">System.Byte</span>[]&gt;</td>
+        <td><p>Task which resolves to a <span class="xref">System.Byte</span>[] containing the image data.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_ElementHandle_ScreenshotDataAsync_PuppeteerSharp_ScreenshotOptions_.md&amp;value=---%0Auid%3A%20PuppeteerSharp.ElementHandle.ScreenshotDataAsync(PuppeteerSharp.ScreenshotOptions)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/ElementHandle.cs/#L87">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_ElementHandle_ScreenshotDataAsync_" data-uid="PuppeteerSharp.ElementHandle.ScreenshotDataAsync*"></a>
+  <h4 id="PuppeteerSharp_ElementHandle_ScreenshotDataAsync_PuppeteerSharp_ScreenshotOptions_" data-uid="PuppeteerSharp.ElementHandle.ScreenshotDataAsync(PuppeteerSharp.ScreenshotOptions)">ScreenshotDataAsync(ScreenshotOptions)</h4>
+  <div class="markdown level1 summary"><p>This method scrolls element into view if needed, and then uses <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_ScreenshotDataAsync_PuppeteerSharp_ScreenshotOptions_">ScreenshotDataAsync(ScreenshotOptions)</a> to take a screenshot of the element.
+If the element is detached from DOM, the method throws an error.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;byte[]&gt; ScreenshotDataAsync(ScreenshotOptions options)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.ScreenshotOptions.html">ScreenshotOptions</a></td>
+        <td><span class="parametername">options</span></td>
+        <td><p>Screenshot options.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">System.Byte</span>[]&gt;</td>
+        <td><p>Task which resolves to a <span class="xref">System.Byte</span>[] containing the image data.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_ElementHandle_ScreenshotStreamAsync.md&amp;value=---%0Auid%3A%20PuppeteerSharp.ElementHandle.ScreenshotStreamAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/ElementHandle.cs/#L63">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_ElementHandle_ScreenshotStreamAsync_" data-uid="PuppeteerSharp.ElementHandle.ScreenshotStreamAsync*"></a>
+  <h4 id="PuppeteerSharp_ElementHandle_ScreenshotStreamAsync" data-uid="PuppeteerSharp.ElementHandle.ScreenshotStreamAsync">ScreenshotStreamAsync()</h4>
+  <div class="markdown level1 summary"><p>This method scrolls element into view if needed, and then uses <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_ScreenshotDataAsync_PuppeteerSharp_ScreenshotOptions_">ScreenshotDataAsync(ScreenshotOptions)</a> to take a screenshot of the element.
+If the element is detached from DOM, the method throws an error.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;Stream&gt; ScreenshotStreamAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">System.IO.Stream</span>&gt;</td>
+        <td><p>Task which resolves to a <span class="xref">System.IO.Stream</span> containing the image data.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_ElementHandle_ScreenshotStreamAsync_PuppeteerSharp_ScreenshotOptions_.md&amp;value=---%0Auid%3A%20PuppeteerSharp.ElementHandle.ScreenshotStreamAsync(PuppeteerSharp.ScreenshotOptions)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/ElementHandle.cs/#L71">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_ElementHandle_ScreenshotStreamAsync_" data-uid="PuppeteerSharp.ElementHandle.ScreenshotStreamAsync*"></a>
+  <h4 id="PuppeteerSharp_ElementHandle_ScreenshotStreamAsync_PuppeteerSharp_ScreenshotOptions_" data-uid="PuppeteerSharp.ElementHandle.ScreenshotStreamAsync(PuppeteerSharp.ScreenshotOptions)">ScreenshotStreamAsync(ScreenshotOptions)</h4>
+  <div class="markdown level1 summary"><p>This method scrolls element into view if needed, and then uses <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_ScreenshotDataAsync_PuppeteerSharp_ScreenshotOptions_">ScreenshotDataAsync(ScreenshotOptions)</a> to take a screenshot of the element.
+If the element is detached from DOM, the method throws an error.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;Stream&gt; ScreenshotStreamAsync(ScreenshotOptions options)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.ScreenshotOptions.html">ScreenshotOptions</a></td>
+        <td><span class="parametername">options</span></td>
+        <td><p>Screenshot options.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">System.IO.Stream</span>&gt;</td>
+        <td><p>Task which resolves to a <span class="xref">System.IO.Stream</span> containing the image data.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_ElementHandle_TapAsync.md&amp;value=---%0Auid%3A%20PuppeteerSharp.ElementHandle.TapAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/ElementHandle.cs/#L144">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_ElementHandle_TapAsync_" data-uid="PuppeteerSharp.ElementHandle.TapAsync*"></a>
+  <h4 id="PuppeteerSharp_ElementHandle_TapAsync" data-uid="PuppeteerSharp.ElementHandle.TapAsync">TapAsync()</h4>
+  <div class="markdown level1 summary"><p>Scrolls element into view if needed, and then uses <a class="xref" href="PuppeteerSharp.Input.Touchscreen.html#PuppeteerSharp_Input_Touchscreen_TapAsync_System_Decimal_System_Decimal_">TapAsync(Decimal, Decimal)</a> to tap in the center of the element.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task TapAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td><p>Task which resolves when the element is successfully tapped</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.PuppeteerException.html">PuppeteerException</a></td>
+        <td><p>if the element is detached from DOM</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_ElementHandle_TypeAsync_System_String_PuppeteerSharp_Input_TypeOptions_.md&amp;value=---%0Auid%3A%20PuppeteerSharp.ElementHandle.TypeAsync(System.String%2CPuppeteerSharp.Input.TypeOptions)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/ElementHandle.cs/#L177">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_ElementHandle_TypeAsync_" data-uid="PuppeteerSharp.ElementHandle.TypeAsync*"></a>
+  <h4 id="PuppeteerSharp_ElementHandle_TypeAsync_System_String_PuppeteerSharp_Input_TypeOptions_" data-uid="PuppeteerSharp.ElementHandle.TypeAsync(System.String,PuppeteerSharp.Input.TypeOptions)">TypeAsync(String, TypeOptions)</h4>
+  <div class="markdown level1 summary"><p>Focuses the element, and sends a <code>keydown</code>, <code>keypress</code>/<code>input</code>, and <code>keyup</code> event for each character in the text.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task TypeAsync(string text, TypeOptions options = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">text</span></td>
+        <td><p>A text to type into a focused element</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.Input.TypeOptions.html">TypeOptions</a></td>
+        <td><span class="parametername">options</span></td>
+        <td><p>type options</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td><p>Task</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_ElementHandle_TypeAsync_System_String_PuppeteerSharp_Input_TypeOptions__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>To press a special key, like <code>Control</code> or <code>ArrowDown</code> use <a class="xref" href="PuppeteerSharp.ElementHandle.html#PuppeteerSharp_ElementHandle_PressAsync_System_String_PuppeteerSharp_Input_PressOptions_">PressAsync(String, PressOptions)</a></p>
+</div>
+  <h5 id="PuppeteerSharp_ElementHandle_TypeAsync_System_String_PuppeteerSharp_Input_TypeOptions__examples">Examples</h5>
+  <pre><code>elementHandle.TypeAsync(&quot;#mytextarea&quot;, &quot;Hello&quot;); // Types instantly
+elementHandle.TypeAsync(&quot;#mytextarea&quot;, &quot;World&quot;, new TypeOptions { Delay = 100 }); // Types slower, like a user</code></pre>
+<p>An example of typing into a text field and then submitting the form:</p>
+<pre><code>var elementHandle = await page.GetElementAsync(&quot;input&quot;);
+await elementHandle.TypeAsync(&quot;some text&quot;);
+await elementHandle.PressAsync(&quot;Enter&quot;);</code></pre>
+
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_ElementHandle_UploadFileAsync_System_String___.md&amp;value=---%0Auid%3A%20PuppeteerSharp.ElementHandle.UploadFileAsync(System.String%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/ElementHandle.cs/#L132">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_ElementHandle_UploadFileAsync_" data-uid="PuppeteerSharp.ElementHandle.UploadFileAsync*"></a>
+  <h4 id="PuppeteerSharp_ElementHandle_UploadFileAsync_System_String___" data-uid="PuppeteerSharp.ElementHandle.UploadFileAsync(System.String[])">UploadFileAsync(String[])</h4>
+  <div class="markdown level1 summary"><p>Uploads files</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task UploadFileAsync(params string[] filePaths)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span>[]</td>
+        <td><span class="parametername">filePaths</span></td>
+        <td><p>Sets the value of the file input these paths. paths are resolved using <span class="xref">System.IO.Path.GetFullPath(System.String)</span></p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td><p>Task</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_ElementHandle_UploadFileAsync_System_String____remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method expects <code>elementHandle</code> to point to an <code>input element</code> <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input">https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input</a></p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_ElementHandle_XPathAsync_System_String_.md&amp;value=---%0Auid%3A%20PuppeteerSharp.ElementHandle.XPathAsync(System.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/ElementHandle.cs/#L240">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_ElementHandle_XPathAsync_" data-uid="PuppeteerSharp.ElementHandle.XPathAsync*"></a>
+  <h4 id="PuppeteerSharp_ElementHandle_XPathAsync_System_String_" data-uid="PuppeteerSharp.ElementHandle.XPathAsync(System.String)">XPathAsync(String)</h4>
+  <div class="markdown level1 summary"><p>Evaluates the XPath expression relative to the elementHandle. If there's no such element, the method will resolve to <code>null</code>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;ElementHandle[]&gt; XPathAsync(string expression)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">expression</span></td>
+        <td><p>Expression to evaluate <a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate">https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate</a></p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a>[]&gt;</td>
+        <td><p>Task which resolves to an array of <a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a></p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/kblok/puppeteer-sharp/new/tasks/docs-site/apiSpec/new?filename=PuppeteerSharp_ElementHandle.md&amp;value=---%0Auid%3A%20PuppeteerSharp.ElementHandle%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/ElementHandle.cs/#L16" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <div class="row">
+              <div class="col-md-4">
+                
+                <span>Generated by <strong>DocFX</strong></span>
+              </div>
+              <div class="col-md-4">
+                <p class="text-center">
+                  <a href="https://www.hardkoded.com">www.hardkoded.com</a>
+                </p>
+              </div>
+              <div class="col-md-4">
+                <span class="pull-right">
+                  <a href="#top">Back to top</a>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-586295-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'UA-586295-9');
+    </script>
+  </body>
+</html>
