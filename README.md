@@ -10,6 +10,14 @@
 
 Puppeteer Sharp is a .NET port of the official [Node.JS Puppeteer API](https://github.com/GoogleChrome/puppeteer). 
 
+# Useful links
+
+* [API Documentation](http://www.puppeteersharp.com/api/index.html)
+* Slack channel [#puppeteer-sharp](https://join.slack.com/t/puppeteer/shared_invite/enQtMzU4MjIyMDA5NTM4LTM1OTdkNDhlM2Y4ZGUzZDdjYjM5ZWZlZGFiZjc4MTkyYTVlYzIzYjU5NDIyNzgyMmFiNDFjN2UzNWU0N2ZhZDc)
+* [StackOverflow](https://stackoverflow.com/search?q=puppeteer-sharp)
+* [Issues](https://github.com/kblok/puppeteer-sharp/issues?utf8=%E2%9C%93&q=is%3Aissue)
+
+
 # Usage
 
 ## Take screenshots
@@ -127,9 +135,3 @@ using (var browser = await PuppeteerSharp.Puppeteer.ConnectAsync(options))
 * Tests on Google's Puppeteer: 405.
 * Tests on Puppeteer Sharp: 322.
 * Passing tests: 319.
-
-# Useful links
-
-* Slack channel [#puppeteer-sharp](https://join.slack.com/t/puppeteer/shared_invite/enQtMzU4MjIyMDA5NTM4LTM1OTdkNDhlM2Y4ZGUzZDdjYjM5ZWZlZGFiZjc4MTkyYTVlYzIzYjU5NDIyNzgyMmFiNDFjN2UzNWU0N2ZhZDc)
-* [StackOverflow](https://stackoverflow.com/search?q=puppeteer-sharp)
-* [Issues](https://github.com/kblok/puppeteer-sharp/issues?utf8=%E2%9C%93&q=is%3Aissue)
