@@ -5,9 +5,18 @@ branches:
 image: Visual Studio 2017
 configuration: Release
 environment:
+  git_access_token:
+    secure: FxcQ9C8a/NgcQB5dFdZts6ZWEDT4zMhA4qPQAYwWc7huMmhmTIl1sbFEIaAWQMTL
   matrix:
     - framework: net471
     - framework: netcoreapp2.0
+install:
+- ps: >-
+    if($env:APPVEYOR_REPO_TAG -eq 'True' -And $env:framework -eq 'netcoreapp2.0') {
+    
+        choco install docfx
+
+    }
 before_build:
 - ps: >-
     dotnet restore .\lib\PuppeteerSharp.sln
@@ -26,6 +35,7 @@ test_script:
     cd .\lib\PuppeteerSharp.Tests
 
     dotnet test -f %framework% -s test.runsettings
-
+on_success:
+- ps: appveyor/GenerateDocs.ps1
 cache:
   - $HOME/.nuget/packages
