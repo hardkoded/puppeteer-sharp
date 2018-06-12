@@ -27,7 +27,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Default chromiumg revision.
         /// </summary>
-        public const int DefaultRevision = 526987;
+        public const int DefaultRevision = 536395;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Downloader"/> class.

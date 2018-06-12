@@ -180,6 +180,7 @@ namespace PuppeteerSharp
                     e.Response.Status,
                     e.Response.Headers,
                     e.Response.FromDiskCache,
+                    e.Response.FromServiceWorker,
                     e.Response.SecurityDetails);
 
                 request.Response = response;
@@ -245,8 +246,7 @@ namespace PuppeteerSharp
             {
                 var request = _interceptionIdToRequest[e.InterceptionId];
 
-                HandleRequestRedirect(request, e.ResponseStatusCode,
-                    e.ResponseHeaders, fromDiskCache: false);
+                HandleRequestRedirect(request, e.ResponseStatusCode, e.ResponseHeaders, false, false);
                 HandleRequestStart(request.RequestId, e.InterceptionId, e.RedirectUrl, e.ResourceType, e.Request, e.FrameId);
                 return;
             }
@@ -274,11 +274,11 @@ namespace PuppeteerSharp
         }
 
         private void HandleRequestStart(
-            string requestId, 
-            string interceptionId, 
+            string requestId,
+            string interceptionId,
             string url,
-            ResourceType resourceType, 
-            Payload requestPayload, 
+            ResourceType resourceType,
+            Payload requestPayload,
             string frameId)
         {
             Frame frame = null;
@@ -288,8 +288,15 @@ namespace PuppeteerSharp
                 _frameManager.Frames.TryGetValue(frameId, out frame);
             }
 
-            var request = new Request(_client, requestId, interceptionId, _userRequestInterceptionEnabled, url,
-                                      resourceType, requestPayload, frame);
+            var request = new Request(
+                _client,
+                requestId,
+                interceptionId,
+                _userRequestInterceptionEnabled,
+                url,
+                resourceType,
+                requestPayload,
+                frame);
 
             if (!string.IsNullOrEmpty(requestId))
             {
@@ -307,13 +314,22 @@ namespace PuppeteerSharp
         }
 
         private void HandleRequestRedirect(
-            Request request, 
-            HttpStatusCode redirectStatus, 
+            Request request,
+            HttpStatusCode redirectStatus,
             Dictionary<string, object> redirectHeaders,
-            bool fromDiskCache, 
+            bool fromDiskCache,
+            bool fromServiceWorker,
             SecurityDetails securityDetails = null)
         {
-            var response = new Response(_client, request, redirectStatus, redirectHeaders, fromDiskCache, securityDetails);
+            var response = new Response(
+                _client,
+                request,
+                redirectStatus,
+                redirectHeaders,
+                fromDiskCache,
+                fromServiceWorker,
+                securityDetails);
+
             request.Response = response;
             if (request.RequestId != null)
             {
@@ -369,7 +385,8 @@ namespace PuppeteerSharp
                     request,
                     e.RedirectResponse.Status,
                     e.RedirectResponse.Headers,
-                    false,
+                    e.RedirectResponse.FromDiskCache,
+                    e.RedirectResponse.FromServiceWorker,
                     e.RedirectResponse.SecurityDetails);
             }
 
