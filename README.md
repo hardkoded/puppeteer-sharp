@@ -3,10 +3,12 @@
 [![NuGet](https://img.shields.io/nuget/v/PuppeteerSharp.svg?style=flat-square&label=nuget&colorB=green)][NugetUrl]
 [![Build status](https://ci.appveyor.com/api/projects/status/pwfkjb0c4jfdo7lc/branch/master?svg=true&pendingText=master&failingText=master&passingText=master)][BuildUrl]
 [![Demo build status](https://ci.appveyor.com/api/projects/status/10g64a4aa0083wgf/branch/master?svg=true&pendingText=demo&failingText=demo&passingText=demo)][BuildDemoUrl]
+[![CodeFactor](https://www.codefactor.io/repository/github/ninetaillabs/varaniumsharp.initiator/badge)][CodeFactorUrl]
 
 [NugetUrl]: https://www.nuget.org/packages/PuppeteerSharp/
 [BuildUrl]: https://ci.appveyor.com/project/kblok/puppeteer-sharp/branch/master
 [BuildDemoUrl]: https://ci.appveyor.com/project/kblok/puppeteer-sharp-0c8w9/branch/master
+[CodeFactorUrl]: https://www.codefactor.io/repository/github/kblok/puppeteer-sharp
 
 Puppeteer Sharp is a .NET port of the official [Node.JS Puppeteer API](https://github.com/GoogleChrome/puppeteer). 
 

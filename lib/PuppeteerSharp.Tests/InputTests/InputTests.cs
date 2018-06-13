@@ -41,13 +41,14 @@ namespace PuppeteerSharp.Tests.InputTests
             await Page.ClickAsync("input#agree");
             Assert.True(await Page.EvaluateExpressionAsync<bool>("result.check"));
             Assert.Equal(new[] {
-               "mouseover",
-               "mouseenter",
-               "mousemove",
-               "mousedown",
-               "mouseup",
-               "click",
-               "change"
+                "mouseover",
+                "mouseenter",
+                "mousemove",
+                "mousedown",
+                "mouseup",
+                "click",
+                "input",
+                "change"
             }, await Page.EvaluateExpressionAsync<string[]>("result.events"));
             await Page.ClickAsync("input#agree");
             Assert.False(await Page.EvaluateExpressionAsync<bool>("result.check"));
@@ -62,6 +63,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.True(await Page.EvaluateExpressionAsync<bool>("result.check"));
             Assert.Equal(new[] {
                 "click",
+                "input",
                 "change"
             }, await Page.EvaluateExpressionAsync<string[]>("result.events"));
             await Page.ClickAsync("label[for=\"agree\"]");
