@@ -16,13 +16,18 @@ namespace PuppeteerSharp
         private readonly CDPSession _client;
         private readonly int _contextId;
 
-        internal ExecutionContext(CDPSession client, ContextPayload contextPayload, Func<dynamic, JSHandle> objectHandleFactory)
+        internal ExecutionContext(
+            CDPSession client,
+            ContextPayload contextPayload,
+            Func<dynamic, JSHandle> objectHandleFactory,
+            Frame frame)
         {
             _client = client;
             _contextId = contextPayload.Id;
             FrameId = contextPayload.AuxData.FrameId;
             IsDefault = contextPayload.AuxData.IsDefault;
             ObjectHandleFactory = objectHandleFactory;
+            Frame = frame;
         }
 
         internal Func<dynamic, JSHandle> ObjectHandleFactory { get; set; }
@@ -31,6 +36,13 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The frame identifier.</value>
         public string FrameId { get; internal set; }
+        /// <summary>
+        /// Frame associated with this execution context.
+        /// </summary>
+        /// <remarks>
+        /// NOTE Not every execution context is associated with a frame. For example, workers and extensions have execution contexts that are not associated with frames.
+        /// </remarks>
+        public Frame Frame { get; }
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="ExecutionContext"/> is the 
         /// default context of a <see cref="Frame"/>

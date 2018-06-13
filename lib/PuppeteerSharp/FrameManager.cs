@@ -123,16 +123,21 @@ namespace PuppeteerSharp
                 RemoveContext(context);
             }
         }
-        
+
         private void OnExecutionContextCreated(ContextPayload contextPayload)
         {
-            var context = new ExecutionContext(_client, contextPayload,
-                remoteObject => CreateJsHandle(contextPayload.Id, remoteObject));
+            var frameId = contextPayload.AuxData.IsDefault ? contextPayload.AuxData.FrameId : null;
+            var frame = !string.IsNullOrEmpty(frameId) ? Frames[frameId] : null;
+
+            var context = new ExecutionContext(
+                _client,
+                contextPayload,
+                remoteObject => CreateJsHandle(contextPayload.Id, remoteObject),
+                frame);
 
             _contextIdToContext[contextPayload.Id] = context;
 
-            var frame = !string.IsNullOrEmpty(context.FrameId) ? Frames[context.FrameId] : null;
-            if (frame != null && context.IsDefault)
+            if (frame != null)
             {
                 frame.SetDefaultContext(context);
             }
@@ -192,11 +197,9 @@ namespace PuppeteerSharp
 
         private void RemoveContext(ExecutionContext context)
         {
-            var frame = !string.IsNullOrEmpty(context.FrameId) ? Frames[context.FrameId] : null;
-
-            if (frame != null && context.IsDefault)
+            if (context.Frame != null)
             {
-                frame.SetDefaultContext(null);
+                context.Frame.SetDefaultContext(null);
             }
         }
 
