@@ -125,6 +125,23 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Fact]
+        public async Task ShouldSendReferer()
+        {
+            await Page.SetExtraHttpHeadersAsync(new Dictionary<string, string>
+            {
+                ["referer"] = "http://google.com/"
+            });
+            await Page.SetRequestInterceptionAsync(true);
+            Page.Request += async (sender, e) => await e.Request.ContinueAsync();
+            var requestTask = Server.WaitForRequest("/grid.html", request => request.Headers["referer"].ToString());
+            await Task.WhenAll(
+                requestTask,
+                Page.GoToAsync(TestConstants.ServerUrl + "/grid.html")
+            );
+            Assert.Equal("http://google.com/", requestTask.Result);
+        }
+
+        [Fact]
         public async Task ShouldAmendHTTPHeaders()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -330,7 +347,8 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.SetRequestInterceptionAsync(true);
             Request request = null;
             var requestIntercepted = new TaskCompletionSource<bool>();
-            Page.Request += (sender, e) => {
+            Page.Request += (sender, e) =>
+            {
                 request = e.Request;
                 requestIntercepted.SetResult(true);
             };
