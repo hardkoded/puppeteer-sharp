@@ -257,7 +257,7 @@ namespace PuppeteerSharp.Tests.PageTests
         [Fact]
         public async Task ShouldWorkWithSelfRequestingPage()
         {
-            var response = await Page.GoToAsync(TestConstants.EmptyPage + "/self-request.html");
+            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/self-request.html");
             Assert.Equal(HttpStatusCode.OK, response.Status);
             Assert.Contains("self-request.html", response.Url);
         }
