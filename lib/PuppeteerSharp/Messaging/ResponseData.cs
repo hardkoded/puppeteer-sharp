@@ -16,5 +16,7 @@ namespace PuppeteerSharp.Messaging
         public SecurityDetails SecurityDetails { get; set; }
         [JsonProperty("fromDiskCache")]
         public bool FromDiskCache { get; set; }
+        [JsonProperty("fromServiceWorker")]
+        public bool FromServiceWorker { get; set; }
     }
 }

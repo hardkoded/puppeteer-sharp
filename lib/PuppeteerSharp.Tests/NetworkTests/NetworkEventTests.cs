@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -52,7 +53,40 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Single(responses);
             Assert.Equal(TestConstants.EmptyPage, responses[0].Url);
             Assert.Equal(HttpStatusCode.OK, responses[0].Status);
+            Assert.False(responses[0].FromCache);
+            Assert.False(responses[0].FromServiceWorker);
             Assert.NotNull(responses[0].Request);
+        }
+
+        [Fact]
+        public async Task ResponseFromCache()
+        {
+            var responses = new Dictionary<string, Response>();
+            Page.Response += (sender, e) => responses[e.Response.Url.Split('/').Last()] = e.Response;
+            await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
+            await Page.ReloadAsync();
+
+            Assert.Equal(2, responses.Count);
+            Assert.Equal(HttpStatusCode.NotModified, responses["one-style.html"].Status);
+            Assert.False(responses["one-style.html"].FromCache);
+            Assert.Equal(HttpStatusCode.OK, responses["one-style.css"].Status);
+            Assert.True(responses["one-style.css"].FromCache);
+        }
+
+        [Fact]
+        public async Task ResponseFromServiceWorker()
+        {
+            var responses = new Dictionary<string, Response>();
+            Page.Response += (sender, e) => responses[e.Response.Url.Split('/').Last()] = e.Response;
+            await Page.GoToAsync(TestConstants.ServerUrl + "/serviceworkers/fetch/sw.html",
+                waitUntil: new[] { WaitUntilNavigation.Networkidle2 });
+            await Page.ReloadAsync();
+
+            Assert.Equal(2, responses.Count);
+            Assert.Equal(HttpStatusCode.OK, responses["sw.html"].Status);
+            Assert.True(responses["sw.html"].FromServiceWorker);
+            Assert.Equal(HttpStatusCode.OK, responses["style.css"].Status);
+            Assert.True(responses["style.css"].FromServiceWorker);
         }
 
         [Fact]

@@ -14,13 +14,21 @@ namespace PuppeteerSharp
         private readonly CDPSession _client;
         private bool _fromDiskCache;
 
-        internal Response(CDPSession client, Request request, HttpStatusCode status, Dictionary<string, object> headers, bool fromDiskCache, SecurityDetails securityDetails)
+        internal Response(
+            CDPSession client,
+            Request request,
+            HttpStatusCode status,
+            Dictionary<string, object> headers,
+            bool fromDiskCache,
+            bool fromServiceWorker,
+            SecurityDetails securityDetails)
         {
             _client = client;
             Request = request;
-            Status = status;            
+            Status = status;
             Url = request.Url;
             _fromDiskCache = fromDiskCache;
+            FromServiceWorker = fromServiceWorker;
 
             Headers = new Dictionary<string, object>();
             if (headers != null)
@@ -68,10 +76,14 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The security details.</value>
         public SecurityDetails SecurityDetails { get; internal set; }
+        /// <summary>
+        /// Gets a value indicating whether the <see cref="Response"/> was served by a service worker.
+        /// </summary>
+        /// <value><c>true</c> if the <see cref="Response"/> was served by a service worker; otherwise, <c>false</c>.</value>
+        public bool FromServiceWorker { get; }
 
         internal Task<string> ContentTask => ContentTaskWrapper.Task;
         internal TaskCompletionSource<string> ContentTaskWrapper { get; set; }
-        
         #endregion
 
         #region Public Methods
