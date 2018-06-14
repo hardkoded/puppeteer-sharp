@@ -25,7 +25,8 @@ namespace PuppeteerSharp.Tests.PageTests
         [Fact]
         public async Task ShouldNavigateToEmptyPageWithDOMContentLoaded()
         {
-            var response = await Page.GoToAsync(TestConstants.EmptyPage, waitUntil: new[] {
+            var response = await Page.GoToAsync(TestConstants.EmptyPage, waitUntil: new[]
+            {
                 WaitUntilNavigation.DOMContentLoaded
             });
             Assert.Equal(HttpStatusCode.OK, response.Status);
