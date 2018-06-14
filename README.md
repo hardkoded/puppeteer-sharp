@@ -3,12 +3,22 @@
 [![NuGet](https://img.shields.io/nuget/v/PuppeteerSharp.svg?style=flat-square&label=nuget&colorB=green)][NugetUrl]
 [![Build status](https://ci.appveyor.com/api/projects/status/pwfkjb0c4jfdo7lc/branch/master?svg=true&pendingText=master&failingText=master&passingText=master)][BuildUrl]
 [![Demo build status](https://ci.appveyor.com/api/projects/status/10g64a4aa0083wgf/branch/master?svg=true&pendingText=demo&failingText=demo&passingText=demo)][BuildDemoUrl]
+[![CodeFactor](https://www.codefactor.io/repository/github/ninetaillabs/varaniumsharp.initiator/badge)][CodeFactorUrl]
 
 [NugetUrl]: https://www.nuget.org/packages/PuppeteerSharp/
 [BuildUrl]: https://ci.appveyor.com/project/kblok/puppeteer-sharp/branch/master
 [BuildDemoUrl]: https://ci.appveyor.com/project/kblok/puppeteer-sharp-0c8w9/branch/master
+[CodeFactorUrl]: https://www.codefactor.io/repository/github/kblok/puppeteer-sharp
 
 Puppeteer Sharp is a .NET port of the official [Node.JS Puppeteer API](https://github.com/GoogleChrome/puppeteer). 
+
+# Useful links
+
+* [API Documentation](http://www.puppeteersharp.com/api/index.html)
+* Slack channel [#puppeteer-sharp](https://join.slack.com/t/puppeteer/shared_invite/enQtMzU4MjIyMDA5NTM4LTM1OTdkNDhlM2Y4ZGUzZDdjYjM5ZWZlZGFiZjc4MTkyYTVlYzIzYjU5NDIyNzgyMmFiNDFjN2UzNWU0N2ZhZDc)
+* [StackOverflow](https://stackoverflow.com/search?q=puppeteer-sharp)
+* [Issues](https://github.com/kblok/puppeteer-sharp/issues?utf8=%E2%9C%93&q=is%3Aissue)
+
 
 # Usage
 
@@ -127,9 +137,3 @@ using (var browser = await PuppeteerSharp.Puppeteer.ConnectAsync(options))
 * Tests on Google's Puppeteer: 405.
 * Tests on Puppeteer Sharp: 322.
 * Passing tests: 319.
-
-# Useful links
-
-* Slack channel [#puppeteer-sharp](https://join.slack.com/t/puppeteer/shared_invite/enQtMzU4MjIyMDA5NTM4LTM1OTdkNDhlM2Y4ZGUzZDdjYjM5ZWZlZGFiZjc4MTkyYTVlYzIzYjU5NDIyNzgyMmFiNDFjN2UzNWU0N2ZhZDc)
-* [StackOverflow](https://stackoverflow.com/search?q=puppeteer-sharp)
-* [Issues](https://github.com/kblok/puppeteer-sharp/issues?utf8=%E2%9C%93&q=is%3Aissue)

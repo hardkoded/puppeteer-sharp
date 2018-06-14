@@ -40,17 +40,16 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.Null(await Page.EvaluateExpressionAsync("result.check"));
             await Page.ClickAsync("input#agree");
             Assert.True(await Page.EvaluateExpressionAsync<bool>("result.check"));
-            var res = await Page.EvaluateExpressionAsync<string[]>("result.events");
             Assert.Equal(new[] {
-               "mouseover",
-               "mouseenter",
-               "mousemove",
-               "mousedown",
-               "mouseup",
-               "click",
-               "input",
-               "change"
-            }, res);
+                "mouseover",
+                "mouseenter",
+                "mousemove",
+                "mousedown",
+                "mouseup",
+                "click",
+                "input",
+                "change"
+            }, await Page.EvaluateExpressionAsync<string[]>("result.events"));
             await Page.ClickAsync("input#agree");
             Assert.False(await Page.EvaluateExpressionAsync<bool>("result.check"));
         }
