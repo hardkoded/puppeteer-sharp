@@ -25,6 +25,30 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             {
                 var response = await page.GoToAsync(TestConstants.HttpsPrefix + "/empty.html");
                 Assert.Equal(HttpStatusCode.OK, response.Status);
+                Assert.NotNull(response.SecurityDetails);
+                Assert.Equal("TLS 1.2", response.SecurityDetails.Protocol);
+            }
+        }
+
+        [Fact]
+        public async Task NetworkRedirectsShouldReportSecurityDetails()
+        {
+            var responses = new List<Response>();
+            var options = TestConstants.DefaultBrowserOptions();
+            options.IgnoreHTTPSErrors = true;
+
+            HttpsServer.SetRedirect("/plzredirect", "/empty.html");
+
+            using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision, TestConstants.LoggerFactory))
+            using (var page = await browser.NewPageAsync())
+            {
+                page.Response += (sender, e) => responses.Add(e.Response);
+
+                await page.GoToAsync(TestConstants.HttpsPrefix + "/plzredirect");
+
+                Assert.Equal(2, responses.Count);
+                Assert.Equal(HttpStatusCode.Found, responses[0].Status);
+                Assert.Equal("TLS 1.2", responses[0].SecurityDetails.Protocol);
             }
         }
 
@@ -57,26 +81,6 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                         WaitUntil = new[] { WaitUntilNavigation.Networkidle0 }
                     });
                 Assert.Equal(HttpStatusCode.OK, response.Status);
-            }
-        }
-
-        [Fact(Skip = "test is not part of v1.0.0")]
-        public async Task NetworkRedirectsShouldReportSecurityDetails()
-        {
-            var options = TestConstants.DefaultBrowserOptions();
-            options.IgnoreHTTPSErrors = true;
-
-            using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision, TestConstants.LoggerFactory))
-            using (var page = await browser.NewPageAsync())
-            {
-                var responses = new List<Response>();
-                page.Response += (sender, e) => responses.Add(e.Response);
-
-                await page.GoToAsync(TestConstants.HttpsPrefix + "/plzredirect");
-                Assert.Equal(2, responses.Count);
-                Assert.Equal(HttpStatusCode.Redirect, responses[0].Status);
-                var securityDetails = responses[0].SecurityDetails;
-                Assert.Equal("TLS 1.2", securityDetails.Protocol);
             }
         }
 

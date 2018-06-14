@@ -22,8 +22,17 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Null(response);
         }
 
+        [Fact]
+        public async Task ShouldNavigateToEmptyPageWithDOMContentLoaded()
+        {
+            var response = await Page.GoToAsync(TestConstants.EmptyPage, waitUntil: new WaitUntilNavigation[] {
+                WaitUntilNavigation.DOMContentLoaded
+            });
+            Assert.Equal(HttpStatusCode.OK, response.Status);
+            Assert.Null(response.SecurityDetails);
+        }
+
         [Theory]
-        [InlineData(WaitUntilNavigation.DOMContentLoaded)]
         [InlineData(WaitUntilNavigation.Networkidle0)]
         [InlineData(WaitUntilNavigation.Networkidle2)]
         public async Task ShouldNavigateToEmptyPage(WaitUntilNavigation waitUntil)
@@ -242,6 +251,14 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(TestConstants.EmptyPage, response.Url);
             Assert.Single(requests);
             Assert.Equal(TestConstants.EmptyPage, requests[0].Url);
+        }
+
+        [Fact]
+        public async Task ShouldWorkWithSelfRequestingPage()
+        {
+            var response = await Page.GoToAsync(TestConstants.EmptyPage + "/self-request.html");
+            Assert.Equal(HttpStatusCode.OK, response.Status);
+            Assert.Contains("self-request.html", response.Url);
         }
     }
 }
