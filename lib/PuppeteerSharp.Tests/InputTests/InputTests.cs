@@ -425,10 +425,19 @@ namespace PuppeteerSharp.Tests.InputTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
             await Page.FocusAsync("textarea");
             await Page.EvaluateExpressionAsync("document.querySelector('textarea').addEventListener('keydown', e => window.lastEvent = e, true)");
-            await Page.Keyboard.DownAsync("a", new DownOptions { Text = "a" });
+            await Page.Keyboard.DownAsync("a");
             Assert.False(await Page.EvaluateExpressionAsync<bool>("window.lastEvent.repeat"));
             await Page.Keyboard.PressAsync("a");
             Assert.True(await Page.EvaluateExpressionAsync<bool>("window.lastEvent.repeat"));
+
+            await Page.Keyboard.DownAsync("b");
+            Assert.False(await Page.EvaluateExpressionAsync<bool>("window.lastEvent.repeat"));
+            await Page.Keyboard.DownAsync("b");
+            Assert.True(await Page.EvaluateExpressionAsync<bool>("window.lastEvent.repeat"));
+
+            await Page.Keyboard.UpAsync("a");
+            await Page.Keyboard.DownAsync("a");
+            Assert.False(await Page.EvaluateExpressionAsync<bool>("window.lastEvent.repeat"));
         }
 
         // @see https://github.com/GoogleChrome/puppeteer/issues/206
