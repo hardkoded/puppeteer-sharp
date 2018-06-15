@@ -27,6 +27,27 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Fact]
+        public async Task ShouldWaitForAnXpath()
+        {
+            var found = false;
+            var waitFor = Page.WaitForXPathAsync("//div").ContinueWith(_ => found = true);
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            Assert.False(found);
+            await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+            await waitFor;
+            Assert.True(found);
+        }
+
+        [Fact]
+        public async Task ShouldNotAllowYouToSelectAnElementWithSingleSlashXpath()
+        {
+            await Page.SetContentAsync("<div>some text</div>");
+            var exception = await Assert.ThrowsAsync<EvaluationFailedException>(() =>
+                Page.WaitForSelectorAsync("/html/body/div"));
+            Assert.NotNull(exception);
+        }
+
+        [Fact]
         public async Task ShouldTimeout()
         {
             var startTime = DateTime.Now;

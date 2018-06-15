@@ -1237,8 +1237,19 @@ namespace PuppeteerSharp
         /// <param name="selector">A selector of an element to wait for</param>
         /// <param name="options">Optional waiting parameters</param>
         /// <returns>A task that resolves when element specified by selector string is added to DOM</returns>
+        /// <seealso cref="WaitForXPathAsync(string, WaitForSelectorOptions)"/>
         public Task<ElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
             => MainFrame.WaitForSelectorAsync(selector, options ?? new WaitForSelectorOptions());
+
+        /// <summary>
+        /// Waits for a xpath selector to be added to the DOM
+        /// </summary>
+        /// <param name="xpath">A xpath selector of an element to wait for</param>
+        /// <param name="options">Optional waiting parameters</param>
+        /// <returns>A task that resolves when element specified by selector string is added to DOM</returns>
+        /// <seealso cref="WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
+        public Task<ElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
+            => MainFrame.WaitForXPathAsync(xpath, options ?? new WaitForSelectorOptions());
 
         /// <summary>
         /// Waits for navigation
