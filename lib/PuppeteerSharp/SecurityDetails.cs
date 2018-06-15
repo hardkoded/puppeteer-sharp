@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace PuppeteerSharp
@@ -39,26 +40,31 @@ namespace PuppeteerSharp
         /// Gets the name of the subject.
         /// </summary>
         /// <value>The name of the subject.</value>
-        public string SubjectName { get; }
+        [JsonProperty("subjectName")]
+        public string SubjectName { get; internal set; }
         /// <summary>
         /// Gets the issuer.
         /// </summary>
         /// <value>The issuer.</value>
-        public string Issuer { get; }
+        [JsonProperty("issuer")]
+        public string Issuer { get; internal set; }
         /// <summary>
         /// Gets the valid from.
         /// </summary>
         /// <value>The valid from.</value>
-        public int ValidFrom { get; }
+        [JsonProperty("validFrom")]
+        public int ValidFrom { get; internal set; }
         /// <summary>
         /// Gets the valid to.
         /// </summary>
         /// <value>The valid to.</value>
-        public int ValidTo { get; }
+        [JsonProperty("validTo")]
+        public int ValidTo { get; internal set; }
         /// <summary>
         /// Gets the protocol.
         /// </summary>
         /// <value>The protocol.</value>
-        public string Protocol { get; }
+        [JsonProperty("protocol")]
+        public string Protocol { get; internal set; }
     }
 }
