@@ -88,7 +88,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Raised when the JavaScript <c>load</c> <see href="https://developer.mozilla.org/en-US/docs/Web/Events/load"/> event is dispatched.
         /// </summary>
-        public event EventHandler<EventArgs> Load;
+        public event EventHandler Load;
 
         /// <summary>
         /// Raised when the page crashes
@@ -104,6 +104,11 @@ namespace PuppeteerSharp
         /// Raised when a JavaScript dialog appears, such as <c>alert</c>, <c>prompt</c>, <c>confirm</c> or <c>beforeunload</c>. Puppeteer can respond to the dialog via <see cref="Dialog"/>'s <see cref="Dialog.Accept(string)"/> or <see cref="Dialog.Dismiss"/> methods.
         /// </summary>
         public event EventHandler<DialogEventArgs> Dialog;
+
+        /// <summary>
+        /// Raised when the JavaScript <c>DOMContentLoaded</c> <see href="https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded"/> event is dispatched.
+        /// </summary>
+        public event EventHandler DOMContentLoaded;
 
         /// <summary>
         /// Raised when JavaScript within the page calls one of console API methods, e.g. <c>console.log</c> or <c>console.dir</c>. Also emitted if the page throws an error or a warning.
@@ -1507,8 +1512,11 @@ namespace PuppeteerSharp
         {
             switch (e.MessageID)
             {
+                case "Page.domContentEventFired":
+                    DOMContentLoaded?.Invoke(this, EventArgs.Empty);
+                    break;
                 case "Page.loadEventFired":
-                    Load?.Invoke(this, new EventArgs());
+                    Load?.Invoke(this, EventArgs.Empty);
                     break;
                 case "Runtime.consoleAPICalled":
                     await OnConsoleAPI(e.MessageData.ToObject<PageConsoleResponse>());
