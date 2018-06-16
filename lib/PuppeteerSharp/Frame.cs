@@ -502,7 +502,7 @@ namespace PuppeteerSharp
         {
             while (WaitTasks.Count > 0)
             {
-                WaitTasks[0].Termiante(new Exception("waitForSelector failed: frame got detached."));
+                WaitTasks[0].Termiante(new Exception("waitForFunction failed: frame got detached."));
             }
             Detached = true;
             if (ParentFrame != null)

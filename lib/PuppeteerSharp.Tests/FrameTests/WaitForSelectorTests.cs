@@ -113,7 +113,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             await FrameUtils.DetachFrameAsync(Page, "frame1");
             var waitException = await waitTask;
             Assert.NotNull(waitException);
-            Assert.Contains("waitForSelector failed: frame got detached", waitException.Message);
+            Assert.Contains("waitForFunction failed: frame got detached.", waitException.Message);
         }
 
         [Fact]
