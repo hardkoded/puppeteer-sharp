@@ -162,8 +162,49 @@ namespace PuppeteerSharp
         /// <seealso cref="Page.EvaluateFunctionAsync{T}(string, object[])"/>
         public async Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
         {
-            var context = await GetExecutionContextAsync();
+            var context = (await GetExecutionContextAsync());
             return await context.EvaluateFunctionAsync<T>(script, args);
+        }
+
+        /// <summary>
+        /// Passes an expression to the <see cref="ExecutionContext.EvaluateExpressionHandleAsync(string)"/>, returns a <see cref="Task"/>, then <see cref="ExecutionContext.EvaluateExpressionHandleAsync(string)"/> would wait for the <see cref="Task"/> to resolve and return its value.
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// var frame = page.MainFrame;
+        /// const handle = Page.MainFrame.EvaluateExpressionHandleAsync("1 + 2");
+        /// </code>
+        /// </example>
+        /// <returns>Resolves to the return value of <paramref name="script"/></returns>
+        /// <param name="script">Expression to be evaluated in the <seealso cref="ExecutionContext"/></param>
+        public async Task<JSHandle> EvaluateExpressionHandleAsync(string script)
+        {
+            var context = await GetExecutionContextAsync();
+            return await context.EvaluateExpressionHandleAsync(script);
+        }
+
+        /// <summary>
+        /// Passes a function to the <see cref="ExecutionContext.EvaluateFunctionAsync(string, object[])"/>, returns a <see cref="Task"/>, then <see cref="ExecutionContext.EvaluateFunctionHandleAsync(string, object[])"/> would wait for the <see cref="Task"/> to resolve and return its value.
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// var frame = page.MainFrame;
+        /// const handle = Page.MainFrame.EvaluateFunctionHandleAsync("() => Promise.resolve(self)");
+        /// return handle; // Handle for the global object.
+        /// </code>
+        /// <see cref="JSHandle"/> instances can be passed as arguments to the <see cref="ExecutionContext.EvaluateFunctionAsync(string, object[])"/>:
+        /// 
+        /// const handle = await Page.MainFrame.EvaluateExpressionHandleAsync("document.body");
+        /// const resultHandle = await Page.MainFrame.EvaluateFunctionHandleAsync("body => body.innerHTML", handle);
+        /// return await resultHandle.JsonValueAsync(); // prints body's innerHTML
+        /// </example>
+        /// <returns>Resolves to the return value of <paramref name="function"/></returns>
+        /// <param name="function">Function to be evaluated in the <see cref="ExecutionContext"/></param>
+        /// <param name="args">Arguments to pass to <paramref name="function"/></param>
+        public async Task<JSHandle> EvaluateFunctionHandleAsync(string function, params object[] args)
+        {
+            var context = await GetExecutionContextAsync();
+            return await context.EvaluateFunctionHandleAsync(function, args);
         }
 
         /// <summary>
