@@ -83,14 +83,14 @@ namespace PuppeteerSharp.Tests.FrameTests
             var frame1 = Page.Frames.ElementAt(1);
             var frame2 = Page.Frames.ElementAt(2);
             var added = false;
-            var selectorTask = frame2.WaitForSelectorAsync("div").ContinueWith(_ => added = true);
+            var waitForSelectorPromise = frame2.WaitForSelectorAsync("div").ContinueWith(_ => added = true);
             Assert.False(added);
 
             await frame1.EvaluateFunctionAsync(AddElement, "div");
             Assert.False(added);
 
             await frame2.EvaluateFunctionAsync(AddElement, "div");
-            Assert.True(added);
+            await waitForSelectorPromise;
         }
 
         [Fact]
