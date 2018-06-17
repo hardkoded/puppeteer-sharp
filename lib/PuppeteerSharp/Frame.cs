@@ -162,7 +162,7 @@ namespace PuppeteerSharp
         /// <seealso cref="Page.EvaluateFunctionAsync{T}(string, object[])"/>
         public async Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
         {
-            var context = (await GetExecutionContextAsync());
+            var context = await GetExecutionContextAsync();
             return await context.EvaluateFunctionAsync<T>(script, args);
         }
 
