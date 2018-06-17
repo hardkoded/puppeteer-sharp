@@ -210,7 +210,6 @@ namespace PuppeteerSharp
             int delay = 0,
             ILoggerFactory loggerFactory = null)
         {
-
             return null;
         }
 
