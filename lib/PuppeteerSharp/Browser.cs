@@ -201,7 +201,7 @@ namespace PuppeteerSharp
             }
 
             IsClosed = true;
-            Connection.StopReading();
+            Connection.Transport.StopListening();
 
             var closeTask = _closeCallBack();
 
@@ -250,7 +250,7 @@ namespace PuppeteerSharp
             {
                 throw new InvalidTargetException("Target should exists before ChangeTargetInfo");
             }
-            
+
             var target = _targets[e.TargetInfo.TargetId];
             target.TargetInfoChanged(e.TargetInfo);
         }
