@@ -189,6 +189,24 @@ namespace PuppeteerSharp
         /// <param name="xpath">A xpath selector of an element to wait for</param>
         /// <param name="options">Optional waiting parameters</param>
         /// <returns>A task that resolves when element specified by selector string is added to DOM</returns>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions(), Downloader.DefaultRevision);
+        /// var page = await browser.NewPageAsync();
+        /// string currentURL = null;
+        /// page.MainFrame
+        ///     .WaitForXPathAsync("//img")
+        ///     .ContinueWith(_ => Console.WriteLine("First URL with image: " + currentURL));
+        /// foreach (var current in new[] { "https://example.com", "https://google.com", "https://bbc.com" })
+        /// {
+        ///     currentURL = current;
+        ///     await page.GoToAsync(currentURL);
+        /// }
+        /// await browser.CloseAsync();
+        /// ]]>
+        /// </code>
+        /// </example>
         /// <seealso cref="WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
         /// <seealso cref="Page.WaitForXPathAsync(string, WaitForSelectorOptions)"/>
         public Task<ElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
