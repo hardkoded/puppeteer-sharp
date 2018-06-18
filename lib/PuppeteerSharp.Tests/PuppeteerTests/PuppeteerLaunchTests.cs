@@ -137,7 +137,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             var launcher = new Launcher(TestConstants.LoggerFactory);
             var userDataDir = Launcher.GetTemporaryDirectory();
             var options = TestConstants.DefaultBrowserOptions();
-            options.Args = options.Args.Concat(new[] { $"--user-data-dir={userDataDir}" }).ToArray();
+            options.Args = options.Args.Concat(new[] { $"--user-data-dir=\"{userDataDir}\"" }).ToArray();
 
             using (var browser = await launcher.LaunchAsync(options, TestConstants.ChromiumRevision))
             {
@@ -154,7 +154,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             var launcher = new Launcher(TestConstants.LoggerFactory);
             var userDataDir = Launcher.GetTemporaryDirectory();
             var options = TestConstants.DefaultBrowserOptions();
-            options.Args = options.Args.Concat(new[] { $"--user-data-dir={userDataDir}" }).ToArray();
+            options.Args = options.Args.Concat(new[] { $"--user-data-dir=\"{userDataDir}\"" }).ToArray();
 
             using (var browser = await launcher.LaunchAsync(options, TestConstants.ChromiumRevision))
             {
@@ -179,7 +179,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             var launcher = new Launcher(TestConstants.LoggerFactory);
             var userDataDir = Launcher.GetTemporaryDirectory();
             var options = TestConstants.DefaultBrowserOptions();
-            options.Args = options.Args.Concat(new[] { $"--user-data-dir={userDataDir}" }).ToArray();
+            options.Args = options.Args.Concat(new[] { $"--user-data-dir=\"{userDataDir}\"" }).ToArray();
 
             using (var browser = await launcher.LaunchAsync(options, TestConstants.ChromiumRevision))
             {
@@ -205,7 +205,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             var launcher = new Launcher(TestConstants.LoggerFactory);
             var userDataDir = Launcher.GetTemporaryDirectory();
             var options = TestConstants.DefaultBrowserOptions();
-            options.Args = options.Args.Concat(new[] { $"--user-data-dir={userDataDir}" }).ToArray();
+            options.Args = options.Args.Concat(new[] { $"--user-data-dir=\"{userDataDir}\"" }).ToArray();
             options.Headless = false;
 
             using (var browser = await launcher.LaunchAsync(options, TestConstants.ChromiumRevision))

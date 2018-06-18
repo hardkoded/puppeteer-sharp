@@ -280,16 +280,16 @@ namespace PuppeteerSharp
                 if (string.IsNullOrEmpty(options.UserDataDir))
                 {
                     _temporaryUserDataDir = GetTemporaryDirectory();
-                    chromeArguments.Add($"{UserDataDirArgument}={_temporaryUserDataDir}");
+                    chromeArguments.Add($"{UserDataDirArgument}={_temporaryUserDataDir.Quote()}");
                 }
                 else
                 {
-                    chromeArguments.Add($"{UserDataDirArgument}={options.UserDataDir}");
+                    chromeArguments.Add($"{UserDataDirArgument}={options.UserDataDir.Quote()}");
                 }
             }
             else
             {
-                _options.UserDataDir = userDataDirOption.Replace($"{UserDataDirArgument}=", string.Empty);
+                _options.UserDataDir = userDataDirOption.Replace($"{UserDataDirArgument}=", string.Empty).UnQuote();
             }
 
             if (options.Devtools)
