@@ -1,54 +1,41 @@
-﻿namespace PuppeteerSharp.Helpers
+﻿using System;
+
+namespace PuppeteerSharp.Helpers
 {
     internal static class StringExtensions
     {
         /// <summary>
-        /// Places double quotes around the passed path to prevent path parsing problems
-        /// when folder or file names contain spaces.
+        /// Quotes the specified <see cref="System.String"/>.
         /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        internal static string QuoteFilePath(this string path)
+        /// <param name="value">The string to quote.</param>
+        /// <returns>A quoted string.</returns>
+        public static string Quote(this string value)
         {
-            if (string.IsNullOrWhiteSpace(path))
+            if (!IsQuoted(value))
             {
-                return path;
+                value = string.Concat("\"", value, "\"");
             }
-            var trimmed = path.Trim();
-            if (!trimmed.StartsWith("\""))
-            {
-                trimmed = "\"" + trimmed;
-            }
-            if (!trimmed.EndsWith("\""))
-            {
-                trimmed = trimmed + "\"";
-            }
-            return trimmed;
+            return value;
         }
 
         /// <summary>
-        /// Removes double quotes around path parameters that might have been passed in from the
-        /// user argument list. This is required as calls to BCL functions will not handle double
-        /// quotes around a path and expect a straight string.
+        /// Unquote the specified <see cref="System.String"/>.
         /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        internal static string UnQuoteFilePath(this string path)
+        /// <param name="value">The string to unquote.</param>
+        /// <returns>An unquoted string.</returns>
+        public static string UnQuote(this string value)
         {
-            if (string.IsNullOrWhiteSpace(path))
+            if (IsQuoted(value))
             {
-                return path;
+                value = value.Trim('"');
             }
-            var trimmed = path.Trim();
-            if (trimmed.StartsWith("\""))
-            {
-                trimmed = trimmed.Substring(1, trimmed.Length - 1);
-            }
-            if (trimmed.EndsWith("\""))
-            {
-                trimmed = trimmed.Substring(0, trimmed.Length - 1);
-            }
-            return trimmed;
+            return value;
+        }
+
+        private static bool IsQuoted(this string value)
+        {
+            return value.StartsWith("\"", StringComparison.OrdinalIgnoreCase)
+                   && value.EndsWith("\"", StringComparison.OrdinalIgnoreCase);
         }
     }
 }
