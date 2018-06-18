@@ -35,7 +35,7 @@ namespace PuppeteerSharp.Tests
         {
             SlowMo = Convert.ToInt32(Environment.GetEnvironmentVariable("SLOW_MO")),
             Headless = Convert.ToBoolean(Environment.GetEnvironmentVariable("HEADLESS") ?? "true"),
-            Args = new[] { "--no-sandbox" },
+            Args = new[] { "--no-sandbox", "--disable-dev-shm-usage" },
             Timeout = 0,
             KeepAliveInterval = 120,
             LogProcess = true

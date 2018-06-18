@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
     {
         public AppModeTests(ITestOutputHelper output) : base(output) { }
 
-        [Fact(Skip = "WIP")]
+        [Fact]
         public async Task ShouldWork()
         {
             var options = TestConstants.DefaultBrowserOptions();

@@ -193,7 +193,7 @@ namespace PuppeteerSharp
         #endregion
         #region Static Methods
 
-        internal static async Task<Connection> CreateForWebSocket(
+        internal static async Task<Connection> CreateForWebSocketAsync(
             string url,
             int delay = 0,
             int keepAliveInterval = 60,
@@ -204,14 +204,12 @@ namespace PuppeteerSharp
             return new Connection(url, delay, transport, loggerFactory);
         }
 
-        internal static async Task<Connection> CreateForPipe(
+        internal static Connection CreateForPipe(
             StreamReader streamReader,
             StreamWriter streamWriter,
             int delay = 0,
             ILoggerFactory loggerFactory = null)
-        {
-            return null;
-        }
+            => new Connection(string.Empty, delay, new PipeTransport(streamReader, streamWriter), loggerFactory);
 
         /// <summary>
         /// Releases all resource used by the <see cref="Connection"/> object.

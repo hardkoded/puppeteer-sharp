@@ -20,6 +20,7 @@ namespace PuppeteerSharp.Transport
         #endregion
         #region Internal Members
         internal virtual void StopListening() => _stopListening = true;
+
         internal virtual void OnClose()
         {
             Closed?.Invoke(this, EventArgs.Empty);
@@ -30,9 +31,14 @@ namespace PuppeteerSharp.Transport
             OnMessage?.Invoke(this, new TransportMessageEventArgs(response));
         }
 
+        internal virtual void Close()
+        {
+            IsClosed = true;
+        }
+
         internal abstract void StartListening();
         internal abstract Task SendAsync(string message);
-        internal abstract void Close();
+
         #endregion
     }
 }

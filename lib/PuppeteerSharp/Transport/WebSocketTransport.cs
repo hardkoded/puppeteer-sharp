@@ -48,7 +48,6 @@ namespace PuppeteerSharp.Transport
         {
             var buffer = new byte[2048];
 
-            //If it's not in the list we wait for it
             while (true)
             {
                 if (IsClosed)
@@ -112,6 +111,7 @@ namespace PuppeteerSharp.Transport
             {
                 return;
             }
+            base.Close();
             _websocketReaderCancellationSource.Cancel();
         }
 
