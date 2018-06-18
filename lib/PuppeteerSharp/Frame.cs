@@ -219,36 +219,40 @@ namespace PuppeteerSharp
         /// <param name="selector">A selector of an element to wait for</param>
         /// <param name="options">Optional waiting parameters</param>
         /// <returns>A task that resolves when element specified by selector string is added to DOM</returns>
+        /// <seealso cref="WaitForXPathAsync(string, WaitForSelectorOptions)"/>
         /// <seealso cref="Page.WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
-        public async Task<ElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
-        {
-            options = options ?? new WaitForSelectorOptions();
-            const string predicate = @"
-              function predicate(selector, waitForVisible, waitForHidden) {
-              const node = document.querySelector(selector);
-              if (!node)
-                return waitForHidden;
-              if (!waitForVisible && !waitForHidden)
-                return node;
-              const style = window.getComputedStyle(node);
-              const isVisible = style && style.visibility !== 'hidden' && hasVisibleBoundingBox();
-              const success = (waitForVisible === isVisible || waitForHidden === !isVisible);
-              return success ? node : null;
+        public Task<ElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
+            => WaitForSelectorOrXPathAsync(selector, false, options);
 
-              function hasVisibleBoundingBox() {
-                const rect = node.getBoundingClientRect();
-                return !!(rect.top || rect.bottom || rect.width || rect.height);
-              }
-            }";
-            var polling = options.Visible || options.Hidden ? WaitForFunctionPollingOption.Raf : WaitForFunctionPollingOption.Mutation;
-            var handle = await WaitForFunctionAsync(predicate, new WaitForFunctionOptions
-            {
-                Timeout = options.Timeout,
-                Polling = polling
-            }, selector, options.Visible, options.Hidden);
-            return handle as ElementHandle;
-        }
-
+        /// <summary>
+        /// Waits for a selector to be added to the DOM
+        /// </summary>
+        /// <param name="xpath">A xpath selector of an element to wait for</param>
+        /// <param name="options">Optional waiting parameters</param>
+        /// <returns>A task that resolves when element specified by selector string is added to DOM</returns>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions(), Downloader.DefaultRevision);
+        /// var page = await browser.NewPageAsync();
+        /// string currentURL = null;
+        /// page.MainFrame
+        ///     .WaitForXPathAsync("//img")
+        ///     .ContinueWith(_ => Console.WriteLine("First URL with image: " + currentURL));
+        /// foreach (var current in new[] { "https://example.com", "https://google.com", "https://bbc.com" })
+        /// {
+        ///     currentURL = current;
+        ///     await page.GoToAsync(currentURL);
+        /// }
+        /// await browser.CloseAsync();
+        /// ]]>
+        /// </code>
+        /// </example>
+        /// <seealso cref="WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
+        /// <seealso cref="Page.WaitForXPathAsync(string, WaitForSelectorOptions)"/>
+        public Task<ElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
+            => WaitForSelectorOrXPathAsync(xpath, true, options);
+        
         /// <summary>
         /// Waits for a timeout
         /// </summary>
@@ -486,6 +490,39 @@ namespace PuppeteerSharp
         /// <seealso cref="Page.GetTitleAsync"/>
         public Task<string> GetTitleAsync() => EvaluateExpressionAsync<string>("document.title");
 
+        internal async Task<ElementHandle> WaitForSelectorOrXPathAsync(string selectorOrXPath, bool isXPath, WaitForSelectorOptions options = null)
+        {
+            options = options ?? new WaitForSelectorOptions();
+            const string predicate = @"
+              function predicate(selectorOrXPath, isXPath, waitForVisible, waitForHidden) {
+                const node = isXPath
+                  ? document.evaluate(selectorOrXPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue
+                  : document.querySelector(selectorOrXPath);
+                if (!node)
+                  return waitForHidden;
+                if (!waitForVisible && !waitForHidden)
+                  return node;
+                const element = node.nodeType === Node.TEXT_NODE ? node.parentElement : node;
+
+                const style = window.getComputedStyle(element);
+                const isVisible = style && style.visibility !== 'hidden' && hasVisibleBoundingBox();
+                const success = (waitForVisible === isVisible || waitForHidden === !isVisible);
+                return success ? node : null;
+
+                function hasVisibleBoundingBox() {
+                  const rect = element.getBoundingClientRect();
+                  return !!(rect.top || rect.bottom || rect.width || rect.height);
+                }
+              }";
+            var polling = options.Visible || options.Hidden ? WaitForFunctionPollingOption.Raf : WaitForFunctionPollingOption.Mutation;
+            var handle = await WaitForFunctionAsync(predicate, new WaitForFunctionOptions
+            {
+                Timeout = options.Timeout,
+                Polling = polling
+            }, selectorOrXPath, isXPath, options.Visible, options.Hidden);
+            return handle as ElementHandle;
+        }
+
         internal void OnLifecycleEvent(string loaderId, string name)
         {
             if (name == "init")
@@ -524,7 +561,7 @@ namespace PuppeteerSharp
         {
             while (WaitTasks.Count > 0)
             {
-                WaitTasks[0].Termiante(new Exception("waitForSelector failed: frame got detached."));
+                WaitTasks[0].Termiante(new Exception("waitForFunction failed: frame got detached."));
             }
             Detached = true;
             if (ParentFrame != null)

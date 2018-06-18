@@ -328,7 +328,7 @@ namespace PuppeteerSharp
         /// </remarks>
         /// <seealso cref="Frame.XPathAsync(string)"/>
         public Task<ElementHandle[]> XPathAsync(string expression) => MainFrame.XPathAsync(expression);
-
+        
         /// <summary>
         /// Executes a script in browser context
         /// </summary>
@@ -1237,8 +1237,39 @@ namespace PuppeteerSharp
         /// <param name="selector">A selector of an element to wait for</param>
         /// <param name="options">Optional waiting parameters</param>
         /// <returns>A task that resolves when element specified by selector string is added to DOM</returns>
+        /// <seealso cref="WaitForXPathAsync(string, WaitForSelectorOptions)"/>
+        /// <seealso cref="Frame.WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
         public Task<ElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
             => MainFrame.WaitForSelectorAsync(selector, options ?? new WaitForSelectorOptions());
+
+        /// <summary>
+        /// Waits for a xpath selector to be added to the DOM
+        /// </summary>
+        /// <param name="xpath">A xpath selector of an element to wait for</param>
+        /// <param name="options">Optional waiting parameters</param>
+        /// <returns>A task that resolves when element specified by selector string is added to DOM</returns>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions(), Downloader.DefaultRevision);
+        /// var page = await browser.NewPageAsync();
+        /// string currentURL = null;
+        /// page
+        ///     .WaitForXPathAsync("//img")
+        ///     .ContinueWith(_ => Console.WriteLine("First URL with image: " + currentURL));
+        /// foreach (var current in new[] { "https://example.com", "https://google.com", "https://bbc.com" })
+        /// {
+        ///     currentURL = current;
+        ///     await page.GoToAsync(currentURL);
+        /// }
+        /// await browser.CloseAsync();
+        /// ]]>
+        /// </code>
+        /// </example>
+        /// <seealso cref="WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
+        /// <seealso cref="Frame.WaitForXPathAsync(string, WaitForSelectorOptions)"/>
+        public Task<ElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
+            => MainFrame.WaitForXPathAsync(xpath, options ?? new WaitForSelectorOptions());
 
         /// <summary>
         /// Waits for navigation
