@@ -259,55 +259,6 @@ namespace PuppeteerSharp
             };
         }
 
-        /// <summary>
-        /// Places double quotes around the passed path to prevent path parsing problems
-        /// when folder or file names contain spaces.
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        private string QuoteFilePath(string path)
-        {
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                return path;
-            }
-            var trimmed = path.Trim();
-            if (!trimmed.StartsWith("\""))
-            {
-                trimmed = "\"" + trimmed;
-            }
-            if (!trimmed.EndsWith("\""))
-            {
-                trimmed = trimmed + "\"";
-            }
-            return trimmed;
-        }
-
-        /// <summary>
-        /// Removes double quotes around path parameters that might have been passed in from the
-        /// user argument list. This is required as calls to BCL functions will not handle double
-        /// quotes around a path and expect a straight string.
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        private string UnQuoteFilePath(string path)
-        {
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                return path;
-            }
-            var trimmed = path.Trim();
-            if (trimmed.StartsWith("\""))
-            {
-                trimmed = trimmed.Substring(1, trimmed.Length - 1);
-            }
-            if (trimmed.EndsWith("\""))
-            {
-                trimmed = trimmed.Substring(0, trimmed.Length - 1);
-            }
-            return trimmed;
-        }
-
         private List<string> InitChromeArgument(LaunchOptions options)
         {
             var chromeArguments = new List<string>(DefaultArgs);
@@ -329,16 +280,16 @@ namespace PuppeteerSharp
                 if (string.IsNullOrEmpty(options.UserDataDir))
                 {
                     _temporaryUserDataDir = GetTemporaryDirectory();
-                    chromeArguments.Add($"{UserDataDirArgument}={QuoteFilePath(_temporaryUserDataDir)}");
+                    chromeArguments.Add($"{UserDataDirArgument}={_temporaryUserDataDir.QuoteFilePath()}");
                 }
                 else
                 {
-                    chromeArguments.Add($"{UserDataDirArgument}={QuoteFilePath(options.UserDataDir)}");
+                    chromeArguments.Add($"{UserDataDirArgument}={options.UserDataDir.QuoteFilePath()}");
                 }
             }
             else
             {
-                _options.UserDataDir = UnQuoteFilePath(userDataDirOption.Replace($"{UserDataDirArgument}=", string.Empty));
+                _options.UserDataDir = userDataDirOption.Replace($"{UserDataDirArgument}=", string.Empty).UnQuoteFilePath();
             }
 
             if (options.Devtools)
