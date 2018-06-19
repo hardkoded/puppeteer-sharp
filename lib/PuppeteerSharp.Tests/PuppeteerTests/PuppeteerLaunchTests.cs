@@ -229,10 +229,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
 
         [Fact]
         public void ShouldReturnTheDefaultChromeArguments()
-        {
-            var args = Puppeteer.DefaultArgs;
-            Assert.Contains("--no-first-run", args);
-        }
+            => Assert.Contains("--no-first-run", Puppeteer.DefaultArgs());
 
         [Fact]
         public async Task ChromeShouldBeClosed()

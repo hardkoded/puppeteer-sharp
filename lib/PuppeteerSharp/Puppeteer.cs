@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp
@@ -20,7 +21,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// The default flags that Chromium will be launched with.
         /// </summary>
-        public static string[] DefaultArgs => Launcher.DefaultArgs;
+        public static List<string> DefaultArgs() => Launcher.DefaultArgs();
 
         /// <summary>
         /// A path where Puppeteer expects to find bundled Chromium. Chromium might not exist there if the downloader was not used.
@@ -40,7 +41,7 @@ namespace PuppeteerSharp
         /// for a description of the differences between Chromium and Chrome.
         /// <a href="https://chromium.googlesource.com/chromium/src/+/lkcr/docs/chromium_browser_vs_google_chrome.md">This article</a> describes some differences for Linux users.
         /// </remarks>
-        public static Task<Browser> LaunchAsync(LaunchOptions options, int chromiumRevision, ILoggerFactory loggerFactory = null) 
+        public static Task<Browser> LaunchAsync(LaunchOptions options, int chromiumRevision, ILoggerFactory loggerFactory = null)
             => new Launcher(loggerFactory).LaunchAsync(options, chromiumRevision);
 
         /// <summary>

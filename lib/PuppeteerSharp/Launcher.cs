@@ -18,27 +18,6 @@ namespace PuppeteerSharp
     public class Launcher
     {
         #region Constants
-        internal static readonly string[] DefaultArgs = {
-            "--disable-background-networking",
-            "--disable-background-timer-throttling",
-            "--disable-client-side-phishing-detection",
-            "--disable-default-apps",
-            "--disable-extensions",
-            "--disable-hang-monitor",
-            "--disable-popup-blocking",
-            "--disable-prompt-on-repost",
-            "--disable-sync",
-            "--disable-translate",
-            "--metrics-recording-only",
-            "--no-first-run",
-            "--remote-debugging-port=0",
-            "--safebrowsing-disable-auto-update"
-        };
-        internal static readonly string[] AutomationArgs = {
-            "--enable-automation",
-            "--password-store=basic",
-            "--use-mock-keychain"
-        };
         private const string UserDataDirArgument = "--user-data-dir";
         #endregion
 
@@ -54,6 +33,27 @@ namespace PuppeteerSharp
         private TaskCompletionSource<bool> _waitForChromeToClose;
         private bool _processLoaded;
         private bool _chromiumLaunched;
+        private static readonly string[] _defaultArgs = {
+            "--disable-background-networking",
+            "--disable-background-timer-throttling",
+            "--disable-client-side-phishing-detection",
+            "--disable-default-apps",
+            "--disable-extensions",
+            "--disable-hang-monitor",
+            "--disable-popup-blocking",
+            "--disable-prompt-on-repost",
+            "--disable-sync",
+            "--disable-translate",
+            "--metrics-recording-only",
+            "--no-first-run",
+            "--safebrowsing-disable-auto-update"
+        };
+        private static readonly string[] _automationArgs = {
+            "--enable-automation",
+            "--password-store=basic",
+            "--use-mock-keychain",
+            "--remote-debugging-port=0"
+        };
         #endregion
 
         #region Properties
@@ -94,6 +94,11 @@ namespace PuppeteerSharp
             {
                 throw new InvalidOperationException("Unable to create or connect to another chromium process");
             }
+            if (options.IgnoreDefaultArgs && options.AppMode)
+            {
+                throw new ArgumentException("'appMode' flag cannot be used together with 'ignoreDefaultArgs'");
+            }
+
             _chromiumLaunched = true;
             var chromeArguments = InitChromeArgument(options);
             var chromeExecutable = options.ExecutablePath;
@@ -116,8 +121,11 @@ namespace PuppeteerSharp
                 var connectionDelay = options.SlowMo;
                 var browserWSEndpoint = await WaitForEndpoint(_chromeProcess, options.Timeout, options.DumpIO);
                 var keepAliveInterval = options.KeepAliveInterval;
-
-                _connection = await Connection.Create(browserWSEndpoint, connectionDelay, keepAliveInterval, _loggerFactory);
+                _connection = await Connection.CreateForWebSocketAsync(
+                    browserWSEndpoint,
+                    connectionDelay,
+                    keepAliveInterval,
+                    _loggerFactory);
                 _processLoaded = true;
 
                 if (options.LogProcess)
@@ -152,7 +160,11 @@ namespace PuppeteerSharp
                 var connectionDelay = options.SlowMo;
                 var keepAliveInterval = options.KeepAliveInterval;
 
-                _connection = await Connection.Create(options.BrowserWSEndpoint, connectionDelay, keepAliveInterval, _loggerFactory);
+                _connection = await Connection.CreateForWebSocketAsync(
+                    options.BrowserWSEndpoint,
+                    connectionDelay,
+                    keepAliveInterval,
+                    _loggerFactory);
 
                 return await Browser.CreateAsync(_connection, options, null, () =>
                 {
@@ -233,6 +245,16 @@ namespace PuppeteerSharp
             return tempDirectory;
         }
 
+        /// <summary>
+        /// The default flags that Chromium will be launched with.
+        /// </summary>
+        /// <returns>Default flags.</returns>
+        public static List<string> DefaultArgs()
+        {
+            var result = new List<string>(_defaultArgs);
+            result.AddRange(_automationArgs);
+            return result;
+        }
         #endregion
 
         #region Private methods
@@ -261,17 +283,22 @@ namespace PuppeteerSharp
 
         private List<string> InitChromeArgument(LaunchOptions options)
         {
-            var chromeArguments = new List<string>(DefaultArgs);
+            var chromeArguments = new List<string>();
 
             _options = options;
 
+            if (!options.IgnoreDefaultArgs)
+            {
+                chromeArguments.AddRange(_defaultArgs);
+            }
             if (options.AppMode)
             {
                 options.Headless = false;
+                chromeArguments.Add("--remote-debugging-pipe");
             }
-            else
+            else if (!options.IgnoreDefaultArgs)
             {
-                chromeArguments.AddRange(AutomationArgs);
+                chromeArguments.AddRange(_automationArgs);
             }
 
             var userDataDirOption = options.Args.FirstOrDefault(i => i.StartsWith(UserDataDirArgument, StringComparison.Ordinal));

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Transport;
 
 namespace PuppeteerSharp
 {
@@ -19,23 +21,20 @@ namespace PuppeteerSharp
     {
         private readonly ILogger _logger;
 
-        internal Connection(string url, int delay, ClientWebSocket ws, ILoggerFactory loggerFactory = null)
+        internal Connection(string url, int delay, AbstractTransport transport, ILoggerFactory loggerFactory = null)
         {
             LoggerFactory = loggerFactory ?? new LoggerFactory();
             Url = url;
             Delay = delay;
-            WebSocket = ws;
+            Transport = transport;
 
             _logger = LoggerFactory.CreateLogger<Connection>();
             _socketQueue = new TaskQueue();
             _responses = new Dictionary<int, MessageTask>();
             _sessions = new Dictionary<string, CDPSession>();
-            _websocketReaderCancellationSource = new CancellationTokenSource();
-
-            Task task = Task.Factory.StartNew(async () =>
-            {
-                await GetResponseAsync();
-            });
+            Transport.OnMessage += Transport_OnMessage;
+            Transport.Closed += (sender, e) => OnClose();
+            Transport.StartListening();
         }
 
         #region Private Members
@@ -44,8 +43,6 @@ namespace PuppeteerSharp
         private Dictionary<string, CDPSession> _sessions;
         private TaskQueue _socketQueue;
         private const string CloseMessage = "Browser.close";
-        private bool _stopReading;
-        private CancellationTokenSource _websocketReaderCancellationSource;
         #endregion
 
         #region Properties
@@ -59,11 +56,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The delay.</value>
         public int Delay { get; private set; }
-        /// <summary>
-        /// Gets the WebSocket.
-        /// </summary>
-        /// <value>The web socket.</value>
-        public WebSocket WebSocket { get; private set; }
+        internal AbstractTransport Transport { get; }
         /// <summary>
         /// Occurs when the connection is closed.
         /// </summary>
@@ -87,7 +80,8 @@ namespace PuppeteerSharp
         internal async Task<dynamic> SendAsync(string method, dynamic args = null)
         {
             var id = ++_lastId;
-            var message = JsonConvert.SerializeObject(new Dictionary<string, object>(){
+            var message = JsonConvert.SerializeObject(new Dictionary<string, object>
+            {
                 {"id", id},
                 {"method", method},
                 {"params", args}
@@ -101,13 +95,11 @@ namespace PuppeteerSharp
                 Method = method
             };
 
-            var encoded = Encoding.UTF8.GetBytes(message);
-            var buffer = new ArraySegment<Byte>(encoded, 0, encoded.Length);
-            await _socketQueue.Enqueue(() => WebSocket.SendAsync(buffer, WebSocketMessageType.Text, true, default(CancellationToken)));
+            await _socketQueue.Enqueue(() => Transport.SendAsync(message));
 
             if (method == CloseMessage)
             {
-                StopReading();
+                Transport.StopListening();
             }
 
             return await _responses[id].TaskWrapper.Task;
@@ -126,7 +118,7 @@ namespace PuppeteerSharp
         {
             if (!IsClosed)
             {
-                _websocketReaderCancellationSource.Cancel();
+                Transport.Close();
                 Closed?.Invoke(this, new EventArgs());
             }
 
@@ -147,82 +139,14 @@ namespace PuppeteerSharp
             IsClosed = true;
         }
 
-        internal void StopReading() => _stopReading = true;
-
         #region Private Methods
 
-        /// <summary>
-        /// Starts listening the socket
-        /// </summary>
-        /// <returns>The start.</returns>
-        private async Task<object> GetResponseAsync()
+        void Transport_OnMessage(object sender, TransportMessageEventArgs e)
         {
-            var buffer = new byte[2048];
-
-            //If it's not in the list we wait for it
-            while (true)
-            {
-                if (IsClosed)
-                {
-                    OnClose();
-                    return null;
-                }
-
-                var endOfMessage = false;
-                string response = string.Empty;
-
-                while (!endOfMessage)
-                {
-                    WebSocketReceiveResult result = null;
-                    try
-                    {
-                        result = await WebSocket.ReceiveAsync(
-                            new ArraySegment<byte>(buffer),
-                            _websocketReaderCancellationSource.Token);
-                    }
-                    catch (Exception) when (_stopReading)
-                    {
-                        return null;
-                    }
-                    catch (OperationCanceledException)
-                    {
-                        return null;
-                    }
-                    catch (Exception)
-                    {
-                        if (!IsClosed)
-                        {
-                            OnClose();
-                            return null;
-                        }
-                    }
-
-                    endOfMessage = result.EndOfMessage;
-
-                    if (result.MessageType == WebSocketMessageType.Text)
-                    {
-                        response += Encoding.UTF8.GetString(buffer, 0, result.Count);
-                    }
-                    else if (result.MessageType == WebSocketMessageType.Close)
-                    {
-                        OnClose();
-                        return null;
-                    }
-                }
-
-                if (!string.IsNullOrEmpty(response))
-                {
-                    ProcessResponse(response);
-                }
-            }
-        }
-
-        private void ProcessResponse(string response)
-        {
-            dynamic obj = JsonConvert.DeserializeObject(response);
+            dynamic obj = JsonConvert.DeserializeObject(e.Response);
             var objAsJObject = obj as JObject;
 
-            _logger.LogTrace("◀ Receive {Message}", response);
+            _logger.LogTrace("◀ Receive {Message}", e.Response);
 
             if (objAsJObject["id"] != null)
             {
@@ -269,13 +193,23 @@ namespace PuppeteerSharp
         #endregion
         #region Static Methods
 
-        internal static async Task<Connection> Create(string url, int delay = 0, int keepAliveInterval = 60, ILoggerFactory loggerFactory = null)
+        internal static async Task<Connection> CreateForWebSocketAsync(
+            string url,
+            int delay = 0,
+            int keepAliveInterval = 60,
+            ILoggerFactory loggerFactory = null)
         {
-            var ws = new ClientWebSocket();
-            ws.Options.KeepAliveInterval = new TimeSpan(0, 0, keepAliveInterval);
-            await ws.ConnectAsync(new Uri(url), default(CancellationToken)).ConfigureAwait(false);
-            return new Connection(url, delay, ws, loggerFactory);
+            var transport = new WebSocketTransport(url, keepAliveInterval);
+            await transport.ConnectAsync();
+            return new Connection(url, delay, transport, loggerFactory);
         }
+
+        internal static Connection CreateForPipe(
+            StreamReader streamReader,
+            StreamWriter streamWriter,
+            int delay = 0,
+            ILoggerFactory loggerFactory = null)
+            => new Connection(string.Empty, delay, new PipeTransport(streamReader, streamWriter), loggerFactory);
 
         /// <summary>
         /// Releases all resource used by the <see cref="Connection"/> object.
@@ -289,7 +223,7 @@ namespace PuppeteerSharp
         public void Dispose()
         {
             OnClose();
-            WebSocket.Dispose();
+            Transport.Dispose();
         }
 
         #endregion
