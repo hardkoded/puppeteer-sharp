@@ -87,7 +87,8 @@ namespace PuppeteerSharp
         internal async Task<dynamic> SendAsync(string method, dynamic args = null)
         {
             var id = ++_lastId;
-            var message = JsonConvert.SerializeObject(new Dictionary<string, object>(){
+            var message = JsonConvert.SerializeObject(new Dictionary<string, object>
+            {
                 {"id", id},
                 {"method", method},
                 {"params", args}
@@ -102,7 +103,7 @@ namespace PuppeteerSharp
             };
 
             var encoded = Encoding.UTF8.GetBytes(message);
-            var buffer = new ArraySegment<Byte>(encoded, 0, encoded.Length);
+            var buffer = new ArraySegment<byte>(encoded, 0, encoded.Length);
             await _socketQueue.Enqueue(() => WebSocket.SendAsync(buffer, WebSocketMessageType.Text, true, default(CancellationToken)));
 
             if (method == CloseMessage)
@@ -169,7 +170,7 @@ namespace PuppeteerSharp
                 }
 
                 var endOfMessage = false;
-                string response = string.Empty;
+                var response = string.Empty;
 
                 while (!endOfMessage)
                 {
@@ -212,6 +213,11 @@ namespace PuppeteerSharp
 
                 if (!string.IsNullOrEmpty(response))
                 {
+                    if (Delay > 0)
+                    {
+                        await Task.Delay(Delay);
+                    }
+
                     ProcessResponse(response);
                 }
             }
@@ -226,7 +232,7 @@ namespace PuppeteerSharp
 
             if (objAsJObject["id"] != null)
             {
-                int id = (int)objAsJObject["id"];
+                var id = (int)objAsJObject["id"];
 
                 //If we get the object we are waiting for we return if
                 //if not we add this to the list, sooner or later some one will come for it 
