@@ -19,7 +19,7 @@ E.g.
 ```csharp
 // Arrange
 var options = new LaunchOptions { /*  */ };
-var chromiumRevision = Downloader.DefaultRevision;
+var chromiumRevision = BrowserFetcher.DefaultRevision;
 var browser = await Puppeteer.LaunchAsync(options, chromiumRevision);
 var page = browser.NewPageAsync();
 

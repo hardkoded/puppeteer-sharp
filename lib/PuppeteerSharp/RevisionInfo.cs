@@ -6,7 +6,7 @@ namespace PuppeteerSharp
     /// <summary>
     /// Revision info.
     /// </summary>
-    public struct RevisionInfo
+    public class RevisionInfo
     {
         /// <summary>
         /// Gets or sets the revision.
@@ -28,5 +28,17 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value><c>true</c> if <see cref="RevisionInfo.FolderPath"/> exists; otherwise, <c>false</c>.</value>
         public bool Downloaded => Directory.Exists(FolderPath);
+        /// <summary>
+        /// URL this revision can be downloaded from.
+        /// </summary>
+        public string Url { get; set; }
+        /// <summary>
+        /// Whether the revision is locally available on disk.
+        /// </summary>
+        public bool Local { get; set; }
+        /// <summary>
+        /// Revision platform.
+        /// </summary>
+        public Platform Platform { get; set; }
     }
 }

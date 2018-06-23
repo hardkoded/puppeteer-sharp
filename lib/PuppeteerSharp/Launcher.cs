@@ -81,14 +81,13 @@ namespace PuppeteerSharp
         /// The method launches a browser instance with given arguments. The browser will be closed when the Browser is disposed.
         /// </summary>
         /// <param name="options">Options for launching Chrome</param>
-        /// <param name="chromiumRevision">The revision of Chrome to launch.</param>
         /// <returns>A connected browser.</returns>
         /// <remarks>
         /// See <a href="https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/">this article</a>
         /// for a description of the differences between Chromium and Chrome.
         /// <a href="https://chromium.googlesource.com/chromium/src/+/lkcr/docs/chromium_browser_vs_google_chrome.md">This article</a> describes some differences for Linux users.
         /// </remarks>
-        public async Task<Browser> LaunchAsync(LaunchOptions options, int chromiumRevision)
+        public async Task<Browser> LaunchAsync(LaunchOptions options)
         {
             if (_chromiumLaunched)
             {
@@ -100,9 +99,8 @@ namespace PuppeteerSharp
 
             if (string.IsNullOrEmpty(chromeExecutable))
             {
-                var downloader = Downloader.CreateDefault();
-                var revisionInfo = downloader.RevisionInfo(Downloader.CurrentPlatform, chromiumRevision);
-                chromeExecutable = revisionInfo.ExecutablePath;
+                var browserFetcher = new BrowserFetcher();
+                chromeExecutable = browserFetcher.RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath;
             }
             if (!File.Exists(chromeExecutable))
             {
@@ -189,8 +187,8 @@ namespace PuppeteerSharp
                 delay = new TimeSpan(0, 0, 0, 0, 100);
             }
 
-            string folder = string.IsNullOrEmpty(_temporaryUserDataDir) ? _options.UserDataDir : _temporaryUserDataDir;
-            int attempts = 0;
+            var folder = string.IsNullOrEmpty(_temporaryUserDataDir) ? _options.UserDataDir : _temporaryUserDataDir;
+            var attempts = 0;
             while (true)
             {
                 try
@@ -216,11 +214,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>The executable path.</returns>
         public static string GetExecutablePath()
-        {
-            var downloader = Downloader.CreateDefault();
-            var revisionInfo = downloader.RevisionInfo(Downloader.CurrentPlatform, Downloader.DefaultRevision);
-            return revisionInfo.ExecutablePath;
-        }
+            => new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath;
 
         /// <summary>
         /// Gets a temporary directory using <see cref="Path.GetTempPath"/> and <see cref="Path.GetRandomFileName"/>.

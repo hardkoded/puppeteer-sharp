@@ -9,13 +9,13 @@ namespace PuppeteerSharp
     /// <example>
     /// The following is a typical example of using a Puppeteer to drive automation:
     /// <code>
-    /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions(), Downloader.DefaultRevision);
+    /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions(), BrowserFetcher.DefaultRevision);
     /// var page = await browser.NewPageAsync();
     /// await page.GoToAsync("https://www.google.com");
     /// await Browser.CloseAsync();
     /// </code>
     /// </example>
-    public class Puppeteer
+    public static class Puppeteer
     {
         /// <summary>
         /// The default flags that Chromium will be launched with.
@@ -32,7 +32,6 @@ namespace PuppeteerSharp
         /// The method launches a browser instance with given arguments. The browser will be closed when the Browser is disposed.
         /// </summary>
         /// <param name="options">Options for launching Chrome</param>
-        /// <param name="chromiumRevision">The revision of Chrome to launch.</param>
         /// <param name="loggerFactory">The logger factory</param>
         /// <returns>A connected browser.</returns>
         /// <remarks>
@@ -40,8 +39,8 @@ namespace PuppeteerSharp
         /// for a description of the differences between Chromium and Chrome.
         /// <a href="https://chromium.googlesource.com/chromium/src/+/lkcr/docs/chromium_browser_vs_google_chrome.md">This article</a> describes some differences for Linux users.
         /// </remarks>
-        public static Task<Browser> LaunchAsync(LaunchOptions options, int chromiumRevision, ILoggerFactory loggerFactory = null) 
-            => new Launcher(loggerFactory).LaunchAsync(options, chromiumRevision);
+        public static Task<Browser> LaunchAsync(LaunchOptions options, ILoggerFactory loggerFactory = null)
+            => new Launcher(loggerFactory).LaunchAsync(options);
 
         /// <summary>
         /// Attaches Puppeteer to an existing Chromium instance. The browser will be closed when the Browser is disposed.
@@ -51,5 +50,13 @@ namespace PuppeteerSharp
         /// <returns>A connected browser.</returns>
         public static Task<Browser> ConnectAsync(ConnectOptions options, ILoggerFactory loggerFactory = null)
             => new Launcher(loggerFactory).ConnectAsync(options);
+
+        /// <summary>
+        /// Creates the browser fetcher.
+        /// </summary>
+        /// <returns>The browser fetcher.</returns>
+        /// <param name="options">Options.</param>
+        public static BrowserFetcher CreateBrowserFetcher(BrowserFetcherOptions options)
+            => new BrowserFetcher(options);
     }
 }
