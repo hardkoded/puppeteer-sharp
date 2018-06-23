@@ -16,6 +16,10 @@ namespace PuppeteerSharp
         /// <summary>
         /// If set to true, sets Headless = false, otherwise, enables automation.
         /// </summary>
+        /// <remarks>
+        /// AppMode won't neither add the argument '--remote-debugging-pipe' nor implement Pipes
+        /// due to limitations in .NET see <see href="https://github.com/dotnet/corefx/issues/30575"/> 
+        /// </remarks>
         public bool AppMode { get; set; }
 
         /// <summary>
