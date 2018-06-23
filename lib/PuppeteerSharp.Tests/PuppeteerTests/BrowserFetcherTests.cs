@@ -38,24 +38,5 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
 
             new DirectoryInfo(downloadsFolder).Delete(true);
         }
-
-        [Fact(Skip = "Long run")]
-        public async Task ShouldDownloadChromium()
-        {
-            var downloadsFolder = Path.Combine(Directory.GetCurrentDirectory(), ".test-chromium");
-            var dirInfo = new DirectoryInfo(downloadsFolder);
-            var downloader = new BrowserFetcher(new BrowserFetcherOptions
-            {
-                Path = downloadsFolder
-            });
-
-            if (dirInfo.Exists)
-            {
-                dirInfo.Delete(true);
-            }
-
-            await downloader.DownloadAsync(BrowserFetcher.DefaultRevision);
-            Assert.True(new FileInfo(downloader.GetExecutablePath(BrowserFetcher.DefaultRevision)).Exists);
-        }
     }
 }
