@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PuppeteerSharp.Tests", "Pup
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PuppeteerSharp.TestServer", "PuppeteerSharp.TestServer\PuppeteerSharp.TestServer.csproj", "{0CC393AB-10C2-4CDB-8353-78924D3DD5D3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PuppeteerSharp.Tests.DumpIO", "PuppeteerSharp.Tests.DumpIO\PuppeteerSharp.Tests.DumpIO.csproj", "{B1892212-CEE3-4DC3-ADB8-04A2D9A081A0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +27,16 @@ Global
 		{0CC393AB-10C2-4CDB-8353-78924D3DD5D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0CC393AB-10C2-4CDB-8353-78924D3DD5D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0CC393AB-10C2-4CDB-8353-78924D3DD5D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1892212-CEE3-4DC3-ADB8-04A2D9A081A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1892212-CEE3-4DC3-ADB8-04A2D9A081A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1892212-CEE3-4DC3-ADB8-04A2D9A081A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1892212-CEE3-4DC3-ADB8-04A2D9A081A0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F9F7978B-89C0-4A54-8D80-A1E93E401D4C}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0
