@@ -1,12 +1,23 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace PuppeteerSharp.Tests.DumpIO
 {
     class Program
     {
-        static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            var options = new LaunchOptions
+            {
+                Headless = true,
+                DumpIO = true
+            };
+            await Downloader.CreateDefault().DownloadRevisionAsync(Downloader.DefaultRevision);
+            using (var browser = await Puppeteer.LaunchAsync(options, Downloader.DefaultRevision))
+            using (var page = await browser.NewPageAsync())
+            {
+                await page.EvaluateFunctionAsync("_dumpioTextToLog => console.log(_dumpioTextToLog)", args[0]);
+            }
         }
     }
 }

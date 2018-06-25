@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -284,6 +285,29 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 });
                 Assert.Equal("Unable to create or connect to another chromium process", exception.Message);
             }
+        }
+
+        [Fact]
+        public void ShouldDumpBrowserProcessStderr()
+        {
+            var dumpioTextToLog = "MAGIC_DUMPIO_TEST";
+            var success = false;
+            var process = new Process();
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.WorkingDirectory = Directory.GetCurrentDirectory();
+            process.StartInfo.FileName = "dotnet";
+            process.StartInfo.Arguments = " PuppeteerSharp.Tests.DumpIO.dll " + dumpioTextToLog;
+            process.StartInfo.RedirectStandardError = true;
+
+            process.ErrorDataReceived += (sender, e) =>
+            {
+                success |= e.Data != null && e.Data.Contains(dumpioTextToLog);
+            };
+
+            process.Start();
+            process.BeginErrorReadLine();
+            process.WaitForExit();
+            Assert.True(success);
         }
     }
 }

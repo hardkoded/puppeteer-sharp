@@ -245,18 +245,21 @@ namespace PuppeteerSharp
             _chromeProcess.StartInfo.UseShellExecute = false;
             _chromeProcess.StartInfo.FileName = chromeExecutable;
             _chromeProcess.StartInfo.Arguments = string.Join(" ", chromeArguments);
+            _chromeProcess.StartInfo.RedirectStandardError = true;
 
             SetEnvVariables(_chromeProcess.StartInfo.Environment, options.Env, Environment.GetEnvironmentVariables());
-
-            if (!options.DumpIO)
-            {
-                _chromeProcess.StartInfo.RedirectStandardOutput = false;
-                _chromeProcess.StartInfo.RedirectStandardError = false;
-            }
 
             _chromeProcess.Exited += async (sender, e) =>
             {
                 await AfterProcessExit();
+            };
+
+            _chromeProcess.ErrorDataReceived += (sender, e) =>
+            {
+                if (options.DumpIO)
+                {
+                    Console.Error.WriteLine(e.Data);
+                }
             };
         }
 
@@ -322,9 +325,6 @@ namespace PuppeteerSharp
             var taskWrapper = new TaskCompletionSource<string>();
             var output = string.Empty;
 
-            chromeProcess.StartInfo.RedirectStandardOutput = true;
-            chromeProcess.StartInfo.RedirectStandardError = true;
-
             void exitedEvent(object sender, EventArgs e)
             {
                 if (_options.LogProcess && !_processLoaded)
@@ -337,7 +337,8 @@ namespace PuppeteerSharp
                 taskWrapper.SetException(new ChromeProcessException($"Failed to launch chrome! {output}"));
             }
 
-            chromeProcess.ErrorDataReceived += (sender, e) =>
+
+            void errorDataReceivedEvent(object sender, DataReceivedEventArgs e)
             {
                 if (e.Data != null)
                 {
@@ -351,17 +352,12 @@ namespace PuppeteerSharp
 
                     CleanUp();
                     chromeProcess.Exited -= exitedEvent;
+                    chromeProcess.ErrorDataReceived -= errorDataReceivedEvent;
                     taskWrapper.SetResult(match.Groups[1].Value);
-
-                    //Restore defaults for Redirects
-                    if (!dumpio)
-                    {
-                        chromeProcess.StartInfo.RedirectStandardOutput = false;
-                        chromeProcess.StartInfo.RedirectStandardError = false;
-                    }
                 }
             };
 
+            chromeProcess.ErrorDataReceived += errorDataReceivedEvent;
             chromeProcess.Exited += exitedEvent;
 
             if (timeout > 0)
