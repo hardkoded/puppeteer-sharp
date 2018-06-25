@@ -54,6 +54,7 @@ namespace PuppeteerSharp
         private TaskCompletionSource<bool> _waitForChromeToClose;
         private bool _processLoaded;
         private bool _chromiumLaunched;
+        private object _isChromeCloseLock = new object();
         #endregion
 
         #region Properties
@@ -383,17 +384,18 @@ namespace PuppeteerSharp
 
         private async Task AfterProcessExit()
         {
-            if (IsChromeClosed)
+            lock (_isChromeCloseLock)
             {
-                return;
+                if (IsChromeClosed)
+                {
+                    return;
+                }
+                IsChromeClosed = true;
             }
-
             if (_options.LogProcess)
             {
                 _logger.LogInformation("Process Count: {ProcessCount}", Interlocked.Decrement(ref _processCount));
             }
-
-            IsChromeClosed = true;
 
             if (_temporaryUserDataDir != null)
             {
@@ -411,6 +413,7 @@ namespace PuppeteerSharp
             if (!string.IsNullOrEmpty(_temporaryUserDataDir))
             {
                 ForceKillChrome();
+                await AfterProcessExit();
             }
             else if (_connection != null)
             {
