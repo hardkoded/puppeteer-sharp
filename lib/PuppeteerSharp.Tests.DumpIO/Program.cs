@@ -10,9 +10,10 @@ namespace PuppeteerSharp.Tests.DumpIO
             var options = new LaunchOptions
             {
                 Headless = true,
-                DumpIO = true
+                DumpIO = true,
+                ExecutablePath = args[1]
             };
-            await Downloader.CreateDefault().DownloadRevisionAsync(Downloader.DefaultRevision);
+
             using (var browser = await Puppeteer.LaunchAsync(options, Downloader.DefaultRevision))
             using (var page = await browser.NewPageAsync())
             {
