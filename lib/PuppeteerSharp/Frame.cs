@@ -19,7 +19,7 @@ namespace PuppeteerSharp
     /// An example of dumping frame tree
     /// <code>
     /// <![CDATA[
-    /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions(), BrowserFetcher.DefaultRevision);
+    /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions());
     /// var page = await browser.NewPageAsync();
     /// await page.GoToAsync("https://www.google.com/chrome/browser/canary.html");
     /// dumpFrameTree(page.MainFrame, string.Empty);
@@ -233,7 +233,7 @@ namespace PuppeteerSharp
         /// <example>
         /// <code>
         /// <![CDATA[
-        /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions(), BrowserFetcher.DefaultRevision);
+        /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions());
         /// var page = await browser.NewPageAsync();
         /// string currentURL = null;
         /// page.MainFrame

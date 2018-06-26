@@ -9,7 +9,7 @@ namespace PuppeteerSharp
     /// <example>
     /// The following is a typical example of using a Puppeteer to drive automation:
     /// <code>
-    /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions(), BrowserFetcher.DefaultRevision);
+    /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions());
     /// var page = await browser.NewPageAsync();
     /// await page.GoToAsync("https://www.google.com");
     /// await Browser.CloseAsync();

@@ -16,7 +16,7 @@ namespace PuppeteerSharp
     /// An example of using a <see cref="Browser"/> to create a <see cref="Page"/>:
     /// <code>
     /// <![CDATA[
-    /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions(), BrowserFetcher.DefaultRevision);
+    /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions());
     /// var page = await browser.NewPageAsync();
     /// await page.GoToAsync("https://example.com");
     /// await browser.CloseAsync();
@@ -25,7 +25,7 @@ namespace PuppeteerSharp
     /// An example of disconnecting from and reconnecting to a <see cref="Browser"/>:
     /// <code>
     /// <![CDATA[
-    /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions(), BrowserFetcher.DefaultRevision);
+    /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions());
     /// var browserWSEndpoint = browser.WebSocketEndpoint;
     /// browser.Disconnect();
     /// var browser2 = await Puppeteer.ConnectAsync(new ConnectOptions { BrowserWSEndpoint = browserWSEndpoint });
