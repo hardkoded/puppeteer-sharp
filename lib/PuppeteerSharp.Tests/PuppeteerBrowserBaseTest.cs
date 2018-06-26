@@ -24,7 +24,7 @@ namespace PuppeteerSharp.Tests
 
         protected virtual async Task InitializeAsync()
         {
-            Browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.ChromiumRevision, TestConstants.LoggerFactory);
+            Browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.LoggerFactory);
         }
 
         protected virtual async Task DisposeAsync() => await Browser.CloseAsync();

@@ -24,7 +24,7 @@ namespace PuppeteerSharp
     /// <example>
     /// This example creates a page, navigates it to a URL, and then saves a screenshot:
     /// <code>
-    /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions(), Downloader.DefaultRevision);
+    /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions());
     /// var page = await browser.NewPageAsync();
     /// await page.GoToAsync("https://example.com");
     /// await page.ScreenshotAsync("screenshot.png");
@@ -1251,7 +1251,7 @@ namespace PuppeteerSharp
         /// <example>
         /// <code>
         /// <![CDATA[
-        /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions(), Downloader.DefaultRevision);
+        /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions());
         /// var page = await browser.NewPageAsync();
         /// string currentURL = null;
         /// page
