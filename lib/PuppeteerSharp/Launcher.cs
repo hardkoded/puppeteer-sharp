@@ -337,7 +337,6 @@ namespace PuppeteerSharp
                 taskWrapper.SetException(new ChromeProcessException($"Failed to launch chrome! {output}"));
             }
 
-
             void errorDataReceivedEvent(object sender, DataReceivedEventArgs e)
             {
                 if (e.Data != null)
@@ -355,7 +354,7 @@ namespace PuppeteerSharp
                     chromeProcess.ErrorDataReceived -= errorDataReceivedEvent;
                     taskWrapper.SetResult(match.Groups[1].Value);
                 }
-            };
+            }
 
             chromeProcess.ErrorDataReceived += errorDataReceivedEvent;
             chromeProcess.Exited += exitedEvent;
