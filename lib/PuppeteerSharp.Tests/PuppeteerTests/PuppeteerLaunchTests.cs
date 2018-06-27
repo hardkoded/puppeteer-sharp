@@ -288,12 +288,11 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         {
             var dumpioTextToLog = "MAGIC_DUMPIO_TEST";
             var success = false;
-            var process = new Process();
+            var process = new DirectoryInfo(Directory.GetCurrentDirectory()).Name.Contains("netcore") ?
+                GetDumpIOCoreProcess(dumpioTextToLog) :
+                GetDumpIOFrameworkProcess(dumpioTextToLog);
+
             process.StartInfo.UseShellExecute = false;
-            process.StartInfo.WorkingDirectory = GetDumpIOAppDirectory();
-            process.StartInfo.FileName = "dotnet";
-            process.StartInfo.Arguments = $"PuppeteerSharp.Tests.DumpIO.dll {dumpioTextToLog} " +
-                $"\"{new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath}\"";
             process.StartInfo.RedirectStandardError = true;
 
             process.ErrorDataReceived += (sender, e) =>
@@ -307,15 +306,37 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             Assert.True(success);
         }
 
+        private Process GetDumpIOFrameworkProcess(string dumpioTextToLog)
+        {
+            var process = new Process();
+            process.StartInfo.WorkingDirectory = GetDumpIOAppDirectory();
+            process.StartInfo.FileName = "PuppeteerSharp.Tests.DumpIO.exe";
+            process.StartInfo.Arguments = $"{dumpioTextToLog} \"{new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath}\"";
+
+            return process;
+        }
+
+        private Process GetDumpIOCoreProcess(string dumpioTextToLog)
+        {
+            var process = new Process();
+            process.StartInfo.WorkingDirectory = GetDumpIOAppDirectory();
+            process.StartInfo.FileName = "dotnet";
+            process.StartInfo.Arguments = $"PuppeteerSharp.Tests.DumpIO.dll {dumpioTextToLog} " +
+                $"\"{new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath}\"";
+
+            return process;
+        }
+
         private string GetDumpIOAppDirectory()
         {
-            var build = Directory.GetCurrentDirectory().Contains("Debug") ? "Debug" : "Release";
+            var directoryInfo = new DirectoryInfo(Directory.GetCurrentDirectory());
+            var build = directoryInfo.FullName.Contains("Debug") ? "Debug" : "Release";
             return Path.Combine(
                 TestUtils.FindParentDirectory("lib"),
                 "PuppeteerSharp.Tests.DumpIO",
                 "bin",
                 build,
-                "netcoreapp2.0");
+                directoryInfo.Name);
         }
     }
 }
