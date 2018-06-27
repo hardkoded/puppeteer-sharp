@@ -310,6 +310,5 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             process.WaitForExit();
             Assert.True(success);
         }
-
     }
 }
