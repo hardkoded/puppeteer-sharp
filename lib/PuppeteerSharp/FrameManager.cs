@@ -38,7 +38,7 @@ namespace PuppeteerSharp
 
         #region Public Methods
 
-        public JSHandle CreateJsHandle(int contextId, dynamic remoteObject)
+        internal JSHandle CreateJSHandle(int contextId, dynamic remoteObject)
         {
             _contextIdToContext.TryGetValue(contextId, out var storedContext);
 
@@ -132,7 +132,7 @@ namespace PuppeteerSharp
             var context = new ExecutionContext(
                 _client,
                 contextPayload,
-                remoteObject => CreateJsHandle(contextPayload.Id, remoteObject),
+                remoteObject => CreateJSHandle(contextPayload.Id, remoteObject),
                 frame);
 
             _contextIdToContext[contextPayload.Id] = context;
