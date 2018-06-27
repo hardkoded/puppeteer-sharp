@@ -20,7 +20,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             var options = TestConstants.DefaultBrowserOptions();
             options.AppMode = true;
 
-            using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.ChromiumRevision, TestConstants.LoggerFactory))
+            using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
             using (var page = await browser.NewPageAsync())
             {
                 Assert.Equal(121, await page.EvaluateExpressionAsync<int>("11 * 11"));

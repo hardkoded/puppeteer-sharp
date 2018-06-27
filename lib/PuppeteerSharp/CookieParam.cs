@@ -45,7 +45,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>Expiration.</value>
         [JsonProperty("expires", NullValueHandling = NullValueHandling.Ignore)]
-        public int? Expires { get; set; }
+        public double? Expires { get; set; }
         /// <summary>
         /// Gets or sets the size.
         /// </summary>
