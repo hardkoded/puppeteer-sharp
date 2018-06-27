@@ -294,7 +294,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             var success = false;
             var process = new Process();
             process.StartInfo.UseShellExecute = false;
-            process.StartInfo.WorkingDirectory = GetDumpIOAppDirectory();
+            process.StartInfo.WorkingDirectory = Directory.GetCurrentDirectory();
             process.StartInfo.FileName = "dotnet";
             process.StartInfo.Arguments = $" PuppeteerSharp.Tests.DumpIO.dll {dumpioTextToLog} " +
                 $"\"{Downloader.CreateDefault().GetExecutablePath(Downloader.DefaultRevision)}\"";
@@ -311,11 +311,5 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             Assert.True(success);
         }
 
-        private string GetDumpIOAppDirectory()
-        {
-            var build = Directory.GetCurrentDirectory().Contains("Debug") ? "Debug" : "Release";
-            return Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "..",
-                "PuppeteerSharp.Tests.DumpIO", "bin", build, "netcoreapp2.0");
-        }
     }
 }
