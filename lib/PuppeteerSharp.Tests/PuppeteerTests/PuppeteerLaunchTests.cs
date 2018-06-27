@@ -300,6 +300,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 success |= e.Data != null && e.Data.Contains(dumpioTextToLog);
             };
 
+            Assert.Equal("s", process.StartInfo.WorkingDirectory);
             process.Start();
             process.BeginErrorReadLine();
             process.WaitForExit();
