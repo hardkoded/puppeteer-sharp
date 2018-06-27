@@ -309,9 +309,11 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         private Process GetDumpIOFrameworkProcess(string dumpioTextToLog)
         {
             var process = new Process();
-            process.StartInfo.WorkingDirectory = GetDumpIOAppDirectory();
+            process.StartInfo.WorkingDirectory = GetDumpIOAppDirectory(
+                new DirectoryInfo(Directory.GetCurrentDirectory()).Parent);
             process.StartInfo.FileName = "PuppeteerSharp.Tests.DumpIO.exe";
-            process.StartInfo.Arguments = $"{dumpioTextToLog} \"{new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath}\"";
+            process.StartInfo.Arguments = $"{dumpioTextToLog} " +
+                $"\"{new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath}\"";
 
             return process;
         }
@@ -319,7 +321,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         private Process GetDumpIOCoreProcess(string dumpioTextToLog)
         {
             var process = new Process();
-            process.StartInfo.WorkingDirectory = GetDumpIOAppDirectory();
+            process.StartInfo.WorkingDirectory = GetDumpIOAppDirectory(new DirectoryInfo(Directory.GetCurrentDirectory()));
             process.StartInfo.FileName = "dotnet";
             process.StartInfo.Arguments = $"PuppeteerSharp.Tests.DumpIO.dll {dumpioTextToLog} " +
                 $"\"{new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath}\"";
@@ -327,9 +329,9 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             return process;
         }
 
-        private string GetDumpIOAppDirectory()
+        private string GetDumpIOAppDirectory(DirectoryInfo baseDir)
         {
-            var directoryInfo = new DirectoryInfo(Directory.GetCurrentDirectory());
+            var directoryInfo = baseDir;
             var build = directoryInfo.FullName.Contains("Debug") ? "Debug" : "Release";
             return Path.Combine(
                 TestUtils.FindParentDirectory("lib"),
