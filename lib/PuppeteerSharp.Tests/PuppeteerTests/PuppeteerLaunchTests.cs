@@ -13,7 +13,12 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
     [Collection("PuppeteerLoaderFixture collection")]
     public class PuppeteerLaunchTests : PuppeteerBaseTest
     {
-        public PuppeteerLaunchTests(ITestOutputHelper output) : base(output) { }
+        private ITestOutputHelper _output;
+
+        public PuppeteerLaunchTests(ITestOutputHelper output) : base(output)
+        {
+            _output = output;
+        }
 
         [Fact]
         public async Task ShouldSupportIgnoreHTTPSErrorsOption()
@@ -300,7 +305,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 success |= e.Data != null && e.Data.Contains(dumpioTextToLog);
             };
 
-            Assert.Equal("s", process.StartInfo.WorkingDirectory);
+            _output.WriteLine(process.StartInfo.WorkingDirectory);
             process.Start();
             process.BeginErrorReadLine();
             process.WaitForExit();
