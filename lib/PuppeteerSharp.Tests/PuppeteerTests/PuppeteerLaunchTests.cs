@@ -293,7 +293,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             process.StartInfo.WorkingDirectory = Directory.GetCurrentDirectory();
             process.StartInfo.FileName = "dotnet";
             process.StartInfo.Arguments = $" PuppeteerSharp.Tests.DumpIO.dll {dumpioTextToLog} " +
-                $"\"{Downloader.CreateDefault().GetExecutablePath(Downloader.DefaultRevision)}\"";
+                $"\"{new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath}\"";
             process.StartInfo.RedirectStandardError = true;
 
             process.ErrorDataReceived += (sender, e) =>

@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests.DumpIO
                 ExecutablePath = args[1]
             };
 
-            using (var browser = await Puppeteer.LaunchAsync(options, Downloader.DefaultRevision))
+            using (var browser = await Puppeteer.LaunchAsync(options))
             using (var page = await browser.NewPageAsync())
             {
                 await page.EvaluateFunctionAsync("_dumpioTextToLog => console.log(_dumpioTextToLog)", args[0]);
