@@ -13,12 +13,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
     [Collection("PuppeteerLoaderFixture collection")]
     public class PuppeteerLaunchTests : PuppeteerBaseTest
     {
-        private ITestOutputHelper _output;
-
-        public PuppeteerLaunchTests(ITestOutputHelper output) : base(output)
-        {
-            _output = output;
-        }
+        public PuppeteerLaunchTests(ITestOutputHelper output) : base(output) { }
 
         [Fact]
         public async Task ShouldSupportIgnoreHTTPSErrorsOption()
@@ -305,7 +300,6 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 success |= e.Data != null && e.Data.Contains(dumpioTextToLog);
             };
 
-            _output.WriteLine(process.StartInfo.WorkingDirectory);
             process.Start();
             process.BeginErrorReadLine();
             process.WaitForExit();
@@ -315,9 +309,9 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         private Process GetDumpIOFrameworkProcess(string dumpioTextToLog)
         {
             var process = new Process();
-            process.StartInfo.WorkingDirectory = GetDumpIOAppDirectory(
-                new DirectoryInfo(Directory.GetCurrentDirectory()).Parent);
-            process.StartInfo.FileName = "PuppeteerSharp.Tests.DumpIO.exe";
+            process.StartInfo.FileName = Path.Combine(
+                GetDumpIOAppDirectory(new DirectoryInfo(Directory.GetCurrentDirectory()).Parent),
+                "PuppeteerSharp.Tests.DumpIO.exe");
             process.StartInfo.Arguments = $"{dumpioTextToLog} " +
                 $"\"{new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath}\"";
 
