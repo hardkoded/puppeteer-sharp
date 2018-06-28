@@ -1683,7 +1683,7 @@ namespace PuppeteerSharp
             }
 
             var values = message.Args
-                .Select(_ => (JSHandle)_frameManager.CreateJsHandle(message.ExecutionContextId, _))
+                .Select(_ => (JSHandle)_frameManager.CreateJSHandle(message.ExecutionContextId, _))
                 .ToList();
             var handles = values
                 .ConvertAll(handle => handle.RemoteObject["objectId"] != null
