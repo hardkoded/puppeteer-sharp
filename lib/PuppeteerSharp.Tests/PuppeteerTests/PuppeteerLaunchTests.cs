@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -280,6 +281,61 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 });
                 Assert.Equal("Unable to create or connect to another chromium process", exception.Message);
             }
+        }
+
+        [Fact]
+        public void ShouldDumpBrowserProcessStderr()
+        {
+            var dumpioTextToLog = "MAGIC_DUMPIO_TEST";
+            var success = false;
+            var process = new Process();
+
+#if NETCOREAPP
+            process.StartInfo.WorkingDirectory = GetDumpIOAppDirectory();
+            process.StartInfo.FileName = "dotnet";
+            process.StartInfo.Arguments = $"PuppeteerSharp.Tests.DumpIO.dll {dumpioTextToLog} " +
+                $"\"{new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath}\"";
+#else
+            process.StartInfo.FileName = Path.Combine(GetDumpIOAppDirectory(), "PuppeteerSharp.Tests.DumpIO.exe");
+            process.StartInfo.Arguments = $"{dumpioTextToLog} " +
+                $"\"{new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath}\"";
+#endif
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.RedirectStandardError = true;
+
+            process.ErrorDataReceived += (sender, e) =>
+            {
+                success |= e.Data != null && e.Data.Contains(dumpioTextToLog);
+            };
+
+            process.Start();
+            process.BeginErrorReadLine();
+            process.WaitForExit();
+            Assert.True(success);
+        }
+
+        private string GetDumpIOAppDirectory()
+        {
+#if DEBUG
+            var build = "Debug";
+#else
+            var build = "Release";
+#endif
+#if NETCOREAPP
+            return Path.Combine(
+                TestUtils.FindParentDirectory("lib"),
+                "PuppeteerSharp.Tests.DumpIO",
+                "bin",
+                build,
+                "netcoreapp2.0");
+#else
+                return Path.Combine(
+                TestUtils.FindParentDirectory("lib"),
+                "PuppeteerSharp.Tests.DumpIO",
+                "bin",
+                build,
+                "net471");
+#endif
         }
     }
 }
