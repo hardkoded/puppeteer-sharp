@@ -134,6 +134,6 @@ using (var browser = await PuppeteerSharp.Puppeteer.ConnectAsync(options))
 
 # Progress
 
-* Tests on Google's Puppeteer: 405.
-* Tests on Puppeteer Sharp: 322.
-* Passing tests: 319.
+* Tests on Google's Puppeteer: 445.
+* Tests on Puppeteer Sharp: 363.
+* Passing tests: 362.
