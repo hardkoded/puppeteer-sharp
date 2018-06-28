@@ -296,9 +296,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             process.StartInfo.Arguments = $"PuppeteerSharp.Tests.DumpIO.dll {dumpioTextToLog} " +
                 $"\"{new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath}\"";
 #else
-            process.StartInfo.FileName = Path.Combine(
-                GetDumpIOAppDirectory(new DirectoryInfo(Directory.GetCurrentDirectory()).Parent),
-                "PuppeteerSharp.Tests.DumpIO.exe");
+            process.StartInfo.FileName = Path.Combine(GetDumpIOAppDirectory(), "PuppeteerSharp.Tests.DumpIO.exe");
             process.StartInfo.Arguments = $"{dumpioTextToLog} " +
                 $"\"{new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath}\"";
 #endif
