@@ -155,13 +155,13 @@ references:
   commentId: T:PuppeteerSharp.Browser
   fullName: PuppeteerSharp.Browser
   nameWithType: Browser
-- uid: PuppeteerSharp.Browser.#ctor(PuppeteerSharp.Connection,PuppeteerSharp.IBrowserOptions,System.Diagnostics.Process,System.Func{System.Threading.Tasks.Task})
+- uid: PuppeteerSharp.Browser.#ctor(PuppeteerSharp.Connection,PuppeteerSharp.IBrowserOptions,Process,Func{Task})
   name: Browser(Connection, IBrowserOptions, Process, Func<Task>)
-  href: api/PuppeteerSharp.Browser.html#PuppeteerSharp_Browser__ctor_PuppeteerSharp_Connection_PuppeteerSharp_IBrowserOptions_System_Diagnostics_Process_System_Func_System_Threading_Tasks_Task__
-  commentId: M:PuppeteerSharp.Browser.#ctor(PuppeteerSharp.Connection,PuppeteerSharp.IBrowserOptions,System.Diagnostics.Process,System.Func{System.Threading.Tasks.Task})
+  href: api/PuppeteerSharp.Browser.html#PuppeteerSharp_Browser__ctor_PuppeteerSharp_Connection_PuppeteerSharp_IBrowserOptions_Process_Func_Task__
+  commentId: M:PuppeteerSharp.Browser.#ctor(PuppeteerSharp.Connection,PuppeteerSharp.IBrowserOptions,Process,Func{Task})
   name.vb: Browser(Connection, IBrowserOptions, Process, Func(Of Task))
-  fullName: PuppeteerSharp.Browser.Browser(PuppeteerSharp.Connection, PuppeteerSharp.IBrowserOptions, System.Diagnostics.Process, System.Func<System.Threading.Tasks.Task>)
-  fullName.vb: PuppeteerSharp.Browser.Browser(PuppeteerSharp.Connection, PuppeteerSharp.IBrowserOptions, System.Diagnostics.Process, System.Func(Of System.Threading.Tasks.Task))
+  fullName: PuppeteerSharp.Browser.Browser(PuppeteerSharp.Connection, PuppeteerSharp.IBrowserOptions, Process, Func<Task>)
+  fullName.vb: PuppeteerSharp.Browser.Browser(PuppeteerSharp.Connection, PuppeteerSharp.IBrowserOptions, Process, Func(Of Task))
   nameWithType: Browser.Browser(Connection, IBrowserOptions, Process, Func<Task>)
   nameWithType.vb: Browser.Browser(Connection, IBrowserOptions, Process, Func(Of Task))
 - uid: PuppeteerSharp.Browser.#ctor*
@@ -370,6 +370,211 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Browser.WebSocketEndpoint
   nameWithType: Browser.WebSocketEndpoint
+- uid: PuppeteerSharp.BrowserFetcher
+  name: BrowserFetcher
+  href: api/PuppeteerSharp.BrowserFetcher.html
+  commentId: T:PuppeteerSharp.BrowserFetcher
+  fullName: PuppeteerSharp.BrowserFetcher
+  nameWithType: BrowserFetcher
+- uid: PuppeteerSharp.BrowserFetcher.#ctor
+  name: BrowserFetcher()
+  href: api/PuppeteerSharp.BrowserFetcher.html#PuppeteerSharp_BrowserFetcher__ctor
+  commentId: M:PuppeteerSharp.BrowserFetcher.#ctor
+  fullName: PuppeteerSharp.BrowserFetcher.BrowserFetcher()
+  nameWithType: BrowserFetcher.BrowserFetcher()
+- uid: PuppeteerSharp.BrowserFetcher.#ctor(PuppeteerSharp.BrowserFetcherOptions)
+  name: BrowserFetcher(BrowserFetcherOptions)
+  href: api/PuppeteerSharp.BrowserFetcher.html#PuppeteerSharp_BrowserFetcher__ctor_PuppeteerSharp_BrowserFetcherOptions_
+  commentId: M:PuppeteerSharp.BrowserFetcher.#ctor(PuppeteerSharp.BrowserFetcherOptions)
+  fullName: PuppeteerSharp.BrowserFetcher.BrowserFetcher(PuppeteerSharp.BrowserFetcherOptions)
+  nameWithType: BrowserFetcher.BrowserFetcher(BrowserFetcherOptions)
+- uid: PuppeteerSharp.BrowserFetcher.#ctor*
+  name: BrowserFetcher
+  href: api/PuppeteerSharp.BrowserFetcher.html#PuppeteerSharp_BrowserFetcher__ctor_
+  commentId: Overload:PuppeteerSharp.BrowserFetcher.#ctor
+  isSpec: "True"
+  fullName: PuppeteerSharp.BrowserFetcher.BrowserFetcher
+  nameWithType: BrowserFetcher.BrowserFetcher
+- uid: PuppeteerSharp.BrowserFetcher.CanDownloadAsync(System.Int32)
+  name: CanDownloadAsync(Int32)
+  href: api/PuppeteerSharp.BrowserFetcher.html#PuppeteerSharp_BrowserFetcher_CanDownloadAsync_System_Int32_
+  commentId: M:PuppeteerSharp.BrowserFetcher.CanDownloadAsync(System.Int32)
+  fullName: PuppeteerSharp.BrowserFetcher.CanDownloadAsync(System.Int32)
+  nameWithType: BrowserFetcher.CanDownloadAsync(Int32)
+- uid: PuppeteerSharp.BrowserFetcher.CanDownloadAsync*
+  name: CanDownloadAsync
+  href: api/PuppeteerSharp.BrowserFetcher.html#PuppeteerSharp_BrowserFetcher_CanDownloadAsync_
+  commentId: Overload:PuppeteerSharp.BrowserFetcher.CanDownloadAsync
+  isSpec: "True"
+  fullName: PuppeteerSharp.BrowserFetcher.CanDownloadAsync
+  nameWithType: BrowserFetcher.CanDownloadAsync
+- uid: PuppeteerSharp.BrowserFetcher.DefaultRevision
+  name: DefaultRevision
+  href: api/PuppeteerSharp.BrowserFetcher.html#PuppeteerSharp_BrowserFetcher_DefaultRevision
+  commentId: F:PuppeteerSharp.BrowserFetcher.DefaultRevision
+  fullName: PuppeteerSharp.BrowserFetcher.DefaultRevision
+  nameWithType: BrowserFetcher.DefaultRevision
+- uid: PuppeteerSharp.BrowserFetcher.DownloadAsync(System.Int32)
+  name: DownloadAsync(Int32)
+  href: api/PuppeteerSharp.BrowserFetcher.html#PuppeteerSharp_BrowserFetcher_DownloadAsync_System_Int32_
+  commentId: M:PuppeteerSharp.BrowserFetcher.DownloadAsync(System.Int32)
+  fullName: PuppeteerSharp.BrowserFetcher.DownloadAsync(System.Int32)
+  nameWithType: BrowserFetcher.DownloadAsync(Int32)
+- uid: PuppeteerSharp.BrowserFetcher.DownloadAsync*
+  name: DownloadAsync
+  href: api/PuppeteerSharp.BrowserFetcher.html#PuppeteerSharp_BrowserFetcher_DownloadAsync_
+  commentId: Overload:PuppeteerSharp.BrowserFetcher.DownloadAsync
+  isSpec: "True"
+  fullName: PuppeteerSharp.BrowserFetcher.DownloadAsync
+  nameWithType: BrowserFetcher.DownloadAsync
+- uid: PuppeteerSharp.BrowserFetcher.DownloadHost
+  name: DownloadHost
+  href: api/PuppeteerSharp.BrowserFetcher.html#PuppeteerSharp_BrowserFetcher_DownloadHost
+  commentId: P:PuppeteerSharp.BrowserFetcher.DownloadHost
+  fullName: PuppeteerSharp.BrowserFetcher.DownloadHost
+  nameWithType: BrowserFetcher.DownloadHost
+- uid: PuppeteerSharp.BrowserFetcher.DownloadHost*
+  name: DownloadHost
+  href: api/PuppeteerSharp.BrowserFetcher.html#PuppeteerSharp_BrowserFetcher_DownloadHost_
+  commentId: Overload:PuppeteerSharp.BrowserFetcher.DownloadHost
+  isSpec: "True"
+  fullName: PuppeteerSharp.BrowserFetcher.DownloadHost
+  nameWithType: BrowserFetcher.DownloadHost
+- uid: PuppeteerSharp.BrowserFetcher.DownloadProgressChanged
+  name: DownloadProgressChanged
+  href: api/PuppeteerSharp.BrowserFetcher.html#PuppeteerSharp_BrowserFetcher_DownloadProgressChanged
+  commentId: E:PuppeteerSharp.BrowserFetcher.DownloadProgressChanged
+  fullName: PuppeteerSharp.BrowserFetcher.DownloadProgressChanged
+  nameWithType: BrowserFetcher.DownloadProgressChanged
+- uid: PuppeteerSharp.BrowserFetcher.DownloadsFolder
+  name: DownloadsFolder
+  href: api/PuppeteerSharp.BrowserFetcher.html#PuppeteerSharp_BrowserFetcher_DownloadsFolder
+  commentId: P:PuppeteerSharp.BrowserFetcher.DownloadsFolder
+  fullName: PuppeteerSharp.BrowserFetcher.DownloadsFolder
+  nameWithType: BrowserFetcher.DownloadsFolder
+- uid: PuppeteerSharp.BrowserFetcher.DownloadsFolder*
+  name: DownloadsFolder
+  href: api/PuppeteerSharp.BrowserFetcher.html#PuppeteerSharp_BrowserFetcher_DownloadsFolder_
+  commentId: Overload:PuppeteerSharp.BrowserFetcher.DownloadsFolder
+  isSpec: "True"
+  fullName: PuppeteerSharp.BrowserFetcher.DownloadsFolder
+  nameWithType: BrowserFetcher.DownloadsFolder
+- uid: PuppeteerSharp.BrowserFetcher.GetExecutablePath(PuppeteerSharp.Platform,System.String)
+  name: GetExecutablePath(Platform, String)
+  href: api/PuppeteerSharp.BrowserFetcher.html#PuppeteerSharp_BrowserFetcher_GetExecutablePath_PuppeteerSharp_Platform_System_String_
+  commentId: M:PuppeteerSharp.BrowserFetcher.GetExecutablePath(PuppeteerSharp.Platform,System.String)
+  fullName: PuppeteerSharp.BrowserFetcher.GetExecutablePath(PuppeteerSharp.Platform, System.String)
+  nameWithType: BrowserFetcher.GetExecutablePath(Platform, String)
+- uid: PuppeteerSharp.BrowserFetcher.GetExecutablePath(System.Int32)
+  name: GetExecutablePath(Int32)
+  href: api/PuppeteerSharp.BrowserFetcher.html#PuppeteerSharp_BrowserFetcher_GetExecutablePath_System_Int32_
+  commentId: M:PuppeteerSharp.BrowserFetcher.GetExecutablePath(System.Int32)
+  fullName: PuppeteerSharp.BrowserFetcher.GetExecutablePath(System.Int32)
+  nameWithType: BrowserFetcher.GetExecutablePath(Int32)
+- uid: PuppeteerSharp.BrowserFetcher.GetExecutablePath*
+  name: GetExecutablePath
+  href: api/PuppeteerSharp.BrowserFetcher.html#PuppeteerSharp_BrowserFetcher_GetExecutablePath_
+  commentId: Overload:PuppeteerSharp.BrowserFetcher.GetExecutablePath
+  isSpec: "True"
+  fullName: PuppeteerSharp.BrowserFetcher.GetExecutablePath
+  nameWithType: BrowserFetcher.GetExecutablePath
+- uid: PuppeteerSharp.BrowserFetcher.LocalRevisions
+  name: LocalRevisions()
+  href: api/PuppeteerSharp.BrowserFetcher.html#PuppeteerSharp_BrowserFetcher_LocalRevisions
+  commentId: M:PuppeteerSharp.BrowserFetcher.LocalRevisions
+  fullName: PuppeteerSharp.BrowserFetcher.LocalRevisions()
+  nameWithType: BrowserFetcher.LocalRevisions()
+- uid: PuppeteerSharp.BrowserFetcher.LocalRevisions*
+  name: LocalRevisions
+  href: api/PuppeteerSharp.BrowserFetcher.html#PuppeteerSharp_BrowserFetcher_LocalRevisions_
+  commentId: Overload:PuppeteerSharp.BrowserFetcher.LocalRevisions
+  isSpec: "True"
+  fullName: PuppeteerSharp.BrowserFetcher.LocalRevisions
+  nameWithType: BrowserFetcher.LocalRevisions
+- uid: PuppeteerSharp.BrowserFetcher.Platform
+  name: Platform
+  href: api/PuppeteerSharp.BrowserFetcher.html#PuppeteerSharp_BrowserFetcher_Platform
+  commentId: P:PuppeteerSharp.BrowserFetcher.Platform
+  fullName: PuppeteerSharp.BrowserFetcher.Platform
+  nameWithType: BrowserFetcher.Platform
+- uid: PuppeteerSharp.BrowserFetcher.Platform*
+  name: Platform
+  href: api/PuppeteerSharp.BrowserFetcher.html#PuppeteerSharp_BrowserFetcher_Platform_
+  commentId: Overload:PuppeteerSharp.BrowserFetcher.Platform
+  isSpec: "True"
+  fullName: PuppeteerSharp.BrowserFetcher.Platform
+  nameWithType: BrowserFetcher.Platform
+- uid: PuppeteerSharp.BrowserFetcher.Remove(System.Int32)
+  name: Remove(Int32)
+  href: api/PuppeteerSharp.BrowserFetcher.html#PuppeteerSharp_BrowserFetcher_Remove_System_Int32_
+  commentId: M:PuppeteerSharp.BrowserFetcher.Remove(System.Int32)
+  fullName: PuppeteerSharp.BrowserFetcher.Remove(System.Int32)
+  nameWithType: BrowserFetcher.Remove(Int32)
+- uid: PuppeteerSharp.BrowserFetcher.Remove*
+  name: Remove
+  href: api/PuppeteerSharp.BrowserFetcher.html#PuppeteerSharp_BrowserFetcher_Remove_
+  commentId: Overload:PuppeteerSharp.BrowserFetcher.Remove
+  isSpec: "True"
+  fullName: PuppeteerSharp.BrowserFetcher.Remove
+  nameWithType: BrowserFetcher.Remove
+- uid: PuppeteerSharp.BrowserFetcher.RevisionInfo(System.Int32)
+  name: RevisionInfo(Int32)
+  href: api/PuppeteerSharp.BrowserFetcher.html#PuppeteerSharp_BrowserFetcher_RevisionInfo_System_Int32_
+  commentId: M:PuppeteerSharp.BrowserFetcher.RevisionInfo(System.Int32)
+  fullName: PuppeteerSharp.BrowserFetcher.RevisionInfo(System.Int32)
+  nameWithType: BrowserFetcher.RevisionInfo(Int32)
+- uid: PuppeteerSharp.BrowserFetcher.RevisionInfo*
+  name: RevisionInfo
+  href: api/PuppeteerSharp.BrowserFetcher.html#PuppeteerSharp_BrowserFetcher_RevisionInfo_
+  commentId: Overload:PuppeteerSharp.BrowserFetcher.RevisionInfo
+  isSpec: "True"
+  fullName: PuppeteerSharp.BrowserFetcher.RevisionInfo
+  nameWithType: BrowserFetcher.RevisionInfo
+- uid: PuppeteerSharp.BrowserFetcherOptions
+  name: BrowserFetcherOptions
+  href: api/PuppeteerSharp.BrowserFetcherOptions.html
+  commentId: T:PuppeteerSharp.BrowserFetcherOptions
+  fullName: PuppeteerSharp.BrowserFetcherOptions
+  nameWithType: BrowserFetcherOptions
+- uid: PuppeteerSharp.BrowserFetcherOptions.Host
+  name: Host
+  href: api/PuppeteerSharp.BrowserFetcherOptions.html#PuppeteerSharp_BrowserFetcherOptions_Host
+  commentId: P:PuppeteerSharp.BrowserFetcherOptions.Host
+  fullName: PuppeteerSharp.BrowserFetcherOptions.Host
+  nameWithType: BrowserFetcherOptions.Host
+- uid: PuppeteerSharp.BrowserFetcherOptions.Host*
+  name: Host
+  href: api/PuppeteerSharp.BrowserFetcherOptions.html#PuppeteerSharp_BrowserFetcherOptions_Host_
+  commentId: Overload:PuppeteerSharp.BrowserFetcherOptions.Host
+  isSpec: "True"
+  fullName: PuppeteerSharp.BrowserFetcherOptions.Host
+  nameWithType: BrowserFetcherOptions.Host
+- uid: PuppeteerSharp.BrowserFetcherOptions.Path
+  name: Path
+  href: api/PuppeteerSharp.BrowserFetcherOptions.html#PuppeteerSharp_BrowserFetcherOptions_Path
+  commentId: P:PuppeteerSharp.BrowserFetcherOptions.Path
+  fullName: PuppeteerSharp.BrowserFetcherOptions.Path
+  nameWithType: BrowserFetcherOptions.Path
+- uid: PuppeteerSharp.BrowserFetcherOptions.Path*
+  name: Path
+  href: api/PuppeteerSharp.BrowserFetcherOptions.html#PuppeteerSharp_BrowserFetcherOptions_Path_
+  commentId: Overload:PuppeteerSharp.BrowserFetcherOptions.Path
+  isSpec: "True"
+  fullName: PuppeteerSharp.BrowserFetcherOptions.Path
+  nameWithType: BrowserFetcherOptions.Path
+- uid: PuppeteerSharp.BrowserFetcherOptions.Platform
+  name: Platform
+  href: api/PuppeteerSharp.BrowserFetcherOptions.html#PuppeteerSharp_BrowserFetcherOptions_Platform
+  commentId: P:PuppeteerSharp.BrowserFetcherOptions.Platform
+  fullName: PuppeteerSharp.BrowserFetcherOptions.Platform
+  nameWithType: BrowserFetcherOptions.Platform
+- uid: PuppeteerSharp.BrowserFetcherOptions.Platform*
+  name: Platform
+  href: api/PuppeteerSharp.BrowserFetcherOptions.html#PuppeteerSharp_BrowserFetcherOptions_Platform_
+  commentId: Overload:PuppeteerSharp.BrowserFetcherOptions.Platform
+  isSpec: "True"
+  fullName: PuppeteerSharp.BrowserFetcherOptions.Platform
+  nameWithType: BrowserFetcherOptions.Platform
 - uid: PuppeteerSharp.CDPSession
   name: CDPSession
   href: api/PuppeteerSharp.CDPSession.html
@@ -478,11 +683,11 @@ references:
   commentId: M:PuppeteerSharp.ChromeProcessException.#ctor(System.String)
   fullName: PuppeteerSharp.ChromeProcessException.ChromeProcessException(System.String)
   nameWithType: ChromeProcessException.ChromeProcessException(String)
-- uid: PuppeteerSharp.ChromeProcessException.#ctor(System.String,System.Exception)
+- uid: PuppeteerSharp.ChromeProcessException.#ctor(System.String,Exception)
   name: ChromeProcessException(String, Exception)
-  href: api/PuppeteerSharp.ChromeProcessException.html#PuppeteerSharp_ChromeProcessException__ctor_System_String_System_Exception_
-  commentId: M:PuppeteerSharp.ChromeProcessException.#ctor(System.String,System.Exception)
-  fullName: PuppeteerSharp.ChromeProcessException.ChromeProcessException(System.String, System.Exception)
+  href: api/PuppeteerSharp.ChromeProcessException.html#PuppeteerSharp_ChromeProcessException__ctor_System_String_Exception_
+  commentId: M:PuppeteerSharp.ChromeProcessException.#ctor(System.String,Exception)
+  fullName: PuppeteerSharp.ChromeProcessException.ChromeProcessException(System.String, Exception)
   nameWithType: ChromeProcessException.ChromeProcessException(String, Exception)
 - uid: PuppeteerSharp.ChromeProcessException.#ctor*
   name: ChromeProcessException
@@ -683,13 +888,13 @@ references:
   commentId: T:PuppeteerSharp.ConsoleMessage
   fullName: PuppeteerSharp.ConsoleMessage
   nameWithType: ConsoleMessage
-- uid: PuppeteerSharp.ConsoleMessage.#ctor(PuppeteerSharp.ConsoleType,System.String,System.Collections.Generic.IList{PuppeteerSharp.JSHandle})
+- uid: PuppeteerSharp.ConsoleMessage.#ctor(PuppeteerSharp.ConsoleType,System.String,IList{PuppeteerSharp.JSHandle})
   name: ConsoleMessage(ConsoleType, String, IList<JSHandle>)
-  href: api/PuppeteerSharp.ConsoleMessage.html#PuppeteerSharp_ConsoleMessage__ctor_PuppeteerSharp_ConsoleType_System_String_System_Collections_Generic_IList_PuppeteerSharp_JSHandle__
-  commentId: M:PuppeteerSharp.ConsoleMessage.#ctor(PuppeteerSharp.ConsoleType,System.String,System.Collections.Generic.IList{PuppeteerSharp.JSHandle})
+  href: api/PuppeteerSharp.ConsoleMessage.html#PuppeteerSharp_ConsoleMessage__ctor_PuppeteerSharp_ConsoleType_System_String_IList_PuppeteerSharp_JSHandle__
+  commentId: M:PuppeteerSharp.ConsoleMessage.#ctor(PuppeteerSharp.ConsoleType,System.String,IList{PuppeteerSharp.JSHandle})
   name.vb: ConsoleMessage(ConsoleType, String, IList(Of JSHandle))
-  fullName: PuppeteerSharp.ConsoleMessage.ConsoleMessage(PuppeteerSharp.ConsoleType, System.String, System.Collections.Generic.IList<PuppeteerSharp.JSHandle>)
-  fullName.vb: PuppeteerSharp.ConsoleMessage.ConsoleMessage(PuppeteerSharp.ConsoleType, System.String, System.Collections.Generic.IList(Of PuppeteerSharp.JSHandle))
+  fullName: PuppeteerSharp.ConsoleMessage.ConsoleMessage(PuppeteerSharp.ConsoleType, System.String, IList<PuppeteerSharp.JSHandle>)
+  fullName.vb: PuppeteerSharp.ConsoleMessage.ConsoleMessage(PuppeteerSharp.ConsoleType, System.String, IList(Of PuppeteerSharp.JSHandle))
   nameWithType: ConsoleMessage.ConsoleMessage(ConsoleType, String, IList<JSHandle>)
   nameWithType.vb: ConsoleMessage.ConsoleMessage(ConsoleType, String, IList(Of JSHandle))
 - uid: PuppeteerSharp.ConsoleMessage.#ctor*
@@ -1166,76 +1371,6 @@ references:
   commentId: F:PuppeteerSharp.DialogType.Prompt
   fullName: PuppeteerSharp.DialogType.Prompt
   nameWithType: DialogType.Prompt
-- uid: PuppeteerSharp.Downloader
-  name: Downloader
-  href: api/PuppeteerSharp.Downloader.html
-  commentId: T:PuppeteerSharp.Downloader
-  fullName: PuppeteerSharp.Downloader
-  nameWithType: Downloader
-- uid: PuppeteerSharp.Downloader.#ctor(System.String)
-  name: Downloader(String)
-  href: api/PuppeteerSharp.Downloader.html#PuppeteerSharp_Downloader__ctor_System_String_
-  commentId: M:PuppeteerSharp.Downloader.#ctor(System.String)
-  fullName: PuppeteerSharp.Downloader.Downloader(System.String)
-  nameWithType: Downloader.Downloader(String)
-- uid: PuppeteerSharp.Downloader.#ctor*
-  name: Downloader
-  href: api/PuppeteerSharp.Downloader.html#PuppeteerSharp_Downloader__ctor_
-  commentId: Overload:PuppeteerSharp.Downloader.#ctor
-  isSpec: "True"
-  fullName: PuppeteerSharp.Downloader.Downloader
-  nameWithType: Downloader.Downloader
-- uid: PuppeteerSharp.Downloader.CreateDefault
-  name: CreateDefault()
-  href: api/PuppeteerSharp.Downloader.html#PuppeteerSharp_Downloader_CreateDefault
-  commentId: M:PuppeteerSharp.Downloader.CreateDefault
-  fullName: PuppeteerSharp.Downloader.CreateDefault()
-  nameWithType: Downloader.CreateDefault()
-- uid: PuppeteerSharp.Downloader.CreateDefault*
-  name: CreateDefault
-  href: api/PuppeteerSharp.Downloader.html#PuppeteerSharp_Downloader_CreateDefault_
-  commentId: Overload:PuppeteerSharp.Downloader.CreateDefault
-  isSpec: "True"
-  fullName: PuppeteerSharp.Downloader.CreateDefault
-  nameWithType: Downloader.CreateDefault
-- uid: PuppeteerSharp.Downloader.DefaultRevision
-  name: DefaultRevision
-  href: api/PuppeteerSharp.Downloader.html#PuppeteerSharp_Downloader_DefaultRevision
-  commentId: F:PuppeteerSharp.Downloader.DefaultRevision
-  fullName: PuppeteerSharp.Downloader.DefaultRevision
-  nameWithType: Downloader.DefaultRevision
-- uid: PuppeteerSharp.Downloader.DownloadRevisionAsync(System.Int32)
-  name: DownloadRevisionAsync(Int32)
-  href: api/PuppeteerSharp.Downloader.html#PuppeteerSharp_Downloader_DownloadRevisionAsync_System_Int32_
-  commentId: M:PuppeteerSharp.Downloader.DownloadRevisionAsync(System.Int32)
-  fullName: PuppeteerSharp.Downloader.DownloadRevisionAsync(System.Int32)
-  nameWithType: Downloader.DownloadRevisionAsync(Int32)
-- uid: PuppeteerSharp.Downloader.DownloadRevisionAsync*
-  name: DownloadRevisionAsync
-  href: api/PuppeteerSharp.Downloader.html#PuppeteerSharp_Downloader_DownloadRevisionAsync_
-  commentId: Overload:PuppeteerSharp.Downloader.DownloadRevisionAsync
-  isSpec: "True"
-  fullName: PuppeteerSharp.Downloader.DownloadRevisionAsync
-  nameWithType: Downloader.DownloadRevisionAsync
-- uid: PuppeteerSharp.Downloader.GetExecutablePath(PuppeteerSharp.Platform,System.String)
-  name: GetExecutablePath(Platform, String)
-  href: api/PuppeteerSharp.Downloader.html#PuppeteerSharp_Downloader_GetExecutablePath_PuppeteerSharp_Platform_System_String_
-  commentId: M:PuppeteerSharp.Downloader.GetExecutablePath(PuppeteerSharp.Platform,System.String)
-  fullName: PuppeteerSharp.Downloader.GetExecutablePath(PuppeteerSharp.Platform, System.String)
-  nameWithType: Downloader.GetExecutablePath(Platform, String)
-- uid: PuppeteerSharp.Downloader.GetExecutablePath(System.Int32)
-  name: GetExecutablePath(Int32)
-  href: api/PuppeteerSharp.Downloader.html#PuppeteerSharp_Downloader_GetExecutablePath_System_Int32_
-  commentId: M:PuppeteerSharp.Downloader.GetExecutablePath(System.Int32)
-  fullName: PuppeteerSharp.Downloader.GetExecutablePath(System.Int32)
-  nameWithType: Downloader.GetExecutablePath(Int32)
-- uid: PuppeteerSharp.Downloader.GetExecutablePath*
-  name: GetExecutablePath
-  href: api/PuppeteerSharp.Downloader.html#PuppeteerSharp_Downloader_GetExecutablePath_
-  commentId: Overload:PuppeteerSharp.Downloader.GetExecutablePath
-  isSpec: "True"
-  fullName: PuppeteerSharp.Downloader.GetExecutablePath
-  nameWithType: Downloader.GetExecutablePath
 - uid: PuppeteerSharp.ElementHandle
   name: ElementHandle
   href: api/PuppeteerSharp.ElementHandle.html
@@ -1489,11 +1624,11 @@ references:
   commentId: M:PuppeteerSharp.EvaluationFailedException.#ctor
   fullName: PuppeteerSharp.EvaluationFailedException.EvaluationFailedException()
   nameWithType: EvaluationFailedException.EvaluationFailedException()
-- uid: PuppeteerSharp.EvaluationFailedException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
+- uid: PuppeteerSharp.EvaluationFailedException.#ctor(SerializationInfo,StreamingContext)
   name: EvaluationFailedException(SerializationInfo, StreamingContext)
-  href: api/PuppeteerSharp.EvaluationFailedException.html#PuppeteerSharp_EvaluationFailedException__ctor_System_Runtime_Serialization_SerializationInfo_System_Runtime_Serialization_StreamingContext_
-  commentId: M:PuppeteerSharp.EvaluationFailedException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
-  fullName: PuppeteerSharp.EvaluationFailedException.EvaluationFailedException(System.Runtime.Serialization.SerializationInfo, System.Runtime.Serialization.StreamingContext)
+  href: api/PuppeteerSharp.EvaluationFailedException.html#PuppeteerSharp_EvaluationFailedException__ctor_SerializationInfo_StreamingContext_
+  commentId: M:PuppeteerSharp.EvaluationFailedException.#ctor(SerializationInfo,StreamingContext)
+  fullName: PuppeteerSharp.EvaluationFailedException.EvaluationFailedException(SerializationInfo, StreamingContext)
   nameWithType: EvaluationFailedException.EvaluationFailedException(SerializationInfo, StreamingContext)
 - uid: PuppeteerSharp.EvaluationFailedException.#ctor(System.String)
   name: EvaluationFailedException(String)
@@ -1501,11 +1636,11 @@ references:
   commentId: M:PuppeteerSharp.EvaluationFailedException.#ctor(System.String)
   fullName: PuppeteerSharp.EvaluationFailedException.EvaluationFailedException(System.String)
   nameWithType: EvaluationFailedException.EvaluationFailedException(String)
-- uid: PuppeteerSharp.EvaluationFailedException.#ctor(System.String,System.Exception)
+- uid: PuppeteerSharp.EvaluationFailedException.#ctor(System.String,Exception)
   name: EvaluationFailedException(String, Exception)
-  href: api/PuppeteerSharp.EvaluationFailedException.html#PuppeteerSharp_EvaluationFailedException__ctor_System_String_System_Exception_
-  commentId: M:PuppeteerSharp.EvaluationFailedException.#ctor(System.String,System.Exception)
-  fullName: PuppeteerSharp.EvaluationFailedException.EvaluationFailedException(System.String, System.Exception)
+  href: api/PuppeteerSharp.EvaluationFailedException.html#PuppeteerSharp_EvaluationFailedException__ctor_System_String_Exception_
+  commentId: M:PuppeteerSharp.EvaluationFailedException.#ctor(System.String,Exception)
+  fullName: PuppeteerSharp.EvaluationFailedException.EvaluationFailedException(System.String, Exception)
   nameWithType: EvaluationFailedException.EvaluationFailedException(String, Exception)
 - uid: PuppeteerSharp.EvaluationFailedException.#ctor*
   name: EvaluationFailedException
@@ -1567,6 +1702,19 @@ references:
   fullName.vb: PuppeteerSharp.ExecutionContext.EvaluateFunctionAsync(Of T)(System.String, System.Object())
   nameWithType: ExecutionContext.EvaluateFunctionAsync<T>(String, Object[])
   nameWithType.vb: ExecutionContext.EvaluateFunctionAsync(Of T)(String, Object())
+- uid: PuppeteerSharp.ExecutionContext.Frame
+  name: Frame
+  href: api/PuppeteerSharp.ExecutionContext.html#PuppeteerSharp_ExecutionContext_Frame
+  commentId: P:PuppeteerSharp.ExecutionContext.Frame
+  fullName: PuppeteerSharp.ExecutionContext.Frame
+  nameWithType: ExecutionContext.Frame
+- uid: PuppeteerSharp.ExecutionContext.Frame*
+  name: Frame
+  href: api/PuppeteerSharp.ExecutionContext.html#PuppeteerSharp_ExecutionContext_Frame_
+  commentId: Overload:PuppeteerSharp.ExecutionContext.Frame
+  isSpec: "True"
+  fullName: PuppeteerSharp.ExecutionContext.Frame
+  nameWithType: ExecutionContext.Frame
 - uid: PuppeteerSharp.ExecutionContext.FrameId
   name: FrameId
   href: api/PuppeteerSharp.ExecutionContext.html#PuppeteerSharp_ExecutionContext_FrameId
@@ -1619,22 +1767,22 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Extensions.EvaluateFunctionAsync
   nameWithType: Extensions.EvaluateFunctionAsync
-- uid: PuppeteerSharp.Extensions.EvaluateFunctionAsync``1(System.Threading.Tasks.Task{PuppeteerSharp.ElementHandle},System.String,System.Object[])
+- uid: PuppeteerSharp.Extensions.EvaluateFunctionAsync``1(Task{PuppeteerSharp.ElementHandle},System.String,System.Object[])
   name: EvaluateFunctionAsync<T>(Task<ElementHandle>, String, Object[])
-  href: api/PuppeteerSharp.Extensions.html#PuppeteerSharp_Extensions_EvaluateFunctionAsync__1_System_Threading_Tasks_Task_PuppeteerSharp_ElementHandle__System_String_System_Object___
-  commentId: M:PuppeteerSharp.Extensions.EvaluateFunctionAsync``1(System.Threading.Tasks.Task{PuppeteerSharp.ElementHandle},System.String,System.Object[])
+  href: api/PuppeteerSharp.Extensions.html#PuppeteerSharp_Extensions_EvaluateFunctionAsync__1_Task_PuppeteerSharp_ElementHandle__System_String_System_Object___
+  commentId: M:PuppeteerSharp.Extensions.EvaluateFunctionAsync``1(Task{PuppeteerSharp.ElementHandle},System.String,System.Object[])
   name.vb: EvaluateFunctionAsync(Of T)(Task(Of ElementHandle), String, Object())
-  fullName: PuppeteerSharp.Extensions.EvaluateFunctionAsync<T>(System.Threading.Tasks.Task<PuppeteerSharp.ElementHandle>, System.String, System.Object[])
-  fullName.vb: PuppeteerSharp.Extensions.EvaluateFunctionAsync(Of T)(System.Threading.Tasks.Task(Of PuppeteerSharp.ElementHandle), System.String, System.Object())
+  fullName: PuppeteerSharp.Extensions.EvaluateFunctionAsync<T>(Task<PuppeteerSharp.ElementHandle>, System.String, System.Object[])
+  fullName.vb: PuppeteerSharp.Extensions.EvaluateFunctionAsync(Of T)(Task(Of PuppeteerSharp.ElementHandle), System.String, System.Object())
   nameWithType: Extensions.EvaluateFunctionAsync<T>(Task<ElementHandle>, String, Object[])
   nameWithType.vb: Extensions.EvaluateFunctionAsync(Of T)(Task(Of ElementHandle), String, Object())
-- uid: PuppeteerSharp.Extensions.EvaluateFunctionAsync``1(System.Threading.Tasks.Task{PuppeteerSharp.JSHandle},System.String,System.Object[])
+- uid: PuppeteerSharp.Extensions.EvaluateFunctionAsync``1(Task{PuppeteerSharp.JSHandle},System.String,System.Object[])
   name: EvaluateFunctionAsync<T>(Task<JSHandle>, String, Object[])
-  href: api/PuppeteerSharp.Extensions.html#PuppeteerSharp_Extensions_EvaluateFunctionAsync__1_System_Threading_Tasks_Task_PuppeteerSharp_JSHandle__System_String_System_Object___
-  commentId: M:PuppeteerSharp.Extensions.EvaluateFunctionAsync``1(System.Threading.Tasks.Task{PuppeteerSharp.JSHandle},System.String,System.Object[])
+  href: api/PuppeteerSharp.Extensions.html#PuppeteerSharp_Extensions_EvaluateFunctionAsync__1_Task_PuppeteerSharp_JSHandle__System_String_System_Object___
+  commentId: M:PuppeteerSharp.Extensions.EvaluateFunctionAsync``1(Task{PuppeteerSharp.JSHandle},System.String,System.Object[])
   name.vb: EvaluateFunctionAsync(Of T)(Task(Of JSHandle), String, Object())
-  fullName: PuppeteerSharp.Extensions.EvaluateFunctionAsync<T>(System.Threading.Tasks.Task<PuppeteerSharp.JSHandle>, System.String, System.Object[])
-  fullName.vb: PuppeteerSharp.Extensions.EvaluateFunctionAsync(Of T)(System.Threading.Tasks.Task(Of PuppeteerSharp.JSHandle), System.String, System.Object())
+  fullName: PuppeteerSharp.Extensions.EvaluateFunctionAsync<T>(Task<PuppeteerSharp.JSHandle>, System.String, System.Object[])
+  fullName.vb: PuppeteerSharp.Extensions.EvaluateFunctionAsync(Of T)(Task(Of PuppeteerSharp.JSHandle), System.String, System.Object())
   nameWithType: Extensions.EvaluateFunctionAsync<T>(Task<JSHandle>, String, Object[])
   nameWithType.vb: Extensions.EvaluateFunctionAsync(Of T)(Task(Of JSHandle), String, Object())
 - uid: PuppeteerSharp.Frame
@@ -1717,6 +1865,19 @@ references:
   fullName.vb: PuppeteerSharp.Frame.EvaluateExpressionAsync(Of T)(System.String)
   nameWithType: Frame.EvaluateExpressionAsync<T>(String)
   nameWithType.vb: Frame.EvaluateExpressionAsync(Of T)(String)
+- uid: PuppeteerSharp.Frame.EvaluateExpressionHandleAsync(System.String)
+  name: EvaluateExpressionHandleAsync(String)
+  href: api/PuppeteerSharp.Frame.html#PuppeteerSharp_Frame_EvaluateExpressionHandleAsync_System_String_
+  commentId: M:PuppeteerSharp.Frame.EvaluateExpressionHandleAsync(System.String)
+  fullName: PuppeteerSharp.Frame.EvaluateExpressionHandleAsync(System.String)
+  nameWithType: Frame.EvaluateExpressionHandleAsync(String)
+- uid: PuppeteerSharp.Frame.EvaluateExpressionHandleAsync*
+  name: EvaluateExpressionHandleAsync
+  href: api/PuppeteerSharp.Frame.html#PuppeteerSharp_Frame_EvaluateExpressionHandleAsync_
+  commentId: Overload:PuppeteerSharp.Frame.EvaluateExpressionHandleAsync
+  isSpec: "True"
+  fullName: PuppeteerSharp.Frame.EvaluateExpressionHandleAsync
+  nameWithType: Frame.EvaluateExpressionHandleAsync
 - uid: PuppeteerSharp.Frame.EvaluateFunctionAsync(System.String,System.Object[])
   name: EvaluateFunctionAsync(String, Object[])
   href: api/PuppeteerSharp.Frame.html#PuppeteerSharp_Frame_EvaluateFunctionAsync_System_String_System_Object___
@@ -1742,6 +1903,22 @@ references:
   fullName.vb: PuppeteerSharp.Frame.EvaluateFunctionAsync(Of T)(System.String, System.Object())
   nameWithType: Frame.EvaluateFunctionAsync<T>(String, Object[])
   nameWithType.vb: Frame.EvaluateFunctionAsync(Of T)(String, Object())
+- uid: PuppeteerSharp.Frame.EvaluateFunctionHandleAsync(System.String,System.Object[])
+  name: EvaluateFunctionHandleAsync(String, Object[])
+  href: api/PuppeteerSharp.Frame.html#PuppeteerSharp_Frame_EvaluateFunctionHandleAsync_System_String_System_Object___
+  commentId: M:PuppeteerSharp.Frame.EvaluateFunctionHandleAsync(System.String,System.Object[])
+  name.vb: EvaluateFunctionHandleAsync(String, Object())
+  fullName: PuppeteerSharp.Frame.EvaluateFunctionHandleAsync(System.String, System.Object[])
+  fullName.vb: PuppeteerSharp.Frame.EvaluateFunctionHandleAsync(System.String, System.Object())
+  nameWithType: Frame.EvaluateFunctionHandleAsync(String, Object[])
+  nameWithType.vb: Frame.EvaluateFunctionHandleAsync(String, Object())
+- uid: PuppeteerSharp.Frame.EvaluateFunctionHandleAsync*
+  name: EvaluateFunctionHandleAsync
+  href: api/PuppeteerSharp.Frame.html#PuppeteerSharp_Frame_EvaluateFunctionHandleAsync_
+  commentId: Overload:PuppeteerSharp.Frame.EvaluateFunctionHandleAsync
+  isSpec: "True"
+  fullName: PuppeteerSharp.Frame.EvaluateFunctionHandleAsync
+  nameWithType: Frame.EvaluateFunctionHandleAsync
 - uid: PuppeteerSharp.Frame.GetContentAsync
   name: GetContentAsync()
   href: api/PuppeteerSharp.Frame.html#PuppeteerSharp_Frame_GetContentAsync
@@ -1917,6 +2094,19 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Frame.WaitForTimeoutAsync
   nameWithType: Frame.WaitForTimeoutAsync
+- uid: PuppeteerSharp.Frame.WaitForXPathAsync(System.String,PuppeteerSharp.WaitForSelectorOptions)
+  name: WaitForXPathAsync(String, WaitForSelectorOptions)
+  href: api/PuppeteerSharp.Frame.html#PuppeteerSharp_Frame_WaitForXPathAsync_System_String_PuppeteerSharp_WaitForSelectorOptions_
+  commentId: M:PuppeteerSharp.Frame.WaitForXPathAsync(System.String,PuppeteerSharp.WaitForSelectorOptions)
+  fullName: PuppeteerSharp.Frame.WaitForXPathAsync(System.String, PuppeteerSharp.WaitForSelectorOptions)
+  nameWithType: Frame.WaitForXPathAsync(String, WaitForSelectorOptions)
+- uid: PuppeteerSharp.Frame.WaitForXPathAsync*
+  name: WaitForXPathAsync
+  href: api/PuppeteerSharp.Frame.html#PuppeteerSharp_Frame_WaitForXPathAsync_
+  commentId: Overload:PuppeteerSharp.Frame.WaitForXPathAsync
+  isSpec: "True"
+  fullName: PuppeteerSharp.Frame.WaitForXPathAsync
+  nameWithType: Frame.WaitForXPathAsync
 - uid: PuppeteerSharp.Frame.XPathAsync(System.String)
   name: XPathAsync(String)
   href: api/PuppeteerSharp.Frame.html#PuppeteerSharp_Frame_XPathAsync_System_String_
@@ -3185,12 +3375,12 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Launcher.IsChromeClosed
   nameWithType: Launcher.IsChromeClosed
-- uid: PuppeteerSharp.Launcher.LaunchAsync(PuppeteerSharp.LaunchOptions,System.Int32)
-  name: LaunchAsync(LaunchOptions, Int32)
-  href: api/PuppeteerSharp.Launcher.html#PuppeteerSharp_Launcher_LaunchAsync_PuppeteerSharp_LaunchOptions_System_Int32_
-  commentId: M:PuppeteerSharp.Launcher.LaunchAsync(PuppeteerSharp.LaunchOptions,System.Int32)
-  fullName: PuppeteerSharp.Launcher.LaunchAsync(PuppeteerSharp.LaunchOptions, System.Int32)
-  nameWithType: Launcher.LaunchAsync(LaunchOptions, Int32)
+- uid: PuppeteerSharp.Launcher.LaunchAsync(PuppeteerSharp.LaunchOptions)
+  name: LaunchAsync(LaunchOptions)
+  href: api/PuppeteerSharp.Launcher.html#PuppeteerSharp_Launcher_LaunchAsync_PuppeteerSharp_LaunchOptions_
+  commentId: M:PuppeteerSharp.Launcher.LaunchAsync(PuppeteerSharp.LaunchOptions)
+  fullName: PuppeteerSharp.Launcher.LaunchAsync(PuppeteerSharp.LaunchOptions)
+  nameWithType: Launcher.LaunchAsync(LaunchOptions)
 - uid: PuppeteerSharp.Launcher.LaunchAsync*
   name: LaunchAsync
   href: api/PuppeteerSharp.Launcher.html#PuppeteerSharp_Launcher_LaunchAsync_
@@ -3198,13 +3388,13 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Launcher.LaunchAsync
   nameWithType: Launcher.LaunchAsync
-- uid: PuppeteerSharp.Launcher.TryDeleteUserDataDir(System.Int32,System.Nullable{System.TimeSpan})
+- uid: PuppeteerSharp.Launcher.TryDeleteUserDataDir(System.Int32,System.Nullable{TimeSpan})
   name: TryDeleteUserDataDir(Int32, Nullable<TimeSpan>)
-  href: api/PuppeteerSharp.Launcher.html#PuppeteerSharp_Launcher_TryDeleteUserDataDir_System_Int32_System_Nullable_System_TimeSpan__
-  commentId: M:PuppeteerSharp.Launcher.TryDeleteUserDataDir(System.Int32,System.Nullable{System.TimeSpan})
+  href: api/PuppeteerSharp.Launcher.html#PuppeteerSharp_Launcher_TryDeleteUserDataDir_System_Int32_System_Nullable_TimeSpan__
+  commentId: M:PuppeteerSharp.Launcher.TryDeleteUserDataDir(System.Int32,System.Nullable{TimeSpan})
   name.vb: TryDeleteUserDataDir(Int32, Nullable(Of TimeSpan))
-  fullName: PuppeteerSharp.Launcher.TryDeleteUserDataDir(System.Int32, System.Nullable<System.TimeSpan>)
-  fullName.vb: PuppeteerSharp.Launcher.TryDeleteUserDataDir(System.Int32, System.Nullable(Of System.TimeSpan))
+  fullName: PuppeteerSharp.Launcher.TryDeleteUserDataDir(System.Int32, System.Nullable<TimeSpan>)
+  fullName.vb: PuppeteerSharp.Launcher.TryDeleteUserDataDir(System.Int32, System.Nullable(Of TimeSpan))
   nameWithType: Launcher.TryDeleteUserDataDir(Int32, Nullable<TimeSpan>)
   nameWithType.vb: Launcher.TryDeleteUserDataDir(Int32, Nullable(Of TimeSpan))
 - uid: PuppeteerSharp.Launcher.TryDeleteUserDataDir*
@@ -3664,11 +3854,11 @@ references:
   commentId: M:PuppeteerSharp.MessageException.#ctor(System.String)
   fullName: PuppeteerSharp.MessageException.MessageException(System.String)
   nameWithType: MessageException.MessageException(String)
-- uid: PuppeteerSharp.MessageException.#ctor(System.String,System.Exception)
+- uid: PuppeteerSharp.MessageException.#ctor(System.String,Exception)
   name: MessageException(String, Exception)
-  href: api/PuppeteerSharp.MessageException.html#PuppeteerSharp_MessageException__ctor_System_String_System_Exception_
-  commentId: M:PuppeteerSharp.MessageException.#ctor(System.String,System.Exception)
-  fullName: PuppeteerSharp.MessageException.MessageException(System.String, System.Exception)
+  href: api/PuppeteerSharp.MessageException.html#PuppeteerSharp_MessageException__ctor_System_String_Exception_
+  commentId: M:PuppeteerSharp.MessageException.#ctor(System.String,Exception)
+  fullName: PuppeteerSharp.MessageException.MessageException(System.String, Exception)
   nameWithType: MessageException.MessageException(String, Exception)
 - uid: PuppeteerSharp.MessageException.#ctor*
   name: MessageException
@@ -3683,13 +3873,13 @@ references:
   commentId: T:PuppeteerSharp.MetricEventArgs
   fullName: PuppeteerSharp.MetricEventArgs
   nameWithType: MetricEventArgs
-- uid: PuppeteerSharp.MetricEventArgs.#ctor(System.String,System.Collections.Generic.Dictionary{System.String,System.Decimal})
+- uid: PuppeteerSharp.MetricEventArgs.#ctor(System.String,Dictionary{System.String,System.Decimal})
   name: MetricEventArgs(String, Dictionary<String, Decimal>)
-  href: api/PuppeteerSharp.MetricEventArgs.html#PuppeteerSharp_MetricEventArgs__ctor_System_String_System_Collections_Generic_Dictionary_System_String_System_Decimal__
-  commentId: M:PuppeteerSharp.MetricEventArgs.#ctor(System.String,System.Collections.Generic.Dictionary{System.String,System.Decimal})
+  href: api/PuppeteerSharp.MetricEventArgs.html#PuppeteerSharp_MetricEventArgs__ctor_System_String_Dictionary_System_String_System_Decimal__
+  commentId: M:PuppeteerSharp.MetricEventArgs.#ctor(System.String,Dictionary{System.String,System.Decimal})
   name.vb: MetricEventArgs(String, Dictionary(Of String, Decimal))
-  fullName: PuppeteerSharp.MetricEventArgs.MetricEventArgs(System.String, System.Collections.Generic.Dictionary<System.String, System.Decimal>)
-  fullName.vb: PuppeteerSharp.MetricEventArgs.MetricEventArgs(System.String, System.Collections.Generic.Dictionary(Of System.String, System.Decimal))
+  fullName: PuppeteerSharp.MetricEventArgs.MetricEventArgs(System.String, Dictionary<System.String, System.Decimal>)
+  fullName.vb: PuppeteerSharp.MetricEventArgs.MetricEventArgs(System.String, Dictionary(Of System.String, System.Decimal))
   nameWithType: MetricEventArgs.MetricEventArgs(String, Dictionary<String, Decimal>)
   nameWithType.vb: MetricEventArgs.MetricEventArgs(String, Dictionary(Of String, Decimal))
 - uid: PuppeteerSharp.MetricEventArgs.#ctor*
@@ -4131,11 +4321,11 @@ references:
   commentId: M:PuppeteerSharp.NavigationException.#ctor
   fullName: PuppeteerSharp.NavigationException.NavigationException()
   nameWithType: NavigationException.NavigationException()
-- uid: PuppeteerSharp.NavigationException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
+- uid: PuppeteerSharp.NavigationException.#ctor(SerializationInfo,StreamingContext)
   name: NavigationException(SerializationInfo, StreamingContext)
-  href: api/PuppeteerSharp.NavigationException.html#PuppeteerSharp_NavigationException__ctor_System_Runtime_Serialization_SerializationInfo_System_Runtime_Serialization_StreamingContext_
-  commentId: M:PuppeteerSharp.NavigationException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
-  fullName: PuppeteerSharp.NavigationException.NavigationException(System.Runtime.Serialization.SerializationInfo, System.Runtime.Serialization.StreamingContext)
+  href: api/PuppeteerSharp.NavigationException.html#PuppeteerSharp_NavigationException__ctor_SerializationInfo_StreamingContext_
+  commentId: M:PuppeteerSharp.NavigationException.#ctor(SerializationInfo,StreamingContext)
+  fullName: PuppeteerSharp.NavigationException.NavigationException(SerializationInfo, StreamingContext)
   nameWithType: NavigationException.NavigationException(SerializationInfo, StreamingContext)
 - uid: PuppeteerSharp.NavigationException.#ctor(System.String)
   name: NavigationException(String)
@@ -4143,11 +4333,11 @@ references:
   commentId: M:PuppeteerSharp.NavigationException.#ctor(System.String)
   fullName: PuppeteerSharp.NavigationException.NavigationException(System.String)
   nameWithType: NavigationException.NavigationException(String)
-- uid: PuppeteerSharp.NavigationException.#ctor(System.String,System.Exception)
+- uid: PuppeteerSharp.NavigationException.#ctor(System.String,Exception)
   name: NavigationException(String, Exception)
-  href: api/PuppeteerSharp.NavigationException.html#PuppeteerSharp_NavigationException__ctor_System_String_System_Exception_
-  commentId: M:PuppeteerSharp.NavigationException.#ctor(System.String,System.Exception)
-  fullName: PuppeteerSharp.NavigationException.NavigationException(System.String, System.Exception)
+  href: api/PuppeteerSharp.NavigationException.html#PuppeteerSharp_NavigationException__ctor_System_String_Exception_
+  commentId: M:PuppeteerSharp.NavigationException.#ctor(System.String,Exception)
+  fullName: PuppeteerSharp.NavigationException.NavigationException(System.String, Exception)
   nameWithType: NavigationException.NavigationException(String, Exception)
 - uid: PuppeteerSharp.NavigationException.#ctor*
   name: NavigationException
@@ -4338,6 +4528,12 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Page.Dispose
   nameWithType: Page.Dispose
+- uid: PuppeteerSharp.Page.DOMContentLoaded
+  name: DOMContentLoaded
+  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_DOMContentLoaded
+  commentId: E:PuppeteerSharp.Page.DOMContentLoaded
+  fullName: PuppeteerSharp.Page.DOMContentLoaded
+  nameWithType: Page.DOMContentLoaded
 - uid: PuppeteerSharp.Page.EmulateAsync(PuppeteerSharp.Mobile.DeviceDescriptor)
   name: EmulateAsync(DeviceDescriptor)
   href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_EmulateAsync_PuppeteerSharp_Mobile_DeviceDescriptor_
@@ -4462,11 +4658,11 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Page.EvaluateOnNewDocumentAsync
   nameWithType: Page.EvaluateOnNewDocumentAsync
-- uid: PuppeteerSharp.Page.ExposeFunctionAsync(System.String,System.Action)
+- uid: PuppeteerSharp.Page.ExposeFunctionAsync(System.String,Action)
   name: ExposeFunctionAsync(String, Action)
-  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_ExposeFunctionAsync_System_String_System_Action_
-  commentId: M:PuppeteerSharp.Page.ExposeFunctionAsync(System.String,System.Action)
-  fullName: PuppeteerSharp.Page.ExposeFunctionAsync(System.String, System.Action)
+  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_ExposeFunctionAsync_System_String_Action_
+  commentId: M:PuppeteerSharp.Page.ExposeFunctionAsync(System.String,Action)
+  fullName: PuppeteerSharp.Page.ExposeFunctionAsync(System.String, Action)
   nameWithType: Page.ExposeFunctionAsync(String, Action)
 - uid: PuppeteerSharp.Page.ExposeFunctionAsync*
   name: ExposeFunctionAsync
@@ -4475,49 +4671,49 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Page.ExposeFunctionAsync
   nameWithType: Page.ExposeFunctionAsync
-- uid: PuppeteerSharp.Page.ExposeFunctionAsync``1(System.String,System.Func{``0})
+- uid: PuppeteerSharp.Page.ExposeFunctionAsync``1(System.String,Func{``0})
   name: ExposeFunctionAsync<TResult>(String, Func<TResult>)
-  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_ExposeFunctionAsync__1_System_String_System_Func___0__
-  commentId: M:PuppeteerSharp.Page.ExposeFunctionAsync``1(System.String,System.Func{``0})
+  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_ExposeFunctionAsync__1_System_String_Func___0__
+  commentId: M:PuppeteerSharp.Page.ExposeFunctionAsync``1(System.String,Func{``0})
   name.vb: ExposeFunctionAsync(Of TResult)(String, Func(Of TResult))
-  fullName: PuppeteerSharp.Page.ExposeFunctionAsync<TResult>(System.String, System.Func<TResult>)
-  fullName.vb: PuppeteerSharp.Page.ExposeFunctionAsync(Of TResult)(System.String, System.Func(Of TResult))
+  fullName: PuppeteerSharp.Page.ExposeFunctionAsync<TResult>(System.String, Func<TResult>)
+  fullName.vb: PuppeteerSharp.Page.ExposeFunctionAsync(Of TResult)(System.String, Func(Of TResult))
   nameWithType: Page.ExposeFunctionAsync<TResult>(String, Func<TResult>)
   nameWithType.vb: Page.ExposeFunctionAsync(Of TResult)(String, Func(Of TResult))
-- uid: PuppeteerSharp.Page.ExposeFunctionAsync``2(System.String,System.Func{``0,``1})
+- uid: PuppeteerSharp.Page.ExposeFunctionAsync``2(System.String,Func{``0,``1})
   name: ExposeFunctionAsync<T, TResult>(String, Func<T, TResult>)
-  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_ExposeFunctionAsync__2_System_String_System_Func___0___1__
-  commentId: M:PuppeteerSharp.Page.ExposeFunctionAsync``2(System.String,System.Func{``0,``1})
+  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_ExposeFunctionAsync__2_System_String_Func___0___1__
+  commentId: M:PuppeteerSharp.Page.ExposeFunctionAsync``2(System.String,Func{``0,``1})
   name.vb: ExposeFunctionAsync(Of T, TResult)(String, Func(Of T, TResult))
-  fullName: PuppeteerSharp.Page.ExposeFunctionAsync<T, TResult>(System.String, System.Func<T, TResult>)
-  fullName.vb: PuppeteerSharp.Page.ExposeFunctionAsync(Of T, TResult)(System.String, System.Func(Of T, TResult))
+  fullName: PuppeteerSharp.Page.ExposeFunctionAsync<T, TResult>(System.String, Func<T, TResult>)
+  fullName.vb: PuppeteerSharp.Page.ExposeFunctionAsync(Of T, TResult)(System.String, Func(Of T, TResult))
   nameWithType: Page.ExposeFunctionAsync<T, TResult>(String, Func<T, TResult>)
   nameWithType.vb: Page.ExposeFunctionAsync(Of T, TResult)(String, Func(Of T, TResult))
-- uid: PuppeteerSharp.Page.ExposeFunctionAsync``3(System.String,System.Func{``0,``1,``2})
+- uid: PuppeteerSharp.Page.ExposeFunctionAsync``3(System.String,Func{``0,``1,``2})
   name: ExposeFunctionAsync<T1, T2, TResult>(String, Func<T1, T2, TResult>)
-  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_ExposeFunctionAsync__3_System_String_System_Func___0___1___2__
-  commentId: M:PuppeteerSharp.Page.ExposeFunctionAsync``3(System.String,System.Func{``0,``1,``2})
+  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_ExposeFunctionAsync__3_System_String_Func___0___1___2__
+  commentId: M:PuppeteerSharp.Page.ExposeFunctionAsync``3(System.String,Func{``0,``1,``2})
   name.vb: ExposeFunctionAsync(Of T1, T2, TResult)(String, Func(Of T1, T2, TResult))
-  fullName: PuppeteerSharp.Page.ExposeFunctionAsync<T1, T2, TResult>(System.String, System.Func<T1, T2, TResult>)
-  fullName.vb: PuppeteerSharp.Page.ExposeFunctionAsync(Of T1, T2, TResult)(System.String, System.Func(Of T1, T2, TResult))
+  fullName: PuppeteerSharp.Page.ExposeFunctionAsync<T1, T2, TResult>(System.String, Func<T1, T2, TResult>)
+  fullName.vb: PuppeteerSharp.Page.ExposeFunctionAsync(Of T1, T2, TResult)(System.String, Func(Of T1, T2, TResult))
   nameWithType: Page.ExposeFunctionAsync<T1, T2, TResult>(String, Func<T1, T2, TResult>)
   nameWithType.vb: Page.ExposeFunctionAsync(Of T1, T2, TResult)(String, Func(Of T1, T2, TResult))
-- uid: PuppeteerSharp.Page.ExposeFunctionAsync``4(System.String,System.Func{``3})
+- uid: PuppeteerSharp.Page.ExposeFunctionAsync``4(System.String,Func{``3})
   name: ExposeFunctionAsync<T1, T2, T3, TResult>(String, Func<TResult>)
-  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_ExposeFunctionAsync__4_System_String_System_Func___3__
-  commentId: M:PuppeteerSharp.Page.ExposeFunctionAsync``4(System.String,System.Func{``3})
+  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_ExposeFunctionAsync__4_System_String_Func___3__
+  commentId: M:PuppeteerSharp.Page.ExposeFunctionAsync``4(System.String,Func{``3})
   name.vb: ExposeFunctionAsync(Of T1, T2, T3, TResult)(String, Func(Of TResult))
-  fullName: PuppeteerSharp.Page.ExposeFunctionAsync<T1, T2, T3, TResult>(System.String, System.Func<TResult>)
-  fullName.vb: PuppeteerSharp.Page.ExposeFunctionAsync(Of T1, T2, T3, TResult)(System.String, System.Func(Of TResult))
+  fullName: PuppeteerSharp.Page.ExposeFunctionAsync<T1, T2, T3, TResult>(System.String, Func<TResult>)
+  fullName.vb: PuppeteerSharp.Page.ExposeFunctionAsync(Of T1, T2, T3, TResult)(System.String, Func(Of TResult))
   nameWithType: Page.ExposeFunctionAsync<T1, T2, T3, TResult>(String, Func<TResult>)
   nameWithType.vb: Page.ExposeFunctionAsync(Of T1, T2, T3, TResult)(String, Func(Of TResult))
-- uid: PuppeteerSharp.Page.ExposeFunctionAsync``5(System.String,System.Func{``0,``1,``2,``3,``4})
+- uid: PuppeteerSharp.Page.ExposeFunctionAsync``5(System.String,Func{``0,``1,``2,``3,``4})
   name: ExposeFunctionAsync<T1, T2, T3, T4, TResult>(String, Func<T1, T2, T3, T4, TResult>)
-  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_ExposeFunctionAsync__5_System_String_System_Func___0___1___2___3___4__
-  commentId: M:PuppeteerSharp.Page.ExposeFunctionAsync``5(System.String,System.Func{``0,``1,``2,``3,``4})
+  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_ExposeFunctionAsync__5_System_String_Func___0___1___2___3___4__
+  commentId: M:PuppeteerSharp.Page.ExposeFunctionAsync``5(System.String,Func{``0,``1,``2,``3,``4})
   name.vb: ExposeFunctionAsync(Of T1, T2, T3, T4, TResult)(String, Func(Of T1, T2, T3, T4, TResult))
-  fullName: PuppeteerSharp.Page.ExposeFunctionAsync<T1, T2, T3, T4, TResult>(System.String, System.Func<T1, T2, T3, T4, TResult>)
-  fullName.vb: PuppeteerSharp.Page.ExposeFunctionAsync(Of T1, T2, T3, T4, TResult)(System.String, System.Func(Of T1, T2, T3, T4, TResult))
+  fullName: PuppeteerSharp.Page.ExposeFunctionAsync<T1, T2, T3, T4, TResult>(System.String, Func<T1, T2, T3, T4, TResult>)
+  fullName.vb: PuppeteerSharp.Page.ExposeFunctionAsync(Of T1, T2, T3, T4, TResult)(System.String, Func(Of T1, T2, T3, T4, TResult))
   nameWithType: Page.ExposeFunctionAsync<T1, T2, T3, T4, TResult>(String, Func<T1, T2, T3, T4, TResult>)
   nameWithType.vb: Page.ExposeFunctionAsync(Of T1, T2, T3, T4, TResult)(String, Func(Of T1, T2, T3, T4, TResult))
 - uid: PuppeteerSharp.Page.FocusAsync(System.String)
@@ -5007,13 +5203,13 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Page.SetCookieAsync
   nameWithType: Page.SetCookieAsync
-- uid: PuppeteerSharp.Page.SetExtraHttpHeadersAsync(System.Collections.Generic.Dictionary{System.String,System.String})
+- uid: PuppeteerSharp.Page.SetExtraHttpHeadersAsync(Dictionary{System.String,System.String})
   name: SetExtraHttpHeadersAsync(Dictionary<String, String>)
-  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_SetExtraHttpHeadersAsync_System_Collections_Generic_Dictionary_System_String_System_String__
-  commentId: M:PuppeteerSharp.Page.SetExtraHttpHeadersAsync(System.Collections.Generic.Dictionary{System.String,System.String})
+  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_SetExtraHttpHeadersAsync_Dictionary_System_String_System_String__
+  commentId: M:PuppeteerSharp.Page.SetExtraHttpHeadersAsync(Dictionary{System.String,System.String})
   name.vb: SetExtraHttpHeadersAsync(Dictionary(Of String, String))
-  fullName: PuppeteerSharp.Page.SetExtraHttpHeadersAsync(System.Collections.Generic.Dictionary<System.String, System.String>)
-  fullName.vb: PuppeteerSharp.Page.SetExtraHttpHeadersAsync(System.Collections.Generic.Dictionary(Of System.String, System.String))
+  fullName: PuppeteerSharp.Page.SetExtraHttpHeadersAsync(Dictionary<System.String, System.String>)
+  fullName.vb: PuppeteerSharp.Page.SetExtraHttpHeadersAsync(Dictionary(Of System.String, System.String))
   nameWithType: Page.SetExtraHttpHeadersAsync(Dictionary<String, String>)
   nameWithType.vb: Page.SetExtraHttpHeadersAsync(Dictionary(Of String, String))
 - uid: PuppeteerSharp.Page.SetExtraHttpHeadersAsync*
@@ -5249,6 +5445,19 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Page.WaitForTimeoutAsync
   nameWithType: Page.WaitForTimeoutAsync
+- uid: PuppeteerSharp.Page.WaitForXPathAsync(System.String,PuppeteerSharp.WaitForSelectorOptions)
+  name: WaitForXPathAsync(String, WaitForSelectorOptions)
+  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_WaitForXPathAsync_System_String_PuppeteerSharp_WaitForSelectorOptions_
+  commentId: M:PuppeteerSharp.Page.WaitForXPathAsync(System.String,PuppeteerSharp.WaitForSelectorOptions)
+  fullName: PuppeteerSharp.Page.WaitForXPathAsync(System.String, PuppeteerSharp.WaitForSelectorOptions)
+  nameWithType: Page.WaitForXPathAsync(String, WaitForSelectorOptions)
+- uid: PuppeteerSharp.Page.WaitForXPathAsync*
+  name: WaitForXPathAsync
+  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_WaitForXPathAsync_
+  commentId: Overload:PuppeteerSharp.Page.WaitForXPathAsync
+  isSpec: "True"
+  fullName: PuppeteerSharp.Page.WaitForXPathAsync
+  nameWithType: Page.WaitForXPathAsync
 - uid: PuppeteerSharp.Page.XPathAsync(System.String)
   name: XPathAsync(String)
   href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_XPathAsync_System_String_
@@ -5742,6 +5951,19 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Puppeteer.ConnectAsync
   nameWithType: Puppeteer.ConnectAsync
+- uid: PuppeteerSharp.Puppeteer.CreateBrowserFetcher(PuppeteerSharp.BrowserFetcherOptions)
+  name: CreateBrowserFetcher(BrowserFetcherOptions)
+  href: api/PuppeteerSharp.Puppeteer.html#PuppeteerSharp_Puppeteer_CreateBrowserFetcher_PuppeteerSharp_BrowserFetcherOptions_
+  commentId: M:PuppeteerSharp.Puppeteer.CreateBrowserFetcher(PuppeteerSharp.BrowserFetcherOptions)
+  fullName: PuppeteerSharp.Puppeteer.CreateBrowserFetcher(PuppeteerSharp.BrowserFetcherOptions)
+  nameWithType: Puppeteer.CreateBrowserFetcher(BrowserFetcherOptions)
+- uid: PuppeteerSharp.Puppeteer.CreateBrowserFetcher*
+  name: CreateBrowserFetcher
+  href: api/PuppeteerSharp.Puppeteer.html#PuppeteerSharp_Puppeteer_CreateBrowserFetcher_
+  commentId: Overload:PuppeteerSharp.Puppeteer.CreateBrowserFetcher
+  isSpec: "True"
+  fullName: PuppeteerSharp.Puppeteer.CreateBrowserFetcher
+  nameWithType: Puppeteer.CreateBrowserFetcher
 - uid: PuppeteerSharp.Puppeteer.DefaultArgs
   name: DefaultArgs
   href: api/PuppeteerSharp.Puppeteer.html#PuppeteerSharp_Puppeteer_DefaultArgs
@@ -5768,12 +5990,12 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Puppeteer.GetExecutablePath
   nameWithType: Puppeteer.GetExecutablePath
-- uid: PuppeteerSharp.Puppeteer.LaunchAsync(PuppeteerSharp.LaunchOptions,System.Int32,ILoggerFactory)
-  name: LaunchAsync(LaunchOptions, Int32, ILoggerFactory)
-  href: api/PuppeteerSharp.Puppeteer.html#PuppeteerSharp_Puppeteer_LaunchAsync_PuppeteerSharp_LaunchOptions_System_Int32_ILoggerFactory_
-  commentId: M:PuppeteerSharp.Puppeteer.LaunchAsync(PuppeteerSharp.LaunchOptions,System.Int32,ILoggerFactory)
-  fullName: PuppeteerSharp.Puppeteer.LaunchAsync(PuppeteerSharp.LaunchOptions, System.Int32, ILoggerFactory)
-  nameWithType: Puppeteer.LaunchAsync(LaunchOptions, Int32, ILoggerFactory)
+- uid: PuppeteerSharp.Puppeteer.LaunchAsync(PuppeteerSharp.LaunchOptions,ILoggerFactory)
+  name: LaunchAsync(LaunchOptions, ILoggerFactory)
+  href: api/PuppeteerSharp.Puppeteer.html#PuppeteerSharp_Puppeteer_LaunchAsync_PuppeteerSharp_LaunchOptions_ILoggerFactory_
+  commentId: M:PuppeteerSharp.Puppeteer.LaunchAsync(PuppeteerSharp.LaunchOptions,ILoggerFactory)
+  fullName: PuppeteerSharp.Puppeteer.LaunchAsync(PuppeteerSharp.LaunchOptions, ILoggerFactory)
+  nameWithType: Puppeteer.LaunchAsync(LaunchOptions, ILoggerFactory)
 - uid: PuppeteerSharp.Puppeteer.LaunchAsync*
   name: LaunchAsync
   href: api/PuppeteerSharp.Puppeteer.html#PuppeteerSharp_Puppeteer_LaunchAsync_
@@ -5793,11 +6015,11 @@ references:
   commentId: M:PuppeteerSharp.PuppeteerException.#ctor
   fullName: PuppeteerSharp.PuppeteerException.PuppeteerException()
   nameWithType: PuppeteerException.PuppeteerException()
-- uid: PuppeteerSharp.PuppeteerException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
+- uid: PuppeteerSharp.PuppeteerException.#ctor(SerializationInfo,StreamingContext)
   name: PuppeteerException(SerializationInfo, StreamingContext)
-  href: api/PuppeteerSharp.PuppeteerException.html#PuppeteerSharp_PuppeteerException__ctor_System_Runtime_Serialization_SerializationInfo_System_Runtime_Serialization_StreamingContext_
-  commentId: M:PuppeteerSharp.PuppeteerException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
-  fullName: PuppeteerSharp.PuppeteerException.PuppeteerException(System.Runtime.Serialization.SerializationInfo, System.Runtime.Serialization.StreamingContext)
+  href: api/PuppeteerSharp.PuppeteerException.html#PuppeteerSharp_PuppeteerException__ctor_SerializationInfo_StreamingContext_
+  commentId: M:PuppeteerSharp.PuppeteerException.#ctor(SerializationInfo,StreamingContext)
+  fullName: PuppeteerSharp.PuppeteerException.PuppeteerException(SerializationInfo, StreamingContext)
   nameWithType: PuppeteerException.PuppeteerException(SerializationInfo, StreamingContext)
 - uid: PuppeteerSharp.PuppeteerException.#ctor(System.String)
   name: PuppeteerException(String)
@@ -5805,11 +6027,11 @@ references:
   commentId: M:PuppeteerSharp.PuppeteerException.#ctor(System.String)
   fullName: PuppeteerSharp.PuppeteerException.PuppeteerException(System.String)
   nameWithType: PuppeteerException.PuppeteerException(String)
-- uid: PuppeteerSharp.PuppeteerException.#ctor(System.String,System.Exception)
+- uid: PuppeteerSharp.PuppeteerException.#ctor(System.String,Exception)
   name: PuppeteerException(String, Exception)
-  href: api/PuppeteerSharp.PuppeteerException.html#PuppeteerSharp_PuppeteerException__ctor_System_String_System_Exception_
-  commentId: M:PuppeteerSharp.PuppeteerException.#ctor(System.String,System.Exception)
-  fullName: PuppeteerSharp.PuppeteerException.PuppeteerException(System.String, System.Exception)
+  href: api/PuppeteerSharp.PuppeteerException.html#PuppeteerSharp_PuppeteerException__ctor_System_String_Exception_
+  commentId: M:PuppeteerSharp.PuppeteerException.#ctor(System.String,Exception)
+  fullName: PuppeteerSharp.PuppeteerException.PuppeteerException(System.String, Exception)
   nameWithType: PuppeteerException.PuppeteerException(String, Exception)
 - uid: PuppeteerSharp.PuppeteerException.#ctor*
   name: PuppeteerException
@@ -6154,6 +6376,19 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Response.FromCache
   nameWithType: Response.FromCache
+- uid: PuppeteerSharp.Response.FromServiceWorker
+  name: FromServiceWorker
+  href: api/PuppeteerSharp.Response.html#PuppeteerSharp_Response_FromServiceWorker
+  commentId: P:PuppeteerSharp.Response.FromServiceWorker
+  fullName: PuppeteerSharp.Response.FromServiceWorker
+  nameWithType: Response.FromServiceWorker
+- uid: PuppeteerSharp.Response.FromServiceWorker*
+  name: FromServiceWorker
+  href: api/PuppeteerSharp.Response.html#PuppeteerSharp_Response_FromServiceWorker_
+  commentId: Overload:PuppeteerSharp.Response.FromServiceWorker
+  isSpec: "True"
+  fullName: PuppeteerSharp.Response.FromServiceWorker
+  nameWithType: Response.FromServiceWorker
 - uid: PuppeteerSharp.Response.Headers
   name: Headers
   href: api/PuppeteerSharp.Response.html#PuppeteerSharp_Response_Headers
@@ -6402,6 +6637,32 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.RevisionInfo.FolderPath
   nameWithType: RevisionInfo.FolderPath
+- uid: PuppeteerSharp.RevisionInfo.Local
+  name: Local
+  href: api/PuppeteerSharp.RevisionInfo.html#PuppeteerSharp_RevisionInfo_Local
+  commentId: P:PuppeteerSharp.RevisionInfo.Local
+  fullName: PuppeteerSharp.RevisionInfo.Local
+  nameWithType: RevisionInfo.Local
+- uid: PuppeteerSharp.RevisionInfo.Local*
+  name: Local
+  href: api/PuppeteerSharp.RevisionInfo.html#PuppeteerSharp_RevisionInfo_Local_
+  commentId: Overload:PuppeteerSharp.RevisionInfo.Local
+  isSpec: "True"
+  fullName: PuppeteerSharp.RevisionInfo.Local
+  nameWithType: RevisionInfo.Local
+- uid: PuppeteerSharp.RevisionInfo.Platform
+  name: Platform
+  href: api/PuppeteerSharp.RevisionInfo.html#PuppeteerSharp_RevisionInfo_Platform
+  commentId: P:PuppeteerSharp.RevisionInfo.Platform
+  fullName: PuppeteerSharp.RevisionInfo.Platform
+  nameWithType: RevisionInfo.Platform
+- uid: PuppeteerSharp.RevisionInfo.Platform*
+  name: Platform
+  href: api/PuppeteerSharp.RevisionInfo.html#PuppeteerSharp_RevisionInfo_Platform_
+  commentId: Overload:PuppeteerSharp.RevisionInfo.Platform
+  isSpec: "True"
+  fullName: PuppeteerSharp.RevisionInfo.Platform
+  nameWithType: RevisionInfo.Platform
 - uid: PuppeteerSharp.RevisionInfo.Revision
   name: Revision
   href: api/PuppeteerSharp.RevisionInfo.html#PuppeteerSharp_RevisionInfo_Revision
@@ -6415,6 +6676,19 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.RevisionInfo.Revision
   nameWithType: RevisionInfo.Revision
+- uid: PuppeteerSharp.RevisionInfo.Url
+  name: Url
+  href: api/PuppeteerSharp.RevisionInfo.html#PuppeteerSharp_RevisionInfo_Url
+  commentId: P:PuppeteerSharp.RevisionInfo.Url
+  fullName: PuppeteerSharp.RevisionInfo.Url
+  nameWithType: RevisionInfo.Url
+- uid: PuppeteerSharp.RevisionInfo.Url*
+  name: Url
+  href: api/PuppeteerSharp.RevisionInfo.html#PuppeteerSharp_RevisionInfo_Url_
+  commentId: Overload:PuppeteerSharp.RevisionInfo.Url
+  isSpec: "True"
+  fullName: PuppeteerSharp.RevisionInfo.Url
+  nameWithType: RevisionInfo.Url
 - uid: PuppeteerSharp.ScreenshotOptions
   name: ScreenshotOptions
   href: api/PuppeteerSharp.ScreenshotOptions.html

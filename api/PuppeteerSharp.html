@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Namespace PuppeteerSharp
    ">
-    <meta name="generator" content="docfx 2.36.1.0">
+    <meta name="generator" content="docfx 2.37.0.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -86,6 +86,13 @@
       <h4><a class="xref" href="PuppeteerSharp.Browser.html">Browser</a></h4>
       <section><p>Provides methods to interact with a browser in Chromium.</p>
 </section>
+      <h4><a class="xref" href="PuppeteerSharp.BrowserFetcher.html">BrowserFetcher</a></h4>
+      <section><p>BrowserFetcher can download and manage different versions of Chromium.
+BrowserFetcher operates on revision strings that specify a precise version of Chromium, e.g. 533271. Revision strings can be obtained from omahaproxy.appspot.com.</p>
+</section>
+      <h4><a class="xref" href="PuppeteerSharp.BrowserFetcherOptions.html">BrowserFetcherOptions</a></h4>
+      <section><p>Browser fetcher options used to construct a <a class="xref" href="PuppeteerSharp.BrowserFetcher.html">BrowserFetcher</a></p>
+</section>
       <h4><a class="xref" href="PuppeteerSharp.CDPSession.html">CDPSession</a></h4>
       <section><p>The CDPSession instances are used to talk raw Chrome Devtools Protocol:</p>
 <ul>
@@ -136,9 +143,6 @@ await client.SendAsync(&quot;Animation.setPlaybackRate&quot;, new
       <h4><a class="xref" href="PuppeteerSharp.DialogEventArgs.html">DialogEventArgs</a></h4>
       <section><p><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_Dialog">Dialog</a> arguments.</p>
 </section>
-      <h4><a class="xref" href="PuppeteerSharp.Downloader.html">Downloader</a></h4>
-      <section><p>Downloader class used to download a chromium version from Google.</p>
-</section>
       <h4><a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a></h4>
       <section><p>Inherits from <a class="xref" href="PuppeteerSharp.JSHandle.html">JSHandle</a>. It represents an in-page DOM element.
 ElementHandles can be created by <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_QuerySelectorAsync_System_String_">QuerySelectorAsync(String)</a> or <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_QuerySelectorAllAsync_System_String_">QuerySelectorAllAsync(String)</a>.</p>
@@ -151,7 +155,7 @@ ElementHandles can be created by <a class="xref" href="PuppeteerSharp.Page.html#
 </section>
       <h4><a class="xref" href="PuppeteerSharp.ExecutionContext.html">ExecutionContext</a></h4>
       <section><p>The class represents a context for JavaScript execution. Examples of JavaScript contexts are:
-Each <a class="xref" href="PuppeteerSharp.Frame.html">Frame</a> has a separate <a class="xref" href="PuppeteerSharp.ExecutionContext.html">ExecutionContext</a>
+Each <a class="xref" href="PuppeteerSharp.ExecutionContext.html#PuppeteerSharp_ExecutionContext_Frame">Frame</a> has a separate <a class="xref" href="PuppeteerSharp.ExecutionContext.html">ExecutionContext</a>
 All kind of web workers have their own contexts</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.Extensions.html">Extensions</a></h4>
@@ -229,6 +233,9 @@ At every point of time, page exposes its current frame tree via the <a class="xr
       <h4><a class="xref" href="PuppeteerSharp.ResponseCreatedEventArgs.html">ResponseCreatedEventArgs</a></h4>
       <section><p><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_Response">Response</a> arguments.</p>
 </section>
+      <h4><a class="xref" href="PuppeteerSharp.RevisionInfo.html">RevisionInfo</a></h4>
+      <section><p>Revision info.</p>
+</section>
       <h4><a class="xref" href="PuppeteerSharp.ScreenshotOptions.html">ScreenshotOptions</a></h4>
       <section><p>Options to be used in <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_ScreenshotAsync_System_String_PuppeteerSharp_ScreenshotOptions_">ScreenshotAsync(String, ScreenshotOptions)</a>, <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_ScreenshotStreamAsync_PuppeteerSharp_ScreenshotOptions_">ScreenshotStreamAsync(ScreenshotOptions)</a> and <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_ScreenshotDataAsync_PuppeteerSharp_ScreenshotOptions_">ScreenshotDataAsync(ScreenshotOptions)</a></p>
 </section>
@@ -273,9 +280,6 @@ At every point of time, page exposes its current frame tree via the <a class="xr
       <h4><a class="xref" href="PuppeteerSharp.ResponseData.html">ResponseData</a></h4>
       <section><p>Response that will fulfill a request.</p>
 </section>
-      <h4><a class="xref" href="PuppeteerSharp.RevisionInfo.html">RevisionInfo</a></h4>
-      <section><p>Revision info.</p>
-</section>
     <h3 id="interfaces">Interfaces
   </h3>
       <h4><a class="xref" href="PuppeteerSharp.IBrowserOptions.html">IBrowserOptions</a></h4>
@@ -290,7 +294,7 @@ At every point of time, page exposes its current frame tree via the <a class="xr
       <section><p>Dialog type.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.Platform.html">Platform</a></h4>
-      <section><p>Platform used by a <a class="xref" href="PuppeteerSharp.Downloader.html">Downloader</a>.</p>
+      <section><p>Platform used by a <a class="xref" href="PuppeteerSharp.BrowserFetcher.html">BrowserFetcher</a>.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.RequestAbortErrorCode.html">RequestAbortErrorCode</a></h4>
       <section><p>Abort error codes. used by <a class="xref" href="PuppeteerSharp.Request.html#PuppeteerSharp_Request_AbortAsync_PuppeteerSharp_RequestAbortErrorCode_">AbortAsync(RequestAbortErrorCode)</a></p>

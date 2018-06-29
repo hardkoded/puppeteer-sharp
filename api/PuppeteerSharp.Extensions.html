@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class Extensions
    ">
-    <meta name="generator" content="docfx 2.36.1.0">
+    <meta name="generator" content="docfx 2.37.0.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -85,19 +85,19 @@
   <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
   <h5 id="PuppeteerSharp_Extensions_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static class Extensions</code></pre>
+    <pre><code class="lang-csharp hljs">public static class Extensions : object</code></pre>
   </div>
   <h3 id="methods">Methods
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EvaluateFunctionAsync&lt;T&gt;(Task&lt;ElementHandle&gt;, String, Object[])&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Extensions.cs/%23L19">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EvaluateFunctionAsync&lt;T&gt;(Task&lt;ElementHandle&gt;, String, Object[])&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Extensions.cs/%23L19">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Extensions.cs/#L19">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Extensions.cs/#L19">View Source</a>
   </span>
   <a id="PuppeteerSharp_Extensions_EvaluateFunctionAsync_" data-uid="PuppeteerSharp.Extensions.EvaluateFunctionAsync*"></a>
-  <h4 id="PuppeteerSharp_Extensions_EvaluateFunctionAsync__1_System_Threading_Tasks_Task_PuppeteerSharp_ElementHandle__System_String_System_Object___" data-uid="PuppeteerSharp.Extensions.EvaluateFunctionAsync``1(System.Threading.Tasks.Task{PuppeteerSharp.ElementHandle},System.String,System.Object[])">EvaluateFunctionAsync&lt;T&gt;(Task&lt;ElementHandle&gt;, String, Object[])</h4>
+  <h4 id="PuppeteerSharp_Extensions_EvaluateFunctionAsync__1_Task_PuppeteerSharp_ElementHandle__System_String_System_Object___" data-uid="PuppeteerSharp.Extensions.EvaluateFunctionAsync``1(Task{PuppeteerSharp.ElementHandle},System.String,System.Object[])">EvaluateFunctionAsync&lt;T&gt;(Task&lt;ElementHandle&gt;, String, Object[])</h4>
   <div class="markdown level1 summary"><p>Runs <code data-dev-comment-type="paramref" class="paramref">pageFunction</code> within the frame and passes it the outcome of <code data-dev-comment-type="paramref" class="paramref">elementHandleTask</code> as the first argument</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -116,7 +116,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a>&gt;</td>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a>&gt;</td>
         <td><span class="parametername">elementHandleTask</span></td>
         <td><p>A task that returns an <a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a> that will be used as the first argument in <code data-dev-comment-type="paramref" class="paramref">pageFunction</code></p>
 </td>
@@ -145,7 +145,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;T&gt;</td>
+        <td><span class="xref">Task</span>&lt;T&gt;</td>
         <td><p>Task which resolves to the return value of <code>pageFunction</code></p>
 </td>
       </tr>
@@ -185,13 +185,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EvaluateFunctionAsync&lt;T&gt;(Task&lt;JSHandle&gt;, String, Object[])&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Extensions.cs/%23L43">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EvaluateFunctionAsync&lt;T&gt;(Task&lt;JSHandle&gt;, String, Object[])&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Extensions.cs/%23L43">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Extensions.cs/#L43">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Extensions.cs/#L43">View Source</a>
   </span>
   <a id="PuppeteerSharp_Extensions_EvaluateFunctionAsync_" data-uid="PuppeteerSharp.Extensions.EvaluateFunctionAsync*"></a>
-  <h4 id="PuppeteerSharp_Extensions_EvaluateFunctionAsync__1_System_Threading_Tasks_Task_PuppeteerSharp_JSHandle__System_String_System_Object___" data-uid="PuppeteerSharp.Extensions.EvaluateFunctionAsync``1(System.Threading.Tasks.Task{PuppeteerSharp.JSHandle},System.String,System.Object[])">EvaluateFunctionAsync&lt;T&gt;(Task&lt;JSHandle&gt;, String, Object[])</h4>
+  <h4 id="PuppeteerSharp_Extensions_EvaluateFunctionAsync__1_Task_PuppeteerSharp_JSHandle__System_String_System_Object___" data-uid="PuppeteerSharp.Extensions.EvaluateFunctionAsync``1(Task{PuppeteerSharp.JSHandle},System.String,System.Object[])">EvaluateFunctionAsync&lt;T&gt;(Task&lt;JSHandle&gt;, String, Object[])</h4>
   <div class="markdown level1 summary"><p>Runs <code data-dev-comment-type="paramref" class="paramref">pageFunction</code> within the frame and passes it the outcome of <code data-dev-comment-type="paramref" class="paramref">arrayHandleTask</code> as the first argument. Use only after <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_QuerySelectorAllHandleAsync_System_String_">QuerySelectorAllHandleAsync(String)</a></p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -210,7 +210,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="PuppeteerSharp.JSHandle.html">JSHandle</a>&gt;</td>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="PuppeteerSharp.JSHandle.html">JSHandle</a>&gt;</td>
         <td><span class="parametername">arrayHandleTask</span></td>
         <td><p>A task that returns an <a class="xref" href="PuppeteerSharp.JSHandle.html">JSHandle</a> that represents an array of <a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a> that will be used as the first argument in <code data-dev-comment-type="paramref" class="paramref">pageFunction</code></p>
 </td>
@@ -239,7 +239,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;T&gt;</td>
+        <td><span class="xref">Task</span>&lt;T&gt;</td>
         <td><p>Task which resolves to the return value of <code>pageFunction</code></p>
 </td>
       </tr>
@@ -268,10 +268,10 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Extensions&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Extensions.cs/%23L8" class="contribution-link">Request doc improvement</a>
+                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Extensions&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Extensions.cs/%23L8" class="contribution-link">Request doc improvement</a>
                   </li>
                   <li>
-                    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Extensions.cs/#L8" class="contribution-link">View Source</a>
+                    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Extensions.cs/#L8" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

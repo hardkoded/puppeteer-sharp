@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class ExecutionContext
    ">
-    <meta name="generator" content="docfx 2.36.1.0">
+    <meta name="generator" content="docfx 2.37.0.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -74,7 +74,7 @@
   <h1 id="PuppeteerSharp_ExecutionContext" data-uid="PuppeteerSharp.ExecutionContext" class="text-break">Class ExecutionContext
   </h1>
   <div class="markdown level0 summary"><p>The class represents a context for JavaScript execution. Examples of JavaScript contexts are:
-Each <a class="xref" href="PuppeteerSharp.Frame.html">Frame</a> has a separate <a class="xref" href="PuppeteerSharp.ExecutionContext.html">ExecutionContext</a>
+Each <a class="xref" href="PuppeteerSharp.ExecutionContext.html#PuppeteerSharp_ExecutionContext_Frame">Frame</a> has a separate <a class="xref" href="PuppeteerSharp.ExecutionContext.html">ExecutionContext</a>
 All kind of web workers have their own contexts</p>
 </div>
   <div class="markdown level0 conceptual"></div>
@@ -87,16 +87,50 @@ All kind of web workers have their own contexts</p>
   <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
   <h5 id="PuppeteerSharp_ExecutionContext_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class ExecutionContext</code></pre>
+    <pre><code class="lang-csharp hljs">public class ExecutionContext : object</code></pre>
   </div>
   <h3 id="properties">Properties
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20FrameId&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/ExecutionContext.cs/%23L33">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Frame&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/%23L45">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/ExecutionContext.cs/#L33">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/#L45">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_ExecutionContext_Frame_" data-uid="PuppeteerSharp.ExecutionContext.Frame*"></a>
+  <h4 id="PuppeteerSharp_ExecutionContext_Frame" data-uid="PuppeteerSharp.ExecutionContext.Frame">Frame</h4>
+  <div class="markdown level1 summary"><p>Frame associated with this execution context.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Frame Frame { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.Frame.html">Frame</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_ExecutionContext_Frame_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>NOTE Not every execution context is associated with a frame. For example, workers and extensions have execution contexts that are not associated with frames.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20FrameId&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/%23L38">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/#L38">View Source</a>
   </span>
   <a id="PuppeteerSharp_ExecutionContext_FrameId_" data-uid="PuppeteerSharp.ExecutionContext.FrameId*"></a>
   <h4 id="PuppeteerSharp_ExecutionContext_FrameId" data-uid="PuppeteerSharp.ExecutionContext.FrameId">FrameId</h4>
@@ -125,15 +159,15 @@ All kind of web workers have their own contexts</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20IsDefault&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/ExecutionContext.cs/%23L39">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20IsDefault&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/%23L51">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/ExecutionContext.cs/#L39">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/#L51">View Source</a>
   </span>
   <a id="PuppeteerSharp_ExecutionContext_IsDefault_" data-uid="PuppeteerSharp.ExecutionContext.IsDefault*"></a>
   <h4 id="PuppeteerSharp_ExecutionContext_IsDefault" data-uid="PuppeteerSharp.ExecutionContext.IsDefault">IsDefault</h4>
   <div class="markdown level1 summary"><p>Gets or sets a value indicating whether this <a class="xref" href="PuppeteerSharp.ExecutionContext.html">ExecutionContext</a> is the
-default context of a <a class="xref" href="PuppeteerSharp.Frame.html">Frame</a></p>
+default context of a <a class="xref" href="PuppeteerSharp.ExecutionContext.html#PuppeteerSharp_ExecutionContext_Frame">Frame</a></p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -160,10 +194,10 @@ default context of a <a class="xref" href="PuppeteerSharp.Frame.html">Frame</a><
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EvaluateExpressionAsync(String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/ExecutionContext.cs/%23L51">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EvaluateExpressionAsync(String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/%23L63">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/ExecutionContext.cs/#L51">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/#L63">View Source</a>
   </span>
   <a id="PuppeteerSharp_ExecutionContext_EvaluateExpressionAsync_" data-uid="PuppeteerSharp.ExecutionContext.EvaluateExpressionAsync*"></a>
   <h4 id="PuppeteerSharp_ExecutionContext_EvaluateExpressionAsync_System_String_" data-uid="PuppeteerSharp.ExecutionContext.EvaluateExpressionAsync(System.String)">EvaluateExpressionAsync(String)</h4>
@@ -202,7 +236,7 @@ default context of a <a class="xref" href="PuppeteerSharp.Frame.html">Frame</a><
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">System.Object</span>&gt;</td>
+        <td><span class="xref">Task</span>&lt;<span class="xref">System.Object</span>&gt;</td>
         <td><p>Task which resolves to script return value</p>
 </td>
       </tr>
@@ -218,10 +252,10 @@ default context of a <a class="xref" href="PuppeteerSharp.Frame.html">Frame</a><
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EvaluateExpressionAsync&lt;T&gt;(String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/ExecutionContext.cs/%23L65">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EvaluateExpressionAsync&lt;T&gt;(String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/%23L77">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/ExecutionContext.cs/#L65">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/#L77">View Source</a>
   </span>
   <a id="PuppeteerSharp_ExecutionContext_EvaluateExpressionAsync_" data-uid="PuppeteerSharp.ExecutionContext.EvaluateExpressionAsync*"></a>
   <h4 id="PuppeteerSharp_ExecutionContext_EvaluateExpressionAsync__1_System_String_" data-uid="PuppeteerSharp.ExecutionContext.EvaluateExpressionAsync``1(System.String)">EvaluateExpressionAsync&lt;T&gt;(String)</h4>
@@ -260,7 +294,7 @@ default context of a <a class="xref" href="PuppeteerSharp.Frame.html">Frame</a><
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;T&gt;</td>
+        <td><span class="xref">Task</span>&lt;T&gt;</td>
         <td><p>Task which resolves to script return value</p>
 </td>
       </tr>
@@ -292,10 +326,10 @@ default context of a <a class="xref" href="PuppeteerSharp.Frame.html">Frame</a><
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EvaluateFunctionAsync(String, Object[])&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/ExecutionContext.cs/%23L80">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EvaluateFunctionAsync(String, Object[])&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/%23L92">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/ExecutionContext.cs/#L80">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/#L92">View Source</a>
   </span>
   <a id="PuppeteerSharp_ExecutionContext_EvaluateFunctionAsync_" data-uid="PuppeteerSharp.ExecutionContext.EvaluateFunctionAsync*"></a>
   <h4 id="PuppeteerSharp_ExecutionContext_EvaluateFunctionAsync_System_String_System_Object___" data-uid="PuppeteerSharp.ExecutionContext.EvaluateFunctionAsync(System.String,System.Object[])">EvaluateFunctionAsync(String, Object[])</h4>
@@ -340,7 +374,7 @@ default context of a <a class="xref" href="PuppeteerSharp.Frame.html">Frame</a><
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">System.Object</span>&gt;</td>
+        <td><span class="xref">Task</span>&lt;<span class="xref">System.Object</span>&gt;</td>
         <td><p>Task which resolves to script return value</p>
 </td>
       </tr>
@@ -357,10 +391,10 @@ default context of a <a class="xref" href="PuppeteerSharp.Frame.html">Frame</a><
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EvaluateFunctionAsync&lt;T&gt;(String, Object[])&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/ExecutionContext.cs/%23L96">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EvaluateFunctionAsync&lt;T&gt;(String, Object[])&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/%23L108">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/ExecutionContext.cs/#L96">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/#L108">View Source</a>
   </span>
   <a id="PuppeteerSharp_ExecutionContext_EvaluateFunctionAsync_" data-uid="PuppeteerSharp.ExecutionContext.EvaluateFunctionAsync*"></a>
   <h4 id="PuppeteerSharp_ExecutionContext_EvaluateFunctionAsync__1_System_String_System_Object___" data-uid="PuppeteerSharp.ExecutionContext.EvaluateFunctionAsync``1(System.String,System.Object[])">EvaluateFunctionAsync&lt;T&gt;(String, Object[])</h4>
@@ -405,7 +439,7 @@ default context of a <a class="xref" href="PuppeteerSharp.Frame.html">Frame</a><
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;T&gt;</td>
+        <td><span class="xref">Task</span>&lt;T&gt;</td>
         <td><p>Task which resolves to script return value</p>
 </td>
       </tr>
@@ -438,10 +472,10 @@ default context of a <a class="xref" href="PuppeteerSharp.Frame.html">Frame</a><
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20QueryObjectsAsync(JSHandle)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/ExecutionContext.cs/%23L104">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20QueryObjectsAsync(JSHandle)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/%23L116">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/ExecutionContext.cs/#L104">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/#L116">View Source</a>
   </span>
   <a id="PuppeteerSharp_ExecutionContext_QueryObjectsAsync_" data-uid="PuppeteerSharp.ExecutionContext.QueryObjectsAsync*"></a>
   <h4 id="PuppeteerSharp_ExecutionContext_QueryObjectsAsync_PuppeteerSharp_JSHandle_" data-uid="PuppeteerSharp.ExecutionContext.QueryObjectsAsync(PuppeteerSharp.JSHandle)">QueryObjectsAsync(JSHandle)</h4>
@@ -480,7 +514,7 @@ default context of a <a class="xref" href="PuppeteerSharp.Frame.html">Frame</a><
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">System.Object</span>&gt;</td>
+        <td><span class="xref">Task</span>&lt;<span class="xref">System.Object</span>&gt;</td>
         <td><p>A task which resolves to a handle to an array of objects with this prototype.</p>
 </td>
       </tr>
@@ -494,10 +528,10 @@ default context of a <a class="xref" href="PuppeteerSharp.Frame.html">Frame</a><
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20ExecutionContext&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/ExecutionContext.cs/%23L14" class="contribution-link">Request doc improvement</a>
+                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20ExecutionContext&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/%23L14" class="contribution-link">Request doc improvement</a>
                   </li>
                   <li>
-                    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/ExecutionContext.cs/#L14" class="contribution-link">View Source</a>
+                    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/#L14" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

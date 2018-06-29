@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class Frame
    ">
-    <meta name="generator" content="docfx 2.36.1.0">
+    <meta name="generator" content="docfx 2.37.0.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -92,11 +92,11 @@ At every point of time, page exposes its current frame tree via the <a class="xr
   <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
   <h5 id="PuppeteerSharp_Frame_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class Frame</code></pre>
+    <pre><code class="lang-csharp hljs">public class Frame : object</code></pre>
   </div>
   <h5 id="PuppeteerSharp_Frame_examples"><strong>Examples</strong></h5>
   <p>An example of dumping frame tree</p>
-<pre><code>var browser = await Puppeteer.LaunchAsync(new LaunchOptions(), Downloader.DefaultRevision);
+<pre><code>var browser = await Puppeteer.LaunchAsync(new LaunchOptions());
 var page = await browser.NewPageAsync();
 await page.GoToAsync(&quot;https://www.google.com/chrome/browser/canary.html&quot;);
 dumpFrameTree(page.MainFrame, string.Empty);
@@ -115,10 +115,10 @@ void dumpFrameTree(Frame frame, string indent)
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20ChildFrames&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/%23L73">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20ChildFrames&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/%23L73">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L73">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/#L73">View Source</a>
   </span>
   <a id="PuppeteerSharp_Frame_ChildFrames_" data-uid="PuppeteerSharp.Frame.ChildFrames*"></a>
   <h4 id="PuppeteerSharp_Frame_ChildFrames" data-uid="PuppeteerSharp.Frame.ChildFrames">ChildFrames</h4>
@@ -139,17 +139,17 @@ void dumpFrameTree(Frame frame, string indent)
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Collections.Generic.List</span>&lt;<a class="xref" href="PuppeteerSharp.Frame.html">Frame</a>&gt;</td>
+        <td><span class="xref">List</span>&lt;<a class="xref" href="PuppeteerSharp.Frame.html">Frame</a>&gt;</td>
         <td></td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Detached&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/%23L89">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Detached&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/%23L89">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L89">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/#L89">View Source</a>
   </span>
   <a id="PuppeteerSharp_Frame_Detached_" data-uid="PuppeteerSharp.Frame.Detached*"></a>
   <h4 id="PuppeteerSharp_Frame_Detached" data-uid="PuppeteerSharp.Frame.Detached">Detached</h4>
@@ -177,10 +177,10 @@ void dumpFrameTree(Frame frame, string indent)
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Name&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/%23L79">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Name&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/%23L79">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L79">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/#L79">View Source</a>
   </span>
   <a id="PuppeteerSharp_Frame_Name_" data-uid="PuppeteerSharp.Frame.Name*"></a>
   <h4 id="PuppeteerSharp_Frame_Name" data-uid="PuppeteerSharp.Frame.Name">Name</h4>
@@ -209,10 +209,10 @@ If the name is empty, returns the id attribute instead</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20ParentFrame&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/%23L94">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20ParentFrame&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/%23L94">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L94">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/#L94">View Source</a>
   </span>
   <a id="PuppeteerSharp_Frame_ParentFrame_" data-uid="PuppeteerSharp.Frame.ParentFrame*"></a>
   <h4 id="PuppeteerSharp_Frame_ParentFrame" data-uid="PuppeteerSharp.Frame.ParentFrame">ParentFrame</h4>
@@ -240,10 +240,10 @@ If the name is empty, returns the id attribute instead</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Url&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/%23L84">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Url&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/%23L84">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L84">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/#L84">View Source</a>
   </span>
   <a id="PuppeteerSharp_Frame_Url_" data-uid="PuppeteerSharp.Frame.Url*"></a>
   <h4 id="PuppeteerSharp_Frame_Url" data-uid="PuppeteerSharp.Frame.Url">Url</h4>
@@ -273,10 +273,10 @@ If the name is empty, returns the id attribute instead</p>
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20AddScriptTag(AddTagOptions)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/%23L362">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20AddScriptTag(AddTagOptions)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/%23L407">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L362">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/#L407">View Source</a>
   </span>
   <a id="PuppeteerSharp_Frame_AddScriptTag_" data-uid="PuppeteerSharp.Frame.AddScriptTag*"></a>
   <h4 id="PuppeteerSharp_Frame_AddScriptTag_PuppeteerSharp_AddTagOptions_" data-uid="PuppeteerSharp.Frame.AddScriptTag(PuppeteerSharp.AddTagOptions)">AddScriptTag(AddTagOptions)</h4>
@@ -315,7 +315,7 @@ If the name is empty, returns the id attribute instead</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a>&gt;</td>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a>&gt;</td>
         <td><p>Task which resolves to the added tag when the script's onload fires or when the script content was injected into frame</p>
 </td>
       </tr>
@@ -328,10 +328,10 @@ If the name is empty, returns the id attribute instead</p>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20AddStyleTag(AddTagOptions)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/%23L303">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20AddStyleTag(AddTagOptions)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/%23L348">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L303">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/#L348">View Source</a>
   </span>
   <a id="PuppeteerSharp_Frame_AddStyleTag_" data-uid="PuppeteerSharp.Frame.AddStyleTag*"></a>
   <h4 id="PuppeteerSharp_Frame_AddStyleTag_PuppeteerSharp_AddTagOptions_" data-uid="PuppeteerSharp.Frame.AddStyleTag(PuppeteerSharp.AddTagOptions)">AddStyleTag(AddTagOptions)</h4>
@@ -370,7 +370,7 @@ If the name is empty, returns the id attribute instead</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a>&gt;</td>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a>&gt;</td>
         <td><p>Task which resolves to the added tag when the stylesheet's onload fires or when the CSS content was injected into frame</p>
 </td>
       </tr>
@@ -383,10 +383,10 @@ If the name is empty, returns the id attribute instead</p>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EvaluateExpressionAsync(String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/%23L109">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EvaluateExpressionAsync(String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/%23L109">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L109">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/#L109">View Source</a>
   </span>
   <a id="PuppeteerSharp_Frame_EvaluateExpressionAsync_" data-uid="PuppeteerSharp.Frame.EvaluateExpressionAsync*"></a>
   <h4 id="PuppeteerSharp_Frame_EvaluateExpressionAsync_System_String_" data-uid="PuppeteerSharp.Frame.EvaluateExpressionAsync(System.String)">EvaluateExpressionAsync(String)</h4>
@@ -425,7 +425,7 @@ If the name is empty, returns the id attribute instead</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">System.Object</span>&gt;</td>
+        <td><span class="xref">Task</span>&lt;<span class="xref">System.Object</span>&gt;</td>
         <td><p>Task which resolves to script return value</p>
 </td>
       </tr>
@@ -441,10 +441,10 @@ If the name is empty, returns the id attribute instead</p>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EvaluateExpressionAsync&lt;T&gt;(String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/%23L126">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EvaluateExpressionAsync&lt;T&gt;(String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/%23L126">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L126">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/#L126">View Source</a>
   </span>
   <a id="PuppeteerSharp_Frame_EvaluateExpressionAsync_" data-uid="PuppeteerSharp.Frame.EvaluateExpressionAsync*"></a>
   <h4 id="PuppeteerSharp_Frame_EvaluateExpressionAsync__1_System_String_" data-uid="PuppeteerSharp.Frame.EvaluateExpressionAsync``1(System.String)">EvaluateExpressionAsync&lt;T&gt;(String)</h4>
@@ -483,7 +483,7 @@ If the name is empty, returns the id attribute instead</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;T&gt;</td>
+        <td><span class="xref">Task</span>&lt;T&gt;</td>
         <td><p>Task which resolves to script return value</p>
 </td>
       </tr>
@@ -515,10 +515,64 @@ If the name is empty, returns the id attribute instead</p>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EvaluateFunctionAsync(String, Object[])&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/%23L144">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EvaluateExpressionHandleAsync(String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/%23L180">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L144">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/#L180">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Frame_EvaluateExpressionHandleAsync_" data-uid="PuppeteerSharp.Frame.EvaluateExpressionHandleAsync*"></a>
+  <h4 id="PuppeteerSharp_Frame_EvaluateExpressionHandleAsync_System_String_" data-uid="PuppeteerSharp.Frame.EvaluateExpressionHandleAsync(System.String)">EvaluateExpressionHandleAsync(String)</h4>
+  <div class="markdown level1 summary"><p>Passes an expression to the <span class="xref">PuppeteerSharp.ExecutionContext.EvaluateExpressionHandleAsync(System.String)</span>, returns a <see cref="!:Task"></see>, then <span class="xref">PuppeteerSharp.ExecutionContext.EvaluateExpressionHandleAsync(System.String)</span> would wait for the <see cref="!:Task"></see> to resolve and return its value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;JSHandle&gt; EvaluateExpressionHandleAsync(string script)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">script</span></td>
+        <td><p>Expression to be evaluated in the <a class="xref" href="PuppeteerSharp.ExecutionContext.html">ExecutionContext</a></p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="PuppeteerSharp.JSHandle.html">JSHandle</a>&gt;</td>
+        <td><p>Resolves to the return value of <code data-dev-comment-type="paramref" class="paramref">script</code></p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_Frame_EvaluateExpressionHandleAsync_System_String__examples">Examples</h5>
+  <pre><code>var frame = page.MainFrame;
+const handle = Page.MainFrame.EvaluateExpressionHandleAsync(&quot;1 + 2&quot;);</code></pre>
+
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EvaluateFunctionAsync(String, Object[])&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/%23L144">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/#L144">View Source</a>
   </span>
   <a id="PuppeteerSharp_Frame_EvaluateFunctionAsync_" data-uid="PuppeteerSharp.Frame.EvaluateFunctionAsync*"></a>
   <h4 id="PuppeteerSharp_Frame_EvaluateFunctionAsync_System_String_System_Object___" data-uid="PuppeteerSharp.Frame.EvaluateFunctionAsync(System.String,System.Object[])">EvaluateFunctionAsync(String, Object[])</h4>
@@ -563,7 +617,7 @@ If the name is empty, returns the id attribute instead</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">System.Object</span>&gt;</td>
+        <td><span class="xref">Task</span>&lt;<span class="xref">System.Object</span>&gt;</td>
         <td><p>Task which resolves to script return value</p>
 </td>
       </tr>
@@ -580,10 +634,10 @@ If the name is empty, returns the id attribute instead</p>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EvaluateFunctionAsync&lt;T&gt;(String, Object[])&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/%23L163">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EvaluateFunctionAsync&lt;T&gt;(String, Object[])&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/%23L163">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L163">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/#L163">View Source</a>
   </span>
   <a id="PuppeteerSharp_Frame_EvaluateFunctionAsync_" data-uid="PuppeteerSharp.Frame.EvaluateFunctionAsync*"></a>
   <h4 id="PuppeteerSharp_Frame_EvaluateFunctionAsync__1_System_String_System_Object___" data-uid="PuppeteerSharp.Frame.EvaluateFunctionAsync``1(System.String,System.Object[])">EvaluateFunctionAsync&lt;T&gt;(String, Object[])</h4>
@@ -628,7 +682,7 @@ If the name is empty, returns the id attribute instead</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;T&gt;</td>
+        <td><span class="xref">Task</span>&lt;T&gt;</td>
         <td><p>Task which resolves to script return value</p>
 </td>
       </tr>
@@ -661,10 +715,75 @@ If the name is empty, returns the id attribute instead</p>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20GetContentAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/%23L418">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EvaluateFunctionHandleAsync(String, Object[])&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/%23L204">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L418">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/#L204">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Frame_EvaluateFunctionHandleAsync_" data-uid="PuppeteerSharp.Frame.EvaluateFunctionHandleAsync*"></a>
+  <h4 id="PuppeteerSharp_Frame_EvaluateFunctionHandleAsync_System_String_System_Object___" data-uid="PuppeteerSharp.Frame.EvaluateFunctionHandleAsync(System.String,System.Object[])">EvaluateFunctionHandleAsync(String, Object[])</h4>
+  <div class="markdown level1 summary"><p>Passes a function to the <a class="xref" href="PuppeteerSharp.ExecutionContext.html#PuppeteerSharp_ExecutionContext_EvaluateFunctionAsync_System_String_System_Object___">EvaluateFunctionAsync(String, Object[])</a>, returns a <see cref="!:Task"></see>, then <span class="xref">PuppeteerSharp.ExecutionContext.EvaluateFunctionHandleAsync(System.String,System.Object[])</span> would wait for the <see cref="!:Task"></see> to resolve and return its value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;JSHandle&gt; EvaluateFunctionHandleAsync(string function, params object[] args)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">function</span></td>
+        <td><p>Function to be evaluated in the <a class="xref" href="PuppeteerSharp.ExecutionContext.html">ExecutionContext</a></p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Object</span>[]</td>
+        <td><span class="parametername">args</span></td>
+        <td><p>Arguments to pass to <code data-dev-comment-type="paramref" class="paramref">function</code></p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="PuppeteerSharp.JSHandle.html">JSHandle</a>&gt;</td>
+        <td><p>Resolves to the return value of <code data-dev-comment-type="paramref" class="paramref">function</code></p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_Frame_EvaluateFunctionHandleAsync_System_String_System_Object____examples">Examples</h5>
+  <pre><code>var frame = page.MainFrame;
+const handle = Page.MainFrame.EvaluateFunctionHandleAsync(&quot;() => Promise.resolve(self)&quot;);
+return handle; // Handle for the global object.</code></pre>
+<p><a class="xref" href="PuppeteerSharp.JSHandle.html">JSHandle</a> instances can be passed as arguments to the <a class="xref" href="PuppeteerSharp.ExecutionContext.html#PuppeteerSharp_ExecutionContext_EvaluateFunctionAsync_System_String_System_Object___">EvaluateFunctionAsync(String, Object[])</a>:</p>
+<p>const handle = await Page.MainFrame.EvaluateExpressionHandleAsync(&quot;document.body&quot;);
+const resultHandle = await Page.MainFrame.EvaluateFunctionHandleAsync(&quot;body =&gt; body.innerHTML&quot;, handle);
+return await resultHandle.JsonValueAsync(); // prints body's innerHTML</p>
+
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20GetContentAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/%23L463">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/#L463">View Source</a>
   </span>
   <a id="PuppeteerSharp_Frame_GetContentAsync_" data-uid="PuppeteerSharp.Frame.GetContentAsync*"></a>
   <h4 id="PuppeteerSharp_Frame_GetContentAsync" data-uid="PuppeteerSharp.Frame.GetContentAsync">GetContentAsync()</h4>
@@ -685,7 +804,7 @@ If the name is empty, returns the id attribute instead</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">System.String</span>&gt;</td>
+        <td><span class="xref">Task</span>&lt;<span class="xref">System.String</span>&gt;</td>
         <td><p>Task which resolves to the HTML content.</p>
 </td>
       </tr>
@@ -697,10 +816,10 @@ If the name is empty, returns the id attribute instead</p>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20GetExecutionContextAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/%23L173">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20GetExecutionContextAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/%23L214">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L173">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/#L214">View Source</a>
   </span>
   <a id="PuppeteerSharp_Frame_GetExecutionContextAsync_" data-uid="PuppeteerSharp.Frame.GetExecutionContextAsync*"></a>
   <h4 id="PuppeteerSharp_Frame_GetExecutionContextAsync" data-uid="PuppeteerSharp.Frame.GetExecutionContextAsync">GetExecutionContextAsync()</h4>
@@ -721,7 +840,7 @@ If the name is empty, returns the id attribute instead</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="PuppeteerSharp.ExecutionContext.html">ExecutionContext</a>&gt;</td>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="PuppeteerSharp.ExecutionContext.html">ExecutionContext</a>&gt;</td>
         <td><p><a class="xref" href="PuppeteerSharp.ExecutionContext.html">ExecutionContext</a> associated with the frame.</p>
 </td>
       </tr>
@@ -729,10 +848,10 @@ If the name is empty, returns the id attribute instead</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20GetTitleAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/%23L446">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20GetTitleAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/%23L491">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L446">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/#L491">View Source</a>
   </span>
   <a id="PuppeteerSharp_Frame_GetTitleAsync_" data-uid="PuppeteerSharp.Frame.GetTitleAsync*"></a>
   <h4 id="PuppeteerSharp_Frame_GetTitleAsync" data-uid="PuppeteerSharp.Frame.GetTitleAsync">GetTitleAsync()</h4>
@@ -753,7 +872,7 @@ If the name is empty, returns the id attribute instead</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">System.String</span>&gt;</td>
+        <td><span class="xref">Task</span>&lt;<span class="xref">System.String</span>&gt;</td>
         <td><p>page's title</p>
 </td>
       </tr>
@@ -765,14 +884,14 @@ If the name is empty, returns the id attribute instead</p>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20QuerySelectorAllAsync(String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/%23L276">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20QuerySelectorAllAsync(String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/%23L321">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L276">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/#L321">View Source</a>
   </span>
   <a id="PuppeteerSharp_Frame_QuerySelectorAllAsync_" data-uid="PuppeteerSharp.Frame.QuerySelectorAllAsync*"></a>
   <h4 id="PuppeteerSharp_Frame_QuerySelectorAllAsync_System_String_" data-uid="PuppeteerSharp.Frame.QuerySelectorAllAsync(System.String)">QuerySelectorAllAsync(String)</h4>
-  <div class="markdown level1 summary"><p>Queries frame for the selector. If no elements match the selector, the return value resolve to <span class="xref">System.Array.Empty``1</span>.</p>
+  <div class="markdown level1 summary"><p>Queries frame for the selector. If no elements match the selector, the return value resolve to <see cref="!:Array.Empty&lt;T>"></see>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -807,7 +926,7 @@ If the name is empty, returns the id attribute instead</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a>[]&gt;</td>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a>[]&gt;</td>
         <td><p>Task which resolves to ElementHandles pointing to the frame elements</p>
 </td>
       </tr>
@@ -819,10 +938,10 @@ If the name is empty, returns the id attribute instead</p>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20QuerySelectorAsync(String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/%23L263">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20QuerySelectorAsync(String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/%23L308">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L263">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/#L308">View Source</a>
   </span>
   <a id="PuppeteerSharp_Frame_QuerySelectorAsync_" data-uid="PuppeteerSharp.Frame.QuerySelectorAsync*"></a>
   <h4 id="PuppeteerSharp_Frame_QuerySelectorAsync_System_String_" data-uid="PuppeteerSharp.Frame.QuerySelectorAsync(System.String)">QuerySelectorAsync(String)</h4>
@@ -861,7 +980,7 @@ If the name is empty, returns the id attribute instead</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a>&gt;</td>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a>&gt;</td>
         <td><p>Task which resolves to <a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a> pointing to the frame element</p>
 </td>
       </tr>
@@ -873,10 +992,10 @@ If the name is empty, returns the id attribute instead</p>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20SelectAsync(String, String[])&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/%23L240">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20SelectAsync(String, String[])&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/%23L285">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L240">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/#L285">View Source</a>
   </span>
   <a id="PuppeteerSharp_Frame_SelectAsync_" data-uid="PuppeteerSharp.Frame.SelectAsync*"></a>
   <h4 id="PuppeteerSharp_Frame_SelectAsync_System_String_System_String___" data-uid="PuppeteerSharp.Frame.SelectAsync(System.String,System.String[])">SelectAsync(String, String[])</h4>
@@ -923,7 +1042,7 @@ all values are considered, otherwise only the first one is taken into account.</
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">System.String</span>[]&gt;</td>
+        <td><span class="xref">Task</span>&lt;<span class="xref">System.String</span>[]&gt;</td>
         <td><p>Returns an array of option values that have been successfully selected.</p>
 </td>
       </tr>
@@ -951,10 +1070,10 @@ all values are considered, otherwise only the first one is taken into account.</
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20SetContentAsync(String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/%23L434">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20SetContentAsync(String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/%23L479">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L434">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/#L479">View Source</a>
   </span>
   <a id="PuppeteerSharp_Frame_SetContentAsync_" data-uid="PuppeteerSharp.Frame.SetContentAsync*"></a>
   <h4 id="PuppeteerSharp_Frame_SetContentAsync_System_String_" data-uid="PuppeteerSharp.Frame.SetContentAsync(System.String)">SetContentAsync(String)</h4>
@@ -993,7 +1112,7 @@ all values are considered, otherwise only the first one is taken into account.</
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td><span class="xref">Task</span></td>
         <td><p>Task.</p>
 </td>
       </tr>
@@ -1005,10 +1124,10 @@ all values are considered, otherwise only the first one is taken into account.</
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WaitForFunctionAsync(String, WaitForFunctionOptions, Object[])&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/%23L227">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WaitForFunctionAsync(String, WaitForFunctionOptions, Object[])&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/%23L272">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L227">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/#L272">View Source</a>
   </span>
   <a id="PuppeteerSharp_Frame_WaitForFunctionAsync_" data-uid="PuppeteerSharp.Frame.WaitForFunctionAsync*"></a>
   <h4 id="PuppeteerSharp_Frame_WaitForFunctionAsync_System_String_PuppeteerSharp_WaitForFunctionOptions_System_Object___" data-uid="PuppeteerSharp.Frame.WaitForFunctionAsync(System.String,PuppeteerSharp.WaitForFunctionOptions,System.Object[])">WaitForFunctionAsync(String, WaitForFunctionOptions, Object[])</h4>
@@ -1059,7 +1178,7 @@ all values are considered, otherwise only the first one is taken into account.</
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="PuppeteerSharp.JSHandle.html">JSHandle</a>&gt;</td>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="PuppeteerSharp.JSHandle.html">JSHandle</a>&gt;</td>
         <td><p>A task that resolves when the <code>script</code> returns a truthy value</p>
 </td>
       </tr>
@@ -1071,10 +1190,10 @@ all values are considered, otherwise only the first one is taken into account.</
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WaitForSelectorAsync(String, WaitForSelectorOptions)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/%23L182">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WaitForSelectorAsync(String, WaitForSelectorOptions)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/%23L224">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L182">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/#L224">View Source</a>
   </span>
   <a id="PuppeteerSharp_Frame_WaitForSelectorAsync_" data-uid="PuppeteerSharp.Frame.WaitForSelectorAsync*"></a>
   <h4 id="PuppeteerSharp_Frame_WaitForSelectorAsync_System_String_PuppeteerSharp_WaitForSelectorOptions_" data-uid="PuppeteerSharp.Frame.WaitForSelectorAsync(System.String,PuppeteerSharp.WaitForSelectorOptions)">WaitForSelectorAsync(String, WaitForSelectorOptions)</h4>
@@ -1119,7 +1238,7 @@ all values are considered, otherwise only the first one is taken into account.</
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a>&gt;</td>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a>&gt;</td>
         <td><p>A task that resolves when element specified by selector string is added to DOM</p>
 </td>
       </tr>
@@ -1127,14 +1246,15 @@ all values are considered, otherwise only the first one is taken into account.</
   </table>
   <h5 id="PuppeteerSharp_Frame_WaitForSelectorAsync_System_String_PuppeteerSharp_WaitForSelectorOptions__seealso">See Also</h5>
   <div class="seealso">
+      <div><a class="xref" href="PuppeteerSharp.Frame.html#PuppeteerSharp_Frame_WaitForXPathAsync_System_String_PuppeteerSharp_WaitForSelectorOptions_">WaitForXPathAsync(String, WaitForSelectorOptions)</a></div>
       <div><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_WaitForSelectorAsync_System_String_PuppeteerSharp_WaitForSelectorOptions_">WaitForSelectorAsync(String, WaitForSelectorOptions)</a></div>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WaitForTimeoutAsync(Int32)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/%23L217">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WaitForTimeoutAsync(Int32)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/%23L262">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L217">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/#L262">View Source</a>
   </span>
   <a id="PuppeteerSharp_Frame_WaitForTimeoutAsync_" data-uid="PuppeteerSharp.Frame.WaitForTimeoutAsync*"></a>
   <h4 id="PuppeteerSharp_Frame_WaitForTimeoutAsync_System_Int32_" data-uid="PuppeteerSharp.Frame.WaitForTimeoutAsync(System.Int32)">WaitForTimeoutAsync(Int32)</h4>
@@ -1172,7 +1292,7 @@ all values are considered, otherwise only the first one is taken into account.</
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td><span class="xref">Task</span></td>
         <td><p>A task that resolves when after the timeout</p>
 </td>
       </tr>
@@ -1184,10 +1304,85 @@ all values are considered, otherwise only the first one is taken into account.</
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20XPathAsync(String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/%23L289">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WaitForXPathAsync(String, WaitForSelectorOptions)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/%23L253">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L289">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/#L253">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Frame_WaitForXPathAsync_" data-uid="PuppeteerSharp.Frame.WaitForXPathAsync*"></a>
+  <h4 id="PuppeteerSharp_Frame_WaitForXPathAsync_System_String_PuppeteerSharp_WaitForSelectorOptions_" data-uid="PuppeteerSharp.Frame.WaitForXPathAsync(System.String,PuppeteerSharp.WaitForSelectorOptions)">WaitForXPathAsync(String, WaitForSelectorOptions)</h4>
+  <div class="markdown level1 summary"><p>Waits for a selector to be added to the DOM</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;ElementHandle&gt; WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">xpath</span></td>
+        <td><p>A xpath selector of an element to wait for</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.WaitForSelectorOptions.html">WaitForSelectorOptions</a></td>
+        <td><span class="parametername">options</span></td>
+        <td><p>Optional waiting parameters</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a>&gt;</td>
+        <td><p>A task that resolves when element specified by selector string is added to DOM</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_Frame_WaitForXPathAsync_System_String_PuppeteerSharp_WaitForSelectorOptions__examples">Examples</h5>
+  <pre><code>var browser = await Puppeteer.LaunchAsync(new LaunchOptions());
+var page = await browser.NewPageAsync();
+string currentURL = null;
+page.MainFrame
+    .WaitForXPathAsync(&quot;//img&quot;)
+    .ContinueWith(_ => Console.WriteLine(&quot;First URL with image: &quot; + currentURL));
+foreach (var current in new[] { &quot;https://example.com&quot;, &quot;https://google.com&quot;, &quot;https://bbc.com&quot; })
+{
+    currentURL = current;
+    await page.GoToAsync(currentURL);
+}
+await browser.CloseAsync();</code></pre>
+
+  <h5 id="PuppeteerSharp_Frame_WaitForXPathAsync_System_String_PuppeteerSharp_WaitForSelectorOptions__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="PuppeteerSharp.Frame.html#PuppeteerSharp_Frame_WaitForSelectorAsync_System_String_PuppeteerSharp_WaitForSelectorOptions_">WaitForSelectorAsync(String, WaitForSelectorOptions)</a></div>
+      <div><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_WaitForXPathAsync_System_String_PuppeteerSharp_WaitForSelectorOptions_">WaitForXPathAsync(String, WaitForSelectorOptions)</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20XPathAsync(String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/%23L334">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/#L334">View Source</a>
   </span>
   <a id="PuppeteerSharp_Frame_XPathAsync_" data-uid="PuppeteerSharp.Frame.XPathAsync*"></a>
   <h4 id="PuppeteerSharp_Frame_XPathAsync_System_String_" data-uid="PuppeteerSharp.Frame.XPathAsync(System.String)">XPathAsync(String)</h4>
@@ -1226,7 +1421,7 @@ all values are considered, otherwise only the first one is taken into account.</
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a>[]&gt;</td>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a>[]&gt;</td>
         <td><p>Task which resolves to an array of <a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a></p>
 </td>
       </tr>
@@ -1244,10 +1439,10 @@ all values are considered, otherwise only the first one is taken into account.</
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Frame&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/%23L39" class="contribution-link">Request doc improvement</a>
+                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Frame&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/%23L39" class="contribution-link">Request doc improvement</a>
                   </li>
                   <li>
-                    <a href="https://github.com/kblok/puppeteer-sharp/blob/tasks/docs-site/lib/PuppeteerSharp/Frame.cs/#L39" class="contribution-link">View Source</a>
+                    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs/#L39" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>
