@@ -1284,7 +1284,13 @@ namespace PuppeteerSharp
             var responses = new Dictionary<string, Response>();
 
             EventHandler<ResponseCreatedEventArgs> createResponseEventListener = (object sender, ResponseCreatedEventArgs e) =>
-                responses.Add(e.Response.Url, e.Response);
+            {
+                if(!responses.ContainsKey(e.Response.Url)){
+                    responses.Add(e.Response.Url, e.Response);
+                }else{
+                    responses[e.Response.Url] = e.Response;
+                }
+            }
 
             _networkManager.Response += createResponseEventListener;
 
