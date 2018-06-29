@@ -1,4 +1,4 @@
-if($env:APPVEYOR_REPO_TAG -eq 'True' -And $env:framework -eq 'netcoreapp2.0') {
+if($env:framework -eq 'netcoreapp2.0') {
     git config --global credential.helper store
     Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:git_access_token):x-oauth-basic@github.com`n"
 
