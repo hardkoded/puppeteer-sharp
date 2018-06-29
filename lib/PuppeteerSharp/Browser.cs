@@ -275,7 +275,6 @@ namespace PuppeteerSharp
                 TargetDestroyed?.Invoke(this, new TargetChangedArgs()
                 {
                     Target = target
-
                 });
             }
         }
