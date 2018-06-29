@@ -138,7 +138,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             await Page.EvaluateFunctionAsync("element => element.remove()", elementHandle);
 
             var exception = await Assert.ThrowsAsync<PuppeteerException>(elementHandle.ScreenshotStreamAsync);
-            Assert.Equal("Node is detached from document", exception.Message);
+            Assert.Equal("Node is either not visible or not an HTMLElement", exception.Message);
         }
     }
 }
