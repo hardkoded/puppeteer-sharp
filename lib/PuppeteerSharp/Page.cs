@@ -1285,12 +1285,8 @@ namespace PuppeteerSharp
 
             EventHandler<ResponseCreatedEventArgs> createResponseEventListener = (object sender, ResponseCreatedEventArgs e) =>
             {
-                if(!responses.ContainsKey(e.Response.Url)){
-                    responses.Add(e.Response.Url, e.Response);
-                }else{
-                    responses[e.Response.Url] = e.Response;
-                }
-            }
+                responses[e.Response.Url] = e.Response;
+            };
 
             _networkManager.Response += createResponseEventListener;
 
