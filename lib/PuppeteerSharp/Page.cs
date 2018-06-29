@@ -328,7 +328,7 @@ namespace PuppeteerSharp
         /// </remarks>
         /// <seealso cref="Frame.XPathAsync(string)"/>
         public Task<ElementHandle[]> XPathAsync(string expression) => MainFrame.XPathAsync(expression);
-        
+
         /// <summary>
         /// Executes a script in browser context
         /// </summary>
@@ -1283,8 +1283,7 @@ namespace PuppeteerSharp
             var watcher = new NavigatorWatcher(_frameManager, mainFrame, timeout, options);
             var responses = new Dictionary<string, Response>();
 
-            EventHandler<ResponseCreatedEventArgs> createResponseEventListener = (object sender, ResponseCreatedEventArgs e) =>
-                responses.Add(e.Response.Url, e.Response);
+            EventHandler<ResponseCreatedEventArgs> createResponseEventListener = (sender, e) => responses[e.Response.Url] = e.Response;
 
             _networkManager.Response += createResponseEventListener;
 
