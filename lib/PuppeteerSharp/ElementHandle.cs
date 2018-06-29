@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Input;
+using PuppeteerSharp.Messaging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -358,20 +359,5 @@ namespace PuppeteerSharp
 
             return new BoundingBox(x, y, width, height);
         }
-    }
-
-    internal class GetLayoutMetricsResponse
-    {
-        [JsonProperty("layoutViewport")]
-        public LayoutViewport LayoutViewport { get; set; }
-    }
-
-    internal class LayoutViewport
-    {
-        [JsonProperty("pageX")]
-        public decimal PageX { get; set; }
-
-        [JsonProperty("pageY")]
-        public decimal PageY { get; set; }
     }
 }
