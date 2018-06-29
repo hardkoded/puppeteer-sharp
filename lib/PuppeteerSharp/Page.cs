@@ -981,17 +981,17 @@ namespace PuppeteerSharp
         /// Closes the page.
         /// </summary>
         /// <returns>Task.</returns>
-        public Task CloseAsync()
+        public async Task CloseAsync()
         {
             if (!(Client?.Connection?.IsClosed ?? true))
             {
-                return Client.Connection.SendAsync("Target.closeTarget", new
+                await Client.Connection.SendAsync("Target.closeTarget", new
                 {
                     targetId = Target.TargetId
                 });
-            }
 
-            return Task.CompletedTask;
+                await Target.CloseTask;
+            }
         }
 
         /// <summary>
@@ -1525,7 +1525,7 @@ namespace PuppeteerSharp
                     valueText = text;
                 }
 
-                if (Decimal.TryParse(valueText, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out var number))
+                if (decimal.TryParse(valueText, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out var number))
                 {
                     pixels = number * _unitToPixels[unit];
                 }
@@ -1750,7 +1750,10 @@ namespace PuppeteerSharp
 
             string SerializeArgument(object arg)
             {
-                if (arg == null) return "undefined";
+                if (arg == null)
+                {
+                    return "undefined";
+                }
                 return JsonConvert.SerializeObject(arg);
             }
         }
