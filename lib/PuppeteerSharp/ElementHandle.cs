@@ -19,7 +19,7 @@ namespace PuppeteerSharp
     {
         internal Page Page { get; }
 
-        private FrameManager _frameManager;
+        private readonly FrameManager _frameManager;
 
         internal ElementHandle(
             ExecutionContext
