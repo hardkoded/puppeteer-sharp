@@ -1,5 +1,7 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
 {
@@ -10,21 +12,26 @@ namespace PuppeteerSharp
     public class Target
     {
         #region Private members
-        private Browser _browser;
+        private readonly Browser _browser;
         private TargetInfo _targetInfo;
+        private string _targetId;
+        private Func<Task<CDPSession>> _sessionFactory;
         private Task<Page> _pageTask;
         #endregion
 
         internal bool IsInitialized;
 
-        internal Target(Browser browser, TargetInfo targetInfo)
+        internal Target(TargetInfo targetInfo, Func<Task<CDPSession>> sessionFactory, Browser browser)
         {
-            _browser = browser;
             _targetInfo = targetInfo;
+            _targetId = targetInfo.TargetId;
+            _sessionFactory = sessionFactory;
+            _browser = browser;
+            _pageTask = null;
 
             InitilizedTaskWrapper = new TaskCompletionSource<bool>();
             CloseTaskWrapper = new TaskCompletionSource<bool>();
-            IsInitialized = _targetInfo.Type != "page" || _targetInfo.Url != string.Empty;
+            IsInitialized = _targetInfo.Type != TargetType.Page || _targetInfo.Url != string.Empty;
 
             if (IsInitialized)
             {
@@ -42,7 +49,8 @@ namespace PuppeteerSharp
         /// Gets the type. It will be <see cref="TargetInfo.Type"/> if it's "page" or "service_worker". Otherwise it will be "other"
         /// </summary>
         /// <value>The type.</value>
-        public string Type => _targetInfo.Type == "page" || _targetInfo.Type == "service_worker" || _targetInfo.Type == "browser" ? _targetInfo.Type : "other";
+        public TargetType Type => _targetInfo.Type;
+
         /// <summary>
         /// Gets the target identifier.
         /// </summary>
@@ -60,14 +68,18 @@ namespace PuppeteerSharp
         /// <returns>a task that returns a new <see cref="Page"/></returns>
         public async Task<Page> PageAsync()
         {
-            if (_targetInfo.Type == "page" && _pageTask == null)
+            if (_targetInfo.Type == TargetType.Page && _pageTask == null)
             {
-                _pageTask = await _browser.Connection.CreateSessionAsync(_targetInfo.TargetId)
-                    .ContinueWith(clientTask
-                    => Page.CreateAsync(clientTask.Result, this, _browser.IgnoreHTTPSErrors, _browser.AppMode, _browser.ScreenshotTaskQueue));
+                _pageTask = CreatePageAsync();
             }
 
             return await (_pageTask ?? Task.FromResult<Page>(null));
+        }
+
+        private async Task<Page> CreatePageAsync()
+        {
+            var session = await _sessionFactory();
+            return await Page.CreateAsync(session, this, _browser.IgnoreHTTPSErrors, _browser.AppMode, _browser.ScreenshotTaskQueue);
         }
 
         internal void TargetInfoChanged(TargetInfo targetInfo)
@@ -75,7 +87,7 @@ namespace PuppeteerSharp
             var previousUrl = _targetInfo.Url;
             _targetInfo = targetInfo;
 
-            if (!IsInitialized && (_targetInfo.Type != "page" || _targetInfo.Url != string.Empty))
+            if (!IsInitialized && (_targetInfo.Type != TargetType.Page || _targetInfo.Url != string.Empty))
             {
                 IsInitialized = true;
                 InitilizedTaskWrapper.SetResult(true);
