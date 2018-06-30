@@ -34,6 +34,9 @@ test_script:
 
     dotnet test -f %framework% -s test.runsettings
 on_success:
-- ps: c:\projects\puppeteer-sharp\appveyor\GenerateDocs.ps1
+- ps: >-
+    cd  c:\projects\puppeteer-sharp
+
+    c:\projects\puppeteer-sharp\appveyor\GenerateDocs.ps1
 cache:
   - $HOME/.nuget/packages

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Input;
 using PuppeteerSharp.Messaging;
@@ -96,19 +97,41 @@ namespace PuppeteerSharp
         /// <param name="options">Screenshot options.</param>
         public async Task<byte[]> ScreenshotDataAsync(ScreenshotOptions options)
         {
-            await ScrollIntoViewIfNeededAsync();
-            dynamic metrics = await Client.SendAsync("Page.getLayoutMetrics") as JObject;
-
-            var boundingBox = await BoundingBoxAsync();
-            if (boundingBox == null)
+            var needsViewportReset = false;
+            var boundingBox = await AssertBoundingBoxAsync();
+            var viewport = Page.Viewport;
+            if (boundingBox.Width > viewport.Width || boundingBox.Height > viewport.Height)
             {
-                throw new PuppeteerException("Node is not visible");
+                var newRawViewport = JObject.FromObject(viewport);
+                newRawViewport.Merge(new ViewPortOptions
+                {
+                    Width = (int)Math.Max(viewport.Width, Math.Ceiling(boundingBox.Width)),
+                    Height = (int)Math.Max(viewport.Height, Math.Ceiling(boundingBox.Height))
+                });
+                await Page.SetViewportAsync(newRawViewport.ToObject<ViewPortOptions>());
+                needsViewportReset = true;
+            }
+            await ExecutionContext.EvaluateFunctionAsync(@"function(element) {
+                element.scrollIntoView({ block: 'center', inline: 'center', behavior: 'instant'});
+            }", this);
+
+            boundingBox = await AssertBoundingBoxAsync();
+
+            var getLayoutMetricsResponse = await Client.SendAsync<GetLayoutMetricsResponse>("Page.getLayoutMetrics");
+
+            var clip = boundingBox;
+            clip.X += getLayoutMetricsResponse.LayoutViewport.PageX;
+            clip.Y += getLayoutMetricsResponse.LayoutViewport.PageY;
+
+            options.Clip = boundingBox.ToClip();
+            var imageData = await Page.ScreenshotDataAsync(options);
+
+            if (needsViewportReset)
+            {
+                await Page.SetViewportAsync(viewport);
             }
 
-            boundingBox.X += metrics.layoutViewport.pageX.ToObject<decimal>();
-            boundingBox.Y += metrics.layoutViewport.pageY.ToObject<decimal>();
-            options.Clip = boundingBox.ToClip();
-            return await Page.ScreenshotDataAsync(options);
+            return imageData;
         }
 
         /// <summary>
@@ -267,6 +290,44 @@ namespace PuppeteerSharp
             return properties.Values.OfType<ElementHandle>().ToArray();
         }
 
+        private async Task<(decimal x, decimal y)> VisibleCenterAsync()
+        {
+            await ScrollIntoViewIfNeededAsync();
+            var box = await AssertBoundingBoxAsync();
+
+            return (
+                x: box.X + (box.Width / 2),
+                y: box.Y + (box.Height / 2)
+            );
+        }
+
+        private async Task<BoundingBox> AssertBoundingBoxAsync()
+        {
+            var box = await BoundingBoxAsync();
+            if (box != null)
+            {
+                return box;
+            }
+            throw new PuppeteerException("Node is either not visible or not an HTMLElement");
+        }
+
+        private async Task ScrollIntoViewIfNeededAsync()
+        {
+            var errorMessage = await ExecutionContext.EvaluateFunctionAsync<string>(@"element => {
+                if (!element.isConnected)
+                    return 'Node is detached from document';
+                if (element.nodeType !== Node.ELEMENT_NODE)
+                    return 'Node is not of type HTMLElement';
+                element.scrollIntoViewIfNeeded();
+                return null;
+            }", this);
+
+            if (errorMessage != null)
+            {
+                throw new PuppeteerException(errorMessage);
+            }
+        }
+
         /// <summary>
         /// This method returns the bounding box of the element (relative to the main frame), 
         /// or null if the element is not visible.
@@ -319,38 +380,6 @@ namespace PuppeteerSharp
                 return null;
             }
             return _frameManager.Frames[nodeInfo.Node.FrameId];
-        }
-
-        private async Task<(decimal x, decimal y)> VisibleCenterAsync()
-        {
-            await ScrollIntoViewIfNeededAsync();
-            var box = await BoundingBoxAsync();
-            if (box == null)
-            {
-                throw new PuppeteerException("Node is not visible");
-            }
-
-            return (
-                x: box.X + (box.Width / 2),
-                y: box.Y + (box.Height / 2)
-            );
-        }
-
-        private async Task ScrollIntoViewIfNeededAsync()
-        {
-            var errorMessage = await ExecutionContext.EvaluateFunctionAsync<string>(@"element => {
-                if (!element.isConnected)
-                    return 'Node is detached from document';
-                if (element.nodeType !== Node.ELEMENT_NODE)
-                    return 'Node is not of type HTMLElement';
-                element.scrollIntoViewIfNeeded();
-                return null;
-            }", this);
-
-            if (errorMessage != null)
-            {
-                throw new PuppeteerException(errorMessage);
-            }
         }
     }
 }
