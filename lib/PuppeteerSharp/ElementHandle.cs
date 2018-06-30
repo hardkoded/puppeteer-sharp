@@ -19,10 +19,19 @@ namespace PuppeteerSharp
     {
         internal Page Page { get; }
 
-        internal ElementHandle(ExecutionContext context, CDPSession client, object remoteObject, Page page) :
+        private readonly FrameManager _frameManager;
+
+        internal ElementHandle(
+            ExecutionContext
+            context,
+            CDPSession client,
+            object remoteObject,
+            Page page,
+            FrameManager frameManager) :
             base(context, client, remoteObject)
         {
             Page = page;
+            _frameManager = frameManager;
         }
 
         /// <summary>
@@ -353,6 +362,24 @@ namespace PuppeteerSharp
             var height = new[] { quad[1], quad[3], quad[5], quad[7] }.Max() - y;
 
             return new BoundingBox(x, y, width, height);
+        }
+
+        /// <summary>
+        ///Content frame for element handles referencing iframe nodes, or null otherwise.
+        /// </summary>
+        /// <returns>Resolves to the content frame</returns>
+        public async Task<Frame> ContentFrameAsync()
+        {
+            var nodeInfo = await Client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new
+            {
+                RemoteObject.objectId
+            });
+
+            if (string.IsNullOrEmpty(nodeInfo.Node.FrameId))
+            {
+                return null;
+            }
+            return _frameManager.Frames[nodeInfo.Node.FrameId];
         }
     }
 }
