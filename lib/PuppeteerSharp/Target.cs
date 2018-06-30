@@ -30,6 +30,7 @@ namespace PuppeteerSharp
             _pageTask = null;
 
             InitilizedTaskWrapper = new TaskCompletionSource<bool>();
+            CloseTaskWrapper = new TaskCompletionSource<bool>();
             IsInitialized = _targetInfo.Type != TargetType.Page || _targetInfo.Url != string.Empty;
 
             if (IsInitialized)
@@ -57,6 +58,8 @@ namespace PuppeteerSharp
         public string TargetId => _targetInfo.TargetId;
         internal Task<bool> InitializedTask => InitilizedTaskWrapper.Task;
         internal TaskCompletionSource<bool> InitilizedTaskWrapper { get; }
+        internal Task<bool> CloseTask => CloseTaskWrapper.Task;
+        internal TaskCompletionSource<bool> CloseTaskWrapper { get; }
         #endregion
 
         /// <summary>

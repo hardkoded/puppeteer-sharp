@@ -234,11 +234,11 @@ namespace PuppeteerSharp
             switch (e.MessageID)
             {
                 case "Target.targetCreated":
-                    await CreateTarget(e.MessageData.ToObject<TargetCreatedResponse>());
+                    await CreateTargetAsync(e.MessageData.ToObject<TargetCreatedResponse>());
                     return;
 
                 case "Target.targetDestroyed":
-                    DestroyTarget(e.MessageData.ToObject<TargetDestroyedResponse>());
+                    await DestroyTargetAsync(e.MessageData.ToObject<TargetDestroyedResponse>());
                     return;
 
                 case "Target.targetInfoChanged":
@@ -258,7 +258,7 @@ namespace PuppeteerSharp
             target.TargetInfoChanged(e.TargetInfo);
         }
 
-        private void DestroyTarget(TargetDestroyedResponse e)
+        private async Task DestroyTargetAsync(TargetDestroyedResponse e)
         {
             if (!_targets.ContainsKey(e.TargetId))
             {
@@ -266,19 +266,22 @@ namespace PuppeteerSharp
             }
 
             var target = _targets[e.TargetId];
-            if (!target.InitilizedTaskWrapper.Task.IsCompleted)
-            {
-                target.InitilizedTaskWrapper.SetResult(false);
-            }
             _targets.Remove(e.TargetId);
 
-            TargetDestroyed?.Invoke(this, new TargetChangedArgs
+            if (!target.CloseTaskWrapper.Task.IsCompleted)
             {
-                Target = target
-            });
+                target.CloseTaskWrapper.SetResult(true);
+            }
+            if (await target.InitializedTask)
+            {
+                TargetDestroyed?.Invoke(this, new TargetChangedArgs
+                {
+                    Target = target
+                });
+            }
         }
 
-        private async Task CreateTarget(TargetCreatedResponse e)
+        private async Task CreateTargetAsync(TargetCreatedResponse e)
         {
             var target = new Target(
                 e.TargetInfo,
@@ -302,7 +305,10 @@ namespace PuppeteerSharp
         }
 
         internal static async Task<Browser> CreateAsync(
-            Connection connection, IBrowserOptions options, Process process, Func<Task> closeCallBack)
+            Connection connection,
+            IBrowserOptions options,
+            Process process,
+            Func<Task> closeCallBack)
         {
             var browser = new Browser(connection, options, process, closeCallBack);
             await connection.SendAsync("Target.setDiscoverTargets", new
