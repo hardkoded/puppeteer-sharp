@@ -125,7 +125,7 @@ namespace PuppeteerSharp
                 throw new PuppeteerException("Prototype JSHandle must not be referencing primitive value");
             }
 
-            dynamic response = await _client.SendAsync("Runtime.queryObjects", new Dictionary<string, object>()
+            dynamic response = await _client.SendAsync("Runtime.queryObjects", new Dictionary<string, object>
             {
                 {"prototypeObjectId", objectId.ToString()}
             });
@@ -140,7 +140,7 @@ namespace PuppeteerSharp
                 return null;
             }
 
-            return await EvaluateHandleAsync("Runtime.evaluate", new Dictionary<string, object>()
+            return await EvaluateHandleAsync("Runtime.evaluate", new Dictionary<string, object>
             {
                 {"contextId", _contextId},
                 {"expression", script},
@@ -156,7 +156,7 @@ namespace PuppeteerSharp
                 return null;
             }
 
-            return await EvaluateHandleAsync("Runtime.callFunctionOn", new Dictionary<string, object>()
+            return await EvaluateHandleAsync("Runtime.callFunctionOn", new Dictionary<string, object>
             {
                 {"functionDeclaration", script },
                 {"executionContextId", _contextId},
@@ -169,9 +169,20 @@ namespace PuppeteerSharp
         private async Task<T> EvaluateAsync<T>(Task<JSHandle> handleEvaluator)
         {
             var handle = await handleEvaluator;
-            var result = await handle.JsonValueAsync<T>()
-                .ContinueWith(jsonTask => jsonTask.Exception != null ? default(T) : jsonTask.Result);
+            var result = default(T);
 
+            try
+            {
+                result = await handle.JsonValueAsync<T>()
+                    .ContinueWith(jsonTask => jsonTask.Exception != null ? default : jsonTask.Result);
+            }
+            catch (Exception ex)
+            {
+                if (!ex.Message.Contains("Object reference chain is too long"))
+                {
+                    throw new EvaluationFailedException(ex.Message, ex);
+                }
+            }
             await handle.DisposeAsync();
             return result;
         }
