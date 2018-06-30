@@ -7,11 +7,11 @@ namespace PuppeteerSharp.Messaging
     {
         [JsonProperty("node")]
         public DomNode Node { get; set; }
-    }
 
-    internal class DomNode
-    {
-        [JsonProperty("frameId")]
-        public string FrameId { get; set; }
+        internal class DomNode
+        {
+            [JsonProperty("frameId")]
+            public string FrameId { get; set; }
+        }
     }
 }
