@@ -1750,11 +1750,7 @@ namespace PuppeteerSharp
 
             string SerializeArgument(object arg)
             {
-                if (arg == null)
-                {
-                    return "undefined";
-                }
-                return JsonConvert.SerializeObject(arg);
+                return arg == null ? "undefined" : JsonConvert.SerializeObject(arg);
             }
         }
         #endregion
