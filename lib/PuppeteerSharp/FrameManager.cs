@@ -49,7 +49,7 @@ namespace PuppeteerSharp
 
             if (remoteObject.subtype == "node")
             {
-                return new ElementHandle(storedContext, _client, remoteObject, _page);
+                return new ElementHandle(storedContext, _client, remoteObject, _page, this);
             }
 
             return new JSHandle(storedContext, _client, remoteObject);

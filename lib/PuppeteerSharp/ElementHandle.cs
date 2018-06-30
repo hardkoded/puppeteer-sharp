@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Input;
+using PuppeteerSharp.Messaging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,10 +18,19 @@ namespace PuppeteerSharp
     {
         internal Page Page { get; }
 
-        internal ElementHandle(ExecutionContext context, CDPSession client, object remoteObject, Page page) :
+        private FrameManager _frameManager;
+
+        internal ElementHandle(
+            ExecutionContext
+            context,
+            CDPSession client,
+            object remoteObject,
+            Page page,
+            FrameManager frameManager) :
             base(context, client, remoteObject)
         {
             Page = page;
+            _frameManager = frameManager;
         }
 
         /// <summary>
@@ -257,38 +267,6 @@ namespace PuppeteerSharp
             return properties.Values.OfType<ElementHandle>().ToArray();
         }
 
-        private async Task<(decimal x, decimal y)> VisibleCenterAsync()
-        {
-            await ScrollIntoViewIfNeededAsync();
-            var box = await BoundingBoxAsync();
-            if (box == null)
-            {
-                throw new PuppeteerException("Node is not visible");
-            }
-
-            return (
-                x: box.X + (box.Width / 2),
-                y: box.Y + (box.Height / 2)
-            );
-        }
-
-        private async Task ScrollIntoViewIfNeededAsync()
-        {
-            var errorMessage = await ExecutionContext.EvaluateFunctionAsync<string>(@"element => {
-                if (!element.isConnected)
-                    return 'Node is detached from document';
-                if (element.nodeType !== Node.ELEMENT_NODE)
-                    return 'Node is not of type HTMLElement';
-                element.scrollIntoViewIfNeeded();
-                return null;
-            }", this);
-
-            if (errorMessage != null)
-            {
-                throw new PuppeteerException(errorMessage);
-            }
-        }
-
         /// <summary>
         /// This method returns the bounding box of the element (relative to the main frame), 
         /// or null if the element is not visible.
@@ -323,6 +301,56 @@ namespace PuppeteerSharp
             var height = new[] { quad[1], quad[3], quad[5], quad[7] }.Max() - y;
 
             return new BoundingBox(x, y, width, height);
+        }
+
+        /// <summary>
+        ///Content frame for element handles referencing iframe nodes, or null otherwise.
+        /// </summary>
+        /// <returns>Resolves to the content frame</returns>
+        public async Task<Frame> ContentFrameAsync()
+        {
+            var nodeInfo = await Client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new
+            {
+                RemoteObject.objectId
+            });
+
+            if (string.IsNullOrEmpty(nodeInfo.Node.FrameId))
+            {
+                return null;
+            }
+            return _frameManager.Frames[nodeInfo.Node.FrameId];
+        }
+
+        private async Task<(decimal x, decimal y)> VisibleCenterAsync()
+        {
+            await ScrollIntoViewIfNeededAsync();
+            var box = await BoundingBoxAsync();
+            if (box == null)
+            {
+                throw new PuppeteerException("Node is not visible");
+            }
+
+            return (
+                x: box.X + (box.Width / 2),
+                y: box.Y + (box.Height / 2)
+            );
+        }
+
+        private async Task ScrollIntoViewIfNeededAsync()
+        {
+            var errorMessage = await ExecutionContext.EvaluateFunctionAsync<string>(@"element => {
+                if (!element.isConnected)
+                    return 'Node is detached from document';
+                if (element.nodeType !== Node.ELEMENT_NODE)
+                    return 'Node is not of type HTMLElement';
+                element.scrollIntoViewIfNeeded();
+                return null;
+            }", this);
+
+            if (errorMessage != null)
+            {
+                throw new PuppeteerException(errorMessage);
+            }
         }
     }
 }
