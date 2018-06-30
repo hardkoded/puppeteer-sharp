@@ -16,7 +16,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The type.</value>
         [JsonProperty("type")]
-        public string Type { get; internal set; }
+        public TargetType Type { get; internal set; }
         /// <summary>
         /// Gets or sets the URL.
         /// </summary>
@@ -28,6 +28,6 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The target identifier.</value>
         [JsonProperty("targetId")]
-        public string TargetId { get; internal set; }        
+        public string TargetId { get; internal set; }
     }
 }
