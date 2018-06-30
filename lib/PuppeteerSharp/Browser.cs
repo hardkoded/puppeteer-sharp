@@ -55,11 +55,13 @@ namespace PuppeteerSharp
             Connection.MessageReceived += Connect_MessageReceived;
 
             _closeCallBack = closeCallBack;
+            _logger = Connection.LoggerFactory.CreateLogger<Browser>();
         }
 
         #region Private members
         private readonly Dictionary<string, Target> _targets;
         private readonly Func<Task> _closeCallBack;
+        private readonly ILogger<Browser> _logger;
         #endregion
 
         #region Properties
@@ -136,9 +138,10 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to a new <see cref="Page"/> object</returns>
         public async Task<Page> NewPageAsync()
         {
-            string targetId = (await Connection.SendAsync("Target.createTarget", new Dictionary<string, object>(){
-                {"url", "about:blank"}
-              })).targetId.ToString();
+            string targetId = (await Connection.SendAsync("Target.createTarget", new Dictionary<string, object>
+            {
+                ["url"] = "about:blank"
+            })).targetId.ToString();
 
             var target = _targets[targetId];
             await target.InitializedTask;
@@ -250,7 +253,7 @@ namespace PuppeteerSharp
             {
                 throw new InvalidTargetException("Target should exists before ChangeTargetInfo");
             }
-            
+
             var target = _targets[e.TargetInfo.TargetId];
             target.TargetInfoChanged(e.TargetInfo);
         }
@@ -269,7 +272,7 @@ namespace PuppeteerSharp
             }
             _targets.Remove(e.TargetId);
 
-            TargetDestroyed?.Invoke(this, new TargetChangedArgs()
+            TargetDestroyed?.Invoke(this, new TargetChangedArgs
             {
                 Target = target
             });
@@ -277,12 +280,21 @@ namespace PuppeteerSharp
 
         private async Task CreateTarget(TargetCreatedResponse e)
         {
-            var target = new Target(this, e.TargetInfo);
+            var target = new Target(
+                e.TargetInfo,
+                () => Connection.CreateSessionAsync(e.TargetInfo.TargetId),
+                this);
+
+            if (_targets.ContainsKey(e.TargetInfo.TargetId))
+            {
+                _logger.LogError("Target should not exist before targetCreated");
+            }
+
             _targets[e.TargetInfo.TargetId] = target;
 
             if (await target.InitializedTask)
             {
-                TargetCreated?.Invoke(this, new TargetChangedArgs()
+                TargetCreated?.Invoke(this, new TargetChangedArgs
                 {
                     Target = target
                 });
