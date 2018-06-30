@@ -81,7 +81,10 @@ namespace PuppeteerSharp.Tests.PageTests
         [Fact]
         public async Task ShouldAcceptNullAsOneOfMultipleParameters()
         {
-            bool result = await Page.EvaluateFunctionAsync<bool>("(a, b) => Object.is(a, null) && Object.is(b, 'foo')", null, "foo");
+            var result = await Page.EvaluateFunctionAsync<bool>(
+                "(a, b) => Object.is(a, null) && Object.is(b, 'foo')",
+                null,
+                "foo");
             Assert.True(result);
         }
 
@@ -113,7 +116,7 @@ namespace PuppeteerSharp.Tests.PageTests
             var window = await Page.EvaluateFunctionAsync("() => window");
             Assert.Null(window);
         }
-        
+
         [Fact]
         public async Task ShouldAcceptElementHandleAsAnArgument()
         {
@@ -172,6 +175,35 @@ namespace PuppeteerSharp.Tests.PageTests
                 return await callController(9, 3);
             }");
             Assert.Equal(27, result);
+        }
+
+        [Fact]
+        public async Task ShouldThrowWhenEvaluationTriggersReload()
+        {
+            var exception = await Assert.ThrowsAsync<MessageException>(() =>
+            {
+                return Page.EvaluateFunctionAsync<object>(@"() => {
+                    location.reload();
+                    return new Promise(resolve => {
+                        setTimeout(() => resolve(1), 0);
+                    });
+                }");
+            });
+
+            Assert.Contains("Protocol error", exception.Message);
+        }
+
+        [Fact]
+        public async Task ShouldFailForCircularObject()
+        {
+            var result = await Page.EvaluateFunctionAsync<object>(@"() => {
+                const a = {};
+                const b = {a};
+                a.b = b;
+                return a;
+            }");
+
+            Assert.Null(result);
         }
     }
 }
