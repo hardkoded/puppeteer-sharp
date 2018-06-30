@@ -406,9 +406,11 @@ namespace PuppeteerSharp
         /// <seealso cref="Page.AddScriptTagAsync(string)"/>
         public async Task<ElementHandle> AddScriptTag(AddTagOptions options)
         {
-            const string addScriptUrl = @"async function addScriptUrl(url) {
+            const string addScriptUrl = @"async function addScriptUrl(url, type) {
               const script = document.createElement('script');
               script.src = url;
+              if(type)
+                script.type = type;
               document.head.appendChild(script);
               await new Promise((res, rej) => {
                 script.onload = res;
@@ -416,9 +418,9 @@ namespace PuppeteerSharp
               });
               return script;
             }";
-            const string addScriptContent = @"function addScriptContent(content) {
+            const string addScriptContent = @"function addScriptContent(content, type = 'text/javascript') {
               const script = document.createElement('script');
-              script.type = 'text/javascript';
+              script.type = type;
               script.text = content;
               document.head.appendChild(script);
               return script;
@@ -430,7 +432,7 @@ namespace PuppeteerSharp
                 try
                 {
                     var context = await GetExecutionContextAsync();
-                    return (await context.EvaluateFunctionHandleAsync(addScriptUrl, url)) as ElementHandle;
+                    return (await context.EvaluateFunctionHandleAsync(addScriptUrl, url, options.Type)) as ElementHandle;
                 }
                 catch (PuppeteerException)
                 {
@@ -443,13 +445,13 @@ namespace PuppeteerSharp
                 var contents = File.ReadAllText(options.Path, Encoding.UTF8);
                 contents += "//# sourceURL=" + options.Path.Replace("\n", string.Empty);
                 var context = await GetExecutionContextAsync();
-                return (await context.EvaluateFunctionHandleAsync(addScriptContent, contents)) as ElementHandle;
+                return (await context.EvaluateFunctionHandleAsync(addScriptContent, contents, options.Type)) as ElementHandle;
             }
 
             if (!string.IsNullOrEmpty(options.Content))
             {
                 var context = await GetExecutionContextAsync();
-                return (await context.EvaluateFunctionHandleAsync(addScriptContent, options.Content)) as ElementHandle;
+                return (await context.EvaluateFunctionHandleAsync(addScriptContent, options.Content, options.Type)) as ElementHandle;
             }
 
             throw new ArgumentException("Provide options with a `Url`, `Path` or `Content` property");
