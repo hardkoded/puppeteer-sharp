@@ -89,11 +89,8 @@ namespace PuppeteerSharp
         public async Task<byte[]> ScreenshotDataAsync(ScreenshotOptions options)
         {
             var needsViewportReset = false;
-
             var boundingBox = await AssertBoundingBoxAsync();
-
             var viewport = Page.Viewport;
-
             if (boundingBox.Width > viewport.Width || boundingBox.Height > viewport.Height)
             {
                 var newRawViewport = JObject.FromObject(viewport);
@@ -103,10 +100,8 @@ namespace PuppeteerSharp
                     Height = (int)Math.Max(viewport.Height, Math.Ceiling(boundingBox.Height))
                 });
                 await Page.SetViewportAsync(newRawViewport.ToObject<ViewPortOptions>());
-
                 needsViewportReset = true;
             }
-
             await ExecutionContext.EvaluateFunctionAsync(@"function(element) {
                 element.scrollIntoView({ block: 'center', inline: 'center', behavior: 'instant'});
             }", this);
