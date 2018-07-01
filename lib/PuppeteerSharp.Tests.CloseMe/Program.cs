@@ -1,15 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp.Tests.CloseMe
 {
-	class Program
-	{
-		static void Main(string[] args)
-		{
-		}
-	}
+    class Program
+    {
+        public static async Task Main(string[] args)
+        {
+            await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
+            var options = new LaunchOptions
+            {
+                Headless = true,
+                DumpIO = false/*,
+                ExecutablePath = args[0]*/
+            };
+
+            using (var browser = await Puppeteer.LaunchAsync(options))
+            {
+                Console.WriteLine(browser.WebSocketEndpoint);
+                Console.ReadLine();
+            }
+        }
+    }
 }

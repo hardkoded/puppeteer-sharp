@@ -56,6 +56,11 @@ namespace PuppeteerSharp
 
             _closeCallBack = closeCallBack;
             _logger = Connection.LoggerFactory.CreateLogger<Browser>();
+
+            if (Process != null)
+            {
+                CurrentProcessHandle();
+            }
         }
 
         #region Private members
@@ -319,6 +324,13 @@ namespace PuppeteerSharp
             return browser;
         }
 
+        private void CurrentProcessHandle()
+        {
+            //Source https://stackoverflow.com/a/45286568/2373249
+            AppDomain.CurrentDomain.DomainUnload += (sender, e) => { Dispose(); };
+            AppDomain.CurrentDomain.ProcessExit += (sender, e) => { Dispose(); };
+            AppDomain.CurrentDomain.UnhandledException += (sender, e) => { Dispose(); };
+        }
         #endregion
 
         #region IDisposable
