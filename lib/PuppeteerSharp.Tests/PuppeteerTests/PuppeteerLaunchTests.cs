@@ -291,12 +291,14 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             var process = new Process();
 
 #if NETCOREAPP
-            process.StartInfo.WorkingDirectory = GetDumpIOAppDirectory();
+            process.StartInfo.WorkingDirectory = GetSubprocessWorkingDir("PuppeteerSharp.Tests.DumpIO");
             process.StartInfo.FileName = "dotnet";
             process.StartInfo.Arguments = $"PuppeteerSharp.Tests.DumpIO.dll {dumpioTextToLog} " +
                 $"\"{new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath}\"";
 #else
-            process.StartInfo.FileName = Path.Combine(GetDumpIOAppDirectory(), "PuppeteerSharp.Tests.DumpIO.exe");
+            process.StartInfo.FileName = Path.Combine(
+                GetSubprocessWorkingDir("PuppeteerSharp.Tests.DumpIO"),
+                "PuppeteerSharp.Tests.DumpIO.exe");
             process.StartInfo.Arguments = $"{dumpioTextToLog} " +
                 $"\"{new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath}\"";
 #endif
@@ -314,7 +316,55 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             Assert.True(success);
         }
 
-        private string GetDumpIOAppDirectory()
+        [Fact]
+        public async Task ShouldCloseTheBrowserWhenTheProcessCloses()
+        {
+            var process = new Process();
+            var webSocketTaskWrapper = new TaskCompletionSource<string>();
+            var browserCloseTaskWrapper = new TaskCompletionSource<bool>();
+
+#if NETCOREAPP
+            process.StartInfo.WorkingDirectory = GetSubprocessWorkingDir("PuppeteerSharp.Tests.CloseMe");
+            process.StartInfo.FileName = "dotnet";
+            process.StartInfo.Arguments = $"PuppeteerSharp.Tests.CloseMe.dll " +
+                $"\"{new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath}\"";
+#else
+            process.StartInfo.FileName = Path.Combine(
+                GetSubprocessWorkingDir("PuppeteerSharp.Tests.CloseMe"), 
+                "PuppeteerSharp.Tests.CloseMe.exe");
+            process.StartInfo.Arguments = $"\"{new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath}\"";
+#endif
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.RedirectStandardOutput = true;
+
+            process.OutputDataReceived += (sender, e) =>
+            {
+                if (!webSocketTaskWrapper.Task.IsCompleted)
+                {
+                    webSocketTaskWrapper.SetResult(e.Data);
+                }
+            };
+
+            process.Start();
+            process.BeginOutputReadLine();
+
+            var webSocketUrl = await webSocketTaskWrapper.Task;
+
+            var browser = await Puppeteer.ConnectAsync(new ConnectOptions
+            {
+                BrowserWSEndpoint = webSocketUrl
+            });
+            browser.Disconnected += (sender, e) =>
+            {
+                browserCloseTaskWrapper.SetResult(true);
+            };
+
+            process.Kill();
+
+            await browserCloseTaskWrapper.Task;
+        }
+
+        private string GetSubprocessWorkingDir(string dir)
         {
 #if DEBUG
             var build = "Debug";
@@ -324,14 +374,14 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
 #if NETCOREAPP
             return Path.Combine(
                 TestUtils.FindParentDirectory("lib"),
-                "PuppeteerSharp.Tests.DumpIO",
+                dir,
                 "bin",
                 build,
                 "netcoreapp2.0");
 #else
                 return Path.Combine(
                 TestUtils.FindParentDirectory("lib"),
-                "PuppeteerSharp.Tests.DumpIO",
+                dir,
                 "bin",
                 build,
                 "net471");
