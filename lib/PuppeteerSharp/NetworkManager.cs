@@ -82,13 +82,11 @@ namespace PuppeteerSharp
             }
         }
 
-        internal async Task SetUserAgentAsync(string userAgent)
-        {
-            await _client.SendAsync("Network.setUserAgentOverride", new Dictionary<string, object>
+        internal async Task SetUserAgentAsync(string userAgent) 
+            => await _client.SendAsync("Network.setUserAgentOverride", new Dictionary<string, object>
             {
                 { "userAgent", userAgent }
             });
-        }
 
         internal async Task SetRequestInterceptionAsync(bool value)
         {

@@ -226,13 +226,10 @@ namespace PuppeteerSharp
 
         #region Private Methods
 
-        internal void ChangeTarget(Target target)
+        internal void ChangeTarget(Target target) => TargetChanged?.Invoke(this, new TargetChangedArgs
         {
-            TargetChanged?.Invoke(this, new TargetChangedArgs
-            {
-                Target = target
-            });
-        }
+            Target = target
+        });
 
         private async void Connect_MessageReceived(object sender, MessageEventArgs e)
         {
@@ -335,10 +332,7 @@ namespace PuppeteerSharp
 
         #region IDisposable
         /// <inheritdoc />
-        public void Dispose()
-        {
-            CloseAsync().GetAwaiter().GetResult();
-        }
+        public void Dispose() => CloseAsync().GetAwaiter().GetResult();
         #endregion
     }
 }

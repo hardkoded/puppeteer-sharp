@@ -104,7 +104,7 @@ namespace PuppeteerSharp
 
             var encoded = Encoding.UTF8.GetBytes(message);
             var buffer = new ArraySegment<byte>(encoded, 0, encoded.Length);
-            await _socketQueue.Enqueue(() => WebSocket.SendAsync(buffer, WebSocketMessageType.Text, true, default(CancellationToken)));
+            await _socketQueue.Enqueue(() => WebSocket.SendAsync(buffer, WebSocketMessageType.Text, true, default));
 
             if (method == CloseMessage)
             {
@@ -279,7 +279,7 @@ namespace PuppeteerSharp
         {
             var ws = new ClientWebSocket();
             ws.Options.KeepAliveInterval = new TimeSpan(0, 0, keepAliveInterval);
-            await ws.ConnectAsync(new Uri(url), default(CancellationToken)).ConfigureAwait(false);
+            await ws.ConnectAsync(new Uri(url), default).ConfigureAwait(false);
             return new Connection(url, delay, ws, loggerFactory);
         }
 
