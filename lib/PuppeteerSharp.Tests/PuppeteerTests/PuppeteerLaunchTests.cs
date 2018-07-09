@@ -413,8 +413,8 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         private static void KillProcessTreeLinux(int pid)
         {
             var process = new Process();
-            process.StartInfo.FileName = "kill";
-            process.StartInfo.Arguments = $"-9 {pid}";
+            process.StartInfo.FileName = "/bin/bash";
+            process.StartInfo.Arguments = $"-c \"kill -s 9 {pid}\"";
 
             process.Start();
             process.WaitForExit();
