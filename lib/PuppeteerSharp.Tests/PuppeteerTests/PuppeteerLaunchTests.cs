@@ -348,7 +348,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
 
             process.Start();
             process.BeginOutputReadLine();
-            
+
             var browser = await Puppeteer.ConnectAsync(new ConnectOptions
             {
                 BrowserWSEndpoint = await webSocketTaskWrapper.Task
@@ -358,7 +358,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             {
                 browserClosedTaskWrapper.SetResult(true);
             };
-            
+
             //We need to kill the process tree manually
             //See: https://github.com/dotnet/corefx/issues/26234
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -381,6 +381,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
 #if DEBUG
             var build = "Debug";
 #else
+            
             var build = "Release";
 #endif
 #if NETCOREAPP

@@ -8,9 +8,6 @@
     <ProjectReference Include="..\PuppeteerSharp\PuppeteerSharp.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Remove="App.config" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Remove="Properties\AssemblyInfo.cs" />
   </ItemGroup>
 </Project>
