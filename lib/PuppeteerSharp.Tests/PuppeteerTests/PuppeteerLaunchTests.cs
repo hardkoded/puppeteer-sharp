@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -321,7 +322,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         {
             var process = new Process();
             var webSocketTaskWrapper = new TaskCompletionSource<string>();
-            var browserCloseTaskWrapper = new TaskCompletionSource<bool>();
+            var browserClosedTaskWrapper = new TaskCompletionSource<bool>();
 
 #if NETCOREAPP
             process.StartInfo.WorkingDirectory = GetSubprocessWorkingDir("PuppeteerSharp.Tests.CloseMe");
@@ -347,22 +348,33 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
 
             process.Start();
             process.BeginOutputReadLine();
-
-            var webSocketUrl = await webSocketTaskWrapper.Task;
-
+            
             var browser = await Puppeteer.ConnectAsync(new ConnectOptions
             {
-                BrowserWSEndpoint = webSocketUrl
+                BrowserWSEndpoint = await webSocketTaskWrapper.Task
             });
+
             browser.Disconnected += (sender, e) =>
             {
-                browserCloseTaskWrapper.SetResult(true);
+                browserClosedTaskWrapper.SetResult(true);
             };
+            
+            //We need to kill the process tree manually
+            //See: https://github.com/dotnet/corefx/issues/26234
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                KillProcessTreeWin(process.Id);
+            }
+            else
+            {
+                KillProcessTreeLinux(process.Id);
+            }
 
-            process.Kill();
-
-            await browserCloseTaskWrapper.Task;
+            await browserClosedTaskWrapper.Task;
+            Assert.True(process.HasExited);
         }
+
+        private void Process_Exited(object sender, EventArgs e) => throw new NotImplementedException();
 
         private string GetSubprocessWorkingDir(string dir)
         {
@@ -386,6 +398,26 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 build,
                 "net471");
 #endif
+        }
+
+        private static void KillProcessTreeWin(int pid)
+        {
+            var process = new Process();
+            process.StartInfo.FileName = "taskkill";
+            process.StartInfo.Arguments = $"-pid {pid} -t -f";
+
+            process.Start();
+            process.WaitForExit();
+        }
+
+        private static void KillProcessTreeLinux(int pid)
+        {
+            var process = new Process();
+            process.StartInfo.FileName = "kill";
+            process.StartInfo.Arguments = $"-9 {pid}";
+
+            process.Start();
+            process.WaitForExit();
         }
     }
 }
