@@ -190,6 +190,18 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Contains("empty.html", response.Url);
             Assert.Equal(5, requests.Count);
             Assert.Equal(ResourceType.Document, requests[2].ResourceType);
+
+            // Check redirect chain
+            var redirectChain = response.Request.RedirectChain;
+            Assert.Equal(4, redirectChain.Length);
+            Assert.Contains("/non-existing-page.html", redirectChain[0].Url);
+            Assert.Contains("/non-existing-page-3.html", redirectChain[2].Url);
+
+            for (var i = 0; i < redirectChain.Length; ++i)
+            {
+                var request = redirectChain[i];
+                Assert.Equal(request, request.RedirectChain.ElementAt(i));
+            }
         }
 
         [Fact]

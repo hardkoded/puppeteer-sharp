@@ -247,7 +247,14 @@ namespace PuppeteerSharp
                 var request = _interceptionIdToRequest[e.InterceptionId];
 
                 HandleRequestRedirect(request, e.ResponseStatusCode, e.ResponseHeaders, false, false);
-                HandleRequestStart(request.RequestId, e.InterceptionId, e.RedirectUrl, e.ResourceType, e.Request, e.FrameId);
+                HandleRequestStart(
+                    request.RequestId,
+                    e.InterceptionId,
+                    e.RedirectUrl,
+                    e.ResourceType,
+                    e.Request,
+                    e.FrameId,
+                    request.RedirectChainList);
                 return;
             }
 
@@ -256,12 +263,26 @@ namespace PuppeteerSharp
             if (requestId != null)
             {
                 _requestHashToRequestIds.Delete(requestHash, requestId);
-                HandleRequestStart(requestId, e.InterceptionId, e.Request.Url, e.ResourceType, e.Request, e.FrameId);
+                HandleRequestStart(
+                    requestId,
+                    e.InterceptionId,
+                    e.Request.Url,
+                    e.ResourceType,
+                    e.Request,
+                    e.FrameId,
+                    new List<Request>());
             }
             else
             {
                 _requestHashToInterceptionIds.Add(requestHash, e.InterceptionId);
-                HandleRequestStart(null, e.InterceptionId, e.Request.Url, e.ResourceType, e.Request, e.FrameId);
+                HandleRequestStart(
+                    null,
+                    e.InterceptionId,
+                    e.Request.Url,
+                    e.ResourceType,
+                    e.Request,
+                    e.FrameId,
+                    new List<Request>());
             }
         }
 
@@ -279,7 +300,8 @@ namespace PuppeteerSharp
             string url,
             ResourceType resourceType,
             Payload requestPayload,
-            string frameId)
+            string frameId,
+            List<Request> redirectChain)
         {
             Frame frame = null;
 
@@ -296,7 +318,8 @@ namespace PuppeteerSharp
                 url,
                 resourceType,
                 requestPayload,
-                frame);
+                frame,
+                redirectChain);
 
             if (!string.IsNullOrEmpty(requestId))
             {
@@ -331,6 +354,7 @@ namespace PuppeteerSharp
                 securityDetails);
 
             request.Response = response;
+            request.RedirectChainList.Add(request);
             if (request.RequestId != null)
             {
                 _requestIdToRequest.Remove(request.RequestId);
@@ -355,6 +379,8 @@ namespace PuppeteerSharp
 
         private void OnRequestWillBeSent(RequestWillBeSentResponse e)
         {
+            var redirectChain = new List<Request>();
+
             if (_protocolRequestInterceptionEnabled)
             {
                 // All redirects are handled in requestIntercepted.
@@ -388,9 +414,11 @@ namespace PuppeteerSharp
                     e.RedirectResponse.FromDiskCache,
                     e.RedirectResponse.FromServiceWorker,
                     e.RedirectResponse.SecurityDetails);
+
+                redirectChain = request.RedirectChainList;
             }
 
-            HandleRequestStart(e.RequestId, null, e.Request.Url, e.Type, e.Request, e.FrameId);
+            HandleRequestStart(e.RequestId, null, e.Request.Url, e.Type, e.Request, e.FrameId, redirectChain);
         }
 
         private async Task UpdateProtocolRequestInterceptionAsync()
