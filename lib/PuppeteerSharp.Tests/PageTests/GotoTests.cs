@@ -261,5 +261,13 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(HttpStatusCode.OK, response.Status);
             Assert.Contains("self-request.html", response.Url);
         }
+
+        [Fact]
+        public async Task ShouldFailWhenNavigatingAndShowTheUrlAtTheErrorMessage()
+        {
+            var url = TestConstants.HttpsPrefix + "/redirect/1.html";
+            var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await Page.GoToAsync(url));
+            Assert.Contains(url, exception.Message);
+        }
     }
 }
