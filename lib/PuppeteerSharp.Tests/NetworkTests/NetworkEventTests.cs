@@ -80,6 +80,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Page.Response += (sender, e) => responses[e.Response.Url.Split('/').Last()] = e.Response;
             await Page.GoToAsync(TestConstants.ServerUrl + "/serviceworkers/fetch/sw.html",
                 waitUntil: new[] { WaitUntilNavigation.Networkidle2 });
+            await Page.EvaluateFunctionAsync("async () => await window.activationPromise");
             await Page.ReloadAsync();
 
             Assert.Equal(2, responses.Count);
