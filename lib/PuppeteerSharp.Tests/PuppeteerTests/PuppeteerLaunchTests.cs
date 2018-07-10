@@ -77,7 +77,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             {
                 var response = await page.GoToAsync(
                     "https://www.google.com",
-                    new NavigationOptions()
+                    new NavigationOptions
                     {
                         Timeout = 10000,
                         WaitUntil = new[] { WaitUntilNavigation.Networkidle0 }
@@ -289,22 +289,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         {
             var dumpioTextToLog = "MAGIC_DUMPIO_TEST";
             var success = false;
-            var process = new Process();
-
-#if NETCOREAPP
-            process.StartInfo.WorkingDirectory = GetSubprocessWorkingDir("PuppeteerSharp.Tests.DumpIO");
-            process.StartInfo.FileName = "dotnet";
-            process.StartInfo.Arguments = $"PuppeteerSharp.Tests.DumpIO.dll {dumpioTextToLog} " +
-                $"\"{new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath}\"";
-#else
-            process.StartInfo.FileName = Path.Combine(
-                GetSubprocessWorkingDir("PuppeteerSharp.Tests.DumpIO"),
-                "PuppeteerSharp.Tests.DumpIO.exe");
-            process.StartInfo.Arguments = $"{dumpioTextToLog} " +
-                $"\"{new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath}\"";
-#endif
-            process.StartInfo.UseShellExecute = false;
-            process.StartInfo.RedirectStandardError = true;
+            var process = GetDumpIOProcess(dumpioTextToLog);
 
             process.ErrorDataReceived += (sender, e) =>
             {
@@ -359,22 +344,32 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 browserClosedTaskWrapper.SetResult(true);
             };
 
-            //We need to kill the process tree manually
-            //See: https://github.com/dotnet/corefx/issues/26234
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                KillProcessTreeWin(process.Id);
-            }
-            else
-            {
-                KillProcessTreeLinux(process.Id);
-            }
+            KillProcess(process.Id);
 
             await browserClosedTaskWrapper.Task;
             Assert.True(process.HasExited);
         }
 
-        private void Process_Exited(object sender, EventArgs e) => throw new NotImplementedException();
+        private Process GetDumpIOProcess(string dumpioTextToLog)
+        {
+            var process = new Process();
+
+#if NETCOREAPP
+            process.StartInfo.WorkingDirectory = GetSubprocessWorkingDir("PuppeteerSharp.Tests.DumpIO");
+            process.StartInfo.FileName = "dotnet";
+            process.StartInfo.Arguments = $"PuppeteerSharp.Tests.DumpIO.dll {dumpioTextToLog} " +
+                $"\"{new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath}\"";
+#else
+            process.StartInfo.FileName = Path.Combine(
+                GetSubprocessWorkingDir("PuppeteerSharp.Tests.DumpIO"),
+                "PuppeteerSharp.Tests.DumpIO.exe");
+            process.StartInfo.Arguments = $"{dumpioTextToLog} " +
+                $"\"{new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath}\"";
+#endif
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.RedirectStandardError = true;
+            return process;
+        }
 
         private string GetSubprocessWorkingDir(string dir)
         {
@@ -401,21 +396,22 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
 #endif
         }
 
-        private static void KillProcessTreeWin(int pid)
+        private void KillProcess(int pid)
         {
             var process = new Process();
-            process.StartInfo.FileName = "taskkill";
-            process.StartInfo.Arguments = $"-pid {pid} -t -f";
 
-            process.Start();
-            process.WaitForExit();
-        }
-
-        private static void KillProcessTreeLinux(int pid)
-        {
-            var process = new Process();
-            process.StartInfo.FileName = "/bin/bash";
-            process.StartInfo.Arguments = $"-c \"kill -s 9 {pid}\"";
+            //We need to kill the process tree manually
+            //See: https://github.com/dotnet/corefx/issues/26234
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                process.StartInfo.FileName = "taskkill";
+                process.StartInfo.Arguments = $"-pid {pid} -t -f";
+            }
+            else
+            {
+                process.StartInfo.FileName = "/bin/bash";
+                process.StartInfo.Arguments = $"-c \"kill -s 9 {pid}\"";
+            }
 
             process.Start();
             process.WaitForExit();

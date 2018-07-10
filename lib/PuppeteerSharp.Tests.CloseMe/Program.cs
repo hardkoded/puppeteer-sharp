@@ -11,8 +11,8 @@ namespace PuppeteerSharp.Tests.CloseMe
             var options = new LaunchOptions
             {
                 Headless = true,
-                DumpIO = false/*,
-                ExecutablePath = args[0]*/
+                DumpIO = false,
+                ExecutablePath = args[0]
             };
 
             using (var browser = await Puppeteer.LaunchAsync(options))
