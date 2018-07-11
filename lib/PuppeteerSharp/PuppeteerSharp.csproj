@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>1.1.0</PackageVersion>
+    <PackageVersion>1.2.0</PackageVersion>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
@@ -13,76 +13,20 @@
     <PackageId>PuppeteerSharp</PackageId>
     <PackageReleaseNotes>
 New Features
- * New Chromium version r536395
- * Service workers support
- * Cache Support
- * New WaitFor options
- * New BrowserFetcher utility
- * Dump IO implementation
+ * New RequestChain property
+ * Chromium updated to r543305
 
 New APIs
+ * Request.RedirectChain
+ * ElementHandle.ContentFrameAsync
+ * AddTagOptions.Type. Allowing the user to declare script tags (using Page.AddScriptTagAsync) as modules.
 
- * Page.SetCacheEnabledAsync
- * Page.DOMContentLoaded
- * Page.WaitForXPathAsync
- * ResponseData.FromServiceWorker
- * ExecutionContext.Frame
- * Frame.EvaluateExpressionHandleAsync
- * Frame.EvaluateFunctionHandleAsync
- * Frame.WaitForSelectorAsync
- * Frame.WaitForXPathAsync
- * Frame.WaitForSelectorOrXPathAsync
-
-Breaking Changes
-
-Downloader changes
-
-The Downloader class was renamed to BrowserFetcher. BrowserFetcher has the following API:
-
- * DefaultRevision
- * DownloadsFolder
- * DownloadHost
- * Platform
- * DownloadProgressChanged
- * CanDownloadAsync(int revision)
- * LocalRevisions()
- * Remove(int revision)
- * RevisionInfo(int revision)
- * DownloadAsync(int revision)
- * GetExecutablePath(int revision)
- * GetExecutablePath(Platform platform, string folderPath)
-
-If you were using Downloader like this:
-
-await Downloader.CreateDefault().DownloadRevisionAsync(chromiumRevision);
-
-It should be changed to :
-
-await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
-
-
-Puppeteer.LaunchAsync breaking change
-
-In order to simplify the API, the revision argument was removed from the `LaunchAsync` method. So this piece of code:
-
-Puppeteer.LaunchAsync(launcherOptions, Downloader.DefaultRevision);
-
-
-Should be changed to:
-
-Puppeteer.LaunchAsync(launcherOptions);
-
- 
-If you need to launch Puppeteer using another revision you should handle that using the `ExecutablePath` option:
-
-var myRevisionInfo = await new BrowserFetcher().DownloadAsync(myRevision);
-var browser = Puppeteer.LaunchAsync(new LaunchOptions
-{
-   Headless = true,
-   ExecutablePath = myRevisionInfo.ExecutablePath
-});
+Changes
+ * Response.Ok() returns true for local files
+ * Target.TargetType is now an enum.
+ * NavigationException Improvements
     </PackageReleaseNotes>
-    <ReleaseVersion>1.1.0</ReleaseVersion>
+    <ReleaseVersion>1.2.0</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>
@@ -96,8 +40,5 @@ var browser = Puppeteer.LaunchAsync(new LaunchOptions
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="System.Net.Http" Version="4.3.3" />
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.0.2" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="FrameInfo.cs" />
   </ItemGroup>
 </Project>
