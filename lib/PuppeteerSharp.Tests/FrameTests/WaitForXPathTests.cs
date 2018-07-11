@@ -29,13 +29,11 @@ namespace PuppeteerSharp.Tests.FrameTests
             await FrameUtils.AttachFrameAsync(Page, "frame2", TestConstants.EmptyPage);
             var frame1 = Page.Frames[1];
             var frame2 = Page.Frames[2];
-            var added = false;
-            var waitForXPathPromise = frame2.WaitForXPathAsync("//div").ContinueWith(_ => added = true);
-            Assert.False(added);
+            var waitForXPathPromise = frame2.WaitForXPathAsync("//div");
             await frame1.EvaluateFunctionAsync(addElement, "div");
-            Assert.False(added);
             await frame2.EvaluateFunctionAsync(addElement, "div");
-            await waitForXPathPromise;
+            var eHandle = await waitForXPathPromise;
+            Assert.Equal(frame2, eHandle.ExecutionContext.Frame);
         }
 
         [Fact]
