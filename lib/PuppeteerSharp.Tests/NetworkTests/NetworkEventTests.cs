@@ -204,7 +204,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Page.RequestFailed += (sender, e) => events.Add($"FAIL {e.Request.Url}");
             Server.SetRedirect("/foo.html", "/empty.html");
             const string FOO_URL = TestConstants.ServerUrl + "/foo.html";
-            await Page.GoToAsync(FOO_URL);
+            var response = await Page.GoToAsync(FOO_URL);
             Assert.Equal(new[] {
                 $"GET {FOO_URL}",
                 $"302 {FOO_URL}",
@@ -213,6 +213,11 @@ namespace PuppeteerSharp.Tests.NetworkTests
                 $"200 {TestConstants.EmptyPage}",
                 $"DONE {TestConstants.EmptyPage}"
             }, events);
+
+            // Check redirect chain
+            var redirectChain = response.Request.RedirectChain;
+            Assert.Single(redirectChain);
+            Assert.Contains("/foo.html", redirectChain[0].Url);
         }
     }
 }
