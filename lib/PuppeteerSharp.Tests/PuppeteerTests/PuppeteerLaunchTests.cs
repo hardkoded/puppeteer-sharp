@@ -289,7 +289,9 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         {
             var dumpioTextToLog = "MAGIC_DUMPIO_TEST";
             var success = false;
-            var process = GetDumpIOProcess(dumpioTextToLog);
+            var process = GetTestAppProcess(
+                "PuppeteerSharp.Tests.DumpIO",
+                $"{dumpioTextToLog} \"{new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath}\"");
 
             process.ErrorDataReceived += (sender, e) =>
             {
@@ -305,21 +307,13 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         [Fact]
         public async Task ShouldCloseTheBrowserWhenTheProcessCloses()
         {
-            var process = new Process();
+            var process = GetTestAppProcess(
+                "PuppeteerSharp.Tests.CloseMe",
+                $"\"{new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath}\"");
+
             var webSocketTaskWrapper = new TaskCompletionSource<string>();
             var browserClosedTaskWrapper = new TaskCompletionSource<bool>();
 
-#if NETCOREAPP
-            process.StartInfo.WorkingDirectory = GetSubprocessWorkingDir("PuppeteerSharp.Tests.CloseMe");
-            process.StartInfo.FileName = "dotnet";
-            process.StartInfo.Arguments = $"PuppeteerSharp.Tests.CloseMe.dll " +
-                $"\"{new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath}\"";
-#else
-            process.StartInfo.FileName = Path.Combine(
-                GetSubprocessWorkingDir("PuppeteerSharp.Tests.CloseMe"), 
-                "PuppeteerSharp.Tests.CloseMe.exe");
-            process.StartInfo.Arguments = $"\"{new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath}\"";
-#endif
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.RedirectStandardOutput = true;
 
@@ -350,21 +344,17 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             Assert.True(process.HasExited);
         }
 
-        private Process GetDumpIOProcess(string dumpioTextToLog)
+        private Process GetTestAppProcess(string appName, string arguments)
         {
             var process = new Process();
 
 #if NETCOREAPP
-            process.StartInfo.WorkingDirectory = GetSubprocessWorkingDir("PuppeteerSharp.Tests.DumpIO");
+            process.StartInfo.WorkingDirectory = GetSubprocessWorkingDir(appName);
             process.StartInfo.FileName = "dotnet";
-            process.StartInfo.Arguments = $"PuppeteerSharp.Tests.DumpIO.dll {dumpioTextToLog} " +
-                $"\"{new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath}\"";
+            process.StartInfo.Arguments = $"{appName}.dll {arguments}";
 #else
-            process.StartInfo.FileName = Path.Combine(
-                GetSubprocessWorkingDir("PuppeteerSharp.Tests.DumpIO"),
-                "PuppeteerSharp.Tests.DumpIO.exe");
-            process.StartInfo.Arguments = $"{dumpioTextToLog} " +
-                $"\"{new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath}\"";
+            process.StartInfo.FileName = Path.Combine(GetSubprocessWorkingDir(appFolder), $"{appName}.exe");
+            process.StartInfo.Arguments = arguments;
 #endif
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.RedirectStandardError = true;
