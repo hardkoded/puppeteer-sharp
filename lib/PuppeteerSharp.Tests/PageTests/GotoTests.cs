@@ -264,6 +264,15 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Fact]
+        public async Task ShouldFailWhenNavigatingAndShowTheUrlAtTheErrorMessage()
+        {
+            var url = TestConstants.HttpsPrefix + "/redirect/1.html";
+            var exception = await Assert.ThrowsAnyAsync<NavigationException>(async () => await Page.GoToAsync(url));
+            Assert.Contains(url, exception.Message);
+            Assert.Contains(url, exception.Url);
+        }
+
+        [Fact]
         public async Task ResponseOkShouldBeTrueForFile()
         {
             var fileToNavigate = Path.Combine(Directory.GetCurrentDirectory(), Path.Combine("assets", "file-to-upload.txt"));

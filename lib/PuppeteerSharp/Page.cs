@@ -649,13 +649,13 @@ namespace PuppeteerSharp
             var referrer = _networkManager.ExtraHTTPHeaders?.GetValueOrDefault("referer");
             var requests = new Dictionary<string, Request>();
 
-            EventHandler<RequestEventArgs> createRequestEventListener = (object sender, RequestEventArgs e) =>
+            void createRequestEventListener(object sender, RequestEventArgs e)
             {
                 if (!requests.ContainsKey(e.Request.Url))
                 {
                     requests.Add(e.Request.Url, e.Request);
                 }
-            };
+            }
 
             _networkManager.Request += createRequestEventListener;
 
@@ -1283,7 +1283,7 @@ namespace PuppeteerSharp
             var watcher = new NavigatorWatcher(_frameManager, mainFrame, timeout, options);
             var responses = new Dictionary<string, Response>();
 
-            EventHandler<ResponseCreatedEventArgs> createResponseEventListener = (sender, e) => responses[e.Response.Url] = e.Response;
+            void createResponseEventListener(object sender, ResponseCreatedEventArgs e) => responses[e.Response.Url] = e.Response;
 
             _networkManager.Response += createResponseEventListener;
 
@@ -1306,7 +1306,7 @@ namespace PuppeteerSharp
         /// <returns>Task which which resolves to the main resource response. In case of multiple redirects, 
         /// the navigation will resolve with the response of the last redirect. If can not go back, resolves to null.</returns>
         /// <param name="options">Navigation parameters.</param>
-        public Task<Response> GoBackAsync(NavigationOptions options = null) => GoAsync(-1, null);
+        public Task<Response> GoBackAsync(NavigationOptions options = null) => GoAsync(-1, options);
 
         /// <summary>
         /// Navigate to the next page in history.
@@ -1314,7 +1314,7 @@ namespace PuppeteerSharp
         /// <returns>Task which which resolves to the main resource response. In case of multiple redirects, 
         /// the navigation will resolve with the response of the last redirect. If can not go forward, resolves to null.</returns>
         /// <param name="options">Navigation parameters.</param>
-        public Task<Response> GoForwardAsync(NavigationOptions options = null) => GoAsync(1, null);
+        public Task<Response> GoForwardAsync(NavigationOptions options = null) => GoAsync(1, options);
 
         #endregion
 
@@ -1402,7 +1402,7 @@ namespace PuppeteerSharp
                 targetId = Target.TargetId
             });
 
-            var clip = options.Clip != null ? options.Clip.Clone() : null;
+            var clip = options.Clip?.Clone();
             if (clip != null)
             {
                 clip.Scale = 1;
@@ -1740,7 +1740,7 @@ namespace PuppeteerSharp
 
             if (response.errorText != null)
             {
-                throw new NavigationException(response.errorText.ToString());
+                throw new NavigationException(response.errorText.ToString(), url);
             }
         }
 
