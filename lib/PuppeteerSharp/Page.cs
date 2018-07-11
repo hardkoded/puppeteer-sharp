@@ -1306,7 +1306,7 @@ namespace PuppeteerSharp
         /// <returns>Task which which resolves to the main resource response. In case of multiple redirects, 
         /// the navigation will resolve with the response of the last redirect. If can not go back, resolves to null.</returns>
         /// <param name="options">Navigation parameters.</param>
-        public Task<Response> GoBackAsync(NavigationOptions options = null) => GoAsync(-1, null);
+        public Task<Response> GoBackAsync(NavigationOptions options = null) => GoAsync(-1, options);
 
         /// <summary>
         /// Navigate to the next page in history.
@@ -1314,7 +1314,7 @@ namespace PuppeteerSharp
         /// <returns>Task which which resolves to the main resource response. In case of multiple redirects, 
         /// the navigation will resolve with the response of the last redirect. If can not go forward, resolves to null.</returns>
         /// <param name="options">Navigation parameters.</param>
-        public Task<Response> GoForwardAsync(NavigationOptions options = null) => GoAsync(1, null);
+        public Task<Response> GoForwardAsync(NavigationOptions options = null) => GoAsync(1, options);
 
         #endregion
 
@@ -1740,7 +1740,7 @@ namespace PuppeteerSharp
 
             if (response.errorText != null)
             {
-                throw new NavigationException($"{response.errorText.ToString()} at {url}");
+                throw new NavigationException(response.errorText.ToString(), url);
             }
         }
 
