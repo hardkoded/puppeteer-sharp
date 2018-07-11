@@ -22,5 +22,14 @@ namespace PuppeteerSharp.Tests.PageTests
 
             Assert.Contains("Protocol error", exception.Message);
         }
+
+        [Fact]
+        public async Task ShouldNotBeVisibleInBrowserPages()
+        {
+            var newPage = await Browser.NewPageAsync();
+            Assert.Contains(newPage, await Browser.PagesAsync());
+            await newPage.CloseAsync();
+            Assert.DoesNotContain(newPage, await Browser.PagesAsync());
+        }
     }
 }

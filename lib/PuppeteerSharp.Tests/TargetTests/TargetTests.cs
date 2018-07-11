@@ -19,9 +19,9 @@ namespace PuppeteerSharp.Tests.TargetTests
         {
             // The pages will be the testing page and the original newtab page
             var targets = Browser.Targets();
-            Assert.Contains(targets, target => target.Type == "page"
+            Assert.Contains(targets, target => target.Type == TargetType.Page
                 && target.Url == TestConstants.AboutBlank);
-            Assert.Contains(targets, target => target.Type == "browser");
+            Assert.Contains(targets, target => target.Type == TargetType.Browser);
         }
 
         [Fact]
@@ -38,7 +38,7 @@ namespace PuppeteerSharp.Tests.TargetTests
         public void ShouldContainBrowserTarget()
         {
             var targets = Browser.Targets();
-            var browserTarget = targets.FirstOrDefault(target => target.Type == "browser");
+            var browserTarget = targets.FirstOrDefault(target => target.Type == TargetType.Browser);
             Assert.NotNull(browserTarget);
         }
 
@@ -102,7 +102,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/serviceworkers/empty/sw.html");
 
             var createdTarget = await createdTargetTaskCompletion.Task;
-            Assert.Equal("service_worker", createdTarget.Type);
+            Assert.Equal(TargetType.ServiceWorker, createdTarget.Type);
             Assert.Equal(TestConstants.ServerUrl + "/serviceworkers/empty/sw.js", createdTarget.Url);
 
             var targetDestroyedTaskCompletion = new TaskCompletionSource<Target>();
@@ -144,7 +144,7 @@ namespace PuppeteerSharp.Tests.TargetTests
         public async Task ShouldNotReportUninitializedPages()
         {
             var targetChanged = false;
-            EventHandler<TargetChangedArgs> listener = (sender, e) => targetChanged = true;
+            void listener(object sender, TargetChangedArgs e) => targetChanged = true;
             Browser.TargetChanged += listener;
             var targetCompletionTask = new TaskCompletionSource<Target>();
             void TargetCreatedEventHandler(object sender, TargetChangedArgs e)
