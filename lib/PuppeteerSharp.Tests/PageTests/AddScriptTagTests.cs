@@ -105,7 +105,5 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.NotNull(scriptHandle as ElementHandle);
             Assert.Equal(35, await Page.EvaluateExpressionAsync<int>("__injected"));
         }
-
-
     }
 }
