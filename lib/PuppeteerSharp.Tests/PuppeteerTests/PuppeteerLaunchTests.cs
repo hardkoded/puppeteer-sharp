@@ -353,7 +353,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             process.StartInfo.FileName = "dotnet";
             process.StartInfo.Arguments = $"{appName}.dll {arguments}";
 #else
-            process.StartInfo.FileName = Path.Combine(GetSubprocessWorkingDir(appFolder), $"{appName}.exe");
+            process.StartInfo.FileName = Path.Combine(GetSubprocessWorkingDir(appName), $"{appName}.exe");
             process.StartInfo.Arguments = arguments;
 #endif
             process.StartInfo.UseShellExecute = false;
