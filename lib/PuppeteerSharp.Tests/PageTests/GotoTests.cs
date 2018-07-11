@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using Xunit;
@@ -269,6 +270,16 @@ namespace PuppeteerSharp.Tests.PageTests
             var exception = await Assert.ThrowsAnyAsync<NavigationException>(async () => await Page.GoToAsync(url));
             Assert.Contains(url, exception.Message);
             Assert.Contains(url, exception.Url);
+        }
+
+        [Fact]
+        public async Task ResponseOkShouldBeTrueForFile()
+        {
+            var fileToNavigate = Path.Combine(Directory.GetCurrentDirectory(), Path.Combine("assets", "file-to-upload.txt"));
+            var url = new Uri(fileToNavigate).AbsoluteUri;
+
+            var response = await Page.GoToAsync(url);
+            Assert.True(response.Ok);
         }
     }
 }
