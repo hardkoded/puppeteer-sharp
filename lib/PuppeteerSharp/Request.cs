@@ -150,13 +150,24 @@ namespace PuppeteerSharp
             {
                 var requestData = new Dictionary<string, object> { ["interceptionId"] = InterceptionId };
                 if (overrides?.Url != null)
+                {
                     requestData["url"] = overrides.Url;
+                }
+
                 if (overrides?.Method != null)
+                {
                     requestData["method"] = overrides.Method;
+                }
+
                 if (overrides?.PostData != null)
+                {
                     requestData["postData"] = overrides.PostData;
+                }
+
                 if (overrides?.Headers != null)
+                {
                     requestData["headers"] = overrides.Headers;
+                }
 
                 await _client.SendAsync("Network.continueInterceptedRequest", requestData);
             }
