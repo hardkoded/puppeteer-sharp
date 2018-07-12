@@ -13,13 +13,13 @@
         }
 
         /// <summary>
-        /// Page width expressed in inches
+        /// Page width in inches
         /// </summary>
         /// <value>The width.</value>
         public decimal Width { get; set; }
 
         /// <summary>
-        /// Page height expressed in inches
+        /// Page height in inches
         /// </summary>
         /// <value>The Height.</value>
         public decimal Height { get; set; }
