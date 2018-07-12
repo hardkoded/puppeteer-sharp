@@ -252,7 +252,7 @@ namespace PuppeteerSharp
         /// <seealso cref="Page.WaitForXPathAsync(string, WaitForSelectorOptions)"/>
         public Task<ElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
             => WaitForSelectorOrXPathAsync(xpath, true, options);
-        
+
         /// <summary>
         /// Waits for a timeout
         /// </summary>
@@ -406,9 +406,11 @@ namespace PuppeteerSharp
         /// <seealso cref="Page.AddScriptTagAsync(string)"/>
         public async Task<ElementHandle> AddScriptTag(AddTagOptions options)
         {
-            const string addScriptUrl = @"async function addScriptUrl(url) {
+            const string addScriptUrl = @"async function addScriptUrl(url, type) {
               const script = document.createElement('script');
               script.src = url;
+              if(type)
+                script.type = type;
               document.head.appendChild(script);
               await new Promise((res, rej) => {
                 script.onload = res;
@@ -416,21 +418,28 @@ namespace PuppeteerSharp
               });
               return script;
             }";
-            const string addScriptContent = @"function addScriptContent(content) {
+            const string addScriptContent = @"function addScriptContent(content, type = 'text/javascript') {
               const script = document.createElement('script');
-              script.type = 'text/javascript';
+              script.type = type;
               script.text = content;
               document.head.appendChild(script);
               return script;
             }";
+
+            async Task<ElementHandle> AddScriptTagPrivate(string script, string urlOrContent, string type)
+            {
+                var context = await GetExecutionContextAsync();
+                return (string.IsNullOrEmpty(type)
+                        ? await context.EvaluateFunctionHandleAsync(script, urlOrContent)
+                        : await context.EvaluateFunctionHandleAsync(script, urlOrContent, type)) as ElementHandle;
+            }
 
             if (!string.IsNullOrEmpty(options.Url))
             {
                 var url = options.Url;
                 try
                 {
-                    var context = await GetExecutionContextAsync();
-                    return (await context.EvaluateFunctionHandleAsync(addScriptUrl, url)) as ElementHandle;
+                    return await AddScriptTagPrivate(addScriptUrl, url, options.Type);
                 }
                 catch (PuppeteerException)
                 {
@@ -442,14 +451,12 @@ namespace PuppeteerSharp
             {
                 var contents = File.ReadAllText(options.Path, Encoding.UTF8);
                 contents += "//# sourceURL=" + options.Path.Replace("\n", string.Empty);
-                var context = await GetExecutionContextAsync();
-                return (await context.EvaluateFunctionHandleAsync(addScriptContent, contents)) as ElementHandle;
+                return await AddScriptTagPrivate(addScriptContent, contents, options.Type);
             }
 
             if (!string.IsNullOrEmpty(options.Content))
             {
-                var context = await GetExecutionContextAsync();
-                return (await context.EvaluateFunctionHandleAsync(addScriptContent, options.Content)) as ElementHandle;
+                return await AddScriptTagPrivate(addScriptContent, options.Content, options.Type);
             }
 
             throw new ArgumentException("Provide options with a `Url`, `Path` or `Content` property");

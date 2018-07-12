@@ -31,6 +31,40 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Fact]
+        public async Task ShouldWorkWithAUrlAndTypeModule()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.AddScriptTagAsync(new AddTagOptions { Url = "/es6/es6import.js", Type = "module" });
+            Assert.Equal(42, await Page.EvaluateExpressionAsync<int>("__es6injected"));
+        }
+
+        [Fact]
+        public async Task ShouldWorkWithAPathAndTypeModule()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.AddScriptTagAsync(new AddTagOptions
+            {
+                Path = Path.Combine(Directory.GetCurrentDirectory(), Path.Combine("assets", "es6", "es6pathimport.js")),
+                Type = "module"
+            });
+            await Page.WaitForFunctionAsync("() => window.__es6injected");
+            Assert.Equal(42, await Page.EvaluateExpressionAsync<int>("__es6injected"));
+        }
+
+        [Fact]
+        public async Task ShouldWorkWithAContentAndTypeModule()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.AddScriptTagAsync(new AddTagOptions
+            {
+                Content = "import num from '/es6/es6module.js'; window.__es6injected = num;",
+                Type = "module"
+            });
+            await Page.WaitForFunctionAsync("() => window.__es6injected");
+            Assert.Equal(42, await Page.EvaluateExpressionAsync<int>("__es6injected"));
+        }
+
+        [Fact]
         public async Task ShouldThrowAnErrorIfLoadingFromUrlFail()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
