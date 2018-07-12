@@ -13,18 +13,19 @@
     <PackageId>PuppeteerSharp</PackageId>
     <PackageReleaseNotes>
 New Features
- * New RequestChain property
- * Chromium updated to r543305
+ * New RequestChain property.
+ * Chromium updated to r543305.
 
 New APIs
- * Request.RedirectChain
- * ElementHandle.ContentFrameAsync
+ * Request.RedirectChain.
+ * ElementHandle.ContentFrameAsync.
  * AddTagOptions.Type. Allowing the user to declare script tags (using Page.AddScriptTagAsync) as modules.
 
 Changes
- * Response.Ok() returns true for local files
+ * Response.Ok() returns true for local files.
  * Target.TargetType is now an enum.
- * NavigationException Improvements
+ * NavigationException Improvements.
+ * PaperFormat Height and Width now are public.
     </PackageReleaseNotes>
     <ReleaseVersion>1.2.0</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
