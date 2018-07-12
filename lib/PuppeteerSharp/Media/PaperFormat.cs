@@ -6,14 +6,23 @@
     /// <seealso cref="PdfOptions.Format"/>
     public class PaperFormat
     {
-        internal decimal Width { get; set; }
-        internal decimal Height { get; set; }
-
         private PaperFormat(decimal width, decimal height)
         {
             Width = width;
             Height = height;
         }
+
+        /// <summary>
+        /// Page width expressed in inches
+        /// </summary>
+        /// <value>The width.</value>
+        public decimal Width { get; set; }
+
+        /// <summary>
+        /// Page height expressed in inches
+        /// </summary>
+        /// <value>The Height.</value>
+        public decimal Height { get; set; }
 
         /// <summary>
         /// Letter.
