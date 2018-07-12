@@ -429,9 +429,9 @@ namespace PuppeteerSharp
             async Task<ElementHandle> AddScriptTagPrivate(string script, string urlOrContent, string type)
             {
                 var context = await GetExecutionContextAsync();
-                return string.IsNullOrEmpty(type)
-                        ? (await context.EvaluateFunctionHandleAsync(script, urlOrContent)) as ElementHandle
-                        : (await context.EvaluateFunctionHandleAsync(script, urlOrContent, type)) as ElementHandle;
+                return (string.IsNullOrEmpty(type)
+                        ? await context.EvaluateFunctionHandleAsync(script, urlOrContent)
+                        : await context.EvaluateFunctionHandleAsync(script, urlOrContent, type)) as ElementHandle;
             }
 
             if (!string.IsNullOrEmpty(options.Url))
