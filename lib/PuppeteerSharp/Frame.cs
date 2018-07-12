@@ -252,7 +252,7 @@ namespace PuppeteerSharp
         /// <seealso cref="Page.WaitForXPathAsync(string, WaitForSelectorOptions)"/>
         public Task<ElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
             => WaitForSelectorOrXPathAsync(xpath, true, options);
-        
+
         /// <summary>
         /// Waits for a timeout
         /// </summary>
@@ -432,7 +432,9 @@ namespace PuppeteerSharp
                 try
                 {
                     var context = await GetExecutionContextAsync();
-                    return (await context.EvaluateFunctionHandleAsync(addScriptUrl, url, options.Type)) as ElementHandle;
+                    return string.IsNullOrEmpty(options.Type)
+                        ? (await context.EvaluateFunctionHandleAsync(addScriptUrl, url)) as ElementHandle
+                        : (await context.EvaluateFunctionHandleAsync(addScriptUrl, url, options.Type)) as ElementHandle;
                 }
                 catch (PuppeteerException)
                 {
@@ -445,13 +447,17 @@ namespace PuppeteerSharp
                 var contents = File.ReadAllText(options.Path, Encoding.UTF8);
                 contents += "//# sourceURL=" + options.Path.Replace("\n", string.Empty);
                 var context = await GetExecutionContextAsync();
-                return (await context.EvaluateFunctionHandleAsync(addScriptContent, contents, options.Type)) as ElementHandle;
+                return string.IsNullOrEmpty(options.Type)
+                        ? (await context.EvaluateFunctionHandleAsync(addScriptContent, contents)) as ElementHandle
+                        : (await context.EvaluateFunctionHandleAsync(addScriptContent, contents, options.Type)) as ElementHandle;
             }
 
             if (!string.IsNullOrEmpty(options.Content))
             {
                 var context = await GetExecutionContextAsync();
-                return (await context.EvaluateFunctionHandleAsync(addScriptContent, options.Content, options.Type)) as ElementHandle;
+                return string.IsNullOrEmpty(options.Type)
+                        ? (await context.EvaluateFunctionHandleAsync(addScriptContent, options.Content)) as ElementHandle
+                        : (await context.EvaluateFunctionHandleAsync(addScriptContent, options.Content, options.Type)) as ElementHandle;
             }
 
             throw new ArgumentException("Provide options with a `Url`, `Path` or `Content` property");
