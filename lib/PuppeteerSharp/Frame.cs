@@ -404,7 +404,7 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to the added tag when the script's onload fires or when the script content was injected into frame</returns>
         /// <seealso cref="Page.AddScriptTagAsync(AddTagOptions)"/>
         /// <seealso cref="Page.AddScriptTagAsync(string)"/>
-        public Task<ElementHandle> AddScriptTag(AddTagOptions options)
+        public async Task<ElementHandle> AddScriptTag(AddTagOptions options)
         {
             const string addScriptUrl = @"async function addScriptUrl(url, type) {
               const script = document.createElement('script');
@@ -439,7 +439,7 @@ namespace PuppeteerSharp
                 var url = options.Url;
                 try
                 {
-                    return AddScriptTagPrivate(addScriptUrl, url, options.Type);
+                    return await AddScriptTagPrivate(addScriptUrl, url, options.Type);
                 }
                 catch (PuppeteerException)
                 {
@@ -451,12 +451,12 @@ namespace PuppeteerSharp
             {
                 var contents = File.ReadAllText(options.Path, Encoding.UTF8);
                 contents += "//# sourceURL=" + options.Path.Replace("\n", string.Empty);
-                return AddScriptTagPrivate(addScriptContent, contents, options.Type);
+                return await AddScriptTagPrivate(addScriptContent, contents, options.Type);
             }
 
             if (!string.IsNullOrEmpty(options.Content))
             {
-                return AddScriptTagPrivate(addScriptContent, options.Content, options.Type);
+                return await AddScriptTagPrivate(addScriptContent, options.Content, options.Type);
             }
 
             throw new ArgumentException("Provide options with a `Url`, `Path` or `Content` property");
