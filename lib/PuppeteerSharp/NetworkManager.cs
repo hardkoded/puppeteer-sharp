@@ -82,13 +82,11 @@ namespace PuppeteerSharp
             }
         }
 
-        internal async Task SetUserAgentAsync(string userAgent)
-        {
-            await _client.SendAsync("Network.setUserAgentOverride", new Dictionary<string, object>
+        internal Task SetUserAgentAsync(string userAgent)
+            => _client.SendAsync("Network.setUserAgentOverride", new Dictionary<string, object>
             {
                 { "userAgent", userAgent }
             });
-        }
 
         internal async Task SetRequestInterceptionAsync(bool value)
         {
@@ -258,7 +256,7 @@ namespace PuppeteerSharp
                 return;
             }
 
-            string requestHash = e.Request.Hash;
+            var requestHash = e.Request.Hash;
             var requestId = _requestHashToRequestIds.FirstValue(requestHash);
             if (requestId != null)
             {
@@ -388,7 +386,7 @@ namespace PuppeteerSharp
                 {
                     return;
                 }
-                string requestHash = e.Request.Hash;
+                var requestHash = e.Request.Hash;
                 var interceptionId = _requestHashToInterceptionIds.FirstValue(requestHash);
                 if (interceptionId != null && _interceptionIdToRequest.TryGetValue(interceptionId, out var request))
                 {

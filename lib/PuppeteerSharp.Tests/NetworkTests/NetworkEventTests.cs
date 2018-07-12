@@ -153,9 +153,13 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Page.Request += async (sender, e) =>
             {
                 if (e.Request.Url.EndsWith("css"))
+                {
                     await e.Request.AbortAsync();
+                }
                 else
+                {
                     await e.Request.ContinueAsync();
+                }
             };
             var failedRequests = new List<Request>();
             Page.RequestFailed += (sender, e) => failedRequests.Add(e.Request);

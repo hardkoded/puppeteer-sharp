@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -76,7 +77,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             {
                 var response = await page.GoToAsync(
                     "https://www.google.com",
-                    new NavigationOptions()
+                    new NavigationOptions
                     {
                         Timeout = 10000,
                         WaitUntil = new[] { WaitUntilNavigation.Networkidle0 }
@@ -288,20 +289,9 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         {
             var dumpioTextToLog = "MAGIC_DUMPIO_TEST";
             var success = false;
-            var process = new Process();
-
-#if NETCOREAPP
-            process.StartInfo.WorkingDirectory = GetDumpIOAppDirectory();
-            process.StartInfo.FileName = "dotnet";
-            process.StartInfo.Arguments = $"PuppeteerSharp.Tests.DumpIO.dll {dumpioTextToLog} " +
-                $"\"{new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath}\"";
-#else
-            process.StartInfo.FileName = Path.Combine(GetDumpIOAppDirectory(), "PuppeteerSharp.Tests.DumpIO.exe");
-            process.StartInfo.Arguments = $"{dumpioTextToLog} " +
-                $"\"{new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath}\"";
-#endif
-            process.StartInfo.UseShellExecute = false;
-            process.StartInfo.RedirectStandardError = true;
+            var process = GetTestAppProcess(
+                "PuppeteerSharp.Tests.DumpIO",
+                $"{dumpioTextToLog} \"{new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath}\"");
 
             process.ErrorDataReceived += (sender, e) =>
             {
@@ -314,28 +304,107 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             Assert.True(success);
         }
 
-        private string GetDumpIOAppDirectory()
+        [Fact]
+        public async Task ShouldCloseTheBrowserWhenTheProcessCloses()
+        {
+            var process = GetTestAppProcess(
+                "PuppeteerSharp.Tests.CloseMe",
+                $"\"{new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath}\"");
+
+            var webSocketTaskWrapper = new TaskCompletionSource<string>();
+            var browserClosedTaskWrapper = new TaskCompletionSource<bool>();
+
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.RedirectStandardOutput = true;
+
+            process.OutputDataReceived += (sender, e) =>
+            {
+                if (!webSocketTaskWrapper.Task.IsCompleted)
+                {
+                    webSocketTaskWrapper.SetResult(e.Data);
+                }
+            };
+
+            process.Start();
+            process.BeginOutputReadLine();
+
+            var browser = await Puppeteer.ConnectAsync(new ConnectOptions
+            {
+                BrowserWSEndpoint = await webSocketTaskWrapper.Task
+            });
+
+            browser.Disconnected += (sender, e) =>
+            {
+                browserClosedTaskWrapper.SetResult(true);
+            };
+
+            KillProcess(process.Id);
+
+            await browserClosedTaskWrapper.Task;
+            Assert.True(process.HasExited);
+        }
+
+        private Process GetTestAppProcess(string appName, string arguments)
+        {
+            var process = new Process();
+
+#if NETCOREAPP
+            process.StartInfo.WorkingDirectory = GetSubprocessWorkingDir(appName);
+            process.StartInfo.FileName = "dotnet";
+            process.StartInfo.Arguments = $"{appName}.dll {arguments}";
+#else
+            process.StartInfo.FileName = Path.Combine(GetSubprocessWorkingDir(appName), $"{appName}.exe");
+            process.StartInfo.Arguments = arguments;
+#endif
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.RedirectStandardError = true;
+            return process;
+        }
+
+        private string GetSubprocessWorkingDir(string dir)
         {
 #if DEBUG
             var build = "Debug";
 #else
+            
             var build = "Release";
 #endif
 #if NETCOREAPP
             return Path.Combine(
                 TestUtils.FindParentDirectory("lib"),
-                "PuppeteerSharp.Tests.DumpIO",
+                dir,
                 "bin",
                 build,
                 "netcoreapp2.0");
 #else
                 return Path.Combine(
                 TestUtils.FindParentDirectory("lib"),
-                "PuppeteerSharp.Tests.DumpIO",
+                dir,
                 "bin",
                 build,
                 "net471");
 #endif
+        }
+
+        private void KillProcess(int pid)
+        {
+            var process = new Process();
+
+            //We need to kill the process tree manually
+            //See: https://github.com/dotnet/corefx/issues/26234
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                process.StartInfo.FileName = "taskkill";
+                process.StartInfo.Arguments = $"-pid {pid} -t -f";
+            }
+            else
+            {
+                process.StartInfo.FileName = "/bin/bash";
+                process.StartInfo.Arguments = $"-c \"kill -s 9 {pid}\"";
+            }
+
+            process.Start();
+            process.WaitForExit();
         }
     }
 }

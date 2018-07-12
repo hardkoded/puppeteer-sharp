@@ -981,17 +981,17 @@ namespace PuppeteerSharp
         /// Closes the page.
         /// </summary>
         /// <returns>Task.</returns>
-        public async Task CloseAsync()
+        public Task CloseAsync()
         {
             if (!(Client?.Connection?.IsClosed ?? true))
             {
-                await Client.Connection.SendAsync("Target.closeTarget", new
+                return Client.Connection.SendAsync("Target.closeTarget", new
                 {
                     targetId = Target.TargetId
-                });
-
-                await Target.CloseTask;
+                }).ContinueWith((task) => Target.CloseTask);
             }
+
+            return Task.CompletedTask;
         }
 
         /// <summary>

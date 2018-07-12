@@ -58,7 +58,7 @@ namespace PuppeteerSharp
         public string TargetId => _targetInfo.TargetId;
         internal Task<bool> InitializedTask => InitilizedTaskWrapper.Task;
         internal TaskCompletionSource<bool> InitilizedTaskWrapper { get; }
-        internal Task<bool> CloseTask => CloseTaskWrapper.Task;
+        internal Task CloseTask => CloseTaskWrapper.Task;
         internal TaskCompletionSource<bool> CloseTaskWrapper { get; }
         #endregion
 
