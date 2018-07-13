@@ -313,6 +313,10 @@ namespace PuppeteerSharp
             return new BoundingBox(x, y, width, height);
         }
 
+        /// <summary>
+        /// returns boxes of the element, or <c>null</c> if the element is not visible. Box points are sorted clock-wise.
+        /// </summary>
+        /// <returns>Task BoxModel task.</returns>
         public async Task<BoxModel> BoxModelAsync()
         {
             var result = await GetBoxModelAsync();
@@ -405,12 +409,12 @@ namespace PuppeteerSharp
             }
         }
 
-        private Point[] FromProtocolQuad(int[] points) => new[]
+        private BoxModelPoint[] FromProtocolQuad(int[] points) => new[]
         {
-            new Point{ X = points[0], Y = points[1] },
-            new Point{ X = points[2], Y = points[3] },
-            new Point{ X = points[4], Y = points[5] },
-            new Point{ X = points[6], Y = points[7] }
+            new BoxModelPoint{ X = points[0], Y = points[1] },
+            new BoxModelPoint{ X = points[2], Y = points[3] },
+            new BoxModelPoint{ X = points[4], Y = points[5] },
+            new BoxModelPoint{ X = points[6], Y = points[7] }
         };
     }
 }

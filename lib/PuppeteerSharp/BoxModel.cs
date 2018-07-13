@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-
-namespace PuppeteerSharp
+﻿namespace PuppeteerSharp
 {
     /// <summary>
     /// Represents boxes of the element.
@@ -11,31 +9,34 @@ namespace PuppeteerSharp
         {
         }
 
-        [JsonProperty("content")]
-        public Point[] Content { get; internal set; }
+        /// <summary>
+        /// Gets the Content box
+        /// </summary>
+        public BoxModelPoint[] Content { get; internal set; }
 
-        [JsonProperty("padding")]
-        public Point[] Padding { get; internal set; }
+        /// <summary>
+        /// Gets the Padding box
+        /// </summary>
+        public BoxModelPoint[] Padding { get; internal set; }
 
-        [JsonProperty("border")]
-        public Point[] Border { get; internal set; }
+        /// <summary>
+        /// Gets the Border box
+        /// </summary>
+        public BoxModelPoint[] Border { get; internal set; }
 
-        [JsonProperty("margin")]
-        public Point[] Margin { get; internal set; }
+        /// <summary>
+        /// Gets the Margin box
+        /// </summary>
+        public BoxModelPoint[] Margin { get; internal set; }
 
-        [JsonProperty("width")]
+        /// <summary>
+        /// Gets the element's width
+        /// </summary>
         public int Width { get; internal set; }
 
-        [JsonProperty("height")]
+        /// <summary>
+        /// Gets the element's height
+        /// </summary>
         public int Height { get; internal set; }
-    }
-
-    public struct Point
-    {
-        [JsonProperty("x")]
-        public int X { get; set; }
-
-        [JsonProperty("y")]
-        public int Y { get; set; }
     }
 }

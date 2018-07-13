@@ -49,22 +49,22 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             var box = await divHandle.BoxModelAsync();
             Assert.Equal(6, box.Width);
             Assert.Equal(7, box.Height);
-            Assert.Equal(new Point
+            Assert.Equal(new BoxModelPoint
             {
                 X = 1 + 4, // frame.left + div.left
                 Y = 2 + 5
             }, box.Margin[0]);
-            Assert.Equal(new Point
+            Assert.Equal(new BoxModelPoint
             {
                 X = 1 + 4 + 3, // frame.left + div.left + div.margin-left
                 Y = 2 + 5
             }, box.Border[0]);
-            Assert.Equal(new Point
+            Assert.Equal(new BoxModelPoint
             {
                 X = 1 + 4 + 3 + 1, // frame.left + div.left + div.marginLeft + div.borderLeft
                 Y = 2 + 5
             }, box.Padding[0]);
-            Assert.Equal(new Point
+            Assert.Equal(new BoxModelPoint
             {
                 X = 1 + 4 + 3 + 1 + 2, // frame.left + div.left + div.marginLeft + div.borderLeft + dif.paddingLeft
                 Y = 2 + 5
