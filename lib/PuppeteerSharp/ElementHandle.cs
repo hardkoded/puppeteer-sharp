@@ -17,13 +17,10 @@ namespace PuppeteerSharp
     /// </summary>
     public class ElementHandle : JSHandle
     {
-        internal Page Page { get; }
-
         private readonly FrameManager _frameManager;
 
         internal ElementHandle(
-            ExecutionContext
-            context,
+            ExecutionContext context,
             CDPSession client,
             object remoteObject,
             Page page,
@@ -33,6 +30,8 @@ namespace PuppeteerSharp
             Page = page;
             _frameManager = frameManager;
         }
+
+        internal Page Page { get; }
 
         /// <summary>
         /// This method scrolls element into view if needed, and then uses <seealso cref="Page.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element. 
@@ -290,6 +289,68 @@ namespace PuppeteerSharp
             return properties.Values.OfType<ElementHandle>().ToArray();
         }
 
+        /// <summary>
+        /// This method returns the bounding box of the element (relative to the main frame), 
+        /// or null if the element is not visible.
+        /// </summary>
+        /// <returns>The BoundingBox task.</returns>
+        public async Task<BoundingBox> BoundingBoxAsync()
+        {
+            var result = await GetBoxModelAsync();
+
+            if (result == null)
+            {
+                return null;
+            }
+
+            var quad = result.Model.Border;
+
+            var x = new[] { quad[0], quad[2], quad[4], quad[6] }.Min();
+            var y = new[] { quad[1], quad[3], quad[5], quad[7] }.Min();
+            var width = new[] { quad[0], quad[2], quad[4], quad[6] }.Max() - x;
+            var height = new[] { quad[1], quad[3], quad[5], quad[7] }.Max() - y;
+
+            return new BoundingBox(x, y, width, height);
+        }
+
+        public async Task<BoxModel> BoxModelAsync()
+        {
+            var result = await GetBoxModelAsync();
+
+            if (result == null)
+            {
+                return null;
+            }
+
+            return new BoxModel
+            {
+                Content = FromProtocolQuad(result.Model.Content),
+                Padding = FromProtocolQuad(result.Model.Padding),
+                Border = FromProtocolQuad(result.Model.Border),
+                Margin = FromProtocolQuad(result.Model.Margin),
+                Width = result.Model.Width,
+                Height = result.Model.Height
+            };
+        }
+
+        /// <summary>
+        ///Content frame for element handles referencing iframe nodes, or null otherwise.
+        /// </summary>
+        /// <returns>Resolves to the content frame</returns>
+        public async Task<Frame> ContentFrameAsync()
+        {
+            var nodeInfo = await Client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new
+            {
+                RemoteObject.objectId
+            });
+
+            if (string.IsNullOrEmpty(nodeInfo.Node.FrameId))
+            {
+                return null;
+            }
+            return _frameManager.Frames[nodeInfo.Node.FrameId];
+        }
+
         private async Task<(decimal x, decimal y)> VisibleCenterAsync()
         {
             await ScrollIntoViewIfNeededAsync();
@@ -328,18 +389,11 @@ namespace PuppeteerSharp
             }
         }
 
-        /// <summary>
-        /// This method returns the bounding box of the element (relative to the main frame), 
-        /// or null if the element is not visible.
-        /// </summary>
-        /// <returns>The BoundingBox task.</returns>
-        public async Task<BoundingBox> BoundingBoxAsync()
+        private async Task<BoxModelResponse> GetBoxModelAsync()
         {
-            dynamic result = null;
-
             try
             {
-                result = await Client.SendAsync("DOM.getBoxModel", new
+                return await Client.SendAsync<BoxModelResponse>("DOM.getBoxModel", new
                 {
                     objectId = RemoteObject.objectId.ToString()
                 });
@@ -347,39 +401,16 @@ namespace PuppeteerSharp
             catch (PuppeteerException ex)
             {
                 Logger.LogError(ex.Message);
-            }
-
-            if (result == null)
-            {
                 return null;
             }
-
-            var quad = result.model.border.ToObject<decimal[]>();
-
-            var x = new[] { quad[0], quad[2], quad[4], quad[6] }.Min();
-            var y = new[] { quad[1], quad[3], quad[5], quad[7] }.Min();
-            var width = new[] { quad[0], quad[2], quad[4], quad[6] }.Max() - x;
-            var height = new[] { quad[1], quad[3], quad[5], quad[7] }.Max() - y;
-
-            return new BoundingBox(x, y, width, height);
         }
 
-        /// <summary>
-        ///Content frame for element handles referencing iframe nodes, or null otherwise.
-        /// </summary>
-        /// <returns>Resolves to the content frame</returns>
-        public async Task<Frame> ContentFrameAsync()
+        private Point[] FromProtocolQuad(int[] points) => new[]
         {
-            var nodeInfo = await Client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new
-            {
-                RemoteObject.objectId
-            });
-
-            if (string.IsNullOrEmpty(nodeInfo.Node.FrameId))
-            {
-                return null;
-            }
-            return _frameManager.Frames[nodeInfo.Node.FrameId];
-        }
+            new Point{ X = points[0], Y = points[1] },
+            new Point{ X = points[2], Y = points[3] },
+            new Point{ X = points[4], Y = points[5] },
+            new Point{ X = points[6], Y = points[7] }
+        };
     }
 }
