@@ -39,6 +39,19 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.AddTagOptions.Path
   nameWithType: AddTagOptions.Path
+- uid: PuppeteerSharp.AddTagOptions.Type
+  name: Type
+  href: api/PuppeteerSharp.AddTagOptions.html#PuppeteerSharp_AddTagOptions_Type
+  commentId: P:PuppeteerSharp.AddTagOptions.Type
+  fullName: PuppeteerSharp.AddTagOptions.Type
+  nameWithType: AddTagOptions.Type
+- uid: PuppeteerSharp.AddTagOptions.Type*
+  name: Type
+  href: api/PuppeteerSharp.AddTagOptions.html#PuppeteerSharp_AddTagOptions_Type_
+  commentId: Overload:PuppeteerSharp.AddTagOptions.Type
+  isSpec: "True"
+  fullName: PuppeteerSharp.AddTagOptions.Type
+  nameWithType: AddTagOptions.Type
 - uid: PuppeteerSharp.AddTagOptions.Url
   name: Url
   href: api/PuppeteerSharp.AddTagOptions.html#PuppeteerSharp_AddTagOptions_Url
@@ -1403,6 +1416,19 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.ElementHandle.ClickAsync
   nameWithType: ElementHandle.ClickAsync
+- uid: PuppeteerSharp.ElementHandle.ContentFrameAsync
+  name: ContentFrameAsync()
+  href: api/PuppeteerSharp.ElementHandle.html#PuppeteerSharp_ElementHandle_ContentFrameAsync
+  commentId: M:PuppeteerSharp.ElementHandle.ContentFrameAsync
+  fullName: PuppeteerSharp.ElementHandle.ContentFrameAsync()
+  nameWithType: ElementHandle.ContentFrameAsync()
+- uid: PuppeteerSharp.ElementHandle.ContentFrameAsync*
+  name: ContentFrameAsync
+  href: api/PuppeteerSharp.ElementHandle.html#PuppeteerSharp_ElementHandle_ContentFrameAsync_
+  commentId: Overload:PuppeteerSharp.ElementHandle.ContentFrameAsync
+  isSpec: "True"
+  fullName: PuppeteerSharp.ElementHandle.ContentFrameAsync
+  nameWithType: ElementHandle.ContentFrameAsync
 - uid: PuppeteerSharp.ElementHandle.FocusAsync
   name: FocusAsync()
   href: api/PuppeteerSharp.ElementHandle.html#PuppeteerSharp_ElementHandle_FocusAsync
@@ -3786,6 +3812,19 @@ references:
   commentId: F:PuppeteerSharp.Media.PaperFormat.A6
   fullName: PuppeteerSharp.Media.PaperFormat.A6
   nameWithType: PaperFormat.A6
+- uid: PuppeteerSharp.Media.PaperFormat.Height
+  name: Height
+  href: api/PuppeteerSharp.Media.PaperFormat.html#PuppeteerSharp_Media_PaperFormat_Height
+  commentId: P:PuppeteerSharp.Media.PaperFormat.Height
+  fullName: PuppeteerSharp.Media.PaperFormat.Height
+  nameWithType: PaperFormat.Height
+- uid: PuppeteerSharp.Media.PaperFormat.Height*
+  name: Height
+  href: api/PuppeteerSharp.Media.PaperFormat.html#PuppeteerSharp_Media_PaperFormat_Height_
+  commentId: Overload:PuppeteerSharp.Media.PaperFormat.Height
+  isSpec: "True"
+  fullName: PuppeteerSharp.Media.PaperFormat.Height
+  nameWithType: PaperFormat.Height
 - uid: PuppeteerSharp.Media.PaperFormat.Ledger
   name: Ledger
   href: api/PuppeteerSharp.Media.PaperFormat.html#PuppeteerSharp_Media_PaperFormat_Ledger
@@ -3810,6 +3849,19 @@ references:
   commentId: F:PuppeteerSharp.Media.PaperFormat.Tabloid
   fullName: PuppeteerSharp.Media.PaperFormat.Tabloid
   nameWithType: PaperFormat.Tabloid
+- uid: PuppeteerSharp.Media.PaperFormat.Width
+  name: Width
+  href: api/PuppeteerSharp.Media.PaperFormat.html#PuppeteerSharp_Media_PaperFormat_Width
+  commentId: P:PuppeteerSharp.Media.PaperFormat.Width
+  fullName: PuppeteerSharp.Media.PaperFormat.Width
+  nameWithType: PaperFormat.Width
+- uid: PuppeteerSharp.Media.PaperFormat.Width*
+  name: Width
+  href: api/PuppeteerSharp.Media.PaperFormat.html#PuppeteerSharp_Media_PaperFormat_Width_
+  commentId: Overload:PuppeteerSharp.Media.PaperFormat.Width
+  isSpec: "True"
+  fullName: PuppeteerSharp.Media.PaperFormat.Width
+  nameWithType: PaperFormat.Width
 - uid: PuppeteerSharp.MessageEventArgs
   name: MessageEventArgs
   href: api/PuppeteerSharp.MessageEventArgs.html
@@ -4339,6 +4391,12 @@ references:
   commentId: M:PuppeteerSharp.NavigationException.#ctor(System.String,Exception)
   fullName: PuppeteerSharp.NavigationException.NavigationException(System.String, Exception)
   nameWithType: NavigationException.NavigationException(String, Exception)
+- uid: PuppeteerSharp.NavigationException.#ctor(System.String,System.String)
+  name: NavigationException(String, String)
+  href: api/PuppeteerSharp.NavigationException.html#PuppeteerSharp_NavigationException__ctor_System_String_System_String_
+  commentId: M:PuppeteerSharp.NavigationException.#ctor(System.String,System.String)
+  fullName: PuppeteerSharp.NavigationException.NavigationException(System.String, System.String)
+  nameWithType: NavigationException.NavigationException(String, String)
 - uid: PuppeteerSharp.NavigationException.#ctor*
   name: NavigationException
   href: api/PuppeteerSharp.NavigationException.html#PuppeteerSharp_NavigationException__ctor_
@@ -4346,6 +4404,32 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.NavigationException.NavigationException
   nameWithType: NavigationException.NavigationException
+- uid: PuppeteerSharp.NavigationException.Message
+  name: Message
+  href: api/PuppeteerSharp.NavigationException.html#PuppeteerSharp_NavigationException_Message
+  commentId: P:PuppeteerSharp.NavigationException.Message
+  fullName: PuppeteerSharp.NavigationException.Message
+  nameWithType: NavigationException.Message
+- uid: PuppeteerSharp.NavigationException.Message*
+  name: Message
+  href: api/PuppeteerSharp.NavigationException.html#PuppeteerSharp_NavigationException_Message_
+  commentId: Overload:PuppeteerSharp.NavigationException.Message
+  isSpec: "True"
+  fullName: PuppeteerSharp.NavigationException.Message
+  nameWithType: NavigationException.Message
+- uid: PuppeteerSharp.NavigationException.Url
+  name: Url
+  href: api/PuppeteerSharp.NavigationException.html#PuppeteerSharp_NavigationException_Url
+  commentId: P:PuppeteerSharp.NavigationException.Url
+  fullName: PuppeteerSharp.NavigationException.Url
+  nameWithType: NavigationException.Url
+- uid: PuppeteerSharp.NavigationException.Url*
+  name: Url
+  href: api/PuppeteerSharp.NavigationException.html#PuppeteerSharp_NavigationException_Url_
+  commentId: Overload:PuppeteerSharp.NavigationException.Url
+  isSpec: "True"
+  fullName: PuppeteerSharp.NavigationException.Url
+  nameWithType: NavigationException.Url
 - uid: PuppeteerSharp.NavigationOptions
   name: NavigationOptions
   href: api/PuppeteerSharp.NavigationOptions.html
@@ -6111,6 +6195,19 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Request.InterceptionId
   nameWithType: Request.InterceptionId
+- uid: PuppeteerSharp.Request.RedirectChain
+  name: RedirectChain
+  href: api/PuppeteerSharp.Request.html#PuppeteerSharp_Request_RedirectChain
+  commentId: P:PuppeteerSharp.Request.RedirectChain
+  fullName: PuppeteerSharp.Request.RedirectChain
+  nameWithType: Request.RedirectChain
+- uid: PuppeteerSharp.Request.RedirectChain*
+  name: RedirectChain
+  href: api/PuppeteerSharp.Request.html#PuppeteerSharp_Request_RedirectChain_
+  commentId: Overload:PuppeteerSharp.Request.RedirectChain
+  isSpec: "True"
+  fullName: PuppeteerSharp.Request.RedirectChain
+  nameWithType: Request.RedirectChain
 - uid: PuppeteerSharp.Request.RequestId
   name: RequestId
   href: api/PuppeteerSharp.Request.html#PuppeteerSharp_Request_RequestId
@@ -7055,6 +7152,36 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.TargetInfo.Url
   nameWithType: TargetInfo.Url
+- uid: PuppeteerSharp.TargetType
+  name: TargetType
+  href: api/PuppeteerSharp.TargetType.html
+  commentId: T:PuppeteerSharp.TargetType
+  fullName: PuppeteerSharp.TargetType
+  nameWithType: TargetType
+- uid: PuppeteerSharp.TargetType.Browser
+  name: Browser
+  href: api/PuppeteerSharp.TargetType.html#PuppeteerSharp_TargetType_Browser
+  commentId: F:PuppeteerSharp.TargetType.Browser
+  fullName: PuppeteerSharp.TargetType.Browser
+  nameWithType: TargetType.Browser
+- uid: PuppeteerSharp.TargetType.Other
+  name: Other
+  href: api/PuppeteerSharp.TargetType.html#PuppeteerSharp_TargetType_Other
+  commentId: F:PuppeteerSharp.TargetType.Other
+  fullName: PuppeteerSharp.TargetType.Other
+  nameWithType: TargetType.Other
+- uid: PuppeteerSharp.TargetType.Page
+  name: Page
+  href: api/PuppeteerSharp.TargetType.html#PuppeteerSharp_TargetType_Page
+  commentId: F:PuppeteerSharp.TargetType.Page
+  fullName: PuppeteerSharp.TargetType.Page
+  nameWithType: TargetType.Page
+- uid: PuppeteerSharp.TargetType.ServiceWorker
+  name: ServiceWorker
+  href: api/PuppeteerSharp.TargetType.html#PuppeteerSharp_TargetType_ServiceWorker
+  commentId: F:PuppeteerSharp.TargetType.ServiceWorker
+  fullName: PuppeteerSharp.TargetType.ServiceWorker
+  nameWithType: TargetType.ServiceWorker
 - uid: PuppeteerSharp.Tracing
   name: Tracing
   href: api/PuppeteerSharp.Tracing.html

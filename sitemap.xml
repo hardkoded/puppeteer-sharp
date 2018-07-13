@@ -2,547 +2,553 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://www.puppeteersharp.com/api/index.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.AddTagOptions.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.BoundingBox.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.Browser.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.BrowserFetcher.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.BrowserFetcherOptions.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.CDPSession.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.ChromeProcessException.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.Connection.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.ConnectOptions.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.ConsoleEventArgs.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.ConsoleMessage.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.ConsoleType.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.CookieParam.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.Credentials.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.Dialog.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.DialogEventArgs.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.DialogType.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.ElementHandle.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.ErrorEventArgs.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.EvaluationFailedException.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.ExecutionContext.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.Extensions.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.Frame.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.FrameEventArgs.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.IBrowserOptions.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.Input.ClickOptions.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.Input.DownOptions.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.Input.Key.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.Input.Keyboard.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.Input.Mouse.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.Input.MouseButton.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.Input.MoveOptions.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.Input.PressOptions.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.Input.Touchscreen.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.Input.TypeOptions.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.Input.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.JSHandle.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.Launcher.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.LaunchOptions.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.Media.Clip.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.Media.MarginOptions.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.Media.MediaType.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.Media.PaperFormat.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.Media.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.MessageEventArgs.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.MessageException.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.MetricEventArgs.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.Mobile.DeviceDescriptor.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.Mobile.DeviceDescriptorName.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.Mobile.DeviceDescriptors.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.Mobile.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.NavigationException.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.NavigationOptions.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.Page.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.PageCoverage.Coverage.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.PageCoverage.CoverageEntry.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.PageCoverage.CoverageEntryRange.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.PageCoverage.CoverageStartOptions.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.PageCoverage.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.PageErrorEventArgs.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.Payload.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.PdfOptions.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.Platform.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.Puppeteer.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.PuppeteerException.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.Request.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.RequestAbortErrorCode.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.RequestEventArgs.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.ResourceType.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.Response.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.ResponseCreatedEventArgs.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.ResponseData.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.RevisionInfo.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.ScreenshotOptions.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.SecurityDetails.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.SelectorException.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.Target.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.TargetChangedArgs.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.TargetClosedException.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.TargetInfo.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1</priority>
+  </url>
+  <url>
+    <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.TargetType.html</loc>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.Tracing.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.TracingCompleteEventArgs.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.TracingOptions.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.ViewPortOptions.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.WaitForFunctionOptions.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.WaitForFunctionPollingOption.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.WaitForSelectorOptions.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.WaitUntilNavigation.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/api/PuppeteerSharp.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://www.puppeteersharp.com/index.html</loc>
-    <lastmod>2018-06-29T09:17:37-07:00</lastmod>
+    <lastmod>2018-07-13T04:47:54-07:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
