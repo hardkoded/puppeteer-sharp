@@ -45,7 +45,6 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(TestConstants.EmptyPage, Page.Url);
             await Page.GoForwardAsync();
             Assert.Equal(TestConstants.EmptyPage + "first.html", Page.Url);
-
         }
     }
 }
