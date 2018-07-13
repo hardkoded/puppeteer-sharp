@@ -28,5 +28,24 @@ namespace PuppeteerSharp.Tests.PageTests
             response = await Page.GoForwardAsync();
             Assert.Null(response);
         }
+
+        [Fact]
+        public async Task ShouldWorkWithHistoryAPI()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.EvaluateExpressionAsync(@"
+              history.pushState({ }, '', '/first.html');
+              history.pushState({ }, '', '/second.html');
+            ");
+            Assert.Equal(TestConstants.EmptyPage + "second.html", Page.Url);
+
+            await Page.GoBackAsync();
+            Assert.Equal(TestConstants.EmptyPage + "first.html", Page.Url);
+            await Page.GoBackAsync();
+            Assert.Equal(TestConstants.EmptyPage, Page.Url);
+            await Page.GoForwardAsync();
+            Assert.Equal(TestConstants.EmptyPage + "first.html", Page.Url);
+
+        }
     }
 }

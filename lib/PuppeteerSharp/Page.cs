@@ -144,7 +144,7 @@ namespace PuppeteerSharp
         /// Raised when a frame is navigated to a new url.
         /// </summary>
         public event EventHandler<FrameEventArgs> FrameNavigated;
-
+        
         /// <summary>
         /// Raised when a <see cref="Response"/> is received.
         /// </summary>

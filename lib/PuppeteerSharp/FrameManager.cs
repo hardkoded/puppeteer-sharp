@@ -29,6 +29,7 @@ namespace PuppeteerSharp
         internal event EventHandler<FrameEventArgs> FrameAttached;
         internal event EventHandler<FrameEventArgs> FrameDetached;
         internal event EventHandler<FrameEventArgs> FrameNavigated;
+        internal event EventHandler<FrameEventArgs> FrameNavigatedWithinDocument;
         internal event EventHandler<FrameEventArgs> LifecycleEvent;
 
         internal Dictionary<string, Frame> Frames { get; set; }
@@ -71,6 +72,12 @@ namespace PuppeteerSharp
 
                 case "Page.frameNavigated":
                     OnFrameNavigated(e.MessageData.SelectToken("frame").ToObject<FramePayload>());
+                    break;
+
+                case "Page.navigatedWithinDocument":
+                    OnFrameNavigatedWithinDocument(
+                        e.MessageData.SelectToken("frameId").ToObject<string>(),
+                        e.MessageData.SelectToken("url").ToObject<string>());
                     break;
 
                 case "Page.frameDetached":
@@ -182,7 +189,7 @@ namespace PuppeteerSharp
                 else
                 {
                     // Initial main frame navigation.
-                    frame = new Frame(this._client, this._page, null, framePayload.Id);
+                    frame = new Frame(_client, _page, null, framePayload.Id);
                 }
 
                 Frames[framePayload.Id] = frame;
@@ -193,6 +200,18 @@ namespace PuppeteerSharp
             frame.Navigated(framePayload);
 
             FrameNavigated?.Invoke(this, new FrameEventArgs(frame));
+        }
+
+        private void OnFrameNavigatedWithinDocument(string frameId, string url)
+        {
+            if (Frames.TryGetValue(frameId, out var frame))
+            {
+                frame.NavigatedWithinDocument(url);
+
+                var eventArgs = new FrameEventArgs(frame);
+                FrameNavigatedWithinDocument?.Invoke(this, eventArgs);
+                FrameNavigated?.Invoke(this, eventArgs);
+            }
         }
 
         private void RemoveContext(ExecutionContext context)
