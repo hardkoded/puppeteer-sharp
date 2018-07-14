@@ -52,6 +52,19 @@ namespace PuppeteerSharp.Tests.FrameTests
         }
 
         [Fact]
+        public async Task ShouldSendFrameNavigatedWhenNavigatingOnAnchorURLs()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var frameNavigated = new TaskCompletionSource<bool>();
+            Page.FrameNavigated += (sender, e) => frameNavigated.TrySetResult(true);
+            await Task.WhenAll(
+                Page.GoToAsync(TestConstants.EmptyPage + "#foo"),
+                frameNavigated.Task
+            );
+            Assert.Equal(TestConstants.EmptyPage + "#foo", Page.Url);
+        }
+
+        [Fact]
         public async Task ShouldPersistMainFrameOnCrossProcessNavigation()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

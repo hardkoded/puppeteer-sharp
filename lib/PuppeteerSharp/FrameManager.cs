@@ -29,6 +29,7 @@ namespace PuppeteerSharp
         internal event EventHandler<FrameEventArgs> FrameAttached;
         internal event EventHandler<FrameEventArgs> FrameDetached;
         internal event EventHandler<FrameEventArgs> FrameNavigated;
+        internal event EventHandler<FrameEventArgs> FrameNavigatedWithinDocument;
         internal event EventHandler<FrameEventArgs> LifecycleEvent;
 
         internal Dictionary<string, Frame> Frames { get; set; }
@@ -73,8 +74,12 @@ namespace PuppeteerSharp
                     OnFrameNavigated(e.MessageData.SelectToken("frame").ToObject<FramePayload>());
                     break;
 
+                case "Page.navigatedWithinDocument":
+                    OnFrameNavigatedWithinDocument(e.MessageData.ToObject<NavigatedWithinDocumentResponse>());
+                    break;
+
                 case "Page.frameDetached":
-                    OnFrameDetached(e.MessageData.SelectToken("frameId").ToObject<string>());
+                    OnFrameDetached(e.MessageData.ToObject<FrameDetachedResponse>());
                     break;
 
                 case "Runtime.executionContextCreated":
@@ -143,11 +148,11 @@ namespace PuppeteerSharp
             }
         }
 
-        private void OnFrameDetached(string frameId)
+        private void OnFrameDetached(FrameDetachedResponse e)
         {
-            if (Frames.ContainsKey(frameId))
+            if(Frames.TryGetValue(e.FrameId, out var frame))
             {
-                RemoveFramesRecursively(Frames[frameId]);
+                RemoveFramesRecursively(frame);
             }
         }
 
@@ -182,7 +187,7 @@ namespace PuppeteerSharp
                 else
                 {
                     // Initial main frame navigation.
-                    frame = new Frame(this._client, this._page, null, framePayload.Id);
+                    frame = new Frame(_client, _page, null, framePayload.Id);
                 }
 
                 Frames[framePayload.Id] = frame;
@@ -193,6 +198,18 @@ namespace PuppeteerSharp
             frame.Navigated(framePayload);
 
             FrameNavigated?.Invoke(this, new FrameEventArgs(frame));
+        }
+
+        private void OnFrameNavigatedWithinDocument(NavigatedWithinDocumentResponse e)
+        {
+            if (Frames.TryGetValue(e.FrameId, out var frame))
+            {
+                frame.NavigatedWithinDocument(e.Url);
+
+                var eventArgs = new FrameEventArgs(frame);
+                FrameNavigatedWithinDocument?.Invoke(this, eventArgs);
+                FrameNavigated?.Invoke(this, eventArgs);
+            }
         }
 
         private void RemoveContext(ExecutionContext context)

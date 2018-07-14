@@ -546,6 +546,8 @@ namespace PuppeteerSharp
             Url = framePayload.Url;
         }
 
+        internal void NavigatedWithinDocument(string url) => Url = url;
+
         internal void SetDefaultContext(ExecutionContext context)
         {
             if (context != null)
