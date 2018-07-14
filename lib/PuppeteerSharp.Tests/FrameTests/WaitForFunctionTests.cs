@@ -82,5 +82,14 @@ namespace PuppeteerSharp.Tests.FrameTests
             await Page.EvaluateFunctionAsync("element => element.remove()", div);
             await waitForFunction;
         }
+
+        [Fact]
+        public async Task ShouldDisableTimeoutWhenItsSetTo0()
+        {
+            var handle = await Page.WaitForFunctionAsync(
+                "() => new Promise(res => setTimeout(() => res(42), 100))",
+                new WaitForFunctionOptions { Timeout = 0 });
+            Assert.Equal(42, await handle.JsonValueAsync<int>());
+        }
     }
 }
