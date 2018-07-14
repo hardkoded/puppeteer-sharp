@@ -409,7 +409,7 @@ namespace PuppeteerSharp
             }
         }
 
-        private BoxModelPoint[] FromProtocolQuad(int[] points) => new[]
+        private BoxModelPoint[] FromProtocolQuad(decimal[] points) => new[]
         {
             new BoxModelPoint{ X = points[0], Y = points[1] },
             new BoxModelPoint{ X = points[2], Y = points[3] },

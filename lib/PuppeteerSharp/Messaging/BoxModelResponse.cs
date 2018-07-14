@@ -10,16 +10,16 @@ namespace PuppeteerSharp.Messaging
         public class BoxModelResponseModel
         {
             [JsonProperty("content")]
-            public int[] Content { get; set; }
+            public decimal[] Content { get; set; }
 
             [JsonProperty("padding")]
-            public int[] Padding { get; set; }
+            public decimal[] Padding { get; set; }
 
             [JsonProperty("border")]
-            public int[] Border { get; set; }
+            public decimal[] Border { get; set; }
 
             [JsonProperty("margin")]
-            public int[] Margin { get; set; }
+            public decimal[] Margin { get; set; }
 
             [JsonProperty("width")]
             public int Width { get; set; }

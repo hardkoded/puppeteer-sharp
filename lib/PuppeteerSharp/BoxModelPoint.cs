@@ -8,11 +8,11 @@
         /// <summary>
         /// Gets the X point
         /// </summary>
-        public int X { get; set; }
+        public decimal X { get; set; }
 
         /// <summary>
         /// Gets the y point
         /// </summary>
-        public int Y { get; set; }
+        public decimal Y { get; set; }
     }
 }
