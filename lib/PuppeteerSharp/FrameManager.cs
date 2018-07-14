@@ -75,13 +75,11 @@ namespace PuppeteerSharp
                     break;
 
                 case "Page.navigatedWithinDocument":
-                    OnFrameNavigatedWithinDocument(
-                        e.MessageData.SelectToken("frameId").ToObject<string>(),
-                        e.MessageData.SelectToken("url").ToObject<string>());
+                    OnFrameNavigatedWithinDocument(e.MessageData.ToObject<NavigatedWithinDocumentResponse>());
                     break;
 
                 case "Page.frameDetached":
-                    OnFrameDetached(e.MessageData.SelectToken("frameId").ToObject<string>());
+                    OnFrameDetached(e.MessageData.ToObject<FrameDetachedResponse>());
                     break;
 
                 case "Runtime.executionContextCreated":
@@ -150,11 +148,11 @@ namespace PuppeteerSharp
             }
         }
 
-        private void OnFrameDetached(string frameId)
+        private void OnFrameDetached(FrameDetachedResponse e)
         {
-            if (Frames.ContainsKey(frameId))
+            if(Frames.TryGetValue(e.FrameId, out var frame))
             {
-                RemoveFramesRecursively(Frames[frameId]);
+                RemoveFramesRecursively(frame);
             }
         }
 
@@ -202,11 +200,11 @@ namespace PuppeteerSharp
             FrameNavigated?.Invoke(this, new FrameEventArgs(frame));
         }
 
-        private void OnFrameNavigatedWithinDocument(string frameId, string url)
+        private void OnFrameNavigatedWithinDocument(NavigatedWithinDocumentResponse e)
         {
-            if (Frames.TryGetValue(frameId, out var frame))
+            if (Frames.TryGetValue(e.FrameId, out var frame))
             {
-                frame.NavigatedWithinDocument(url);
+                frame.NavigatedWithinDocument(e.Url);
 
                 var eventArgs = new FrameEventArgs(frame);
                 FrameNavigatedWithinDocument?.Invoke(this, eventArgs);
