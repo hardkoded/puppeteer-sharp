@@ -13,6 +13,7 @@ namespace PuppeteerSharp
         private readonly int? _pollingInterval;
         private readonly int _timeout;
         private readonly object[] _args;
+        private readonly string _title;
         private readonly Task _timeoutTimer;
 
         private readonly CancellationTokenSource _cts;
@@ -108,7 +109,14 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
   }
 }";
 
-        internal WaitTask(Frame frame, string predicateBody, WaitForFunctionPollingOption polling, int? pollingInterval, int timeout, object[] args)
+        internal WaitTask(
+            Frame frame,
+            string predicateBody,
+            string title,
+            WaitForFunctionPollingOption polling,
+            int? pollingInterval,
+            int timeout,
+            object[] args)
         {
             if (string.IsNullOrEmpty(predicateBody))
             {
@@ -125,6 +133,7 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
             _pollingInterval = pollingInterval;
             _timeout = timeout;
             _args = args;
+            _title = title;
 
             frame.WaitTasks.Add(this);
             _taskCompletion = new TaskCompletionSource<JSHandle>();
@@ -132,7 +141,7 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
             _cts = new CancellationTokenSource();
 
             _timeoutTimer = System.Threading.Tasks.Task.Delay(timeout, _cts.Token).ContinueWith(_
-                => Termiante(new PuppeteerException($"waiting failed: timeout {timeout}ms exceeded")));
+                => Termiante(new WaitTaskTimeoutException(timeout, title)));
 
             Rerun();
         }
@@ -158,12 +167,14 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
 
             if (_terminated || runCount != _runCount)
             {
-                if (success != null) await success.DisposeAsync();
+                if (success != null)
+                    await success.DisposeAsync();
                 return;
             }
             if (exception == null && await _frame.EvaluateFunctionAsync<bool>("s => !s", success))
             {
-                if (success != null) await success.DisposeAsync();
+                if (success != null)
+                    await success.DisposeAsync();
                 return;
             }
 

@@ -82,5 +82,14 @@ namespace PuppeteerSharp.Tests.FrameTests
             await Page.EvaluateFunctionAsync("element => element.remove()", div);
             await waitForFunction;
         }
+
+        [Fact]
+        public async Task ShouldRespectTimeout()
+        {
+            var exception = await Assert.ThrowsAsync<WaitTaskTimeoutException>(()
+                => Page.WaitForFunctionAsync("false", new WaitForFunctionOptions { Timeout = 10 }));
+
+            Assert.Contains("waiting for function failed: timeout", exception.Message);
+        }
     }
 }

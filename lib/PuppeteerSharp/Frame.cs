@@ -270,7 +270,7 @@ namespace PuppeteerSharp
         /// <returns>A task that resolves when the <c>script</c> returns a truthy value</returns>
         /// <seealso cref="Page.WaitForFunctionAsync(string, WaitForFunctionOptions, object[])"/>
         public Task<JSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args)
-            => new WaitTask(this, script, options.Polling, options.PollingInterval, options.Timeout, args).Task;
+            => new WaitTask(this, script, "function", options.Polling, options.PollingInterval, options.Timeout, args).Task;
 
         /// <summary>
         /// Triggers a change and input event once all the provided options have been selected. 
@@ -522,11 +522,20 @@ namespace PuppeteerSharp
                 }
               }";
             var polling = options.Visible || options.Hidden ? WaitForFunctionPollingOption.Raf : WaitForFunctionPollingOption.Mutation;
-            var handle = await WaitForFunctionAsync(predicate, new WaitForFunctionOptions
-            {
-                Timeout = options.Timeout,
-                Polling = polling
-            }, selectorOrXPath, isXPath, options.Visible, options.Hidden);
+            var handle = await new WaitTask(
+                this,
+                predicate,
+                $"{(isXPath ? "XPath" : "selector")} '{selectorOrXPath}'",
+                options.Polling,
+                options.PollingInterval,
+                options.Timeout,
+                new object[]
+                {
+                    selectorOrXPath,
+                    isXPath,
+                    options.Visible,
+                    options.Hidden
+            }).Task;
             return handle as ElementHandle;
         }
 

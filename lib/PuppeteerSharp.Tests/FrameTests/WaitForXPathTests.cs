@@ -96,5 +96,14 @@ namespace PuppeteerSharp.Tests.FrameTests
             var waitForXPath = Page.WaitForXPathAsync("/html/body/div");
             Assert.Equal("some text", await Page.EvaluateFunctionAsync<string>("x => x.textContent", await waitForXPath));
         }
+
+        [Fact]
+        public async Task ShouldRespectTimeout()
+        {
+            var exception = await Assert.ThrowsAsync<WaitTaskTimeoutException>(()
+                    => Page.WaitForXPathAsync("//div", new WaitForSelectorOptions { Timeout = 10 }));
+
+            Assert.Contains("waiting for XPath '//div' failed: timeout", exception.Message);
+        }
     }
 }
