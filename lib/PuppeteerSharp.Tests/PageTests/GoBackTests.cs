@@ -37,14 +37,14 @@ namespace PuppeteerSharp.Tests.PageTests
               history.pushState({ }, '', '/first.html');
               history.pushState({ }, '', '/second.html');
             ");
-            Assert.Equal(TestConstants.EmptyPage + "second.html", Page.Url);
+            Assert.Equal(TestConstants.ServerUrl + "/second.html", Page.Url);
 
             await Page.GoBackAsync();
-            Assert.Equal(TestConstants.EmptyPage + "first.html", Page.Url);
+            Assert.Equal(TestConstants.ServerUrl + "/first.html", Page.Url);
             await Page.GoBackAsync();
             Assert.Equal(TestConstants.EmptyPage, Page.Url);
             await Page.GoForwardAsync();
-            Assert.Equal(TestConstants.EmptyPage + "first.html", Page.Url);
+            Assert.Equal(TestConstants.ServerUrl + "/first.html", Page.Url);
         }
     }
 }
