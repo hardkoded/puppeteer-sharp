@@ -78,7 +78,9 @@ namespace PuppeteerSharp
             _networkManager.Response += (sender, e) => Response?.Invoke(this, e);
             _networkManager.RequestFinished += (sender, e) => RequestFinished?.Invoke(this, e);
 
-            Client.MessageReceived += client_MessageReceived;
+            target.CloseTask.ContinueWith((arg) => Close?.Invoke(this, EventArgs.Empty));
+
+            Client.MessageReceived += Client_MessageReceived;
         }
 
         internal CDPSession Client { get; }
@@ -170,6 +172,11 @@ namespace PuppeteerSharp
         /// Raised when an uncaught exception happens within the page.
         /// </summary>
         public event EventHandler<PageErrorEventArgs> PageError;
+
+        /// <summary>
+        /// Raised when the page closes.
+        /// </summary>
+        public event EventHandler Close;
 
         /// <summary>
         /// This setting will change the default maximum navigation time of 30 seconds for the following methods:
@@ -597,10 +604,10 @@ namespace PuppeteerSharp
         /// <param name="puppeteerFunction">Callback function which will be called in Puppeteer's context.</param>
         /// <remarks>
         /// If the <paramref name="puppeteerFunction"/> returns a <see cref="Task"/>, it will be awaited.
-        /// Functions installed via <see cref="ExposeFunctionAsync{T1, T2, T3, TResult}(string, Func{TResult})"/> survive navigations
+        /// Functions installed via <see cref="ExposeFunctionAsync{T1, T2, T3, TResult}(string, Func{T1, T2, T3, TResult})"/> survive navigations
         /// </remarks>
         /// <returns>Task</returns>
-        public Task ExposeFunctionAsync<T1, T2, T3, TResult>(string name, Func<TResult> puppeteerFunction)
+        public Task ExposeFunctionAsync<T1, T2, T3, TResult>(string name, Func<T1, T2, T3, TResult> puppeteerFunction)
             => ExposeFunctionAsync(name, (Delegate)puppeteerFunction);
 
         /// <summary>
@@ -1538,7 +1545,7 @@ namespace PuppeteerSharp
             return pixels / 96;
         }
 
-        private async void client_MessageReceived(object sender, MessageEventArgs e)
+        private async void Client_MessageReceived(object sender, MessageEventArgs e)
         {
             switch (e.MessageID)
             {

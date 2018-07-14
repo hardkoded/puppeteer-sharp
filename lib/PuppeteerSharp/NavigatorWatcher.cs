@@ -90,10 +90,7 @@ namespace PuppeteerSharp
                 return;
             }
 
-            if (!LifeCycleCompleteTaskWrapper.Task.IsCompleted)
-            {
-                LifeCycleCompleteTaskWrapper.SetResult(true);
-            }
+            LifeCycleCompleteTaskWrapper.TrySetResult(true);
         }
 
         private void NavigatedWithinDocument(object sender, FrameEventArgs e)
