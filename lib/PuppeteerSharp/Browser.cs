@@ -265,10 +265,8 @@ namespace PuppeteerSharp
             var target = _targets[e.TargetId];
             _targets.Remove(e.TargetId);
 
-            if (!target.CloseTaskWrapper.Task.IsCompleted)
-            {
-                target.CloseTaskWrapper.SetResult(true);
-            }
+            target.CloseTaskWrapper.TrySetResult(true);
+
             if (await target.InitializedTask)
             {
                 TargetDestroyed?.Invoke(this, new TargetChangedArgs

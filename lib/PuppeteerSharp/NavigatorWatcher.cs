@@ -89,10 +89,7 @@ namespace PuppeteerSharp
                 return;
             }
 
-            if (!LifeCycleCompleteTaskWrapper.Task.IsCompleted)
-            {
-                LifeCycleCompleteTaskWrapper.SetResult(true);
-            }
+            LifeCycleCompleteTaskWrapper.TrySetResult(true);
         }
 
         private bool CheckLifecycle(Frame frame, IEnumerable<string> expectedLifecycle)
