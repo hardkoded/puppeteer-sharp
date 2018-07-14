@@ -18,13 +18,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
         public async Task ShouldWorkWithWindowClose()
         {
             var newPageTaskSource = new TaskCompletionSource<Page>();
-            Browser.TargetCreated += async (sender, e) =>
-            {
-                if (!newPageTaskSource.Task.IsCompleted)
-                {
-                    newPageTaskSource.SetResult(await e.Target.PageAsync());
-                }
-            };
+            Browser.TargetCreated += async (sender, e) => newPageTaskSource.TrySetResult(await e.Target.PageAsync());
 
             await Page.EvaluateExpressionAsync("window['newPage'] = window.open('about:blank');");
             var newPage = await newPageTaskSource.Task;
