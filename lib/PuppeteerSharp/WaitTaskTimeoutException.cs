@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace PuppeteerSharp
 {
     [Serializable]
-    internal class WaitTaskTimeoutException : Exception
+    internal class WaitTaskTimeoutException : PuppeteerException
     {
         /// <summary>
         /// Timeout that caused the exception
