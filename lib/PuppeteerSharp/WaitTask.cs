@@ -140,8 +140,11 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
 
             _cts = new CancellationTokenSource();
 
-            _timeoutTimer = System.Threading.Tasks.Task.Delay(timeout, _cts.Token).ContinueWith(_
-                => Termiante(new WaitTaskTimeoutException(timeout, title)));
+            if (timeout > 0)
+            {
+                _timeoutTimer = System.Threading.Tasks.Task.Delay(timeout, _cts.Token).ContinueWith(_
+                    => Termiante(new PuppeteerException($"waiting failed: timeout {timeout}ms exceeded")));
+            }
 
             Rerun();
         }

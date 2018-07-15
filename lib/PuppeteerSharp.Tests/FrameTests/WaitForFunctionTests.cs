@@ -91,5 +91,14 @@ namespace PuppeteerSharp.Tests.FrameTests
 
             Assert.Contains("waiting for function failed: timeout", exception.Message);
         }
+
+        [Fact]
+        public async Task ShouldDisableTimeoutWhenItsSetTo0()
+        {
+            var handle = await Page.WaitForFunctionAsync(
+                "() => new Promise(res => setTimeout(() => res(42), 100))",
+                new WaitForFunctionOptions { Timeout = 0 });
+            Assert.Equal(42, await handle.JsonValueAsync<int>());
+        }
     }
 }
