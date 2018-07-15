@@ -18,7 +18,7 @@ namespace PuppeteerSharp
         private readonly CancellationTokenSource _cts;
         private readonly TaskCompletionSource<JSHandle> _taskCompletion;
 
-        private int _runCount = 0;
+        private int _runCount;
         private bool _terminated;
 
         private const string WaitForPredicatePageFunction = @"
@@ -131,8 +131,11 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
 
             _cts = new CancellationTokenSource();
 
-            _timeoutTimer = System.Threading.Tasks.Task.Delay(timeout, _cts.Token).ContinueWith(_
-                => Termiante(new PuppeteerException($"waiting failed: timeout {timeout}ms exceeded")));
+            if (timeout > 0)
+            {
+                _timeoutTimer = System.Threading.Tasks.Task.Delay(timeout, _cts.Token).ContinueWith(_
+                    => Termiante(new PuppeteerException($"waiting failed: timeout {timeout}ms exceeded")));
+            }
 
             Rerun();
         }
@@ -158,12 +161,20 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
 
             if (_terminated || runCount != _runCount)
             {
-                if (success != null) await success.DisposeAsync();
+                if (success != null)
+                {
+                    await success.DisposeAsync();
+                }
+
                 return;
             }
             if (exception == null && await _frame.EvaluateFunctionAsync<bool>("s => !s", success))
             {
-                if (success != null) await success.DisposeAsync();
+                if (success != null)
+                {
+                    await success.DisposeAsync();
+                }
+
                 return;
             }
 

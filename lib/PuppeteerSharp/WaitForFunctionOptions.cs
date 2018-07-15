@@ -8,7 +8,7 @@
     public class WaitForFunctionOptions
     {
         /// <summary>
-        /// Maximum time to wait for in milliseconds. Defaults to 30000 (30 seconds).
+        /// Maximum time to wait for in milliseconds. Defaults to 30000 (30 seconds). Pass 0 to disable timeout.
         /// </summary>
         public int Timeout { get; set; } = 30_000;
 
