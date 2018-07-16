@@ -530,6 +530,12 @@ namespace PuppeteerSharp
             return handle as ElementHandle;
         }
 
+        internal void OnLoadingStopped()
+        {
+            LifecycleEvents.Add("DOMContentLoaded");
+            LifecycleEvents.Add("load");
+        }
+
         internal void OnLifecycleEvent(string loaderId, string name)
         {
             if (name == "init")

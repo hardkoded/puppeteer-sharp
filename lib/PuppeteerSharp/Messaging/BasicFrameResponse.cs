@@ -2,7 +2,7 @@
 
 namespace PuppeteerSharp.Messaging
 {
-    internal class FrameDetachedResponse
+    internal class BasicFrameResponse
     {
         [JsonProperty("frameId")]
         public string FrameId { get; set; }

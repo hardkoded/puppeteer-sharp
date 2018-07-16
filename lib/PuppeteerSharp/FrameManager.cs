@@ -79,7 +79,11 @@ namespace PuppeteerSharp
                     break;
 
                 case "Page.frameDetached":
-                    OnFrameDetached(e.MessageData.ToObject<FrameDetachedResponse>());
+                    OnFrameDetached(e.MessageData.ToObject<BasicFrameResponse>());
+                    break;
+
+                case "Page.frameStoppedLoading":
+                    OnFrameStoppedLoading(e.MessageData.ToObject<BasicFrameResponse>());
                     break;
 
                 case "Runtime.executionContextCreated":
@@ -97,6 +101,15 @@ namespace PuppeteerSharp
                     break;
                 default:
                     break;
+            }
+        }
+
+        private void OnFrameStoppedLoading(BasicFrameResponse e)
+        {
+            if (Frames.TryGetValue(e.FrameId, out var frame))
+            {
+                frame.OnLoadingStopped();
+                LifecycleEvent?.Invoke(this, new FrameEventArgs(frame));
             }
         }
 
@@ -148,9 +161,9 @@ namespace PuppeteerSharp
             }
         }
 
-        private void OnFrameDetached(FrameDetachedResponse e)
+        private void OnFrameDetached(BasicFrameResponse e)
         {
-            if(Frames.TryGetValue(e.FrameId, out var frame))
+            if (Frames.TryGetValue(e.FrameId, out var frame))
             {
                 RemoveFramesRecursively(frame);
             }

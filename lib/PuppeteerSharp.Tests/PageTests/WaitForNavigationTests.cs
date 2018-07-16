@@ -131,24 +131,28 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(TestConstants.ServerUrl + "/second.html", Page.Url);
         }
 
-        [Fact(Skip = "Test Hangs" )]
+        [Fact]
         public async Task ShouldWorkWhenSubframeIssuesWindowStop()
         {
-            Server.SetRoute("/frames/style.css", context => Task.Delay(-1));
+            Server.SetRoute("/frames/style.css", (context) => Task.CompletedTask);
             var navigationTask = Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
-            var frameTsc = new TaskCompletionSource<Frame>();
-            Page.FrameAttached += (sender, e) => frameTsc.TrySetResult(e.Frame);
-            var frame = await frameTsc.Task;
-            var frameNavigatedTsc = new TaskCompletionSource<bool>();
+            var frameAttachedTaskSource = new TaskCompletionSource<Frame>();
+            Page.FrameAttached += (sender, e) =>
+            {
+                frameAttachedTaskSource.SetResult(e.Frame);
+            };
+
+            var frame = await frameAttachedTaskSource.Task;
+            var frameNavigatedTaskSource = new TaskCompletionSource<bool>();
             Page.FrameNavigated += (sender, e) =>
             {
-                if(e.Frame  == frame)
+                if (e.Frame == frame)
                 {
-                    frameNavigatedTsc.TrySetResult(true);
+                    frameNavigatedTaskSource.TrySetResult(true);
                 }
             };
-            await frameNavigatedTsc.Task;
-            _ =frame.EvaluateExpressionAsync("window.stop()");
+            await frameNavigatedTaskSource.Task;
+            var task = frame.EvaluateFunctionAsync("() => window.stop()");
             await navigationTask;
         }
     }
