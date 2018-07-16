@@ -23,6 +23,7 @@ namespace PuppeteerSharp
             "--disable-background-timer-throttling",
             "--disable-client-side-phishing-detection",
             "--disable-default-apps",
+            "--disable-dev-shm-usage",
             "--disable-extensions",
             "--disable-hang-monitor",
             "--disable-popup-blocking",
