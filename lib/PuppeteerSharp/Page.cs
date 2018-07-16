@@ -1243,19 +1243,10 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="script">Expression to be evaluated in browser context</param>
         /// <param name="options">Optional waiting parameters</param>
-        /// <param name="args">Arguments to pass to <c>script</c></param>
         /// <returns>A task that resolves when the <c>script</c> returns a truthy value</returns>
         /// <seealso cref="Frame.WaitForExpressionAsync(string, WaitForFunctionOptions, object[])"/>
-        public Task<JSHandle> WaitForExpressionAsync(string script, WaitForFunctionOptions options = null, params object[] args)
-        => MainFrame.WaitForExpressionAsync(script, options ?? new WaitForFunctionOptions(), args);
-
-        /// <summary>
-        /// Waits for an expression to be evaluated to a truthy value
-        /// </summary>
-        /// <param name="script">Expresson to be evaluated in browser context</param>
-        /// <param name="args">Arguments to pass to <c>script</c></param>
-        /// <returns>A task that resolves when the <c>script</c> returns a truthy value</returns>
-        public Task<JSHandle> WaitForExpressionAsync(string script, params object[] args) => WaitForExpressionAsync(script, null, args);
+        public Task<JSHandle> WaitForExpressionAsync(string script, WaitForFunctionOptions options = null)
+            => MainFrame.WaitForExpressionAsync(script, options ?? new WaitForFunctionOptions());
 
         /// <summary>
         /// Waits for a selector to be added to the DOM

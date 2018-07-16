@@ -117,7 +117,7 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
             WaitForFunctionPollingOption polling,
             int? pollingInterval,
             int timeout,
-            object[] args)
+            object[] args = null)
         {
             if (string.IsNullOrEmpty(predicateBody))
             {
@@ -133,7 +133,7 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
             _polling = polling;
             _pollingInterval = pollingInterval;
             _timeout = timeout;
-            _args = args;
+            _args = args ?? new object[] { };
             _title = title;
 
             frame.WaitTasks.Add(this);
@@ -152,7 +152,7 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
 
         internal Task<JSHandle> Task => _taskCompletion.Task;
 
-        internal async void Rerun()
+        internal async Task Rerun()
         {
             var runCount = ++_runCount;
             JSHandle success = null;

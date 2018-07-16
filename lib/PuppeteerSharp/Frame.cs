@@ -279,16 +279,15 @@ namespace PuppeteerSharp
         /// <param name="options">Optional waiting parameters</param>
         /// <param name="args">Arguments to pass to <c>script</c></param>
         /// <returns>A task that resolves when the <c>script</c> returns a truthy value</returns>
-        /// <seealso cref="Page.WaitForExpressionAsync(string, WaitForFunctionOptions, object[])"/>
-        public Task<JSHandle> WaitForExpressionAsync(string script, WaitForFunctionOptions options, params object[] args)
-            => new WaitTask(this, script, true, "function", options.Polling, options.PollingInterval, options.Timeout, args).Task;
-
+        /// <seealso cref="Page.WaitForExpressionAsync(string, WaitForFunctionOptions)"/>
+        public Task<JSHandle> WaitForExpressionAsync(string script, WaitForFunctionOptions options)
+            => new WaitTask(this, script, true, "function", options.Polling, options.PollingInterval, options.Timeout).Task;
 
         /// <summary>
         /// Triggers a change and input event once all the provided options have been selected. 
         /// If there's no <![CDATA[<select>]]> element matching selector, the method throws an error.
         /// </summary>
-        /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>        
+        /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
         /// <param name="selector">A selector to query page for</param>
         /// <param name="values">Values of options to select. If the <![CDATA[<select>]]> has the multiple attribute, 
         /// all values are considered, otherwise only the first one is taken into account.</param>
