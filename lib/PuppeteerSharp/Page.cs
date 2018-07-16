@@ -1327,8 +1327,12 @@ namespace PuppeteerSharp
 
         #region Private Method
 
-        internal static async Task<Page> CreateAsync(CDPSession client, Target target, bool ignoreHTTPSErrors, bool appMode,
-                                                   TaskQueue screenshotTaskQueue)
+        internal static async Task<Page> CreateAsync(
+            CDPSession client,
+            Target target,
+            bool ignoreHTTPSErrors,
+            bool setDefaultViewPort,
+            TaskQueue screenshotTaskQueue)
         {
             await client.SendAsync("Page.enable", null);
             dynamic result = await client.SendAsync("Page.getFrameTree");
@@ -1353,8 +1357,7 @@ namespace PuppeteerSharp
                 });
             }
 
-            // Initialize default page size.
-            if (!appMode)
+            if (setDefaultViewPort)
             {
                 await page.SetViewportAsync(new ViewPortOptions
                 {

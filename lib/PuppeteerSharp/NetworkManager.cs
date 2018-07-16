@@ -130,7 +130,7 @@ namespace PuppeteerSharp
             if (_requestIdToRequest.TryGetValue(e.RequestId, out var request))
             {
                 request.Failure = e.ErrorText;
-                request.CompleteTaskWrapper.SetResult(true);
+                request.Response?.BodyLoadedTaskWrapper.SetResult(true);
                 _requestIdToRequest.Remove(request.RequestId);
 
                 if (request.InterceptionId != null)
@@ -151,7 +151,7 @@ namespace PuppeteerSharp
             // @see https://crbug.com/750469
             if (_requestIdToRequest.TryGetValue(e.RequestId, out var request))
             {
-                request.CompleteTaskWrapper.SetResult(true);
+                request.Response.BodyLoadedTaskWrapper.SetResult(true);
                 _requestIdToRequest.Remove(request.RequestId);
 
                 if (request.InterceptionId != null)
@@ -353,6 +353,9 @@ namespace PuppeteerSharp
 
             request.Response = response;
             request.RedirectChainList.Add(request);
+            response.BodyLoadedTaskWrapper.TrySetException(
+                new PuppeteerException("Response body is unavailable for redirect responses"));
+
             if (request.RequestId != null)
             {
                 _requestIdToRequest.Remove(request.RequestId);
