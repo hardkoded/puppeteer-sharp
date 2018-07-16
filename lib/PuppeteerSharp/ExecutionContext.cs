@@ -178,10 +178,12 @@ namespace PuppeteerSharp
             }
             catch (Exception ex)
             {
-                if (!ex.Message.Contains("Object reference chain is too long"))
+                if (ex.Message.Contains("Object reference chain is too long") ||
+                    ex.Message.Contains("Object couldn't be returned by value"))
                 {
-                    throw new EvaluationFailedException(ex.Message, ex);
+                    return default;
                 }
+                throw new EvaluationFailedException(ex.Message, ex);
             }
             await handle.DisposeAsync();
             return result;

@@ -104,17 +104,10 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Fact]
-        public async Task ShouldFailForWindowObjectUsingEvaluateExpression()
+        public async Task ShouldReturnNullForNonSerializableObjects()
         {
-            var window = await Page.EvaluateExpressionAsync("window");
-            Assert.Null(window);
-        }
-
-        [Fact]
-        public async Task ShouldFailForWindowObjectUsingEvaluateFunction()
-        {
-            var window = await Page.EvaluateFunctionAsync("() => window");
-            Assert.Null(window);
+            Assert.Null(await Page.EvaluateFunctionAsync("() => window"));
+            Assert.Null(await Page.EvaluateFunctionAsync("() => [Symbol('foo4')]"));
         }
 
         [Fact]
