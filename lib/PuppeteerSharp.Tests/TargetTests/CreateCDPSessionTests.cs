@@ -57,7 +57,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             await Page.Coverage.StartJSCoverageAsync();
             await Page.Coverage.StopJSCoverageAsync();
             // generate a script in page and wait for the event.
-            var eventTask = WaitForEvents(client, "Debugger.scriptParsed");
+            var eventTask = WaitEvent(client, "Debugger.scriptParsed");
             await Task.WhenAll(
                 eventTask,
                 Page.EvaluateExpressionAsync("//# sourceURL=foo.js")
