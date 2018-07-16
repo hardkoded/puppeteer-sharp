@@ -843,6 +843,18 @@ namespace PuppeteerSharp
             => Client.SendAsync("Emulation.setScriptExecutionDisabled", new { value = !enabled });
 
         /// <summary>
+        /// Toggles bypassing page's Content-Security-Policy.
+        /// </summary>
+        /// <param name="enabled">sets bypassing of page's Content-Security-Policy.</param>
+        /// <returns></returns>
+        /// <remarks>
+        /// CSP bypassing happens at the moment of CSP initialization rather then evaluation.
+        /// Usually this means that <see cref="SetBypassCSPAsync(bool)"/> should be called before navigating to the domain.
+        /// </remarks>
+        public Task SetBypassCSPAsync(bool enabled)
+            => Client.SendAsync("Page.setBypassCSP", new { enabled });
+
+        /// <summary>
         /// Emulates a media such as screen or print.
         /// </summary>
         /// <returns>Task.</returns>
