@@ -55,13 +55,12 @@ namespace PuppeteerSharp
             RedirectChainList = redirectChain;
 
             Headers = new Dictionary<string, object>();
-            foreach (KeyValuePair<string, object> keyValue in payload.Headers)
+            foreach (var keyValue in payload.Headers)
             {
                 Headers[keyValue.Key] = keyValue.Value;
             }
 
             FromMemoryCache = false;
-            CompleteTaskWrapper = new TaskCompletionSource<bool>();
         }
 
         #region Properties
@@ -121,8 +120,6 @@ namespace PuppeteerSharp
         public Request[] RedirectChain => RedirectChainList.ToArray();
 
         internal bool FromMemoryCache { get; set; }
-        internal Task<bool> CompleteTask => CompleteTaskWrapper.Task;
-        internal TaskCompletionSource<bool> CompleteTaskWrapper { get; set; }
         internal List<Request> RedirectChainList { get; }
         #endregion
 

@@ -13,6 +13,7 @@ namespace PuppeteerSharp
     {
         private readonly CDPSession _client;
         private bool _fromDiskCache;
+        private string _buffer;
 
         internal Response(
             CDPSession client,
@@ -39,6 +40,7 @@ namespace PuppeteerSharp
                 }
             }
             SecurityDetails = securityDetails;
+            BodyLoadedTaskWrapper = new TaskCompletionSource<bool>();
         }
 
         #region Properties
@@ -82,8 +84,7 @@ namespace PuppeteerSharp
         /// <value><c>true</c> if the <see cref="Response"/> was served by a service worker; otherwise, <c>false</c>.</value>
         public bool FromServiceWorker { get; }
 
-        internal Task<string> ContentTask => ContentTaskWrapper.Task;
-        internal TaskCompletionSource<string> ContentTaskWrapper { get; set; }
+        internal TaskCompletionSource<bool> BodyLoadedTaskWrapper { get; }
         #endregion
 
         #region Public Methods
@@ -92,38 +93,35 @@ namespace PuppeteerSharp
         /// Returns a Task which resolves to a buffer with response body
         /// </summary>
         /// <returns>A Task which resolves to a buffer with response body</returns>
-        public Task<string> BufferAsync()
+        public async ValueTask<string> BufferAsync()
         {
-            if (ContentTaskWrapper == null)
+            if (_buffer == null)
             {
-                ContentTaskWrapper = new TaskCompletionSource<string>();
+                await BodyLoadedTaskWrapper.Task;
 
-                Request.CompleteTask.ContinueWith(async (task) =>
+                try
                 {
-                    try
+                    var response = await _client.SendAsync("Network.getResponseBody", new Dictionary<string, object>
                     {
-                        var response = await _client.SendAsync("Network.getResponseBody", new Dictionary<string, object>
-                        {
-                            {"requestId", Request.RequestId}
-                        });
+                        {"requestId", Request.RequestId}
+                    });
 
-                        ContentTaskWrapper.SetResult(response.body.ToString());
-                    }
-                    catch (Exception ex)
-                    {
-                        ContentTaskWrapper.SetException(new BufferException("Unable to get response body", ex));
-                    }
-                });
+                    _buffer = response.body.ToString();
+                }
+                catch (Exception ex)
+                {
+                    throw new BufferException("Unable to get response body", ex);
+                }
             }
 
-            return ContentTaskWrapper.Task;
+            return _buffer;
         }
 
         /// <summary>
         /// Returns a Task which resolves to a text representation of response body
         /// </summary>
         /// <returns>A Task which resolves to a text representation of response body</returns>
-        public Task<string> TextAsync() => BufferAsync();
+        public ValueTask<string> TextAsync() => BufferAsync();
 
         /// <summary>
         /// Returns a Task which resolves to a <see cref="JObject"/> representation of response body

@@ -103,6 +103,20 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [Fact]
+        public async Task PageEventsResponseShouldThrowWhenRequestingBodyOfRedirectedResponse()
+        {
+            Server.SetRedirect("/foo.html", "/empty.html");
+            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/foo.html");
+            var redirectChain = response.Request.RedirectChain;
+            Assert.Single(redirectChain);
+            var redirected = redirectChain[0].Response;
+            Assert.Equal(HttpStatusCode.Redirect, redirected.Status);
+
+            var exception = await Assert.ThrowsAsync<PuppeteerException>(async () => await redirected.TextAsync());
+            Assert.Contains("Response body is unavailable for redirect responses", exception.Message);
+        }
+
+        [Fact]
         public async Task PageEventsResponseShouldNotReportBodyUnlessRequestIsFinished()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
