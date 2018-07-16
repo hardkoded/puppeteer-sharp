@@ -112,6 +112,7 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
         internal WaitTask(
             Frame frame,
             string predicateBody,
+            bool isExpression,
             string title,
             WaitForFunctionPollingOption polling,
             int? pollingInterval,
@@ -128,7 +129,7 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
             }
 
             _frame = frame;
-            _predicateBody = $"return ( {predicateBody} )(...args)";
+            _predicateBody = isExpression ? $"return {predicateBody}" : $"return ( {predicateBody} )(...args)";
             _polling = polling;
             _pollingInterval = pollingInterval;
             _timeout = timeout;

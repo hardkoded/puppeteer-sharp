@@ -146,7 +146,7 @@ namespace PuppeteerSharp
         /// Raised when a frame is navigated to a new url.
         /// </summary>
         public event EventHandler<FrameEventArgs> FrameNavigated;
-        
+
         /// <summary>
         /// Raised when a <see cref="Response"/> is received.
         /// </summary>
@@ -1220,7 +1220,7 @@ namespace PuppeteerSharp
             => MainFrame.WaitForTimeoutAsync(milliseconds);
 
         /// <summary>
-        /// Waits for a script to be evaluated to a truthy value
+        /// Waits for a function to be evaluated to a truthy value
         /// </summary>
         /// <param name="script">Function to be evaluated in browser context</param>
         /// <param name="options">Optional waiting parameters</param>
@@ -1231,12 +1231,31 @@ namespace PuppeteerSharp
             => MainFrame.WaitForFunctionAsync(script, options ?? new WaitForFunctionOptions(), args);
 
         /// <summary>
-        /// Waits for a script to be evaluated to a truthy value
+        /// Waits for a function to be evaluated to a truthy value
         /// </summary>
         /// <param name="script">Function to be evaluated in browser context</param>
         /// <param name="args">Arguments to pass to <c>script</c></param>
         /// <returns>A task that resolves when the <c>script</c> returns a truthy value</returns>
         public Task<JSHandle> WaitForFunctionAsync(string script, params object[] args) => WaitForFunctionAsync(script, null, args);
+
+        /// <summary>
+        /// Waits for an expression to be evaluated to a truthy value
+        /// </summary>
+        /// <param name="script">Expression to be evaluated in browser context</param>
+        /// <param name="options">Optional waiting parameters</param>
+        /// <param name="args">Arguments to pass to <c>script</c></param>
+        /// <returns>A task that resolves when the <c>script</c> returns a truthy value</returns>
+        /// <seealso cref="Frame.WaitForExpressionAsync(string, WaitForFunctionOptions, object[])"/>
+        public Task<JSHandle> WaitForExpressionAsync(string script, WaitForFunctionOptions options = null, params object[] args)
+        => MainFrame.WaitForExpressionAsync(script, options ?? new WaitForFunctionOptions(), args);
+
+        /// <summary>
+        /// Waits for an expression to be evaluated to a truthy value
+        /// </summary>
+        /// <param name="script">Expresson to be evaluated in browser context</param>
+        /// <param name="args">Arguments to pass to <c>script</c></param>
+        /// <returns>A task that resolves when the <c>script</c> returns a truthy value</returns>
+        public Task<JSHandle> WaitForExpressionAsync(string script, params object[] args) => WaitForExpressionAsync(script, null, args);
 
         /// <summary>
         /// Waits for a selector to be added to the DOM

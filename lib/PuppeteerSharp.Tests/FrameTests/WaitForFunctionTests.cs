@@ -87,7 +87,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         public async Task ShouldRespectTimeout()
         {
             var exception = await Assert.ThrowsAsync<WaitTaskTimeoutException>(()
-                => Page.WaitForFunctionAsync("false", new WaitForFunctionOptions { Timeout = 10 }));
+                => Page.WaitForExpressionAsync("false", new WaitForFunctionOptions { Timeout = 10 }));
 
             Assert.Contains("waiting for function failed: timeout", exception.Message);
         }

@@ -262,7 +262,7 @@ namespace PuppeteerSharp
         public Task WaitForTimeoutAsync(int milliseconds) => Task.Delay(milliseconds);
 
         /// <summary>
-        /// Waits for a script to be evaluated to a truthy value
+        /// Waits for a function to be evaluated to a truthy value
         /// </summary>
         /// <param name="script">Function to be evaluated in browser context</param>
         /// <param name="options">Optional waiting parameters</param>
@@ -270,7 +270,19 @@ namespace PuppeteerSharp
         /// <returns>A task that resolves when the <c>script</c> returns a truthy value</returns>
         /// <seealso cref="Page.WaitForFunctionAsync(string, WaitForFunctionOptions, object[])"/>
         public Task<JSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args)
-            => new WaitTask(this, script, "function", options.Polling, options.PollingInterval, options.Timeout, args).Task;
+            => new WaitTask(this, script, false, "function", options.Polling, options.PollingInterval, options.Timeout, args).Task;
+
+        /// <summary>
+        /// Waits for an expression to be evaluated to a truthy value
+        /// </summary>
+        /// <param name="script">Expression to be evaluated in browser context</param>
+        /// <param name="options">Optional waiting parameters</param>
+        /// <param name="args">Arguments to pass to <c>script</c></param>
+        /// <returns>A task that resolves when the <c>script</c> returns a truthy value</returns>
+        /// <seealso cref="Page.WaitForExpressionAsync(string, WaitForFunctionOptions, object[])"/>
+        public Task<JSHandle> WaitForExpressionAsync(string script, WaitForFunctionOptions options, params object[] args)
+            => new WaitTask(this, script, true, "function", options.Polling, options.PollingInterval, options.Timeout, args).Task;
+
 
         /// <summary>
         /// Triggers a change and input event once all the provided options have been selected. 
@@ -525,6 +537,7 @@ namespace PuppeteerSharp
             var handle = await new WaitTask(
                 this,
                 predicate,
+                false,
                 $"{(isXPath ? "XPath" : "selector")} '{selectorOrXPath}'",
                 options.Polling,
                 options.PollingInterval,
