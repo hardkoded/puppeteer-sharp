@@ -79,7 +79,7 @@ namespace PuppeteerSharp
         private async Task<Page> CreatePageAsync()
         {
             var session = await _sessionFactory();
-            return await Page.CreateAsync(session, this, _browser.IgnoreHTTPSErrors, _browser.AppMode, _browser.ScreenshotTaskQueue);
+            return await Page.CreateAsync(session, this, _browser.IgnoreHTTPSErrors, !_browser.AppMode, _browser.ScreenshotTaskQueue);
         }
 
         internal void TargetInfoChanged(TargetInfo targetInfo)

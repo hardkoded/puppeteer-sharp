@@ -31,7 +31,6 @@ namespace PuppeteerSharp
             "--disable-translate",
             "--metrics-recording-only",
             "--no-first-run",
-            "--remote-debugging-port=0",
             "--safebrowsing-disable-auto-update"
         };
         internal static readonly string[] AutomationArgs = {
@@ -270,6 +269,12 @@ namespace PuppeteerSharp
             else
             {
                 chromeArguments.AddRange(AutomationArgs);
+            }
+
+            if (!options.IgnoreDefaultArgs ||
+                !chromeArguments.Any(argument => argument.StartsWith("--remote-debugging-", StringComparison.Ordinal)))
+            {
+                chromeArguments.Add("--remote-debugging-port=0");
             }
 
             var userDataDirOption = options.Args.FirstOrDefault(i => i.StartsWith(UserDataDirArgument, StringComparison.Ordinal));

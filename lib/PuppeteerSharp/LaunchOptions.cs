@@ -76,5 +76,10 @@ namespace PuppeteerSharp
         /// Logs process counts after launching chrome and after exiting.
         /// </summary>
         public bool LogProcess { get; set; }
+        /// <summary>
+        /// Do not use it. Dangerous option; use with care. Defaults to false.
+        /// </summary>
+        /// <value><c>true</c> if ignore default arguments; otherwise, <c>false</c>.</value>
+        public bool IgnoreDefaultArgs { get; set; }
     }
 }

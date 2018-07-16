@@ -338,6 +338,18 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             Assert.True(process.HasExited);
         }
 
+        [Fact]
+        public async Task ShouldWorkWithNoDefaultArguments()
+        {
+            var options = TestConstants.DefaultBrowserOptions();
+            options.IgnoreDefaultArgs = true;
+            using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
+            using (var page = await browser.NewPageAsync())
+            {
+                Assert.Equal(121, await page.EvaluateExpressionAsync<int>("11 * 11"));
+            }
+        }
+
         private Process GetTestAppProcess(string appName, string arguments)
         {
             var process = new Process();
