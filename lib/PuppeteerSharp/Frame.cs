@@ -351,18 +351,24 @@ namespace PuppeteerSharp
               const link = document.createElement('link');
               link.rel = 'stylesheet';
               link.href = url;
-              document.head.appendChild(link);
-              await new Promise((res, rej) => {
+              const promise = new Promise((res, rej) => {
                 link.onload = res;
                 link.onerror = rej;
               });
+              document.head.appendChild(style);
+              await promise;
               return link;
             }";
-            const string addStyleContent = @"function addStyleContent(content) {
+            const string addStyleContent = @"async function addStyleContent(content) {
               const style = document.createElement('style');
               style.type = 'text/css';
               style.appendChild(document.createTextNode(content));
+              const promise = new Promise((res, rej) => {
+                link.onload = res;
+                link.onerror = rej;
+              });
               document.head.appendChild(style);
+              await promise;
               return style;
             }";
 
@@ -411,18 +417,23 @@ namespace PuppeteerSharp
               script.src = url;
               if(type)
                 script.type = type;
-              document.head.appendChild(script);
-              await new Promise((res, rej) => {
+              const promise = new Promise((res, rej) => {
                 script.onload = res;
                 script.onerror = rej;
               });
+              document.head.appendChild(script);
+              await promise;
               return script;
             }";
             const string addScriptContent = @"function addScriptContent(content, type = 'text/javascript') {
               const script = document.createElement('script');
               script.type = type;
               script.text = content;
+              let error = null;
+              script.onerror = e => error = e;
               document.head.appendChild(script);
+              if (error)
+                throw error;
               return script;
             }";
 

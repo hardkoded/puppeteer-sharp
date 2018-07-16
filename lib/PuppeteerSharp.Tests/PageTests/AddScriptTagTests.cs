@@ -105,5 +105,29 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.NotNull(scriptHandle as ElementHandle);
             Assert.Equal(35, await Page.EvaluateExpressionAsync<int>("__injected"));
         }
+
+        [Fact]
+        public async Task ShouldThrowWhenAddedWithContentToTheCSPPage()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/csp.html");
+            var exception = await Assert.ThrowsAsync<EvaluationFailedException>(
+                () => Page.AddScriptTagAsync(new AddTagOptions
+                {
+                    Content = "window.__injected = 35;"
+                }));
+            Assert.NotNull(exception);
+        }
+
+        [Fact]
+        public async Task ShouldThrowWhenAddedWithURLToTheCSPPage()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/csp.html");
+            var exception = await Assert.ThrowsAsync<PuppeteerException>(
+                () => Page.AddScriptTagAsync(new AddTagOptions
+                {
+                    Url = TestConstants.CrossProcessUrl + "/injectedfile.js"
+                }));
+            Assert.NotNull(exception);
+        }
     }
 }
