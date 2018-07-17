@@ -355,7 +355,7 @@ namespace PuppeteerSharp
                 link.onload = res;
                 link.onerror = rej;
               });
-              document.head.appendChild(style);
+              document.head.appendChild(link);
               await promise;
               return link;
             }";
@@ -364,8 +364,8 @@ namespace PuppeteerSharp
               style.type = 'text/css';
               style.appendChild(document.createTextNode(content));
               const promise = new Promise((res, rej) => {
-                link.onload = res;
-                link.onerror = rej;
+                style.onload = res;
+                style.onerror = rej;
               });
               document.head.appendChild(style);
               await promise;
