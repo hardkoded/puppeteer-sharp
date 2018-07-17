@@ -175,11 +175,11 @@ namespace PuppeteerSharp.Tests.FrameTests
         [Fact]
         public async Task ShouldRespectTimeout()
         {
-            var exception = await Assert.ThrowsAnyAsync<PuppeteerException>(async ()
+            var exception = await Assert.ThrowsAsync<WaitTaskTimeoutException>(async ()
                 => await Page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Timeout = 10 }));
 
             Assert.NotNull(exception);
-            Assert.Contains("waiting failed: timeout", exception.Message);
+            Assert.Contains("waiting for selector 'div' failed: timeout", exception.Message);
         }
 
         [Fact]

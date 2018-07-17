@@ -262,7 +262,7 @@ namespace PuppeteerSharp
         public Task WaitForTimeoutAsync(int milliseconds) => Task.Delay(milliseconds);
 
         /// <summary>
-        /// Waits for a script to be evaluated to a truthy value
+        /// Waits for a function to be evaluated to a truthy value
         /// </summary>
         /// <param name="script">Function to be evaluated in browser context</param>
         /// <param name="options">Optional waiting parameters</param>
@@ -270,13 +270,24 @@ namespace PuppeteerSharp
         /// <returns>A task that resolves when the <c>script</c> returns a truthy value</returns>
         /// <seealso cref="Page.WaitForFunctionAsync(string, WaitForFunctionOptions, object[])"/>
         public Task<JSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args)
-            => new WaitTask(this, script, options.Polling, options.PollingInterval, options.Timeout, args).Task;
+            => new WaitTask(this, script, false, "function", options.Polling, options.PollingInterval, options.Timeout, args).Task;
+
+        /// <summary>
+        /// Waits for an expression to be evaluated to a truthy value
+        /// </summary>
+        /// <param name="script">Expression to be evaluated in browser context</param>
+        /// <param name="options">Optional waiting parameters</param>
+        /// <param name="args">Arguments to pass to <c>script</c></param>
+        /// <returns>A task that resolves when the <c>script</c> returns a truthy value</returns>
+        /// <seealso cref="Page.WaitForExpressionAsync(string, WaitForFunctionOptions)"/>
+        public Task<JSHandle> WaitForExpressionAsync(string script, WaitForFunctionOptions options)
+            => new WaitTask(this, script, true, "function", options.Polling, options.PollingInterval, options.Timeout).Task;
 
         /// <summary>
         /// Triggers a change and input event once all the provided options have been selected. 
         /// If there's no <![CDATA[<select>]]> element matching selector, the method throws an error.
         /// </summary>
-        /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>        
+        /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
         /// <param name="selector">A selector to query page for</param>
         /// <param name="values">Values of options to select. If the <![CDATA[<select>]]> has the multiple attribute, 
         /// all values are considered, otherwise only the first one is taken into account.</param>
@@ -522,11 +533,21 @@ namespace PuppeteerSharp
                 }
               }";
             var polling = options.Visible || options.Hidden ? WaitForFunctionPollingOption.Raf : WaitForFunctionPollingOption.Mutation;
-            var handle = await WaitForFunctionAsync(predicate, new WaitForFunctionOptions
-            {
-                Timeout = options.Timeout,
-                Polling = polling
-            }, selectorOrXPath, isXPath, options.Visible, options.Hidden);
+            var handle = await new WaitTask(
+                this,
+                predicate,
+                false,
+                $"{(isXPath ? "XPath" : "selector")} '{selectorOrXPath}'",
+                options.Polling,
+                options.PollingInterval,
+                options.Timeout,
+                new object[]
+                {
+                    selectorOrXPath,
+                    isXPath,
+                    options.Visible,
+                    options.Hidden
+            }).Task;
             return handle as ElementHandle;
         }
 

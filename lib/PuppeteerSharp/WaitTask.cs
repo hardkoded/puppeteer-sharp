@@ -13,6 +13,7 @@ namespace PuppeteerSharp
         private readonly int? _pollingInterval;
         private readonly int _timeout;
         private readonly object[] _args;
+        private readonly string _title;
         private readonly Task _timeoutTimer;
 
         private readonly CancellationTokenSource _cts;
@@ -108,7 +109,15 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
   }
 }";
 
-        internal WaitTask(Frame frame, string predicateBody, WaitForFunctionPollingOption polling, int? pollingInterval, int timeout, object[] args)
+        internal WaitTask(
+            Frame frame,
+            string predicateBody,
+            bool isExpression,
+            string title,
+            WaitForFunctionPollingOption polling,
+            int? pollingInterval,
+            int timeout,
+            object[] args = null)
         {
             if (string.IsNullOrEmpty(predicateBody))
             {
@@ -120,11 +129,12 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
             }
 
             _frame = frame;
-            _predicateBody = $"return ( {predicateBody} )(...args)";
+            _predicateBody = isExpression ? $"return {predicateBody}" : $"return ( {predicateBody} )(...args)";
             _polling = polling;
             _pollingInterval = pollingInterval;
             _timeout = timeout;
-            _args = args;
+            _args = args ?? new object[] { };
+            _title = title;
 
             frame.WaitTasks.Add(this);
             _taskCompletion = new TaskCompletionSource<JSHandle>();
@@ -134,7 +144,7 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
             if (timeout > 0)
             {
                 _timeoutTimer = System.Threading.Tasks.Task.Delay(timeout, _cts.Token).ContinueWith(_
-                    => Termiante(new PuppeteerException($"waiting failed: timeout {timeout}ms exceeded")));
+                    => Termiante(new WaitTaskTimeoutException(timeout, title)));
             }
 
             Rerun();
@@ -142,7 +152,7 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
 
         internal Task<JSHandle> Task => _taskCompletion.Task;
 
-        internal async void Rerun()
+        internal async Task Rerun()
         {
             var runCount = ++_runCount;
             JSHandle success = null;
