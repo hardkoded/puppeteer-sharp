@@ -1,11 +1,16 @@
 ﻿using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.FrameTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class ContextTests : PuppeteerPageBaseTest
     {
+        public ContextTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
         public async Task ShouldWork()
         {
@@ -18,6 +23,8 @@ namespace PuppeteerSharp.Tests.FrameTests
             Assert.NotNull(context1);
             Assert.NotNull(context2);
             Assert.NotEqual(context1, context2);
+            Assert.Equal(Page.Frames[0], context1.Frame);
+            Assert.Equal(Page.Frames[1], context2.Frame);
 
             await Task.WhenAll(
                 context1.EvaluateExpressionAsync("window.a = 1"),

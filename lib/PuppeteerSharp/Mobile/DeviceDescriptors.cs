@@ -2,6 +2,9 @@
 
 namespace PuppeteerSharp.Mobile
 {
+    /// <summary>
+    /// Device descriptors.
+    /// </summary>
     public static class DeviceDescriptors
     {
         private static readonly Dictionary<DeviceDescriptorName, DeviceDescriptor> Devices = new Dictionary<DeviceDescriptorName, DeviceDescriptor>
@@ -736,6 +739,11 @@ namespace PuppeteerSharp.Mobile
             }
         };
 
+        /// <summary>
+        /// Get the specified device description.
+        /// </summary>
+        /// <returns>The device descriptor.</returns>
+        /// <param name="name">Device Name.</param>
         public static DeviceDescriptor Get(DeviceDescriptorName name) => Devices[name];
     }
 }

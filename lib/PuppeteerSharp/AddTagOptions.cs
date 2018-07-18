@@ -19,5 +19,11 @@
         /// Raw JavaScript content to be injected into frame
         /// </summary>
         public string Content { get; set; }
+
+        /// <summary>
+        /// Script type. Use <c>module</c> in order to load a Javascript ES6 module
+        /// </summary>
+        /// <seealso href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script"/>
+        public string Type { get; set; }
     }
 }

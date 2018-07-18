@@ -3,21 +3,25 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.TargetTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class TargetTests : PuppeteerPageBaseTest
     {
+        public TargetTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
         public void BrowserTargetsShouldReturnAllOfTheTargets()
         {
             // The pages will be the testing page and the original newtab page
             var targets = Browser.Targets();
-            Assert.Contains(targets, target => target.Type == "page"
+            Assert.Contains(targets, target => target.Type == TargetType.Page
                 && target.Url == TestConstants.AboutBlank);
-            Assert.Contains(targets, target => target.Type == "other"
-                && target.Url == string.Empty);
+            Assert.Contains(targets, target => target.Type == TargetType.Browser);
         }
 
         [Fact]
@@ -28,6 +32,14 @@ namespace PuppeteerSharp.Tests.TargetTests
             Assert.Equal(2, allPages.Length);
             Assert.Contains(Page, allPages);
             Assert.NotSame(allPages[0], allPages[1]);
+        }
+
+        [Fact]
+        public void ShouldContainBrowserTarget()
+        {
+            var targets = Browser.Targets();
+            var browserTarget = targets.FirstOrDefault(target => target.Type == TargetType.Browser);
+            Assert.NotNull(browserTarget);
         }
 
         [Fact]
@@ -87,11 +99,11 @@ namespace PuppeteerSharp.Tests.TargetTests
                 Browser.TargetCreated -= TargetCreatedEventHandler;
             }
             Browser.TargetCreated += TargetCreatedEventHandler;
-            var registration = await Page.EvaluateExpressionHandleAsync("navigator.serviceWorker.register('sw.js')");
+            await Page.GoToAsync(TestConstants.ServerUrl + "/serviceworkers/empty/sw.html");
 
             var createdTarget = await createdTargetTaskCompletion.Task;
-            Assert.Equal("service_worker", createdTarget.Type);
-            Assert.Equal(TestConstants.ServerUrl + "/sw.js", createdTarget.Url);
+            Assert.Equal(TargetType.ServiceWorker, createdTarget.Type);
+            Assert.Equal(TestConstants.ServerUrl + "/serviceworkers/empty/sw.js", createdTarget.Url);
 
             var targetDestroyedTaskCompletion = new TaskCompletionSource<Target>();
             void TargetDestroyedEventHandler(object sender, TargetChangedArgs e)
@@ -100,7 +112,7 @@ namespace PuppeteerSharp.Tests.TargetTests
                 Browser.TargetDestroyed -= TargetDestroyedEventHandler;
             }
             Browser.TargetDestroyed += TargetDestroyedEventHandler;
-            await Page.EvaluateFunctionAsync("registration => registration.unregister()", registration);
+            await Page.EvaluateExpressionAsync("window.registrationPromise.then(registration => registration.unregister())");
             Assert.Equal(createdTarget, await targetDestroyedTaskCompletion.Task);
         }
 
@@ -132,7 +144,7 @@ namespace PuppeteerSharp.Tests.TargetTests
         public async Task ShouldNotReportUninitializedPages()
         {
             var targetChanged = false;
-            EventHandler<TargetChangedArgs> listener = (sender, e) => targetChanged = true;
+            void listener(object sender, TargetChangedArgs e) => targetChanged = true;
             Browser.TargetChanged += listener;
             var targetCompletionTask = new TaskCompletionSource<Target>();
             void TargetCreatedEventHandler(object sender, TargetChangedArgs e)
@@ -175,7 +187,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             serverResponse.Redirect("/injectedstyle.css");
             serverResponseEnd.SetResult(true);
             // Wait for the new page to load.            
-            await WaitForEvents(newPage.Client, "Page.loadEventFired");
+            await WaitEvent(newPage.Client, "Page.loadEventFired");
             // Cleanup.
             await newPage.CloseAsync();
         }

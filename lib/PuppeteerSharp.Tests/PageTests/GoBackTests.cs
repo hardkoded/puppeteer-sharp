@@ -1,11 +1,16 @@
 ﻿using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class GoBackTests : PuppeteerPageBaseTest
     {
+        public GoBackTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
         public async Task ShouldWork()
         {
@@ -22,6 +27,24 @@ namespace PuppeteerSharp.Tests.PageTests
 
             response = await Page.GoForwardAsync();
             Assert.Null(response);
+        }
+
+        [Fact]
+        public async Task ShouldWorkWithHistoryAPI()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.EvaluateExpressionAsync(@"
+              history.pushState({ }, '', '/first.html');
+              history.pushState({ }, '', '/second.html');
+            ");
+            Assert.Equal(TestConstants.ServerUrl + "/second.html", Page.Url);
+
+            await Page.GoBackAsync();
+            Assert.Equal(TestConstants.ServerUrl + "/first.html", Page.Url);
+            await Page.GoBackAsync();
+            Assert.Equal(TestConstants.EmptyPage, Page.Url);
+            await Page.GoForwardAsync();
+            Assert.Equal(TestConstants.ServerUrl + "/first.html", Page.Url);
         }
     }
 }

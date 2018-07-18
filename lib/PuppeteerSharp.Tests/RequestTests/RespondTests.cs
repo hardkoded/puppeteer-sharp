@@ -3,12 +3,17 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.RequestTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class RespondTests : PuppeteerPageBaseTest
     {
+        public RespondTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
         public async Task ShouldWork()
         {

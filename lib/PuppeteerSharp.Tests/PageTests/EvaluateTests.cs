@@ -2,12 +2,17 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class EvaluateTests : PuppeteerPageBaseTest
     {
+        public EvaluateTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Theory]
         [InlineData("1 + 5;", 6)] //ShouldAcceptSemiColons
         [InlineData("2 + 5\n// do some math!'", 7)] //ShouldAceptStringComments
@@ -76,7 +81,10 @@ namespace PuppeteerSharp.Tests.PageTests
         [Fact]
         public async Task ShouldAcceptNullAsOneOfMultipleParameters()
         {
-            bool result = await Page.EvaluateFunctionAsync<bool>("(a, b) => Object.is(a, null) && Object.is(b, 'foo')", null, "foo");
+            var result = await Page.EvaluateFunctionAsync<bool>(
+                "(a, b) => Object.is(a, null) && Object.is(b, 'foo')",
+                null,
+                "foo");
             Assert.True(result);
         }
 
@@ -96,19 +104,12 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Fact]
-        public async Task ShouldFailForWindowObjectUsingEvaluateExpression()
+        public async Task ShouldReturnNullForNonSerializableObjects()
         {
-            var window = await Page.EvaluateExpressionAsync("window");
-            Assert.Null(window);
+            Assert.Null(await Page.EvaluateFunctionAsync("() => window"));
+            Assert.Null(await Page.EvaluateFunctionAsync("() => [Symbol('foo4')]"));
         }
 
-        [Fact]
-        public async Task ShouldFailForWindowObjectUsingEvaluateFunction()
-        {
-            var window = await Page.EvaluateFunctionAsync("() => window");
-            Assert.Null(window);
-        }
-        
         [Fact]
         public async Task ShouldAcceptElementHandleAsAnArgument()
         {
@@ -167,6 +168,35 @@ namespace PuppeteerSharp.Tests.PageTests
                 return await callController(9, 3);
             }");
             Assert.Equal(27, result);
+        }
+
+        [Fact]
+        public async Task ShouldThrowWhenEvaluationTriggersReload()
+        {
+            var exception = await Assert.ThrowsAsync<MessageException>(() =>
+            {
+                return Page.EvaluateFunctionAsync<object>(@"() => {
+                    location.reload();
+                    return new Promise(resolve => {
+                        setTimeout(() => resolve(1), 0);
+                    });
+                }");
+            });
+
+            Assert.Contains("Protocol error", exception.Message);
+        }
+
+        [Fact]
+        public async Task ShouldFailForCircularObject()
+        {
+            var result = await Page.EvaluateFunctionAsync<object>(@"() => {
+                const a = {};
+                const b = {a};
+                a.b = b;
+                return a;
+            }");
+
+            Assert.Null(result);
         }
     }
 }

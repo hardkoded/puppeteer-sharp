@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
@@ -19,45 +20,107 @@ namespace PuppeteerSharp
     public class Request : Payload
     {
         #region Private Members
-        private readonly Session _client;
-
-        private bool _allowInterception;
+        private readonly CDPSession _client;
+        private readonly bool _allowInterception;
+        private readonly ILogger _logger;
         private bool _interceptionHandled;
-
         #endregion
 
-        public Request(Session client, string requestId, string interceptionId, bool allowInterception, string url,
-                      ResourceType resourceType, Payload payload, Frame frame)
+        internal Request()
+        {
+        }
+        internal Request(
+            CDPSession client,
+            string requestId,
+            string interceptionId,
+            bool allowInterception,
+            string url,
+            ResourceType resourceType,
+            Payload payload,
+            Frame frame,
+            List<Request> redirectChain)
         {
             _client = client;
-            RequestId = requestId;
-            InterceptionId = interceptionId;
             _allowInterception = allowInterception;
             _interceptionHandled = false;
+            _logger = _client.Connection.LoggerFactory.CreateLogger<Request>();
+
+            RequestId = requestId;
+            InterceptionId = interceptionId;
             Url = url;
             ResourceType = resourceType;
             Method = payload.Method;
             PostData = payload.PostData;
             Frame = frame;
+            RedirectChainList = redirectChain;
 
             Headers = new Dictionary<string, object>();
-            foreach (KeyValuePair<string, object> keyValue in payload.Headers)
+            foreach (var keyValue in payload.Headers)
             {
                 Headers[keyValue.Key] = keyValue.Value;
             }
 
-            CompleteTaskWrapper = new TaskCompletionSource<bool>();
+            FromMemoryCache = false;
         }
 
         #region Properties
-        public Response Response { get; set; }
-        public string Failure { get; set; }
+        /// <summary>
+        /// Responsed attached to the request.
+        /// </summary>
+        /// <value>The response.</value>
+        public Response Response { get; internal set; }
+        /// <summary>
+        /// Gets or sets the failure.
+        /// </summary>
+        /// <value>The failure.</value>
+        public string Failure { get; internal set; }
+        /// <summary>
+        /// Gets or sets the request identifier.
+        /// </summary>
+        /// <value>The request identifier.</value>
         public string RequestId { get; internal set; }
+        /// <summary>
+        /// Gets or sets the interception identifier.
+        /// </summary>
+        /// <value>The interception identifier.</value>
         public string InterceptionId { get; internal set; }
+        /// <summary>
+        /// Gets or sets the type of the resource.
+        /// </summary>
+        /// <value>The type of the resource.</value>
         public ResourceType ResourceType { get; internal set; }
-        public Task<bool> CompleteTask => CompleteTaskWrapper.Task;
-        public TaskCompletionSource<bool> CompleteTaskWrapper { get; internal set; }
+        /// <summary>
+        /// Gets the frame.
+        /// </summary>
+        /// <value>The frame.</value>
         public Frame Frame { get; }
+
+        /// <summary>
+        /// A redirectChain is a chain of requests initiated to fetch a resource.
+        /// If there are no redirects and the request was successful, the chain will be empty.
+        /// If a server responds with at least a single redirect, then the chain will contain all the requests that were redirected.
+        /// redirectChain is shared between all the requests of the same chain.
+        /// </summary>
+        /// <example>
+        /// For example, if the website http://example.com has a single redirect to https://example.com, then the chain will contain one request:
+        /// <code>
+        /// var response = await page.GoToAsync("http://example.com");
+        /// var chain = response.Request.RedirectChain;
+        /// Console.WriteLine(chain.Length); // 1
+        /// Console.WriteLine(chain[0].Url); // 'http://example.com'
+        /// </code>
+        /// If the website https://google.com has no redirects, then the chain will be empty:
+        /// <code>
+        /// var response = await page.GoToAsync("https://google.com");
+        /// var chain = response.Request.RedirectChain;
+        /// Console.WriteLine(chain.Length); // 0
+        /// </code>
+        /// </example>
+        /// <value>The redirect chain.</value>
+        public Request[] RedirectChain => RedirectChainList.ToArray();
+
+        internal bool FromMemoryCache { get; set; }
+        internal List<Request> RedirectChainList { get; }
         #endregion
 
         #region Public Methods
@@ -83,18 +146,33 @@ namespace PuppeteerSharp
             try
             {
                 var requestData = new Dictionary<string, object> { ["interceptionId"] = InterceptionId };
-                if (overrides?.Url != null) requestData["url"] = overrides.Url;
-                if (overrides?.Method != null) requestData["method"] = overrides.Method;
-                if (overrides?.PostData != null) requestData["postData"] = overrides.PostData;
-                if (overrides?.Headers != null) requestData["headers"] = overrides.Headers;
+                if (overrides?.Url != null)
+                {
+                    requestData["url"] = overrides.Url;
+                }
+
+                if (overrides?.Method != null)
+                {
+                    requestData["method"] = overrides.Method;
+                }
+
+                if (overrides?.PostData != null)
+                {
+                    requestData["postData"] = overrides.PostData;
+                }
+
+                if (overrides?.Headers != null)
+                {
+                    requestData["headers"] = overrides.Headers;
+                }
 
                 await _client.SendAsync("Network.continueInterceptedRequest", requestData);
             }
-            catch (Exception)
+            catch (PuppeteerException ex)
             {
                 // In certain cases, protocol will return error if the request was already canceled
                 // or the page was closed. We should tolerate these errors
-                //TODO: Choose log mechanism
+                _logger.LogError(ex.ToString());
             }
         }
 
@@ -170,11 +248,11 @@ namespace PuppeteerSharp
                     {"rawResponse", Convert.ToBase64String(responseData)}
                 });
             }
-            catch (Exception)
+            catch (PuppeteerException ex)
             {
                 // In certain cases, protocol will return error if the request was already canceled
                 // or the page was closed. We should tolerate these errors
-                //TODO: Choose log mechanism
+                _logger.LogError(ex.ToString());
             }
         }
 
@@ -207,11 +285,11 @@ namespace PuppeteerSharp
                     {"errorReason", errorReason}
                 });
             }
-            catch (Exception)
+            catch (PuppeteerException ex)
             {
                 // In certain cases, protocol will return error if the request was already canceled
                 // or the page was closed. We should tolerate these errors
-                //TODO: Choose log mechanism
+                _logger.LogError(ex.ToString());
             }
         }
         #endregion

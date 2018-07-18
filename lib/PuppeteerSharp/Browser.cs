@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
@@ -14,7 +16,7 @@ namespace PuppeteerSharp
     /// An example of using a <see cref="Browser"/> to create a <see cref="Page"/>:
     /// <code>
     /// <![CDATA[
-    /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions(), Downloader.DefaultRevision);
+    /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions());
     /// var page = await browser.NewPageAsync();
     /// await page.GoToAsync("https://example.com");
     /// await browser.CloseAsync();
@@ -23,7 +25,7 @@ namespace PuppeteerSharp
     /// An example of disconnecting from and reconnecting to a <see cref="Browser"/>:
     /// <code>
     /// <![CDATA[
-    /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions(), Downloader.DefaultRevision);
+    /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions());
     /// var browserWSEndpoint = browser.WebSocketEndpoint;
     /// browser.Disconnect();
     /// var browser2 = await Puppeteer.ConnectAsync(new ConnectOptions { BrowserWSEndpoint = browserWSEndpoint });
@@ -53,11 +55,13 @@ namespace PuppeteerSharp
             Connection.MessageReceived += Connect_MessageReceived;
 
             _closeCallBack = closeCallBack;
+            _logger = Connection.LoggerFactory.CreateLogger<Browser>();
         }
 
         #region Private members
         private readonly Dictionary<string, Target> _targets;
         private readonly Func<Task> _closeCallBack;
+        private readonly ILogger<Browser> _logger;
         #endregion
 
         #region Properties
@@ -87,13 +91,13 @@ namespace PuppeteerSharp
         /// <summary>
         /// Raised when a target is destroyed, for example when a page is closed
         /// </summary>
-        public event EventHandler<TargetChangedArgs> TargetDestroyed;        
+        public event EventHandler<TargetChangedArgs> TargetDestroyed;
 
         /// <summary>
         /// Gets the Browser websocket url
         /// </summary>
         /// <remarks>
-        /// Browser websocket endpoint which can be used as an argument to <see cref="Puppeteer.ConnectAsync(ConnectOptions)"/>.
+        /// Browser websocket endpoint which can be used as an argument to <see cref="Puppeteer.ConnectAsync(ConnectOptions, ILoggerFactory)"/>.
         /// The format is <c>ws://${host}:${port}/devtools/browser/[id]</c>
         /// You can find the <c>webSocketDebuggerUrl</c> from <c>http://${host}:${port}/json/version</c>.
         /// Learn more about the devtools protocol <see href="https://chromedevtools.github.io/devtools-protocol"/> 
@@ -102,7 +106,7 @@ namespace PuppeteerSharp
         public string WebSocketEndpoint => Connection.Url;
 
         /// <summary>
-        /// Gets the spawned browser process. Returns <c>null</c> if the browser instance was created with <see cref="Puppeteer.ConnectAsync(ConnectOptions)"/> method.
+        /// Gets the spawned browser process. Returns <c>null</c> if the browser instance was created with <see cref="Puppeteer.ConnectAsync(ConnectOptions, ILoggerFactory)"/> method.
         /// </summary>
         public Process Process { get; }
 
@@ -134,9 +138,10 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to a new <see cref="Page"/> object</returns>
         public async Task<Page> NewPageAsync()
         {
-            string targetId = (await Connection.SendAsync("Target.createTarget", new Dictionary<string, object>(){
-                {"url", "about:blank"}
-              })).targetId.ToString();
+            string targetId = (await Connection.SendAsync("Target.createTarget", new Dictionary<string, object>
+            {
+                ["url"] = "about:blank"
+            })).targetId.ToString();
 
             var target = _targets[targetId];
             await target.InitializedTask;
@@ -155,7 +160,7 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to an array of all open pages.</returns>
         public async Task<Page[]> PagesAsync()
             => (await Task.WhenAll(Targets().Select(target => target.PageAsync()))).Where(x => x != null).ToArray();
-        
+
         /// <summary>
         /// Gets the browser's version
         /// </summary>
@@ -216,73 +221,78 @@ namespace PuppeteerSharp
 
         #region Private Methods
 
-        internal void ChangeTarget(Target target)
+        internal void ChangeTarget(Target target) => TargetChanged?.Invoke(this, new TargetChangedArgs
         {
-            TargetChanged?.Invoke(this, new TargetChangedArgs
-            {
-                Target = target
-            });
-        }
+            Target = target
+        });
 
-        private async void Connect_MessageReceived(object sender, MessageEventArgs args)
+        private async void Connect_MessageReceived(object sender, MessageEventArgs e)
         {
-            switch (args.MessageID)
+            switch (e.MessageID)
             {
                 case "Target.targetCreated":
-                    await CreateTarget(args);
+                    await CreateTargetAsync(e.MessageData.ToObject<TargetCreatedResponse>());
                     return;
 
                 case "Target.targetDestroyed":
-                    DestroyTarget(args);
+                    await DestroyTargetAsync(e.MessageData.ToObject<TargetDestroyedResponse>());
                     return;
 
                 case "Target.targetInfoChanged":
-                    ChangeTargetInfo(args);
+                    ChangeTargetInfo(e.MessageData.ToObject<TargetCreatedResponse>());
                     return;
             }
         }
 
-        private void ChangeTargetInfo(MessageEventArgs args)
+        private void ChangeTargetInfo(TargetCreatedResponse e)
         {
-            if (!_targets.ContainsKey(args.MessageData.targetInfo.targetId.Value))
+            if (!_targets.ContainsKey(e.TargetInfo.TargetId))
             {
                 throw new InvalidTargetException("Target should exists before ChangeTargetInfo");
             }
 
-            string targetId = args.MessageData.targetInfo.targetId.Value;
-            var target = _targets[targetId];
-            target.TargetInfoChanged(new TargetInfo(args.MessageData.targetInfo));
+            var target = _targets[e.TargetInfo.TargetId];
+            target.TargetInfoChanged(e.TargetInfo);
         }
 
-        private void DestroyTarget(MessageEventArgs args)
+        private async Task DestroyTargetAsync(TargetDestroyedResponse e)
         {
-            if (!_targets.ContainsKey(args.MessageData.targetId.ToString()))
+            if (!_targets.ContainsKey(e.TargetId))
             {
                 throw new InvalidTargetException("Target should exists before DestroyTarget");
             }
 
-            var target = _targets[args.MessageData.targetId.ToString()];
-            if (!target.InitilizedTaskWrapper.Task.IsCompleted)
-            {
-                target.InitilizedTaskWrapper.SetResult(false);
-            }
-            _targets.Remove(args.MessageData.targetId.ToString());
+            var target = _targets[e.TargetId];
+            _targets.Remove(e.TargetId);
 
-            TargetDestroyed?.Invoke(this, new TargetChangedArgs()
-            {
-                Target = target
-            });
-        }
-
-        private async Task CreateTarget(MessageEventArgs args)
-        {
-            var targetInfo = new TargetInfo(args.MessageData.targetInfo);
-            var target = new Target(this, targetInfo);
-            _targets[targetInfo.TargetId] = target;
+            target.CloseTaskWrapper.TrySetResult(true);
 
             if (await target.InitializedTask)
             {
-                TargetCreated?.Invoke(this, new TargetChangedArgs()
+                TargetDestroyed?.Invoke(this, new TargetChangedArgs
+                {
+                    Target = target
+                });
+            }
+        }
+
+        private async Task CreateTargetAsync(TargetCreatedResponse e)
+        {
+            var target = new Target(
+                e.TargetInfo,
+                () => Connection.CreateSessionAsync(e.TargetInfo.TargetId),
+                this);
+
+            if (_targets.ContainsKey(e.TargetInfo.TargetId))
+            {
+                _logger.LogError("Target should not exist before targetCreated");
+            }
+
+            _targets[e.TargetInfo.TargetId] = target;
+
+            if (await target.InitializedTask)
+            {
+                TargetCreated?.Invoke(this, new TargetChangedArgs
                 {
                     Target = target
                 });
@@ -290,7 +300,10 @@ namespace PuppeteerSharp
         }
 
         internal static async Task<Browser> CreateAsync(
-            Connection connection, IBrowserOptions options, Process process, Func<Task> closeCallBack)
+            Connection connection,
+            IBrowserOptions options,
+            Process process,
+            Func<Task> closeCallBack)
         {
             var browser = new Browser(connection, options, process, closeCallBack);
             await connection.SendAsync("Target.setDiscoverTargets", new
@@ -300,15 +313,11 @@ namespace PuppeteerSharp
 
             return browser;
         }
-
         #endregion
 
         #region IDisposable
         /// <inheritdoc />
-        public void Dispose()
-        {
-            CloseAsync().GetAwaiter().GetResult();
-        }
+        public void Dispose() => CloseAsync().GetAwaiter().GetResult();
         #endregion
     }
 }

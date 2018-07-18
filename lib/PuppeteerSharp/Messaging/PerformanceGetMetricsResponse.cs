@@ -4,9 +4,9 @@ using Newtonsoft.Json;
 
 namespace PuppeteerSharp.Messaging
 {
-    public class PerformanceGetMetricsResponse
+    internal class PerformanceGetMetricsResponse
     {
         [JsonProperty("metrics")]
-        public List<Metric> Metrics { get; set; }
+        internal List<Metric> Metrics { get; set; }
     }
 }

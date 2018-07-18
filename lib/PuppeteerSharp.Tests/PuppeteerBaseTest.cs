@@ -1,7 +1,7 @@
 ﻿using PuppeteerSharp.TestServer;
-using System;
 using System.IO;
 using System.Threading.Tasks;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests
 {
@@ -12,8 +12,10 @@ namespace PuppeteerSharp.Tests
         protected SimpleServer Server => PuppeteerLoaderFixture.Server;
         protected SimpleServer HttpsServer => PuppeteerLoaderFixture.HttpsServer;
 
-        public PuppeteerBaseTest()
+        public PuppeteerBaseTest(ITestOutputHelper output)
         {
+            TestConstants.SetupLogging(output);
+
             BaseDirectory = Path.Combine(Directory.GetCurrentDirectory(), "workspace");
             var dirInfo = new DirectoryInfo(BaseDirectory);
 
@@ -31,7 +33,7 @@ namespace PuppeteerSharp.Tests
             HttpsServer.Reset();
         }
 
-        protected static Task<dynamic> WaitForEvents(Session emitter, string eventName, int eventCount = 1)
+        protected static Task<dynamic> WaitEvent(CDPSession emitter, string eventName)
         {
             var completion = new TaskCompletionSource<dynamic>();
             void handler(object sender, MessageEventArgs e)
@@ -40,20 +42,19 @@ namespace PuppeteerSharp.Tests
                 {
                     return;
                 }
-
-                --eventCount;
-                if (eventCount > 0)
-                {
-                    return;
-                }
-
                 emitter.MessageReceived -= handler;
                 completion.SetResult(e.MessageData);
             }
 
             emitter.MessageReceived += handler;
-
             return completion.Task;
+        }
+
+        protected static Task WaitForBrowserDisconnect(Browser browser)
+        {
+            var disconnectedTask = new TaskCompletionSource<bool>();
+            browser.Disconnected += (sender, e) => disconnectedTask.TrySetResult(true);
+            return disconnectedTask.Task;
         }
     }
 }

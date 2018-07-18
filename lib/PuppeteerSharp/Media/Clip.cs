@@ -3,6 +3,11 @@ using Newtonsoft.Json;
 
 namespace PuppeteerSharp.Media
 {
+    /// <summary>
+    /// Clip data.
+    /// </summary>
+    /// <seealso cref="BoundingBox.ToClip"/>
+    /// <seealso cref="ScreenshotOptions.Clip"/>
     public class Clip
     {
         /// <summary>

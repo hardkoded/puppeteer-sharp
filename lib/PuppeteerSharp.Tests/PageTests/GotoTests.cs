@@ -1,15 +1,21 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class GotoTests : PuppeteerPageBaseTest
     {
+        public GotoTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
         public async Task ShouldNavigateToAboutBlank()
         {
@@ -17,8 +23,18 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Null(response);
         }
 
+        [Fact]
+        public async Task ShouldNavigateToEmptyPageWithDOMContentLoaded()
+        {
+            var response = await Page.GoToAsync(TestConstants.EmptyPage, waitUntil: new[]
+            {
+                WaitUntilNavigation.DOMContentLoaded
+            });
+            Assert.Equal(HttpStatusCode.OK, response.Status);
+            Assert.Null(response.SecurityDetails);
+        }
+
         [Theory]
-        [InlineData(WaitUntilNavigation.DOMContentLoaded)]
         [InlineData(WaitUntilNavigation.Networkidle0)]
         [InlineData(WaitUntilNavigation.Networkidle2)]
         public async Task ShouldNavigateToEmptyPage(WaitUntilNavigation waitUntil)
@@ -237,6 +253,33 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(TestConstants.EmptyPage, response.Url);
             Assert.Single(requests);
             Assert.Equal(TestConstants.EmptyPage, requests[0].Url);
+        }
+
+        [Fact]
+        public async Task ShouldWorkWithSelfRequestingPage()
+        {
+            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/self-request.html");
+            Assert.Equal(HttpStatusCode.OK, response.Status);
+            Assert.Contains("self-request.html", response.Url);
+        }
+
+        [Fact]
+        public async Task ShouldFailWhenNavigatingAndShowTheUrlAtTheErrorMessage()
+        {
+            var url = TestConstants.HttpsPrefix + "/redirect/1.html";
+            var exception = await Assert.ThrowsAnyAsync<NavigationException>(async () => await Page.GoToAsync(url));
+            Assert.Contains(url, exception.Message);
+            Assert.Contains(url, exception.Url);
+        }
+
+        [Fact]
+        public async Task ResponseOkShouldBeTrueForFile()
+        {
+            var fileToNavigate = Path.Combine(Directory.GetCurrentDirectory(), Path.Combine("assets", "file-to-upload.txt"));
+            var url = new Uri(fileToNavigate).AbsoluteUri;
+
+            var response = await Page.GoToAsync(url);
+            Assert.True(response.Ok);
         }
     }
 }

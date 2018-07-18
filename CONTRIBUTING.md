@@ -24,7 +24,7 @@ Get-ChildItem -Path cert:\CurrentUSer\my | where { $_.friendlyname -eq "Puppetee
 
 ```
 
-On MacOS, you can create an “SSL Client” certificate using the Keychain Access app and then export it to `.\lib\PuppeteerSharp.TestServer\testCert.cer`
+On MacOS, you can create an “SSL Server” certificate using the Keychain Access app and then export it to `.\lib\PuppeteerSharp.TestServer\testCert.cer`
 
 
 ## Code reviews

@@ -1,23 +1,33 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+
 namespace PuppeteerSharp
 {
+    /// <summary>
+    /// Target info.
+    /// </summary>
     public class TargetInfo
     {
-        public TargetInfo()
+        internal TargetInfo()
         {
         }
 
-        public TargetInfo(dynamic targetInfo)
-        {
-            Type = targetInfo.type;
-            Url = targetInfo.url;
-            TargetId = targetInfo.targetId;
-            SourceObject = targetInfo;
-        }
-
-        public string Type { get; internal set; }
+        /// <summary>
+        /// Gets or sets the type.
+        /// </summary>
+        /// <value>The type.</value>
+        [JsonProperty("type")]
+        public TargetType Type { get; internal set; }
+        /// <summary>
+        /// Gets or sets the URL.
+        /// </summary>
+        /// <value>The URL.</value>
+        [JsonProperty("url")]
         public string Url { get; internal set; }
+        /// <summary>
+        /// Gets or sets the target identifier.
+        /// </summary>
+        /// <value>The target identifier.</value>
+        [JsonProperty("targetId")]
         public string TargetId { get; internal set; }
-        public dynamic SourceObject { get; private set; }
     }
 }

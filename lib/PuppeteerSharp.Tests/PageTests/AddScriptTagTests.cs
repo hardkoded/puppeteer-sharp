@@ -2,12 +2,17 @@
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class AddScriptTagTests : PuppeteerPageBaseTest
     {
+        public AddScriptTagTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
         public async Task ShouldThrowAnErrorIfNoOptionsAreProvided()
         {
@@ -23,6 +28,40 @@ namespace PuppeteerSharp.Tests.PageTests
             var scriptHandle = await Page.AddScriptTagAsync(new AddTagOptions { Url = "/injectedfile.js" });
             Assert.NotNull(scriptHandle as ElementHandle);
             Assert.Equal(42, await Page.EvaluateExpressionAsync<int>("__injected"));
+        }
+
+        [Fact]
+        public async Task ShouldWorkWithAUrlAndTypeModule()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.AddScriptTagAsync(new AddTagOptions { Url = "/es6/es6import.js", Type = "module" });
+            Assert.Equal(42, await Page.EvaluateExpressionAsync<int>("__es6injected"));
+        }
+
+        [Fact]
+        public async Task ShouldWorkWithAPathAndTypeModule()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.AddScriptTagAsync(new AddTagOptions
+            {
+                Path = Path.Combine(Directory.GetCurrentDirectory(), Path.Combine("assets", "es6", "es6pathimport.js")),
+                Type = "module"
+            });
+            await Page.WaitForFunctionAsync("() => window.__es6injected");
+            Assert.Equal(42, await Page.EvaluateExpressionAsync<int>("__es6injected"));
+        }
+
+        [Fact]
+        public async Task ShouldWorkWithAContentAndTypeModule()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.AddScriptTagAsync(new AddTagOptions
+            {
+                Content = "import num from '/es6/es6module.js'; window.__es6injected = num;",
+                Type = "module"
+            });
+            await Page.WaitForFunctionAsync("() => window.__es6injected");
+            Assert.Equal(42, await Page.EvaluateExpressionAsync<int>("__es6injected"));
         }
 
         [Fact]
@@ -65,6 +104,30 @@ namespace PuppeteerSharp.Tests.PageTests
             var scriptHandle = await Page.AddScriptTagAsync(new AddTagOptions { Content = "window.__injected = 35;" });
             Assert.NotNull(scriptHandle as ElementHandle);
             Assert.Equal(35, await Page.EvaluateExpressionAsync<int>("__injected"));
+        }
+
+        [Fact]
+        public async Task ShouldThrowWhenAddedWithContentToTheCSPPage()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/csp.html");
+            var exception = await Assert.ThrowsAsync<EvaluationFailedException>(
+                () => Page.AddScriptTagAsync(new AddTagOptions
+                {
+                    Content = "window.__injected = 35;"
+                }));
+            Assert.NotNull(exception);
+        }
+
+        [Fact]
+        public async Task ShouldThrowWhenAddedWithURLToTheCSPPage()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/csp.html");
+            var exception = await Assert.ThrowsAsync<PuppeteerException>(
+                () => Page.AddScriptTagAsync(new AddTagOptions
+                {
+                    Url = TestConstants.CrossProcessUrl + "/injectedfile.js"
+                }));
+            Assert.NotNull(exception);
         }
     }
 }

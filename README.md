@@ -1,25 +1,35 @@
 # Puppeteer Sharp
 
-[![NuGet](https://img.shields.io/nuget/v/PuppeteerSharp.svg?style=flat-square&label=nuget&colorB=green)][NugetUrl]
+[![NuGet](https://buildstats.info/nuget/PuppeteerSharp)][NugetUrl]
 [![Build status](https://ci.appveyor.com/api/projects/status/pwfkjb0c4jfdo7lc/branch/master?svg=true&pendingText=master&failingText=master&passingText=master)][BuildUrl]
 [![Demo build status](https://ci.appveyor.com/api/projects/status/10g64a4aa0083wgf/branch/master?svg=true&pendingText=demo&failingText=demo&passingText=demo)][BuildDemoUrl]
+[![CodeFactor](https://www.codefactor.io/repository/github/ninetaillabs/varaniumsharp.initiator/badge)][CodeFactorUrl]
 
 [NugetUrl]: https://www.nuget.org/packages/PuppeteerSharp/
 [BuildUrl]: https://ci.appveyor.com/project/kblok/puppeteer-sharp/branch/master
 [BuildDemoUrl]: https://ci.appveyor.com/project/kblok/puppeteer-sharp-0c8w9/branch/master
+[CodeFactorUrl]: https://www.codefactor.io/repository/github/kblok/puppeteer-sharp
 
 Puppeteer Sharp is a .NET port of the official [Node.JS Puppeteer API](https://github.com/GoogleChrome/puppeteer). 
+
+# Useful links
+
+* [API Documentation](http://www.puppeteersharp.com/api/index.html)
+* Slack channel [#puppeteer-sharp](https://join.slack.com/t/puppeteer/shared_invite/enQtMzU4MjIyMDA5NTM4LTM1OTdkNDhlM2Y4ZGUzZDdjYjM5ZWZlZGFiZjc4MTkyYTVlYzIzYjU5NDIyNzgyMmFiNDFjN2UzNWU0N2ZhZDc)
+* [StackOverflow](https://stackoverflow.com/search?q=puppeteer-sharp)
+* [Issues](https://github.com/kblok/puppeteer-sharp/issues?utf8=%E2%9C%93&q=is%3Aissue)
+
 
 # Usage
 
 ## Take screenshots
 
 ```cs
-await Downloader.CreateDefault().DownloadRevisionAsync(chromiumRevision);
+await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
 var browser = await Puppeteer.LaunchAsync(new LaunchOptions
 {
     Headless = true
-}, chromiumRevision);
+});
 var page = await browser.NewPageAsync();
 await page.GoToAsync("http://www.google.com");
 await page.ScreenshotAsync(outputFile);
@@ -40,11 +50,11 @@ await page.SetViewport(new ViewPortOptions
 ## Generate PDF files
 
 ```cs
-await Downloader.CreateDefault().DownloadRevisionAsync(chromiumRevision);
+await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
 var browser = await Puppeteer.LaunchAsync(new LaunchOptions
 {
     Headless = true
-}, chromiumRevision);
+});
 var page = await browser.NewPageAsync();
 await page.GoToAsync("http://www.google.com");
 await page.PdfAsync(outputFile);
@@ -116,56 +126,15 @@ using (var browser = await PuppeteerSharp.Puppeteer.ConnectAsync(options))
 ```
 
 # Monthly reports
+ * [July 2018](https://www.hardkoded.com/blog/puppeteer-sharp-monthly-jul-2018)
+ * [June 2018](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-jun-2018)
  * [May 2018](http://www.hardkoded.com/blogs/puppeteer-sharp-monthly-may-2018)
  * [April 2018](http://www.hardkoded.com/blogs/puppeteer-sharp-monthly-april-2018)
  * [March 2018](http://www.hardkoded.com/blogs/puppeteer-sharp-monthly-march-2018)
  * [February 2018](http://www.hardkoded.com/blogs/puppeteer-sharp-monthly-february-2018)
 
-# Roadmap
-Getting to all the 523 tests Puppeteer has, will be a long and fun journey. So, this will be the roadmap for Puppeteer Sharp 1.0:
-
-## 0.1 First Minimum Viable Product
-The first 0.1 will include:
-* Browser download
-* Basic browser operations: create a browser, a page and navigate a page.
-* Take screenshots.
-* Print to PDF.
-
-## 0.2 Repository cleanup
-This version won't include a new version. It will be about improving the repository:
-
-* Setup CI.
-* Create basic documentation (Readme, contributing, code of conduct).
-
-## 0.3 Puppeteer
-It will implement all [Puppeteer related tests](https://github.com/GoogleChrome/puppeteer/blob/master/test/test.js#L108).
-
-## 0.4 Page
-It will implement all Page tests except the ones testing the evaluate method.
-As this will be quite a big version, I think we will publish many 0.3.X versions before 0.4.
-
-## 0.5 Frames
-It will implement all Frame tests.
-
-## 0.6 Simple interactions
-It will implement all tests related to setting values to inputs and clicking on elements.
-
-## 0.7 Page Improvements
-It will implement all missing Page tests.
-
-## 0.8 Element Handle and JS Handle
-It will implement all tests releated to Element handles and JS handles.
-
-## 0.X Intermediate versions
-At this point, We will have implemented most features, except the ones which are javascript related.
-I believe there will be many versions between 0.6 and 1.0.
-
-## 1.0 Puppeteer the world!
-The 1.0 version will have all (or most) Puppeteer features implemented. I don't know if we'll be able to cover 100% of Puppeteer features, due to differences between both technologies, but we'll do our best.
-
 # Progress
 
-* Tests on Google's Puppeteer: 405.
-* Tests on Puppeteer Sharp: 322.
-* Passing tests: 319.
-
+* Tests on Google's Puppeteer: 445.
+* Tests on Puppeteer Sharp: 363.
+* Passing tests: 362.

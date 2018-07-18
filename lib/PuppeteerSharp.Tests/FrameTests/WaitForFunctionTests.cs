@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.FrameTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class WaitForFunctionTests : PuppeteerPageBaseTest
     {
+        public WaitForFunctionTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
         public async Task ShouldPollOnInterval()
         {
@@ -45,6 +50,19 @@ namespace PuppeteerSharp.Tests.FrameTests
         }
 
         [Fact]
+        public async Task ShouldWorkWithStrictCSPPolicy()
+        {
+            Server.SetCSP("/empty.html", "script-src " + TestConstants.ServerUrl);
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var watchdog = Page.WaitForFunctionAsync("() => window.__FOO === 'hit'", new WaitForFunctionOptions
+            {
+                Polling = WaitForFunctionPollingOption.Raf
+            });
+            await Page.EvaluateExpressionAsync("window.__FOO = 'hit'");
+            await watchdog;
+        }
+
+        [Fact]
         public async Task ShouldThrowNegativePollingInterval()
         {
             var exception = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(()
@@ -76,6 +94,24 @@ namespace PuppeteerSharp.Tests.FrameTests
             Assert.False(resolved);
             await Page.EvaluateFunctionAsync("element => element.remove()", div);
             await waitForFunction;
+        }
+
+        [Fact]
+        public async Task ShouldRespectTimeout()
+        {
+            var exception = await Assert.ThrowsAsync<WaitTaskTimeoutException>(()
+                => Page.WaitForExpressionAsync("false", new WaitForFunctionOptions { Timeout = 10 }));
+
+            Assert.Contains("waiting for function failed: timeout", exception.Message);
+        }
+
+        [Fact]
+        public async Task ShouldDisableTimeoutWhenItsSetTo0()
+        {
+            var handle = await Page.WaitForFunctionAsync(
+                "() => new Promise(res => setTimeout(() => res(42), 100))",
+                new WaitForFunctionOptions { Timeout = 0 });
+            Assert.Equal(42, await handle.JsonValueAsync<int>());
         }
     }
 }

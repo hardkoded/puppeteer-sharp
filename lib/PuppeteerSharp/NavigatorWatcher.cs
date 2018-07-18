@@ -18,12 +18,14 @@ namespace PuppeteerSharp
             [WaitUntilNavigation.Networkidle2] = "networkAlmostIdle"
         };
 
-        private FrameManager _frameManager;
-        private Frame _frame;
-        private NavigationOptions _options;
-        private IEnumerable<string> _expectedLifecycle;
-        private int _timeout;
-        private string _initialLoaderId;
+        private readonly FrameManager _frameManager;
+        private readonly Frame _frame;
+        private readonly NavigationOptions _options;
+        private readonly IEnumerable<string> _expectedLifecycle;
+        private readonly int _timeout;
+        private readonly string _initialLoaderId;
+
+        private bool _hasSameDocumentNavigation;
 
         public NavigatorWatcher(FrameManager frameManager, Frame mainFrame, int timeout, NavigationOptions options)
         {
@@ -46,9 +48,11 @@ namespace PuppeteerSharp
             _options = options;
             _initialLoaderId = mainFrame.LoaderId;
             _timeout = timeout;
+            _hasSameDocumentNavigation = false;
 
-            frameManager.LifecycleEvent += FrameManager_LifecycleEvent;
-            frameManager.FrameDetached += FrameManager_LifecycleEvent;
+            frameManager.LifecycleEvent += CheckLifecycleComplete;
+            frameManager.FrameNavigatedWithinDocument += NavigatedWithinDocument;
+            frameManager.FrameDetached += CheckLifecycleComplete;
             LifeCycleCompleteTaskWrapper = new TaskCompletionSource<bool>();
 
             NavigationTask = Task.WhenAny(new[]
@@ -70,17 +74,14 @@ namespace PuppeteerSharp
         #endregion
 
         #region Public methods
-        public void Cancel()
-        {
-            CleanUp();
-        }
+        public void Cancel() => CleanUp();
         #endregion
         #region Private methods
 
-        void FrameManager_LifecycleEvent(object sender, FrameEventArgs e)
+        private void CheckLifecycleComplete(object sender, FrameEventArgs e)
         {
             // We expect navigation to commit.
-            if (_frame.LoaderId == _initialLoaderId)
+            if (_frame.LoaderId == _initialLoaderId && !_hasSameDocumentNavigation)
             {
                 return;
             }
@@ -89,10 +90,17 @@ namespace PuppeteerSharp
                 return;
             }
 
-            if (!LifeCycleCompleteTaskWrapper.Task.IsCompleted)
+            LifeCycleCompleteTaskWrapper.TrySetResult(true);
+        }
+
+        private void NavigatedWithinDocument(object sender, FrameEventArgs e)
+        {
+            if (e.Frame != _frame)
             {
-                LifeCycleCompleteTaskWrapper.SetResult(true);
+                return;
             }
+            _hasSameDocumentNavigation = true;
+            CheckLifecycleComplete(sender, e);
         }
 
         private bool CheckLifecycle(Frame frame, IEnumerable<string> expectedLifecycle)
@@ -116,8 +124,8 @@ namespace PuppeteerSharp
 
         private void CleanUp()
         {
-            _frameManager.LifecycleEvent -= FrameManager_LifecycleEvent;
-            _frameManager.FrameDetached -= FrameManager_LifecycleEvent;
+            _frameManager.LifecycleEvent -= CheckLifecycleComplete;
+            _frameManager.FrameDetached -= CheckLifecycleComplete;
         }
 
         private async Task CreateTimeoutTask()
@@ -131,7 +139,7 @@ namespace PuppeteerSharp
             else
             {
                 await Task.Delay(_timeout);
-                throw new ChromeProcessException($"Navigation Timeout Exceeded: {_timeout}ms exceeded");
+                throw new NavigationException($"Navigation Timeout Exceeded: {_timeout}ms exceeded");
             }
         }
 

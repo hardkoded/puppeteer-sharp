@@ -1,11 +1,16 @@
 ﻿using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class ViewPortTests : PuppeteerPageBaseTest
     {
+        public ViewPortTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
         public async Task ShouldGetTheProperViewPortSize()
         {
@@ -38,11 +43,11 @@ namespace PuppeteerSharp.Tests.PageTests
               let fulfill;
               const promise = new Promise(x => fulfill = x);
               window.ontouchstart = function(e) {
-                fulfill('Recieved touch');
+                fulfill('Received touch');
               };
               window.dispatchEvent(new Event('touchstart'));
 
-              fulfill('Did not recieve touch');
+              fulfill('Did not receive touch');
 
               return promise;
             }";
@@ -52,7 +57,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
             await Page.SetViewportAsync(TestConstants.IPhone.ViewPort);
             Assert.True(await Page.EvaluateExpressionAsync<bool>("'ontouchstart' in window"));
-            Assert.Equal("Recieved touch", await Page.EvaluateFunctionAsync<string>(dispatchTouch));
+            Assert.Equal("Received touch", await Page.EvaluateFunctionAsync<string>(dispatchTouch));
 
             await Page.SetViewportAsync(new ViewPortOptions { Width = 100, Height = 100 });
             Assert.False(await Page.EvaluateExpressionAsync<bool>("'ontouchstart' in window"));

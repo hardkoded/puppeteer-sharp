@@ -3,6 +3,7 @@ using PuppeteerSharp.Input;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.InputTests
 {
@@ -20,6 +21,10 @@ namespace PuppeteerSharp.Tests.InputTests
             };
         }";
 
+        public InputTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
         public async Task ShouldClickTheButton()
         {
@@ -36,13 +41,14 @@ namespace PuppeteerSharp.Tests.InputTests
             await Page.ClickAsync("input#agree");
             Assert.True(await Page.EvaluateExpressionAsync<bool>("result.check"));
             Assert.Equal(new[] {
-               "mouseover",
-               "mouseenter",
-               "mousemove",
-               "mousedown",
-               "mouseup",
-               "click",
-               "change"
+                "mouseover",
+                "mouseenter",
+                "mousemove",
+                "mousedown",
+                "mouseup",
+                "click",
+                "input",
+                "change"
             }, await Page.EvaluateExpressionAsync<string[]>("result.events"));
             await Page.ClickAsync("input#agree");
             Assert.False(await Page.EvaluateExpressionAsync<bool>("result.check"));
@@ -57,6 +63,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.True(await Page.EvaluateExpressionAsync<bool>("result.check"));
             Assert.Equal(new[] {
                 "click",
+                "input",
                 "change"
             }, await Page.EvaluateExpressionAsync<string[]>("result.events"));
             await Page.ClickAsync("label[for=\"agree\"]");
@@ -418,10 +425,19 @@ namespace PuppeteerSharp.Tests.InputTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
             await Page.FocusAsync("textarea");
             await Page.EvaluateExpressionAsync("document.querySelector('textarea').addEventListener('keydown', e => window.lastEvent = e, true)");
-            await Page.Keyboard.DownAsync("a", new DownOptions { Text = "a" });
+            await Page.Keyboard.DownAsync("a");
             Assert.False(await Page.EvaluateExpressionAsync<bool>("window.lastEvent.repeat"));
             await Page.Keyboard.PressAsync("a");
             Assert.True(await Page.EvaluateExpressionAsync<bool>("window.lastEvent.repeat"));
+
+            await Page.Keyboard.DownAsync("b");
+            Assert.False(await Page.EvaluateExpressionAsync<bool>("window.lastEvent.repeat"));
+            await Page.Keyboard.DownAsync("b");
+            Assert.True(await Page.EvaluateExpressionAsync<bool>("window.lastEvent.repeat"));
+
+            await Page.Keyboard.UpAsync("a");
+            await Page.Keyboard.DownAsync("a");
+            Assert.False(await Page.EvaluateExpressionAsync<bool>("window.lastEvent.repeat"));
         }
 
         // @see https://github.com/GoogleChrome/puppeteer/issues/206

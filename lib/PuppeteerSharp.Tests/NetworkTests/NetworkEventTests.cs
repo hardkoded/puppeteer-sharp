@@ -1,16 +1,22 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class NetworkEventTests : PuppeteerPageBaseTest
     {
+        public NetworkEventTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
         public async Task PageEventsRequest()
         {
@@ -47,7 +53,41 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Single(responses);
             Assert.Equal(TestConstants.EmptyPage, responses[0].Url);
             Assert.Equal(HttpStatusCode.OK, responses[0].Status);
+            Assert.False(responses[0].FromCache);
+            Assert.False(responses[0].FromServiceWorker);
             Assert.NotNull(responses[0].Request);
+        }
+
+        [Fact]
+        public async Task ResponseFromCache()
+        {
+            var responses = new Dictionary<string, Response>();
+            Page.Response += (sender, e) => responses[e.Response.Url.Split('/').Last()] = e.Response;
+            await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
+            await Page.ReloadAsync();
+
+            Assert.Equal(2, responses.Count);
+            Assert.Equal(HttpStatusCode.NotModified, responses["one-style.html"].Status);
+            Assert.False(responses["one-style.html"].FromCache);
+            Assert.Equal(HttpStatusCode.OK, responses["one-style.css"].Status);
+            Assert.True(responses["one-style.css"].FromCache);
+        }
+
+        [Fact]
+        public async Task ResponseFromServiceWorker()
+        {
+            var responses = new Dictionary<string, Response>();
+            Page.Response += (sender, e) => responses[e.Response.Url.Split('/').Last()] = e.Response;
+            await Page.GoToAsync(TestConstants.ServerUrl + "/serviceworkers/fetch/sw.html",
+                waitUntil: new[] { WaitUntilNavigation.Networkidle2 });
+            await Page.EvaluateFunctionAsync("async () => await window.activationPromise");
+            await Page.ReloadAsync();
+
+            Assert.Equal(2, responses.Count);
+            Assert.Equal(HttpStatusCode.OK, responses["sw.html"].Status);
+            Assert.True(responses["sw.html"].FromServiceWorker);
+            Assert.Equal(HttpStatusCode.OK, responses["style.css"].Status);
+            Assert.True(responses["style.css"].FromServiceWorker);
         }
 
         [Fact]
@@ -60,6 +100,20 @@ namespace PuppeteerSharp.Tests.NetworkTests
             var responseText = await new HttpClient().GetStringAsync(TestConstants.ServerUrl + "/simple.json");
             Assert.Equal(responseText, await response.TextAsync());
             Assert.Equal(JObject.Parse(responseText), await response.JsonAsync());
+        }
+
+        [Fact]
+        public async Task PageEventsResponseShouldThrowWhenRequestingBodyOfRedirectedResponse()
+        {
+            Server.SetRedirect("/foo.html", "/empty.html");
+            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/foo.html");
+            var redirectChain = response.Request.RedirectChain;
+            Assert.Single(redirectChain);
+            var redirected = redirectChain[0].Response;
+            Assert.Equal(HttpStatusCode.Redirect, redirected.Status);
+
+            var exception = await Assert.ThrowsAsync<PuppeteerException>(async () => await redirected.TextAsync());
+            Assert.Contains("Response body is unavailable for redirect responses", exception.Message);
         }
 
         [Fact]
@@ -113,9 +167,13 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Page.Request += async (sender, e) =>
             {
                 if (e.Request.Url.EndsWith("css"))
+                {
                     await e.Request.AbortAsync();
+                }
                 else
+                {
                     await e.Request.ContinueAsync();
+                }
             };
             var failedRequests = new List<Request>();
             Page.RequestFailed += (sender, e) => failedRequests.Add(e.Request);
@@ -164,7 +222,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Page.RequestFailed += (sender, e) => events.Add($"FAIL {e.Request.Url}");
             Server.SetRedirect("/foo.html", "/empty.html");
             const string FOO_URL = TestConstants.ServerUrl + "/foo.html";
-            await Page.GoToAsync(FOO_URL);
+            var response = await Page.GoToAsync(FOO_URL);
             Assert.Equal(new[] {
                 $"GET {FOO_URL}",
                 $"302 {FOO_URL}",
@@ -173,6 +231,11 @@ namespace PuppeteerSharp.Tests.NetworkTests
                 $"200 {TestConstants.EmptyPage}",
                 $"DONE {TestConstants.EmptyPage}"
             }, events);
+
+            // Check redirect chain
+            var redirectChain = response.Request.RedirectChain;
+            Assert.Single(redirectChain);
+            Assert.Contains("/foo.html", redirectChain[0].Url);
         }
     }
 }

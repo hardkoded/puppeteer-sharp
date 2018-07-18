@@ -1,11 +1,14 @@
 ﻿using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class CloseTests : PuppeteerBrowserBaseTest
     {
+        public CloseTests(ITestOutputHelper output) : base(output) { }
+
         [Fact]
         public async Task ShouldRejectAllPromisesWhenPageIsClosed()
         {
@@ -18,6 +21,15 @@ namespace PuppeteerSharp.Tests.PageTests
             var exception = await Assert.ThrowsAsync<TargetClosedException>(async () => await neverResolves);
 
             Assert.Contains("Protocol error", exception.Message);
+        }
+
+        [Fact]
+        public async Task ShouldNotBeVisibleInBrowserPages()
+        {
+            var newPage = await Browser.NewPageAsync();
+            Assert.Contains(newPage, await Browser.PagesAsync());
+            await newPage.CloseAsync();
+            Assert.DoesNotContain(newPage, await Browser.PagesAsync());
         }
     }
 }

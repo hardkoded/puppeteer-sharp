@@ -2,12 +2,17 @@
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class AddStyleTagTests : PuppeteerPageBaseTest
     {
+        public AddStyleTagTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
         public async Task ShouldThrowAnErrorIfNoOptionsAreProvided()
         {
@@ -66,6 +71,30 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.NotNull(styleHandle as ElementHandle);
             Assert.Equal("rgb(0, 128, 0)", await Page.EvaluateExpressionAsync(
                 "window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')"));
+        }
+
+        [Fact]
+        public async Task ShouldThrowWhenAddedWithContentToTheCSPPage()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/csp.html");
+            var exception = await Assert.ThrowsAsync<EvaluationFailedException>(
+                () => Page.AddStyleTagAsync(new AddTagOptions
+                {
+                    Content = "body { background-color: green; }"
+                }));
+            Assert.NotNull(exception);
+        }
+
+        [Fact]
+        public async Task ShouldThrowWhenAddedWithURLToTheCSPPage()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/csp.html");
+            var exception = await Assert.ThrowsAsync<PuppeteerException>(
+                () => Page.AddStyleTagAsync(new AddTagOptions
+                {
+                    Url = TestConstants.CrossProcessUrl + "/injectedstyle.css"
+                }));
+            Assert.NotNull(exception);
         }
     }
 }

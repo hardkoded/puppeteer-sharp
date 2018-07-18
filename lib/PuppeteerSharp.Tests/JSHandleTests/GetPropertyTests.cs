@@ -1,11 +1,16 @@
 ﻿using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.JSHandleTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class GetPropertyTests : PuppeteerPageBaseTest
     {
+        public GetPropertyTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
         public async Task ShouldWork()
         {

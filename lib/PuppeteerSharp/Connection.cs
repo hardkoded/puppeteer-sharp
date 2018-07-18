@@ -5,23 +5,31 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
 {
+    /// <summary>
+    /// A connection handles the communication with a Chromium browser
+    /// </summary>
     public class Connection : IDisposable
     {
-        public Connection(string url, int delay, ClientWebSocket ws)
+        private readonly ILogger _logger;
+
+        internal Connection(string url, int delay, ClientWebSocket ws, ILoggerFactory loggerFactory = null)
         {
+            LoggerFactory = loggerFactory ?? new LoggerFactory();
             Url = url;
             Delay = delay;
             WebSocket = ws;
 
+            _logger = LoggerFactory.CreateLogger<Connection>();
             _socketQueue = new TaskQueue();
             _responses = new Dictionary<int, MessageTask>();
-            _sessions = new Dictionary<string, Session>();
+            _sessions = new Dictionary<string, CDPSession>();
             _websocketReaderCancellationSource = new CancellationTokenSource();
 
             Task task = Task.Factory.StartNew(async () =>
@@ -33,7 +41,7 @@ namespace PuppeteerSharp
         #region Private Members
         private int _lastId;
         private Dictionary<int, MessageTask> _responses;
-        private Dictionary<string, Session> _sessions;
+        private Dictionary<string, CDPSession> _sessions;
         private TaskQueue _socketQueue;
         private const string CloseMessage = "Browser.close";
         private bool _stopReading;
@@ -41,25 +49,52 @@ namespace PuppeteerSharp
         #endregion
 
         #region Properties
-        public string Url { get; set; }
-        public int Delay { get; set; }
-        public WebSocket WebSocket { get; set; }
+        /// <summary>
+        /// Gets the WebSocket URL.
+        /// </summary>
+        /// <value>The URL.</value>
+        public string Url { get; private set; }
+        /// <summary>
+        /// Gets the sleep time when a message is received.
+        /// </summary>
+        /// <value>The delay.</value>
+        public int Delay { get; private set; }
+        /// <summary>
+        /// Gets the WebSocket.
+        /// </summary>
+        /// <value>The web socket.</value>
+        public WebSocket WebSocket { get; private set; }
+        /// <summary>
+        /// Occurs when the connection is closed.
+        /// </summary>
         public event EventHandler Closed;
+        /// <summary>
+        /// Occurs when a message from chromium is received.
+        /// </summary>
         public event EventHandler<MessageEventArgs> MessageReceived;
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="Connection"/> is closed.
+        /// </summary>
+        /// <value><c>true</c> if is closed; otherwise, <c>false</c>.</value>
         public bool IsClosed { get; internal set; }
+
+        internal ILoggerFactory LoggerFactory { get; }
 
         #endregion
 
         #region Public Methods
 
-        public async Task<dynamic> SendAsync(string method, dynamic args = null)
+        internal async Task<dynamic> SendAsync(string method, dynamic args = null)
         {
             var id = ++_lastId;
-            var message = JsonConvert.SerializeObject(new Dictionary<string, object>(){
+            var message = JsonConvert.SerializeObject(new Dictionary<string, object>
+            {
                 {"id", id},
                 {"method", method},
                 {"params", args}
             });
+
+            _logger.LogTrace("Send ► {Id} Method {Method} Params {@Params}", id, method, (object)args);
 
             _responses[id] = new MessageTask
             {
@@ -68,8 +103,8 @@ namespace PuppeteerSharp
             };
 
             var encoded = Encoding.UTF8.GetBytes(message);
-            var buffer = new ArraySegment<Byte>(encoded, 0, encoded.Length);
-            await _socketQueue.Enqueue(() => WebSocket.SendAsync(buffer, WebSocketMessageType.Text, true, default(CancellationToken)));
+            var buffer = new ArraySegment<byte>(encoded, 0, encoded.Length);
+            await _socketQueue.Enqueue(() => WebSocket.SendAsync(buffer, WebSocketMessageType.Text, true, default));
 
             if (method == CloseMessage)
             {
@@ -79,10 +114,10 @@ namespace PuppeteerSharp
             return await _responses[id].TaskWrapper.Task;
         }
 
-        public async Task<Session> CreateSession(string targetId)
+        internal async Task<CDPSession> CreateSessionAsync(string targetId)
         {
             string sessionId = (await SendAsync("Target.attachToTarget", new { targetId })).sessionId;
-            var session = new Session(this, targetId, sessionId);
+            var session = new CDPSession(this, targetId, sessionId);
             _sessions.Add(sessionId, session);
             return session;
         }
@@ -135,7 +170,7 @@ namespace PuppeteerSharp
                 }
 
                 var endOfMessage = false;
-                string response = string.Empty;
+                var response = string.Empty;
 
                 while (!endOfMessage)
                 {
@@ -178,6 +213,11 @@ namespace PuppeteerSharp
 
                 if (!string.IsNullOrEmpty(response))
                 {
+                    if (Delay > 0)
+                    {
+                        await Task.Delay(Delay);
+                    }
+
                     ProcessResponse(response);
                 }
             }
@@ -188,9 +228,11 @@ namespace PuppeteerSharp
             dynamic obj = JsonConvert.DeserializeObject(response);
             var objAsJObject = obj as JObject;
 
+            _logger.LogTrace("◀ Receive {Message}", response);
+
             if (objAsJObject["id"] != null)
             {
-                int id = (int)objAsJObject["id"];
+                var id = (int)objAsJObject["id"];
 
                 //If we get the object we are waiting for we return if
                 //if not we add this to the list, sooner or later some one will come for it 
@@ -233,14 +275,23 @@ namespace PuppeteerSharp
         #endregion
         #region Static Methods
 
-        public static async Task<Connection> Create(string url, int delay = 0, int keepAliveInterval = 60)
+        internal static async Task<Connection> Create(string url, int delay = 0, int keepAliveInterval = 60, ILoggerFactory loggerFactory = null)
         {
             var ws = new ClientWebSocket();
             ws.Options.KeepAliveInterval = new TimeSpan(0, 0, keepAliveInterval);
-            await ws.ConnectAsync(new Uri(url), default(CancellationToken)).ConfigureAwait(false);
-            return new Connection(url, delay, ws);
+            await ws.ConnectAsync(new Uri(url), default).ConfigureAwait(false);
+            return new Connection(url, delay, ws, loggerFactory);
         }
 
+        /// <summary>
+        /// Releases all resource used by the <see cref="Connection"/> object.
+        /// It will raise the <see cref="Closed"/> event and call <see cref="WebSocket.CloseAsync(WebSocketCloseStatus, string, CancellationToken)"/>.
+        /// </summary>
+        /// <remarks>Call <see cref="Dispose"/> when you are finished using the <see cref="Connection"/>. The
+        /// <see cref="Dispose"/> method leaves the <see cref="Connection"/> in an unusable state.
+        /// After calling <see cref="Dispose"/>, you must release all references to the
+        /// <see cref="Connection"/> so the garbage collector can reclaim the memory that the
+        /// <see cref="Connection"/> was occupying.</remarks>
         public void Dispose()
         {
             OnClose();

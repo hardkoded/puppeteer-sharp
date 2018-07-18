@@ -3,11 +3,11 @@ using Newtonsoft.Json;
 
 namespace PuppeteerSharp.Messaging
 {
-    public class IOReadResponse
+    internal class IOReadResponse
     {
         [JsonProperty("eof")]
-        public bool Eof { get; set; }
+        internal bool Eof { get; set; }
         [JsonProperty("data")]
-        public string Data { get; set; }
+        internal string Data { get; set; }
     }
 }

@@ -1,12 +1,17 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.ElementHandleTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class ScreenshotTests : PuppeteerPageBaseTest
     {
+        public ScreenshotTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
         public async Task ShouldFire()
         {
@@ -44,6 +49,33 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             var elementHandle = await Page.QuerySelectorAsync("div");
             var screenshot = await elementHandle.ScreenshotDataAsync();
             Assert.True(ScreenshotHelper.PixelMatch("screenshot-element-padding-border.png", screenshot));
+        }
+
+        [Fact]
+        public async Task ShouldCaptureFullElementWhenLargerThanViewport()
+        {
+            await Page.SetViewportAsync(new ViewPortOptions
+            {
+                Width = 500,
+                Height = 500
+            });
+            await Page.SetContentAsync(@"
+                something above
+                <style>
+                div.to-screenshot {
+                  border: 1px solid blue;
+                  width: 600px;
+                  height: 600px;
+                  margin-left: 50px;
+                }
+                </style>
+                <div class='to-screenshot'></div>"
+            );
+            var elementHandle = await Page.QuerySelectorAsync("div.to-screenshot");
+            var screenshot = await elementHandle.ScreenshotDataAsync();
+            Assert.True(ScreenshotHelper.PixelMatch("screenshot-element-larger-than-viewport.png", screenshot));
+            Assert.Equal(JToken.FromObject(new { w = 500, h = 500 }),
+                await Page.EvaluateExpressionAsync("({ w: window.innerWidth, h: window.innerHeight })"));
         }
 
         [Fact]
@@ -106,7 +138,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             await Page.EvaluateFunctionAsync("element => element.remove()", elementHandle);
 
             var exception = await Assert.ThrowsAsync<PuppeteerException>(elementHandle.ScreenshotStreamAsync);
-            Assert.Equal("Node is detached from document", exception.Message);
+            Assert.Equal("Node is either not visible or not an HTMLElement", exception.Message);
         }
     }
 }

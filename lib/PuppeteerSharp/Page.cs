@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
@@ -23,7 +24,7 @@ namespace PuppeteerSharp
     /// <example>
     /// This example creates a page, navigates it to a URL, and then saves a screenshot:
     /// <code>
-    /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions(), Downloader.DefaultRevision);
+    /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions());
     /// var page = await browser.NewPageAsync();
     /// await page.GoToAsync("https://example.com");
     /// await page.ScreenshotAsync("screenshot.png");
@@ -39,6 +40,7 @@ namespace PuppeteerSharp
         private readonly TaskQueue _screenshotTaskQueue;
         private readonly EmulationManager _emulationManager;
         private readonly Dictionary<string, Delegate> _pageBindings;
+        private readonly ILogger _logger;
 
         private static readonly Dictionary<string, decimal> _unitToPixels = new Dictionary<string, decimal> {
             {"px", 1},
@@ -47,21 +49,23 @@ namespace PuppeteerSharp
             {"mm", 3.78m}
         };
 
-        private Page(Session client, Target target, FrameTree frameTree, bool ignoreHTTPSErrors, TaskQueue screenshotTaskQueue)
+        private Page(CDPSession client, Target target, FrameTree frameTree, bool ignoreHTTPSErrors, TaskQueue screenshotTaskQueue)
         {
             Client = client;
             Target = target;
             Keyboard = new Keyboard(client);
             Mouse = new Mouse(client, Keyboard);
             Touchscreen = new Touchscreen(client, Keyboard);
+            Tracing = new Tracing(client);
+            Coverage = new Coverage(client);
+
             _frameManager = new FrameManager(client, frameTree, this);
             _networkManager = new NetworkManager(client, _frameManager);
             _emulationManager = new EmulationManager(client);
-            Tracing = new Tracing(client);
             _pageBindings = new Dictionary<string, Delegate>();
+            _logger = Client.Connection.LoggerFactory.CreateLogger<Page>();
 
             _ignoreHTTPSErrors = ignoreHTTPSErrors;
-            Coverage = new Coverage(client);
 
             _screenshotTaskQueue = screenshotTaskQueue;
 
@@ -74,17 +78,19 @@ namespace PuppeteerSharp
             _networkManager.Response += (sender, e) => Response?.Invoke(this, e);
             _networkManager.RequestFinished += (sender, e) => RequestFinished?.Invoke(this, e);
 
-            Client.MessageReceived += client_MessageReceived;
+            target.CloseTask.ContinueWith((arg) => Close?.Invoke(this, EventArgs.Empty));
+
+            Client.MessageReceived += Client_MessageReceived;
         }
 
-        internal Session Client { get; }
+        internal CDPSession Client { get; }
 
         #region Public Properties
 
         /// <summary>
         /// Raised when the JavaScript <c>load</c> <see href="https://developer.mozilla.org/en-US/docs/Web/Events/load"/> event is dispatched.
         /// </summary>
-        public event EventHandler<EventArgs> Load;
+        public event EventHandler Load;
 
         /// <summary>
         /// Raised when the page crashes
@@ -97,9 +103,14 @@ namespace PuppeteerSharp
         public event EventHandler<MetricEventArgs> Metrics;
 
         /// <summary>
-        /// Raised when a JavaScript dialog appears, such as <c>alert</c>, <c>prompt</c>, <c>confirm</c> or <c>beforeunload</c>. Puppeteer can respond to the dialog via <see cref="PuppeteerSharp.Dialog"/>'s <see cref="Dialog.Accept(string)"/> or <see cref="Dialog.Dismiss"/> methods.
+        /// Raised when a JavaScript dialog appears, such as <c>alert</c>, <c>prompt</c>, <c>confirm</c> or <c>beforeunload</c>. Puppeteer can respond to the dialog via <see cref="Dialog"/>'s <see cref="Dialog.Accept(string)"/> or <see cref="Dialog.Dismiss"/> methods.
         /// </summary>
         public event EventHandler<DialogEventArgs> Dialog;
+
+        /// <summary>
+        /// Raised when the JavaScript <c>DOMContentLoaded</c> <see href="https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded"/> event is dispatched.
+        /// </summary>
+        public event EventHandler DOMContentLoaded;
 
         /// <summary>
         /// Raised when JavaScript within the page calls one of console API methods, e.g. <c>console.log</c> or <c>console.dir</c>. Also emitted if the page throws an error or a warning.
@@ -137,12 +148,12 @@ namespace PuppeteerSharp
         public event EventHandler<FrameEventArgs> FrameNavigated;
 
         /// <summary>
-        /// Raised when a <see cref="PuppeteerSharp.Response"/> is received.
+        /// Raised when a <see cref="Response"/> is received.
         /// </summary>
         public event EventHandler<ResponseCreatedEventArgs> Response;
 
         /// <summary>
-        /// Raised when a page issues a request. The <see cref="PuppeteerSharp.Request"/> object is read-only.
+        /// Raised when a page issues a request. The <see cref="Request"/> object is read-only.
         /// In order to intercept and mutate requests, see <see cref="SetRequestInterceptionAsync(bool)"/>
         /// </summary>
         public event EventHandler<RequestEventArgs> Request;
@@ -161,6 +172,11 @@ namespace PuppeteerSharp
         /// Raised when an uncaught exception happens within the page.
         /// </summary>
         public event EventHandler<PageErrorEventArgs> PageError;
+
+        /// <summary>
+        /// Raised when the page closes.
+        /// </summary>
+        public event EventHandler Close;
 
         /// <summary>
         /// This setting will change the default maximum navigation time of 30 seconds for the following methods:
@@ -288,6 +304,7 @@ namespace PuppeteerSharp
         /// <remarks>
         /// Shortcut for <c>page.MainFrame.QuerySelectorAsync(selector)</c>
         /// </remarks>
+        /// <seealso cref="Frame.QuerySelectorAsync(string)"/>
         public Task<ElementHandle> QuerySelectorAsync(string selector)
             => MainFrame.QuerySelectorAsync(selector);
 
@@ -296,11 +313,12 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="selector">A selector to query page for</param>
         /// <returns>Task which resolves to ElementHandles pointing to the frame elements</returns>
+        /// <seealso cref="Frame.QuerySelectorAllAsync(string)"/>
         public Task<ElementHandle[]> QuerySelectorAllAsync(string selector)
             => MainFrame.QuerySelectorAllAsync(selector);
 
         /// <summary>
-        /// A utility function to based used with <see cref="Extensions.EvaluateFunctionAsync{T}(Task{JSHandle}, string, object[])"/>
+        /// A utility function to be used with <see cref="Extensions.EvaluateFunctionAsync{T}(Task{JSHandle}, string, object[])"/>
         /// </summary>
         /// <param name="selector">A selector to query page for</param>
         /// <returns>Task which resolves to a <see cref="JSHandle"/> of <c>document.querySelectorAll</c> result</returns>
@@ -315,6 +333,7 @@ namespace PuppeteerSharp
         /// <remarks>
         /// Shortcut for <c>page.MainFrame.XPathAsync(expression)</c>
         /// </remarks>
+        /// <seealso cref="Frame.XPathAsync(string)"/>
         public Task<ElementHandle[]> XPathAsync(string expression) => MainFrame.XPathAsync(expression);
 
         /// <summary>
@@ -477,6 +496,7 @@ namespace PuppeteerSharp
         /// Shortcut for <c>page.MainFrame.AddScriptTagAsync(options)</c>
         /// </remarks>
         /// <returns>Task which resolves to the added tag when the script's onload fires or when the script content was injected into frame</returns>
+        /// <seealso cref="Frame.AddScriptTag(AddTagOptions)"/>
         public Task<ElementHandle> AddScriptTagAsync(AddTagOptions options) => MainFrame.AddScriptTag(options);
 
         /// <summary>
@@ -497,6 +517,7 @@ namespace PuppeteerSharp
         /// Shortcut for <c>page.MainFrame.AddStyleTagAsync(options)</c>
         /// </remarks>
         /// <returns>Task which resolves to the added tag when the stylesheet's onload fires or when the CSS content was injected into frame</returns>
+        /// <seealso cref="Frame.AddStyleTag(AddTagOptions)"/>
         public Task<ElementHandle> AddStyleTagAsync(AddTagOptions options) => MainFrame.AddStyleTag(options);
 
         /// <summary>
@@ -583,10 +604,10 @@ namespace PuppeteerSharp
         /// <param name="puppeteerFunction">Callback function which will be called in Puppeteer's context.</param>
         /// <remarks>
         /// If the <paramref name="puppeteerFunction"/> returns a <see cref="Task"/>, it will be awaited.
-        /// Functions installed via <see cref="ExposeFunctionAsync{T1, T2, T3, TResult}(string, Func{TResult})"/> survive navigations
+        /// Functions installed via <see cref="ExposeFunctionAsync{T1, T2, T3, TResult}(string, Func{T1, T2, T3, TResult})"/> survive navigations
         /// </remarks>
         /// <returns>Task</returns>
-        public Task ExposeFunctionAsync<T1, T2, T3, TResult>(string name, Func<TResult> puppeteerFunction)
+        public Task ExposeFunctionAsync<T1, T2, T3, TResult>(string name, Func<T1, T2, T3, TResult> puppeteerFunction)
             => ExposeFunctionAsync(name, (Delegate)puppeteerFunction);
 
         /// <summary>
@@ -612,33 +633,36 @@ namespace PuppeteerSharp
         /// Gets the full HTML contents of the page, including the doctype.
         /// </summary>
         /// <returns>Task which resolves to the HTML content.</returns>
+        /// <seealso cref="Frame.GetContentAsync"/>
         public Task<string> GetContentAsync() => _frameManager.MainFrame.GetContentAsync();
 
         /// <summary>
         /// Sets the HTML markup to the page
         /// </summary>
-        /// <returns>Task.</returns>
         /// <param name="html">HTML markup to assign to the page.</param>
+        /// <returns>Task.</returns>
+        /// <seealso cref="Frame.SetContentAsync(string)"/>
         public Task SetContentAsync(string html) => _frameManager.MainFrame.SetContentAsync(html);
 
         /// <summary>
         /// Navigates to an url
-        /// </summary>
-        /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.</returns>
+        /// </summary>        
         /// <param name="url">URL to navigate page to. The url should include scheme, e.g. https://.</param>
         /// <param name="options">Navigation parameters.</param>
-        public async Task<Response> GoToAsync(string url, NavigationOptions options = null)
+        /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.</returns>
+        /// <seealso cref="GoToAsync(string, int?, WaitUntilNavigation[])"/>
+        public async Task<Response> GoToAsync(string url, NavigationOptions options)
         {
             var referrer = _networkManager.ExtraHTTPHeaders?.GetValueOrDefault("referer");
             var requests = new Dictionary<string, Request>();
 
-            EventHandler<RequestEventArgs> createRequestEventListener = (object sender, RequestEventArgs e) =>
+            void createRequestEventListener(object sender, RequestEventArgs e)
             {
                 if (!requests.ContainsKey(e.Request.Url))
                 {
                     requests.Add(e.Request.Url, e.Request);
                 }
-            };
+            }
 
             _networkManager.Request += createRequestEventListener;
 
@@ -684,6 +708,17 @@ namespace PuppeteerSharp
 
             return request?.Response;
         }
+
+        /// <summary>
+        /// Navigates to an url
+        /// </summary>
+        /// <param name="url">URL to navigate page to. The url should include scheme, e.g. https://.</param>
+        /// <param name="timeout">Maximum navigation time in milliseconds, defaults to 30 seconds, pass <c>0</c> to disable timeout. </param>
+        /// <param name="waitUntil">When to consider navigation succeeded, defaults to <see cref="WaitUntilNavigation.Load"/>. Given an array of <see cref="WaitUntilNavigation"/>, navigation is considered to be successful after all events have been fired</param>
+        /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect</returns>
+        /// <seealso cref="GoToAsync(string, NavigationOptions)"/>
+        public Task<Response> GoToAsync(string url, int? timeout = null, WaitUntilNavigation[] waitUntil = null)
+            => GoToAsync(url, new NavigationOptions { Timeout = timeout, WaitUntil = waitUntil });
 
         /// <summary>
         /// generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaAsync(MediaType)"/> with <see cref="MediaType.Screen"/>
@@ -808,6 +843,17 @@ namespace PuppeteerSharp
             => Client.SendAsync("Emulation.setScriptExecutionDisabled", new { value = !enabled });
 
         /// <summary>
+        /// Toggles bypassing page's Content-Security-Policy.
+        /// </summary>
+        /// <param name="enabled">sets bypassing of page's Content-Security-Policy.</param>
+        /// <returns></returns>
+        /// <remarks>
+        /// CSP bypassing happens at the moment of CSP initialization rather then evaluation.
+        /// Usually this means that <see cref="SetBypassCSPAsync(bool)"/> should be called before navigating to the domain.
+        /// </remarks>
+        public Task SetBypassCSPAsync(bool enabled) => Client.SendAsync("Page.setBypassCSP", new { enabled });
+
+        /// <summary>
         /// Emulates a media such as screen or print.
         /// </summary>
         /// <returns>Task.</returns>
@@ -824,7 +870,7 @@ namespace PuppeteerSharp
         /// <param name="viewport">Viewport options.</param>
         public async Task SetViewportAsync(ViewPortOptions viewport)
         {
-            var needsReload = await _emulationManager.EmulateViewport(Client, viewport);
+            var needsReload = await _emulationManager.EmulateViewport(viewport);
             Viewport = viewport;
 
             if (needsReload)
@@ -946,6 +992,7 @@ namespace PuppeteerSharp
         /// Returns page's title
         /// </summary>
         /// <returns>page's title</returns>
+        /// <see cref="Frame.GetTitleAsync"/>
         public Task<string> GetTitleAsync() => MainFrame.GetTitleAsync();
 
         /// <summary>
@@ -959,11 +1006,19 @@ namespace PuppeteerSharp
                 return Client.Connection.SendAsync("Target.closeTarget", new
                 {
                     targetId = Target.TargetId
-                });
+                }).ContinueWith((task) => Target.CloseTask);
             }
 
             return Task.CompletedTask;
         }
+
+        /// <summary>
+        /// Toggles ignoring cache for each request based on the enabled state. By default, caching is enabled.
+        /// </summary>
+        /// <param name="enabled">sets the <c>enabled</c> state of the cache</param>
+        /// <returns>Task</returns>
+        public Task SetCacheEnabledAsync(bool enabled = true)
+            => Client.SendAsync("Network.setCacheDisabled", new { cacheDisabled = !enabled });
 
         /// <summary>
         /// Fetches an element with <paramref name="selector"/>, scrolls it into view if needed, and then uses <see cref="Page.Mouse"/> to click in the center of the element.
@@ -1102,7 +1157,8 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="options">Navigation options</param>
         /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect</returns>
-        public async Task<Response> ReloadAsync(NavigationOptions options = null)
+        /// <seealso cref="ReloadAsync(int?, WaitUntilNavigation[])"/>
+        public async Task<Response> ReloadAsync(NavigationOptions options)
         {
             var navigationTask = WaitForNavigationAsync(options);
 
@@ -1115,14 +1171,25 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
+        /// Reloads the page
+        /// </summary>
+        /// <param name="timeout">Maximum navigation time in milliseconds, defaults to 30 seconds, pass <c>0</c> to disable timeout. </param>
+        /// <param name="waitUntil">When to consider navigation succeeded, defaults to <see cref="WaitUntilNavigation.Load"/>. Given an array of <see cref="WaitUntilNavigation"/>, navigation is considered to be successful after all events have been fired</param>
+        /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect</returns>
+        /// <seealso cref="ReloadAsync(NavigationOptions)"/>
+        public Task<Response> ReloadAsync(int? timeout = null, WaitUntilNavigation[] waitUntil = null)
+            => ReloadAsync(new NavigationOptions { Timeout = timeout, WaitUntil = waitUntil });
+
+        /// <summary>
         /// Triggers a change and input event once all the provided options have been selected. 
         /// If there's no <![CDATA[<select>]]> element matching selector, the method throws an error.
         /// </summary>
         /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
-        /// <returns>Returns an array of option values that have been successfully selected.</returns>
         /// <param name="selector">A selector to query page for</param>
         /// <param name="values">Values of options to select. If the <![CDATA[<select>]]> has the multiple attribute, 
         /// all values are considered, otherwise only the first one is taken into account.</param>
+        /// <returns>Returns an array of option values that have been successfully selected.</returns>
+        /// <seealso cref="Frame.SelectAsync(string, string[])"/>
         public Task<string[]> SelectAsync(string selector, params string[] values)
             => MainFrame.SelectAsync(selector, values);
 
@@ -1159,21 +1226,23 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="milliseconds"></param>
         /// <returns>A task that resolves when after the timeout</returns>
+        /// <seealso cref="Frame.WaitForTimeoutAsync(int)"/>
         public Task WaitForTimeoutAsync(int milliseconds)
             => MainFrame.WaitForTimeoutAsync(milliseconds);
 
         /// <summary>
-        /// Waits for a script to be evaluated to a truthy value
+        /// Waits for a function to be evaluated to a truthy value
         /// </summary>
         /// <param name="script">Function to be evaluated in browser context</param>
         /// <param name="options">Optional waiting parameters</param>
         /// <param name="args">Arguments to pass to <c>script</c></param>
         /// <returns>A task that resolves when the <c>script</c> returns a truthy value</returns>
+        /// <seealso cref="Frame.WaitForFunctionAsync(string, WaitForFunctionOptions, object[])"/>
         public Task<JSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options = null, params object[] args)
             => MainFrame.WaitForFunctionAsync(script, options ?? new WaitForFunctionOptions(), args);
 
         /// <summary>
-        /// Waits for a script to be evaluated to a truthy value
+        /// Waits for a function to be evaluated to a truthy value
         /// </summary>
         /// <param name="script">Function to be evaluated in browser context</param>
         /// <param name="args">Arguments to pass to <c>script</c></param>
@@ -1181,13 +1250,54 @@ namespace PuppeteerSharp
         public Task<JSHandle> WaitForFunctionAsync(string script, params object[] args) => WaitForFunctionAsync(script, null, args);
 
         /// <summary>
+        /// Waits for an expression to be evaluated to a truthy value
+        /// </summary>
+        /// <param name="script">Expression to be evaluated in browser context</param>
+        /// <param name="options">Optional waiting parameters</param>
+        /// <returns>A task that resolves when the <c>script</c> returns a truthy value</returns>
+        /// <seealso cref="Frame.WaitForExpressionAsync(string, WaitForFunctionOptions, object[])"/>
+        public Task<JSHandle> WaitForExpressionAsync(string script, WaitForFunctionOptions options = null)
+            => MainFrame.WaitForExpressionAsync(script, options ?? new WaitForFunctionOptions());
+
+        /// <summary>
         /// Waits for a selector to be added to the DOM
         /// </summary>
         /// <param name="selector">A selector of an element to wait for</param>
         /// <param name="options">Optional waiting parameters</param>
         /// <returns>A task that resolves when element specified by selector string is added to DOM</returns>
+        /// <seealso cref="WaitForXPathAsync(string, WaitForSelectorOptions)"/>
+        /// <seealso cref="Frame.WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
         public Task<ElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
             => MainFrame.WaitForSelectorAsync(selector, options ?? new WaitForSelectorOptions());
+
+        /// <summary>
+        /// Waits for a xpath selector to be added to the DOM
+        /// </summary>
+        /// <param name="xpath">A xpath selector of an element to wait for</param>
+        /// <param name="options">Optional waiting parameters</param>
+        /// <returns>A task that resolves when element specified by selector string is added to DOM</returns>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions());
+        /// var page = await browser.NewPageAsync();
+        /// string currentURL = null;
+        /// page
+        ///     .WaitForXPathAsync("//img")
+        ///     .ContinueWith(_ => Console.WriteLine("First URL with image: " + currentURL));
+        /// foreach (var current in new[] { "https://example.com", "https://google.com", "https://bbc.com" })
+        /// {
+        ///     currentURL = current;
+        ///     await page.GoToAsync(currentURL);
+        /// }
+        /// await browser.CloseAsync();
+        /// ]]>
+        /// </code>
+        /// </example>
+        /// <seealso cref="WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
+        /// <seealso cref="Frame.WaitForXPathAsync(string, WaitForSelectorOptions)"/>
+        public Task<ElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
+            => MainFrame.WaitForXPathAsync(xpath, options ?? new WaitForSelectorOptions());
 
         /// <summary>
         /// Waits for navigation
@@ -1201,8 +1311,7 @@ namespace PuppeteerSharp
             var watcher = new NavigatorWatcher(_frameManager, mainFrame, timeout, options);
             var responses = new Dictionary<string, Response>();
 
-            EventHandler<ResponseCreatedEventArgs> createResponseEventListener = (object sender, ResponseCreatedEventArgs e) =>
-                responses.Add(e.Response.Url, e.Response);
+            void createResponseEventListener(object sender, ResponseCreatedEventArgs e) => responses[e.Response.Url] = e.Response;
 
             _networkManager.Response += createResponseEventListener;
 
@@ -1225,7 +1334,7 @@ namespace PuppeteerSharp
         /// <returns>Task which which resolves to the main resource response. In case of multiple redirects, 
         /// the navigation will resolve with the response of the last redirect. If can not go back, resolves to null.</returns>
         /// <param name="options">Navigation parameters.</param>
-        public Task<Response> GoBackAsync(NavigationOptions options = null) => GoAsync(-1, null);
+        public Task<Response> GoBackAsync(NavigationOptions options = null) => GoAsync(-1, options);
 
         /// <summary>
         /// Navigate to the next page in history.
@@ -1233,14 +1342,18 @@ namespace PuppeteerSharp
         /// <returns>Task which which resolves to the main resource response. In case of multiple redirects, 
         /// the navigation will resolve with the response of the last redirect. If can not go forward, resolves to null.</returns>
         /// <param name="options">Navigation parameters.</param>
-        public Task<Response> GoForwardAsync(NavigationOptions options = null) => GoAsync(1, null);
+        public Task<Response> GoForwardAsync(NavigationOptions options = null) => GoAsync(1, options);
 
         #endregion
 
         #region Private Method
 
-        internal static async Task<Page> CreateAsync(Session client, Target target, bool ignoreHTTPSErrors, bool appMode,
-                                                   TaskQueue screenshotTaskQueue)
+        internal static async Task<Page> CreateAsync(
+            CDPSession client,
+            Target target,
+            bool ignoreHTTPSErrors,
+            bool setDefaultViewPort,
+            TaskQueue screenshotTaskQueue)
         {
             await client.SendAsync("Page.enable", null);
             dynamic result = await client.SendAsync("Page.getFrameTree");
@@ -1265,8 +1378,7 @@ namespace PuppeteerSharp
                 });
             }
 
-            // Initialize default page size.
-            if (!appMode)
+            if (setDefaultViewPort)
             {
                 await page.SetViewportAsync(new ViewPortOptions
                 {
@@ -1321,7 +1433,7 @@ namespace PuppeteerSharp
                 targetId = Target.TargetId
             });
 
-            var clip = options.Clip != null ? options.Clip.Clone() : null;
+            var clip = options.Clip?.Clone();
             if (clip != null)
             {
                 clip.Scale = 1;
@@ -1444,7 +1556,7 @@ namespace PuppeteerSharp
                     valueText = text;
                 }
 
-                if (Decimal.TryParse(valueText, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out var number))
+                if (decimal.TryParse(valueText, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out var number))
                 {
                     pixels = number * _unitToPixels[unit];
                 }
@@ -1457,12 +1569,15 @@ namespace PuppeteerSharp
             return pixels / 96;
         }
 
-        private async void client_MessageReceived(object sender, MessageEventArgs e)
+        private async void Client_MessageReceived(object sender, MessageEventArgs e)
         {
             switch (e.MessageID)
             {
+                case "Page.domContentEventFired":
+                    DOMContentLoaded?.Invoke(this, EventArgs.Empty);
+                    break;
                 case "Page.loadEventFired":
-                    Load?.Invoke(this, new EventArgs());
+                    Load?.Invoke(this, EventArgs.Empty);
                     break;
                 case "Runtime.consoleAPICalled":
                     await OnConsoleAPI(e.MessageData.ToObject<PageConsoleResponse>());
@@ -1471,10 +1586,10 @@ namespace PuppeteerSharp
                     OnDialog(e.MessageData.ToObject<PageJavascriptDialogOpeningResponse>());
                     break;
                 case "Runtime.exceptionThrown":
-                    HandleException(e.MessageData.exceptionDetails);
+                    HandleException(e.MessageData.SelectToken("exceptionDetails").ToObject<EvaluateExceptionDetails>());
                     break;
                 case "Security.certificateError":
-                    await OnCertificateError(e);
+                    await OnCertificateError(e.MessageData.ToObject<CertificateErrorResponse>());
                     break;
                 case "Inspector.targetCrashed":
                     OnTargetCrashed();
@@ -1498,35 +1613,41 @@ namespace PuppeteerSharp
         private void EmitMetrics(PerformanceMetricsResponse metrics)
             => Metrics?.Invoke(this, new MetricEventArgs(metrics.Title, BuildMetricsObject(metrics.Metrics)));
 
-        private async Task OnCertificateError(MessageEventArgs e)
+        private async Task OnCertificateError(CertificateErrorResponse e)
         {
             if (_ignoreHTTPSErrors)
             {
-                //TODO: Puppeteer is silencing an error here, I don't know if that's necessary here
-                await Client.SendAsync("Security.handleCertificateError", new Dictionary<string, object>
+                try
                 {
-                    {"eventId", e.MessageData.eventId },
-                    {"action", "continue"}
-                });
+                    await Client.SendAsync("Security.handleCertificateError", new Dictionary<string, object>
+                    {
+                        {"eventId", e.EventId },
+                        {"action", "continue"}
+                    });
+                }
+                catch (PuppeteerException ex)
+                {
+                    _logger.LogError(ex.ToString());
+                }
             }
         }
 
-        private void HandleException(dynamic exceptionDetails)
+        private void HandleException(EvaluateExceptionDetails exceptionDetails)
             => PageError?.Invoke(this, new PageErrorEventArgs(GetExceptionMessage(exceptionDetails)));
 
-        private string GetExceptionMessage(dynamic exceptionDetails)
+        private string GetExceptionMessage(EvaluateExceptionDetails exceptionDetails)
         {
-            if (exceptionDetails.exception != null)
+            if (exceptionDetails.Exception != null)
             {
-                return exceptionDetails.exception.description;
+                return exceptionDetails.Exception.Description;
             }
-            var message = exceptionDetails.text;
-            if (exceptionDetails.stackTrace)
+            var message = exceptionDetails.Text;
+            if (exceptionDetails.StackTrace != null)
             {
-                foreach (var callframe in exceptionDetails.stackTrace.callFrames)
+                foreach (var callframe in exceptionDetails.StackTrace.CallFrames)
                 {
-                    var location = $"{callframe.url}:{callframe.lineNumber}:{callframe.columnNumber}";
-                    var functionName = callframe.functionName || "<anonymous>";
+                    var location = $"{callframe.Url}:{callframe.LineNumber}:{callframe.ColumnNumber}";
+                    var functionName = callframe.FunctionName ?? "<anonymous>";
                     message += $"\n at {functionName} ({location})";
                 }
             }
@@ -1575,7 +1696,7 @@ namespace PuppeteerSharp
                     {
                         if (task.IsFaulted)
                         {
-                            System.Console.WriteLine(task.Exception);
+                            _logger.LogError(task.Exception.ToString());
                         }
                     });
                 return;
@@ -1585,14 +1706,14 @@ namespace PuppeteerSharp
             {
                 foreach (var arg in message.Args)
                 {
-                    await RemoteObjectHelper.ReleaseObject(Client, arg);
+                    await RemoteObjectHelper.ReleaseObject(Client, arg, _logger);
                 }
 
                 return;
             }
 
             var values = message.Args
-                .Select(_ => (JSHandle)_frameManager.CreateJsHandle(message.ExecutionContextId, _))
+                .Select(_ => (JSHandle)_frameManager.CreateJSHandle(message.ExecutionContextId, _))
                 .ToList();
             var handles = values
                 .ConvertAll(handle => handle.RemoteObject["objectId"] != null
@@ -1635,12 +1756,12 @@ namespace PuppeteerSharp
                 {
                     if (task.IsFaulted)
                     {
-                        System.Console.WriteLine(task.Exception);
+                        _logger.LogError(task.Exception.ToString());
                     }
                 })));
         }
 
-        private async Task Navigate(Session client, string url, string referrer)
+        private async Task Navigate(CDPSession client, string url, string referrer)
         {
             dynamic response = await client.SendAsync("Page.navigate", new
             {
@@ -1650,7 +1771,7 @@ namespace PuppeteerSharp
 
             if (response.errorText != null)
             {
-                throw new NavigationException(response.errorText.ToString());
+                throw new NavigationException(response.errorText.ToString(), url);
             }
         }
 
@@ -1660,8 +1781,7 @@ namespace PuppeteerSharp
 
             string SerializeArgument(object arg)
             {
-                if (arg == null) return "undefined";
-                return JsonConvert.SerializeObject(arg);
+                return arg == null ? "undefined" : JsonConvert.SerializeObject(arg);
             }
         }
         #endregion
@@ -1670,10 +1790,10 @@ namespace PuppeteerSharp
         /// <summary>
         /// Releases all resource used by the <see cref="Page"/> object by calling the <see cref="CloseAsync"/> method.
         /// </summary>
-        /// <remarks>Call <see cref="Dispose"/> when you are finished using the <see cref="T:PuppeteerSharp.Page"/>. The
-        /// <see cref="Dispose"/> method leaves the <see cref="T:PuppeteerSharp.Page"/> in an unusable state. After
-        /// calling <see cref="Dispose"/>, you must release all references to the <see cref="T:PuppeteerSharp.Page"/> so
-        /// the garbage collector can reclaim the memory that the <see cref="T:PuppeteerSharp.Page"/> was occupying.</remarks>
+        /// <remarks>Call <see cref="Dispose"/> when you are finished using the <see cref="Page"/>. The
+        /// <see cref="Dispose"/> method leaves the <see cref="Page"/> in an unusable state. After
+        /// calling <see cref="Dispose"/>, you must release all references to the <see cref="Page"/> so
+        /// the garbage collector can reclaim the memory that the <see cref="Page"/> was occupying.</remarks>
         public void Dispose() => CloseAsync();
         #endregion
     }

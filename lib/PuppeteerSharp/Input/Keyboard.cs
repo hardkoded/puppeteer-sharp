@@ -10,12 +10,12 @@ namespace PuppeteerSharp.Input
     /// </summary>
     public class Keyboard
     {
-        private readonly Session _client;
+        private readonly CDPSession _client;
         private readonly HashSet<string> _pressedKeys = new HashSet<string>();
 
         internal int Modifiers { get; set; }
 
-        public Keyboard(Session client)
+        internal Keyboard(CDPSession client)
         {
             _client = client;
         }
@@ -65,7 +65,7 @@ namespace PuppeteerSharp.Input
             var description = KeyDescriptionForString(key);
 
             Modifiers &= ~ModifierBit(key);
-            _pressedKeys.Remove(description.Key);
+            _pressedKeys.Remove(description.Code);
 
             await _client.SendAsync("Input.dispatchKeyEvent", new Dictionary<string, object>(){
                 {"type", "keyUp"},

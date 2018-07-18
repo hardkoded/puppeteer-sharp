@@ -2,6 +2,9 @@
 
 namespace PuppeteerSharp
 {
+    /// <summary>
+    /// <see cref="JSHandle"/> and <see cref="ElementHandle"/> Extensions.
+    /// </summary>
     public static class Extensions
     {
         /// <summary>
@@ -40,7 +43,7 @@ namespace PuppeteerSharp
         public static async Task<T> EvaluateFunctionAsync<T>(this Task<JSHandle> arrayHandleTask, string pageFunction, params object[] args)
         {
             var arrayHandle = await arrayHandleTask;
-            
+
             var newArgs = new object[args.Length + 1];
             newArgs[0] = arrayHandle;
             args.CopyTo(newArgs, 1);

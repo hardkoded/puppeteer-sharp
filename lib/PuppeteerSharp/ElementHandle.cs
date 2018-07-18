@@ -1,5 +1,8 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Input;
+using PuppeteerSharp.Messaging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,15 +11,27 @@ using System.Threading.Tasks;
 
 namespace PuppeteerSharp
 {
+    /// <summary>
+    /// Inherits from <see cref="JSHandle"/>. It represents an in-page DOM element. 
+    /// ElementHandles can be created by <see cref="Page.QuerySelectorAsync(string)"/> or <see cref="Page.QuerySelectorAllAsync(string)"/>.
+    /// </summary>
     public class ElementHandle : JSHandle
     {
-        internal Page Page { get; }
+        private readonly FrameManager _frameManager;
 
-        public ElementHandle(ExecutionContext context, Session client, object remoteObject, Page page) :
+        internal ElementHandle(
+            ExecutionContext context,
+            CDPSession client,
+            object remoteObject,
+            Page page,
+            FrameManager frameManager) :
             base(context, client, remoteObject)
         {
             Page = page;
+            _frameManager = frameManager;
         }
+
+        internal Page Page { get; }
 
         /// <summary>
         /// This method scrolls element into view if needed, and then uses <seealso cref="Page.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element. 
@@ -81,19 +96,41 @@ namespace PuppeteerSharp
         /// <param name="options">Screenshot options.</param>
         public async Task<byte[]> ScreenshotDataAsync(ScreenshotOptions options)
         {
-            await ScrollIntoViewIfNeededAsync();
-            dynamic metrics = await _client.SendAsync("Page.getLayoutMetrics") as JObject;
-
-            var boundingBox = await BoundingBoxAsync();
-            if (boundingBox == null)
+            var needsViewportReset = false;
+            var boundingBox = await AssertBoundingBoxAsync();
+            var viewport = Page.Viewport;
+            if (boundingBox.Width > viewport.Width || boundingBox.Height > viewport.Height)
             {
-                throw new PuppeteerException("Node is not visible");
+                var newRawViewport = JObject.FromObject(viewport);
+                newRawViewport.Merge(new ViewPortOptions
+                {
+                    Width = (int)Math.Max(viewport.Width, Math.Ceiling(boundingBox.Width)),
+                    Height = (int)Math.Max(viewport.Height, Math.Ceiling(boundingBox.Height))
+                });
+                await Page.SetViewportAsync(newRawViewport.ToObject<ViewPortOptions>());
+                needsViewportReset = true;
+            }
+            await ExecutionContext.EvaluateFunctionAsync(@"function(element) {
+                element.scrollIntoView({ block: 'center', inline: 'center', behavior: 'instant'});
+            }", this);
+
+            boundingBox = await AssertBoundingBoxAsync();
+
+            var getLayoutMetricsResponse = await Client.SendAsync<GetLayoutMetricsResponse>("Page.getLayoutMetrics");
+
+            var clip = boundingBox;
+            clip.X += getLayoutMetricsResponse.LayoutViewport.PageX;
+            clip.Y += getLayoutMetricsResponse.LayoutViewport.PageY;
+
+            options.Clip = boundingBox.ToClip();
+            var imageData = await Page.ScreenshotDataAsync(options);
+
+            if (needsViewportReset)
+            {
+                await Page.SetViewportAsync(viewport);
             }
 
-            boundingBox.X += metrics.layoutViewport.pageX.ToObject<decimal>();
-            boundingBox.Y += metrics.layoutViewport.pageY.ToObject<decimal>();
-            options.Clip = boundingBox.ToClip();
-            return await Page.ScreenshotDataAsync(options);
+            return imageData;
         }
 
         /// <summary>
@@ -128,7 +165,7 @@ namespace PuppeteerSharp
         {
             var files = filePaths.Select(Path.GetFullPath).ToArray();
             var objectId = RemoteObject.objectId.ToString();
-            await _client.SendAsync("DOM.setFileInputFiles", new { objectId, files });
+            await Client.SendAsync("DOM.setFileInputFiles", new { objectId, files });
         }
 
         /// <summary>
@@ -201,8 +238,7 @@ namespace PuppeteerSharp
                 "(element, selector) => element.querySelector(selector)",
                 this, selector);
 
-            var element = handle as ElementHandle;
-            if (element != null)
+            if (handle is ElementHandle element)
             {
                 return element;
             }
@@ -253,19 +289,91 @@ namespace PuppeteerSharp
             return properties.Values.OfType<ElementHandle>().ToArray();
         }
 
+        /// <summary>
+        /// This method returns the bounding box of the element (relative to the main frame), 
+        /// or null if the element is not visible.
+        /// </summary>
+        /// <returns>The BoundingBox task.</returns>
+        public async Task<BoundingBox> BoundingBoxAsync()
+        {
+            var result = await GetBoxModelAsync();
+
+            if (result == null)
+            {
+                return null;
+            }
+
+            var quad = result.Model.Border;
+
+            var x = new[] { quad[0], quad[2], quad[4], quad[6] }.Min();
+            var y = new[] { quad[1], quad[3], quad[5], quad[7] }.Min();
+            var width = new[] { quad[0], quad[2], quad[4], quad[6] }.Max() - x;
+            var height = new[] { quad[1], quad[3], quad[5], quad[7] }.Max() - y;
+
+            return new BoundingBox(x, y, width, height);
+        }
+
+        /// <summary>
+        /// returns boxes of the element, or <c>null</c> if the element is not visible. Box points are sorted clock-wise.
+        /// </summary>
+        /// <returns>Task BoxModel task.</returns>
+        public async Task<BoxModel> BoxModelAsync()
+        {
+            var result = await GetBoxModelAsync();
+
+            if (result == null)
+            {
+                return null;
+            }
+
+            return new BoxModel
+            {
+                Content = FromProtocolQuad(result.Model.Content),
+                Padding = FromProtocolQuad(result.Model.Padding),
+                Border = FromProtocolQuad(result.Model.Border),
+                Margin = FromProtocolQuad(result.Model.Margin),
+                Width = result.Model.Width,
+                Height = result.Model.Height
+            };
+        }
+
+        /// <summary>
+        ///Content frame for element handles referencing iframe nodes, or null otherwise.
+        /// </summary>
+        /// <returns>Resolves to the content frame</returns>
+        public async Task<Frame> ContentFrameAsync()
+        {
+            var nodeInfo = await Client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new
+            {
+                RemoteObject.objectId
+            });
+
+            if (string.IsNullOrEmpty(nodeInfo.Node.FrameId))
+            {
+                return null;
+            }
+            return _frameManager.Frames[nodeInfo.Node.FrameId];
+        }
+
         private async Task<(decimal x, decimal y)> VisibleCenterAsync()
         {
             await ScrollIntoViewIfNeededAsync();
-            var box = await BoundingBoxAsync();
-            if (box == null)
-            {
-                throw new PuppeteerException("Node is not visible");
-            }
+            var box = await AssertBoundingBoxAsync();
 
             return (
                 x: box.X + (box.Width / 2),
                 y: box.Y + (box.Height / 2)
             );
+        }
+
+        private async Task<BoundingBox> AssertBoundingBoxAsync()
+        {
+            var box = await BoundingBoxAsync();
+            if (box != null)
+            {
+                return box;
+            }
+            throw new PuppeteerException("Node is either not visible or not an HTMLElement");
         }
 
         private async Task ScrollIntoViewIfNeededAsync()
@@ -285,40 +393,28 @@ namespace PuppeteerSharp
             }
         }
 
-        /// <summary>
-        /// This method returns the bounding box of the element (relative to the main frame), 
-        /// or null if the element is not visible.
-        /// </summary>
-        /// <returns>The BoundingBox task.</returns>
-        public async Task<BoundingBox> BoundingBoxAsync()
+        private async Task<BoxModelResponse> GetBoxModelAsync()
         {
-            dynamic result = null;
-
             try
             {
-                result = await _client.SendAsync("DOM.getBoxModel", new
+                return await Client.SendAsync<BoxModelResponse>("DOM.getBoxModel", new
                 {
                     objectId = RemoteObject.objectId.ToString()
                 });
             }
             catch (PuppeteerException ex)
             {
-                Console.WriteLine(ex.Message);
-            }
-
-            if (result == null)
-            {
+                Logger.LogError(ex.Message);
                 return null;
             }
-
-            var quad = result.model.border.ToObject<decimal[]>();
-
-            var x = new[] { quad[0], quad[2], quad[4], quad[6] }.Min();
-            var y = new[] { quad[1], quad[3], quad[5], quad[7] }.Min();
-            var width = new[] { quad[0], quad[2], quad[4], quad[6] }.Max() - x;
-            var height = new[] { quad[1], quad[3], quad[5], quad[7] }.Max() - y;
-
-            return new BoundingBox(x, y, width, height);
         }
+
+        private BoxModelPoint[] FromProtocolQuad(decimal[] points) => new[]
+        {
+            new BoxModelPoint{ X = points[0], Y = points[1] },
+            new BoxModelPoint{ X = points[2], Y = points[3] },
+            new BoxModelPoint{ X = points[4], Y = points[5] },
+            new BoxModelPoint{ X = points[6], Y = points[7] }
+        };
     }
 }

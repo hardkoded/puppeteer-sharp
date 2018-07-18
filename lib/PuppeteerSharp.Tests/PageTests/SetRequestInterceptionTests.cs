@@ -7,12 +7,17 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class SetRequestInterceptionTests : PuppeteerPageBaseTest
     {
+        public SetRequestInterceptionTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
         public async Task ShouldIntercept()
         {
@@ -120,6 +125,23 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Fact]
+        public async Task ShouldSendReferer()
+        {
+            await Page.SetExtraHttpHeadersAsync(new Dictionary<string, string>
+            {
+                ["referer"] = "http://google.com/"
+            });
+            await Page.SetRequestInterceptionAsync(true);
+            Page.Request += async (sender, e) => await e.Request.ContinueAsync();
+            var requestTask = Server.WaitForRequest("/grid.html", request => request.Headers["referer"].ToString());
+            await Task.WhenAll(
+                requestTask,
+                Page.GoToAsync(TestConstants.ServerUrl + "/grid.html")
+            );
+            Assert.Equal("http://google.com/", requestTask.Result);
+        }
+
+        [Fact]
         public async Task ShouldAmendHTTPHeaders()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -168,6 +190,18 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Contains("empty.html", response.Url);
             Assert.Equal(5, requests.Count);
             Assert.Equal(ResourceType.Document, requests[2].ResourceType);
+
+            // Check redirect chain
+            var redirectChain = response.Request.RedirectChain;
+            Assert.Equal(4, redirectChain.Length);
+            Assert.Contains("/non-existing-page.html", redirectChain[0].Url);
+            Assert.Contains("/non-existing-page-3.html", redirectChain[2].Url);
+
+            for (var i = 0; i < redirectChain.Length; ++i)
+            {
+                var request = redirectChain[i];
+                Assert.Equal(request, request.RedirectChain.ElementAt(i));
+            }
         }
 
         [Fact]
@@ -325,7 +359,8 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.SetRequestInterceptionAsync(true);
             Request request = null;
             var requestIntercepted = new TaskCompletionSource<bool>();
-            Page.Request += (sender, e) => {
+            Page.Request += (sender, e) =>
+            {
                 request = e.Request;
                 requestIntercepted.SetResult(true);
             };

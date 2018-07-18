@@ -1,4 +1,5 @@
-﻿using PuppeteerSharp.Messaging;
+﻿using Microsoft.Extensions.Logging;
+using PuppeteerSharp.Messaging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -7,19 +8,21 @@ namespace PuppeteerSharp.PageCoverage
 {
     internal class CSSCoverage
     {
-        private readonly Session _client;
+        private readonly CDPSession _client;
         private readonly Dictionary<string, string> _stylesheetURLs;
         private readonly Dictionary<string, string> _stylesheetSources;
+        private readonly ILogger _logger;
 
         private bool _enabled;
         private bool _resetOnNavigation;
 
-        public CSSCoverage(Session client)
+        public CSSCoverage(CDPSession client)
         {
             _client = client;
             _enabled = false;
             _stylesheetURLs = new Dictionary<string, string>();
             _stylesheetSources = new Dictionary<string, string>();
+            _logger = _client.Connection.LoggerFactory.CreateLogger<CSSCoverage>();
 
             _resetOnNavigation = false;
         }
@@ -127,7 +130,7 @@ namespace PuppeteerSharp.PageCoverage
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                _logger.LogError(ex.ToString());
             }
         }
 

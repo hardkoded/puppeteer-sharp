@@ -16,6 +16,10 @@ namespace PuppeteerSharp
         /// <summary>
         /// If set to true, sets Headless = false, otherwise, enables automation.
         /// </summary>
+        /// <remarks>
+        /// AppMode won't neither add the argument '--remote-debugging-pipe' nor implement Pipes
+        /// due to limitations in .NET see <see href="https://github.com/dotnet/corefx/issues/30575"/> 
+        /// </remarks>
         public bool AppMode { get; set; }
 
         /// <summary>
@@ -66,11 +70,17 @@ namespace PuppeteerSharp
         /// <summary>
         /// Keep alive value.
         /// </summary>
-        public int KeepAliveInterval { get; set; } = 30;
+        [Obsolete("Chromium doesn't support pings yet (see: https://bugs.chromium.org/p/chromium/issues/detail?id=865002)")]
+        public int KeepAliveInterval { get; set; } = 0;
 
         /// <summary>
         /// Logs process counts after launching chrome and after exiting.
         /// </summary>
         public bool LogProcess { get; set; }
+        /// <summary>
+        /// Do not use it. Dangerous option; use with care. Defaults to false.
+        /// </summary>
+        /// <value><c>true</c> if ignore default arguments; otherwise, <c>false</c>.</value>
+        public bool IgnoreDefaultArgs { get; set; }
     }
 }

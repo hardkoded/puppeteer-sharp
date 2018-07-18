@@ -1,11 +1,16 @@
 ﻿using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.PageTests.Events
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class PageErrorTests : PuppeteerPageBaseTest
     {
+        public PageErrorTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
         public async Task ShouldFire()
         {
@@ -20,7 +25,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
 
             await Task.WhenAll(
                 Page.GoToAsync(TestConstants.ServerUrl + "/error.html"),
-                WaitForEvents(Page.Client, "Runtime.exceptionThrown")
+                WaitEvent(Page.Client, "Runtime.exceptionThrown")
             );
 
             Assert.Contains("Fancy", error);

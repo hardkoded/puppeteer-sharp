@@ -3,15 +3,47 @@ using System.Threading.Tasks;
 
 namespace PuppeteerSharp
 {
+    /// <summary>
+    /// <see cref="Dialog"/> objects are dispatched by page via the 'dialog' event.
+    /// </summary>
+    /// <example>
+    /// An example of using Dialog class:
+    ///<code>
+    /// Page.Dialog += async (sender, e) =>
+    /// {
+    ///     await e.Dialog.Accept();
+    /// }
+    /// await Page.EvaluateExpressionAsync("alert('yo');");
+    /// </code>
+    /// </example>
     public class Dialog
     {
-        private Session _client;
-        
+        private readonly CDPSession _client;
+
+        /// <summary>
+        /// Dialog's type, can be one of alert, beforeunload, confirm or prompt.
+        /// </summary>
+        /// <value>The type of the dialog.</value>
         public DialogType DialogType { get; set; }
+        /// <summary>
+        /// If dialog is prompt, returns default prompt value. Otherwise, returns empty string.
+        /// </summary>
+        /// <value>The default value.</value>
         public string DefaultValue { get; set; }
+        /// <summary>
+        /// A message displayed in the dialog.
+        /// </summary>
+        /// <value>The message.</value>
         public string Message { get; set; }
 
-        public Dialog(Session client, DialogType type, string message, string defaultValue)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Dialog"/> class.
+        /// </summary>
+        /// <param name="client">Client.</param>
+        /// <param name="type">Type.</param>
+        /// <param name="message">Message.</param>
+        /// <param name="defaultValue">Default value.</param>
+        public Dialog(CDPSession client, DialogType type, string message, string defaultValue)
         {
             _client = client;
             DialogType = type;
@@ -19,6 +51,11 @@ namespace PuppeteerSharp
             DefaultValue = defaultValue;
         }
 
+        /// <summary>
+        /// Accept the Dialog.
+        /// </summary>
+        /// <returns>Task which resolves when the dialog has been accepted.</returns>
+        /// <param name="promptText">A text to enter in prompt. Does not cause any effects if the dialog's type is not prompt.</param>
         public async Task Accept(string promptText = "")
         {
             await _client.SendAsync("Page.handleJavaScriptDialog", new Dictionary<string, object>
@@ -28,6 +65,10 @@ namespace PuppeteerSharp
             });
         }
 
+        /// <summary>
+        /// Dismiss the dialog.
+        /// </summary>
+        /// <returns>Task which resolves when the dialog has been dismissed.</returns>
         public async Task Dismiss()
         {
             await _client.SendAsync("Page.handleJavaScriptDialog", new Dictionary<string, object>

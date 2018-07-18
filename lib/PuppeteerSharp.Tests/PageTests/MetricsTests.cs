@@ -3,12 +3,17 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class MetricsTests : PuppeteerPageBaseTest
     {
+        public MetricsTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
         public async Task ShouldGetMetricsFromPage()
         {

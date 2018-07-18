@@ -6,22 +6,48 @@ using Newtonsoft.Json.Linq;
 
 namespace PuppeteerSharp
 {
+    /// <summary>
+    /// The class represents a context for JavaScript execution. Examples of JavaScript contexts are:
+    /// Each <see cref="Frame"/> has a separate <see cref="ExecutionContext"/>
+    /// All kind of web workers have their own contexts
+    /// </summary>
     public class ExecutionContext
     {
-        private readonly Session _client;
+        private readonly CDPSession _client;
         private readonly int _contextId;
 
-        public ExecutionContext(Session client, ContextPayload contextPayload, Func<dynamic, JSHandle> objectHandleFactory)
+        internal ExecutionContext(
+            CDPSession client,
+            ContextPayload contextPayload,
+            Func<dynamic, JSHandle> objectHandleFactory,
+            Frame frame)
         {
             _client = client;
             _contextId = contextPayload.Id;
             FrameId = contextPayload.AuxData.FrameId;
             IsDefault = contextPayload.AuxData.IsDefault;
             ObjectHandleFactory = objectHandleFactory;
+            Frame = frame;
         }
 
-        public Func<dynamic, JSHandle> ObjectHandleFactory { get; internal set; }
+        internal Func<dynamic, JSHandle> ObjectHandleFactory { get; set; }
+        /// <summary>
+        /// Gets or sets the frame identifier.
+        /// </summary>
+        /// <value>The frame identifier.</value>
         public string FrameId { get; internal set; }
+        /// <summary>
+        /// Frame associated with this execution context.
+        /// </summary>
+        /// <remarks>
+        /// NOTE Not every execution context is associated with a frame. For example, workers and extensions have execution contexts that are not associated with frames.
+        /// </remarks>
+        public Frame Frame { get; }
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="ExecutionContext"/> is the 
+        /// default context of a <see cref="Frame"/>
+        /// </summary>
+        /// <value><c>true</c> if is default; otherwise, <c>false</c>.</value>
         public bool IsDefault { get; internal set; }
 
         /// <summary>
@@ -99,7 +125,7 @@ namespace PuppeteerSharp
                 throw new PuppeteerException("Prototype JSHandle must not be referencing primitive value");
             }
 
-            dynamic response = await _client.SendAsync("Runtime.queryObjects", new Dictionary<string, object>()
+            dynamic response = await _client.SendAsync("Runtime.queryObjects", new Dictionary<string, object>
             {
                 {"prototypeObjectId", objectId.ToString()}
             });
@@ -114,7 +140,7 @@ namespace PuppeteerSharp
                 return null;
             }
 
-            return await EvaluateHandleAsync("Runtime.evaluate", new Dictionary<string, object>()
+            return await EvaluateHandleAsync("Runtime.evaluate", new Dictionary<string, object>
             {
                 {"contextId", _contextId},
                 {"expression", script},
@@ -130,7 +156,7 @@ namespace PuppeteerSharp
                 return null;
             }
 
-            return await EvaluateHandleAsync("Runtime.callFunctionOn", new Dictionary<string, object>()
+            return await EvaluateHandleAsync("Runtime.callFunctionOn", new Dictionary<string, object>
             {
                 {"functionDeclaration", script },
                 {"executionContextId", _contextId},
@@ -143,9 +169,22 @@ namespace PuppeteerSharp
         private async Task<T> EvaluateAsync<T>(Task<JSHandle> handleEvaluator)
         {
             var handle = await handleEvaluator;
-            var result = await handle.JsonValueAsync<T>()
-                .ContinueWith(jsonTask => jsonTask.Exception != null ? default(T) : jsonTask.Result);
+            var result = default(T);
 
+            try
+            {
+                result = await handle.JsonValueAsync<T>()
+                    .ContinueWith(jsonTask => jsonTask.Exception != null ? default : jsonTask.Result);
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.Contains("Object reference chain is too long") ||
+                    ex.Message.Contains("Object couldn't be returned by value"))
+                {
+                    return default;
+                }
+                throw new EvaluationFailedException(ex.Message, ex);
+            }
             await handle.DisposeAsync();
             return result;
         }

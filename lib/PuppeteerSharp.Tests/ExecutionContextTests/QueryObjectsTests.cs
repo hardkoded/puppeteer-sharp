@@ -1,11 +1,16 @@
 ﻿using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.ExecutionContextTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class QueryObjectsTests : PuppeteerPageBaseTest
     {
+        public QueryObjectsTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
         public async Task ShouldWork()
         {

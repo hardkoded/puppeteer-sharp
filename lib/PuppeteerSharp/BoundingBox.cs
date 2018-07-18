@@ -3,6 +3,9 @@ using PuppeteerSharp.Media;
 
 namespace PuppeteerSharp
 {
+    /// <summary>
+    /// Bounding box data returned by <see cref="ElementHandle.BoundingBoxAsync"/>.
+    /// </summary>
     public class BoundingBox
     {
         /// <summary>
@@ -26,6 +29,13 @@ namespace PuppeteerSharp
         /// <value>The height.</value>
         public decimal Height { get; set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BoundingBox"/> class.
+        /// </summary>
+        /// <param name="x">The x coordinate.</param>
+        /// <param name="y">The y coordinate.</param>
+        /// <param name="width">Width.</param>
+        /// <param name="height">Height.</param>
         public BoundingBox(decimal x, decimal y, decimal width, decimal height)
         {
             X = x;
@@ -45,6 +55,7 @@ namespace PuppeteerSharp
             };
         }
 
+        /// <inheritdoc/>
         public override bool Equals(object obj)
         {
             if (obj == null && GetType() != obj.GetType())
@@ -60,6 +71,7 @@ namespace PuppeteerSharp
                boundingBox.Width == Width;
         }
 
+        /// <inheritdoc/>
         public override int GetHashCode()
             => X.GetHashCode() * 397
                 ^ Y.GetHashCode() * 397

@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.ElementHandleTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class ClickTests : PuppeteerPageBaseTest
     {
+        public ClickTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
         public async Task ShouldWork()
         {
@@ -52,7 +57,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             var button = await Page.QuerySelectorAsync("button");
             await Page.EvaluateFunctionAsync("button => button.style.display = 'none'", button);
             var exception = await Assert.ThrowsAsync<PuppeteerException>(async () => await button.ClickAsync());
-            Assert.Equal("Node is not visible", exception.Message);
+            Assert.Equal("Node is either not visible or not an HTMLElement", exception.Message);
         }
 
         [Fact]
@@ -62,7 +67,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             var button = await Page.QuerySelectorAsync("button");
             await Page.EvaluateFunctionAsync("button => button.parentElement.style.display = 'none'", button);
             var exception = await Assert.ThrowsAsync<PuppeteerException>(async () => await button.ClickAsync());
-            Assert.Equal("Node is not visible", exception.Message);
+            Assert.Equal("Node is either not visible or not an HTMLElement", exception.Message);
         }
 
         [Fact]
@@ -71,7 +76,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             await Page.SetContentAsync("hello<br>goodbye");
             var br = await Page.QuerySelectorAsync("br");
             var exception = await Assert.ThrowsAsync<PuppeteerException>(async () => await br.ClickAsync());
-            Assert.Equal("Node is not visible", exception.Message);
+            Assert.Equal("Node is either not visible or not an HTMLElement", exception.Message);
         }
     }
 }
