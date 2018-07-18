@@ -114,7 +114,7 @@ namespace PuppeteerSharp
             {
                 var connectionDelay = options.SlowMo;
                 var browserWSEndpoint = await WaitForEndpoint(_chromeProcess, options.Timeout);
-                var keepAliveInterval = options.KeepAliveInterval;
+                var keepAliveInterval = 0;
 
                 _connection = await Connection.Create(browserWSEndpoint, connectionDelay, keepAliveInterval, _loggerFactory);
                 _processLoaded = true;
@@ -149,7 +149,7 @@ namespace PuppeteerSharp
                 _chromiumLaunched = true;
 
                 var connectionDelay = options.SlowMo;
-                var keepAliveInterval = options.KeepAliveInterval;
+                var keepAliveInterval = 0;
 
                 _connection = await Connection.Create(options.BrowserWSEndpoint, connectionDelay, keepAliveInterval, _loggerFactory);
 
