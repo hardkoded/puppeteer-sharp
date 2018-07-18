@@ -17,6 +17,7 @@ namespace PuppeteerSharp.TestServer
         private readonly IDictionary<string, Action<HttpRequest>> _requestSubscribers;
         private readonly IDictionary<string, RequestDelegate> _routes;
         private readonly IDictionary<string, (string username, string password)> _auths;
+        private readonly IDictionary<string, string> _csp;
         private readonly IWebHost _webHost;
 
         public static SimpleServer Create(int port, string contentRoot) => new SimpleServer(port, contentRoot, isHttps: false);
@@ -27,6 +28,7 @@ namespace PuppeteerSharp.TestServer
             _requestSubscribers = new ConcurrentDictionary<string, Action<HttpRequest>>();
             _routes = new ConcurrentDictionary<string, RequestDelegate>();
             _auths = new ConcurrentDictionary<string, (string username, string password)>();
+            _csp = new ConcurrentDictionary<string, string>();
             _webHost = new WebHostBuilder()
                 .ConfigureAppConfiguration((context, builder) => builder
                     .SetBasePath(context.HostingEnvironment.ContentRootPath)
@@ -50,7 +52,16 @@ namespace PuppeteerSharp.TestServer
                         }
                         return next();
                     })
-                    .UseStaticFiles())
+                    .UseStaticFiles(new StaticFileOptions
+                    {
+                        OnPrepareResponse = fileResponseContext =>
+                        {
+                            if(_csp.TryGetValue(fileResponseContext.Context.Request.Path, out var csp))
+                            {
+                                fileResponseContext.Context.Response.Headers["Content-Security-Policy"] = csp;
+                            }
+                        }
+                    }))
                 .UseKestrel(options =>
                 {
                     if (isHttps)
@@ -66,10 +77,9 @@ namespace PuppeteerSharp.TestServer
                 .Build();
         }
 
-        public void SetAuth(string path, string username, string password)
-        {
-            _auths.Add(path, (username, password));
-        }
+        public void SetAuth(string path, string username, string password) => _auths.Add(path, (username, password));
+
+        public void SetCSP(string path, string csp) => _csp.Add(path, csp);
 
         public Task StartAsync() => _webHost.StartAsync();
 
@@ -84,6 +94,7 @@ namespace PuppeteerSharp.TestServer
         {
             _routes.Clear();
             _auths.Clear();
+            _csp.Clear();
             foreach (var subscriber in _requestSubscribers.Values)
             {
                 subscriber(null);
@@ -91,19 +102,13 @@ namespace PuppeteerSharp.TestServer
             _requestSubscribers.Clear();
         }
 
-        public void SetRoute(string path, RequestDelegate handler)
-        {
-            _routes.Add(path, handler);
-        }
+        public void SetRoute(string path, RequestDelegate handler) => _routes.Add(path, handler);
 
-        public void SetRedirect(string from, string to)
+        public void SetRedirect(string from, string to) => SetRoute(from, context =>
         {
-            SetRoute(from, context =>
-            {
-                context.Response.Redirect(to);
-                return Task.CompletedTask;
-            });
-        }
+            context.Response.Redirect(to);
+            return Task.CompletedTask;
+        });
 
         public async Task<T> WaitForRequest<T>(string path, Func<HttpRequest, T> selector)
         {

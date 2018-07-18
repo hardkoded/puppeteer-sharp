@@ -50,6 +50,19 @@ namespace PuppeteerSharp.Tests.FrameTests
         }
 
         [Fact]
+        public async Task ShouldWorkWithStrictCSPPolicy()
+        {
+            Server.SetCSP("/empty.html", "script-src " + TestConstants.ServerUrl);
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var watchdog = Page.WaitForFunctionAsync("() => window.__FOO === 'hit'", new WaitForFunctionOptions
+            {
+                Polling = WaitForFunctionPollingOption.Raf
+            });
+            await Page.EvaluateExpressionAsync("window.__FOO = 'hit'");
+            await watchdog;
+        }
+
+        [Fact]
         public async Task ShouldThrowNegativePollingInterval()
         {
             var exception = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(()
