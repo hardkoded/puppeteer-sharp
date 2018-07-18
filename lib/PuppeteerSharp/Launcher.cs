@@ -149,7 +149,7 @@ namespace PuppeteerSharp
                 _chromiumLaunched = true;
 
                 var connectionDelay = options.SlowMo;
-                var keepAliveInterval = options.KeepAliveInterval;
+                var keepAliveInterval = 0;
 
                 _connection = await Connection.Create(options.BrowserWSEndpoint, connectionDelay, keepAliveInterval, _loggerFactory);
 
