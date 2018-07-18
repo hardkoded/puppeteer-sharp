@@ -146,7 +146,7 @@ namespace PuppeteerSharp
         /// Raised when a frame is navigated to a new url.
         /// </summary>
         public event EventHandler<FrameEventArgs> FrameNavigated;
-        
+
         /// <summary>
         /// Raised when a <see cref="Response"/> is received.
         /// </summary>
@@ -851,8 +851,7 @@ namespace PuppeteerSharp
         /// CSP bypassing happens at the moment of CSP initialization rather then evaluation.
         /// Usually this means that <see cref="SetBypassCSPAsync(bool)"/> should be called before navigating to the domain.
         /// </remarks>
-        public Task SetBypassCSPAsync(bool enabled)
-            => Client.SendAsync("Page.setBypassCSP", new { enabled });
+        public Task SetBypassCSPAsync(bool enabled) => Client.SendAsync("Page.setBypassCSP", new { enabled });
 
         /// <summary>
         /// Emulates a media such as screen or print.
