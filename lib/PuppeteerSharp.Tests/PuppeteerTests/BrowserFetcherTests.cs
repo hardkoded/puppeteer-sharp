@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -33,12 +32,6 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             revisionInfo = await browserFetcher.DownloadAsync(123456);
             Assert.True(revisionInfo.Local);
             Assert.Equal("LINUX BINARY\n", File.ReadAllText(revisionInfo.ExecutablePath));
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) || RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            {
-                Mono.Unix.Native.Syscall.stat(revisionInfo.ExecutablePath, out var stat);
-                Assert.Equal(BrowserFetcher.BrowserPermissionsInLinux, stat.st_mode & BrowserFetcher.BrowserPermissionsInLinux);
-            }
             Assert.Equal(new[] { 123456 }, browserFetcher.LocalRevisions());
             browserFetcher.Remove(123456);
             Assert.Empty(browserFetcher.LocalRevisions());

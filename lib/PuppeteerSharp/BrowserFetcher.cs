@@ -8,7 +8,6 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Net;
 using System.IO.Compression;
-using Mono.Unix.Native;
 
 namespace PuppeteerSharp
 {
@@ -33,13 +32,6 @@ namespace PuppeteerSharp
             {Platform.Win32, "{0}/chromium-browser-snapshots/Win/{1}/chrome-win32.zip"},
             {Platform.Win64, "{0}/chromium-browser-snapshots/Win_x64/{1}/chrome-win32.zip"}
         };
-
-        internal static readonly FilePermissions BrowserPermissionsInLinux =
-            FilePermissions.S_IRWXU |
-            FilePermissions.S_IRGRP |
-            FilePermissions.S_IXGRP |
-            FilePermissions.S_IROTH |
-            FilePermissions.S_IXOTH;
 
         /// <summary>
         /// Default chromiumg revision.
@@ -172,7 +164,7 @@ namespace PuppeteerSharp
 
             if (new DirectoryInfo(folderPath).Exists)
             {
-                return RevisionInfo(revision);
+                return null;
             }
 
             var downloadFolder = new DirectoryInfo(DownloadsFolder);
@@ -203,13 +195,7 @@ namespace PuppeteerSharp
 
             new FileInfo(zipPath).Delete();
 
-            var revisionInfo = RevisionInfo(revision);
-
-            if (revisionInfo != null && (GetCurrentPlatform() == Platform.Linux || GetCurrentPlatform() == Platform.MacOS))
-            {
-                Syscall.chmod(revisionInfo.ExecutablePath, BrowserPermissionsInLinux);
-            }
-            return revisionInfo;
+            return RevisionInfo(revision);
         }
 
         /// <summary>
