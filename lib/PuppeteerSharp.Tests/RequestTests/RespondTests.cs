@@ -43,7 +43,7 @@ namespace PuppeteerSharp.Tests.RequestTests
             await Page.SetRequestInterceptionAsync(true);
             Page.Request += async (sender, e) =>
             {
-                var imageData = File.ReadAllBytes("./assets/pptr.png");
+                var imageData = File.ReadAllBytes("./Assets/pptr.png");
                 await e.Request.RespondAsync(new ResponseData
                 {
                     ContentType = "image/png",
