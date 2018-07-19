@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Net;
 using System.IO.Compression;
-using Mono.Unix.Native;
+using PuppeteerSharp.Helpers.Linux;
 
 namespace PuppeteerSharp
 {
@@ -207,7 +207,7 @@ namespace PuppeteerSharp
 
             if (revisionInfo != null && (GetCurrentPlatform() == Platform.Linux || GetCurrentPlatform() == Platform.MacOS))
             {
-                Syscall.chmod(revisionInfo.ExecutablePath, BrowserPermissionsInLinux);
+                LinuxSysCall.SetPermissions(revisionInfo.ExecutablePath, BrowserPermissionsInLinux);
             }
             return revisionInfo;
         }
