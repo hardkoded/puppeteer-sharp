@@ -11,7 +11,6 @@ namespace PuppeteerSharp
     /// </summary>
     public class ScreenshotOptions
     {
-
         private static readonly Dictionary<string, ScreenshotType?> _extensionScreenshotTypeMap = new Dictionary<string, ScreenshotType?>
         {
             ["jpe"] = ScreenshotType.Jpeg,
