@@ -54,8 +54,10 @@ namespace PuppeteerSharp
         /// <param name="options">Screenshot options.</param>
         public async Task ScreenshotAsync(string file, ScreenshotOptions options)
         {
-            var fileInfo = new FileInfo(file);
-            options.Type = fileInfo.Extension.Replace(".", string.Empty);
+            if (!options.Type.HasValue)
+            {
+                options.Type = ScreenshotOptions.GetScreenshotTypeFromFile(file);
+            }
 
             var data = await ScreenshotDataAsync(options);
 
