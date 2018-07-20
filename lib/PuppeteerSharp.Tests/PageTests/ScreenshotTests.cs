@@ -265,6 +265,5 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(ScreenshotType.Png, ScreenshotOptions.GetScreenshotTypeFromFile("Test.png"));
             Assert.Null(ScreenshotOptions.GetScreenshotTypeFromFile("Test.exe"));
         }
-
     }
 }
