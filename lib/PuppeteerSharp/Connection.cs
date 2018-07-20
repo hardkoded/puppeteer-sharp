@@ -32,10 +32,7 @@ namespace PuppeteerSharp
             _sessions = new Dictionary<string, CDPSession>();
             _websocketReaderCancellationSource = new CancellationTokenSource();
 
-            Task task = Task.Factory.StartNew(async () =>
-            {
-                await GetResponseAsync();
-            });
+            Task.Factory.StartNew(GetResponseAsync);
         }
 
         #region Private Members

@@ -36,7 +36,6 @@ namespace PuppeteerSharp.Tests
             Headless = Convert.ToBoolean(Environment.GetEnvironmentVariable("HEADLESS") ?? "true"),
             Args = new[] { "--no-sandbox" },
             Timeout = 0,
-            KeepAliveInterval = 120,
             LogProcess = true
         };
 

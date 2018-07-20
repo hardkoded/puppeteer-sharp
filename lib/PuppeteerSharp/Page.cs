@@ -1255,7 +1255,7 @@ namespace PuppeteerSharp
         /// <param name="script">Expression to be evaluated in browser context</param>
         /// <param name="options">Optional waiting parameters</param>
         /// <returns>A task that resolves when the <c>script</c> returns a truthy value</returns>
-        /// <seealso cref="Frame.WaitForExpressionAsync(string, WaitForFunctionOptions, object[])"/>
+        /// <seealso cref="Frame.WaitForExpressionAsync(string, WaitForFunctionOptions)"/>
         public Task<JSHandle> WaitForExpressionAsync(string script, WaitForFunctionOptions options = null)
             => MainFrame.WaitForExpressionAsync(script, options ?? new WaitForFunctionOptions());
 
