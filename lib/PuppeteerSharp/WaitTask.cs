@@ -137,7 +137,6 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
             _title = title;
 
             frame.WaitTasks.Add(this);
-            _taskCompletion = new TaskCompletionSource<JSHandle>();
 
             _cts = new CancellationTokenSource();
 
@@ -147,12 +146,10 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
                     => Termiante(new WaitTaskTimeoutException(timeout, title)));
             }
 
-            LaunchRerunTask();
+            var runTask = Rerun();
         }
 
         internal Task<JSHandle> Task => _taskCompletion.Task;
-
-        internal void LaunchRerunTask() => System.Threading.Tasks.Task.Factory.StartNew(Rerun);
 
         internal async Task Rerun()
         {
