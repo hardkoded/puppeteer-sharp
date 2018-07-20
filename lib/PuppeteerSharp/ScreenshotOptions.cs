@@ -16,7 +16,7 @@ namespace PuppeteerSharp
             ["jpe"] = ScreenshotType.Jpeg,
             ["jpeg"] = ScreenshotType.Jpeg,
             ["jpg"] = ScreenshotType.Jpeg,
-            ["png"] = ScreenshotType.Jpeg,
+            ["png"] = ScreenshotType.Png,
         };
 
         /// <summary>
