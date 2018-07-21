@@ -913,9 +913,10 @@ namespace PuppeteerSharp
         /// <param name="options">Screenshot options.</param>
         public async Task ScreenshotAsync(string file, ScreenshotOptions options)
         {
-            var fileInfo = new FileInfo(file);
-            options.Type = fileInfo.Extension.Replace(".", string.Empty);
-
+            if (!options.Type.HasValue)
+            {
+                options.Type = ScreenshotOptions.GetScreenshotTypeFromFile(file);
+            }
             var data = await ScreenshotDataAsync(options);
 
             using (var fs = new FileStream(file, FileMode.Create, FileAccess.Write))
@@ -951,25 +952,16 @@ namespace PuppeteerSharp
         /// <param name="options">Screenshot options.</param>
         public async Task<byte[]> ScreenshotDataAsync(ScreenshotOptions options)
         {
-            string screenshotType = null;
+            var screenshotType = options.Type;
 
-            if (!string.IsNullOrEmpty(options.Type))
+            if (!screenshotType.HasValue)
             {
-                if (options.Type != "png" && options.Type != "jpeg")
-                {
-                    throw new ArgumentException($"Unknown options.type {options.Type}");
-                }
-                screenshotType = options.Type;
-            }
-
-            if (string.IsNullOrEmpty(screenshotType))
-            {
-                screenshotType = "png";
+                screenshotType = ScreenshotType.Png;
             }
 
             if (options.Quality.HasValue)
             {
-                if (screenshotType == "jpeg")
+                if (screenshotType != ScreenshotType.Jpeg)
                 {
                     throw new ArgumentException($"options.Quality is unsupported for the {screenshotType} screenshots");
                 }
@@ -985,7 +977,7 @@ namespace PuppeteerSharp
                 throw new ArgumentException("options.clip and options.fullPage are exclusive");
             }
 
-            return await _screenshotTaskQueue.Enqueue(() => PerformScreenshot(screenshotType, options));
+            return await _screenshotTaskQueue.Enqueue(() => PerformScreenshot(screenshotType.Value, options));
         }
 
         /// <summary>
@@ -1426,7 +1418,7 @@ namespace PuppeteerSharp
             return result;
         }
 
-        private async Task<byte[]> PerformScreenshot(string format, ScreenshotOptions options)
+        private async Task<byte[]> PerformScreenshot(ScreenshotType type, ScreenshotOptions options)
         {
             await Client.SendAsync("Target.activateTarget", new
             {
@@ -1496,7 +1488,7 @@ namespace PuppeteerSharp
 
             dynamic screenMessage = new ExpandoObject();
 
-            screenMessage.format = format;
+            screenMessage.format = type.ToString().ToLower();
 
             if (options.Quality.HasValue)
             {

@@ -255,5 +255,15 @@ namespace PuppeteerSharp.Tests.PageTests
                 Assert.True(ScreenshotHelper.PixelMatch("screenshot-clip-odd-size.png", screenshot));
             }
         }
+
+        [Fact]
+        public void ShouldInferScreenshotTypeFromName()
+        {
+            Assert.Equal(ScreenshotType.Jpeg, ScreenshotOptions.GetScreenshotTypeFromFile("Test.jpg"));
+            Assert.Equal(ScreenshotType.Jpeg, ScreenshotOptions.GetScreenshotTypeFromFile("Test.jpe"));
+            Assert.Equal(ScreenshotType.Jpeg, ScreenshotOptions.GetScreenshotTypeFromFile("Test.jpeg"));
+            Assert.Equal(ScreenshotType.Png, ScreenshotOptions.GetScreenshotTypeFromFile("Test.png"));
+            Assert.Null(ScreenshotOptions.GetScreenshotTypeFromFile("Test.exe"));
+        }
     }
 }
