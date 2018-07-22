@@ -146,7 +146,8 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
                     => Termiante(new WaitTaskTimeoutException(timeout, title)));
             }
 
-            var runTask = Rerun();
+            _taskCompletion = new TaskCompletionSource<JSHandle>();
+            _ = Rerun();
         }
 
         internal Task<JSHandle> Task => _taskCompletion.Task;

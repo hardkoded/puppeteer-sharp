@@ -593,7 +593,7 @@ namespace PuppeteerSharp
 
                 foreach (var waitTask in WaitTasks)
                 {
-                    var runTask = waitTask.Rerun();
+                    _ = waitTask.Rerun();
                 }
             }
             else
