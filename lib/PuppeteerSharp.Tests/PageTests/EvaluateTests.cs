@@ -200,8 +200,8 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Fact]
-        public async Task ShouldSimulateAUserGesture()
-            => await Page.EvaluateExpressionAsync(@"(
+        public Task ShouldSimulateAUserGesture()
+            => Page.EvaluateExpressionAsync(@"(
             function playAudio()
             {
                 const audio = document.createElement('audio');
