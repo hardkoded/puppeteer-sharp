@@ -1296,10 +1296,23 @@ namespace PuppeteerSharp
             => MainFrame.WaitForXPathAsync(xpath, options ?? new WaitForSelectorOptions());
 
         /// <summary>
-        /// Waits for navigation
+        /// This resolves when the page navigates to a new URL or reloads.
+        /// It is useful for when you run code which will indirectly cause the page to navigate.
         /// </summary>
         /// <param name="options">navigation options</param>
         /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect</returns>
+        /// <remarks>
+        /// Usage of the <c>History API</c> <see href="https://developer.mozilla.org/en-US/docs/Web/API/History_API"/> to change the URL is considered a navigation
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// var navigationTask = page.WaitForNavigationAsync();
+        /// await page.ClickAsync("a.my-link");
+        /// await navigationTask;
+        /// ]]>
+        /// </code>
+        /// </example>
         public async Task<Response> WaitForNavigationAsync(NavigationOptions options = null)
         {
             var mainFrame = _frameManager.MainFrame;
