@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>1.2.0</PackageVersion>
+    <PackageVersion>1.3.0</PackageVersion>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
@@ -12,22 +12,35 @@
     <Description>Headless Chrome .NET API</Description>
     <PackageId>PuppeteerSharp</PackageId>
     <PackageReleaseNotes>
-New Features
- * New RequestChain property.
- * Chromium updated to r543305.
+# New Features
 
-New APIs
- * Request.RedirectChain.
- * ElementHandle.ContentFrameAsync.
- * AddTagOptions.Type. Allowing the user to declare script tags (using Page.AddScriptTagAsync) as modules.
+ * CSP Support
+ * Support anchor navigation
+ * Chromium updated to r549031
 
-Changes
- * Response.Ok() returns true for local files.
- * Target.TargetType is now an enum.
- * NavigationException Improvements.
- * PaperFormat Height and Width now are public.
+# New APIs
+
+ * Page.SetBypassCSPAsync
+ * Page.WaitForExpressionAsync
+ * Frame.WaitForExpressionAsync
+ * ElementHandle.BoxModelAsync
+ * Page.Close event
+
+# Breaking Changes
+
+ * ConnectOptions.KeepAliveInterval and LaunchOPtions.KeepAliveInterval were marked as obsolete because Chromim doesn't support pings yet (see: https://bugs.chromium.org/p/chromium/issues/detail?id=865002)
+ * [PENDING] ScreenshotOptions.Type is now an enum 
+
+# Changelog
+
+ * Add an option to disable timeout for WaitForFunctionAsync
+ * Tracing.StopAsync now returns a string with the trace data.
+ * ViewPortOptions.DeviceScaleFactor, IsLandscape and HasTouch now has a public setter.
+ * Page.waitForNavigation handle mixed content correctly.
+ * Explicitly throw on content request for redirect response
+ * Consume protocol errors when initiating browser.close()
     </PackageReleaseNotes>
-    <ReleaseVersion>1.2.0</ReleaseVersion>
+    <ReleaseVersion>1.3.0</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>
