@@ -162,6 +162,122 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.BoundingBox.Y
   nameWithType: BoundingBox.Y
+- uid: PuppeteerSharp.BoxModel
+  name: BoxModel
+  href: api/PuppeteerSharp.BoxModel.html
+  commentId: T:PuppeteerSharp.BoxModel
+  fullName: PuppeteerSharp.BoxModel
+  nameWithType: BoxModel
+- uid: PuppeteerSharp.BoxModel.Border
+  name: Border
+  href: api/PuppeteerSharp.BoxModel.html#PuppeteerSharp_BoxModel_Border
+  commentId: P:PuppeteerSharp.BoxModel.Border
+  fullName: PuppeteerSharp.BoxModel.Border
+  nameWithType: BoxModel.Border
+- uid: PuppeteerSharp.BoxModel.Border*
+  name: Border
+  href: api/PuppeteerSharp.BoxModel.html#PuppeteerSharp_BoxModel_Border_
+  commentId: Overload:PuppeteerSharp.BoxModel.Border
+  isSpec: "True"
+  fullName: PuppeteerSharp.BoxModel.Border
+  nameWithType: BoxModel.Border
+- uid: PuppeteerSharp.BoxModel.Content
+  name: Content
+  href: api/PuppeteerSharp.BoxModel.html#PuppeteerSharp_BoxModel_Content
+  commentId: P:PuppeteerSharp.BoxModel.Content
+  fullName: PuppeteerSharp.BoxModel.Content
+  nameWithType: BoxModel.Content
+- uid: PuppeteerSharp.BoxModel.Content*
+  name: Content
+  href: api/PuppeteerSharp.BoxModel.html#PuppeteerSharp_BoxModel_Content_
+  commentId: Overload:PuppeteerSharp.BoxModel.Content
+  isSpec: "True"
+  fullName: PuppeteerSharp.BoxModel.Content
+  nameWithType: BoxModel.Content
+- uid: PuppeteerSharp.BoxModel.Height
+  name: Height
+  href: api/PuppeteerSharp.BoxModel.html#PuppeteerSharp_BoxModel_Height
+  commentId: P:PuppeteerSharp.BoxModel.Height
+  fullName: PuppeteerSharp.BoxModel.Height
+  nameWithType: BoxModel.Height
+- uid: PuppeteerSharp.BoxModel.Height*
+  name: Height
+  href: api/PuppeteerSharp.BoxModel.html#PuppeteerSharp_BoxModel_Height_
+  commentId: Overload:PuppeteerSharp.BoxModel.Height
+  isSpec: "True"
+  fullName: PuppeteerSharp.BoxModel.Height
+  nameWithType: BoxModel.Height
+- uid: PuppeteerSharp.BoxModel.Margin
+  name: Margin
+  href: api/PuppeteerSharp.BoxModel.html#PuppeteerSharp_BoxModel_Margin
+  commentId: P:PuppeteerSharp.BoxModel.Margin
+  fullName: PuppeteerSharp.BoxModel.Margin
+  nameWithType: BoxModel.Margin
+- uid: PuppeteerSharp.BoxModel.Margin*
+  name: Margin
+  href: api/PuppeteerSharp.BoxModel.html#PuppeteerSharp_BoxModel_Margin_
+  commentId: Overload:PuppeteerSharp.BoxModel.Margin
+  isSpec: "True"
+  fullName: PuppeteerSharp.BoxModel.Margin
+  nameWithType: BoxModel.Margin
+- uid: PuppeteerSharp.BoxModel.Padding
+  name: Padding
+  href: api/PuppeteerSharp.BoxModel.html#PuppeteerSharp_BoxModel_Padding
+  commentId: P:PuppeteerSharp.BoxModel.Padding
+  fullName: PuppeteerSharp.BoxModel.Padding
+  nameWithType: BoxModel.Padding
+- uid: PuppeteerSharp.BoxModel.Padding*
+  name: Padding
+  href: api/PuppeteerSharp.BoxModel.html#PuppeteerSharp_BoxModel_Padding_
+  commentId: Overload:PuppeteerSharp.BoxModel.Padding
+  isSpec: "True"
+  fullName: PuppeteerSharp.BoxModel.Padding
+  nameWithType: BoxModel.Padding
+- uid: PuppeteerSharp.BoxModel.Width
+  name: Width
+  href: api/PuppeteerSharp.BoxModel.html#PuppeteerSharp_BoxModel_Width
+  commentId: P:PuppeteerSharp.BoxModel.Width
+  fullName: PuppeteerSharp.BoxModel.Width
+  nameWithType: BoxModel.Width
+- uid: PuppeteerSharp.BoxModel.Width*
+  name: Width
+  href: api/PuppeteerSharp.BoxModel.html#PuppeteerSharp_BoxModel_Width_
+  commentId: Overload:PuppeteerSharp.BoxModel.Width
+  isSpec: "True"
+  fullName: PuppeteerSharp.BoxModel.Width
+  nameWithType: BoxModel.Width
+- uid: PuppeteerSharp.BoxModelPoint
+  name: BoxModelPoint
+  href: api/PuppeteerSharp.BoxModelPoint.html
+  commentId: T:PuppeteerSharp.BoxModelPoint
+  fullName: PuppeteerSharp.BoxModelPoint
+  nameWithType: BoxModelPoint
+- uid: PuppeteerSharp.BoxModelPoint.X
+  name: X
+  href: api/PuppeteerSharp.BoxModelPoint.html#PuppeteerSharp_BoxModelPoint_X
+  commentId: P:PuppeteerSharp.BoxModelPoint.X
+  fullName: PuppeteerSharp.BoxModelPoint.X
+  nameWithType: BoxModelPoint.X
+- uid: PuppeteerSharp.BoxModelPoint.X*
+  name: X
+  href: api/PuppeteerSharp.BoxModelPoint.html#PuppeteerSharp_BoxModelPoint_X_
+  commentId: Overload:PuppeteerSharp.BoxModelPoint.X
+  isSpec: "True"
+  fullName: PuppeteerSharp.BoxModelPoint.X
+  nameWithType: BoxModelPoint.X
+- uid: PuppeteerSharp.BoxModelPoint.Y
+  name: Y
+  href: api/PuppeteerSharp.BoxModelPoint.html#PuppeteerSharp_BoxModelPoint_Y
+  commentId: P:PuppeteerSharp.BoxModelPoint.Y
+  fullName: PuppeteerSharp.BoxModelPoint.Y
+  nameWithType: BoxModelPoint.Y
+- uid: PuppeteerSharp.BoxModelPoint.Y*
+  name: Y
+  href: api/PuppeteerSharp.BoxModelPoint.html#PuppeteerSharp_BoxModelPoint_Y_
+  commentId: Overload:PuppeteerSharp.BoxModelPoint.Y
+  isSpec: "True"
+  fullName: PuppeteerSharp.BoxModelPoint.Y
+  nameWithType: BoxModelPoint.Y
 - uid: PuppeteerSharp.Browser
   name: Browser
   href: api/PuppeteerSharp.Browser.html
@@ -1403,6 +1519,19 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.ElementHandle.BoundingBoxAsync
   nameWithType: ElementHandle.BoundingBoxAsync
+- uid: PuppeteerSharp.ElementHandle.BoxModelAsync
+  name: BoxModelAsync()
+  href: api/PuppeteerSharp.ElementHandle.html#PuppeteerSharp_ElementHandle_BoxModelAsync
+  commentId: M:PuppeteerSharp.ElementHandle.BoxModelAsync
+  fullName: PuppeteerSharp.ElementHandle.BoxModelAsync()
+  nameWithType: ElementHandle.BoxModelAsync()
+- uid: PuppeteerSharp.ElementHandle.BoxModelAsync*
+  name: BoxModelAsync
+  href: api/PuppeteerSharp.ElementHandle.html#PuppeteerSharp_ElementHandle_BoxModelAsync_
+  commentId: Overload:PuppeteerSharp.ElementHandle.BoxModelAsync
+  isSpec: "True"
+  fullName: PuppeteerSharp.ElementHandle.BoxModelAsync
+  nameWithType: ElementHandle.BoxModelAsync
 - uid: PuppeteerSharp.ElementHandle.ClickAsync(PuppeteerSharp.Input.ClickOptions)
   name: ClickAsync(ClickOptions)
   href: api/PuppeteerSharp.ElementHandle.html#PuppeteerSharp_ElementHandle_ClickAsync_PuppeteerSharp_Input_ClickOptions_
@@ -2078,6 +2207,19 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Frame.Url
   nameWithType: Frame.Url
+- uid: PuppeteerSharp.Frame.WaitForExpressionAsync(System.String,PuppeteerSharp.WaitForFunctionOptions)
+  name: WaitForExpressionAsync(String, WaitForFunctionOptions)
+  href: api/PuppeteerSharp.Frame.html#PuppeteerSharp_Frame_WaitForExpressionAsync_System_String_PuppeteerSharp_WaitForFunctionOptions_
+  commentId: M:PuppeteerSharp.Frame.WaitForExpressionAsync(System.String,PuppeteerSharp.WaitForFunctionOptions)
+  fullName: PuppeteerSharp.Frame.WaitForExpressionAsync(System.String, PuppeteerSharp.WaitForFunctionOptions)
+  nameWithType: Frame.WaitForExpressionAsync(String, WaitForFunctionOptions)
+- uid: PuppeteerSharp.Frame.WaitForExpressionAsync*
+  name: WaitForExpressionAsync
+  href: api/PuppeteerSharp.Frame.html#PuppeteerSharp_Frame_WaitForExpressionAsync_
+  commentId: Overload:PuppeteerSharp.Frame.WaitForExpressionAsync
+  isSpec: "True"
+  fullName: PuppeteerSharp.Frame.WaitForExpressionAsync
+  nameWithType: Frame.WaitForExpressionAsync
 - uid: PuppeteerSharp.Frame.WaitForFunctionAsync(System.String,PuppeteerSharp.WaitForFunctionOptions,System.Object[])
   name: WaitForFunctionAsync(String, WaitForFunctionOptions, Object[])
   href: api/PuppeteerSharp.Frame.html#PuppeteerSharp_Frame_WaitForFunctionAsync_System_String_PuppeteerSharp_WaitForFunctionOptions_System_Object___
@@ -3527,6 +3669,19 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.LaunchOptions.Headless
   nameWithType: LaunchOptions.Headless
+- uid: PuppeteerSharp.LaunchOptions.IgnoreDefaultArgs
+  name: IgnoreDefaultArgs
+  href: api/PuppeteerSharp.LaunchOptions.html#PuppeteerSharp_LaunchOptions_IgnoreDefaultArgs
+  commentId: P:PuppeteerSharp.LaunchOptions.IgnoreDefaultArgs
+  fullName: PuppeteerSharp.LaunchOptions.IgnoreDefaultArgs
+  nameWithType: LaunchOptions.IgnoreDefaultArgs
+- uid: PuppeteerSharp.LaunchOptions.IgnoreDefaultArgs*
+  name: IgnoreDefaultArgs
+  href: api/PuppeteerSharp.LaunchOptions.html#PuppeteerSharp_LaunchOptions_IgnoreDefaultArgs_
+  commentId: Overload:PuppeteerSharp.LaunchOptions.IgnoreDefaultArgs
+  isSpec: "True"
+  fullName: PuppeteerSharp.LaunchOptions.IgnoreDefaultArgs
+  nameWithType: LaunchOptions.IgnoreDefaultArgs
 - uid: PuppeteerSharp.LaunchOptions.IgnoreHTTPSErrors
   name: IgnoreHTTPSErrors
   href: api/PuppeteerSharp.LaunchOptions.html#PuppeteerSharp_LaunchOptions_IgnoreHTTPSErrors
@@ -4532,6 +4687,12 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Page.ClickAsync
   nameWithType: Page.ClickAsync
+- uid: PuppeteerSharp.Page.Close
+  name: Close
+  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_Close
+  commentId: E:PuppeteerSharp.Page.Close
+  fullName: PuppeteerSharp.Page.Close
+  nameWithType: Page.Close
 - uid: PuppeteerSharp.Page.CloseAsync
   name: CloseAsync()
   href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_CloseAsync
@@ -4782,15 +4943,15 @@ references:
   fullName.vb: PuppeteerSharp.Page.ExposeFunctionAsync(Of T1, T2, TResult)(System.String, Func(Of T1, T2, TResult))
   nameWithType: Page.ExposeFunctionAsync<T1, T2, TResult>(String, Func<T1, T2, TResult>)
   nameWithType.vb: Page.ExposeFunctionAsync(Of T1, T2, TResult)(String, Func(Of T1, T2, TResult))
-- uid: PuppeteerSharp.Page.ExposeFunctionAsync``4(System.String,Func{``3})
-  name: ExposeFunctionAsync<T1, T2, T3, TResult>(String, Func<TResult>)
-  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_ExposeFunctionAsync__4_System_String_Func___3__
-  commentId: M:PuppeteerSharp.Page.ExposeFunctionAsync``4(System.String,Func{``3})
-  name.vb: ExposeFunctionAsync(Of T1, T2, T3, TResult)(String, Func(Of TResult))
-  fullName: PuppeteerSharp.Page.ExposeFunctionAsync<T1, T2, T3, TResult>(System.String, Func<TResult>)
-  fullName.vb: PuppeteerSharp.Page.ExposeFunctionAsync(Of T1, T2, T3, TResult)(System.String, Func(Of TResult))
-  nameWithType: Page.ExposeFunctionAsync<T1, T2, T3, TResult>(String, Func<TResult>)
-  nameWithType.vb: Page.ExposeFunctionAsync(Of T1, T2, T3, TResult)(String, Func(Of TResult))
+- uid: PuppeteerSharp.Page.ExposeFunctionAsync``4(System.String,Func{``0,``1,``2,``3})
+  name: ExposeFunctionAsync<T1, T2, T3, TResult>(String, Func<T1, T2, T3, TResult>)
+  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_ExposeFunctionAsync__4_System_String_Func___0___1___2___3__
+  commentId: M:PuppeteerSharp.Page.ExposeFunctionAsync``4(System.String,Func{``0,``1,``2,``3})
+  name.vb: ExposeFunctionAsync(Of T1, T2, T3, TResult)(String, Func(Of T1, T2, T3, TResult))
+  fullName: PuppeteerSharp.Page.ExposeFunctionAsync<T1, T2, T3, TResult>(System.String, Func<T1, T2, T3, TResult>)
+  fullName.vb: PuppeteerSharp.Page.ExposeFunctionAsync(Of T1, T2, T3, TResult)(System.String, Func(Of T1, T2, T3, TResult))
+  nameWithType: Page.ExposeFunctionAsync<T1, T2, T3, TResult>(String, Func<T1, T2, T3, TResult>)
+  nameWithType.vb: Page.ExposeFunctionAsync(Of T1, T2, T3, TResult)(String, Func(Of T1, T2, T3, TResult))
 - uid: PuppeteerSharp.Page.ExposeFunctionAsync``5(System.String,Func{``0,``1,``2,``3,``4})
   name: ExposeFunctionAsync<T1, T2, T3, T4, TResult>(String, Func<T1, T2, T3, T4, TResult>)
   href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_ExposeFunctionAsync__5_System_String_Func___0___1___2___3___4__
@@ -5245,6 +5406,19 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Page.SelectAsync
   nameWithType: Page.SelectAsync
+- uid: PuppeteerSharp.Page.SetBypassCSPAsync(System.Boolean)
+  name: SetBypassCSPAsync(Boolean)
+  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_SetBypassCSPAsync_System_Boolean_
+  commentId: M:PuppeteerSharp.Page.SetBypassCSPAsync(System.Boolean)
+  fullName: PuppeteerSharp.Page.SetBypassCSPAsync(System.Boolean)
+  nameWithType: Page.SetBypassCSPAsync(Boolean)
+- uid: PuppeteerSharp.Page.SetBypassCSPAsync*
+  name: SetBypassCSPAsync
+  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_SetBypassCSPAsync_
+  commentId: Overload:PuppeteerSharp.Page.SetBypassCSPAsync
+  isSpec: "True"
+  fullName: PuppeteerSharp.Page.SetBypassCSPAsync
+  nameWithType: Page.SetBypassCSPAsync
 - uid: PuppeteerSharp.Page.SetCacheEnabledAsync(System.Boolean)
   name: SetCacheEnabledAsync(Boolean)
   href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_SetCacheEnabledAsync_System_Boolean_
@@ -5465,6 +5639,19 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Page.Viewport
   nameWithType: Page.Viewport
+- uid: PuppeteerSharp.Page.WaitForExpressionAsync(System.String,PuppeteerSharp.WaitForFunctionOptions)
+  name: WaitForExpressionAsync(String, WaitForFunctionOptions)
+  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_WaitForExpressionAsync_System_String_PuppeteerSharp_WaitForFunctionOptions_
+  commentId: M:PuppeteerSharp.Page.WaitForExpressionAsync(System.String,PuppeteerSharp.WaitForFunctionOptions)
+  fullName: PuppeteerSharp.Page.WaitForExpressionAsync(System.String, PuppeteerSharp.WaitForFunctionOptions)
+  nameWithType: Page.WaitForExpressionAsync(String, WaitForFunctionOptions)
+- uid: PuppeteerSharp.Page.WaitForExpressionAsync*
+  name: WaitForExpressionAsync
+  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_WaitForExpressionAsync_
+  commentId: Overload:PuppeteerSharp.Page.WaitForExpressionAsync
+  isSpec: "True"
+  fullName: PuppeteerSharp.Page.WaitForExpressionAsync
+  nameWithType: Page.WaitForExpressionAsync
 - uid: PuppeteerSharp.Page.WaitForFunctionAsync(System.String,PuppeteerSharp.WaitForFunctionOptions,System.Object[])
   name: WaitForFunctionAsync(String, WaitForFunctionOptions, Object[])
   href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_WaitForFunctionAsync_System_String_PuppeteerSharp_WaitForFunctionOptions_System_Object___
@@ -6857,6 +7044,24 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.ScreenshotOptions.Type
   nameWithType: ScreenshotOptions.Type
+- uid: PuppeteerSharp.ScreenshotType
+  name: ScreenshotType
+  href: api/PuppeteerSharp.ScreenshotType.html
+  commentId: T:PuppeteerSharp.ScreenshotType
+  fullName: PuppeteerSharp.ScreenshotType
+  nameWithType: ScreenshotType
+- uid: PuppeteerSharp.ScreenshotType.Jpeg
+  name: Jpeg
+  href: api/PuppeteerSharp.ScreenshotType.html#PuppeteerSharp_ScreenshotType_Jpeg
+  commentId: F:PuppeteerSharp.ScreenshotType.Jpeg
+  fullName: PuppeteerSharp.ScreenshotType.Jpeg
+  nameWithType: ScreenshotType.Jpeg
+- uid: PuppeteerSharp.ScreenshotType.Png
+  name: Png
+  href: api/PuppeteerSharp.ScreenshotType.html#PuppeteerSharp_ScreenshotType_Png
+  commentId: F:PuppeteerSharp.ScreenshotType.Png
+  fullName: PuppeteerSharp.ScreenshotType.Png
+  nameWithType: ScreenshotType.Png
 - uid: PuppeteerSharp.SecurityDetails
   name: SecurityDetails
   href: api/PuppeteerSharp.SecurityDetails.html
@@ -7457,19 +7662,6 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.WaitForSelectorOptions.Hidden
   nameWithType: WaitForSelectorOptions.Hidden
-- uid: PuppeteerSharp.WaitForSelectorOptions.Timeout
-  name: Timeout
-  href: api/PuppeteerSharp.WaitForSelectorOptions.html#PuppeteerSharp_WaitForSelectorOptions_Timeout
-  commentId: P:PuppeteerSharp.WaitForSelectorOptions.Timeout
-  fullName: PuppeteerSharp.WaitForSelectorOptions.Timeout
-  nameWithType: WaitForSelectorOptions.Timeout
-- uid: PuppeteerSharp.WaitForSelectorOptions.Timeout*
-  name: Timeout
-  href: api/PuppeteerSharp.WaitForSelectorOptions.html#PuppeteerSharp_WaitForSelectorOptions_Timeout_
-  commentId: Overload:PuppeteerSharp.WaitForSelectorOptions.Timeout
-  isSpec: "True"
-  fullName: PuppeteerSharp.WaitForSelectorOptions.Timeout
-  nameWithType: WaitForSelectorOptions.Timeout
 - uid: PuppeteerSharp.WaitForSelectorOptions.Visible
   name: Visible
   href: api/PuppeteerSharp.WaitForSelectorOptions.html#PuppeteerSharp_WaitForSelectorOptions_Visible
