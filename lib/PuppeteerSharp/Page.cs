@@ -262,6 +262,10 @@ namespace PuppeteerSharp
             "JSHeapTotalSize"
         };
 
+        /// <summary>
+        /// Get the browser the page belongs to.
+        /// </summary>
+        public Browser Browser => Target.Browser;
         #endregion
 
         #region Public Methods
