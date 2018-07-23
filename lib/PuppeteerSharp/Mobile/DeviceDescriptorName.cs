@@ -216,6 +216,22 @@
         /// <summary>
         /// Nokia N9 landscape.
         /// </summary>
-        NokiaN9Landscape
+        NokiaN9Landscape,
+        /// <summary>
+        /// Pixel 2
+        /// </summary>
+        Pixel2,
+        /// <summary>
+        /// Pixel 2 landscape
+        /// </summary>
+        Pixel2Landscape,
+        /// <summary>
+        /// Pixel 2 XL
+        /// </summary>
+        Pixel2XL,
+        /// <summary>
+        /// Pixel 2 XL landscape
+        /// </summary>
+        Pixel2XLLandscape
     }
 }
