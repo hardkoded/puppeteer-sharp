@@ -278,7 +278,6 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="script">Expression to be evaluated in browser context</param>
         /// <param name="options">Optional waiting parameters</param>
-        /// <param name="args">Arguments to pass to <c>script</c></param>
         /// <returns>A task that resolves when the <c>script</c> returns a truthy value</returns>
         /// <seealso cref="Page.WaitForExpressionAsync(string, WaitForFunctionOptions)"/>
         public Task<JSHandle> WaitForExpressionAsync(string script, WaitForFunctionOptions options)
@@ -597,7 +596,7 @@ namespace PuppeteerSharp
 
                 foreach (var waitTask in WaitTasks)
                 {
-                    waitTask.Rerun();
+                    _ = waitTask.Rerun();
                 }
             }
             else

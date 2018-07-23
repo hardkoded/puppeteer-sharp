@@ -12,7 +12,6 @@ namespace PuppeteerSharp
     public class Target
     {
         #region Private members
-        private readonly Browser _browser;
         private TargetInfo _targetInfo;
         private string _targetId;
         private Func<Task<CDPSession>> _sessionFactory;
@@ -26,7 +25,7 @@ namespace PuppeteerSharp
             _targetInfo = targetInfo;
             _targetId = targetInfo.TargetId;
             _sessionFactory = sessionFactory;
-            _browser = browser;
+            Browser = browser;
             _pageTask = null;
 
             InitilizedTaskWrapper = new TaskCompletionSource<bool>();
@@ -56,6 +55,12 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The target identifier.</value>
         public string TargetId => _targetInfo.TargetId;
+
+        /// <summary>
+        /// Get the browser the target belongs to.
+        /// </summary>
+        public Browser Browser { get; }
+
         internal Task<bool> InitializedTask => InitilizedTaskWrapper.Task;
         internal TaskCompletionSource<bool> InitilizedTaskWrapper { get; }
         internal Task CloseTask => CloseTaskWrapper.Task;
@@ -79,7 +84,7 @@ namespace PuppeteerSharp
         private async Task<Page> CreatePageAsync()
         {
             var session = await _sessionFactory();
-            return await Page.CreateAsync(session, this, _browser.IgnoreHTTPSErrors, !_browser.AppMode, _browser.ScreenshotTaskQueue);
+            return await Page.CreateAsync(session, this, Browser.IgnoreHTTPSErrors, !Browser.AppMode, Browser.ScreenshotTaskQueue);
         }
 
         internal void TargetInfoChanged(TargetInfo targetInfo)
@@ -96,7 +101,7 @@ namespace PuppeteerSharp
 
             if (previousUrl != targetInfo.Url)
             {
-                _browser.ChangeTarget(this);
+                Browser.ChangeTarget(this);
             }
         }
 
@@ -104,6 +109,6 @@ namespace PuppeteerSharp
         /// Creates a Chrome Devtools Protocol session attached to the target.
         /// </summary>
         /// <returns>A task that returns a <see cref="CDPSession"/></returns>
-        public Task<CDPSession> CreateCDPSessionAsync() => _browser.Connection.CreateSessionAsync(TargetId);
+        public Task<CDPSession> CreateCDPSessionAsync() => Browser.Connection.CreateSessionAsync(TargetId);
     }
 }
