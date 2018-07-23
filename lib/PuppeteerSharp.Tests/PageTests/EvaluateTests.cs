@@ -198,5 +198,16 @@ namespace PuppeteerSharp.Tests.PageTests
 
             Assert.Null(result);
         }
+
+        [Fact]
+        public async Task ShouldSimulateAUserGesture()
+            => await Page.EvaluateExpressionAsync(@"(
+            function playAudio()
+            {
+                const audio = document.createElement('audio');
+                audio.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';
+                // This returns a promise which throws if it was not triggered by a user gesture.
+                return audio.play();
+            })()");
     }
 }
