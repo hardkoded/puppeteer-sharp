@@ -995,16 +995,28 @@ namespace PuppeteerSharp
         /// Closes the page.
         /// </summary>
         /// <returns>Task.</returns>
-        public Task CloseAsync()
+        public Task CloseAsync(PageCloseOptions options = null)
         {
             if (!(Client?.Connection?.IsClosed ?? true))
             {
-                return Client.Connection.SendAsync("Target.closeTarget", new
-                {
-                    targetId = Target.TargetId
-                }).ContinueWith((task) => Target.CloseTask);
-            }
+                var runBeforeUnload = options?.RunBeforeUnload ?? false;
 
+                if (runBeforeUnload)
+                {
+                    return Client.SendAsync("Page.close");
+                }
+                else
+                {
+                    return Client.Connection.SendAsync("Target.closeTarget", new
+                    {
+                        targetId = Target.TargetId
+                    }).ContinueWith((task) => Target.CloseTask);
+                }
+            }
+            else
+            {
+                _logger.LogWarning("Protocol error: Connection closed. Most likely the page has been closed.");
+            }
             return Task.CompletedTask;
         }
 

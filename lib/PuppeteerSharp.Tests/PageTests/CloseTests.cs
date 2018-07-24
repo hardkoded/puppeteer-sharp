@@ -31,5 +31,36 @@ namespace PuppeteerSharp.Tests.PageTests
             await newPage.CloseAsync();
             Assert.DoesNotContain(newPage, await Browser.PagesAsync());
         }
+
+        [Fact]
+        public async Task ShouldRunBeforeunloadIfAskedFor()
+        {
+            var newPage = await Browser.NewPageAsync();
+            await newPage.GoToAsync(TestConstants.ServerUrl + "/beforeunload.html");
+
+            var dialogTask = new TaskCompletionSource<bool>();
+            newPage.Dialog += async (sender, e) =>
+            {
+                Assert.Equal(DialogType.BeforeUnload, e.Dialog.DialogType);
+                Assert.Equal(string.Empty, e.Dialog.Message);
+                Assert.Equal(string.Empty, e.Dialog.DefaultValue);
+
+                await e.Dialog.Accept();
+                dialogTask.TrySetResult(true);
+            };
+
+            var closeTask = new TaskCompletionSource<bool>();
+            newPage.Close += (sender, e) => closeTask.TrySetResult(true);
+
+            // We have to interact with a page so that 'beforeunload' handlers
+            // fire.
+            await newPage.ClickAsync("body");
+            _ = newPage.CloseAsync(new PageCloseOptions { RunBeforeUnload = true });
+
+            await Task.WhenAll(
+                dialogTask.Task,
+                closeTask.Task
+            );
+        }
     }
 }
