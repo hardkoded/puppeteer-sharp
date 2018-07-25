@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -390,6 +391,24 @@ namespace PuppeteerSharp.Tests.PageTests
             };
             await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.Contains("Request Interception is not enabled", exception.Message);
+        }
+
+        [Fact]
+        public async Task ShouldWorkWithFileURLs()
+        {
+            await Page.SetRequestInterceptionAsync(true);
+            var urls = new List<string>();
+            Page.Request += async (sender, e) =>
+            {
+                urls.Add(e.Request.Url.Split('/').Last());
+                await e.Request.ContinueAsync();
+            };
+
+            var uri = new Uri(Path.Combine(Directory.GetCurrentDirectory(), "assets", "one-style.html")).AbsoluteUri;
+            await Page.GoToAsync(uri);
+            Assert.Equal(2, urls.Count);
+            Assert.Contains("one-style.html", urls);
+            Assert.Contains("one-style.css", urls);
         }
     }
 }
