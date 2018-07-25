@@ -164,7 +164,7 @@ namespace PuppeteerSharp
 
             if (new DirectoryInfo(folderPath).Exists)
             {
-                return null;
+                return RevisionInfo(revision);
             }
 
             var downloadFolder = new DirectoryInfo(DownloadsFolder);
