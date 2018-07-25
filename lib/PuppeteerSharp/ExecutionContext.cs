@@ -142,10 +142,11 @@ namespace PuppeteerSharp
 
             return await EvaluateHandleAsync("Runtime.evaluate", new Dictionary<string, object>
             {
-                {"contextId", _contextId},
-                {"expression", script},
-                {"returnByValue", false},
-                {"awaitPromise", true}
+                ["expression"] = script,
+                ["contextId"] = _contextId,
+                ["returnByValue"] = false,
+                ["awaitPromise"] = true,
+                ["userGesture"] = true
             });
         }
 
@@ -158,11 +159,12 @@ namespace PuppeteerSharp
 
             return await EvaluateHandleAsync("Runtime.callFunctionOn", new Dictionary<string, object>
             {
-                {"functionDeclaration", script },
-                {"executionContextId", _contextId},
-                {"arguments", args.Select(FormatArgument)},
-                {"returnByValue", false},
-                {"awaitPromise", true}
+                ["functionDeclaration"] = script,
+                ["executionContextId"] = _contextId,
+                ["arguments"] = args.Select(FormatArgument),
+                ["returnByValue"] = false,
+                ["awaitPromise"] = true,
+                ["userGesture"] = true
             });
         }
 
