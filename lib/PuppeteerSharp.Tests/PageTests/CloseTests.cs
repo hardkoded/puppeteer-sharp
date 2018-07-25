@@ -58,7 +58,6 @@ namespace PuppeteerSharp.Tests.PageTests
                 dialogTask.Task,
                 closeTask.Task
             );
-
         }
     }
 }
