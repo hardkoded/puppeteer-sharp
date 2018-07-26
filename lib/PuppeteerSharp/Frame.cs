@@ -581,7 +581,6 @@ namespace PuppeteerSharp
         internal void Navigated(FramePayload framePayload)
         {
             Name = framePayload.Name ?? string.Empty;
-            // TODO(lushnikov): remove this once requestInterception has loaderId exposed.
             NavigationURL = framePayload.Url;
             Url = framePayload.Url;
         }
