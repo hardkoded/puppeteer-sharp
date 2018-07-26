@@ -1388,7 +1388,8 @@ namespace PuppeteerSharp
                 client.SendAsync("Network.enable", null),
                 client.SendAsync("Runtime.enable", null),
                 client.SendAsync("Security.enable", null),
-                client.SendAsync("Performance.enable", null)
+                client.SendAsync("Performance.enable", null),
+                client.SendAsync("Log.enable", null)
             );
 
             if (ignoreHTTPSErrors)
@@ -1618,7 +1619,22 @@ namespace PuppeteerSharp
                 case "Performance.metrics":
                     EmitMetrics(e.MessageData.ToObject<PerformanceMetricsResponse>());
                     break;
+                case "Log.entryAdded":
+                    OnLogEntryAdded(e.MessageData.ToObject<LogEntryAddedResponse>());
+                    break;
             }
+        }
+
+        private void OnLogEntryAdded(LogEntryAddedResponse e)
+        {
+            if (e.Entry.Args != null)
+            {
+                foreach (var arg in e.Entry?.Args)
+                {
+                    RemoteObjectHelper.ReleaseObject(Client, arg, _logger);
+                }
+            }
+            Console?.Invoke(this, new ConsoleEventArgs(new ConsoleMessage(e.Entry.Level, e.Entry.Text)));
         }
 
         private void OnTargetCrashed()
