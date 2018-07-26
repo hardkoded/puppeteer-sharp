@@ -47,6 +47,7 @@ namespace PuppeteerSharp
         internal string Id { get; set; }
         internal string LoaderId { get; set; }
         internal List<string> LifecycleEvents { get; }
+        internal string NavigationURL { get; private set; }
 
         internal Frame(CDPSession client, Page page, Frame parentFrame, string frameId)
         {
@@ -580,6 +581,7 @@ namespace PuppeteerSharp
         internal void Navigated(FramePayload framePayload)
         {
             Name = framePayload.Name ?? string.Empty;
+            NavigationURL = framePayload.Url;
             Url = framePayload.Url;
         }
 

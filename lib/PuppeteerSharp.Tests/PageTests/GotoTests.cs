@@ -34,6 +34,37 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Null(response.SecurityDetails);
         }
 
+        [Fact]
+        public async Task ShouldFailWhenServerReturns204()
+        {
+            Server.SetRoute("/empty.html", context =>
+            {
+                context.Response.StatusCode = 204;
+                return Task.CompletedTask;
+            });
+            var exception = await Assert.ThrowsAnyAsync<PuppeteerException>(
+                () => Page.GoToAsync(TestConstants.EmptyPage));
+            Assert.Contains("net::ERR_ABORTED", exception.Message);
+        }
+
+        [Fact]
+        public async Task ShouldReturnResponseWhenPageChangesItsURLAfterLoad()
+        {
+            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/historyapi.html");
+            Assert.Equal(HttpStatusCode.OK, response.Status);
+        }
+
+        [Fact]
+        public async Task ShouldWorkWithSubframesReturn204()
+        {
+            Server.SetRoute("/frames/frame.html", context =>
+            {
+                context.Response.StatusCode = 204;
+                return Task.CompletedTask;
+            });
+            await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
+        }
+
         [Theory]
         [InlineData(WaitUntilNavigation.Networkidle0)]
         [InlineData(WaitUntilNavigation.Networkidle2)]

@@ -708,7 +708,7 @@ namespace PuppeteerSharp
                 throw new NavigationException(exception.InnerException.Message, exception.InnerException);
             }
 
-            requests.TryGetValue(MainFrame.Url, out var request);
+            requests.TryGetValue(MainFrame.NavigationURL, out var request);
 
             return request?.Response;
         }
