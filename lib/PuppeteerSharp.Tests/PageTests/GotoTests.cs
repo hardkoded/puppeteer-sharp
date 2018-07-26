@@ -62,7 +62,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 context.Response.StatusCode = 204;
                 return Task.CompletedTask;
             });
-            await Page.GoToAsync(TestConstants.ServerUrl + "/frames/frame.html");
+            await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
         }
 
         [Theory]
