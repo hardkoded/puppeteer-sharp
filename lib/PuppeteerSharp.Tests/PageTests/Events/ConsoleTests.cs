@@ -105,7 +105,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
         [Fact]
         public async Task ShouldTriggerCorrectLog()
         {
-            await Page.GoToAsync("about:blank");
+            await Page.GoToAsync(TestConstants.AboutBlank);
             var messageTask = new TaskCompletionSource<ConsoleMessage>();
 
             Page.Console += (sender, e) => messageTask.TrySetResult(e.Message);

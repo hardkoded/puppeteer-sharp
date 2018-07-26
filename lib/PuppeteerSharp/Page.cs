@@ -1623,14 +1623,6 @@ namespace PuppeteerSharp
                 }
             }
             Console?.Invoke(this, new ConsoleEventArgs(new ConsoleMessage(e.Entry.Level, e.Entry.Text)));
-            /*
-            const { level, text, args} = event.entry;
-    if (args)
-      args.map(arg => helper.releaseObject(this._client, arg));
-
-            
-    this.emit(Page.Events.Console, new ConsoleMessage(level, text));
-    */
         }
 
         private void OnTargetCrashed()
