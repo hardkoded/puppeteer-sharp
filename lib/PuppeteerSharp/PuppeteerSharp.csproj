@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>1.3.0</PackageVersion>
+    <PackageVersion>1.4.0</PackageVersion>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
@@ -12,35 +12,24 @@
     <Description>Headless Chrome .NET API</Description>
     <PackageId>PuppeteerSharp</PackageId>
     <PackageReleaseNotes>
-# New Features
+New APIs
+ 
+ * Page.CloseAsync(PageCloseOptions)
+ * Page.Browser
 
- * CSP Support
- * Support anchor navigation
- * Chromium updated to r549031
+# Minor changes
 
-# New APIs
-
- * Page.SetBypassCSPAsync
- * Page.WaitForExpressionAsync
- * Frame.WaitForExpressionAsync
- * ElementHandle.BoxModelAsync
- * Page.Close event
-
-# Breaking Changes
-
- * ConnectOptions.KeepAliveInterval and LaunchOPtions.KeepAliveInterval were marked as obsolete because Chromim doesn't support pings yet (see: https://bugs.chromium.org/p/chromium/issues/detail?id=865002)
- * [PENDING] ScreenshotOptions.Type is now an enum 
-
-# Changelog
-
- * Add an option to disable timeout for WaitForFunctionAsync
- * Tracing.StopAsync now returns a string with the trace data.
- * ViewPortOptions.DeviceScaleFactor, IsLandscape and HasTouch now has a public setter.
- * Page.waitForNavigation handle mixed content correctly.
- * Explicitly throw on content request for redirect response
- * Consume protocol errors when initiating browser.close()
+ * Rolled Chromium to r555668.
+ * Status 204 support.
+ * Report 'Log' domain entries as 'console' events.
+ * Verify file url interception works as expected.
+ * DownloadAsync should return revision info even if the revision was already downloaded.
+ * Allow user gesture restricted code to be run in Page.EvaluateExpressionAsync.
+ * Add pixel2/pixel2 xl.
+ * Add explanation to page.waitForNavigation.
+ * ElementHandle EvaluateFunctionAsync examples.
     </PackageReleaseNotes>
-    <ReleaseVersion>1.3.0</ReleaseVersion>
+    <ReleaseVersion>1.4.0</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>
