@@ -36,6 +36,14 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             browserFetcher.Remove(123456);
             Assert.Empty(browserFetcher.LocalRevisions());
 
+            //Download should return data from a downloaded version
+            //This section is not in the Puppeteer test.
+            await browserFetcher.DownloadAsync(123456);
+            Server.Reset();
+            revisionInfo = await browserFetcher.DownloadAsync(123456);
+            Assert.True(revisionInfo.Local);
+            Assert.Equal("LINUX BINARY\n", File.ReadAllText(revisionInfo.ExecutablePath));
+
             new DirectoryInfo(downloadsFolder).Delete(true);
         }
     }
