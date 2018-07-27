@@ -4497,6 +4497,30 @@ references:
   commentId: F:PuppeteerSharp.Mobile.DeviceDescriptorName.NokiaN9Landscape
   fullName: PuppeteerSharp.Mobile.DeviceDescriptorName.NokiaN9Landscape
   nameWithType: DeviceDescriptorName.NokiaN9Landscape
+- uid: PuppeteerSharp.Mobile.DeviceDescriptorName.Pixel2
+  name: Pixel2
+  href: api/PuppeteerSharp.Mobile.DeviceDescriptorName.html#PuppeteerSharp_Mobile_DeviceDescriptorName_Pixel2
+  commentId: F:PuppeteerSharp.Mobile.DeviceDescriptorName.Pixel2
+  fullName: PuppeteerSharp.Mobile.DeviceDescriptorName.Pixel2
+  nameWithType: DeviceDescriptorName.Pixel2
+- uid: PuppeteerSharp.Mobile.DeviceDescriptorName.Pixel2Landscape
+  name: Pixel2Landscape
+  href: api/PuppeteerSharp.Mobile.DeviceDescriptorName.html#PuppeteerSharp_Mobile_DeviceDescriptorName_Pixel2Landscape
+  commentId: F:PuppeteerSharp.Mobile.DeviceDescriptorName.Pixel2Landscape
+  fullName: PuppeteerSharp.Mobile.DeviceDescriptorName.Pixel2Landscape
+  nameWithType: DeviceDescriptorName.Pixel2Landscape
+- uid: PuppeteerSharp.Mobile.DeviceDescriptorName.Pixel2XL
+  name: Pixel2XL
+  href: api/PuppeteerSharp.Mobile.DeviceDescriptorName.html#PuppeteerSharp_Mobile_DeviceDescriptorName_Pixel2XL
+  commentId: F:PuppeteerSharp.Mobile.DeviceDescriptorName.Pixel2XL
+  fullName: PuppeteerSharp.Mobile.DeviceDescriptorName.Pixel2XL
+  nameWithType: DeviceDescriptorName.Pixel2XL
+- uid: PuppeteerSharp.Mobile.DeviceDescriptorName.Pixel2XLLandscape
+  name: Pixel2XLLandscape
+  href: api/PuppeteerSharp.Mobile.DeviceDescriptorName.html#PuppeteerSharp_Mobile_DeviceDescriptorName_Pixel2XLLandscape
+  commentId: F:PuppeteerSharp.Mobile.DeviceDescriptorName.Pixel2XLLandscape
+  fullName: PuppeteerSharp.Mobile.DeviceDescriptorName.Pixel2XLLandscape
+  nameWithType: DeviceDescriptorName.Pixel2XLLandscape
 - uid: PuppeteerSharp.Mobile.DeviceDescriptors
   name: DeviceDescriptors
   href: api/PuppeteerSharp.Mobile.DeviceDescriptors.html
@@ -4674,6 +4698,19 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Page.AuthenticateAsync
   nameWithType: Page.AuthenticateAsync
+- uid: PuppeteerSharp.Page.Browser
+  name: Browser
+  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_Browser
+  commentId: P:PuppeteerSharp.Page.Browser
+  fullName: PuppeteerSharp.Page.Browser
+  nameWithType: Page.Browser
+- uid: PuppeteerSharp.Page.Browser*
+  name: Browser
+  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_Browser_
+  commentId: Overload:PuppeteerSharp.Page.Browser
+  isSpec: "True"
+  fullName: PuppeteerSharp.Page.Browser
+  nameWithType: Page.Browser
 - uid: PuppeteerSharp.Page.ClickAsync(System.String,PuppeteerSharp.Input.ClickOptions)
   name: ClickAsync(String, ClickOptions)
   href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_ClickAsync_System_String_PuppeteerSharp_Input_ClickOptions_
@@ -4693,12 +4730,12 @@ references:
   commentId: E:PuppeteerSharp.Page.Close
   fullName: PuppeteerSharp.Page.Close
   nameWithType: Page.Close
-- uid: PuppeteerSharp.Page.CloseAsync
-  name: CloseAsync()
-  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_CloseAsync
-  commentId: M:PuppeteerSharp.Page.CloseAsync
-  fullName: PuppeteerSharp.Page.CloseAsync()
-  nameWithType: Page.CloseAsync()
+- uid: PuppeteerSharp.Page.CloseAsync(PuppeteerSharp.PageCloseOptions)
+  name: CloseAsync(PageCloseOptions)
+  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_CloseAsync_PuppeteerSharp_PageCloseOptions_
+  commentId: M:PuppeteerSharp.Page.CloseAsync(PuppeteerSharp.PageCloseOptions)
+  fullName: PuppeteerSharp.Page.CloseAsync(PuppeteerSharp.PageCloseOptions)
+  nameWithType: Page.CloseAsync(PageCloseOptions)
 - uid: PuppeteerSharp.Page.CloseAsync*
   name: CloseAsync
   href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_CloseAsync_
@@ -5742,6 +5779,25 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Page.XPathAsync
   nameWithType: Page.XPathAsync
+- uid: PuppeteerSharp.PageCloseOptions
+  name: PageCloseOptions
+  href: api/PuppeteerSharp.PageCloseOptions.html
+  commentId: T:PuppeteerSharp.PageCloseOptions
+  fullName: PuppeteerSharp.PageCloseOptions
+  nameWithType: PageCloseOptions
+- uid: PuppeteerSharp.PageCloseOptions.RunBeforeUnload
+  name: RunBeforeUnload
+  href: api/PuppeteerSharp.PageCloseOptions.html#PuppeteerSharp_PageCloseOptions_RunBeforeUnload
+  commentId: P:PuppeteerSharp.PageCloseOptions.RunBeforeUnload
+  fullName: PuppeteerSharp.PageCloseOptions.RunBeforeUnload
+  nameWithType: PageCloseOptions.RunBeforeUnload
+- uid: PuppeteerSharp.PageCloseOptions.RunBeforeUnload*
+  name: RunBeforeUnload
+  href: api/PuppeteerSharp.PageCloseOptions.html#PuppeteerSharp_PageCloseOptions_RunBeforeUnload_
+  commentId: Overload:PuppeteerSharp.PageCloseOptions.RunBeforeUnload
+  isSpec: "True"
+  fullName: PuppeteerSharp.PageCloseOptions.RunBeforeUnload
+  nameWithType: PageCloseOptions.RunBeforeUnload
 - uid: PuppeteerSharp.PageCoverage
   name: PuppeteerSharp.PageCoverage
   href: api/PuppeteerSharp.PageCoverage.html
@@ -7196,6 +7252,19 @@ references:
   commentId: T:PuppeteerSharp.Target
   fullName: PuppeteerSharp.Target
   nameWithType: Target
+- uid: PuppeteerSharp.Target.Browser
+  name: Browser
+  href: api/PuppeteerSharp.Target.html#PuppeteerSharp_Target_Browser
+  commentId: P:PuppeteerSharp.Target.Browser
+  fullName: PuppeteerSharp.Target.Browser
+  nameWithType: Target.Browser
+- uid: PuppeteerSharp.Target.Browser*
+  name: Browser
+  href: api/PuppeteerSharp.Target.html#PuppeteerSharp_Target_Browser_
+  commentId: Overload:PuppeteerSharp.Target.Browser
+  isSpec: "True"
+  fullName: PuppeteerSharp.Target.Browser
+  nameWithType: Target.Browser
 - uid: PuppeteerSharp.Target.CreateCDPSessionAsync
   name: CreateCDPSessionAsync()
   href: api/PuppeteerSharp.Target.html#PuppeteerSharp_Target_CreateCDPSessionAsync
