@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Collections;
 using Microsoft.Extensions.Logging;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
@@ -124,7 +125,7 @@ namespace PuppeteerSharp
                     _logger.LogInformation("Process Count: {ProcessCount}", Interlocked.Increment(ref _processCount));
                 }
 
-                return await Browser.CreateAsync(_connection, options, _chromeProcess, GracefullyCloseChrome);
+                return await Browser.CreateAsync(_connection, Array.Empty<string>(), options, _chromeProcess, GracefullyCloseChrome);
             }
             catch (Exception ex)
             {
@@ -150,10 +151,12 @@ namespace PuppeteerSharp
 
                 var connectionDelay = options.SlowMo;
                 var keepAliveInterval = 0;
-
+                
                 _connection = await Connection.Create(options.BrowserWSEndpoint, connectionDelay, keepAliveInterval, _loggerFactory);
 
-                return await Browser.CreateAsync(_connection, options, null, () =>
+                var response = await _connection.SendAsync<GetBrowserContextsResponse>("Target.getBrowserContexts");
+
+                return await Browser.CreateAsync(_connection, response.BrowserContextIds, options, null, () =>
                 {
                     try
                     {

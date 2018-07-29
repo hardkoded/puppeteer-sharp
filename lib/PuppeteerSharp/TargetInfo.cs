@@ -29,5 +29,11 @@ namespace PuppeteerSharp
         /// <value>The target identifier.</value>
         [JsonProperty("targetId")]
         public string TargetId { get; internal set; }
+
+        /// <summary>
+        /// Gets or sets the target browser contextId
+        /// </summary>
+        [JsonProperty("browserContextId")]
+        public string BrowserContextId { get; internal set; }
     }
 }
