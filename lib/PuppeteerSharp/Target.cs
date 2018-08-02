@@ -57,6 +57,15 @@ namespace PuppeteerSharp
         public string TargetId => _targetInfo.TargetId;
 
         /// <summary>
+        /// Get the target that opened this target
+        /// </summary>
+        /// <remarks>
+        /// Top-level targets return <c>null</c>.
+        /// </remarks>
+        public Target Opener => _targetInfo.OpenerId != null ?
+            Browser.TargetsMap.GetValueOrDefault(_targetInfo.OpenerId) : null;
+
+        /// <summary>
         /// Get the browser the target belongs to.
         /// </summary>
         public Browser Browser { get; }
