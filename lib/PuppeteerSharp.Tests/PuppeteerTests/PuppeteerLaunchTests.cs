@@ -377,8 +377,13 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             var options = TestConstants.DefaultBrowserOptions();
             options.Args = options.Args.Prepend(customUrl).ToArray();
             var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
-            var pages = (await browser.PagesAsync()).Select(page => page.Url);
-            Assert.Equal(new[] { customUrl }, pages);
+            var pages = await browser.PagesAsync();
+            Assert.Single(pages);
+            if (pages[0].Url != customUrl)
+            {
+                await pages[0].WaitForNavigationAsync();
+            }
+            Assert.Equal(customUrl, pages[0].Url);
             await browser.CloseAsync();
 
         }
