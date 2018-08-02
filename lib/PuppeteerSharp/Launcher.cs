@@ -21,6 +21,7 @@ namespace PuppeteerSharp
         internal static readonly string[] DefaultArgs = {
             "--disable-background-networking",
             "--disable-background-timer-throttling",
+            "--disable-breakpad",
             "--disable-client-side-phishing-detection",
             "--disable-default-apps",
             "--disable-dev-shm-usage",
