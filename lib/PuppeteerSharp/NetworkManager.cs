@@ -249,6 +249,7 @@ namespace PuppeteerSharp
                     request.RequestId,
                     e.InterceptionId,
                     e.RedirectUrl,
+                    e.IsNavigationRequest,
                     e.ResourceType,
                     e.Request,
                     e.FrameId,
@@ -265,6 +266,7 @@ namespace PuppeteerSharp
                     requestId,
                     e.InterceptionId,
                     e.Request.Url,
+                    e.IsNavigationRequest,
                     e.ResourceType,
                     e.Request,
                     e.FrameId,
@@ -277,6 +279,7 @@ namespace PuppeteerSharp
                     null,
                     e.InterceptionId,
                     e.Request.Url,
+                    e.IsNavigationRequest,
                     e.ResourceType,
                     e.Request,
                     e.FrameId,
@@ -296,6 +299,7 @@ namespace PuppeteerSharp
             string requestId,
             string interceptionId,
             string url,
+            bool isNavigationRequest,
             ResourceType resourceType,
             Payload requestPayload,
             string frameId,
@@ -312,6 +316,7 @@ namespace PuppeteerSharp
                 _client,
                 requestId,
                 interceptionId,
+                isNavigationRequest,
                 _userRequestInterceptionEnabled,
                 url,
                 resourceType,
@@ -418,8 +423,9 @@ namespace PuppeteerSharp
 
                 redirectChain = request.RedirectChainList;
             }
+            var isNavigationRequest = e.RequestId == e.LoaderId && e.Type == ResourceType.Document;
 
-            HandleRequestStart(e.RequestId, null, e.Request.Url, e.Type, e.Request, e.FrameId, redirectChain);
+            HandleRequestStart(e.RequestId, null, e.Request.Url, isNavigationRequest, e.Type, e.Request, e.FrameId, redirectChain);
         }
 
         private async Task UpdateProtocolRequestInterceptionAsync()
