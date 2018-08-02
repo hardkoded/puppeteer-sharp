@@ -17,6 +17,9 @@ namespace PuppeteerSharp.Messaging
 
         [JsonProperty("resourceType")]
         public ResourceType ResourceType { get; set; }
+
+        [JsonProperty("isNavigationRequest")]
+        public bool IsNavigationRequest { get; set; }
         
         [JsonProperty("responseHeaders", NullValueHandling = NullValueHandling.Ignore)]
         public Dictionary<string, object> ResponseHeaders { get; set; }
