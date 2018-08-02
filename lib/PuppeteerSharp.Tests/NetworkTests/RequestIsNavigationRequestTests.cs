@@ -17,7 +17,6 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
-
         [Fact]
         public async Task ShouldWork()
         {
