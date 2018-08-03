@@ -125,7 +125,9 @@ namespace PuppeteerSharp
                     _logger.LogInformation("Process Count: {ProcessCount}", Interlocked.Increment(ref _processCount));
                 }
 
-                return await Browser.CreateAsync(_connection, options, _chromeProcess, GracefullyCloseChrome);
+                var browser = await Browser.CreateAsync(_connection, options, _chromeProcess, GracefullyCloseChrome);
+                await EnsureInitialPageAsync(browser);
+                return browser;
             }
             catch (Exception ex)
             {
@@ -239,6 +241,26 @@ namespace PuppeteerSharp
         #endregion
 
         #region Private methods
+
+        private async Task EnsureInitialPageAsync(Browser browser)
+        {
+            // Wait for initial page target to be created.
+            if (browser.Targets().Any(target => target.Type == TargetType.Page))
+            {
+                return;
+            }
+            var initialPageComplection = new TaskCompletionSource<bool>();
+            void InitialPageCallback(object sender, TargetChangedArgs e)
+            {
+                if (e.Target.Type == TargetType.Page)
+                {
+                    initialPageComplection.SetResult(true);
+                    browser.TargetCreated -= InitialPageCallback;
+                }
+            }
+            browser.TargetCreated += InitialPageCallback;
+            await initialPageComplection.Task;
+        }
 
         private void CreateChromeProcess(LaunchOptions options, List<string> chromeArguments, string chromeExecutable)
         {
