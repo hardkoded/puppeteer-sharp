@@ -59,5 +59,13 @@ namespace PuppeteerSharp.Tests.PageTests
                 closeTask.Task
             );
         }
+
+        [Fact]
+        public async Task ShouldSetThePageCloseState()
+        {
+            Assert.False(Page.IsClosed);
+            await Page.CloseAsync();
+            Assert.True(Page.IsClosed);
+        }
     }
 }

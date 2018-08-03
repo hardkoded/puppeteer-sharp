@@ -78,7 +78,10 @@ namespace PuppeteerSharp
             _networkManager.Response += (sender, e) => Response?.Invoke(this, e);
             _networkManager.RequestFinished += (sender, e) => RequestFinished?.Invoke(this, e);
 
-            target.CloseTask.ContinueWith((arg) => Close?.Invoke(this, EventArgs.Empty));
+            target.CloseTask.ContinueWith((arg) => {
+                Close?.Invoke(this, EventArgs.Empty);
+                IsClosed = true;
+            });
 
             Client.MessageReceived += Client_MessageReceived;
         }
@@ -243,7 +246,7 @@ namespace PuppeteerSharp
         public ViewPortOptions Viewport { get; private set; }
 
         /// <summary>
-        /// List of suported metrics provided by the <see cref="Metrics"/> event.
+        /// List of supported metrics provided by the <see cref="Metrics"/> event.
         /// </summary>
         public static readonly IEnumerable<string> SupportedMetrics = new List<string>
         {
@@ -266,6 +269,12 @@ namespace PuppeteerSharp
         /// Get the browser the page belongs to.
         /// </summary>
         public Browser Browser => Target.Browser;
+        
+        /// <summary>
+        /// Get an indication that the page has been closed..
+        /// </summary>
+        public bool IsClosed { get; private set; }
+
         #endregion
 
         #region Public Methods
