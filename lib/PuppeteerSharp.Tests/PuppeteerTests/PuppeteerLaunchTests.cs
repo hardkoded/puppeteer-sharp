@@ -353,10 +353,11 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         [Fact]
         public async Task ShouldHaveDefaultUrlWhenLaunchingBrowser()
         {
-            var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.LoggerFactory);
-            var pages = (await browser.PagesAsync()).Select(page => page.Url);
-            Assert.Equal(new[] { TestConstants.AboutBlank }, pages);
-            await browser.CloseAsync();
+            using (var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.LoggerFactory))
+            {
+                var pages = (await browser.PagesAsync()).Select(page => page.Url);
+                Assert.Equal(new[] { TestConstants.AboutBlank }, pages);
+            }
         }
 
         [Fact]
@@ -364,10 +365,11 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         {
             var options = TestConstants.DefaultBrowserOptions();
             options.Headless = false;
-            var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
-            var pages = (await browser.PagesAsync()).Select(page => page.Url);
-            Assert.Equal(new[] { TestConstants.AboutBlank }, pages);
-            await browser.CloseAsync();
+            using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
+            {
+                var pages = (await browser.PagesAsync()).Select(page => page.Url);
+                Assert.Equal(new[] { TestConstants.AboutBlank }, pages);
+            }
         }
 
         [Fact]
@@ -376,16 +378,16 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             var customUrl = TestConstants.EmptyPage;
             var options = TestConstants.DefaultBrowserOptions();
             options.Args = options.Args.Prepend(customUrl).ToArray();
-            var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
-            var pages = await browser.PagesAsync();
-            Assert.Single(pages);
-            if (pages[0].Url != customUrl)
+            using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
             {
-                await pages[0].WaitForNavigationAsync();
+                var pages = await browser.PagesAsync();
+                Assert.Single(pages);
+                if (pages[0].Url != customUrl)
+                {
+                    await pages[0].WaitForNavigationAsync();
+                }
+                Assert.Equal(customUrl, pages[0].Url);
             }
-            Assert.Equal(customUrl, pages[0].Url);
-            await browser.CloseAsync();
-
         }
 
         private Process GetTestAppProcess(string appName, string arguments)
