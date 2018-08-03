@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Xunit;
 using PuppeteerSharp.Mobile;
@@ -18,6 +19,7 @@ namespace PuppeteerSharp.Tests
         public static readonly string CrossProcessHttpPrefix = "http://127.0.0.1:8907";
         public static readonly string EmptyPage = $"{ServerUrl}/empty.html";
         public static readonly string CrossProcessUrl = ServerIpUrl;
+        public static readonly string ExtensionPath = Path.Combine(Directory.GetCurrentDirectory(), "Assets","simple-extension");
 
         public static readonly DeviceDescriptor IPhone = DeviceDescriptors.Get(DeviceDescriptorName.IPhone6);
         public static readonly DeviceDescriptor IPhone6Landscape = DeviceDescriptors.Get(DeviceDescriptorName.IPhone6Landscape);
@@ -37,6 +39,17 @@ namespace PuppeteerSharp.Tests
             Args = new[] { "--no-sandbox" },
             Timeout = 0,
             LogProcess = true
+        };
+
+        public static LaunchOptions BrowserWithExtensionOptions() => new LaunchOptions
+        {
+            Headless = false,
+            Args = new[]
+            {
+                "--no-sandbox",
+                $"--disable-extensions-except={ExtensionPath}",
+                $"--load-extension={ExtensionPath}"
+            }
         };
 
         public static void SetupLogging(ITestOutputHelper output)
