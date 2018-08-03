@@ -1717,13 +1717,12 @@ namespace PuppeteerSharp
                 var result = binding.DynamicInvoke(args);
                 if (result is Task taskResult)
                 {
+                    await taskResult.ConfigureAwait(false);
+
                     if (taskResult.GetType().IsGenericType)
                     {
-                        result = await (dynamic)taskResult.ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        await taskResult.ConfigureAwait(false);
+                        // the task is already awaited and therefore the call to property Result will not deadlock
+                        result = ((dynamic)taskResult).Result;
                     }
                 }
 
