@@ -29,9 +29,10 @@ namespace PuppeteerSharp.Tests.PageTests
                 Assert.NotNull(e.Request.Headers);
                 Assert.Equal(HttpMethod.Get, e.Request.Method);
                 Assert.Null(e.Request.PostData);
+                Assert.True(e.Request.IsNavigationRequest);
                 Assert.Equal(ResourceType.Document, e.Request.ResourceType);
                 Assert.Equal(Page.MainFrame, e.Request.Frame);
-                Assert.Equal("about:blank", e.Request.Frame.Url);
+                Assert.Equal(TestConstants.AboutBlank, e.Request.Frame.Url);
                 await e.Request.ContinueAsync();
             };
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
@@ -201,6 +202,7 @@ namespace PuppeteerSharp.Tests.PageTests
             for (var i = 0; i < redirectChain.Length; ++i)
             {
                 var request = redirectChain[i];
+                Assert.True(request.IsNavigationRequest);
                 Assert.Equal(request, request.RedirectChain.ElementAt(i));
             }
         }

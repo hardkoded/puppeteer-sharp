@@ -7,6 +7,9 @@ namespace PuppeteerSharp.Messaging
         [JsonProperty("requestId")]
         public string RequestId { get; set; }
 
+        [JsonProperty("loaderId")]
+        public string LoaderId { get; set; }
+
         [JsonProperty("request")]
         public Payload Request { get; set; }
 
