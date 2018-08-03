@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
 {
@@ -399,7 +400,7 @@ namespace PuppeteerSharp
 
             if (!string.IsNullOrEmpty(options.Path))
             {
-                var contents = File.ReadAllText(options.Path, Encoding.UTF8);
+                string contents = await AsyncFileHelper.ReadAllText(options.Path).ConfigureAwait(false);
                 contents += "//# sourceURL=" + options.Path.Replace("\n", string.Empty);
                 var context = await GetExecutionContextAsync().ConfigureAwait(false);
                 return (await context.EvaluateFunctionHandleAsync(addStyleContent, contents).ConfigureAwait(false)) as ElementHandle;
@@ -471,7 +472,7 @@ namespace PuppeteerSharp
 
             if (!string.IsNullOrEmpty(options.Path))
             {
-                var contents = File.ReadAllText(options.Path, Encoding.UTF8);
+                string contents = await AsyncFileHelper.ReadAllText(options.Path).ConfigureAwait(false);
                 contents += "//# sourceURL=" + options.Path.Replace("\n", string.Empty);
                 return await AddScriptTagPrivate(addScriptContent, contents, options.Type).ConfigureAwait(false);
             }
