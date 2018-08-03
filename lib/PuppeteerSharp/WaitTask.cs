@@ -26,7 +26,8 @@ namespace PuppeteerSharp
 async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...args) {
   const predicate = new Function('...args', predicateBody);
   let timedOut = false;
-  setTimeout(() => timedOut = true, timeout);
+  if (timeout)
+    setTimeout(() => timedOut = true, timeout);
   if (polling === 'raf')
     return await pollRaf();
   if (polling === 'mutation')
