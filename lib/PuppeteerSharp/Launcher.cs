@@ -322,6 +322,11 @@ namespace PuppeteerSharp
                 });
             }
 
+            if (!options.IgnoreDefaultArgs && options.Args.Any() && options.Args.All(arg => arg.StartsWith("-")))
+            {
+                chromeArguments.Add("about:blank");
+            }
+
             if (options.Args.Any())
             {
                 chromeArguments.AddRange(options.Args);
