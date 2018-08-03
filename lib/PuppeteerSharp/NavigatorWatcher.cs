@@ -134,11 +134,11 @@ namespace PuppeteerSharp
 
             if (_timeout == 0)
             {
-                await Task.Delay(-1);
+                await Task.Delay(-1).ConfigureAwait(false);
             }
             else
             {
-                await Task.Delay(_timeout);
+                await Task.Delay(_timeout).ConfigureAwait(false);
                 throw new NavigationException($"Navigation Timeout Exceeded: {_timeout}ms exceeded");
             }
         }

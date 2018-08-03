@@ -47,7 +47,7 @@ namespace PuppeteerSharp
                     enabled = viewport.HasTouch,
                     configuration = viewport.IsMobile ? "mobile" : "desktop"
                 })
-            });
+            }).ConfigureAwait(false);
 
             var reloadNeeded = false;
             if (viewport.HasTouch && string.IsNullOrEmpty(_injectedTouchScriptId))
@@ -55,7 +55,7 @@ namespace PuppeteerSharp
                 //TODO: It's not clear what to do here
                 /*
                 var source = $"({ injectedTouchEventsFunction})()";
-                this._injectedTouchScriptId = (await this._client.send('Page.addScriptToEvaluateOnNewDocument', { source })).identifier;
+                this._injectedTouchScriptId = (await this._client.send('Page.addScriptToEvaluateOnNewDocument', { source }).ConfigureAwait(false)).identifier;
                 reloadNeeded = true;
                 */
             }
@@ -64,7 +64,7 @@ namespace PuppeteerSharp
                 await _client.SendAsync("Page.removeScriptToEvaluateOnNewDocument", new
                 {
                     identifier = _injectedTouchScriptId
-                });
+                }).ConfigureAwait(false);
                 _injectedTouchScriptId = null;
                 reloadNeeded = true;
             }

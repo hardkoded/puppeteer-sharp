@@ -109,8 +109,8 @@ namespace PuppeteerSharp
         /// <seealso cref="Page.EvaluateExpressionAsync(string)"/>
         public async Task<dynamic> EvaluateExpressionAsync(string script)
         {
-            var context = await GetExecutionContextAsync();
-            return await context.EvaluateExpressionAsync(script);
+            var context = await GetExecutionContextAsync().ConfigureAwait(false);
+            return await context.EvaluateExpressionAsync(script).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -126,8 +126,8 @@ namespace PuppeteerSharp
         /// <seealso cref="Page.EvaluateExpressionAsync{T}(string)"/>
         public async Task<T> EvaluateExpressionAsync<T>(string script)
         {
-            var context = await GetExecutionContextAsync();
-            return await context.EvaluateExpressionAsync<T>(script);
+            var context = await GetExecutionContextAsync().ConfigureAwait(false);
+            return await context.EvaluateExpressionAsync<T>(script).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -144,8 +144,8 @@ namespace PuppeteerSharp
         /// <seealso cref="Page.EvaluateFunctionAsync(string, object[])"/>
         public async Task<dynamic> EvaluateFunctionAsync(string script, params object[] args)
         {
-            var context = await GetExecutionContextAsync();
-            return await context.EvaluateFunctionAsync(script, args);
+            var context = await GetExecutionContextAsync().ConfigureAwait(false);
+            return await context.EvaluateFunctionAsync(script, args).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -163,8 +163,8 @@ namespace PuppeteerSharp
         /// <seealso cref="Page.EvaluateFunctionAsync{T}(string, object[])"/>
         public async Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
         {
-            var context = await GetExecutionContextAsync();
-            return await context.EvaluateFunctionAsync<T>(script, args);
+            var context = await GetExecutionContextAsync().ConfigureAwait(false);
+            return await context.EvaluateFunctionAsync<T>(script, args).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -180,8 +180,8 @@ namespace PuppeteerSharp
         /// <param name="script">Expression to be evaluated in the <seealso cref="ExecutionContext"/></param>
         public async Task<JSHandle> EvaluateExpressionHandleAsync(string script)
         {
-            var context = await GetExecutionContextAsync();
-            return await context.EvaluateExpressionHandleAsync(script);
+            var context = await GetExecutionContextAsync().ConfigureAwait(false);
+            return await context.EvaluateExpressionHandleAsync(script).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -204,8 +204,8 @@ namespace PuppeteerSharp
         /// <param name="args">Arguments to pass to <paramref name="function"/></param>
         public async Task<JSHandle> EvaluateFunctionHandleAsync(string function, params object[] args)
         {
-            var context = await GetExecutionContextAsync();
-            return await context.EvaluateFunctionHandleAsync(function, args);
+            var context = await GetExecutionContextAsync().ConfigureAwait(false);
+            return await context.EvaluateFunctionHandleAsync(function, args).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -318,8 +318,8 @@ namespace PuppeteerSharp
         /// <seealso cref="Page.QuerySelectorAsync(string)"/>
         public async Task<ElementHandle> QuerySelectorAsync(string selector)
         {
-            var document = await GetDocument();
-            var value = await document.QuerySelectorAsync(selector);
+            var document = await GetDocument().ConfigureAwait(false);
+            var value = await document.QuerySelectorAsync(selector).ConfigureAwait(false);
             return value;
         }
 
@@ -331,8 +331,8 @@ namespace PuppeteerSharp
         /// <seealso cref="Page.QuerySelectorAllAsync(string)"/>
         public async Task<ElementHandle[]> QuerySelectorAllAsync(string selector)
         {
-            var document = await GetDocument();
-            var value = await document.QuerySelectorAllAsync(selector);
+            var document = await GetDocument().ConfigureAwait(false);
+            var value = await document.QuerySelectorAllAsync(selector).ConfigureAwait(false);
             return value;
         }
 
@@ -344,8 +344,8 @@ namespace PuppeteerSharp
         /// <seealso cref="Page.XPathAsync(string)"/>
         public async Task<ElementHandle[]> XPathAsync(string expression)
         {
-            var document = await GetDocument();
-            var value = await document.XPathAsync(expression);
+            var document = await GetDocument().ConfigureAwait(false);
+            var value = await document.XPathAsync(expression).ConfigureAwait(false);
             return value;
         }
 
@@ -388,8 +388,8 @@ namespace PuppeteerSharp
                 var url = options.Url;
                 try
                 {
-                    var context = await GetExecutionContextAsync();
-                    return (await context.EvaluateFunctionHandleAsync(addStyleUrl, url)) as ElementHandle;
+                    var context = await GetExecutionContextAsync().ConfigureAwait(false);
+                    return (await context.EvaluateFunctionHandleAsync(addStyleUrl, url).ConfigureAwait(false)) as ElementHandle;
                 }
                 catch (PuppeteerException)
                 {
@@ -401,14 +401,14 @@ namespace PuppeteerSharp
             {
                 var contents = File.ReadAllText(options.Path, Encoding.UTF8);
                 contents += "//# sourceURL=" + options.Path.Replace("\n", string.Empty);
-                var context = await GetExecutionContextAsync();
-                return (await context.EvaluateFunctionHandleAsync(addStyleContent, contents)) as ElementHandle;
+                var context = await GetExecutionContextAsync().ConfigureAwait(false);
+                return (await context.EvaluateFunctionHandleAsync(addStyleContent, contents).ConfigureAwait(false)) as ElementHandle;
             }
 
             if (!string.IsNullOrEmpty(options.Content))
             {
-                var context = await GetExecutionContextAsync();
-                return (await context.EvaluateFunctionHandleAsync(addStyleContent, options.Content)) as ElementHandle;
+                var context = await GetExecutionContextAsync().ConfigureAwait(false);
+                return (await context.EvaluateFunctionHandleAsync(addStyleContent, options.Content).ConfigureAwait(false)) as ElementHandle;
             }
 
             throw new ArgumentException("Provide options with a `Url`, `Path` or `Content` property");
@@ -450,10 +450,10 @@ namespace PuppeteerSharp
 
             async Task<ElementHandle> AddScriptTagPrivate(string script, string urlOrContent, string type)
             {
-                var context = await GetExecutionContextAsync();
+                var context = await GetExecutionContextAsync().ConfigureAwait(false);
                 return (string.IsNullOrEmpty(type)
-                        ? await context.EvaluateFunctionHandleAsync(script, urlOrContent)
-                        : await context.EvaluateFunctionHandleAsync(script, urlOrContent, type)) as ElementHandle;
+                        ? await context.EvaluateFunctionHandleAsync(script, urlOrContent).ConfigureAwait(false)
+                        : await context.EvaluateFunctionHandleAsync(script, urlOrContent, type).ConfigureAwait(false)) as ElementHandle;
             }
 
             if (!string.IsNullOrEmpty(options.Url))
@@ -461,7 +461,7 @@ namespace PuppeteerSharp
                 var url = options.Url;
                 try
                 {
-                    return await AddScriptTagPrivate(addScriptUrl, url, options.Type);
+                    return await AddScriptTagPrivate(addScriptUrl, url, options.Type).ConfigureAwait(false);
                 }
                 catch (PuppeteerException)
                 {
@@ -473,12 +473,12 @@ namespace PuppeteerSharp
             {
                 var contents = File.ReadAllText(options.Path, Encoding.UTF8);
                 contents += "//# sourceURL=" + options.Path.Replace("\n", string.Empty);
-                return await AddScriptTagPrivate(addScriptContent, contents, options.Type);
+                return await AddScriptTagPrivate(addScriptContent, contents, options.Type).ConfigureAwait(false);
             }
 
             if (!string.IsNullOrEmpty(options.Content))
             {
-                return await AddScriptTagPrivate(addScriptContent, options.Content, options.Type);
+                return await AddScriptTagPrivate(addScriptContent, options.Content, options.Type).ConfigureAwait(false);
             }
 
             throw new ArgumentException("Provide options with a `Url`, `Path` or `Content` property");
@@ -558,7 +558,7 @@ namespace PuppeteerSharp
                     isXPath,
                     options.Visible,
                     options.Hidden
-            }).Task;
+            }).Task.ConfigureAwait(false);
             return handle as ElementHandle;
         }
 
@@ -628,11 +628,11 @@ namespace PuppeteerSharp
             if (_documentCompletionSource == null)
             {
                 _documentCompletionSource = new TaskCompletionSource<ElementHandle>();
-                var context = await GetExecutionContextAsync();
-                var document = await context.EvaluateExpressionHandleAsync("document");
+                var context = await GetExecutionContextAsync().ConfigureAwait(false);
+                var document = await context.EvaluateExpressionHandleAsync("document").ConfigureAwait(false);
                 _documentCompletionSource.SetResult(document as ElementHandle);
             }
-            return await _documentCompletionSource.Task;
+            return await _documentCompletionSource.Task.ConfigureAwait(false);
         }
 
         #endregion
