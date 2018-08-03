@@ -57,10 +57,10 @@ namespace PuppeteerSharp
               const result = { __proto__: null};
               result[propertyName] = object[propertyName];
               return result;
-            }", this, propertyName);
-            var properties = await objectHandle.GetPropertiesAsync();
+            }", this, propertyName).ConfigureAwait(false);
+            var properties = await objectHandle.GetPropertiesAsync().ConfigureAwait(false);
             properties.TryGetValue(propertyName, out var result);
-            await objectHandle.DisposeAsync();
+            await objectHandle.DisposeAsync().ConfigureAwait(false);
             return result;
         }
 
@@ -83,7 +83,7 @@ namespace PuppeteerSharp
             {
                 objectId = RemoteObject.objectId.ToString(),
                 ownProperties = true
-            });
+            }).ConfigureAwait(false);
             var result = new Dictionary<string, JSHandle>();
             foreach (var property in response.result)
             {
@@ -104,7 +104,7 @@ namespace PuppeteerSharp
         /// <remarks>
         /// The method will return an empty JSON if the referenced object is not stringifiable. It will throw an error if the object has circular references
         /// </remarks>
-        public async Task<object> JsonValueAsync() => await JsonValueAsync<object>();
+        public async Task<object> JsonValueAsync() => await JsonValueAsync<object>().ConfigureAwait(false);
 
         /// <summary>
         /// Returns a JSON representation of the object
@@ -124,7 +124,7 @@ namespace PuppeteerSharp
                     ["objectId"] = RemoteObject.objectId,
                     ["returnByValue"] = true,
                     ["awaitPromise"] = true
-                });
+                }).ConfigureAwait(false);
                 return (T)RemoteObjectHelper.ValueFromRemoteObject<T>(response.result);
             }
 
@@ -143,7 +143,7 @@ namespace PuppeteerSharp
             }
 
             Disposed = true;
-            await RemoteObjectHelper.ReleaseObject(Client, RemoteObject, Logger);
+            await RemoteObjectHelper.ReleaseObject(Client, RemoteObject, Logger).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>

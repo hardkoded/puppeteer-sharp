@@ -97,7 +97,7 @@ namespace PuppeteerSharp
             {
                 RequestUri = new Uri(url),
                 Method = HttpMethod.Head
-            });
+            }).ConfigureAwait(false);
 
             return response.IsSuccessStatusCode;
         }
@@ -179,7 +179,7 @@ namespace PuppeteerSharp
             {
                 webClient.DownloadProgressChanged += DownloadProgressChanged;
             }
-            await webClient.DownloadFileTaskAsync(new Uri(url), zipPath);
+            await webClient.DownloadFileTaskAsync(new Uri(url), zipPath).ConfigureAwait(false);
 
             if (Platform == Platform.MacOS)
             {

@@ -173,7 +173,7 @@ namespace PuppeteerSharp
                     requestData["headers"] = overrides.Headers;
                 }
 
-                await _client.SendAsync("Network.continueInterceptedRequest", requestData);
+                await _client.SendAsync("Network.continueInterceptedRequest", requestData).ConfigureAwait(false);
             }
             catch (PuppeteerException ex)
             {
@@ -253,7 +253,7 @@ namespace PuppeteerSharp
                 {
                     {"interceptionId", InterceptionId},
                     {"rawResponse", Convert.ToBase64String(responseData)}
-                });
+                }).ConfigureAwait(false);
             }
             catch (PuppeteerException ex)
             {
@@ -290,7 +290,7 @@ namespace PuppeteerSharp
                 {
                     {"interceptionId", InterceptionId},
                     {"errorReason", errorReason}
-                });
+                }).ConfigureAwait(false);
             }
             catch (PuppeteerException ex)
             {

@@ -141,11 +141,11 @@ namespace PuppeteerSharp
             string targetId = (await Connection.SendAsync("Target.createTarget", new Dictionary<string, object>
             {
                 ["url"] = "about:blank"
-            })).targetId.ToString();
+            }).ConfigureAwait(false)).targetId.ToString();
 
             var target = TargetsMap[targetId];
-            await target.InitializedTask;
-            return await target.PageAsync();
+            await target.InitializedTask.ConfigureAwait(false);
+            return await target.PageAsync().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -159,7 +159,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>Task which resolves to an array of all open pages.</returns>
         public async Task<Page[]> PagesAsync()
-            => (await Task.WhenAll(Targets().Select(target => target.PageAsync()))).Where(x => x != null).ToArray();
+            => (await Task.WhenAll(Targets().Select(target => target.PageAsync())).ConfigureAwait(false)).Where(x => x != null).ToArray();
 
         /// <summary>
         /// Gets the browser's version
@@ -170,7 +170,7 @@ namespace PuppeteerSharp
         /// </remarks>
         public async Task<string> GetVersionAsync()
         {
-            dynamic version = await Connection.SendAsync("Browser.getVersion");
+            dynamic version = await Connection.SendAsync("Browser.getVersion").ConfigureAwait(false);
             return version.product.ToString();
         }
 
@@ -183,7 +183,7 @@ namespace PuppeteerSharp
         /// </remarks>
         public async Task<string> GetUserAgentAsync()
         {
-            dynamic version = await Connection.SendAsync("Browser.getVersion");
+            dynamic version = await Connection.SendAsync("Browser.getVersion").ConfigureAwait(false);
             return version.userAgent.ToString();
         }
 
@@ -210,7 +210,7 @@ namespace PuppeteerSharp
 
             if (closeTask != null)
             {
-                await closeTask;
+                await closeTask.ConfigureAwait(false);
             }
 
             Disconnect();
@@ -231,11 +231,11 @@ namespace PuppeteerSharp
             switch (e.MessageID)
             {
                 case "Target.targetCreated":
-                    await CreateTargetAsync(e.MessageData.ToObject<TargetCreatedResponse>());
+                    await CreateTargetAsync(e.MessageData.ToObject<TargetCreatedResponse>()).ConfigureAwait(false);
                     return;
 
                 case "Target.targetDestroyed":
-                    await DestroyTargetAsync(e.MessageData.ToObject<TargetDestroyedResponse>());
+                    await DestroyTargetAsync(e.MessageData.ToObject<TargetDestroyedResponse>()).ConfigureAwait(false);
                     return;
 
                 case "Target.targetInfoChanged":
@@ -267,7 +267,7 @@ namespace PuppeteerSharp
 
             target.CloseTaskWrapper.TrySetResult(true);
 
-            if (await target.InitializedTask)
+            if (await target.InitializedTask.ConfigureAwait(false))
             {
                 TargetDestroyed?.Invoke(this, new TargetChangedArgs
                 {
@@ -290,7 +290,7 @@ namespace PuppeteerSharp
 
             TargetsMap[e.TargetInfo.TargetId] = target;
 
-            if (await target.InitializedTask)
+            if (await target.InitializedTask.ConfigureAwait(false))
             {
                 TargetCreated?.Invoke(this, new TargetChangedArgs
                 {
@@ -309,7 +309,7 @@ namespace PuppeteerSharp
             await connection.SendAsync("Target.setDiscoverTargets", new
             {
                 discover = true
-            });
+            }).ConfigureAwait(false);
 
             return browser;
         }
