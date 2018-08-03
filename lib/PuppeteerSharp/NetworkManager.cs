@@ -46,13 +46,13 @@ namespace PuppeteerSharp
 
         #region Public Methods
 
-        internal async Task AuthenticateAsync(Credentials credentials)
+        internal Task AuthenticateAsync(Credentials credentials)
         {
             _credentials = credentials;
-            await UpdateProtocolRequestInterceptionAsync();
+            return UpdateProtocolRequestInterceptionAsync();
         }
 
-        internal async Task SetExtraHTTPHeadersAsync(Dictionary<string, string> extraHTTPHeaders)
+        internal Task SetExtraHTTPHeadersAsync(Dictionary<string, string> extraHTTPHeaders)
         {
             _extraHTTPHeaders = new Dictionary<string, string>();
 
@@ -60,7 +60,7 @@ namespace PuppeteerSharp
             {
                 _extraHTTPHeaders[item.Key.ToLower()] = item.Value;
             }
-            await _client.SendAsync("Network.setExtraHTTPHeaders", new Dictionary<string, object>
+            return _client.SendAsync("Network.setExtraHTTPHeaders", new Dictionary<string, object>
             {
                 {"headers", _extraHTTPHeaders}
             });
@@ -78,7 +78,7 @@ namespace PuppeteerSharp
                     { "latency", 0},
                     { "downloadThroughput", -1},
                     { "uploadThroughput", -1}
-                });
+                }).ConfigureAwait(false);
             }
         }
 
@@ -88,10 +88,10 @@ namespace PuppeteerSharp
                 { "userAgent", userAgent }
             });
 
-        internal async Task SetRequestInterceptionAsync(bool value)
+        internal Task SetRequestInterceptionAsync(bool value)
         {
             _userRequestInterceptionEnabled = value;
-            await UpdateProtocolRequestInterceptionAsync();
+            return UpdateProtocolRequestInterceptionAsync();
         }
 
         #endregion
@@ -106,7 +106,7 @@ namespace PuppeteerSharp
                     OnRequestWillBeSent(e.MessageData.ToObject<RequestWillBeSentResponse>());
                     break;
                 case "Network.requestIntercepted":
-                    await OnRequestInterceptedAsync(e.MessageData.ToObject<RequestInterceptedResponse>());
+                    await OnRequestInterceptedAsync(e.MessageData.ToObject<RequestInterceptedResponse>()).ConfigureAwait(false);
                     break;
                 case "Network.requestServedFromCache":
                     OnRequestServedFromCache(e.MessageData.ToObject<RequestServedFromCacheResponse>());
@@ -217,7 +217,7 @@ namespace PuppeteerSharp
                                 password = credentials.Password
                             }
                         }
-                    });
+                    }).ConfigureAwait(false);
                 }
                 catch (PuppeteerException ex)
                 {
@@ -232,7 +232,7 @@ namespace PuppeteerSharp
                     await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object>
                     {
                         { "interceptionId", e.InterceptionId}
-                    });
+                    }).ConfigureAwait(false);
                 }
                 catch (PuppeteerException ex)
                 {
@@ -451,7 +451,7 @@ namespace PuppeteerSharp
                 {
                     { "patterns", patterns}
                 })
-            );
+            ).ConfigureAwait(false);
         }
         #endregion
     }

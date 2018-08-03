@@ -128,7 +128,7 @@ namespace PuppeteerSharp
             dynamic response = await _client.SendAsync("Runtime.queryObjects", new Dictionary<string, object>
             {
                 {"prototypeObjectId", objectId.ToString()}
-            });
+            }).ConfigureAwait(false);
 
             return ObjectHandleFactory(response.objects);
         }
@@ -147,7 +147,7 @@ namespace PuppeteerSharp
                 ["returnByValue"] = false,
                 ["awaitPromise"] = true,
                 ["userGesture"] = true
-            });
+            }).ConfigureAwait(false);
         }
 
         internal async Task<JSHandle> EvaluateFunctionHandleAsync(string script, params object[] args)
@@ -165,18 +165,18 @@ namespace PuppeteerSharp
                 ["returnByValue"] = false,
                 ["awaitPromise"] = true,
                 ["userGesture"] = true
-            });
+            }).ConfigureAwait(false);
         }
 
         private async Task<T> EvaluateAsync<T>(Task<JSHandle> handleEvaluator)
         {
-            var handle = await handleEvaluator;
+            var handle = await handleEvaluator.ConfigureAwait(false);
             var result = default(T);
 
             try
             {
                 result = await handle.JsonValueAsync<T>()
-                    .ContinueWith(jsonTask => jsonTask.Exception != null ? default : jsonTask.Result);
+                    .ContinueWith(jsonTask => jsonTask.Exception != null ? default : jsonTask.Result).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -187,13 +187,13 @@ namespace PuppeteerSharp
                 }
                 throw new EvaluationFailedException(ex.Message, ex);
             }
-            await handle.DisposeAsync();
+            await handle.DisposeAsync().ConfigureAwait(false);
             return result;
         }
 
         private async Task<JSHandle> EvaluateHandleAsync(string method, dynamic args)
         {
-            dynamic response = await _client.SendAsync(method, args);
+            dynamic response = await _client.SendAsync(method, args).ConfigureAwait(false);
 
             if (response.exceptionDetails != null)
             {

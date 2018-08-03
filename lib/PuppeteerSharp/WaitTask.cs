@@ -26,7 +26,8 @@ namespace PuppeteerSharp
 async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...args) {
   const predicate = new Function('...args', predicateBody);
   let timedOut = false;
-  setTimeout(() => timedOut = true, timeout);
+  if (timeout)
+    setTimeout(() => timedOut = true, timeout);
   if (polling === 'raf')
     return await pollRaf();
   if (polling === 'mutation')
@@ -158,11 +159,11 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
             JSHandle success = null;
             Exception exception = null;
 
-            var context = await _frame.GetExecutionContextAsync();
+            var context = await _frame.GetExecutionContextAsync().ConfigureAwait(false);
             try
             {
                 success = await context.EvaluateFunctionHandleAsync(WaitForPredicatePageFunction,
-                    new object[] { _predicateBody, _pollingInterval ?? (object)_polling, _timeout }.Concat(_args).ToArray());
+                    new object[] { _predicateBody, _pollingInterval ?? (object)_polling, _timeout }.Concat(_args).ToArray()).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -173,16 +174,16 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
             {
                 if (success != null)
                 {
-                    await success.DisposeAsync();
+                    await success.DisposeAsync().ConfigureAwait(false);
                 }
 
                 return;
             }
-            if (exception == null && await _frame.EvaluateFunctionAsync<bool>("s => !s", success))
+            if (exception == null && await _frame.EvaluateFunctionAsync<bool>("s => !s", success).ConfigureAwait(false))
             {
                 if (success != null)
                 {
-                    await success.DisposeAsync();
+                    await success.DisposeAsync().ConfigureAwait(false);
                 }
 
                 return;

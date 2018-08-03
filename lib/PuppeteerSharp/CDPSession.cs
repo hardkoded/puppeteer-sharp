@@ -86,7 +86,7 @@ namespace PuppeteerSharp
 
         internal async Task<T> SendAsync<T>(string method, dynamic args = null)
         {
-            var content = await SendAsync(method, true, args);
+            var content = await SendAsync(method, true, args).ConfigureAwait(false);
             return JsonConvert.DeserializeObject<T>(content);
         }
 
@@ -125,7 +125,7 @@ namespace PuppeteerSharp
                 {
                     {"sessionId", SessionId},
                     {"message", message}
-                });
+                }).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -136,7 +136,7 @@ namespace PuppeteerSharp
                 }
             }
 
-            return await callback.TaskWrapper.Task;
+            return await callback.TaskWrapper.Task.ConfigureAwait(false);
         }
 
         /// <summary>
