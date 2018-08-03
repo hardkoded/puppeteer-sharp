@@ -126,7 +126,7 @@ namespace PuppeteerSharp
                 }
 
                 var browser = await Browser.CreateAsync(_connection, options, _chromeProcess, GracefullyCloseChrome).ConfigureAwait(false);
-                await EnsureInitialPageAsync(browser);
+                await EnsureInitialPageAsync(browser).ConfigureAwait(false);
                 return browser;
             }
             catch (Exception ex)
