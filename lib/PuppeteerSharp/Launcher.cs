@@ -242,24 +242,24 @@ namespace PuppeteerSharp
 
         #region Private methods
 
-        private async Task EnsureInitialPageAsync(Browser browser)
+        private static async Task EnsureInitialPageAsync(Browser browser)
         {
             // Wait for initial page target to be created.
             if (browser.Targets().Any(target => target.Type == TargetType.Page))
             {
                 return;
             }
-            var initialPageComplection = new TaskCompletionSource<bool>();
+            var initialPageCompletion = new TaskCompletionSource<bool>();
             void InitialPageCallback(object sender, TargetChangedArgs e)
             {
                 if (e.Target.Type == TargetType.Page)
                 {
-                    initialPageComplection.SetResult(true);
+                    initialPageCompletion.SetResult(true);
                     browser.TargetCreated -= InitialPageCallback;
                 }
             }
             browser.TargetCreated += InitialPageCallback;
-            await initialPageComplection.Task;
+            await initialPageCompletion.Task;
         }
 
         private void CreateChromeProcess(LaunchOptions options, List<string> chromeArguments, string chromeExecutable)
