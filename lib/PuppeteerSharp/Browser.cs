@@ -167,7 +167,6 @@ namespace PuppeteerSharp
             return allContexts;
         }
 
-
         /// <summary>
         /// Returns a Task which resolves to an array of all open pages.
         /// </summary>
