@@ -97,14 +97,14 @@ namespace PuppeteerSharp
         {
             if (_buffer == null)
             {
-                await BodyLoadedTaskWrapper.Task;
+                await BodyLoadedTaskWrapper.Task.ConfigureAwait(false);
 
                 try
                 {
                     var response = await _client.SendAsync("Network.getResponseBody", new Dictionary<string, object>
                     {
                         {"requestId", Request.RequestId}
-                    });
+                    }).ConfigureAwait(false);
 
                     _buffer = response.body.ToString();
                 }
@@ -128,7 +128,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <seealso cref="JsonAsync{T}"/>
         /// <returns>A Task which resolves to a <see cref="JObject"/> representation of response body</returns>
-        public async Task<JObject> JsonAsync() => JObject.Parse(await TextAsync());
+        public async Task<JObject> JsonAsync() => JObject.Parse(await TextAsync().ConfigureAwait(false));
 
         /// <summary>
         /// Returns a Task which resolves to a <typeparamref name="T"/> representation of response body
@@ -136,7 +136,7 @@ namespace PuppeteerSharp
         /// <typeparam name="T">The type of the response</typeparam>
         /// <seealso cref="JsonAsync"/>
         /// <returns>A Task which resolves to a <typeparamref name="T"/> representation of response body</returns>
-        public async Task<T> JsonAsync<T>() => (await JsonAsync()).ToObject<T>();
+        public async Task<T> JsonAsync<T>() => (await JsonAsync().ConfigureAwait(false)).ToObject<T>();
 
         #endregion
     }

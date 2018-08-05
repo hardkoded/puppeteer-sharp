@@ -101,14 +101,14 @@ namespace PuppeteerSharp
 
             var encoded = Encoding.UTF8.GetBytes(message);
             var buffer = new ArraySegment<byte>(encoded, 0, encoded.Length);
-            await _socketQueue.Enqueue(() => WebSocket.SendAsync(buffer, WebSocketMessageType.Text, true, default));
+            await _socketQueue.Enqueue(() => WebSocket.SendAsync(buffer, WebSocketMessageType.Text, true, default)).ConfigureAwait(false);
 
             if (method == CloseMessage)
             {
                 StopReading();
             }
 
-            return await _responses[id].TaskWrapper.Task;
+            return await _responses[id].TaskWrapper.Task.ConfigureAwait(false);
         }
         internal async Task<T> SendAsync<T>(string method, dynamic args = null)
         {
@@ -118,7 +118,7 @@ namespace PuppeteerSharp
 
         internal async Task<CDPSession> CreateSessionAsync(string targetId)
         {
-            string sessionId = (await SendAsync("Target.attachToTarget", new { targetId })).sessionId;
+            string sessionId = (await SendAsync("Target.attachToTarget", new { targetId }).ConfigureAwait(false)).sessionId;
             var session = new CDPSession(this, targetId, sessionId);
             _sessions.Add(sessionId, session);
             return session;
@@ -181,7 +181,7 @@ namespace PuppeteerSharp
                     {
                         result = await WebSocket.ReceiveAsync(
                             new ArraySegment<byte>(buffer),
-                            _websocketReaderCancellationSource.Token);
+                            _websocketReaderCancellationSource.Token).ConfigureAwait(false);
                     }
                     catch (Exception) when (_stopReading)
                     {
@@ -217,7 +217,7 @@ namespace PuppeteerSharp
                 {
                     if (Delay > 0)
                     {
-                        await Task.Delay(Delay);
+                        await Task.Delay(Delay).ConfigureAwait(false);
                     }
 
                     ProcessResponse(response);

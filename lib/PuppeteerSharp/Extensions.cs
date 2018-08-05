@@ -18,7 +18,7 @@ namespace PuppeteerSharp
         /// <exception cref="SelectorException">If <paramref name="elementHandleTask"/> resolves to <c>null</c></exception>
         public static async Task<T> EvaluateFunctionAsync<T>(this Task<ElementHandle> elementHandleTask, string pageFunction, params object[] args)
         {
-            var elementHandle = await elementHandleTask;
+            var elementHandle = await elementHandleTask.ConfigureAwait(false);
             if (elementHandle == null)
             {
                 throw new SelectorException($"Error: failed to find element matching selector");
@@ -27,8 +27,8 @@ namespace PuppeteerSharp
             var newArgs = new object[args.Length + 1];
             newArgs[0] = elementHandle;
             args.CopyTo(newArgs, 1);
-            var result = await elementHandle.ExecutionContext.EvaluateFunctionAsync<T>(pageFunction, newArgs);
-            await elementHandle.DisposeAsync();
+            var result = await elementHandle.ExecutionContext.EvaluateFunctionAsync<T>(pageFunction, newArgs).ConfigureAwait(false);
+            await elementHandle.DisposeAsync().ConfigureAwait(false);
             return result;
         }
 
@@ -42,13 +42,13 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to the return value of <c>pageFunction</c></returns>
         public static async Task<T> EvaluateFunctionAsync<T>(this Task<JSHandle> arrayHandleTask, string pageFunction, params object[] args)
         {
-            var arrayHandle = await arrayHandleTask;
+            var arrayHandle = await arrayHandleTask.ConfigureAwait(false);
 
             var newArgs = new object[args.Length + 1];
             newArgs[0] = arrayHandle;
             args.CopyTo(newArgs, 1);
-            var result = await arrayHandle.ExecutionContext.EvaluateFunctionAsync<T>(pageFunction, newArgs);
-            await arrayHandle.DisposeAsync();
+            var result = await arrayHandle.ExecutionContext.EvaluateFunctionAsync<T>(pageFunction, newArgs).ConfigureAwait(false);
+            await arrayHandle.DisposeAsync().ConfigureAwait(false);
             return result;
         }
     }

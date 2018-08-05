@@ -344,9 +344,52 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             var options = TestConstants.DefaultBrowserOptions();
             options.IgnoreDefaultArgs = true;
             using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
-            using (var page = await browser.NewPageAsync())
             {
-                Assert.Equal(121, await page.EvaluateExpressionAsync<int>("11 * 11"));
+                Assert.Single(await browser.PagesAsync());
+                using (var page = await browser.NewPageAsync())
+                {
+                    Assert.Equal(121, await page.EvaluateExpressionAsync<int>("11 * 11"));
+                }
+            }
+        }
+
+        [Fact]
+        public async Task ShouldHaveDefaultUrlWhenLaunchingBrowser()
+        {
+            using (var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.LoggerFactory))
+            {
+                var pages = (await browser.PagesAsync()).Select(page => page.Url);
+                Assert.Equal(new[] { TestConstants.AboutBlank }, pages);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldHaveDefaultUrlWhenLaunchingBrowserWithHeadlessFalse()
+        {
+            var options = TestConstants.DefaultBrowserOptions();
+            options.Headless = false;
+            using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
+            {
+                var pages = (await browser.PagesAsync()).Select(page => page.Url);
+                Assert.Equal(new[] { TestConstants.AboutBlank }, pages);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldHaveCustomUrlWhenLaunchingBrowser()
+        {
+            var customUrl = TestConstants.EmptyPage;
+            var options = TestConstants.DefaultBrowserOptions();
+            options.Args = options.Args.Prepend(customUrl).ToArray();
+            using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
+            {
+                var pages = await browser.PagesAsync();
+                Assert.Single(pages);
+                if (pages[0].Url != customUrl)
+                {
+                    await pages[0].WaitForNavigationAsync();
+                }
+                Assert.Equal(customUrl, pages[0].Url);
             }
         }
 

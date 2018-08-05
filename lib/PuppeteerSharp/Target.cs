@@ -60,6 +60,15 @@ namespace PuppeteerSharp
         public string TargetId => _targetInfo.TargetId;
 
         /// <summary>
+        /// Get the target that opened this target
+        /// </summary>
+        /// <remarks>
+        /// Top-level targets return <c>null</c>.
+        /// </remarks>
+        public Target Opener => _targetInfo.OpenerId != null ?
+            Browser.TargetsMap.GetValueOrDefault(_targetInfo.OpenerId) : null;
+
+        /// <summary>
         /// Get the browser the target belongs to.
         /// </summary>
         public Browser Browser => BrowserContext.Browser;
@@ -79,20 +88,20 @@ namespace PuppeteerSharp
         /// Creates a new <see cref="Page"/>. If the target is not <c>"page"</c> returns <c>null</c>
         /// </summary>
         /// <returns>a task that returns a new <see cref="Page"/></returns>
-        public async Task<Page> PageAsync()
+        public Task<Page> PageAsync()
         {
             if (_targetInfo.Type == TargetType.Page && _pageTask == null)
             {
                 _pageTask = CreatePageAsync();
             }
 
-            return await (_pageTask ?? Task.FromResult<Page>(null));
+            return _pageTask ?? Task.FromResult<Page>(null);
         }
 
         private async Task<Page> CreatePageAsync()
         {
-            var session = await _sessionFactory();
-            return await Page.CreateAsync(session, this, Browser.IgnoreHTTPSErrors, !Browser.AppMode, Browser.ScreenshotTaskQueue);
+            var session = await _sessionFactory().ConfigureAwait(false);
+            return await Page.CreateAsync(session, this, Browser.IgnoreHTTPSErrors, !Browser.AppMode, Browser.ScreenshotTaskQueue).ConfigureAwait(false);
         }
 
         internal void TargetInfoChanged(TargetInfo targetInfo)

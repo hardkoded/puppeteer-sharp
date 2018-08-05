@@ -33,6 +33,7 @@ namespace PuppeteerSharp
             CDPSession client,
             string requestId,
             string interceptionId,
+            bool isNavigationRequest,
             bool allowInterception,
             string url,
             ResourceType resourceType,
@@ -47,6 +48,7 @@ namespace PuppeteerSharp
 
             RequestId = requestId;
             InterceptionId = interceptionId;
+            IsNavigationRequest = isNavigationRequest;
             Url = url;
             ResourceType = resourceType;
             Method = payload.Method;
@@ -94,6 +96,11 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The frame.</value>
         public Frame Frame { get; }
+
+        /// <summary>
+        /// Gets whether this request is driving frame's navigation
+        /// </summary>
+        public bool IsNavigationRequest { get; }
 
         /// <summary>
         /// A redirectChain is a chain of requests initiated to fetch a resource.
@@ -166,7 +173,7 @@ namespace PuppeteerSharp
                     requestData["headers"] = overrides.Headers;
                 }
 
-                await _client.SendAsync("Network.continueInterceptedRequest", requestData);
+                await _client.SendAsync("Network.continueInterceptedRequest", requestData).ConfigureAwait(false);
             }
             catch (PuppeteerException ex)
             {
@@ -246,7 +253,7 @@ namespace PuppeteerSharp
                 {
                     {"interceptionId", InterceptionId},
                     {"rawResponse", Convert.ToBase64String(responseData)}
-                });
+                }).ConfigureAwait(false);
             }
             catch (PuppeteerException ex)
             {
@@ -283,7 +290,7 @@ namespace PuppeteerSharp
                 {
                     {"interceptionId", InterceptionId},
                     {"errorReason", errorReason}
-                });
+                }).ConfigureAwait(false);
             }
             catch (PuppeteerException ex)
             {

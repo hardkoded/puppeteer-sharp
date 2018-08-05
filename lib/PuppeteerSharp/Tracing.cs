@@ -51,7 +51,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>Start task</returns>
         /// <param name="options">Tracing options</param>
-        public async Task StartAsync(TracingOptions options)
+        public Task StartAsync(TracingOptions options)
         {
             if (_recording)
             {
@@ -68,7 +68,7 @@ namespace PuppeteerSharp
             _path = options.Path;
             _recording = true;
 
-            await _client.SendAsync("Tracing.start", new
+            return _client.SendAsync("Tracing.start", new
             {
                 transferMode = "ReturnAsStream",
                 categories = string.Join(", ", categories)
@@ -85,18 +85,18 @@ namespace PuppeteerSharp
 
             async void EventHandler(object sender, TracingCompleteEventArgs e)
             {
-                var tracingData = await ReadStream(e.Stream, _path);
+                var tracingData = await ReadStream(e.Stream, _path).ConfigureAwait(false);
                 _client.TracingComplete -= EventHandler;
                 taskWrapper.SetResult(tracingData);
             }
 
             _client.TracingComplete += EventHandler;
 
-            await _client.SendAsync("Tracing.end");
+            await _client.SendAsync("Tracing.end").ConfigureAwait(false);
 
             _recording = false;
 
-            return await taskWrapper.Task;
+            return await taskWrapper.Task.ConfigureAwait(false);
         }
 
         private async Task<string> ReadStream(string stream, string path)
@@ -109,7 +109,7 @@ namespace PuppeteerSharp
                 var response = await _client.SendAsync<IOReadResponse>("IO.read", new
                 {
                     handle = stream
-                });
+                }).ConfigureAwait(false);
 
                 eof = response.Eof;
 
@@ -120,14 +120,14 @@ namespace PuppeteerSharp
             {
                 using (var fs = new StreamWriter(path))
                 {
-                    await fs.WriteAsync(result.ToString());
+                    await fs.WriteAsync(result.ToString()).ConfigureAwait(false);
                 }
             }
 
             await _client.SendAsync("IO.close", new
             {
                 handle = stream
-            });
+            }).ConfigureAwait(false);
 
             return result.ToString();
         }

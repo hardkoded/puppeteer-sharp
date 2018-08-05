@@ -28,7 +28,7 @@ namespace PuppeteerSharp.PageCoverage
             _resetOnNavigation = false;
         }
 
-        internal async Task StartAsync(CoverageStartOptions options)
+        internal Task StartAsync(CoverageStartOptions options)
         {
             if (_enabled)
             {
@@ -42,7 +42,7 @@ namespace PuppeteerSharp.PageCoverage
 
             _client.MessageReceived += client_MessageReceived;
 
-            await Task.WhenAll(
+            return Task.WhenAll(
                 _client.SendAsync("Profiler.enable"),
                 _client.SendAsync("Profiler.startPreciseCoverage", new { callCount = false, detailed = true }),
                 _client.SendAsync("Debugger.enable"),
@@ -64,7 +64,7 @@ namespace PuppeteerSharp.PageCoverage
                _client.SendAsync("Profiler.stopPreciseCoverage"),
                _client.SendAsync("Profiler.disable"),
                _client.SendAsync("Debugger.disable")
-           );
+           ).ConfigureAwait(false);
             _client.MessageReceived -= client_MessageReceived;
 
             var coverage = new List<CoverageEntry>();
@@ -93,7 +93,7 @@ namespace PuppeteerSharp.PageCoverage
             switch (e.MessageID)
             {
                 case "Debugger.scriptParsed":
-                    await OnScriptParsed(e.MessageData.ToObject<DebuggerScriptParsedResponse>());
+                    await OnScriptParsed(e.MessageData.ToObject<DebuggerScriptParsedResponse>()).ConfigureAwait(false);
                     break;
                 case "Runtime.executionContextsCleared":
                     OnExecutionContextsCleared();
@@ -110,7 +110,7 @@ namespace PuppeteerSharp.PageCoverage
 
             try
             {
-                var response = await _client.SendAsync("Debugger.getScriptSource", new { scriptId = scriptParseResponse.ScriptId });
+                var response = await _client.SendAsync("Debugger.getScriptSource", new { scriptId = scriptParseResponse.ScriptId }).ConfigureAwait(false);
                 _scriptURLs.Add(scriptParseResponse.ScriptId, scriptParseResponse.Url);
                 _scriptSources.Add(scriptParseResponse.ScriptId, response.scriptSource.ToString());
             }

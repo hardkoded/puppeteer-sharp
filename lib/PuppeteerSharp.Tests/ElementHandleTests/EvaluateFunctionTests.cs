@@ -31,5 +31,17 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
                 .EvaluateFunctionAsync<string>("node => node.innerText");
             Assert.Equal("a-child-div", content);
         }
+
+        [Fact]
+        public async Task ShouldThrowInCaseOfMissingSelector()
+        {
+            var htmlContent = "<div class=\"a\">not-a-child-div</div><div id=\"myId\"></div>";
+            await Page.SetContentAsync(htmlContent);
+            var elementHandle = await Page.QuerySelectorAsync("#myId");
+            var exception = await Assert.ThrowsAsync<SelectorException>(
+                () => elementHandle.QuerySelectorAsync(".a").EvaluateFunctionAsync<string>("node => node.innerText")
+            );
+            Assert.Equal("Error: failed to find element matching selector", exception.Message);
+        }
     }
 }

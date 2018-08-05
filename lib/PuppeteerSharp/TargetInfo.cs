@@ -12,19 +12,21 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Gets or sets the type.
+        /// Gets the type.
         /// </summary>
         /// <value>The type.</value>
         [JsonProperty("type")]
         public TargetType Type { get; internal set; }
+
         /// <summary>
-        /// Gets or sets the URL.
+        /// Gets the URL.
         /// </summary>
         /// <value>The URL.</value>
         [JsonProperty("url")]
         public string Url { get; internal set; }
+
         /// <summary>
-        /// Gets or sets the target identifier.
+        /// Gets the target identifier.
         /// </summary>
         /// <value>The target identifier.</value>
         [JsonProperty("targetId")]
@@ -34,6 +36,11 @@ namespace PuppeteerSharp
         /// Gets or sets the target browser contextId
         /// </summary>
         [JsonProperty("browserContextId")]
+        
         public string BrowserContextId { get; internal set; }
+        /// Get the target that opened this target
+        /// </summary>
+        [JsonProperty("openerId")]
+        public string OpenerId { get; internal set; }
     }
 }

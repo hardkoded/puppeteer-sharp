@@ -35,6 +35,18 @@ namespace PuppeteerSharp.Tests.TargetTests
         }
 
         [Fact]
+        public async Task ShouldAllowBackgroundPageTargetTypeToPassThrough()
+        {
+            using (var browserWithExtension = await Puppeteer.LaunchAsync(TestConstants.BrowserWithExtensionOptions()))
+            using (var page = await browserWithExtension.NewPageAsync())
+            {
+                var targets = browserWithExtension.Targets();
+                var backgroundPageTarget = targets.FirstOrDefault(target => target.Type == TargetType.BackgroundPage);
+                Assert.NotNull(backgroundPageTarget);
+            }
+        }
+
+        [Fact]
         public void ShouldContainBrowserTarget()
         {
             var targets = Browser.Targets();
@@ -190,6 +202,20 @@ namespace PuppeteerSharp.Tests.TargetTests
             await WaitEvent(newPage.Client, "Page.loadEventFired");
             // Cleanup.
             await newPage.CloseAsync();
+        }
+
+        [Fact]
+        public async Task ShouldHaveAnOpener()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var targetCreatedCompletion = new TaskCompletionSource<Target>();
+            Browser.TargetCreated += (sender, e) => targetCreatedCompletion.TrySetResult(e.Target);
+            await Page.GoToAsync(TestConstants.ServerUrl + "/popup/window-open.html");
+            var createdTarget = await targetCreatedCompletion.Task;
+
+            Assert.Equal(TestConstants.ServerUrl + "/popup/popup.html", (await createdTarget.PageAsync()).Url);
+            Assert.Same(Page.Target, createdTarget.Opener);
+            Assert.Null(Page.Target.Opener);
         }
     }
 }
