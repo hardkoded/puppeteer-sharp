@@ -756,7 +756,7 @@ namespace PuppeteerSharp
         {
             var data = await PdfDataAsync(options).ConfigureAwait(false);
 
-            using (var fs = File.OpenWrite(file))
+            using (var fs = AsyncFileHelper.CreateStream(file, FileMode.Create))
             {
                 await fs.WriteAsync(data, 0, data.Length).ConfigureAwait(false);
             }
@@ -932,7 +932,7 @@ namespace PuppeteerSharp
             }
             var data = await ScreenshotDataAsync(options).ConfigureAwait(false);
 
-            using (var fs = new FileStream(file, FileMode.Create, FileAccess.Write))
+            using (var fs = AsyncFileHelper.CreateStream(file, FileMode.Create))
             {
                 await fs.WriteAsync(data, 0, data.Length).ConfigureAwait(false);
             }

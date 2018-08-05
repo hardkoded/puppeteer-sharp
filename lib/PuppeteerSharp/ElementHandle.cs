@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Input;
 using PuppeteerSharp.Messaging;
 using System;
@@ -61,7 +62,7 @@ namespace PuppeteerSharp
 
             var data = await ScreenshotDataAsync(options).ConfigureAwait(false);
 
-            using (var fs = new FileStream(file, FileMode.Create, FileAccess.Write))
+            using (var fs = AsyncFileHelper.CreateStream(file, FileMode.Create))
             {
                 await fs.WriteAsync(data, 0, data.Length).ConfigureAwait(false);
             }
