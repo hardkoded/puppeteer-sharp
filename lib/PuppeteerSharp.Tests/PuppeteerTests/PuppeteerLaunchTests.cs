@@ -143,6 +143,8 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
 
             using (var browser = await launcher.LaunchAsync(options))
             {
+                // Open a page to make sure its functional.
+                await browser.NewPageAsync();
                 Assert.True(Directory.GetFiles(userDataDir).Length > 0);
                 await browser.CloseAsync();
                 Assert.True(Directory.GetFiles(userDataDir).Length > 0);
