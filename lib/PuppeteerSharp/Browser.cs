@@ -53,7 +53,7 @@ namespace PuppeteerSharp
             Process = process;
             Connection = connection;
             IgnoreHTTPSErrors = ignoreHTTPSErrors;
-            _setDefaultViewport = setDefaultViewport;
+            DetDefaultViewport = setDefaultViewport;
             TargetsMap = new Dictionary<string, Target>();
             ScreenshotTaskQueue = new TaskQueue();
 
@@ -66,8 +66,7 @@ namespace PuppeteerSharp
 
         #region Private members
         internal readonly Dictionary<string, Target> TargetsMap;
-        internal readonly bool _setDefaultViewport;
-
+        
         private readonly Func<Task> _closeCallBack;
         private readonly ILogger<Browser> _logger;
         #endregion
@@ -130,6 +129,7 @@ namespace PuppeteerSharp
 
         internal TaskQueue ScreenshotTaskQueue { get; set; }
         internal Connection Connection { get; }
+        internal bool DetDefaultViewport { get; }
 
         #endregion
 
