@@ -45,10 +45,10 @@ namespace PuppeteerSharp
         /// <param name="closeCallBack">An async function called before closing</param>
         public Browser(
             Connection connection,
-         bool ignoreHTTPSErrors,
-         bool setDefaultViewport,
-         Process process,
-         Func<Task> closeCallBack)
+            bool ignoreHTTPSErrors,
+            bool setDefaultViewport,
+            Process process,
+            Func<Task> closeCallBack)
         {
             Process = process;
             Connection = connection;
@@ -308,7 +308,7 @@ namespace PuppeteerSharp
         internal static async Task<Browser> CreateAsync(
             Connection connection,
             bool ignoreHTTPSErrors,
-         bool appMode,
+            bool appMode,
             Process process,
             Func<Task> closeCallBack)
         {
