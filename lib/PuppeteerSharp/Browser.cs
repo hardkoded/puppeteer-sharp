@@ -39,15 +39,21 @@ namespace PuppeteerSharp
         /// Initializes a new instance of the <see cref="Browser"/> class.
         /// </summary>
         /// <param name="connection">The connection</param>
-        /// <param name="options">The browser options</param>
+        /// <param name="ignoreHTTPSErrors">The option to ignoreHTTPSErrors</param>
+        /// <param name="setDefaultViewport">The option to setDefaultViewport</param>
         /// <param name="process">The chrome process</param>
         /// <param name="closeCallBack">An async function called before closing</param>
-        public Browser(Connection connection, IBrowserOptions options, Process process, Func<Task> closeCallBack)
+        public Browser(
+            Connection connection,
+         bool ignoreHTTPSErrors,
+         bool setDefaultViewport,
+         Process process,
+         Func<Task> closeCallBack)
         {
             Process = process;
             Connection = connection;
-            IgnoreHTTPSErrors = options.IgnoreHTTPSErrors;
-            AppMode = options.AppMode;
+            IgnoreHTTPSErrors = ignoreHTTPSErrors;
+            AppMode = setDefaultViewport;
             TargetsMap = new Dictionary<string, Target>();
             ScreenshotTaskQueue = new TaskQueue();
 
@@ -301,11 +307,12 @@ namespace PuppeteerSharp
 
         internal static async Task<Browser> CreateAsync(
             Connection connection,
-            IBrowserOptions options,
+            bool ignoreHTTPSErrors,
+         bool appMode,
             Process process,
             Func<Task> closeCallBack)
         {
-            var browser = new Browser(connection, options, process, closeCallBack);
+            var browser = new Browser(connection, ignoreHTTPSErrors, appMode, process, closeCallBack);
             await connection.SendAsync("Target.setDiscoverTargets", new
             {
                 discover = true
