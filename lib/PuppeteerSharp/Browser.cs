@@ -53,7 +53,7 @@ namespace PuppeteerSharp
             Process = process;
             Connection = connection;
             IgnoreHTTPSErrors = ignoreHTTPSErrors;
-            AppMode = setDefaultViewport;
+            _setDefaultViewport = setDefaultViewport;
             TargetsMap = new Dictionary<string, Target>();
             ScreenshotTaskQueue = new TaskQueue();
 
@@ -66,6 +66,8 @@ namespace PuppeteerSharp
 
         #region Private members
         internal readonly Dictionary<string, Target> TargetsMap;
+        internal readonly bool _setDefaultViewport;
+
         private readonly Func<Task> _closeCallBack;
         private readonly ILogger<Browser> _logger;
         #endregion
@@ -120,11 +122,6 @@ namespace PuppeteerSharp
         /// Gets or Sets whether to ignore HTTPS errors during navigation
         /// </summary>
         public bool IgnoreHTTPSErrors { get; set; }
-
-        /// <summary>
-        /// Gets or Sets whether to use appMode or not
-        /// </summary>
-        public bool AppMode { get; set; }
 
         /// <summary>
         /// Gets a value indicating if the browser is closed
