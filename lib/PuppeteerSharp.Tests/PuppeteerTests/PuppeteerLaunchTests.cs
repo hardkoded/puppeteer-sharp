@@ -232,6 +232,32 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         }
 
         [Fact]
+        public async Task OOPIFShouldReportGoogleComFrame()
+        {
+            // https://google.com is isolated by default in Chromium embedder.
+            var headfulOptions = TestConstants.DefaultBrowserOptions();
+            headfulOptions.Headless = false;
+            using (var browser = await Puppeteer.LaunchAsync(headfulOptions))
+            using (var page = await browser.NewPageAsync())
+            {
+                await page.GoToAsync(TestConstants.EmptyPage);
+                await page.SetRequestInterceptionAsync(true);
+                page.Request += async (sender, e) => await e.Request.RespondAsync(
+                    new ResponseData { Body = "{ body: 'YO, GOOGLE.COM'}" });
+                await page.EvaluateFunctionHandleAsync(@"() => {
+                    const frame = document.createElement('iframe');
+                    frame.setAttribute('src', 'https://google.com/');
+                    document.body.appendChild(frame);
+                    return new Promise(x => frame.onload = x);
+                }");
+                await page.WaitForSelectorAsync("iframe[src=\"https://google.com/\"]");
+                var urls = Array.ConvertAll(page.Frames, frame => frame.Url);
+                Array.Sort(urls);
+                Assert.Equal(new[] { TestConstants.EmptyPage, "https://google.com/" }, urls);
+            }
+        }
+
+        [Fact]
         public void ShouldReturnTheDefaultChromeArguments()
         {
             var args = Puppeteer.DefaultArgs;
