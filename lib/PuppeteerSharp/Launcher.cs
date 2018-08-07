@@ -125,7 +125,7 @@ namespace PuppeteerSharp
                     _logger.LogInformation("Process Count: {ProcessCount}", Interlocked.Increment(ref _processCount));
                 }
 
-                var browser = await Browser.CreateAsync(_connection, options.IgnoreHTTPSErrors, options.AppMode, _chromeProcess, GracefullyCloseChrome).ConfigureAwait(false);
+                var browser = await Browser.CreateAsync(_connection, options.IgnoreHTTPSErrors, !options.AppMode, _chromeProcess, GracefullyCloseChrome).ConfigureAwait(false);
                 await EnsureInitialPageAsync(browser).ConfigureAwait(false);
                 return browser;
             }
