@@ -156,7 +156,7 @@ namespace PuppeteerSharp
 
                 _connection = await Connection.Create(options.BrowserWSEndpoint, connectionDelay, keepAliveInterval, _loggerFactory).ConfigureAwait(false);
 
-                return await Browser.CreateAsync(_connection, options.IgnoreHTTPSErrors, options.AppMode, null, () =>
+                return await Browser.CreateAsync(_connection, options.IgnoreHTTPSErrors, true, null, () =>
                 {
                     try
                     {
