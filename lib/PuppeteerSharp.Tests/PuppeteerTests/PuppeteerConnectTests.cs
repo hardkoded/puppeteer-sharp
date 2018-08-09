@@ -36,11 +36,10 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         [Fact]
         public async Task ShouldSupportIgnoreHTTPSErrorsOption()
         {
-            var originalBrowser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
-            var browserWSEndpoint = originalBrowser.WebSocketEndpoint;
+            using (var originalBrowser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions()))
             using (var browser = await Puppeteer.ConnectAsync(new ConnectOptions
             {
-                BrowserWSEndpoint = browserWSEndpoint,
+                BrowserWSEndpoint = originalBrowser.WebSocketEndpoint,
                 IgnoreHTTPSErrors = true
             }))
             using (var page = await browser.NewPageAsync())
