@@ -44,7 +44,7 @@ namespace PuppeteerSharp
         {
             var arrayHandle = await arrayHandleTask.ConfigureAwait(false);
 
-            var response = await arrayHandle.JsonValueAsync<ElementHandle[]>().ConfigureAwait(false);
+            var response = await arrayHandle.JsonValueAsync<object[]>().ConfigureAwait(false);
             if (response.Length == 0)
             {
                 throw new SelectorException("Error: failed to find elements matching selector");
