@@ -268,6 +268,15 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
+        /// A utility function to be used with <see cref="Extensions.EvaluateFunctionAsync{T}(Task{JSHandle}, string, object[])"/>
+        /// </summary>
+        /// <param name="selector">A selector to query element for</param>
+        /// <returns>Task which resolves to a <see cref="JSHandle"/> of <c>document.querySelectorAll</c> result</returns>
+        public Task<JSHandle> QuerySelectorAllHandleAsync(string selector)
+            => ExecutionContext.EvaluateFunctionHandleAsync(
+                "(element, selector) => Array.from(element.querySelectorAll(selector))", this, selector);
+
+        /// <summary>
         /// Evaluates the XPath expression relative to the elementHandle. If there's no such element, the method will resolve to <c>null</c>.
         /// </summary>
         /// <param name="expression">Expression to evaluate <see href="https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate"/></param>
