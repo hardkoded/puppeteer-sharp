@@ -27,6 +27,7 @@ namespace PuppeteerSharp
             "--disable-default-apps",
             "--disable-dev-shm-usage",
             "--disable-extensions",
+            "--disable-features=site-per-process",
             "--disable-hang-monitor",
             "--disable-popup-blocking",
             "--disable-prompt-on-repost",
@@ -126,7 +127,15 @@ namespace PuppeteerSharp
                     _logger.LogInformation("Process Count: {ProcessCount}", Interlocked.Increment(ref _processCount));
                 }
 
-                var browser = await Browser.CreateAsync(_connection, Array.Empty<string>(), options, _chromeProcess, GracefullyCloseChrome).ConfigureAwait(false);
+                var browser = await Browser.CreateAsync(
+                    _connection,
+                    Array.Empty<string>(),
+                    options.IgnoreHTTPSErrors,
+                    !options.AppMode,
+                    _chromeProcess,
+                    GracefullyCloseChrome
+                ).ConfigureAwait(false);
+
                 await EnsureInitialPageAsync(browser).ConfigureAwait(false);
                 return browser;
             }
@@ -159,7 +168,7 @@ namespace PuppeteerSharp
 
                 var response = await _connection.SendAsync<GetBrowserContextsResponse>("Target.getBrowserContexts");
 
-                return await Browser.CreateAsync(_connection, response.BrowserContextIds, options, null, () =>
+                return await Browser.CreateAsync(_connection, response.BrowserContextIds, options.IgnoreHTTPSErrors, true, null, () =>
                 {
                     try
                     {

@@ -77,5 +77,9 @@
         /// TimeEnd.
         /// </summary>
         TimeEnd,
+        /// <summary>
+        /// Verbose.
+        /// </summary>
+        Verbose,
     }
 }

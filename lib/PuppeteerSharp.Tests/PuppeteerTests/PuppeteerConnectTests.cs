@@ -34,6 +34,24 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         }
 
         [Fact]
+        public async Task ShouldSupportIgnoreHTTPSErrorsOption()
+        {
+            using (var originalBrowser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions()))
+            using (var browser = await Puppeteer.ConnectAsync(new ConnectOptions
+            {
+                BrowserWSEndpoint = originalBrowser.WebSocketEndpoint,
+                IgnoreHTTPSErrors = true
+            }))
+            using (var page = await browser.NewPageAsync())
+            {
+                var response = await page.GoToAsync(TestConstants.HttpsPrefix + "/empty.html");
+                Assert.True(response.Ok);
+                Assert.NotNull(response.SecurityDetails);
+                Assert.Equal("TLS 1.2", response.SecurityDetails.Protocol);
+            }
+        }
+
+        [Fact]
         public async Task ShouldBeAbleToReconnectToADisconnectedBrowser()
         {
             var options = new ConnectOptions()

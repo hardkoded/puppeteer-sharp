@@ -39,15 +39,23 @@ namespace PuppeteerSharp
         /// Initializes a new instance of the <see cref="Browser"/> class.
         /// </summary>
         /// <param name="connection">The connection</param>
-        /// <param name="options">The browser options</param>
+        /// <param name="contextIds">The context ids></param>
+        /// <param name="ignoreHTTPSErrors">The option to ignoreHTTPSErrors</param>
+        /// <param name="setDefaultViewport">The option to setDefaultViewport</param>
         /// <param name="process">The chrome process</param>
         /// <param name="closeCallBack">An async function called before closing</param>
-        public Browser(Connection connection, string[] contextIds, IBrowserOptions options, Process process, Func<Task> closeCallBack)
+        public Browser(
+            Connection connection,
+            string[] contextIds,
+            bool ignoreHTTPSErrors,
+            bool setDefaultViewport,
+            Process process,
+            Func<Task> closeCallBack)
         {
             Process = process;
             Connection = connection;
-            IgnoreHTTPSErrors = options.IgnoreHTTPSErrors;
-            AppMode = options.AppMode;
+            IgnoreHTTPSErrors = ignoreHTTPSErrors;
+            SetDefaultViewport = setDefaultViewport;
             TargetsMap = new Dictionary<string, Target>();
             ScreenshotTaskQueue = new TaskQueue();
             _defaultContext = new BrowserContext(this, null);
@@ -123,17 +131,13 @@ namespace PuppeteerSharp
         public bool IgnoreHTTPSErrors { get; set; }
 
         /// <summary>
-        /// Gets or Sets whether to use appMode or not
-        /// </summary>
-        public bool AppMode { get; set; }
-
-        /// <summary>
         /// Gets a value indicating if the browser is closed
         /// </summary>
         public bool IsClosed { get; internal set; }
 
         internal TaskQueue ScreenshotTaskQueue { get; set; }
         internal Connection Connection { get; }
+        internal bool SetDefaultViewport { get; }
 
         #endregion
 
@@ -341,11 +345,12 @@ namespace PuppeteerSharp
         internal static async Task<Browser> CreateAsync(
             Connection connection,
             string[] contextIds,
-            IBrowserOptions options,
+            bool ignoreHTTPSErrors,
+            bool appMode,
             Process process,
             Func<Task> closeCallBack)
         {
-            var browser = new Browser(connection, contextIds, options, process, closeCallBack);
+            var browser = new Browser(connection, contextIds, ignoreHTTPSErrors, appMode, process, closeCallBack);
             await connection.SendAsync("Target.setDiscoverTargets", new
             {
                 discover = true
