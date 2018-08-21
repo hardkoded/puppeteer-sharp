@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -17,7 +18,7 @@ namespace PuppeteerSharp
     /// 
     /// If request gets a 'redirect' response, the request is successfully finished with the <see cref="Page.RequestFinished"/> event, and a new request is issued to a redirected url.
     /// </summary>
-    public class Request : Payload
+    public class Request
     {
         #region Private Members
         private readonly CDPSession _client;
@@ -96,11 +97,30 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The frame.</value>
         public Frame Frame { get; }
-
         /// <summary>
         /// Gets whether this request is driving frame's navigation
         /// </summary>
         public bool IsNavigationRequest { get; }
+        /// <summary>
+        /// Gets or sets the HTTP method.
+        /// </summary>
+        /// <value>HTTP method.</value>
+        public HttpMethod Method { get; internal set; }
+        /// <summary>
+        /// Gets or sets the post data.
+        /// </summary>
+        /// <value>The post data.</value>
+        public object PostData { get; internal set; }
+        /// <summary>
+        /// Gets or sets the HTTP headers.
+        /// </summary>
+        /// <value>HTTP headers.</value>
+        public Dictionary<string, object> Headers { get; internal set; }
+        /// <summary>
+        /// Gets or sets the URL.
+        /// </summary>
+        /// <value>The URL.</value>
+        public string Url { get; internal set; }
 
         /// <summary>
         /// A redirectChain is a chain of requests initiated to fetch a resource.
