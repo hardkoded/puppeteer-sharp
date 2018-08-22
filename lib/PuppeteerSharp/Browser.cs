@@ -39,12 +39,14 @@ namespace PuppeteerSharp
         /// Initializes a new instance of the <see cref="Browser"/> class.
         /// </summary>
         /// <param name="connection">The connection</param>
+        /// <param name="contextIds">The context ids></param>
         /// <param name="ignoreHTTPSErrors">The option to ignoreHTTPSErrors</param>
         /// <param name="setDefaultViewport">The option to setDefaultViewport</param>
         /// <param name="process">The chrome process</param>
         /// <param name="closeCallBack">An async function called before closing</param>
         public Browser(
             Connection connection,
+            string[] contextIds,
             bool ignoreHTTPSErrors,
             bool setDefaultViewport,
             Process process,
@@ -56,6 +58,9 @@ namespace PuppeteerSharp
             SetDefaultViewport = setDefaultViewport;
             TargetsMap = new Dictionary<string, Target>();
             ScreenshotTaskQueue = new TaskQueue();
+            _defaultContext = new BrowserContext(this, null);
+            _contexts = contextIds.ToDictionary(keySelector: contextId => contextId,
+                elementSelector: contextId => new BrowserContext(this, contextId));
 
             Connection.Closed += (object sender, EventArgs e) => Disconnected?.Invoke(this, new EventArgs());
             Connection.MessageReceived += Connect_MessageReceived;
@@ -65,10 +70,13 @@ namespace PuppeteerSharp
         }
 
         #region Private members
+
         internal readonly Dictionary<string, Target> TargetsMap;
-        
+
+        private readonly Dictionary<string, BrowserContext> _contexts;
         private readonly Func<Task> _closeCallBack;
         private readonly ILogger<Browser> _logger;
+        private readonly BrowserContext _defaultContext;
         #endregion
 
         #region Properties
@@ -139,23 +147,52 @@ namespace PuppeteerSharp
         /// Creates a new page
         /// </summary>
         /// <returns>Task which resolves to a new <see cref="Page"/> object</returns>
-        public async Task<Page> NewPageAsync()
-        {
-            string targetId = (await Connection.SendAsync("Target.createTarget", new Dictionary<string, object>
-            {
-                ["url"] = "about:blank"
-            }).ConfigureAwait(false)).targetId.ToString();
-
-            var target = TargetsMap[targetId];
-            await target.InitializedTask.ConfigureAwait(false);
-            return await target.PageAsync().ConfigureAwait(false);
-        }
+        public Task<Page> NewPageAsync() => _defaultContext.NewPageAsync();
 
         /// <summary>
         /// Returns An Array of all active targets
         /// </summary>
         /// <returns>An Array of all active targets</returns>
         public Target[] Targets() => TargetsMap.Values.Where(target => target.IsInitialized).ToArray();
+        
+        /// <summary>
+        /// Creates a new incognito browser context. This won't share cookies/cache with other browser contexts.
+        /// </summary>
+        /// <returns>Task which resolves to a new <see cref="BrowserContext"/> object</returns>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// using(var browser = await Puppeteer.LaunchAsync(new LaunchOptions()))
+        /// {
+        ///     // Create a new incognito browser context.
+        ///     var context = await browser.CreateIncognitoBrowserContextAsync();
+        ///     // Create a new page in a pristine context.
+        ///     var page = await context.NewPageAsync();
+        ///     // Do stuff
+        ///     await page.GoToAsync("https://example.com");
+        /// }
+        /// ]]>
+        /// </code>
+        /// </example>
+        public async Task<BrowserContext> CreateIncognitoBrowserContextAsync()
+        {
+            var response = await Connection.SendAsync<CreateBrowserContextResponse>("Target.createBrowserContext", new { });
+            var context = new BrowserContext(this, response.BrowserContextId);
+            _contexts[response.BrowserContextId] = context;
+            return context;
+        }
+
+        /// <summary>
+        /// Returns an array of all open <see cref="BrowserContext"/>. In a newly created browser, this will return a single instance of <see cref="BrowserContext"/>
+        /// </summary>
+        /// <returns>An array of <see cref="BrowserContext"/> objects</returns>
+        public BrowserContext[] BrowserContexts()
+        {
+            var allContexts = new BrowserContext[_contexts.Count + 1];
+            allContexts[0] = _defaultContext;
+            _contexts.Values.CopyTo(allContexts, 0);
+            return allContexts;
+        }
 
         /// <summary>
         /// Returns a Task which resolves to an array of all open pages.
@@ -224,10 +261,32 @@ namespace PuppeteerSharp
 
         #region Private Methods
 
-        internal void ChangeTarget(Target target) => TargetChanged?.Invoke(this, new TargetChangedArgs
+        internal void ChangeTarget(Target target)
         {
-            Target = target
-        });
+            var args = new TargetChangedArgs { Target = target };
+            TargetChanged?.Invoke(this, args);
+            target.BrowserContext.OnTargetChanged(this, args);
+        }
+
+        internal async Task<Page> CreatePageInContextAsync(string contextId)
+        {
+            var args = new Dictionary<string, object> { ["url"] = "about:blank" };
+            if (contextId != null)
+            {
+                args["browserContextId"] = contextId;
+            }
+            string targetId = (await Connection.SendAsync("Target.createTarget", args)).targetId.ToString();
+
+            var target = TargetsMap[targetId];
+            await target.InitializedTask;
+            return await target.PageAsync();
+        }
+
+        internal async Task DisposeContextAsync(string contextId)
+        {
+            await Connection.SendAsync("Target.disposeBrowserContext", new { browserContextId = contextId });
+            _contexts.Remove(contextId);
+        }
 
         private async void Connect_MessageReceived(object sender, MessageEventArgs e)
         {
@@ -272,19 +331,26 @@ namespace PuppeteerSharp
 
             if (await target.InitializedTask.ConfigureAwait(false))
             {
-                TargetDestroyed?.Invoke(this, new TargetChangedArgs
-                {
-                    Target = target
-                });
+                var args = new TargetChangedArgs { Target = target };
+                TargetDestroyed?.Invoke(this, args);
+                target.BrowserContext.OnTargetDestroyed(this, args);
             }
         }
 
         private async Task CreateTargetAsync(TargetCreatedResponse e)
         {
+            var targetInfo = e.TargetInfo;
+            var browserContextId = targetInfo.BrowserContextId;
+
+            if (!(browserContextId != null && _contexts.TryGetValue(browserContextId, out var context)))
+            {
+                context = _defaultContext;
+            }
+
             var target = new Target(
                 e.TargetInfo,
                 () => Connection.CreateSessionAsync(e.TargetInfo.TargetId),
-                this);
+                context);
 
             if (TargetsMap.ContainsKey(e.TargetInfo.TargetId))
             {
@@ -295,21 +361,21 @@ namespace PuppeteerSharp
 
             if (await target.InitializedTask.ConfigureAwait(false))
             {
-                TargetCreated?.Invoke(this, new TargetChangedArgs
-                {
-                    Target = target
-                });
+                var args = new TargetChangedArgs { Target = target };
+                TargetCreated?.Invoke(this, args);
+                context.OnTargetCreated(this, args);
             }
         }
 
         internal static async Task<Browser> CreateAsync(
             Connection connection,
+            string[] contextIds,
             bool ignoreHTTPSErrors,
             bool appMode,
             Process process,
             Func<Task> closeCallBack)
         {
-            var browser = new Browser(connection, ignoreHTTPSErrors, appMode, process, closeCallBack);
+            var browser = new Browser(connection, contextIds, ignoreHTTPSErrors, appMode, process, closeCallBack);
             await connection.SendAsync("Target.setDiscoverTargets", new
             {
                 discover = true

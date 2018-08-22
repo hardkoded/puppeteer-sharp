@@ -20,12 +20,15 @@ namespace PuppeteerSharp
 
         internal bool IsInitialized;
 
-        internal Target(TargetInfo targetInfo, Func<Task<CDPSession>> sessionFactory, Browser browser)
+        internal Target(
+            TargetInfo targetInfo,
+            Func<Task<CDPSession>> sessionFactory,
+            BrowserContext browserContext)
         {
             _targetInfo = targetInfo;
             _targetId = targetInfo.TargetId;
             _sessionFactory = sessionFactory;
-            Browser = browser;
+            BrowserContext = browserContext;
             _pageTask = null;
 
             InitilizedTaskWrapper = new TaskCompletionSource<bool>();
@@ -68,7 +71,12 @@ namespace PuppeteerSharp
         /// <summary>
         /// Get the browser the target belongs to.
         /// </summary>
-        public Browser Browser { get; }
+        public Browser Browser => BrowserContext.Browser;
+
+        /// <summary>
+        /// Get the browser context the target belongs to.
+        /// </summary>
+        public BrowserContext BrowserContext { get; }
 
         internal Task<bool> InitializedTask => InitilizedTaskWrapper.Task;
         internal TaskCompletionSource<bool> InitilizedTaskWrapper { get; }

@@ -110,6 +110,12 @@ namespace PuppeteerSharp
 
             return await _responses[id].TaskWrapper.Task.ConfigureAwait(false);
         }
+        
+        internal async Task<T> SendAsync<T>(string method, dynamic args = null)
+        {
+            JToken response = await SendAsync(method, args);
+            return response.ToObject<T>();
+        }
 
         internal async Task<CDPSession> CreateSessionAsync(string targetId)
         {
