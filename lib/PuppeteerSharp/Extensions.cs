@@ -21,7 +21,7 @@ namespace PuppeteerSharp
             var elementHandle = await elementHandleTask.ConfigureAwait(false);
             if (elementHandle == null)
             {
-                throw new SelectorException($"Error: failed to find element matching selector");
+                throw new SelectorException("Error: failed to find element matching selector");
             }
 
             var newArgs = new object[args.Length + 1];
@@ -43,6 +43,12 @@ namespace PuppeteerSharp
         public static async Task<T> EvaluateFunctionAsync<T>(this Task<JSHandle> arrayHandleTask, string pageFunction, params object[] args)
         {
             var arrayHandle = await arrayHandleTask.ConfigureAwait(false);
+
+            var response = await arrayHandle.JsonValueAsync<object[]>().ConfigureAwait(false);
+            if (response.Length == 0)
+            {
+                throw new SelectorException("Error: failed to find elements matching selector");
+            }
 
             var newArgs = new object[args.Length + 1];
             newArgs[0] = arrayHandle;

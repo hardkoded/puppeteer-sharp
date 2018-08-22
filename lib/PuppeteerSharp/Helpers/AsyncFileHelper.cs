@@ -47,6 +47,7 @@ namespace PuppeteerSharp.Helpers
             => OpenText(path, Encoding.UTF8);
 
         /// <inheritdoc cref="System.IO.File.OpenText(string)" />
+        /// <param name="path">File path.</param>
         /// <param name="encoding">The encoding applied to the contents of the file.</param>
         public static StreamReader OpenText(string path, Encoding encoding)
             => new StreamReader(OpenRead(path), encoding);
