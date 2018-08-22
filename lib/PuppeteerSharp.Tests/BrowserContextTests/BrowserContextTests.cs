@@ -40,14 +40,14 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         [Fact]
         public async Task ShouldCloseAllBelongingTargetsOnceClosingContext()
         {
-            Assert.Equal(2, (await Browser.PagesAsync()).Length);
+            Assert.Single((await Browser.PagesAsync()));
 
             var context = await Browser.CreateIncognitoBrowserContextAsync();
             await context.NewPageAsync();
-            Assert.Equal(3, (await Browser.PagesAsync()).Length);
+            Assert.Equal(2, (await Browser.PagesAsync()).Length);
 
             await context.CloseAsync();
-            Assert.Equal(2, (await Browser.PagesAsync()).Length);
+            Assert.Single((await Browser.PagesAsync()));
         }
 
         [Fact]
