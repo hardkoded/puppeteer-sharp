@@ -40,6 +40,7 @@ namespace PuppeteerSharp
         private readonly TaskQueue _screenshotTaskQueue;
         private readonly EmulationManager _emulationManager;
         private readonly Dictionary<string, Delegate> _pageBindings;
+        private readonly Dictionary<string, Worker> _workers;
         private readonly ILogger _logger;
 
         private static readonly Dictionary<string, decimal> _unitToPixels = new Dictionary<string, decimal> {
@@ -63,6 +64,7 @@ namespace PuppeteerSharp
             _networkManager = new NetworkManager(client, _frameManager);
             _emulationManager = new EmulationManager(client);
             _pageBindings = new Dictionary<string, Delegate>();
+            _workers = new Dictionary<string, Worker>();
             _logger = Client.Connection.LoggerFactory.CreateLogger<Page>();
 
             _ignoreHTTPSErrors = ignoreHTTPSErrors;
@@ -170,6 +172,8 @@ namespace PuppeteerSharp
         /// Raised when an uncaught exception happens within the page.
         /// </summary>
         public event EventHandler<PageErrorEventArgs> PageError;
+
+        public event EventHandler<WorkerCreatedEventArgs> WorkerCreated;
 
         /// <summary>
         /// This setting will change the default maximum navigation time of 30 seconds for the following methods:
@@ -328,7 +332,7 @@ namespace PuppeteerSharp
         /// </remarks>
         /// <seealso cref="Frame.XPathAsync(string)"/>
         public Task<ElementHandle[]> XPathAsync(string expression) => MainFrame.XPathAsync(expression);
-        
+
         /// <summary>
         /// Executes a script in browser context
         /// </summary>
@@ -1566,6 +1570,23 @@ namespace PuppeteerSharp
                     break;
                 case "Performance.metrics":
                     EmitMetrics(e.MessageData.ToObject<PerformanceMetricsResponse>());
+                    break;
+                case "Target.attachedToTarget":
+                    var targetInfo = e.MessageData.SelectToken("targetInfo").ToObject<TargetInfo>();
+                    var sessionId = e.MessageData.SelectToken("sessionId").ToObject<string>();
+                    if (targetInfo.Type != "worker")
+                    {
+                        await Client.SendAsync("Target.detachFromTarget", new { sessionId });
+                        return;
+                    }
+                    var session = Client.CreateSession(targetInfo.Type, sessionId);
+                    var worker = new Worker(Client, targetInfo.Url, this._addConsoleMessage);
+                    _workers[sessionId] = worker;
+                    WorkerCreated?.Invoke(this, new WorkerCreatedEventArgs(worker));
+
+                    break;
+                case "Target.detachedFromTarget":
+
                     break;
             }
         }
