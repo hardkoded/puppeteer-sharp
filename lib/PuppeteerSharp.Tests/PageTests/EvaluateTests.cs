@@ -81,7 +81,10 @@ namespace PuppeteerSharp.Tests.PageTests
         [Fact]
         public async Task ShouldAcceptNullAsOneOfMultipleParameters()
         {
-            bool result = await Page.EvaluateFunctionAsync<bool>("(a, b) => Object.is(a, null) && Object.is(b, 'foo')", null, "foo");
+            var result = await Page.EvaluateFunctionAsync<bool>(
+                "(a, b) => Object.is(a, null) && Object.is(b, 'foo')",
+                null,
+                "foo");
             Assert.True(result);
         }
 
@@ -101,19 +104,12 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Fact]
-        public async Task ShouldFailForWindowObjectUsingEvaluateExpression()
+        public async Task ShouldReturnNullForNonSerializableObjects()
         {
-            var window = await Page.EvaluateExpressionAsync("window");
-            Assert.Null(window);
+            Assert.Null(await Page.EvaluateFunctionAsync("() => window"));
+            Assert.Null(await Page.EvaluateFunctionAsync("() => [Symbol('foo4')]"));
         }
 
-        [Fact]
-        public async Task ShouldFailForWindowObjectUsingEvaluateFunction()
-        {
-            var window = await Page.EvaluateFunctionAsync("() => window");
-            Assert.Null(window);
-        }
-        
         [Fact]
         public async Task ShouldAcceptElementHandleAsAnArgument()
         {
@@ -173,5 +169,45 @@ namespace PuppeteerSharp.Tests.PageTests
             }");
             Assert.Equal(27, result);
         }
+
+        [Fact]
+        public async Task ShouldThrowWhenEvaluationTriggersReload()
+        {
+            var exception = await Assert.ThrowsAsync<MessageException>(() =>
+            {
+                return Page.EvaluateFunctionAsync<object>(@"() => {
+                    location.reload();
+                    return new Promise(resolve => {
+                        setTimeout(() => resolve(1), 0);
+                    });
+                }");
+            });
+
+            Assert.Contains("Protocol error", exception.Message);
+        }
+
+        [Fact]
+        public async Task ShouldFailForCircularObject()
+        {
+            var result = await Page.EvaluateFunctionAsync<object>(@"() => {
+                const a = {};
+                const b = {a};
+                a.b = b;
+                return a;
+            }");
+
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public Task ShouldSimulateAUserGesture()
+            => Page.EvaluateExpressionAsync(@"(
+            function playAudio()
+            {
+                const audio = document.createElement('audio');
+                audio.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';
+                // This returns a promise which throws if it was not triggered by a user gesture.
+                return audio.play();
+            })()");
     }
 }

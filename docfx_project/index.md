@@ -7,7 +7,7 @@ Puppeteer Sharp is a .NET port of the official [Node.JS Puppeteer API](https://g
 ## Take screenshots
 
 ```cs
-await Downloader.CreateDefault().DownloadAsync(chromiumRevision);
+await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
 var browser = await Puppeteer.LaunchAsync(new LaunchOptions
 {
     Headless = true
@@ -108,6 +108,7 @@ using (var browser = await PuppeteerSharp.Puppeteer.ConnectAsync(options))
 ```
 
 # Monthly reports
+ * [July 2018](https://www.hardkoded.com/blog/puppeteer-sharp-monthly-jul-2018)
  * [June 2018](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-jun-2018)
  * [May 2018](http://www.hardkoded.com/blogs/puppeteer-sharp-monthly-may-2018)
  * [April 2018](http://www.hardkoded.com/blogs/puppeteer-sharp-monthly-april-2018)
@@ -116,9 +117,9 @@ using (var browser = await PuppeteerSharp.Puppeteer.ConnectAsync(options))
 
 # Progress
 
-* Tests on Google's Puppeteer: 405.
-* Tests on Puppeteer Sharp: 322.
-* Passing tests: 319.
+* Tests on Google's Puppeteer: 445.
+* Tests on Puppeteer Sharp: 363.
+* Passing tests: 362.
 
 # Useful links
 

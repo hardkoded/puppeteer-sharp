@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -17,7 +18,7 @@ namespace PuppeteerSharp
     /// 
     /// If request gets a 'redirect' response, the request is successfully finished with the <see cref="Page.RequestFinished"/> event, and a new request is issued to a redirected url.
     /// </summary>
-    public class Request : Payload
+    public class Request
     {
         #region Private Members
         private readonly CDPSession _client;
@@ -29,8 +30,17 @@ namespace PuppeteerSharp
         internal Request()
         {
         }
-        internal Request(CDPSession client, string requestId, string interceptionId, bool allowInterception, string url,
-                      ResourceType resourceType, Payload payload, Frame frame)
+        internal Request(
+            CDPSession client,
+            string requestId,
+            string interceptionId,
+            bool isNavigationRequest,
+            bool allowInterception,
+            string url,
+            ResourceType resourceType,
+            Payload payload,
+            Frame frame,
+            List<Request> redirectChain)
         {
             _client = client;
             _allowInterception = allowInterception;
@@ -39,20 +49,21 @@ namespace PuppeteerSharp
 
             RequestId = requestId;
             InterceptionId = interceptionId;
+            IsNavigationRequest = isNavigationRequest;
             Url = url;
             ResourceType = resourceType;
             Method = payload.Method;
             PostData = payload.PostData;
             Frame = frame;
+            RedirectChainList = redirectChain;
 
             Headers = new Dictionary<string, object>();
-            foreach (KeyValuePair<string, object> keyValue in payload.Headers)
+            foreach (var keyValue in payload.Headers)
             {
                 Headers[keyValue.Key] = keyValue.Value;
             }
 
             FromMemoryCache = false;
-            CompleteTaskWrapper = new TaskCompletionSource<bool>();
         }
 
         #region Properties
@@ -86,10 +97,57 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The frame.</value>
         public Frame Frame { get; }
+        /// <summary>
+        /// Gets whether this request is driving frame's navigation
+        /// </summary>
+        public bool IsNavigationRequest { get; }
+        /// <summary>
+        /// Gets or sets the HTTP method.
+        /// </summary>
+        /// <value>HTTP method.</value>
+        public HttpMethod Method { get; internal set; }
+        /// <summary>
+        /// Gets or sets the post data.
+        /// </summary>
+        /// <value>The post data.</value>
+        public object PostData { get; internal set; }
+        /// <summary>
+        /// Gets or sets the HTTP headers.
+        /// </summary>
+        /// <value>HTTP headers.</value>
+        public Dictionary<string, object> Headers { get; internal set; }
+        /// <summary>
+        /// Gets or sets the URL.
+        /// </summary>
+        /// <value>The URL.</value>
+        public string Url { get; internal set; }
+
+        /// <summary>
+        /// A redirectChain is a chain of requests initiated to fetch a resource.
+        /// If there are no redirects and the request was successful, the chain will be empty.
+        /// If a server responds with at least a single redirect, then the chain will contain all the requests that were redirected.
+        /// redirectChain is shared between all the requests of the same chain.
+        /// </summary>
+        /// <example>
+        /// For example, if the website http://example.com has a single redirect to https://example.com, then the chain will contain one request:
+        /// <code>
+        /// var response = await page.GoToAsync("http://example.com");
+        /// var chain = response.Request.RedirectChain;
+        /// Console.WriteLine(chain.Length); // 1
+        /// Console.WriteLine(chain[0].Url); // 'http://example.com'
+        /// </code>
+        /// If the website https://google.com has no redirects, then the chain will be empty:
+        /// <code>
+        /// var response = await page.GoToAsync("https://google.com");
+        /// var chain = response.Request.RedirectChain;
+        /// Console.WriteLine(chain.Length); // 0
+        /// </code>
+        /// </example>
+        /// <value>The redirect chain.</value>
+        public Request[] RedirectChain => RedirectChainList.ToArray();
 
         internal bool FromMemoryCache { get; set; }
-        internal Task<bool> CompleteTask => CompleteTaskWrapper.Task;
-        internal TaskCompletionSource<bool> CompleteTaskWrapper { get; set; }
+        internal List<Request> RedirectChainList { get; }
         #endregion
 
         #region Public Methods
@@ -115,12 +173,27 @@ namespace PuppeteerSharp
             try
             {
                 var requestData = new Dictionary<string, object> { ["interceptionId"] = InterceptionId };
-                if (overrides?.Url != null) requestData["url"] = overrides.Url;
-                if (overrides?.Method != null) requestData["method"] = overrides.Method;
-                if (overrides?.PostData != null) requestData["postData"] = overrides.PostData;
-                if (overrides?.Headers != null) requestData["headers"] = overrides.Headers;
+                if (overrides?.Url != null)
+                {
+                    requestData["url"] = overrides.Url;
+                }
 
-                await _client.SendAsync("Network.continueInterceptedRequest", requestData);
+                if (overrides?.Method != null)
+                {
+                    requestData["method"] = overrides.Method;
+                }
+
+                if (overrides?.PostData != null)
+                {
+                    requestData["postData"] = overrides.PostData;
+                }
+
+                if (overrides?.Headers != null)
+                {
+                    requestData["headers"] = overrides.Headers;
+                }
+
+                await _client.SendAsync("Network.continueInterceptedRequest", requestData).ConfigureAwait(false);
             }
             catch (PuppeteerException ex)
             {
@@ -200,7 +273,7 @@ namespace PuppeteerSharp
                 {
                     {"interceptionId", InterceptionId},
                     {"rawResponse", Convert.ToBase64String(responseData)}
-                });
+                }).ConfigureAwait(false);
             }
             catch (PuppeteerException ex)
             {
@@ -237,7 +310,7 @@ namespace PuppeteerSharp
                 {
                     {"interceptionId", InterceptionId},
                     {"errorReason", errorReason}
-                });
+                }).ConfigureAwait(false);
             }
             catch (PuppeteerException ex)
             {

@@ -19,14 +19,9 @@ namespace PuppeteerSharp.Tests.FrameTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             var frame = Page.MainFrame;
-            var added = false;
-            await frame.WaitForSelectorAsync("*").ContinueWith(_ => added = true);
-            Assert.True(added);
-
-            added = false;
+            await frame.WaitForSelectorAsync("*");
             await frame.EvaluateFunctionAsync(AddElement, "div");
-            await frame.WaitForSelectorAsync("div").ContinueWith(_ => added = true);
-            Assert.True(added);
+            await frame.WaitForSelectorAsync("div");
         }
 
         [Fact]
@@ -34,19 +29,13 @@ namespace PuppeteerSharp.Tests.FrameTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             var frame = Page.MainFrame;
-            var added = false;
-            var watchdog = frame.WaitForSelectorAsync("div").ContinueWith(_ => added = true);
-            // run nop function..
-            await frame.EvaluateExpressionAsync("42");
-            // .. to be sure that waitForSelector promise is not resolved yet.
-            Assert.False(added);
-
+            var watchdog = frame.WaitForSelectorAsync("div");
             await frame.EvaluateFunctionAsync(AddElement, "br");
-            Assert.False(added);
-
             await frame.EvaluateFunctionAsync(AddElement, "div");
-            await watchdog;
-            Assert.True(added);
+            var eHandle = await watchdog;
+            var property = await eHandle.GetPropertyAsync("tagName");
+            var tagName = await property.JsonValueAsync<string>();
+            Assert.Equal("DIV", tagName);
         }
 
         [Fact]
@@ -65,14 +54,11 @@ namespace PuppeteerSharp.Tests.FrameTests
             await Page.GoToAsync(TestConstants.EmptyPage);
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
             var otherFrame = Page.Frames.ElementAt(1);
-            var added = false;
-            var waitForSelectorTask = Page.WaitForSelectorAsync("div").ContinueWith(_ => added = true);
+            var watchdog = Page.WaitForSelectorAsync("div");
             await otherFrame.EvaluateFunctionAsync(AddElement, "div");
-            Assert.False(added);
-
             await Page.EvaluateFunctionAsync(AddElement, "div");
-            Assert.True(await waitForSelectorTask);
-            Assert.True(added);
+            var eHandle = await watchdog;
+            Assert.Equal(Page.MainFrame, eHandle.ExecutionContext.Frame);
         }
 
         [Fact]
@@ -82,15 +68,11 @@ namespace PuppeteerSharp.Tests.FrameTests
             await FrameUtils.AttachFrameAsync(Page, "frame2", TestConstants.EmptyPage);
             var frame1 = Page.Frames.ElementAt(1);
             var frame2 = Page.Frames.ElementAt(2);
-            var added = false;
-            var waitForSelectorPromise = frame2.WaitForSelectorAsync("div").ContinueWith(_ => added = true);
-            Assert.False(added);
-
+            var waitForSelectorPromise = frame2.WaitForSelectorAsync("div");
             await frame1.EvaluateFunctionAsync(AddElement, "div");
-            Assert.False(added);
-
             await frame2.EvaluateFunctionAsync(AddElement, "div");
-            await waitForSelectorPromise;
+            var eHandle = await waitForSelectorPromise;
+            Assert.Equal(frame2, eHandle.ExecutionContext.Frame);
         }
 
         [Fact]
@@ -193,11 +175,11 @@ namespace PuppeteerSharp.Tests.FrameTests
         [Fact]
         public async Task ShouldRespectTimeout()
         {
-            var exception = await Assert.ThrowsAnyAsync<PuppeteerException>(async ()
+            var exception = await Assert.ThrowsAsync<WaitTaskTimeoutException>(async ()
                 => await Page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Timeout = 10 }));
 
             Assert.NotNull(exception);
-            Assert.Contains("waiting failed: timeout", exception.Message);
+            Assert.Contains("waiting for selector 'div' failed: timeout", exception.Message);
         }
 
         [Fact]

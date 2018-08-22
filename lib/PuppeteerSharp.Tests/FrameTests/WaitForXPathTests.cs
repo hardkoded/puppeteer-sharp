@@ -29,13 +29,11 @@ namespace PuppeteerSharp.Tests.FrameTests
             await FrameUtils.AttachFrameAsync(Page, "frame2", TestConstants.EmptyPage);
             var frame1 = Page.Frames[1];
             var frame2 = Page.Frames[2];
-            var added = false;
-            var waitForXPathPromise = frame2.WaitForXPathAsync("//div").ContinueWith(_ => added = true);
-            Assert.False(added);
+            var waitForXPathPromise = frame2.WaitForXPathAsync("//div");
             await frame1.EvaluateFunctionAsync(addElement, "div");
-            Assert.False(added);
             await frame2.EvaluateFunctionAsync(addElement, "div");
-            await waitForXPathPromise;
+            var eHandle = await waitForXPathPromise;
+            Assert.Equal(frame2, eHandle.ExecutionContext.Frame);
         }
 
         [Fact]
@@ -97,6 +95,15 @@ namespace PuppeteerSharp.Tests.FrameTests
             await Page.SetContentAsync("<div>some text</div>");
             var waitForXPath = Page.WaitForXPathAsync("/html/body/div");
             Assert.Equal("some text", await Page.EvaluateFunctionAsync<string>("x => x.textContent", await waitForXPath));
+        }
+
+        [Fact]
+        public async Task ShouldRespectTimeout()
+        {
+            var exception = await Assert.ThrowsAsync<WaitTaskTimeoutException>(()
+                    => Page.WaitForXPathAsync("//div", new WaitForSelectorOptions { Timeout = 10 }));
+
+            Assert.Contains("waiting for XPath '//div' failed: timeout", exception.Message);
         }
     }
 }

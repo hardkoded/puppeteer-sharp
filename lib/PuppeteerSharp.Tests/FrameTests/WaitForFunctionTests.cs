@@ -50,6 +50,19 @@ namespace PuppeteerSharp.Tests.FrameTests
         }
 
         [Fact]
+        public async Task ShouldWorkWithStrictCSPPolicy()
+        {
+            Server.SetCSP("/empty.html", "script-src " + TestConstants.ServerUrl);
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var watchdog = Page.WaitForFunctionAsync("() => window.__FOO === 'hit'", new WaitForFunctionOptions
+            {
+                Polling = WaitForFunctionPollingOption.Raf
+            });
+            await Page.EvaluateExpressionAsync("window.__FOO = 'hit'");
+            await watchdog;
+        }
+
+        [Fact]
         public async Task ShouldThrowNegativePollingInterval()
         {
             var exception = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(()
@@ -81,6 +94,27 @@ namespace PuppeteerSharp.Tests.FrameTests
             Assert.False(resolved);
             await Page.EvaluateFunctionAsync("element => element.remove()", div);
             await waitForFunction;
+        }
+
+        [Fact]
+        public async Task ShouldRespectTimeout()
+        {
+            var exception = await Assert.ThrowsAsync<WaitTaskTimeoutException>(()
+                => Page.WaitForExpressionAsync("false", new WaitForFunctionOptions { Timeout = 10 }));
+
+            Assert.Contains("waiting for function failed: timeout", exception.Message);
+        }
+
+        [Fact]
+        public async Task ShouldDisableTimeoutWhenItsSetTo0()
+        {
+            var watchdog = Page.WaitForFunctionAsync(@"() => {
+                window.__counter = (window.__counter || 0) + 1;
+                return window.__injected;
+            }", new WaitForFunctionOptions { Timeout = 0, PollingInterval = 10 });
+            await Page.WaitForFunctionAsync("() => window.__counter > 10");
+            await Page.EvaluateExpressionAsync("window.__injected = true");
+            await watchdog;
         }
     }
 }

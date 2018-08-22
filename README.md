@@ -25,7 +25,7 @@ Puppeteer Sharp is a .NET port of the official [Node.JS Puppeteer API](https://g
 ## Take screenshots
 
 ```cs
-await Downloader.CreateDefault().DownloadAsync(chromiumRevision);
+await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
 var browser = await Puppeteer.LaunchAsync(new LaunchOptions
 {
     Headless = true
@@ -39,7 +39,7 @@ You can also change the view port before generating the screenshot
 
 
 ```cs
-await page.SetViewport(new ViewPortOptions
+await page.SetViewportAsync(new ViewPortOptions
 {
     Width = 500,
     Height = 500
@@ -63,7 +63,7 @@ await page.PdfAsync(outputFile);
 ## Inject HTML
 
 ```cs
-using(var page = await Browser.NewPageAsync())
+using(var page = await browser.NewPageAsync())
 {
     await page.SetContentAsync("<div>My Receipt</div>");
     var result = await page.GetContentAsync();
@@ -75,7 +75,7 @@ using(var page = await Browser.NewPageAsync())
 ## Evaluate Javascript
 
 ```cs
-using (var page = await Browser.NewPageAsync())
+using (var page = await browser.NewPageAsync())
 {
     var seven = await page.EvaluateFunctionAsync<int>(“4 + 3”);
     var someObject = await page.EvaluateFunctionAsync<dynamic>("(value) => ({a: value})", 5);
@@ -86,7 +86,7 @@ using (var page = await Browser.NewPageAsync())
 ## Wait For Selector
 
 ```cs
-using (var page = await Browser.NewPageAsync())
+using (var page = await browser.NewPageAsync())
 {
     await page.GoToAsync("http://www.spapage.com");
     await page.WaitForSelectorAsync("div.main-content")
@@ -96,11 +96,11 @@ using (var page = await Browser.NewPageAsync())
 
 ## Wait For Function
 ```cs
-using (var page = await Browser.NewPageAsync())
+using (var page = await browser.NewPageAsync())
 {
     await page.GoToAsync("http://www.spapage.com");
     var watchDog = page.WaitForFunctionAsync("window.innerWidth < 100");
-    await Page.SetViewport(new ViewPortOptions { Width = 50, Height = 50 });
+    await page.SetViewportAsync(new ViewPortOptions { Width = 50, Height = 50 });
     await watchDog;
 }
 ```
@@ -126,6 +126,7 @@ using (var browser = await PuppeteerSharp.Puppeteer.ConnectAsync(options))
 ```
 
 # Monthly reports
+ * [July 2018](https://www.hardkoded.com/blog/puppeteer-sharp-monthly-jul-2018)
  * [June 2018](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-jun-2018)
  * [May 2018](http://www.hardkoded.com/blogs/puppeteer-sharp-monthly-may-2018)
  * [April 2018](http://www.hardkoded.com/blogs/puppeteer-sharp-monthly-april-2018)
@@ -134,6 +135,6 @@ using (var browser = await PuppeteerSharp.Puppeteer.ConnectAsync(options))
 
 # Progress
 
-* Tests on Google's Puppeteer: 405.
-* Tests on Puppeteer Sharp: 322.
-* Passing tests: 319.
+* Tests on Google's Puppeteer: 445.
+* Tests on Puppeteer Sharp: 363.
+* Passing tests: 362.

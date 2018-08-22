@@ -57,5 +57,103 @@ namespace PuppeteerSharp.Tests.PageTests
             await bothFiredTask;
             await navigationTask;
         }
+
+        [Fact]
+        public async Task ShouldWorkWithClickingOnAnchorLinks()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.SetContentAsync("<a href='#foobar'>foobar</a>");
+            await Task.WhenAll(
+                Page.ClickAsync("a"),
+                Page.WaitForNavigationAsync()
+            );
+            Assert.Equal(TestConstants.EmptyPage + "#foobar", Page.Url);
+        }
+
+        [Fact]
+        public async Task ShouldWorkWithHistoryPushState()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.SetContentAsync(@"
+              <a onclick='javascript:pushState()'>SPA</a>
+              <script>
+                function pushState() { history.pushState({}, '', 'wow.html') }
+              </script>
+            ");
+            await Task.WhenAll(
+                Page.ClickAsync("a"),
+                Page.WaitForNavigationAsync()
+            );
+            Assert.Equal(TestConstants.ServerUrl + "/wow.html", Page.Url);
+        }
+
+        [Fact]
+        public async Task ShouldWorkWithHistoryReplaceState()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.SetContentAsync(@"
+              <a onclick='javascript:pushState()'>SPA</a>
+              <script>
+                function pushState() { history.pushState({}, '', 'replaced.html') }
+              </script>
+            ");
+            await Task.WhenAll(
+                Page.ClickAsync("a"),
+                Page.WaitForNavigationAsync()
+            );
+            Assert.Equal(TestConstants.ServerUrl + "/replaced.html", Page.Url);
+        }
+
+        [Fact]
+        public async Task ShouldWorkWithDOMHistoryBackAndHistoryForward()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.SetContentAsync(@"
+              <a id=back onclick='javascript:goBack()'>back</a>
+              <a id=forward onclick='javascript:goForward()'>forward</a>
+              <script>
+                function goBack() { history.back(); }
+                function goForward() { history.forward(); }
+                history.pushState({}, '', '/first.html');
+                history.pushState({}, '', '/second.html');
+              </script>
+            ");
+            Assert.Equal(TestConstants.ServerUrl + "/second.html", Page.Url);
+            await Task.WhenAll(
+                Page.ClickAsync("a#back"),
+                Page.WaitForNavigationAsync()
+            );
+            Assert.Equal(TestConstants.ServerUrl + "/first.html", Page.Url);
+            await Task.WhenAll(
+                Page.ClickAsync("a#forward"),
+                Page.WaitForNavigationAsync()
+            );
+            Assert.Equal(TestConstants.ServerUrl + "/second.html", Page.Url);
+        }
+
+        [Fact]
+        public async Task ShouldWorkWhenSubframeIssuesWindowStop()
+        {
+            Server.SetRoute("/frames/style.css", (context) => Task.CompletedTask);
+            var navigationTask = Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
+            var frameAttachedTaskSource = new TaskCompletionSource<Frame>();
+            Page.FrameAttached += (sender, e) =>
+            {
+                frameAttachedTaskSource.SetResult(e.Frame);
+            };
+
+            var frame = await frameAttachedTaskSource.Task;
+            var frameNavigatedTaskSource = new TaskCompletionSource<bool>();
+            Page.FrameNavigated += (sender, e) =>
+            {
+                if (e.Frame == frame)
+                {
+                    frameNavigatedTaskSource.TrySetResult(true);
+                }
+            };
+            await frameNavigatedTaskSource.Task;
+            var task = frame.EvaluateFunctionAsync("() => window.stop()");
+            await navigationTask;
+        }
     }
 }

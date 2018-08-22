@@ -25,7 +25,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
 
             await Task.WhenAll(
                 Page.GoToAsync(TestConstants.ServerUrl + "/error.html"),
-                WaitForEvents(Page.Client, "Runtime.exceptionThrown")
+                WaitEvent(Page.Client, "Runtime.exceptionThrown")
             );
 
             Assert.Contains("Fancy", error);

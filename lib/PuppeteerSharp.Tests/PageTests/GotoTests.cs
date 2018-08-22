@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using Xunit;
@@ -31,6 +32,37 @@ namespace PuppeteerSharp.Tests.PageTests
             });
             Assert.Equal(HttpStatusCode.OK, response.Status);
             Assert.Null(response.SecurityDetails);
+        }
+
+        [Fact]
+        public async Task ShouldFailWhenServerReturns204()
+        {
+            Server.SetRoute("/empty.html", context =>
+            {
+                context.Response.StatusCode = 204;
+                return Task.CompletedTask;
+            });
+            var exception = await Assert.ThrowsAnyAsync<PuppeteerException>(
+                () => Page.GoToAsync(TestConstants.EmptyPage));
+            Assert.Contains("net::ERR_ABORTED", exception.Message);
+        }
+
+        [Fact]
+        public async Task ShouldReturnResponseWhenPageChangesItsURLAfterLoad()
+        {
+            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/historyapi.html");
+            Assert.Equal(HttpStatusCode.OK, response.Status);
+        }
+
+        [Fact]
+        public async Task ShouldWorkWithSubframesReturn204()
+        {
+            Server.SetRoute("/frames/frame.html", context =>
+            {
+                context.Response.StatusCode = 204;
+                return Task.CompletedTask;
+            });
+            await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
         }
 
         [Theory]
@@ -260,6 +292,25 @@ namespace PuppeteerSharp.Tests.PageTests
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/self-request.html");
             Assert.Equal(HttpStatusCode.OK, response.Status);
             Assert.Contains("self-request.html", response.Url);
+        }
+
+        [Fact]
+        public async Task ShouldFailWhenNavigatingAndShowTheUrlAtTheErrorMessage()
+        {
+            var url = TestConstants.HttpsPrefix + "/redirect/1.html";
+            var exception = await Assert.ThrowsAnyAsync<NavigationException>(async () => await Page.GoToAsync(url));
+            Assert.Contains(url, exception.Message);
+            Assert.Contains(url, exception.Url);
+        }
+
+        [Fact]
+        public async Task ResponseOkShouldBeTrueForFile()
+        {
+            var fileToNavigate = Path.Combine(Directory.GetCurrentDirectory(), Path.Combine("assets", "file-to-upload.txt"));
+            var url = new Uri(fileToNavigate).AbsoluteUri;
+
+            var response = await Page.GoToAsync(url);
+            Assert.True(response.Ok);
         }
     }
 }

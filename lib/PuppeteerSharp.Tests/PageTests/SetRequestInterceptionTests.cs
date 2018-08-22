@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -28,9 +29,10 @@ namespace PuppeteerSharp.Tests.PageTests
                 Assert.NotNull(e.Request.Headers);
                 Assert.Equal(HttpMethod.Get, e.Request.Method);
                 Assert.Null(e.Request.PostData);
+                Assert.True(e.Request.IsNavigationRequest);
                 Assert.Equal(ResourceType.Document, e.Request.ResourceType);
                 Assert.Equal(Page.MainFrame, e.Request.Frame);
-                Assert.Equal("about:blank", e.Request.Frame.Url);
+                Assert.Equal(TestConstants.AboutBlank, e.Request.Frame.Url);
                 await e.Request.ContinueAsync();
             };
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
@@ -190,6 +192,19 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Contains("empty.html", response.Url);
             Assert.Equal(5, requests.Count);
             Assert.Equal(ResourceType.Document, requests[2].ResourceType);
+
+            // Check redirect chain
+            var redirectChain = response.Request.RedirectChain;
+            Assert.Equal(4, redirectChain.Length);
+            Assert.Contains("/non-existing-page.html", redirectChain[0].Url);
+            Assert.Contains("/non-existing-page-3.html", redirectChain[2].Url);
+
+            for (var i = 0; i < redirectChain.Length; ++i)
+            {
+                var request = redirectChain[i];
+                Assert.True(request.IsNavigationRequest);
+                Assert.Equal(request, request.RedirectChain.ElementAt(i));
+            }
         }
 
         [Fact]
@@ -378,6 +393,24 @@ namespace PuppeteerSharp.Tests.PageTests
             };
             await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.Contains("Request Interception is not enabled", exception.Message);
+        }
+
+        [Fact]
+        public async Task ShouldWorkWithFileURLs()
+        {
+            await Page.SetRequestInterceptionAsync(true);
+            var urls = new List<string>();
+            Page.Request += async (sender, e) =>
+            {
+                urls.Add(e.Request.Url.Split('/').Last());
+                await e.Request.ContinueAsync();
+            };
+
+            var uri = new Uri(Path.Combine(Directory.GetCurrentDirectory(), "assets", "one-style.html")).AbsoluteUri;
+            await Page.GoToAsync(uri);
+            Assert.Equal(2, urls.Count);
+            Assert.Contains("one-style.html", urls);
+            Assert.Contains("one-style.css", urls);
         }
     }
 }

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -75,7 +77,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             {
                 var response = await page.GoToAsync(
                     "https://www.google.com",
-                    new NavigationOptions()
+                    new NavigationOptions
                     {
                         Timeout = 10000,
                         WaitUntil = new[] { WaitUntilNavigation.Networkidle0 }
@@ -141,6 +143,8 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
 
             using (var browser = await launcher.LaunchAsync(options))
             {
+                // Open a page to make sure its functional.
+                await browser.NewPageAsync();
                 Assert.True(Directory.GetFiles(userDataDir).Length > 0);
                 await browser.CloseAsync();
                 Assert.True(Directory.GetFiles(userDataDir).Length > 0);
@@ -228,6 +232,32 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         }
 
         [Fact]
+        public async Task OOPIFShouldReportGoogleComFrame()
+        {
+            // https://google.com is isolated by default in Chromium embedder.
+            var headfulOptions = TestConstants.DefaultBrowserOptions();
+            headfulOptions.Headless = false;
+            using (var browser = await Puppeteer.LaunchAsync(headfulOptions))
+            using (var page = await browser.NewPageAsync())
+            {
+                await page.GoToAsync(TestConstants.EmptyPage);
+                await page.SetRequestInterceptionAsync(true);
+                page.Request += async (sender, e) => await e.Request.RespondAsync(
+                    new ResponseData { Body = "{ body: 'YO, GOOGLE.COM'}" });
+                await page.EvaluateFunctionHandleAsync(@"() => {
+                    const frame = document.createElement('iframe');
+                    frame.setAttribute('src', 'https://google.com/');
+                    document.body.appendChild(frame);
+                    return new Promise(x => frame.onload = x);
+                }");
+                await page.WaitForSelectorAsync("iframe[src=\"https://google.com/\"]");
+                var urls = Array.ConvertAll(page.Frames, frame => frame.Url);
+                Array.Sort(urls);
+                Assert.Equal(new[] { TestConstants.EmptyPage, "https://google.com/" }, urls);
+            }
+        }
+
+        [Fact]
         public void ShouldReturnTheDefaultChromeArguments()
         {
             var args = Puppeteer.DefaultArgs;
@@ -280,6 +310,178 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 });
                 Assert.Equal("Unable to create or connect to another chromium process", exception.Message);
             }
+        }
+
+        [Fact]
+        public void ShouldDumpBrowserProcessStderr()
+        {
+            var dumpioTextToLog = "MAGIC_DUMPIO_TEST";
+            var success = false;
+            var process = GetTestAppProcess(
+                "PuppeteerSharp.Tests.DumpIO",
+                $"{dumpioTextToLog} \"{new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath}\"");
+
+            process.ErrorDataReceived += (sender, e) =>
+            {
+                success |= e.Data != null && e.Data.Contains(dumpioTextToLog);
+            };
+
+            process.Start();
+            process.BeginErrorReadLine();
+            process.WaitForExit();
+            Assert.True(success);
+        }
+
+        [Fact]
+        public async Task ShouldCloseTheBrowserWhenTheProcessCloses()
+        {
+            var process = GetTestAppProcess(
+                "PuppeteerSharp.Tests.CloseMe",
+                $"\"{new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath}\"");
+
+            var webSocketTaskWrapper = new TaskCompletionSource<string>();
+            var browserClosedTaskWrapper = new TaskCompletionSource<bool>();
+
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.RedirectStandardOutput = true;
+
+            process.OutputDataReceived += (sender, e) => webSocketTaskWrapper.TrySetResult(e.Data);
+
+            process.Start();
+            process.BeginOutputReadLine();
+
+            var browser = await Puppeteer.ConnectAsync(new ConnectOptions
+            {
+                BrowserWSEndpoint = await webSocketTaskWrapper.Task
+            });
+
+            browser.Disconnected += (sender, e) =>
+            {
+                browserClosedTaskWrapper.SetResult(true);
+            };
+
+            KillProcess(process.Id);
+
+            await browserClosedTaskWrapper.Task;
+            Assert.True(process.HasExited);
+        }
+
+        [Fact]
+        public async Task ShouldWorkWithNoDefaultArguments()
+        {
+            var options = TestConstants.DefaultBrowserOptions();
+            options.IgnoreDefaultArgs = true;
+            using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
+            {
+                Assert.Single(await browser.PagesAsync());
+                using (var page = await browser.NewPageAsync())
+                {
+                    Assert.Equal(121, await page.EvaluateExpressionAsync<int>("11 * 11"));
+                }
+            }
+        }
+
+        [Fact]
+        public async Task ShouldHaveDefaultUrlWhenLaunchingBrowser()
+        {
+            using (var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.LoggerFactory))
+            {
+                var pages = (await browser.PagesAsync()).Select(page => page.Url);
+                Assert.Equal(new[] { TestConstants.AboutBlank }, pages);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldHaveDefaultUrlWhenLaunchingBrowserWithHeadlessFalse()
+        {
+            var options = TestConstants.DefaultBrowserOptions();
+            options.Headless = false;
+            using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
+            {
+                var pages = (await browser.PagesAsync()).Select(page => page.Url);
+                Assert.Equal(new[] { TestConstants.AboutBlank }, pages);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldHaveCustomUrlWhenLaunchingBrowser()
+        {
+            var customUrl = TestConstants.EmptyPage;
+            var options = TestConstants.DefaultBrowserOptions();
+            options.Args = options.Args.Prepend(customUrl).ToArray();
+            using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
+            {
+                var pages = await browser.PagesAsync();
+                Assert.Single(pages);
+                if (pages[0].Url != customUrl)
+                {
+                    await pages[0].WaitForNavigationAsync();
+                }
+                Assert.Equal(customUrl, pages[0].Url);
+            }
+        }
+
+        private Process GetTestAppProcess(string appName, string arguments)
+        {
+            var process = new Process();
+
+#if NETCOREAPP
+            process.StartInfo.WorkingDirectory = GetSubprocessWorkingDir(appName);
+            process.StartInfo.FileName = "dotnet";
+            process.StartInfo.Arguments = $"{appName}.dll {arguments}";
+#else
+            process.StartInfo.FileName = Path.Combine(GetSubprocessWorkingDir(appName), $"{appName}.exe");
+            process.StartInfo.Arguments = arguments;
+#endif
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.RedirectStandardError = true;
+            return process;
+        }
+
+        private string GetSubprocessWorkingDir(string dir)
+        {
+#if DEBUG
+            var build = "Debug";
+#else
+            
+            var build = "Release";
+#endif
+#if NETCOREAPP
+            return Path.Combine(
+                TestUtils.FindParentDirectory("lib"),
+                dir,
+                "bin",
+                build,
+                "netcoreapp2.0");
+#else
+                return Path.Combine(
+                TestUtils.FindParentDirectory("lib"),
+                dir,
+                "bin",
+                build,
+                "net471");
+#endif
+        }
+
+        private void KillProcess(int pid)
+        {
+            var process = new Process();
+
+            //We need to kill the process tree manually
+            //See: https://github.com/dotnet/corefx/issues/26234
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                process.StartInfo.FileName = "taskkill";
+                process.StartInfo.Arguments = $"-pid {pid} -t -f";
+            }
+            else
+            {
+                process.StartInfo.FileName = "/bin/bash";
+                process.StartInfo.Arguments = $"-c \"kill -s 9 {pid}\"";
+            }
+
+            process.Start();
+            process.WaitForExit();
         }
     }
 }

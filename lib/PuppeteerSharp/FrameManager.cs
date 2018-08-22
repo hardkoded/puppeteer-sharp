@@ -29,6 +29,7 @@ namespace PuppeteerSharp
         internal event EventHandler<FrameEventArgs> FrameAttached;
         internal event EventHandler<FrameEventArgs> FrameDetached;
         internal event EventHandler<FrameEventArgs> FrameNavigated;
+        internal event EventHandler<FrameEventArgs> FrameNavigatedWithinDocument;
         internal event EventHandler<FrameEventArgs> LifecycleEvent;
 
         internal Dictionary<string, Frame> Frames { get; set; }
@@ -38,7 +39,7 @@ namespace PuppeteerSharp
 
         #region Public Methods
 
-        public JSHandle CreateJsHandle(int contextId, dynamic remoteObject)
+        internal JSHandle CreateJSHandle(int contextId, dynamic remoteObject)
         {
             _contextIdToContext.TryGetValue(contextId, out var storedContext);
 
@@ -49,7 +50,7 @@ namespace PuppeteerSharp
 
             if (remoteObject.subtype == "node")
             {
-                return new ElementHandle(storedContext, _client, remoteObject, _page);
+                return new ElementHandle(storedContext, _client, remoteObject, _page, this);
             }
 
             return new JSHandle(storedContext, _client, remoteObject);
@@ -73,8 +74,16 @@ namespace PuppeteerSharp
                     OnFrameNavigated(e.MessageData.SelectToken("frame").ToObject<FramePayload>());
                     break;
 
+                case "Page.navigatedWithinDocument":
+                    OnFrameNavigatedWithinDocument(e.MessageData.ToObject<NavigatedWithinDocumentResponse>());
+                    break;
+
                 case "Page.frameDetached":
-                    OnFrameDetached(e.MessageData.SelectToken("frameId").ToObject<string>());
+                    OnFrameDetached(e.MessageData.ToObject<BasicFrameResponse>());
+                    break;
+
+                case "Page.frameStoppedLoading":
+                    OnFrameStoppedLoading(e.MessageData.ToObject<BasicFrameResponse>());
                     break;
 
                 case "Runtime.executionContextCreated":
@@ -92,6 +101,15 @@ namespace PuppeteerSharp
                     break;
                 default:
                     break;
+            }
+        }
+
+        private void OnFrameStoppedLoading(BasicFrameResponse e)
+        {
+            if (Frames.TryGetValue(e.FrameId, out var frame))
+            {
+                frame.OnLoadingStopped();
+                LifecycleEvent?.Invoke(this, new FrameEventArgs(frame));
             }
         }
 
@@ -132,7 +150,7 @@ namespace PuppeteerSharp
             var context = new ExecutionContext(
                 _client,
                 contextPayload,
-                remoteObject => CreateJsHandle(contextPayload.Id, remoteObject),
+                remoteObject => CreateJSHandle(contextPayload.Id, remoteObject),
                 frame);
 
             _contextIdToContext[contextPayload.Id] = context;
@@ -143,11 +161,11 @@ namespace PuppeteerSharp
             }
         }
 
-        private void OnFrameDetached(string frameId)
+        private void OnFrameDetached(BasicFrameResponse e)
         {
-            if (Frames.ContainsKey(frameId))
+            if (Frames.TryGetValue(e.FrameId, out var frame))
             {
-                RemoveFramesRecursively(Frames[frameId]);
+                RemoveFramesRecursively(frame);
             }
         }
 
@@ -182,7 +200,7 @@ namespace PuppeteerSharp
                 else
                 {
                     // Initial main frame navigation.
-                    frame = new Frame(this._client, this._page, null, framePayload.Id);
+                    frame = new Frame(_client, _page, null, framePayload.Id);
                 }
 
                 Frames[framePayload.Id] = frame;
@@ -193,6 +211,18 @@ namespace PuppeteerSharp
             frame.Navigated(framePayload);
 
             FrameNavigated?.Invoke(this, new FrameEventArgs(frame));
+        }
+
+        private void OnFrameNavigatedWithinDocument(NavigatedWithinDocumentResponse e)
+        {
+            if (Frames.TryGetValue(e.FrameId, out var frame))
+            {
+                frame.NavigatedWithinDocument(e.Url);
+
+                var eventArgs = new FrameEventArgs(frame);
+                FrameNavigatedWithinDocument?.Invoke(this, eventArgs);
+                FrameNavigated?.Invoke(this, eventArgs);
+            }
         }
 
         private void RemoveContext(ExecutionContext context)

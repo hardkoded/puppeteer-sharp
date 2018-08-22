@@ -19,9 +19,9 @@ namespace PuppeteerSharp.Tests.TargetTests
         {
             // The pages will be the testing page and the original newtab page
             var targets = Browser.Targets();
-            Assert.Contains(targets, target => target.Type == "page"
+            Assert.Contains(targets, target => target.Type == TargetType.Page
                 && target.Url == TestConstants.AboutBlank);
-            Assert.Contains(targets, target => target.Type == "browser");
+            Assert.Contains(targets, target => target.Type == TargetType.Browser);
         }
 
         [Fact]
@@ -35,10 +35,22 @@ namespace PuppeteerSharp.Tests.TargetTests
         }
 
         [Fact]
+        public async Task ShouldAllowBackgroundPageTargetTypeToPassThrough()
+        {
+            using (var browserWithExtension = await Puppeteer.LaunchAsync(TestConstants.BrowserWithExtensionOptions()))
+            using (var page = await browserWithExtension.NewPageAsync())
+            {
+                var targets = browserWithExtension.Targets();
+                var backgroundPageTarget = targets.FirstOrDefault(target => target.Type == TargetType.BackgroundPage);
+                Assert.NotNull(backgroundPageTarget);
+            }
+        }
+
+        [Fact]
         public void ShouldContainBrowserTarget()
         {
             var targets = Browser.Targets();
-            var browserTarget = targets.FirstOrDefault(target => target.Type == "browser");
+            var browserTarget = targets.FirstOrDefault(target => target.Type == TargetType.Browser);
             Assert.NotNull(browserTarget);
         }
 
@@ -102,7 +114,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/serviceworkers/empty/sw.html");
 
             var createdTarget = await createdTargetTaskCompletion.Task;
-            Assert.Equal("service_worker", createdTarget.Type);
+            Assert.Equal(TargetType.ServiceWorker, createdTarget.Type);
             Assert.Equal(TestConstants.ServerUrl + "/serviceworkers/empty/sw.js", createdTarget.Url);
 
             var targetDestroyedTaskCompletion = new TaskCompletionSource<Target>();
@@ -144,7 +156,7 @@ namespace PuppeteerSharp.Tests.TargetTests
         public async Task ShouldNotReportUninitializedPages()
         {
             var targetChanged = false;
-            EventHandler<TargetChangedArgs> listener = (sender, e) => targetChanged = true;
+            void listener(object sender, TargetChangedArgs e) => targetChanged = true;
             Browser.TargetChanged += listener;
             var targetCompletionTask = new TaskCompletionSource<Target>();
             void TargetCreatedEventHandler(object sender, TargetChangedArgs e)
@@ -187,9 +199,23 @@ namespace PuppeteerSharp.Tests.TargetTests
             serverResponse.Redirect("/injectedstyle.css");
             serverResponseEnd.SetResult(true);
             // Wait for the new page to load.            
-            await WaitForEvents(newPage.Client, "Page.loadEventFired");
+            await WaitEvent(newPage.Client, "Page.loadEventFired");
             // Cleanup.
             await newPage.CloseAsync();
+        }
+
+        [Fact]
+        public async Task ShouldHaveAnOpener()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var targetCreatedCompletion = new TaskCompletionSource<Target>();
+            Browser.TargetCreated += (sender, e) => targetCreatedCompletion.TrySetResult(e.Target);
+            await Page.GoToAsync(TestConstants.ServerUrl + "/popup/window-open.html");
+            var createdTarget = await targetCreatedCompletion.Task;
+
+            Assert.Equal(TestConstants.ServerUrl + "/popup/popup.html", (await createdTarget.PageAsync()).Url);
+            Assert.Same(Page.Target, createdTarget.Opener);
+            Assert.Null(Page.Target.Opener);
         }
     }
 }

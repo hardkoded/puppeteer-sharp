@@ -46,13 +46,13 @@ namespace PuppeteerSharp
 
         #region Public Methods
 
-        internal async Task AuthenticateAsync(Credentials credentials)
+        internal Task AuthenticateAsync(Credentials credentials)
         {
             _credentials = credentials;
-            await UpdateProtocolRequestInterceptionAsync();
+            return UpdateProtocolRequestInterceptionAsync();
         }
 
-        internal async Task SetExtraHTTPHeadersAsync(Dictionary<string, string> extraHTTPHeaders)
+        internal Task SetExtraHTTPHeadersAsync(Dictionary<string, string> extraHTTPHeaders)
         {
             _extraHTTPHeaders = new Dictionary<string, string>();
 
@@ -60,7 +60,7 @@ namespace PuppeteerSharp
             {
                 _extraHTTPHeaders[item.Key.ToLower()] = item.Value;
             }
-            await _client.SendAsync("Network.setExtraHTTPHeaders", new Dictionary<string, object>
+            return _client.SendAsync("Network.setExtraHTTPHeaders", new Dictionary<string, object>
             {
                 {"headers", _extraHTTPHeaders}
             });
@@ -78,22 +78,20 @@ namespace PuppeteerSharp
                     { "latency", 0},
                     { "downloadThroughput", -1},
                     { "uploadThroughput", -1}
-                });
+                }).ConfigureAwait(false);
             }
         }
 
-        internal async Task SetUserAgentAsync(string userAgent)
-        {
-            await _client.SendAsync("Network.setUserAgentOverride", new Dictionary<string, object>
+        internal Task SetUserAgentAsync(string userAgent)
+            => _client.SendAsync("Network.setUserAgentOverride", new Dictionary<string, object>
             {
                 { "userAgent", userAgent }
             });
-        }
 
-        internal async Task SetRequestInterceptionAsync(bool value)
+        internal Task SetRequestInterceptionAsync(bool value)
         {
             _userRequestInterceptionEnabled = value;
-            await UpdateProtocolRequestInterceptionAsync();
+            return UpdateProtocolRequestInterceptionAsync();
         }
 
         #endregion
@@ -108,7 +106,7 @@ namespace PuppeteerSharp
                     OnRequestWillBeSent(e.MessageData.ToObject<RequestWillBeSentResponse>());
                     break;
                 case "Network.requestIntercepted":
-                    await OnRequestInterceptedAsync(e.MessageData.ToObject<RequestInterceptedResponse>());
+                    await OnRequestInterceptedAsync(e.MessageData.ToObject<RequestInterceptedResponse>()).ConfigureAwait(false);
                     break;
                 case "Network.requestServedFromCache":
                     OnRequestServedFromCache(e.MessageData.ToObject<RequestServedFromCacheResponse>());
@@ -132,7 +130,7 @@ namespace PuppeteerSharp
             if (_requestIdToRequest.TryGetValue(e.RequestId, out var request))
             {
                 request.Failure = e.ErrorText;
-                request.CompleteTaskWrapper.SetResult(true);
+                request.Response?.BodyLoadedTaskWrapper.SetResult(true);
                 _requestIdToRequest.Remove(request.RequestId);
 
                 if (request.InterceptionId != null)
@@ -153,7 +151,7 @@ namespace PuppeteerSharp
             // @see https://crbug.com/750469
             if (_requestIdToRequest.TryGetValue(e.RequestId, out var request))
             {
-                request.CompleteTaskWrapper.SetResult(true);
+                request.Response.BodyLoadedTaskWrapper.SetResult(true);
                 _requestIdToRequest.Remove(request.RequestId);
 
                 if (request.InterceptionId != null)
@@ -219,7 +217,7 @@ namespace PuppeteerSharp
                                 password = credentials.Password
                             }
                         }
-                    });
+                    }).ConfigureAwait(false);
                 }
                 catch (PuppeteerException ex)
                 {
@@ -234,7 +232,7 @@ namespace PuppeteerSharp
                     await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object>
                     {
                         { "interceptionId", e.InterceptionId}
-                    });
+                    }).ConfigureAwait(false);
                 }
                 catch (PuppeteerException ex)
                 {
@@ -247,21 +245,45 @@ namespace PuppeteerSharp
                 var request = _interceptionIdToRequest[e.InterceptionId];
 
                 HandleRequestRedirect(request, e.ResponseStatusCode, e.ResponseHeaders, false, false);
-                HandleRequestStart(request.RequestId, e.InterceptionId, e.RedirectUrl, e.ResourceType, e.Request, e.FrameId);
+                HandleRequestStart(
+                    request.RequestId,
+                    e.InterceptionId,
+                    e.RedirectUrl,
+                    e.IsNavigationRequest,
+                    e.ResourceType,
+                    e.Request,
+                    e.FrameId,
+                    request.RedirectChainList);
                 return;
             }
 
-            string requestHash = e.Request.Hash;
+            var requestHash = e.Request.Hash;
             var requestId = _requestHashToRequestIds.FirstValue(requestHash);
             if (requestId != null)
             {
                 _requestHashToRequestIds.Delete(requestHash, requestId);
-                HandleRequestStart(requestId, e.InterceptionId, e.Request.Url, e.ResourceType, e.Request, e.FrameId);
+                HandleRequestStart(
+                    requestId,
+                    e.InterceptionId,
+                    e.Request.Url,
+                    e.IsNavigationRequest,
+                    e.ResourceType,
+                    e.Request,
+                    e.FrameId,
+                    new List<Request>());
             }
             else
             {
                 _requestHashToInterceptionIds.Add(requestHash, e.InterceptionId);
-                HandleRequestStart(null, e.InterceptionId, e.Request.Url, e.ResourceType, e.Request, e.FrameId);
+                HandleRequestStart(
+                    null,
+                    e.InterceptionId,
+                    e.Request.Url,
+                    e.IsNavigationRequest,
+                    e.ResourceType,
+                    e.Request,
+                    e.FrameId,
+                    new List<Request>());
             }
         }
 
@@ -277,9 +299,11 @@ namespace PuppeteerSharp
             string requestId,
             string interceptionId,
             string url,
+            bool isNavigationRequest,
             ResourceType resourceType,
             Payload requestPayload,
-            string frameId)
+            string frameId,
+            List<Request> redirectChain)
         {
             Frame frame = null;
 
@@ -292,11 +316,13 @@ namespace PuppeteerSharp
                 _client,
                 requestId,
                 interceptionId,
+                isNavigationRequest,
                 _userRequestInterceptionEnabled,
                 url,
                 resourceType,
                 requestPayload,
-                frame);
+                frame,
+                redirectChain);
 
             if (!string.IsNullOrEmpty(requestId))
             {
@@ -331,6 +357,10 @@ namespace PuppeteerSharp
                 securityDetails);
 
             request.Response = response;
+            request.RedirectChainList.Add(request);
+            response.BodyLoadedTaskWrapper.TrySetException(
+                new PuppeteerException("Response body is unavailable for redirect responses"));
+
             if (request.RequestId != null)
             {
                 _requestIdToRequest.Remove(request.RequestId);
@@ -355,6 +385,8 @@ namespace PuppeteerSharp
 
         private void OnRequestWillBeSent(RequestWillBeSentResponse e)
         {
+            var redirectChain = new List<Request>();
+
             if (_protocolRequestInterceptionEnabled)
             {
                 // All redirects are handled in requestIntercepted.
@@ -362,7 +394,7 @@ namespace PuppeteerSharp
                 {
                     return;
                 }
-                string requestHash = e.Request.Hash;
+                var requestHash = e.Request.Hash;
                 var interceptionId = _requestHashToInterceptionIds.FirstValue(requestHash);
                 if (interceptionId != null && _interceptionIdToRequest.TryGetValue(interceptionId, out var request))
                 {
@@ -388,9 +420,12 @@ namespace PuppeteerSharp
                     e.RedirectResponse.FromDiskCache,
                     e.RedirectResponse.FromServiceWorker,
                     e.RedirectResponse.SecurityDetails);
-            }
 
-            HandleRequestStart(e.RequestId, null, e.Request.Url, e.Type, e.Request, e.FrameId);
+                redirectChain = request.RedirectChainList;
+            }
+            var isNavigationRequest = e.RequestId == e.LoaderId && e.Type == ResourceType.Document;
+
+            HandleRequestStart(e.RequestId, null, e.Request.Url, isNavigationRequest, e.Type, e.Request, e.FrameId, redirectChain);
         }
 
         private async Task UpdateProtocolRequestInterceptionAsync()
@@ -416,7 +451,7 @@ namespace PuppeteerSharp
                 {
                     { "patterns", patterns}
                 })
-            );
+            ).ConfigureAwait(false);
         }
         #endregion
     }

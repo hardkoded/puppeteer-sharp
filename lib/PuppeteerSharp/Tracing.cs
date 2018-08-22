@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using PuppeteerSharp.Messaging;
 
@@ -25,7 +26,7 @@ namespace PuppeteerSharp
         private readonly CDPSession _client;
         private bool _recording;
         private string _path;
-        private static readonly List<string> _defaultCategories = new List<string>()
+        private static readonly List<string> _defaultCategories = new List<string>
         {
             "-*",
             "devtools.timeline",
@@ -50,18 +51,12 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>Start task</returns>
         /// <param name="options">Tracing options</param>
-        public async Task StartAsync(TracingOptions options)
+        public Task StartAsync(TracingOptions options)
         {
             if (_recording)
             {
                 throw new InvalidOperationException("Cannot start recording trace while already recording trace.");
             }
-
-            if (string.IsNullOrEmpty(options.Path))
-            {
-                throw new ArgumentException("Must specify a path to write trace file to.");
-            }
-
 
             var categories = options.Categories ?? _defaultCategories;
 
@@ -73,7 +68,7 @@ namespace PuppeteerSharp
             _path = options.Path;
             _recording = true;
 
-            await _client.SendAsync("Tracing.start", new
+            return _client.SendAsync("Tracing.start", new
             {
                 transferMode = "ReturnAsStream",
                 categories = string.Join(", ", categories)
@@ -84,48 +79,57 @@ namespace PuppeteerSharp
         /// Stops tracing
         /// </summary>
         /// <returns>Stop task</returns>
-        public async Task StopAsync()
+        public async Task<string> StopAsync()
         {
-            var taskWrapper = new TaskCompletionSource<bool>();
+            var taskWrapper = new TaskCompletionSource<string>();
 
             async void EventHandler(object sender, TracingCompleteEventArgs e)
             {
-                await ReadStream(e.Stream, _path);
+                var tracingData = await ReadStream(e.Stream, _path).ConfigureAwait(false);
                 _client.TracingComplete -= EventHandler;
-                taskWrapper.SetResult(true);
+                taskWrapper.SetResult(tracingData);
             }
 
             _client.TracingComplete += EventHandler;
 
-            await _client.SendAsync("Tracing.end");
+            await _client.SendAsync("Tracing.end").ConfigureAwait(false);
 
             _recording = false;
 
-            await taskWrapper.Task;
+            return await taskWrapper.Task.ConfigureAwait(false);
         }
 
-        private async Task ReadStream(string stream, string path)
+        private async Task<string> ReadStream(string stream, string path)
         {
-            using (var fs = new StreamWriter(path))
+            var result = new StringBuilder();
+            var eof = false;
+
+            while (!eof)
             {
-                bool eof = false;
-
-                while (!eof)
+                var response = await _client.SendAsync<IOReadResponse>("IO.read", new
                 {
-                    var response = await _client.SendAsync<IOReadResponse>("IO.read", new
-                    {
-                        handle = stream
-                    });
+                    handle = stream
+                }).ConfigureAwait(false);
 
-                    eof = response.Eof;
+                eof = response.Eof;
 
-                    await fs.WriteAsync(response.Data);
+                result.Append(response.Data);
+            }
+
+            if (!string.IsNullOrEmpty(path))
+            {
+                using (var fs = new StreamWriter(path))
+                {
+                    await fs.WriteAsync(result.ToString()).ConfigureAwait(false);
                 }
             }
+
             await _client.SendAsync("IO.close", new
             {
                 handle = stream
-            });
+            }).ConfigureAwait(false);
+
+            return result.ToString();
         }
     }
 }

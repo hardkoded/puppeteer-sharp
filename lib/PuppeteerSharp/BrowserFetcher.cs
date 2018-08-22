@@ -36,7 +36,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Default chromiumg revision.
         /// </summary>
-        public const int DefaultRevision = 536395;
+        public const int DefaultRevision = 564778;
 
         /// <summary>
         /// Gets the downloads folder.
@@ -97,7 +97,7 @@ namespace PuppeteerSharp
             {
                 RequestUri = new Uri(url),
                 Method = HttpMethod.Head
-            });
+            }).ConfigureAwait(false);
 
             return response.IsSuccessStatusCode;
         }
@@ -164,7 +164,7 @@ namespace PuppeteerSharp
 
             if (new DirectoryInfo(folderPath).Exists)
             {
-                return null;
+                return RevisionInfo(revision);
             }
 
             var downloadFolder = new DirectoryInfo(DownloadsFolder);
@@ -179,7 +179,7 @@ namespace PuppeteerSharp
             {
                 webClient.DownloadProgressChanged += DownloadProgressChanged;
             }
-            await webClient.DownloadFileTaskAsync(new Uri(url), zipPath);
+            await webClient.DownloadFileTaskAsync(new Uri(url), zipPath).ConfigureAwait(false);
 
             if (Platform == Platform.MacOS)
             {

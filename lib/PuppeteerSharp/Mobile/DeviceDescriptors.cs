@@ -736,6 +736,62 @@ namespace PuppeteerSharp.Mobile
                     HasTouch = true,
                     IsLandscape = true
                 }
+            },
+            [DeviceDescriptorName.Pixel2] = new DeviceDescriptor
+            {
+                Name = "Pixel 2",
+                UserAgent = "Mozilla/5.0 (Linux; Android 8.0; Pixel 2 Build/OPD3.170816.012) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Mobile Safari/537.36",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 411,
+                    Height = 731,
+                    DeviceScaleFactor = 2.625,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = false
+                }
+            },
+            [DeviceDescriptorName.Pixel2Landscape] = new DeviceDescriptor
+            {
+                Name = "Pixel 2 landscape",
+                UserAgent = "Mozilla/5.0 (Linux; Android 8.0; Pixel 2 Build/OPD3.170816.012) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Mobile Safari/537.36",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 731,
+                    Height = 411,
+                    DeviceScaleFactor = 2.625,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = true
+                }
+            },
+            [DeviceDescriptorName.Pixel2XL] = new DeviceDescriptor
+            {
+                Name = "Pixel 2 XL",
+                UserAgent = "Mozilla/5.0 (Linux; Android 8.0.0; Pixel 2 XL Build/OPD1.170816.004) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Mobile Safari/537.36",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 411,
+                    Height = 823,
+                    DeviceScaleFactor = 3.5,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = false
+                }
+            },
+            [DeviceDescriptorName.Pixel2XLLandscape] = new DeviceDescriptor
+            {
+                Name = "Pixel 2 XL landscape",
+                UserAgent = "Mozilla/5.0 (Linux; Android 8.0.0; Pixel 2 XL Build/OPD1.170816.004) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Mobile Safari/537.36",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 823,
+                    Height = 411,
+                    DeviceScaleFactor = 3.5,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = true
+                }
             }
         };
 

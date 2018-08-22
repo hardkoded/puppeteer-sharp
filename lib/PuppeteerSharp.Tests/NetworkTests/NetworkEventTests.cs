@@ -80,6 +80,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Page.Response += (sender, e) => responses[e.Response.Url.Split('/').Last()] = e.Response;
             await Page.GoToAsync(TestConstants.ServerUrl + "/serviceworkers/fetch/sw.html",
                 waitUntil: new[] { WaitUntilNavigation.Networkidle2 });
+            await Page.EvaluateFunctionAsync("async () => await window.activationPromise");
             await Page.ReloadAsync();
 
             Assert.Equal(2, responses.Count);
@@ -99,6 +100,20 @@ namespace PuppeteerSharp.Tests.NetworkTests
             var responseText = await new HttpClient().GetStringAsync(TestConstants.ServerUrl + "/simple.json");
             Assert.Equal(responseText, await response.TextAsync());
             Assert.Equal(JObject.Parse(responseText), await response.JsonAsync());
+        }
+
+        [Fact]
+        public async Task PageEventsResponseShouldThrowWhenRequestingBodyOfRedirectedResponse()
+        {
+            Server.SetRedirect("/foo.html", "/empty.html");
+            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/foo.html");
+            var redirectChain = response.Request.RedirectChain;
+            Assert.Single(redirectChain);
+            var redirected = redirectChain[0].Response;
+            Assert.Equal(HttpStatusCode.Redirect, redirected.Status);
+
+            var exception = await Assert.ThrowsAsync<PuppeteerException>(async () => await redirected.TextAsync());
+            Assert.Contains("Response body is unavailable for redirect responses", exception.Message);
         }
 
         [Fact]
@@ -152,9 +167,13 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Page.Request += async (sender, e) =>
             {
                 if (e.Request.Url.EndsWith("css"))
+                {
                     await e.Request.AbortAsync();
+                }
                 else
+                {
                     await e.Request.ContinueAsync();
+                }
             };
             var failedRequests = new List<Request>();
             Page.RequestFailed += (sender, e) => failedRequests.Add(e.Request);
@@ -203,7 +222,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Page.RequestFailed += (sender, e) => events.Add($"FAIL {e.Request.Url}");
             Server.SetRedirect("/foo.html", "/empty.html");
             const string FOO_URL = TestConstants.ServerUrl + "/foo.html";
-            await Page.GoToAsync(FOO_URL);
+            var response = await Page.GoToAsync(FOO_URL);
             Assert.Equal(new[] {
                 $"GET {FOO_URL}",
                 $"302 {FOO_URL}",
@@ -212,6 +231,11 @@ namespace PuppeteerSharp.Tests.NetworkTests
                 $"200 {TestConstants.EmptyPage}",
                 $"DONE {TestConstants.EmptyPage}"
             }, events);
+
+            // Check redirect chain
+            var redirectChain = response.Request.RedirectChain;
+            Assert.Single(redirectChain);
+            Assert.Contains("/foo.html", redirectChain[0].Url);
         }
     }
 }

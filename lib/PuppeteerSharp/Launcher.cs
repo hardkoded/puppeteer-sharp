@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Collections;
 using Microsoft.Extensions.Logging;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
@@ -21,9 +22,12 @@ namespace PuppeteerSharp
         internal static readonly string[] DefaultArgs = {
             "--disable-background-networking",
             "--disable-background-timer-throttling",
+            "--disable-breakpad",
             "--disable-client-side-phishing-detection",
             "--disable-default-apps",
+            "--disable-dev-shm-usage",
             "--disable-extensions",
+            "--disable-features=site-per-process",
             "--disable-hang-monitor",
             "--disable-popup-blocking",
             "--disable-prompt-on-repost",
@@ -31,7 +35,6 @@ namespace PuppeteerSharp
             "--disable-translate",
             "--metrics-recording-only",
             "--no-first-run",
-            "--remote-debugging-port=0",
             "--safebrowsing-disable-auto-update"
         };
         internal static readonly string[] AutomationArgs = {
@@ -113,10 +116,10 @@ namespace PuppeteerSharp
             try
             {
                 var connectionDelay = options.SlowMo;
-                var browserWSEndpoint = await WaitForEndpoint(_chromeProcess, options.Timeout, options.DumpIO);
-                var keepAliveInterval = options.KeepAliveInterval;
+                var browserWSEndpoint = await WaitForEndpoint(_chromeProcess, options.Timeout).ConfigureAwait(false);
+                var keepAliveInterval = 0;
 
-                _connection = await Connection.Create(browserWSEndpoint, connectionDelay, keepAliveInterval, _loggerFactory);
+                _connection = await Connection.Create(browserWSEndpoint, connectionDelay, keepAliveInterval, _loggerFactory).ConfigureAwait(false);
                 _processLoaded = true;
 
                 if (options.LogProcess)
@@ -124,11 +127,21 @@ namespace PuppeteerSharp
                     _logger.LogInformation("Process Count: {ProcessCount}", Interlocked.Increment(ref _processCount));
                 }
 
-                return await Browser.CreateAsync(_connection, options, _chromeProcess, KillChrome);
+                var browser = await Browser.CreateAsync(
+                    _connection,
+                    Array.Empty<string>(),
+                    options.IgnoreHTTPSErrors,
+                    !options.AppMode,
+                    _chromeProcess,
+                    GracefullyCloseChrome
+                ).ConfigureAwait(false);
+
+                await EnsureInitialPageAsync(browser).ConfigureAwait(false);
+                return browser;
             }
             catch (Exception ex)
             {
-                ForceKillChrome();
+                KillChrome();
                 throw new ChromeProcessException("Failed to create connection", ex);
             }
         }
@@ -149,15 +162,24 @@ namespace PuppeteerSharp
                 _chromiumLaunched = true;
 
                 var connectionDelay = options.SlowMo;
-                var keepAliveInterval = options.KeepAliveInterval;
+                var keepAliveInterval = 0;
 
-                _connection = await Connection.Create(options.BrowserWSEndpoint, connectionDelay, keepAliveInterval, _loggerFactory);
+                _connection = await Connection.Create(options.BrowserWSEndpoint, connectionDelay, keepAliveInterval, _loggerFactory).ConfigureAwait(false);
 
-                return await Browser.CreateAsync(_connection, options, null, () =>
+                var response = await _connection.SendAsync<GetBrowserContextsResponse>("Target.getBrowserContexts");
+
+                return await Browser.CreateAsync(_connection, response.BrowserContextIds, options.IgnoreHTTPSErrors, true, null, () =>
                 {
-                    var closeTask = _connection.SendAsync("Browser.close", null);
+                    try
+                    {
+                        var closeTask = _connection.SendAsync("Browser.close", null);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, ex.Message);
+                    }
                     return null;
-                });
+                }).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -205,7 +227,7 @@ namespace PuppeteerSharp
                         throw;
                     }
 
-                    await Task.Delay(delay.Value);
+                    await Task.Delay(delay.Value).ConfigureAwait(false);
                 }
             }
         }
@@ -223,7 +245,7 @@ namespace PuppeteerSharp
         /// <returns>A temporary directory.</returns>
         public static string GetTemporaryDirectory()
         {
-            string tempDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            var tempDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             Directory.CreateDirectory(tempDirectory);
             return tempDirectory;
         }
@@ -232,25 +254,50 @@ namespace PuppeteerSharp
 
         #region Private methods
 
+        private static Task EnsureInitialPageAsync(Browser browser)
+        {
+            // Wait for initial page target to be created.
+            if (browser.Targets().Any(target => target.Type == TargetType.Page))
+            {
+                return Task.CompletedTask;
+            }
+            var initialPageCompletion = new TaskCompletionSource<bool>();
+            void InitialPageCallback(object sender, TargetChangedArgs e)
+            {
+                if (e.Target.Type == TargetType.Page)
+                {
+                    initialPageCompletion.SetResult(true);
+                    browser.TargetCreated -= InitialPageCallback;
+                }
+            }
+            browser.TargetCreated += InitialPageCallback;
+            return initialPageCompletion.Task;
+        }
+
         private void CreateChromeProcess(LaunchOptions options, List<string> chromeArguments, string chromeExecutable)
         {
-            _chromeProcess = new Process();
-            _chromeProcess.EnableRaisingEvents = true;
+            _chromeProcess = new Process
+            {
+                EnableRaisingEvents = true
+            };
             _chromeProcess.StartInfo.UseShellExecute = false;
             _chromeProcess.StartInfo.FileName = chromeExecutable;
             _chromeProcess.StartInfo.Arguments = string.Join(" ", chromeArguments);
+            _chromeProcess.StartInfo.RedirectStandardError = true;
 
             SetEnvVariables(_chromeProcess.StartInfo.Environment, options.Env, Environment.GetEnvironmentVariables());
 
-            if (!options.DumpIO)
-            {
-                _chromeProcess.StartInfo.RedirectStandardOutput = false;
-                _chromeProcess.StartInfo.RedirectStandardError = false;
-            }
-
             _chromeProcess.Exited += async (sender, e) =>
             {
-                await AfterProcessExit();
+                await AfterProcessExit().ConfigureAwait(false);
+            };
+
+            _chromeProcess.ErrorDataReceived += (sender, e) =>
+            {
+                if (options.DumpIO)
+                {
+                    Console.Error.WriteLine(e.Data);
+                }
             };
         }
 
@@ -267,6 +314,12 @@ namespace PuppeteerSharp
             else
             {
                 chromeArguments.AddRange(AutomationArgs);
+            }
+
+            if (!options.IgnoreDefaultArgs ||
+                !chromeArguments.Any(argument => argument.StartsWith("--remote-debugging-", StringComparison.Ordinal)))
+            {
+                chromeArguments.Add("--remote-debugging-port=0");
             }
 
             var userDataDirOption = options.Args.FirstOrDefault(i => i.StartsWith(UserDataDirArgument, StringComparison.Ordinal));
@@ -303,6 +356,11 @@ namespace PuppeteerSharp
                 });
             }
 
+            if (!options.IgnoreDefaultArgs && options.Args.Any() && options.Args.All(arg => arg.StartsWith("-")))
+            {
+                chromeArguments.Add("about:blank");
+            }
+
             if (options.Args.Any())
             {
                 chromeArguments.AddRange(options.Args);
@@ -311,13 +369,10 @@ namespace PuppeteerSharp
             return chromeArguments;
         }
 
-        private Task<string> WaitForEndpoint(Process chromeProcess, int timeout, bool dumpio)
+        private Task<string> WaitForEndpoint(Process chromeProcess, int timeout)
         {
             var taskWrapper = new TaskCompletionSource<string>();
             var output = string.Empty;
-
-            chromeProcess.StartInfo.RedirectStandardOutput = true;
-            chromeProcess.StartInfo.RedirectStandardError = true;
 
             void exitedEvent(object sender, EventArgs e)
             {
@@ -331,7 +386,7 @@ namespace PuppeteerSharp
                 taskWrapper.SetException(new ChromeProcessException($"Failed to launch chrome! {output}"));
             }
 
-            chromeProcess.ErrorDataReceived += (sender, e) =>
+            void errorDataReceivedEvent(object sender, DataReceivedEventArgs e)
             {
                 if (e.Data != null)
                 {
@@ -345,17 +400,12 @@ namespace PuppeteerSharp
 
                     CleanUp();
                     chromeProcess.Exited -= exitedEvent;
+                    chromeProcess.ErrorDataReceived -= errorDataReceivedEvent;
                     taskWrapper.SetResult(match.Groups[1].Value);
-
-                    //Restore defaults for Redirects
-                    if (!dumpio)
-                    {
-                        chromeProcess.StartInfo.RedirectStandardOutput = false;
-                        chromeProcess.StartInfo.RedirectStandardError = false;
-                    }
                 }
-            };
+            }
 
+            chromeProcess.ErrorDataReceived += errorDataReceivedEvent;
             chromeProcess.Exited += exitedEvent;
 
             if (timeout > 0)
@@ -399,7 +449,7 @@ namespace PuppeteerSharp
 
             if (_temporaryUserDataDir != null)
             {
-                await TryDeleteUserDataDir();
+                await TryDeleteUserDataDir().ConfigureAwait(false);
             }
 
             if (_waitForChromeToClose.Task.Status != TaskStatus.RanToCompletion)
@@ -408,22 +458,30 @@ namespace PuppeteerSharp
             }
         }
 
-        private async Task KillChrome()
+        private async Task GracefullyCloseChrome()
         {
             if (!string.IsNullOrEmpty(_temporaryUserDataDir))
             {
-                ForceKillChrome();
-                await AfterProcessExit();
+                KillChrome();
+                await AfterProcessExit().ConfigureAwait(false);
             }
             else if (_connection != null)
             {
-                await _connection.SendAsync("Browser.close", null);
+                try
+                {
+                    await _connection.SendAsync("Browser.close", null).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, ex.Message);
+                    KillChrome();
+                }
             }
 
-            await _waitForChromeToClose.Task;
+            await _waitForChromeToClose.Task.ConfigureAwait(false);
         }
 
-        private void ForceKillChrome()
+        private void KillChrome()
         {
             try
             {

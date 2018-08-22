@@ -15,10 +15,10 @@ namespace PuppeteerSharp.Helpers
 
         internal async Task<T> Enqueue<T>(Func<Task<T>> taskGenerator)
         {
-            await _semaphore.WaitAsync();
+            await _semaphore.WaitAsync().ConfigureAwait(false);
             try
             {
-                return await taskGenerator();
+                return await taskGenerator().ConfigureAwait(false);
             }
             finally
             {
@@ -28,10 +28,10 @@ namespace PuppeteerSharp.Helpers
 
         internal async Task Enqueue(Func<Task> taskGenerator)
         {
-            await _semaphore.WaitAsync();
+            await _semaphore.WaitAsync().ConfigureAwait(false);
             try
             {
-                await taskGenerator();
+                await taskGenerator().ConfigureAwait(false);
             }
             finally
             {
