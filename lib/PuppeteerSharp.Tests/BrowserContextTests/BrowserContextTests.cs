@@ -21,8 +21,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.Single(Browser.BrowserContexts());
             var defaultContext = Browser.BrowserContexts()[0];
             Assert.False(defaultContext.IsIncognito);
-            var exception = await Assert.ThrowsAsync<PuppeteerException>(
-                () => defaultContext.CloseAsync());
+            var exception = await Assert.ThrowsAsync<PuppeteerException>(defaultContext.CloseAsync);
             Assert.Contains("cannot be closed", exception.Message);
         }
 
@@ -70,16 +69,16 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         {
             var context = await Browser.CreateIncognitoBrowserContextAsync();
             var events = new List<string>();
-            context.TargetCreated += (sender, e) => events.Add("CREATED" + e.Target.Url);
-            context.TargetChanged += (sender, e) => events.Add("CHANGED" + e.Target.Url);
-            context.TargetDestroyed += (sender, e) => events.Add("DESTROYED" + e.Target.Url);
+            context.TargetCreated += (sender, e) => events.Add("CREATED: " + e.Target.Url);
+            context.TargetChanged += (sender, e) => events.Add("CHANGED: " + e.Target.Url);
+            context.TargetDestroyed += (sender, e) => events.Add("DESTROYED: " + e.Target.Url);
             var page = await context.NewPageAsync();
             await page.GoToAsync(TestConstants.EmptyPage);
             await page.CloseAsync();
             Assert.Equal(new[] {
                 $"CREATED: {TestConstants.AboutBlank}",
-                $"CHANGED: ${TestConstants.EmptyPage}",
-                $"DESTROYED: ${TestConstants.EmptyPage}"
+                $"CHANGED: {TestConstants.EmptyPage}",
+                $"DESTROYED: {TestConstants.EmptyPage}"
             }, events);
             await context.CloseAsync();
         }
