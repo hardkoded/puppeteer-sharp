@@ -3,6 +3,10 @@ using System.Threading.Tasks;
 
 namespace PuppeteerSharp
 {
+    /// <summary>
+    /// BrowserContexts provide a way to operate multiple independent browser sessions. When a browser is launched, it has
+    /// a single <see cref="BrowserContext"/> used by default. The method <see cref="Browser.NewPageAsync"/> creates a <see cref="Page"/> in the default <see cref="BrowserContext"/>
+    /// </summary>
     public class BrowserContext
     {
         private readonly string _id;
@@ -28,10 +32,24 @@ namespace PuppeteerSharp
         /// </summary>
         public event EventHandler<TargetChangedArgs> TargetDestroyed;
 
+        /// <summary>
+        /// Returns whether BrowserContext is incognito
+        /// The default browser context is the only non-incognito browser context
+        /// </summary>
+        /// <remarks>
+        /// The default browser context cannot be closed
+        /// </remarks>
         public bool IsIncognito => _id != null;
 
+        /// <summary>
+        /// Gets the browser this browser context belongs to
+        /// </summary>
         public Browser Browser { get; }
 
+        /// <summary>
+        /// Gets an array of all active targets inside the browser context 
+        /// </summary>
+        /// <returns>An array of all active targets inside the browser context</returns>
         public Target[] Targets() => Array.FindAll(Browser.Targets(), target => target.BrowserContext == this);
 
         /// <summary>
@@ -40,6 +58,10 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to a new <see cref="Page"/> object</returns>
         public Task<Page> NewPageAsync() => Browser.CreatePageInContextAsync(_id);
 
+        /// <summary>
+        /// Closes the browser context. All the targets that belong to the browser context will be closed
+        /// </summary>
+        /// <returns>Task</returns>
         public Task CloseAsync()
         {
             if (_id == null)

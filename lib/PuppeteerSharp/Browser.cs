@@ -72,7 +72,7 @@ namespace PuppeteerSharp
         #region Private members
 
         internal readonly Dictionary<string, Target> TargetsMap;
-        
+
         private readonly Dictionary<string, BrowserContext> _contexts;
         private readonly Func<Task> _closeCallBack;
         private readonly ILogger<Browser> _logger;
@@ -154,7 +154,26 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>An Array of all active targets</returns>
         public Target[] Targets() => TargetsMap.Values.Where(target => target.IsInitialized).ToArray();
-
+        
+        /// <summary>
+        /// Creates a new incognito browser context. This won't share cookies/cache with other browser contexts.
+        /// </summary>
+        /// <returns>Task which resolves to a new <see cref="BrowserContext"/> object</returns>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// using(var browser = await Puppeteer.LaunchAsync(new LaunchOptions()))
+        /// {
+        ///     // Create a new incognito browser context.
+        ///     var context = await browser.CreateIncognitoBrowserContextAsync();
+        ///     // Create a new page in a pristine context.
+        ///     var page = await context.NewPageAsync();
+        ///     // Do stuff
+        ///     await page.GoToAsync("https://example.com");
+        /// }
+        /// ]]>
+        /// </code>
+        /// </example>
         public async Task<BrowserContext> CreateIncognitoBrowserContextAsync()
         {
             var response = await Connection.SendAsync<CreateBrowserContextResponse>("Target.createBrowserContext", new { });
@@ -163,6 +182,10 @@ namespace PuppeteerSharp
             return context;
         }
 
+        /// <summary>
+        /// Returns an array of all open <see cref="BrowserContext"/>. In a newly created browser, this will return a single instance of <see cref="BrowserContext"/>
+        /// </summary>
+        /// <returns>An array of <see cref="BrowserContext"/> objects</returns>
         public BrowserContext[] BrowserContexts()
         {
             var allContexts = new BrowserContext[_contexts.Count + 1];
@@ -248,7 +271,7 @@ namespace PuppeteerSharp
         internal async Task<Page> CreatePageInContextAsync(string contextId)
         {
             var args = new Dictionary<string, object> { ["url"] = "about:blank" };
-            if(contextId != null)
+            if (contextId != null)
             {
                 args["browserContextId"] = contextId;
             }
