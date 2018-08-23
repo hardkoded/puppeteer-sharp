@@ -152,7 +152,6 @@ namespace PuppeteerSharp
             return imageData;
         }
 
-
         /// <summary>
         /// Scrolls element into view if needed, and then uses <see cref="Page.Mouse"/> to hover over the center of the element.
         /// </summary>
