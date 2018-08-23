@@ -48,7 +48,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The quality.</value>
         [JsonProperty("quality")]
-        public decimal? Quality { get; set; }
+        public int? Quality { get; set; }
 
         internal static ScreenshotType? GetScreenshotTypeFromFile(string file)
         {

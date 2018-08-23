@@ -265,5 +265,26 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(ScreenshotType.Png, ScreenshotOptions.GetScreenshotTypeFromFile("Test.png"));
             Assert.Null(ScreenshotOptions.GetScreenshotTypeFromFile("Test.exe"));
         }
+
+        [Fact]
+        public async Task ShouldWorkWithQuality()
+        {
+            using (var page = await Browser.NewPageAsync())
+            {
+                await page.SetViewportAsync(new ViewPortOptions
+                {
+                    Width = 500,
+                    Height = 500
+                });
+                await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+                var screenshot = await page.ScreenshotDataAsync(new ScreenshotOptions
+                {
+                    Type = ScreenshotType.Jpeg,
+                    FullPage = true,
+                    Quality = 100
+                });
+                Assert.True(ScreenshotHelper.PixelMatch("screenshot-grid-fullpage.png", screenshot));
+            }
+        }
     }
 }
