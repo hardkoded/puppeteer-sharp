@@ -6,7 +6,7 @@ namespace PuppeteerSharp.Helpers
 {
     internal class TaskQueue
     {
-        private SemaphoreSlim _semaphore;
+        private readonly SemaphoreSlim _semaphore;
 
         internal TaskQueue()
         {

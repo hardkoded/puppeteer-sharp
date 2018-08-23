@@ -78,7 +78,8 @@ namespace PuppeteerSharp
             _networkManager.Response += (sender, e) => Response?.Invoke(this, e);
             _networkManager.RequestFinished += (sender, e) => RequestFinished?.Invoke(this, e);
 
-            target.CloseTask.ContinueWith((arg) => {
+            target.CloseTask.ContinueWith((arg) =>
+            {
                 Close?.Invoke(this, EventArgs.Empty);
                 IsClosed = true;
             });
@@ -955,15 +956,15 @@ namespace PuppeteerSharp
         /// <summary>
         /// Takes a screenshot of the page
         /// </summary>
-        /// <returns>Task which resolves to a <see cref="byte"/>[] containing the image data.</returns>
-        public Task<byte[]> ScreenshotDataAsync() => ScreenshotDataAsync(new ScreenshotOptions());
+        /// <returns>Task which resolves to a <see cref="string"/> containing the image data as base64.</returns>
+        public Task<string> ScreenshotBase64Async() => ScreenshotBase64Async(new ScreenshotOptions());
 
         /// <summary>
         /// Takes a screenshot of the page
         /// </summary>
-        /// <returns>Task which resolves to a <see cref="byte"/>[] containing the image data.</returns>
+        /// <returns>Task which resolves to a <see cref="string"/> containing the image data as base64.</returns>
         /// <param name="options">Screenshot options.</param>
-        public Task<byte[]> ScreenshotDataAsync(ScreenshotOptions options)
+        public Task<string> ScreenshotBase64Async(ScreenshotOptions options)
         {
             var screenshotType = options.Type;
 
@@ -994,6 +995,20 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
+        /// Takes a screenshot of the page
+        /// </summary>
+        /// <returns>Task which resolves to a <see cref="byte"/>[] containing the image data.</returns>
+        public Task<byte[]> ScreenshotDataAsync() => ScreenshotDataAsync(new ScreenshotOptions());
+
+        /// <summary>
+        /// Takes a screenshot of the page
+        /// </summary>
+        /// <returns>Task which resolves to a <see cref="byte"/>[] containing the image data.</returns>
+        /// <param name="options">Screenshot options.</param>
+        public async Task<byte[]> ScreenshotDataAsync(ScreenshotOptions options)
+            => Convert.FromBase64String(await ScreenshotBase64Async(options).ConfigureAwait(false));
+
+        /// <summary>
         /// Returns page's title
         /// </summary>
         /// <returns>page's title</returns>
@@ -1022,10 +1037,8 @@ namespace PuppeteerSharp
                     }).ContinueWith((task) => Target.CloseTask);
                 }
             }
-            else
-            {
-                _logger.LogWarning("Protocol error: Connection closed. Most likely the page has been closed.");
-            }
+
+            _logger.LogWarning("Protocol error: Connection closed. Most likely the page has been closed.");
             return Task.CompletedTask;
         }
 
@@ -1457,7 +1470,7 @@ namespace PuppeteerSharp
             return result;
         }
 
-        private async Task<byte[]> PerformScreenshot(ScreenshotType type, ScreenshotOptions options)
+        private async Task<string> PerformScreenshot(ScreenshotType type, ScreenshotOptions options)
         {
             await Client.SendAsync("Target.activateTarget", new
             {
@@ -1551,9 +1564,7 @@ namespace PuppeteerSharp
                 await SetViewportAsync(Viewport).ConfigureAwait(false);
             }
 
-            var buffer = Convert.FromBase64String(result.GetValue("data").Value<string>());
-
-            return buffer;
+            return result.GetValue("data").Value<string>();
         }
 
         private decimal ConvertPrintParameterToInches(object parameter)
