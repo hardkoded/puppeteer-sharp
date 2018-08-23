@@ -98,6 +98,22 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to a <see cref="byte"/>[] containing the image data.</returns>
         /// <param name="options">Screenshot options.</param>
         public async Task<byte[]> ScreenshotDataAsync(ScreenshotOptions options)
+            => Convert.FromBase64String(await ScreenshotBase64Async(options).ConfigureAwait(false));
+
+        /// <summary>
+        /// This method scrolls element into view if needed, and then uses <seealso cref="Page.ScreenshotBase64Async(ScreenshotOptions)"/> to take a screenshot of the element. 
+        /// If the element is detached from DOM, the method throws an error.
+        /// </summary>
+        /// <returns>Task which resolves to a <see cref="string"/> containing the image data as base64.</returns>
+        public Task<string> ScreenshotBase64Async() => ScreenshotBase64Async(new ScreenshotOptions());
+
+        /// <summary>
+        /// This method scrolls element into view if needed, and then uses <seealso cref="Page.ScreenshotBase64Async(ScreenshotOptions)"/> to take a screenshot of the element. 
+        /// If the element is detached from DOM, the method throws an error.
+        /// </summary>
+        /// <returns>Task which resolves to a <see cref="string"/> containing the image data as base64.</returns>
+        /// <param name="options">Screenshot options.</param>
+        public async Task<string> ScreenshotBase64Async(ScreenshotOptions options)
         {
             var needsViewportReset = false;
             var boundingBox = await AssertBoundingBoxAsync().ConfigureAwait(false);
@@ -126,7 +142,7 @@ namespace PuppeteerSharp
             clip.Y += getLayoutMetricsResponse.LayoutViewport.PageY;
 
             options.Clip = boundingBox.ToClip();
-            var imageData = await Page.ScreenshotDataAsync(options).ConfigureAwait(false);
+            var imageData = await Page.ScreenshotBase64Async(options).ConfigureAwait(false);
 
             if (needsViewportReset)
             {

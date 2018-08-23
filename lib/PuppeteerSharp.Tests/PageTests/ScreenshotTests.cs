@@ -257,6 +257,23 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Fact]
+        public async Task ShouldReturnBase64()
+        {
+            using (var page = await Browser.NewPageAsync())
+            {
+                await page.SetViewportAsync(new ViewPortOptions
+                {
+                    Width = 500,
+                    Height = 500
+                });
+                await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+                var screenshot = await page.ScreenshotBase64Async();
+
+                Assert.True(ScreenshotHelper.PixelMatch("screenshot-sanity.png", Convert.FromBase64String(screenshot)));
+            }
+        }
+
+        [Fact]
         public void ShouldInferScreenshotTypeFromName()
         {
             Assert.Equal(ScreenshotType.Jpeg, ScreenshotOptions.GetScreenshotTypeFromFile("Test.jpg"));
