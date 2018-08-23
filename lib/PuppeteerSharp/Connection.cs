@@ -19,7 +19,7 @@ namespace PuppeteerSharp
     {
         private readonly ILogger _logger;
 
-        internal Connection(string url, int delay, ClientWebSocket ws, ILoggerFactory loggerFactory = null)
+        internal Connection(string url, int delay, WebSocket ws, ILoggerFactory loggerFactory = null)
         {
             LoggerFactory = loggerFactory ?? new LoggerFactory();
             Url = url;
@@ -289,14 +289,33 @@ namespace PuppeteerSharp
             }
         }
         #endregion
+
         #region Static Methods
 
         internal static async Task<Connection> Create(string url, int delay = 0, int keepAliveInterval = 60, ILoggerFactory loggerFactory = null)
         {
-            var ws = new ClientWebSocket();
-            ws.Options.KeepAliveInterval = new TimeSpan(0, 0, keepAliveInterval);
+            var ws = CreateWebSocket(new TimeSpan(0, 0, keepAliveInterval));
             await ws.ConnectAsync(new Uri(url), default).ConfigureAwait(false);
             return new Connection(url, delay, ws, loggerFactory);
+        }
+
+        private static WebSocket CreateWebSocket(TimeSpan keepAliveInterval)
+        {
+            if (SystemClientWebSocket.ManagedWebSocketRequired)
+            {
+                // Fallback to managed web socket implementation, because the default
+                // implementation unfortunately does not run on the current platform
+                // (such as Windows 7, Windows Server 2008 R2).
+                var ws = new System.Net.WebSockets.Managed.ClientWebSocket();
+                ws.Options.KeepAliveInterval = keepAliveInterval;
+                return ws;
+            }
+            else
+            {
+                var ws = new System.Net.WebSockets.ClientWebSocket();
+                ws.Options.KeepAliveInterval = keepAliveInterval;
+                return ws;
+            }
         }
 
         /// <summary>
