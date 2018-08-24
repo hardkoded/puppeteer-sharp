@@ -179,7 +179,9 @@ namespace PuppeteerSharp
         /// </summary>
         public event EventHandler<PageErrorEventArgs> PageError;
 
-        public event EventHandler<WorkerCreatedEventArgs> WorkerCreated;
+        public event EventHandler<WorkerEventArgs> WorkerCreated;
+
+        public event EventHandler<WorkerEventArgs> WorkerDestroyed;
 
         /// <summary>
         /// Raised when the page closes.
@@ -209,6 +211,11 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>An array of all frames attached to the page.</value>
         public Frame[] Frames => _frameManager.Frames.Values.ToArray();
+
+        /// <summary>
+        /// Gets all workers in the page.
+        /// </summary>
+        public Worker[] Workers => _workers.Values.ToArray();
 
         /// <summary>
         /// Shortcut for <c>page.MainFrame.Url</c>
@@ -1395,10 +1402,8 @@ namespace PuppeteerSharp
             var page = new Page(client, target, new FrameTree(result.frameTree), ignoreHTTPSErrors, screenshotTaskQueue);
 
             await Task.WhenAll(
-                client.SendAsync("Page.setLifecycleEventsEnabled", new Dictionary<string, object>
-                {
-                    {"enabled", true }
-                }),
+                client.SendAsync("Target.setAutoAttach", new { autoAttach = true, waitForDebuggerOnStart = false }),
+                client.SendAsync("Page.setLifecycleEventsEnabled", new { enabled = true }),
                 client.SendAsync("Network.enable", null),
                 client.SendAsync("Runtime.enable", null),
                 client.SendAsync("Security.enable", null),
@@ -1636,18 +1641,27 @@ namespace PuppeteerSharp
                 case "Target.attachedToTarget":
                     var targetInfo = e.MessageData.SelectToken("targetInfo").ToObject<TargetInfo>();
                     var sessionId = e.MessageData.SelectToken("sessionId").ToObject<string>();
-                    if (targetInfo.Type != "worker")
+                    if (targetInfo.Type != TargetType.Worker)
                     {
                         await Client.SendAsync("Target.detachFromTarget", new { sessionId });
                         return;
                     }
-                    var session = Client.CreateSession(targetInfo.Type, sessionId);
-                    var worker = new Worker(Client, targetInfo.Url, this._addConsoleMessage);
+                    var session = Client.CreateSession(targetInfo.TargetId, sessionId);
+                    var worker = new Worker(Client, targetInfo.Url, (type, args)
+                        => OnLogEntryAdded(new LogEntryAddedResponse
+                        {
+                            Entry = new LogEntryAddedResponse.LogEntry { Level = type, Args = args }
+                        }));
                     _workers[sessionId] = worker;
-                    WorkerCreated?.Invoke(this, new WorkerCreatedEventArgs(worker));
+                    WorkerCreated?.Invoke(this, new WorkerEventArgs(worker));
                     break;
                 case "Target.detachedFromTarget":
-
+                    sessionId = e.MessageData.SelectToken("sessionId").Value<string>();
+                    if (_workers.TryGetValue(sessionId, out worker))
+                    {
+                        WorkerDestroyed?.Invoke(this, new WorkerEventArgs(worker));
+                        _workers.Remove(sessionId);
+                    }
                     break;
                 case "Log.entryAdded":
                     OnLogEntryAdded(e.MessageData.ToObject<LogEntryAddedResponse>());
