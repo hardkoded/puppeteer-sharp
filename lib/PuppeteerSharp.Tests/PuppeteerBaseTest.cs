@@ -5,6 +5,9 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests
 {
+    using Newtonsoft.Json;
+    using Xunit;
+
     public class PuppeteerBaseTest
     {
         protected string BaseDirectory { get; set; }
