@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>1.4.0</PackageVersion>
+    <PackageVersion>1.5.0</PackageVersion>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
@@ -12,24 +12,44 @@
     <Description>Headless Chrome .NET API</Description>
     <PackageId>PuppeteerSharp</PackageId>
     <PackageReleaseNotes>
-New APIs
- 
- * Page.CloseAsync(PageCloseOptions)
- * Page.Browser
+# New Features
 
-# Minor changes
+ * Browser Contexts.
+ * Workers
 
- * Rolled Chromium to r555668.
- * Status 204 support.
- * Report 'Log' domain entries as 'console' events.
- * Verify file url interception works as expected.
- * DownloadAsync should return revision info even if the revision was already downloaded.
- * Allow user gesture restricted code to be run in Page.EvaluateExpressionAsync.
- * Add pixel2/pixel2 xl.
- * Add explanation to page.waitForNavigation.
- * ElementHandle EvaluateFunctionAsync examples.
+# New APIs
+
+ * Target.Opener.
+ * Request.IsNavigationRequest.
+ * Page.IsClosed.
+ * Change accessibilty on Payload.
+ * Page. ScreenshotBase64Async and ElementHandle.ScreenshotBase64Async.
+
+# Breaking Changes
+
+ * Disable crash reporting by default.
+ * Added .ConfigureAwait(false) to each await.
+ * Change ScreenshotOptions.Quality type.
+
+# Changelog
+
+ * Chromium updated to r564778.
+ * Update PuppeteerSharp.Tests packages versions.
+ * Launch browser with 'about:blank' by default.
+ * Respect timeout 0 in Page.waitForFunctionAsync.
+ * Add a missing test for elementHandle.
+ * Pass through "background_page" types.
+ * Ensure first page is created when browser is launched.
+ * Improve access to files to use true asynchronous methods.
+ * Add test that validates that pages open with userDataDir arg.
+ * Normalize scrollbars in headful tests.
+ * Disable OOPIF by default.
+ * Not pass user options to browser constructor.
+ * Verify ignoreHTTPSErrors works with puppeteer.ConnectAsync.
+ * Update ConsoleType.
+ * ElementHandle.QuerySelectorAllHandleAsync.
     </PackageReleaseNotes>
-    <ReleaseVersion>1.4.0</ReleaseVersion>
+    <ReleaseVersion>1.5.0</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>
