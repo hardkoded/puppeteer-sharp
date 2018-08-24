@@ -5,6 +5,7 @@ using PuppeteerSharp.Helpers;
 using System.Linq;
 using System.IO;
 using System.Diagnostics;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Collections;
@@ -13,8 +14,6 @@ using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
-    using System.Text;
-
     /// <summary>
     /// Launcher controls the creation of Chromium processes or the connection remote ones.
     /// </summary>
