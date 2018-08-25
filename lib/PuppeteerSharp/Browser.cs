@@ -42,17 +42,14 @@ namespace PuppeteerSharp
         /// <param name="contextIds">The context ids></param>
         /// <param name="ignoreHTTPSErrors">The option to ignoreHTTPSErrors</param>
         /// <param name="setDefaultViewport">The option to setDefaultViewport</param>
-        /// <param name="process">The chrome process</param>
-        /// <param name="closeCallBack">An async function called before closing</param>
+        /// <param name="chromeProcess">The chrome process</param>
         public Browser(
             Connection connection,
             string[] contextIds,
             bool ignoreHTTPSErrors,
             bool setDefaultViewport,
-            Process process,
-            Func<Task> closeCallBack)
+            ChromeProcess chromeProcess)
         {
-            Process = process;
             Connection = connection;
             IgnoreHTTPSErrors = ignoreHTTPSErrors;
             SetDefaultViewport = setDefaultViewport;
@@ -65,7 +62,7 @@ namespace PuppeteerSharp
             Connection.Closed += (object sender, EventArgs e) => Disconnected?.Invoke(this, new EventArgs());
             Connection.MessageReceived += Connect_MessageReceived;
 
-            _closeCallBack = closeCallBack;
+            _chromeProcess = chromeProcess;
             _logger = Connection.LoggerFactory.CreateLogger<Browser>();
         }
 
@@ -74,9 +71,10 @@ namespace PuppeteerSharp
         internal readonly Dictionary<string, Target> TargetsMap;
 
         private readonly Dictionary<string, BrowserContext> _contexts;
-        private readonly Func<Task> _closeCallBack;
         private readonly ILogger<Browser> _logger;
         private readonly BrowserContext _defaultContext;
+        private readonly ChromeProcess _chromeProcess;
+        
         #endregion
 
         #region Properties
@@ -123,7 +121,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets the spawned browser process. Returns <c>null</c> if the browser instance was created with <see cref="Puppeteer.ConnectAsync(ConnectOptions, ILoggerFactory)"/> method.
         /// </summary>
-        public Process Process { get; }
+        public Process Process => _chromeProcess?.Process;
 
         /// <summary>
         /// Gets or Sets whether to ignore HTTPS errors during navigation
@@ -244,16 +242,29 @@ namespace PuppeteerSharp
             }
 
             IsClosed = true;
+
             Connection.StopReading();
-
-            var closeTask = _closeCallBack();
-
-            if (closeTask != null)
+            try
             {
-                await closeTask.ConfigureAwait(false);
+                await Connection.SendAsync("Browser.close", null).ConfigureAwait(false);
+
+                if (_chromeProcess != null)
+                {
+                    await _chromeProcess.WaitForExitAsync().ConfigureAwait(false);
+                }
+
+                Disconnect();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+
+                if (_chromeProcess != null)
+                {
+                    await _chromeProcess.KillAsync();
+                }
             }
 
-            Disconnect();
             Closed?.Invoke(this, new EventArgs());
         }
 
@@ -372,10 +383,9 @@ namespace PuppeteerSharp
             string[] contextIds,
             bool ignoreHTTPSErrors,
             bool appMode,
-            Process process,
-            Func<Task> closeCallBack)
+            ChromeProcess chromeProcess)
         {
-            var browser = new Browser(connection, contextIds, ignoreHTTPSErrors, appMode, process, closeCallBack);
+            var browser = new Browser(connection, contextIds, ignoreHTTPSErrors, appMode, chromeProcess);
             await connection.SendAsync("Target.setDiscoverTargets", new
             {
                 discover = true
@@ -386,8 +396,10 @@ namespace PuppeteerSharp
         #endregion
 
         #region IDisposable
+
         /// <inheritdoc />
-        public void Dispose() => CloseAsync().GetAwaiter().GetResult();
+        public void Dispose() => _ = CloseAsync();
+
         #endregion
     }
 }

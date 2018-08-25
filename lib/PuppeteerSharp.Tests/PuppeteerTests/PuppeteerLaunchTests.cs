@@ -299,7 +299,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 Assert.Equal(HttpStatusCode.OK, response.Status);
             }
 
-            Assert.True(launcher.IsChromeClosed);
+            Assert.True(launcher.IsChromeClosing || launcher.IsChromeClosed);
         }
 
         [Fact]
