@@ -1,20 +1,20 @@
-﻿namespace PuppeteerSharp.Helpers
-{
-    using System;
-    using System.IO;
-    using System.Threading;
-    using System.Threading.Tasks;
+﻿using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using PathHelper = System.IO.Path;
 
+namespace PuppeteerSharp.Helpers
+{
     /// <summary>
     /// Represents a directory that is deleted on disposal.
     /// </summary>
     internal class TempDirectory : IDisposable
     {
-        private readonly string _path;
         private Task _deleteTask;
 
         public TempDirectory()
-            : this(System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.IO.Path.GetRandomFileName()))
+            : this(PathHelper.Combine(PathHelper.GetTempPath(), PathHelper.GetRandomFileName()))
         { }
 
         public TempDirectory(string path)
@@ -25,7 +25,7 @@
             }
 
             Directory.CreateDirectory(path);
-            _path = path;
+            this.Path = path;
         }
 
         ~TempDirectory()
@@ -33,10 +33,7 @@
             Dispose(false);
         }
 
-        public string Path
-        {
-            get => _path;
-        }
+        public string Path { get; }
 
         public void Dispose()
         {
@@ -44,30 +41,25 @@
             Dispose(true);
         }
 
-        protected async void Dispose(bool disposing)
+        protected void Dispose(bool disposing)
         {
             if (_deleteTask == null)
             {
-                await Delete().ConfigureAwait(false);
+                _ = DeleteAsync();
             }
         }
 
-        public override string ToString()
-        {
-            return _path;
-        }
+        public override string ToString() => Path;
 
-        public Task Delete(CancellationToken cancellationToken = default)
-        {
-            return _deleteTask ?? (_deleteTask = Delete(_path, CancellationToken.None));
-        }
+        public Task DeleteAsync(CancellationToken cancellationToken = default)
+            => _deleteTask ?? (_deleteTask = DeleteAsync(Path, CancellationToken.None));
 
-        private static async Task Delete(string path, CancellationToken cancellationToken = default)
+        private static async Task DeleteAsync(string path, CancellationToken cancellationToken = default)
         {
             const int minDelayInMsec = 200;
             const int maxDelayInMsec = 8000;
 
-            int retryDelay = minDelayInMsec;
+            var retryDelay = minDelayInMsec;
             while (true)
             {
                 if (!Directory.Exists(path))
