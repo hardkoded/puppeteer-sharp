@@ -112,7 +112,7 @@ namespace PuppeteerSharp.Tests.CSSCoverageTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/csscoverage/involved.html");
             var coverage = await Page.Coverage.StopCSSCoverageAsync();
             Assert.Equal(
-                TestUtils.CompressText(JsonConvert.SerializeObject(JsonConvert.DeserializeObject(involved))),
+                TestUtils.CompressText(involved),
                 Regex.Replace(TestUtils.CompressText(JsonConvert.SerializeObject(coverage)), @":\d{4}\/", ":<PORT>/"));
         }
 

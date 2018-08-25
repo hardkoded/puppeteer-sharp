@@ -2,6 +2,8 @@
 
 namespace PuppeteerSharp.Tests
 {
+    using System.Text;
+
     public static class TestUtils
     {
         public static string FindParentDirectory(string directory)
@@ -14,6 +16,11 @@ namespace PuppeteerSharp.Tests
             return Path.Combine(current, directory);
         }
 
-        public static string CompressText(string text) => text.Replace("\n", "").Replace("\t", "").Replace(" ", "");
+        public static string CompressText(string text) => new StringBuilder(text)
+            .Replace("\r", "")
+            .Replace("\n", "")
+            .Replace("\t", "")
+            .Replace(" ", "")
+            .ToString();
     }
 }
