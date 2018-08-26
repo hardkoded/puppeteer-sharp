@@ -1,9 +1,11 @@
-﻿namespace PuppeteerSharp
+﻿using System;
+
+namespace PuppeteerSharp
 {
     /// <summary>
     /// <see cref="Page.Response"/> arguments.
     /// </summary>
-    public class ResponseCreatedEventArgs
+    public class ResponseCreatedEventArgs : EventArgs
     {
         /// <summary>
         /// Gets or sets the response.
