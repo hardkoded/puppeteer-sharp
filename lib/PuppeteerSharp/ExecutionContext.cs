@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using Newtonsoft.Json.Linq;
+using System.Text.RegularExpressions;
 
 namespace PuppeteerSharp
 {
@@ -13,6 +14,10 @@ namespace PuppeteerSharp
     /// </summary>
     public class ExecutionContext
     {
+        internal const string EvaluationScriptUrl = "__puppeteer_evaluation_script__";
+
+        private readonly string EvaluationScriptSuffix = $"//# sourceURL={EvaluationScriptUrl}";
+        private static Regex _sourceUrlRegex = new Regex(@"^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$", RegexOptions.Multiline);
         private readonly CDPSession _client;
         private readonly int _contextId;
 
@@ -142,7 +147,7 @@ namespace PuppeteerSharp
 
             return await EvaluateHandleAsync("Runtime.evaluate", new Dictionary<string, object>
             {
-                ["expression"] = script,
+                ["expression"] = _sourceUrlRegex.IsMatch(script) ? script : $"{script}\n{EvaluationScriptSuffix}",
                 ["contextId"] = _contextId,
                 ["returnByValue"] = false,
                 ["awaitPromise"] = true,
@@ -159,7 +164,7 @@ namespace PuppeteerSharp
 
             return await EvaluateHandleAsync("Runtime.callFunctionOn", new Dictionary<string, object>
             {
-                ["functionDeclaration"] = script,
+                ["functionDeclaration"] = $"{script}\n{EvaluationScriptSuffix}\n",
                 ["executionContextId"] = _contextId,
                 ["arguments"] = args.Select(FormatArgument),
                 ["returnByValue"] = false,
