@@ -158,7 +158,8 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves when the element is successfully hovered</returns>
         public async Task HoverAsync()
         {
-            var (x, y) = await VisibleCenterAsync().ConfigureAwait(false);
+            await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
+            var (x, y) = await BoundingBoxCenterAsync().ConfigureAwait(false);
             await Page.Mouse.MoveAsync(x, y).ConfigureAwait(false);
         }
 
@@ -170,7 +171,8 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves when the element is successfully clicked</returns>
         public async Task ClickAsync(ClickOptions options = null)
         {
-            var (x, y) = await VisibleCenterAsync().ConfigureAwait(false);
+            await ScrollIntoViewIfNeededAsync().ContinueWith(false);
+            var (x, y) = await BoundingBoxCenterAsync().ConfigureAwait(false);
             await Page.Mouse.ClickAsync(x, y, options).ConfigureAwait(false);
         }
 
@@ -194,7 +196,7 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves when the element is successfully tapped</returns>
         public async Task TapAsync()
         {
-            var (x, y) = await VisibleCenterAsync().ConfigureAwait(false);
+            var (x, y) = await BoundingBoxCenterAsync().ConfigureAwait(false);
             await Page.Touchscreen.TapAsync(x, y).ConfigureAwait(false);
         }
 
@@ -383,7 +385,28 @@ namespace PuppeteerSharp
             return _frameManager.Frames[nodeInfo.Node.FrameId];
         }
 
-        private async Task<(decimal x, decimal y)> VisibleCenterAsync()
+        /// <summary>
+        /// Evaluates if the element is visible in the current viewport.
+        /// </summary>
+        /// <returns>A task which resolves to true if the element is visible in the current viewport.</returns>
+        public Task<bool> IsIntersectingViewportAsync()
+        {
+            return ExecutionContext.EvaluateFunctionAsync<bool>(@"async element =>
+            {
+                const visibleRatio = await new Promise(resolve =>
+                {
+                    const observer = new IntersectionObserver(entries =>
+                    {
+                        resolve(entries[0].intersectionRatio);
+                        observer.disconnect();
+                    });
+                    observer.observe(element);
+                });
+                return visibleRatio > 0;
+            }", this);
+        }
+
+        private async Task<(decimal x, decimal y)> BoundingBoxCenterAsync()
         {
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
             var box = await AssertBoundingBoxAsync().ConfigureAwait(false);
@@ -406,13 +429,21 @@ namespace PuppeteerSharp
 
         private async Task ScrollIntoViewIfNeededAsync()
         {
-            var errorMessage = await ExecutionContext.EvaluateFunctionAsync<string>(@"element => {
-                if (!element.isConnected)
-                    return 'Node is detached from document';
-                if (element.nodeType !== Node.ELEMENT_NODE)
-                    return 'Node is not of type HTMLElement';
-                element.scrollIntoViewIfNeeded();
-                return null;
+            var errorMessage = await ExecutionContext.EvaluateFunctionAsync<string>(@" async element => {
+              if (!element.isConnected)
+                return 'Node is detached from document';
+              if (element.nodeType !== Node.ELEMENT_NODE)
+                return 'Node is not of type HTMLElement';
+              const visibleRatio = await new Promise(resolve => {
+                const observer = new IntersectionObserver(entries => {
+                  resolve(entries[0].intersectionRatio);
+                  observer.disconnect();
+                });
+                observer.observe(element);
+              });
+              if (visibleRatio !== 1.0)
+                element.scrollIntoView({block: 'center', inline: 'center', behavior: 'instant'});
+              return false;
             }", this).ConfigureAwait(false);
 
             if (errorMessage != null)
