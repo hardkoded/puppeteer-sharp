@@ -1428,7 +1428,7 @@ namespace PuppeteerSharp
             {
                 TaskHelper.CreateTimeoutTask(timeout),
                 requestTcs.Task
-            });
+            }).ConfigureAwait(false);
 
             return requestTcs.Task.Result;
         }
@@ -1484,7 +1484,7 @@ namespace PuppeteerSharp
             {
                 TaskHelper.CreateTimeoutTask(timeout),
                 responseTcs.Task
-            });
+            }).ConfigureAwait(false);
 
             return responseTcs.Task.Result;
         }
