@@ -73,7 +73,6 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="loggerFactory">Logger factory.</param>
         public Launcher(ILoggerFactory loggerFactory = null)
-
         {
             _loggerFactory = loggerFactory ?? new LoggerFactory();
             _logger = _loggerFactory.CreateLogger<Launcher>();
