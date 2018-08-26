@@ -1446,7 +1446,6 @@ namespace PuppeteerSharp
 
             _networkManager.Request += requestEventListener;
 
-
             await Task.WhenAny(new[]
             {
                 TaskHelper.CreateTimeoutTask(timeout),
