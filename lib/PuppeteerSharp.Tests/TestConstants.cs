@@ -55,7 +55,7 @@ namespace PuppeteerSharp.Tests
         public static void SetupLogging(ITestOutputHelper output)
         {
             if (Debugger.IsAttached && LoggerFactory == null)
-            {
+            {                
                 LoggerFactory = new LoggerFactory(new[] { new XunitLoggerProvider(output) });
             }
         }

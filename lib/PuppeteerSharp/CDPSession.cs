@@ -43,12 +43,14 @@ namespace PuppeteerSharp
 
             _callbacks = new Dictionary<int, MessageTask>();
             _logger = Connection.LoggerFactory.CreateLogger<CDPSession>();
+            _sessions = new Dictionary<string, CDPSession>();
         }
 
         #region Private Members
         private int _lastId;
         private readonly Dictionary<int, MessageTask> _callbacks;
         private readonly ILogger _logger;
+        private readonly Dictionary<string, CDPSession> _sessions;
         #endregion
 
         #region Properties
@@ -225,6 +227,13 @@ namespace PuppeteerSharp
             }
             _callbacks.Clear();
             Connection = null;
+        }
+
+        internal CDPSession CreateSession(string targetId, string sessionId)
+        {
+            var session = new CDPSession(Connection, targetId, sessionId);
+            _sessions[sessionId] = session;
+            return session;        
         }
 
         #endregion
