@@ -1391,30 +1391,8 @@ namespace PuppeteerSharp
         /// <returns>A task which resolves when a matching request was made.</returns>
         /// <param name="url">URL to wait for.</param>
         /// <param name="options">Options.</param>
-        public async Task<Request> WaitForRequestAsync(string url, WaitForOptions options = null)
-        {
-            var timeout = options?.Timeout ?? DefaultWaitForTimeout;
-            var requestTcs = new TaskCompletionSource<Request>();
-
-            void requestEventListener(object sender, RequestEventArgs e)
-            {
-                if (e.Request.Url == url)
-                {
-                    requestTcs.TrySetResult(e.Request);
-                    _networkManager.Request -= requestEventListener;
-                }
-            }
-
-            _networkManager.Request += requestEventListener;
-
-            await Task.WhenAny(new[]
-            {
-                TaskHelper.CreateTimeoutTask(timeout),
-                requestTcs.Task
-            });
-
-            return requestTcs.Task.Result;
-        }
+        public Task<Request> WaitForRequestAsync(string url, WaitForOptions options = null)
+            => WaitForRequestAsync(request => request.Url == url, options);
 
         /// <summary>
         /// Waits for a request.
@@ -1469,30 +1447,8 @@ namespace PuppeteerSharp
         /// <returns>A task which resolves when a matching response is received.</returns>
         /// <param name="url">URL to wait for.</param>
         /// <param name="options">Options.</param>
-        public async Task<Response> WaitForResponseAsync(string url, WaitForOptions options = null)
-        {
-            var timeout = options?.Timeout ?? DefaultWaitForTimeout;
-            var responseTcs = new TaskCompletionSource<Response>();
-
-            void responseEventListener(object sender, ResponseCreatedEventArgs e)
-            {
-                if (e.Response.Url == url)
-                {
-                    responseTcs.TrySetResult(e.Response);
-                    _networkManager.Response -= responseEventListener;
-                }
-            }
-
-            _networkManager.Response += responseEventListener;
-
-            await Task.WhenAny(new[]
-            {
-                TaskHelper.CreateTimeoutTask(timeout),
-                responseTcs.Task
-            });
-
-            return responseTcs.Task.Result;
-        }
+        public Task<Response> WaitForResponseAsync(string url, WaitForOptions options = null)
+            => WaitForResponseAsync(response => response.Url == url, options);
 
         /// <summary>
         /// Waits for a response.
