@@ -263,8 +263,39 @@ namespace PuppeteerSharp
         #region State machine
 
         /// <summary>
-        /// Represents state machine for chrome process instances.
+        /// Represents state machine for chrome process instances. The happy path runs along the
+        /// following state transitions: <see cref="Initial"/>
+        /// -> <see cref="Starting"/>
+        /// -> <see cref="Started"/>
+        /// -> <see cref="Killing"/>
+        /// -> <see cref="Exited"/>.
         /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This state machine implements the following state transitions:
+        /// <code>
+        /// State     Event              Target State Action
+        /// ======== =================== ============ ==========================================================
+        /// Initial  --StartAsync------> Starting     Start process and wait for endpoint
+        /// Initial  --KillAsync-------> Exited       Cleanup temp user data
+        /// Starting --StartAsync------> Starting     -
+        /// Starting --KillAsync-------> Killing      -
+        /// Starting --endpoint ready--> Started      Complete StartAsync successfully; Log process start
+        /// Starting --process exit----> Exited       Complete StartAsync with exception; Cleanup temp user data
+        /// Started  --StartAsync------> Started      -
+        /// Started  --KillAsync-------> Killing      Kill process; Log process exit
+        /// Started  --process exit----> Exited       Log process exit; Cleanup temp user data
+        /// Killing  --StartAsync------> Killing      - (StartAsync throws InvalidOperationException)
+        /// Killing  --KillAsync-------> Killing      -
+        /// Killing  --process exit----> Exited       Cleanup temp user data
+        /// Exited   --StartAsync------> Killing      - (StartAsync throws InvalidOperationException)
+        /// Exited   --KillAsync-------> Exited       -
+        /// </code>
+        /// </para>
+        /// <para>
+        /// Each state transition is initiated by invocation of <see cref="EnterFromAsync"/> on the target state.
+        /// </para>
+        /// </remarks>
         private abstract class State
         {
             #region Predefined states
@@ -290,17 +321,21 @@ namespace PuppeteerSharp
             /// Transitions current state of chrome process to this state.
             /// </summary>
             /// <param name="p">The chrome process</param>
+            /// <param name="fromState">The state from which state transition takes place</param>
             /// <returns></returns>
-            public virtual Task EnterAsync(ChromeProcess p, State fromState)
+            protected virtual Task EnterFromAsync(ChromeProcess p, State fromState)
             {
                 TryEnter(p, fromState);
                 return Task.CompletedTask;
             }
 
             /// <summary>
-            /// Transitions current state of chrome process to this state.
+            /// Attempts thread-safe transitions from a given state to this state.
             /// </summary>
             /// <param name="p">The chrome process</param>
+            /// <param name="fromState">The state from which state transition takes place</param>
+            /// <returns>Returns <c>true</c> if transition is successful, or <c>false</c> if transition
+            /// cannot be made because current state does not equal <paramref name="fromState"/>.</returns>
             protected bool TryEnter(ChromeProcess p, State fromState)
             {
                 if (Interlocked.CompareExchange(ref p._currentState, this, fromState) == fromState)
@@ -355,19 +390,21 @@ namespace PuppeteerSharp
 
             private class InitialState : State
             {
-                public override Task StartAsync(ChromeProcess p) => Starting.EnterAsync(p, this);
+                public override Task StartAsync(ChromeProcess p) => Starting.EnterFromAsync(p, this);
 
-                public override Task KillAsync(ChromeProcess p) => Exited.EnterAsync(p, this);
+                public override Task KillAsync(ChromeProcess p) => Exited.EnterFromAsync(p, this);
 
                 public override Task WaitForExitAsync(ChromeProcess p) => Task.FromException(InvalidOperation("wait for exit"));
             }
 
             private class StartingState : State
             {
-                public override Task EnterAsync(ChromeProcess p, State fromState)
+                protected override Task EnterFromAsync(ChromeProcess p, State fromState)
                 {
                     if (!TryEnter(p, fromState))
                     {
+                        // Delegate StartAsync to current state, because it has already changed since
+                        // transition to this state was initiated.
                         return p._currentState.StartAsync(p);
                     }
 
@@ -377,22 +414,14 @@ namespace PuppeteerSharp
 
                 public override Task StartAsync(ChromeProcess p) => p._startTask;
 
-                public override Task KillAsync(ChromeProcess p) => Killing.EnterAsync(p, this);
+                public override Task KillAsync(ChromeProcess p) => Killing.EnterFromAsync(p, this);
 
                 private async Task<string> StartCoreAsync(ChromeProcess p)
                 {
                     var startCompletionSource = new TaskCompletionSource<string>();
                     var output = new StringBuilder();
 
-                    void OnChromeExitedWhileStarting(object sender, EventArgs e)
-                    {
-                        startCompletionSource.SetException(new ChromeProcessException($"Failed to launch chrome! {output}"));
-                    }
-                    void OnChromeExited(object sender, EventArgs e)
-                    {
-                        _ = Exited.EnterAsync(p, p._currentState);
-                    }
-                    void OnChromeDataReceived(object sender, DataReceivedEventArgs e)
+                    void OnChromeDataReceivedWhileStarting(object sender, DataReceivedEventArgs e)
                     {
                         if (e.Data != null)
                         {
@@ -404,15 +433,23 @@ namespace PuppeteerSharp
                             }
                         }
                     }
+                    void OnChromeExitedWhileStarting(object sender, EventArgs e)
+                    {
+                        startCompletionSource.SetException(new ChromeProcessException($"Failed to launch chrome! {output}"));
+                    }
+                    void OnChromeExited(object sender, EventArgs e)
+                    {
+                        _ = Exited.EnterFromAsync(p, p._currentState);
+                    }
 
-                    p.Process.ErrorDataReceived += OnChromeDataReceived;
+                    p.Process.ErrorDataReceived += OnChromeDataReceivedWhileStarting;
                     p.Process.Exited += OnChromeExitedWhileStarting;
                     p.Process.Exited += OnChromeExited;
                     CancellationTokenSource cts = null;
                     try
                     {
                         p.Process.Start();
-                        await Started.EnterAsync(p, this).ConfigureAwait(false);
+                        await Started.EnterFromAsync(p, this).ConfigureAwait(false);
 
                         p.Process.BeginErrorReadLine();
 
@@ -426,11 +463,13 @@ namespace PuppeteerSharp
 
                         try
                         {
-                            return await startCompletionSource.Task.ConfigureAwait(false);
+                            var endPoint = await startCompletionSource.Task.ConfigureAwait(false);
+                            await Started.EnterFromAsync(p, this);
+                            return endPoint;
                         }
                         catch
                         {
-                            await Killing.EnterAsync(p, this).ConfigureAwait(false);
+                            await Killing.EnterFromAsync(p, this).ConfigureAwait(false);
                             throw;
                         }
                     }
@@ -438,17 +477,18 @@ namespace PuppeteerSharp
                     {
                         cts?.Dispose();
                         p.Process.Exited -= OnChromeExitedWhileStarting;
-                        p.Process.ErrorDataReceived -= OnChromeDataReceived;
+                        p.Process.ErrorDataReceived -= OnChromeDataReceivedWhileStarting;
                     }
                 }
             }
 
             private class StartedState : State
             {
-                public override Task EnterAsync(ChromeProcess p, State fromState)
+                protected override Task EnterFromAsync(ChromeProcess p, State fromState)
                 {
                     if (TryEnter(p, fromState))
                     {
+                        // Process has not exited or been killed since transition to this state was initiated
                         p._logger?.LogInformation("Process Count: {ProcessCount}", Interlocked.Increment(ref _processCount));
                     }
                     return Task.CompletedTask;
@@ -459,15 +499,17 @@ namespace PuppeteerSharp
 
                 public override Task StartAsync(ChromeProcess p) => Task.CompletedTask;
 
-                public override Task KillAsync(ChromeProcess p) => Killing.EnterAsync(p, this);
+                public override Task KillAsync(ChromeProcess p) => Killing.EnterFromAsync(p, this);
             }
 
             private class KillingState : State
             {
-                public override Task EnterAsync(ChromeProcess p, State fromState)
+                protected override Task EnterFromAsync(ChromeProcess p, State fromState)
                 {
                     if (!TryEnter(p, fromState))
                     {
+                        // Delegate KillAsync to current state, because it has already changed since
+                        // transition to this state was initiated.
                         return p._currentState.KillAsync(p);
                     }
 
@@ -491,10 +533,13 @@ namespace PuppeteerSharp
 
             private class ExitedState : State
             {
-                public override Task EnterAsync(ChromeProcess p, State fromState)
+                protected override Task EnterFromAsync(ChromeProcess p, State fromState)
                 {
                     while (!TryEnter(p, fromState))
                     {
+                        // Current state has changed since transition to this state was requested.
+                        // Therefore retry transition to this state from the current state. This ensures
+                        // that Leave() operation of current state is properly called.
                         fromState = p._currentState;
                     }
 
