@@ -133,6 +133,7 @@ namespace PuppeteerSharp
                 element.scrollIntoView({ block: 'center', inline: 'center', behavior: 'instant'});
             }", this).ConfigureAwait(false);
 
+            await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
             boundingBox = await AssertBoundingBoxAsync().ConfigureAwait(false);
 
             var getLayoutMetricsResponse = await Client.SendAsync<GetLayoutMetricsResponse>("Page.getLayoutMetrics").ConfigureAwait(false);
@@ -171,7 +172,7 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves when the element is successfully clicked</returns>
         public async Task ClickAsync(ClickOptions options = null)
         {
-            await ScrollIntoViewIfNeededAsync().ContinueWith(false);
+            await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
             var (x, y) = await BoundingBoxCenterAsync().ConfigureAwait(false);
             await Page.Mouse.ClickAsync(x, y, options).ConfigureAwait(false);
         }
@@ -196,6 +197,7 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves when the element is successfully tapped</returns>
         public async Task TapAsync()
         {
+            await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
             var (x, y) = await BoundingBoxCenterAsync().ConfigureAwait(false);
             await Page.Touchscreen.TapAsync(x, y).ConfigureAwait(false);
         }

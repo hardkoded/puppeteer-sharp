@@ -15,12 +15,12 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/offscreenbuttons.html");
-            for (let i = 0; i < 11; ++i)
+            for (var i = 0; i < 11; ++i)
             {
-                var button = await Page.QuerySelectorAsync('#btn' + i);
+                var button = await Page.QuerySelectorAsync("#btn" + i);
                 // All but last button are visible.
                 var visible = i < 10;
-                Assert.True(await button.IsIntersectingViewportAsync());
+                Assert.Equal(visible, await button.IsIntersectingViewportAsync());
             }
         }
     }
