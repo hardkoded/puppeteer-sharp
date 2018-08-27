@@ -261,7 +261,7 @@ namespace PuppeteerSharp
 
                 if (_chromeProcess != null)
                 {
-                    await _chromeProcess.KillAsync();
+                    await _chromeProcess.KillAsync().ConfigureAwait(false);
                 }
             }
 
