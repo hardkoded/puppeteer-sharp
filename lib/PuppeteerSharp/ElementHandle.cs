@@ -392,8 +392,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>A task which resolves to true if the element is visible in the current viewport.</returns>
         public Task<bool> IsIntersectingViewportAsync()
-        {
-            return ExecutionContext.EvaluateFunctionAsync<bool>(@"async element =>
+            => ExecutionContext.EvaluateFunctionAsync<bool>(@"async element =>
             {
                 const visibleRatio = await new Promise(resolve =>
                 {
@@ -406,7 +405,6 @@ namespace PuppeteerSharp
                 });
                 return visibleRatio > 0;
             }", this);
-        }
 
         private async Task<(decimal x, decimal y)> BoundingBoxCenterAsync()
         {
