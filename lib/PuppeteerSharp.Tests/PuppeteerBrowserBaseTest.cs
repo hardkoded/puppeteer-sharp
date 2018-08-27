@@ -27,7 +27,6 @@ namespace PuppeteerSharp.Tests
 
         Task IAsyncLifetime.DisposeAsync() => DisposeAsync();
 
-        protected virtual async Task DisposeAsync() 
-            => await Browser.CloseAsync();
+        protected virtual async Task DisposeAsync() => await Browser.CloseAsync();
     }
 }

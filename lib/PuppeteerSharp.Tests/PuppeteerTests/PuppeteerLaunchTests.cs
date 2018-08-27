@@ -6,13 +6,12 @@ using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using PuppeteerSharp.Helpers;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.PuppeteerTests
 {
-    using PuppeteerSharp.Helpers;
-
     [Collection("PuppeteerLoaderFixture collection")]
     public class PuppeteerLaunchTests : PuppeteerBaseTest
     {

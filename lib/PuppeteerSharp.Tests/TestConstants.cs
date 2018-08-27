@@ -26,12 +26,11 @@ namespace PuppeteerSharp.Tests
 
         public static ILoggerFactory LoggerFactory { get; private set; }
 
-        public static readonly string NestedFramesDumpResult = 
-            "http://localhost:<PORT>/frames/nested-frames.html\n" +
-            "    http://localhost:<PORT>/frames/two-frames.html\n" +
-            "        http://localhost:<PORT>/frames/frame.html\n" +
-            "        http://localhost:<PORT>/frames/frame.html\n" +
-            "    http://localhost:<PORT>/frames/frame.html";
+        public static readonly string NestedFramesDumpResult = @"http://localhost:<PORT>/frames/nested-frames.html
+    http://localhost:<PORT>/frames/two-frames.html
+        http://localhost:<PORT>/frames/frame.html
+        http://localhost:<PORT>/frames/frame.html
+    http://localhost:<PORT>/frames/frame.html";
 
         public static LaunchOptions DefaultBrowserOptions() => new LaunchOptions
         {
