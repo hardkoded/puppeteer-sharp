@@ -1,9 +1,8 @@
 ﻿using System.IO;
+using System.Text;
 
 namespace PuppeteerSharp.Tests
 {
-    using System.Text;
-
     public static class TestUtils
     {
         public static string FindParentDirectory(string directory)

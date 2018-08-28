@@ -81,7 +81,8 @@ namespace PuppeteerSharp
                 ? loggerFactory.CreateLogger<ChromeProcess>() 
                 : null;
 
-            var chromeArgs = PrepareChromeArgs(options, out _tempUserDataDir);
+            List<string> chromeArgs;
+            (chromeArgs, _tempUserDataDir) = PrepareChromeArgs(options);
 
             Process = new Process
             {
@@ -175,10 +176,10 @@ namespace PuppeteerSharp
 
         #region Private methods
 
-        private static List<string> PrepareChromeArgs(LaunchOptions options, out TempDirectory tempUserDataDir)
+        private static (List<string> chromeArgs, TempDirectory tempUserDataDir) PrepareChromeArgs(LaunchOptions options)
         {
             var chromeArgs = new List<string>(DefaultArgs);
-            tempUserDataDir = null;
+            TempDirectory tempUserDataDir = null;
 
             if (options.AppMode)
             {
@@ -239,7 +240,7 @@ namespace PuppeteerSharp
                 chromeArgs.AddRange(options.Args);
             }
 
-            return chromeArgs;
+            return (chromeArgs, tempUserDataDir);
         }
 
         private static void SetEnvVariables(IDictionary<string, string> environment, IDictionary<string, string> customEnv, IDictionary realEnv)
