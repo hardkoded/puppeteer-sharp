@@ -20,13 +20,9 @@ namespace PuppeteerSharp.Tests
             }
         }
 
-        Task IAsyncLifetime.InitializeAsync() => InitializeAsync();
-
-        protected virtual async Task InitializeAsync() => 
+        public virtual async Task InitializeAsync() => 
             Browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.LoggerFactory);
 
-        Task IAsyncLifetime.DisposeAsync() => DisposeAsync();
-
-        protected virtual async Task DisposeAsync() => await Browser.CloseAsync();
+        public virtual async Task DisposeAsync() => await Browser.CloseAsync();
     }
 }
