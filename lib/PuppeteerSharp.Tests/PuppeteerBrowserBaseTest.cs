@@ -22,8 +22,8 @@ namespace PuppeteerSharp.Tests
 
         Task IAsyncLifetime.InitializeAsync() => InitializeAsync();
 
-        protected virtual async Task InitializeAsync() 
-            => Browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.LoggerFactory);
+        protected virtual async Task InitializeAsync() => 
+            Browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.LoggerFactory);
 
         Task IAsyncLifetime.DisposeAsync() => DisposeAsync();
 
