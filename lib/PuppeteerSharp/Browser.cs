@@ -42,13 +42,13 @@ namespace PuppeteerSharp
         /// <param name="contextIds">The context ids></param>
         /// <param name="ignoreHTTPSErrors">The option to ignoreHTTPSErrors</param>
         /// <param name="setDefaultViewport">The option to setDefaultViewport</param>
-        /// <param name="chromeProcess">The chrome process</param>
+        /// <param name="chromiumProcess">The Chromium process</param>
         public Browser(
             Connection connection,
             string[] contextIds,
             bool ignoreHTTPSErrors,
             bool setDefaultViewport,
-            ChromeProcess chromeProcess)
+            ChromiumProcess chromiumProcess)
         {
             Connection = connection;
             IgnoreHTTPSErrors = ignoreHTTPSErrors;
@@ -62,7 +62,7 @@ namespace PuppeteerSharp
             Connection.Closed += (object sender, EventArgs e) => Disconnected?.Invoke(this, new EventArgs());
             Connection.MessageReceived += Connect_MessageReceived;
 
-            _chromeProcess = chromeProcess;
+            _chromiumProcess = chromiumProcess;
             _logger = Connection.LoggerFactory.CreateLogger<Browser>();
         }
 
@@ -73,7 +73,7 @@ namespace PuppeteerSharp
         private readonly Dictionary<string, BrowserContext> _contexts;
         private readonly ILogger<Browser> _logger;
         private readonly BrowserContext _defaultContext;
-        private readonly ChromeProcess _chromeProcess;
+        private readonly ChromiumProcess _chromiumProcess;
         
         #endregion
 
@@ -121,7 +121,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets the spawned browser process. Returns <c>null</c> if the browser instance was created with <see cref="Puppeteer.ConnectAsync(ConnectOptions, ILoggerFactory)"/> method.
         /// </summary>
-        public Process Process => _chromeProcess?.Process;
+        public Process Process => _chromiumProcess?.Process;
 
         /// <summary>
         /// Gets or Sets whether to ignore HTTPS errors during navigation
@@ -248,9 +248,9 @@ namespace PuppeteerSharp
             {
                 await Connection.SendAsync("Browser.close", null).ConfigureAwait(false);
 
-                if (_chromeProcess != null)
+                if (_chromiumProcess != null)
                 {
-                    await _chromeProcess.WaitForExitAsync().ConfigureAwait(false);
+                    await _chromiumProcess.WaitForExitAsync().ConfigureAwait(false);
                 }
 
                 Disconnect();
@@ -259,9 +259,9 @@ namespace PuppeteerSharp
             {
                 _logger.LogError(ex, ex.Message);
 
-                if (_chromeProcess != null)
+                if (_chromiumProcess != null)
                 {
-                    await _chromeProcess.KillAsync().ConfigureAwait(false);
+                    await _chromiumProcess.KillAsync().ConfigureAwait(false);
                 }
             }
 
@@ -383,9 +383,9 @@ namespace PuppeteerSharp
             string[] contextIds,
             bool ignoreHTTPSErrors,
             bool appMode,
-            ChromeProcess chromeProcess)
+            ChromiumProcess chromiumProcess)
         {
-            var browser = new Browser(connection, contextIds, ignoreHTTPSErrors, appMode, chromeProcess);
+            var browser = new Browser(connection, contextIds, ignoreHTTPSErrors, appMode, chromiumProcess);
             await connection.SendAsync("Target.setDiscoverTargets", new
             {
                 discover = true

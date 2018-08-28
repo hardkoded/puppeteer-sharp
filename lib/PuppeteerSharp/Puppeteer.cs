@@ -20,7 +20,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// The default flags that Chromium will be launched with.
         /// </summary>
-        public static string[] DefaultArgs => ChromeProcess.DefaultArgs;
+        public static string[] DefaultArgs => ChromiumProcess.DefaultArgs;
 
         /// <summary>
         /// A path where Puppeteer expects to find bundled Chromium. Chromium might not exist there if the downloader was not used.

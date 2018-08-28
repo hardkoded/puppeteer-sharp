@@ -15,7 +15,7 @@ namespace PuppeteerSharp
         #region Private members
 
         private readonly ILoggerFactory _loggerFactory;
-        private ChromeProcess _chromeProcess;
+        private ChromiumProcess _chromiumProcess;
         private bool _chromiumLaunched;
 
         #endregion
@@ -26,13 +26,13 @@ namespace PuppeteerSharp
         /// Gets or sets a value indicating whether the process created by the instance is being closed.
         /// </summary>
         /// <value><c>true</c> if is the process is closed; otherwise, <c>false</c>.</value>
-        public bool IsChromeClosing => _chromeProcess != null || _chromeProcess.IsClosing;
+        public bool IsChromeClosing => _chromiumProcess != null || _chromiumProcess.IsClosing;
 
         /// <summary>
         /// Gets or sets a value indicating whether the process created by the instance is closed.
         /// </summary>
         /// <value><c>true</c> if is the process is closed; otherwise, <c>false</c>.</value>
-        public bool IsChromeClosed => _chromeProcess == null || _chromeProcess.IsClosed;
+        public bool IsChromeClosed => _chromiumProcess == null || _chromiumProcess.IsClosed;
 
         #endregion
 
@@ -60,20 +60,20 @@ namespace PuppeteerSharp
         {
             EnsureSingleLaunchOrConnect();
 
-            var chromeExecutable = GetOrFetchChromeExecutable(options);
-            _chromeProcess = new ChromeProcess(chromeExecutable, options, _loggerFactory);
+            var chromiumExecutable = GetOrFetchChromeExecutable(options);
+            _chromiumProcess = new ChromiumProcess(chromiumExecutable, options, _loggerFactory);
             try
             {
-                await _chromeProcess.StartAsync().ConfigureAwait(false);
+                await _chromiumProcess.StartAsync().ConfigureAwait(false);
                 try
                 {
                     var keepAliveInterval = 0;
                     var connection = await Connection
-                        .Create(_chromeProcess.EndPoint, options.SlowMo, keepAliveInterval, _loggerFactory)
+                        .Create(_chromiumProcess.EndPoint, options.SlowMo, keepAliveInterval, _loggerFactory)
                         .ConfigureAwait(false);
 
                     var browser = await Browser
-                        .CreateAsync(connection, Array.Empty<string>(), options.IgnoreHTTPSErrors, !options.AppMode, _chromeProcess)
+                        .CreateAsync(connection, Array.Empty<string>(), options.IgnoreHTTPSErrors, !options.AppMode, _chromiumProcess)
                         .ConfigureAwait(false);
 
                     await EnsureInitialPageAsync(browser).ConfigureAwait(false);
@@ -81,12 +81,12 @@ namespace PuppeteerSharp
                 }
                 catch (Exception ex)
                 {
-                    throw new ChromeProcessException("Failed to create connection", ex);
+                    throw new ChromiumProcessException("Failed to create connection", ex);
                 }
             }
             catch
             {
-                await _chromeProcess.KillAsync().ConfigureAwait(false);
+                await _chromiumProcess.KillAsync().ConfigureAwait(false);
                 throw;
             }
         }
@@ -115,7 +115,7 @@ namespace PuppeteerSharp
             }
             catch (Exception ex)
             {
-                throw new ChromeProcessException("Failed to create connection", ex);
+                throw new ChromiumProcessException("Failed to create connection", ex);
             }
         }
 
