@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.WebSockets;
 
 namespace PuppeteerSharp
 {
     /// <summary>
     /// Options for launching the Chrome/ium browser.
     /// </summary>
-    public class LaunchOptions : IBrowserOptions
+    public class LaunchOptions : IBrowserOptions, IConnectionOptions
     {
         /// <summary>
         /// Whether to ignore HTTPS errors during navigation. Defaults to false.
@@ -77,10 +78,16 @@ namespace PuppeteerSharp
         /// Logs process counts after launching chrome and after exiting.
         /// </summary>
         public bool LogProcess { get; set; }
+
         /// <summary>
         /// Do not use it. Dangerous option; use with care. Defaults to false.
         /// </summary>
         /// <value><c>true</c> if ignore default arguments; otherwise, <c>false</c>.</value>
         public bool IgnoreDefaultArgs { get; set; }
+
+        /// <summary>
+        /// Optional factory for <see cref="WebSocket"/> implementations.
+        /// </summary>
+        public WebSocketFactory WebSocketFactory { get; set; }
     }
 }

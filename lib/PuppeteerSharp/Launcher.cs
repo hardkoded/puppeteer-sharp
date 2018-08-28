@@ -115,11 +115,8 @@ namespace PuppeteerSharp
 
             try
             {
-                var connectionDelay = options.SlowMo;
                 var browserWSEndpoint = await WaitForEndpoint(_chromeProcess, options.Timeout).ConfigureAwait(false);
-                var keepAliveInterval = 0;
-
-                _connection = await Connection.Create(browserWSEndpoint, connectionDelay, keepAliveInterval, _loggerFactory).ConfigureAwait(false);
+                _connection = await Connection.Create(browserWSEndpoint, options, _loggerFactory).ConfigureAwait(false);
                 _processLoaded = true;
 
                 if (options.LogProcess)
@@ -161,11 +158,7 @@ namespace PuppeteerSharp
                 }
                 _chromiumLaunched = true;
 
-                var connectionDelay = options.SlowMo;
-                var keepAliveInterval = 0;
-
-                _connection = await Connection.Create(options.BrowserWSEndpoint, connectionDelay, keepAliveInterval, _loggerFactory).ConfigureAwait(false);
-
+                _connection = await Connection.Create(options.BrowserWSEndpoint, options, _loggerFactory).ConfigureAwait(false);
                 var response = await _connection.SendAsync<GetBrowserContextsResponse>("Target.getBrowserContexts");
 
                 return await Browser.CreateAsync(_connection, response.BrowserContextIds, options.IgnoreHTTPSErrors, true, null, () =>

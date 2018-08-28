@@ -292,30 +292,24 @@ namespace PuppeteerSharp
 
         #region Static Methods
 
-        internal static async Task<Connection> Create(string url, int delay = 0, int keepAliveInterval = 60, ILoggerFactory loggerFactory = null)
+        /// <summary>
+        /// Gets default <see cref="WebSocketFactory"/> implementation.
+        /// </summary>
+        public static readonly WebSocketFactory DefaultWebSocketFactory = async (uri, options, cancellationToken) =>
         {
-            var ws = CreateWebSocket(new TimeSpan(0, 0, keepAliveInterval));
-            await ws.ConnectAsync(new Uri(url), default).ConfigureAwait(false);
-            return new Connection(url, delay, ws, loggerFactory);
-        }
+            var result = new System.Net.WebSockets.ClientWebSocket();
+#pragma warning disable 618
+            result.Options.KeepAliveInterval = TimeSpan.FromMilliseconds(options.KeepAliveInterval);
+#pragma warning restore 618
 
-        private static WebSocket CreateWebSocket(TimeSpan keepAliveInterval)
+            await result.ConnectAsync(uri, cancellationToken).ConfigureAwait(false);
+            return result;
+        };
+
+        internal static async Task<Connection> Create(string url, IConnectionOptions connectionOptions, ILoggerFactory loggerFactory = null)
         {
-            if (SystemClientWebSocket.ManagedWebSocketRequired)
-            {
-                // Fallback to managed web socket implementation, because the default
-                // implementation unfortunately does not run on the current platform
-                // (such as Windows 7, Windows Server 2008 R2).
-                var ws = new System.Net.WebSockets.Managed.ClientWebSocket();
-                ws.Options.KeepAliveInterval = keepAliveInterval;
-                return ws;
-            }
-            else
-            {
-                var ws = new System.Net.WebSockets.ClientWebSocket();
-                ws.Options.KeepAliveInterval = keepAliveInterval;
-                return ws;
-            }
+            var ws = await (connectionOptions.WebSocketFactory ?? DefaultWebSocketFactory)(new Uri(url), connectionOptions, default);
+            return new Connection(url, connectionOptions.SlowMo, ws, loggerFactory);
         }
 
         /// <summary>
