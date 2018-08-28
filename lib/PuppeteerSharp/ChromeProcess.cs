@@ -60,9 +60,9 @@ namespace PuppeteerSharp
         private readonly LaunchOptions _options;
         private readonly TempDirectory _tempUserDataDir;
         private readonly ILogger _logger;
+        private readonly TaskCompletionSource<string> _startCompletionSource = new TaskCompletionSource<string>();
         private readonly TaskCompletionSource<bool> _exitCompletionSource = new TaskCompletionSource<bool>();
         private State _currentState = State.Initial;
-        private Task<string> _startTask;
 
         #endregion
 
@@ -124,7 +124,7 @@ namespace PuppeteerSharp
         /// Initiates asynchronous disposal of chrome process and any temporary user directory.
         /// </summary>
         /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
-        protected virtual void Dispose(bool disposing) => _ = KillAsync();
+        protected virtual void Dispose(bool disposing) => _currentState.Dispose(this);
 
         #endregion
 
@@ -138,7 +138,9 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets chrome endpoint.
         /// </summary>
-        public string EndPoint => _startTask?.Result;
+        public string EndPoint => _startCompletionSource.Task.IsCompleted 
+            ? _startCompletionSource.Task.Result 
+            : null;
 
         /// <summary>
         /// Indicates whether chrome process is exiting. 
@@ -171,6 +173,9 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns></returns>
         public Task WaitForExitAsync() => _currentState.WaitForExitAsync(this);
+
+        /// <inheritdoc />
+        public override string ToString() => $"Chromium process; EndPoint={EndPoint}; State={_currentState}";
 
         #endregion
 
@@ -270,6 +275,7 @@ namespace PuppeteerSharp
         /// -> <see cref="Started"/>
         /// -> <see cref="Killing"/>
         /// -> <see cref="Exited"/>.
+        /// -> <see cref="Disposed"/>.
         /// </summary>
         /// <remarks>
         /// <para>
@@ -279,18 +285,26 @@ namespace PuppeteerSharp
         /// ======== =================== ============ ==========================================================
         /// Initial  --StartAsync------> Starting     Start process and wait for endpoint
         /// Initial  --KillAsync-------> Exited       Cleanup temp user data
+        /// Initial  --Dispose---------> Disposed     Cleanup temp user data
         /// Starting --StartAsync------> Starting     -
         /// Starting --KillAsync-------> Killing      -
+        /// Starting --Dispose---------> Disposed     Kill process; Cleanup temp user data;  throw ObjectDisposedException on outstanding async operations;
         /// Starting --endpoint ready--> Started      Complete StartAsync successfully; Log process start
         /// Starting --process exit----> Exited       Complete StartAsync with exception; Cleanup temp user data
         /// Started  --StartAsync------> Started      -
         /// Started  --KillAsync-------> Killing      Kill process; Log process exit
+        /// Started  --Dispose---------> Disposed     Kill process; Log process exit; Cleanup temp user data;  throw ObjectDisposedException on outstanding async operations;
         /// Started  --process exit----> Exited       Log process exit; Cleanup temp user data
         /// Killing  --StartAsync------> Killing      - (StartAsync throws InvalidOperationException)
         /// Killing  --KillAsync-------> Killing      -
-        /// Killing  --process exit----> Exited       Cleanup temp user data
+        /// Killing  --Dispose---------> Disposed     Cleanup temp user data; throw ObjectDisposedException on outstanding async operations;
+        /// Killing  --process exit----> Exited       Cleanup temp user data; complete outstanding async operations;
         /// Exited   --StartAsync------> Killing      - (StartAsync throws InvalidOperationException)
         /// Exited   --KillAsync-------> Exited       -
+        /// Exited   --Dispose---------> Disposed     -
+        /// Disposed --StartAsync------> Disposed     -
+        /// Disposed --KillAsync-------> Disposed     -
+        /// Disposed --Dispose---------> Disposed     -
         /// </code>
         /// </para>
         /// <para>
@@ -302,10 +316,11 @@ namespace PuppeteerSharp
             #region Predefined states
 
             public static readonly State Initial = new InitialState();
-            public static readonly State Starting = new StartingState();
-            public static readonly State Started = new StartedState();
-            public static readonly State Killing = new KillingState();
-            public static readonly State Exited = new ExitedState();
+            private static readonly State Starting = new StartingState();
+            private static readonly State Started = new StartedState();
+            private static readonly State Killing = new KillingState();
+            private static readonly State Exited = new ExitedState();
+            private static readonly State Disposed = new DisposedState();
 
             #endregion
 
@@ -376,13 +391,38 @@ namespace PuppeteerSharp
             /// <returns></returns>
             public virtual Task WaitForExitAsync(ChromeProcess p) => p._exitCompletionSource.Task;
 
-            private Exception InvalidOperation(string operationName)
-                => new InvalidOperationException($"Cannot {operationName} in state {this}");
+            /// <summary>
+            /// Handles disposal of process and temporary user directory
+            /// </summary>
+            /// <param name="p"></param>
+            public virtual void Dispose(ChromeProcess p) => _ = Disposed.EnterFromAsync(p, this);
 
             public override string ToString()
             {
                 var name = GetType().Name;
                 return name.Substring(0, name.Length - "State".Length);
+            }
+
+            private Exception InvalidOperation(string operationName)
+                => new InvalidOperationException($"Cannot {operationName} in state {this}");
+
+            /// <summary>
+            /// Kills process if it is still alive.
+            /// </summary>
+            /// <param name="p"></param>
+            private static void Kill(ChromeProcess p)
+            {
+                try
+                {
+                    if (!p.Process.HasExited)
+                    {
+                        p.Process.Kill();
+                    }
+                }
+                catch (InvalidOperationException)
+                {
+                    // Ignore
+                }
             }
 
             #endregion
@@ -409,17 +449,21 @@ namespace PuppeteerSharp
                         return p._currentState.StartAsync(p);
                     }
 
-                    p._startTask = StartCoreAsync(p);
-                    return p._startTask;
+                    return StartCoreAsync(p);
                 }
 
-                public override Task StartAsync(ChromeProcess p) => p._startTask;
+                public override Task StartAsync(ChromeProcess p) => p._startCompletionSource.Task;
 
                 public override Task KillAsync(ChromeProcess p) => Killing.EnterFromAsync(p, this);
 
-                private async Task<string> StartCoreAsync(ChromeProcess p)
+                public override void Dispose(ChromeProcess p)
                 {
-                    var startCompletionSource = new TaskCompletionSource<string>();
+                    p._startCompletionSource.TrySetException(new ObjectDisposedException(p.ToString()));
+                    base.Dispose(p);
+                }
+
+                private async Task StartCoreAsync(ChromeProcess p)
+                {
                     var output = new StringBuilder();
 
                     void OnChromeDataReceivedWhileStarting(object sender, DataReceivedEventArgs e)
@@ -430,13 +474,13 @@ namespace PuppeteerSharp
                             var match = Regex.Match(e.Data, "^DevTools listening on (ws:\\/\\/.*)");
                             if (match.Success)
                             {
-                                startCompletionSource.SetResult(match.Groups[1].Value);
+                                p._startCompletionSource.SetResult(match.Groups[1].Value);
                             }
                         }
                     }
                     void OnChromeExitedWhileStarting(object sender, EventArgs e)
                     {
-                        startCompletionSource.SetException(new ChromeProcessException($"Failed to launch chrome! {output}"));
+                        p._startCompletionSource.SetException(new ChromeProcessException($"Failed to launch chrome! {output}"));
                     }
                     void OnChromeExited(object sender, EventArgs e)
                     {
@@ -458,15 +502,14 @@ namespace PuppeteerSharp
                         if (timeout > 0)
                         {
                             cts = new CancellationTokenSource(timeout);
-                            cts.Token.Register(() => startCompletionSource.TrySetException(
+                            cts.Token.Register(() => p._startCompletionSource.TrySetException(
                                 new ChromeProcessException($"Timed out after {timeout} ms while trying to connect to Chrome!")));
                         }
 
                         try
                         {
-                            var endPoint = await startCompletionSource.Task.ConfigureAwait(false);
+                            await p._startCompletionSource.Task.ConfigureAwait(false);
                             await Started.EnterFromAsync(p, this);
-                            return endPoint;
                         }
                         catch
                         {
@@ -544,7 +587,7 @@ namespace PuppeteerSharp
                         fromState = p._currentState;
                     }
 
-                    p._exitCompletionSource.SetResult(true);
+                    p._exitCompletionSource.TrySetResult(true);
                     p._tempUserDataDir?.Dispose();
                     return Task.CompletedTask;
                 }
@@ -553,6 +596,37 @@ namespace PuppeteerSharp
 
                 public override Task WaitForExitAsync(ChromeProcess p) => Task.CompletedTask;
             }
+
+            private class DisposedState : State
+            {
+                protected override Task EnterFromAsync(ChromeProcess p, State fromState)
+                {
+                    if (!TryEnter(p, fromState))
+                    {
+                        // Delegate Dispose to current state, because it has already changed since
+                        // transition to this state was initiated.
+                        p._currentState.Dispose(p);
+                    }
+                    else if (fromState != Exited)
+                    {
+                        Kill(p);
+                        p._exitCompletionSource.TrySetException(new ObjectDisposedException(p.ToString()));
+                        p._tempUserDataDir?.Dispose();
+                    }
+
+                    return Task.CompletedTask;
+                }
+
+                public override Task StartAsync(ChromeProcess p) => throw new ObjectDisposedException(p.ToString());
+
+                public override Task KillAsync(ChromeProcess p) => throw new ObjectDisposedException(p.ToString());
+
+                public override void Dispose(ChromeProcess p)
+                {
+                    // Nothing to do
+                }
+            }
+
 
             #endregion
         }
