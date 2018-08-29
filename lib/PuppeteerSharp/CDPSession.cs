@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using Microsoft.Extensions.Logging;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
 {
@@ -33,12 +34,13 @@ namespace PuppeteerSharp
     /// });
     /// ]]></code>
     /// </summary>
-    public class CDPSession : IDisposable
+    public class CDPSession : IConnection
     {
-        internal CDPSession(Connection connection, string targetId, string sessionId)
+        internal CDPSession(IConnection connection, string targetType, string sessionId, ILoggerFactory loggerFactory = null)
         {
+            LoggerFactory = loggerFactory ?? new LoggerFactory();
             Connection = connection;
-            TargetId = targetId;
+            TargetType = targetType;
             SessionId = sessionId;
 
             _callbacks = new Dictionary<int, MessageTask>();
@@ -58,7 +60,7 @@ namespace PuppeteerSharp
         /// Gets the target identifier.
         /// </summary>
         /// <value>The target identifier.</value>
-        public string TargetId { get; }
+        public string TargetType { get; }
         /// <summary>
         /// Gets the session identifier.
         /// </summary>
@@ -68,7 +70,7 @@ namespace PuppeteerSharp
         /// Gets the connection.
         /// </summary>
         /// <value>The connection.</value>
-        public Connection Connection { get; private set; }
+        public IConnection Connection { get; private set; }
         /// <summary>
         /// Occurs when message received from Chromium.
         /// </summary>
@@ -82,6 +84,12 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value><c>true</c> if is closed; otherwise, <c>false</c>.</value>
         public bool IsClosed { get; internal set; }
+
+        /// <summary>
+        /// Gets the logger factory.
+        /// </summary>
+        /// <value>The logger factory.</value>
+        public ILoggerFactory LoggerFactory { get; }
         #endregion
 
         #region Public Methods
@@ -92,7 +100,13 @@ namespace PuppeteerSharp
             return JsonConvert.DeserializeObject<T>(content);
         }
 
-        internal Task<dynamic> SendAsync(string method, dynamic args = null)
+        /// <summary>
+        /// Sends a message to chromium.
+        /// </summary>
+        /// <returns>The async.</returns>
+        /// <param name="method">Method to call.</param>
+        /// <param name="args">Method arguments.</param>
+        public Task<dynamic> SendAsync(string method, dynamic args = null)
         {
             return SendAsync(method, false, args ?? new { });
         }
@@ -103,7 +117,7 @@ namespace PuppeteerSharp
             {
                 throw new Exception($"Protocol error ({method}): Session closed. Most likely the page has been closed.");
             }
-            int id = ++_lastId;
+            var id = ++_lastId;
             var message = JsonConvert.SerializeObject(new Dictionary<string, object>
             {
                 {"id", id},
@@ -152,23 +166,6 @@ namespace PuppeteerSharp
 
         #region Private Methods
 
-        /// <summary>
-        /// Releases all resource used by the <see cref="CDPSession"/> object by sending a ""Target.closeTarget"
-        /// using the <see cref="Connection.SendAsync(string, dynamic)"/> method.
-        /// </summary>
-        /// <remarks>Call <see cref="Dispose"/> when you are finished using the <see cref="CDPSession"/>. The
-        /// <see cref="Dispose"/> method leaves the <see cref="CDPSession"/> in an unusable state.
-        /// After calling <see cref="Dispose"/>, you must release all references to the
-        /// <see cref="CDPSession"/> so the garbage collector can reclaim the memory that the
-        /// <see cref="CDPSession"/> was occupying.</remarks>
-        public void Dispose()
-        {
-            Connection.SendAsync("Target.closeTarget", new Dictionary<string, object>
-            {
-                ["targetId"] = TargetId
-            }).GetAwaiter().GetResult();
-        }
-
         internal void OnMessage(string message)
         {
             dynamic obj = JsonConvert.DeserializeObject(message);
@@ -206,6 +203,23 @@ namespace PuppeteerSharp
                     Stream = objAsJObject["params"].Value<string>("stream")
                 });
             }
+            else if (obj.method == "Target.receivedMessageFromTarget")
+            {
+                var session = _sessions.GetValueOrDefault(objAsJObject["params"]["sessionId"].ToString());
+                if (session != null)
+                {
+                    session.OnMessage(objAsJObject["params"]["message"].ToString());
+                }
+            }
+            else if (obj.method == "Target.detachedFromTarget")
+            {
+                var session = _sessions.GetValueOrDefault(objAsJObject["params"]["sessionId"].ToString());
+                if (!(session?.IsClosed ?? true))
+                {
+                    session.OnClosed();
+                    _sessions.Remove(objAsJObject["params"]["sessionId"].ToString());
+                }
+            }
             else
             {
                 MessageReceived?.Invoke(this, new MessageEventArgs
@@ -229,13 +243,12 @@ namespace PuppeteerSharp
             Connection = null;
         }
 
-        internal CDPSession CreateSession(string targetId, string sessionId)
+        internal CDPSession CreateSession(string targetType, string sessionId)
         {
-            var session = new CDPSession(Connection, targetId, sessionId);
-            _sessions[sessionId] = session;
-            return session;        
+            var session = new CDPSession(this, targetType, sessionId);
+            _sessions["sessionId"] = session;
+            return session;
         }
-
         #endregion
     }
 }

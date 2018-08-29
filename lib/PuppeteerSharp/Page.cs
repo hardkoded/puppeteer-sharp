@@ -179,8 +179,14 @@ namespace PuppeteerSharp
         /// </summary>
         public event EventHandler<PageErrorEventArgs> PageError;
 
+        /// <summary>
+        /// Emitted when a dedicated WebWorker (<see href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API"/>) is spawned by the page.
+        /// </summary>
         public event EventHandler<WorkerEventArgs> WorkerCreated;
 
+        /// <summary>
+        /// Emitted when a dedicated WebWorker (<see href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API"/>) is terminated.
+        /// </summary>
         public event EventHandler<WorkerEventArgs> WorkerDestroyed;
 
         /// <summary>

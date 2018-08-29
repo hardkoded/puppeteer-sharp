@@ -15,7 +15,7 @@ namespace PuppeteerSharp
     /// <summary>
     /// A connection handles the communication with a Chromium browser
     /// </summary>
-    public class Connection : IDisposable
+    public class Connection : IDisposable, IConnection
     {
         private readonly ILogger _logger;
 
@@ -75,13 +75,23 @@ namespace PuppeteerSharp
         /// <value><c>true</c> if is closed; otherwise, <c>false</c>.</value>
         public bool IsClosed { get; internal set; }
 
-        internal ILoggerFactory LoggerFactory { get; }
+        /// <summary>
+        /// Gets the logger factory.
+        /// </summary>
+        /// <value>The logger factory.</value>
+        public ILoggerFactory LoggerFactory { get; }
 
         #endregion
 
         #region Public Methods
 
-        internal async Task<dynamic> SendAsync(string method, dynamic args = null)
+        /// <summary>
+        /// Sends a message to chromium.
+        /// </summary>
+        /// <returns>The async.</returns>
+        /// <param name="method">Method to call.</param>
+        /// <param name="args">Method arguments.</param>
+        public async Task<dynamic> SendAsync(string method, dynamic args = null)
         {
             var id = ++_lastId;
             var message = JsonConvert.SerializeObject(new Dictionary<string, object>
@@ -110,7 +120,7 @@ namespace PuppeteerSharp
 
             return await _responses[id].TaskWrapper.Task.ConfigureAwait(false);
         }
-        
+
         internal async Task<T> SendAsync<T>(string method, dynamic args = null)
         {
             JToken response = await SendAsync(method, args);
