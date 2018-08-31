@@ -57,9 +57,9 @@ namespace PuppeteerSharp
 
         #region Properties
         /// <summary>
-        /// Gets the target identifier.
+        /// Gets the target type.
         /// </summary>
-        /// <value>The target identifier.</value>
+        /// <value>The target type.</value>
         public TargetType TargetType { get; }
         /// <summary>
         /// Gets the session identifier.

@@ -94,23 +94,33 @@ namespace PuppeteerSharp
             switch (e.MessageID)
             {
                 case "Runtime.executionContextCreated":
-                    if (_jsHandleFactory == null)
-                    {
-                        _jsHandleFactory = (ctx, remoteObject) => new JSHandle(ctx, _client, remoteObject);
-                        _executionContext = new ExecutionContext(
-                            _client,
-                            e.MessageData.SelectToken("context").ToObject<ContextPayload>(),
-                            _jsHandleFactory,
-                            null);
-                        _executionContextCallback.TrySetResult(_executionContext);
-                    }
+                    OnExecutionContextCreated(e);
                     break;
                 case "Runtime.consoleAPICalled":
-                    var consoleData = e.MessageData.ToObject<PageConsoleResponse>();
-                    await _consoleAPICalled(
-                        consoleData.Type,
-                        consoleData.Args.Select<dynamic, JSHandle>(i => _jsHandleFactory(_executionContext, i)).ToArray());
+                    await OnConsoleAPICalled(e);
                     break;
+            }
+        }
+
+        private async Task OnConsoleAPICalled(MessageEventArgs e)
+        {
+            var consoleData = e.MessageData.ToObject<PageConsoleResponse>();
+            await _consoleAPICalled(
+                consoleData.Type,
+                consoleData.Args.Select<dynamic, JSHandle>(i => _jsHandleFactory(_executionContext, i)).ToArray());
+        }
+
+        private void OnExecutionContextCreated(MessageEventArgs e)
+        {
+            if (_jsHandleFactory == null)
+            {
+                _jsHandleFactory = (ctx, remoteObject) => new JSHandle(ctx, _client, remoteObject);
+                _executionContext = new ExecutionContext(
+                    _client,
+                    e.MessageData.SelectToken("context").ToObject<ContextPayload>(),
+                    _jsHandleFactory,
+                    null);
+                _executionContextCallback.TrySetResult(_executionContext);
             }
         }
     }

@@ -29,6 +29,7 @@ namespace PuppeteerSharp
         }
 
         internal Func<ExecutionContext, dynamic, JSHandle> ObjectHandleFactory { get; set; }
+
         /// <summary>
         /// Frame associated with this execution context.
         /// </summary>
