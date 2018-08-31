@@ -14,11 +14,8 @@ namespace PuppeteerSharp.Tests.WorkerTests
         [Fact]
         public async Task PageWorkers()
         {
-            var pageCreatedCompletion = new TaskCompletionSource<bool>();
-            Page.WorkerCreated += (sender, e) => pageCreatedCompletion.TrySetResult(true);
-            await Task.WhenAll(
-                    pageCreatedCompletion.Task,
-                    Page.GoToAsync(TestConstants.ServerUrl + "/worker/worker.html"));
+            await Page.GoToAsync(TestConstants.ServerUrl + "/worker/worker.html");
+            await Page.WaitForFunctionAsync("() => !!worker");
             var worker = Page.Workers[0];
             Assert.Contains("worker.js", worker.Url);
 
@@ -31,19 +28,27 @@ namespace PuppeteerSharp.Tests.WorkerTests
         [Fact]
         public async Task ShouldEmitCreatedAndDestroyedEvents()
         {
-            var workerCreated = new TaskCompletionSource<Worker>();
-            Page.WorkerCreated += (sender, e) => workerCreated.TrySetResult(e.Worker);
+            var workerCreatedTcs = new TaskCompletionSource<Worker>();
+            Page.WorkerCreated += (sender, e) => workerCreatedTcs.TrySetResult(e.Worker);
 
-            var workerObj = await Page.EvaluateExpressionHandleAsync("new Worker('data:text/javascript,1')");
-            var worker = await workerCreated.Task;
-            var workerThisObj = await worker.EvaluateExpressionHandleAsync("this");
-            var workerDestroyed = new TaskCompletionSource<Worker>();
-            Page.WorkerDestroyed += (sender, e) => workerDestroyed.TrySetResult(e.Worker);
+            var workerObj = await Page.EvaluateFunctionHandleAsync("() => new Worker('data:text/javascript,1')");
+            var worker = await workerCreatedTcs.Task;
+            var workerDestroyedTcs = new TaskCompletionSource<Worker>();
+            Page.WorkerDestroyed += (sender, e) => workerDestroyedTcs.TrySetResult(e.Worker);
             await Page.EvaluateFunctionAsync("workerObj => workerObj.terminate()", workerObj);
-            Assert.Same(worker, await workerDestroyed.Task);
-            var exception = await Assert.ThrowsAsync<PuppeteerException>(
-                () => workerThisObj.GetPropertyAsync("self"));
-            Assert.Contains("Most likely the worker has been closed.", exception.Message);
+            Assert.Same(worker, await workerDestroyedTcs.Task);
+        }
+
+        [Fact]
+        public async Task ShouldReportConsoleLogs()
+        {
+            var consoleTcs = new TaskCompletionSource<ConsoleMessage>();
+            Page.Console += (sender, e) => consoleTcs.TrySetResult(e.Message);
+
+            await Page.EvaluateFunctionAsync("() => new Worker(`data:text/javascript,console.log(1)`)");
+
+            var log = await consoleTcs.Task;
+            Assert.Equal("1", log.Text);
         }
     }
 }

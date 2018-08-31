@@ -150,7 +150,7 @@ namespace PuppeteerSharp
             var context = new ExecutionContext(
                 _client,
                 contextPayload,
-                remoteObject => CreateJSHandle(contextPayload.Id, remoteObject),
+                (ctx, remoteObject) => CreateJSHandle(contextPayload.Id, remoteObject),
                 frame);
 
             _contextIdToContext[contextPayload.Id] = context;

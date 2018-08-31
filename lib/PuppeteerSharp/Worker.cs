@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
@@ -25,18 +26,12 @@ namespace PuppeteerSharp
     {
         private readonly ILogger _logger;
         private readonly CDPSession _client;
-        private readonly Action<ConsoleType, dynamic[]> _consoleAPICalled;
+        private ExecutionContext _executionContext;
+        private readonly Func<ConsoleType, JSHandle[], Task> _consoleAPICalled;
         private readonly TaskCompletionSource<ExecutionContext> _executionContextCallback;
+        private Func<ExecutionContext, dynamic, JSHandle> _jsHandleFactory;
 
-        private Func<dynamic, JSHandle> _jsHandleFactory;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:PuppeteerSharp.Worker"/> class.
-        /// </summary>
-        /// <param name="client">Client.</param>
-        /// <param name="url">URL.</param>
-        /// <param name="consoleAPICalled">Console APIC alled.</param>
-        public Worker(CDPSession client, string url, Action<ConsoleType, dynamic[]> consoleAPICalled)
+        internal Worker(CDPSession client, string url, Func<ConsoleType, JSHandle[], Task> consoleAPICalled)
         {
             _logger = client.Connection.LoggerFactory.CreateLogger<Worker>();
             _client = client;
@@ -51,9 +46,20 @@ namespace PuppeteerSharp
                 {
                     _logger.LogError(task.Exception.Message);
                 }
-            }).ConfigureAwait(false);
+            });
+            _ = _client.SendAsync("Log.enable").ContinueWith(task =>
+            {
+                if (task.IsFaulted)
+                {
+                    _logger.LogError(task.Exception.Message);
+                }
+            });
         }
 
+        /// <summary>
+        /// Gets the Worker URL.
+        /// </summary>
+        /// <value>Worker URL.</value>
         public string Url { get; }
 
         /// <summary>
@@ -83,24 +89,29 @@ namespace PuppeteerSharp
 
         internal Task<ExecutionContext> ExecutionContextTask => _executionContextCallback.Task;
 
-        internal void OnMessageReceived(object sender, MessageEventArgs e)
+        internal async void OnMessageReceived(object sender, MessageEventArgs e)
         {
             switch (e.MessageID)
             {
                 case "Runtime.executionContextCreated":
-                    if (_jsHandleFactory != null)
+                    if (_jsHandleFactory == null)
                     {
-                        return;
+                        _jsHandleFactory = (ctx, remoteObject) => new JSHandle(ctx, _client, remoteObject);
+                        _executionContext = new ExecutionContext(
+                            _client,
+                            e.MessageData.SelectToken("context").ToObject<ContextPayload>(),
+                            _jsHandleFactory,
+                            null);
+                        _executionContextCallback.TrySetResult(_executionContext);
                     }
-                    var executionContext = new ExecutionContext(_client, e.MessageData.SelectToken("context").ToObject<ContextPayload>(), _jsHandleFactory, null);
-                    _jsHandleFactory = remoteObject => new JSHandle(executionContext, _client, remoteObject);
-                    _executionContextCallback.TrySetResult(executionContext);
                     break;
                 case "Runtime.consoleAPICalled":
-                    var type = e.MessageData.SelectToken("type").ToObject<ConsoleType>();
-                    var args = e.MessageData.SelectToken("args").ToObject<dynamic[]>();
-                    _consoleAPICalled(type, args);
+                    var consoleData = e.MessageData.ToObject<PageConsoleResponse>();
+                    await _consoleAPICalled(
+                        consoleData.Type,
+                        consoleData.Args.Select<dynamic, JSHandle>(i => _jsHandleFactory(_executionContext, i)).ToArray());
                     break;
+
             }
         }
     }

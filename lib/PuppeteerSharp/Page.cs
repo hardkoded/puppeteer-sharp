@@ -1040,10 +1040,8 @@ namespace PuppeteerSharp
                     }).ContinueWith((task) => Target.CloseTask);
                 }
             }
-            else
-            {
-                _logger.LogWarning("Protocol error: Connection closed. Most likely the page has been closed.");
-            }
+
+            _logger.LogWarning("Protocol error: Connection closed. Most likely the page has been closed.");
             return Task.CompletedTask;
         }
 
@@ -1645,34 +1643,40 @@ namespace PuppeteerSharp
                     EmitMetrics(e.MessageData.ToObject<PerformanceMetricsResponse>());
                     break;
                 case "Target.attachedToTarget":
-                    var targetInfo = e.MessageData.SelectToken("targetInfo").ToObject<TargetInfo>();
-                    var sessionId = e.MessageData.SelectToken("sessionId").ToObject<string>();
-                    if (targetInfo.Type != TargetType.Worker)
-                    {
-                        await Client.SendAsync("Target.detachFromTarget", new { sessionId });
-                        return;
-                    }
-                    var session = Client.CreateSession(targetInfo.TargetId, sessionId);
-                    var worker = new Worker(Client, targetInfo.Url, (type, args)
-                        => OnLogEntryAdded(new LogEntryAddedResponse
-                        {
-                            Entry = new LogEntryAddedResponse.LogEntry { Level = type, Args = args }
-                        }));
-                    _workers[sessionId] = worker;
-                    WorkerCreated?.Invoke(this, new WorkerEventArgs(worker));
+                    await OnAttachedToTarget(e);
                     break;
                 case "Target.detachedFromTarget":
-                    sessionId = e.MessageData.SelectToken("sessionId").Value<string>();
-                    if (_workers.TryGetValue(sessionId, out worker))
-                    {
-                        WorkerDestroyed?.Invoke(this, new WorkerEventArgs(worker));
-                        _workers.Remove(sessionId);
-                    }
+                    OnDetachedFromTarget(e);
                     break;
                 case "Log.entryAdded":
                     OnLogEntryAdded(e.MessageData.ToObject<LogEntryAddedResponse>());
                     break;
             }
+        }
+
+        private void OnDetachedFromTarget(MessageEventArgs e)
+        {
+            var sessionId = e.MessageData.SelectToken("sessionId").Value<string>();
+            if (_workers.TryGetValue(sessionId, out var worker))
+            {
+                WorkerDestroyed?.Invoke(this, new WorkerEventArgs(worker));
+                _workers.Remove(sessionId);
+            }
+        }
+
+        private async Task OnAttachedToTarget(MessageEventArgs e)
+        {
+            var targetInfo = e.MessageData.SelectToken("targetInfo").ToObject<TargetInfo>();
+            var sessionId = e.MessageData.SelectToken("sessionId").ToObject<string>();
+            if (targetInfo.Type != TargetType.Worker)
+            {
+                await Client.SendAsync("Target.detachFromTarget", new { sessionId });
+                return;
+            }
+            var session = Client.CreateSession("worker", sessionId);
+            var worker = new Worker(session, targetInfo.Url, AddConsoleMessage);
+            _workers[sessionId] = worker;
+            WorkerCreated?.Invoke(this, new WorkerEventArgs(worker));
         }
 
         private void OnLogEntryAdded(LogEntryAddedResponse e)
@@ -1777,7 +1781,7 @@ namespace PuppeteerSharp
                 }
 
                 var expression = EvaluationString(deliverResult, name, seq, result);
-                var dummy = Client.SendAsync("Runtime.evaluate", new { expression, contextId = message.ExecutionContextId })
+                _ = Client.SendAsync("Runtime.evaluate", new { expression, contextId = message.ExecutionContextId })
                     .ContinueWith(task =>
                     {
                         if (task.IsFaulted)
@@ -1788,9 +1792,17 @@ namespace PuppeteerSharp
                 return;
             }
 
+            var values = message.Args.Select<dynamic, JSHandle>(i =>
+                _frameManager.CreateJSHandle(message.ExecutionContextId, i)).ToArray();
+
+            await AddConsoleMessage(message.Type, values);
+        }
+
+        private async Task AddConsoleMessage(ConsoleType type, JSHandle[] values)
+        {
             if (Console?.GetInvocationList().Length == 0)
             {
-                foreach (var arg in message.Args)
+                foreach (var arg in values)
                 {
                     await RemoteObjectHelper.ReleaseObject(Client, arg, _logger).ConfigureAwait(false);
                 }
@@ -1798,14 +1810,11 @@ namespace PuppeteerSharp
                 return;
             }
 
-            var values = message.Args
-                .Select(_ => (JSHandle)_frameManager.CreateJSHandle(message.ExecutionContextId, _))
-                .ToList();
-            var handles = values
-                .ConvertAll(handle => handle.RemoteObject["objectId"] != null
-                ? handle.ToString() : RemoteObjectHelper.ValueFromRemoteObject<object>(handle.RemoteObject));
+            var tokens = values.Select(i => i.RemoteObject.objectId != null
+                ? i.ToString()
+                : RemoteObjectHelper.ValueFromRemoteObject<string>(i.RemoteObject));
 
-            var consoleMessage = new ConsoleMessage(message.Type, string.Join(" ", handles), values);
+            var consoleMessage = new ConsoleMessage(type, string.Join(" ", tokens), values);
             Console?.Invoke(this, new ConsoleEventArgs(consoleMessage));
         }
 

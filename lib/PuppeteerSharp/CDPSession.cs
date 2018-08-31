@@ -70,7 +70,7 @@ namespace PuppeteerSharp
         /// Gets the connection.
         /// </summary>
         /// <value>The connection.</value>
-        public IConnection Connection { get; private set; }
+        internal IConnection Connection { get; private set; }
         /// <summary>
         /// Occurs when message received from Chromium.
         /// </summary>
@@ -196,32 +196,33 @@ namespace PuppeteerSharp
                     }
                 }
             }
-            else if (obj.method == "Tracing.tracingComplete")
-            {
-                TracingComplete?.Invoke(this, new TracingCompleteEventArgs
-                {
-                    Stream = objAsJObject["params"].Value<string>("stream")
-                });
-            }
-            else if (obj.method == "Target.receivedMessageFromTarget")
-            {
-                var session = _sessions.GetValueOrDefault(objAsJObject["params"]["sessionId"].ToString());
-                if (session != null)
-                {
-                    session.OnMessage(objAsJObject["params"]["message"].ToString());
-                }
-            }
-            else if (obj.method == "Target.detachedFromTarget")
-            {
-                var session = _sessions.GetValueOrDefault(objAsJObject["params"]["sessionId"].ToString());
-                if (!(session?.IsClosed ?? true))
-                {
-                    session.OnClosed();
-                    _sessions.Remove(objAsJObject["params"]["sessionId"].ToString());
-                }
-            }
             else
             {
+                if (obj.method == "Tracing.tracingComplete")
+                {
+                    TracingComplete?.Invoke(this, new TracingCompleteEventArgs
+                    {
+                        Stream = objAsJObject["params"].Value<string>("stream")
+                    });
+                }
+                else if (obj.method == "Target.receivedMessageFromTarget")
+                {
+                    var session = _sessions.GetValueOrDefault(objAsJObject["params"]["sessionId"].ToString());
+                    if (session != null)
+                    {
+                        session.OnMessage(objAsJObject["params"]["message"].ToString());
+                    }
+                }
+                else if (obj.method == "Target.detachedFromTarget")
+                {
+                    var session = _sessions.GetValueOrDefault(objAsJObject["params"]["sessionId"].ToString());
+                    if (!(session?.IsClosed ?? true))
+                    {
+                        session.OnClosed();
+                        _sessions.Remove(objAsJObject["params"]["sessionId"].ToString());
+                    }
+                }
+
                 MessageReceived?.Invoke(this, new MessageEventArgs
                 {
                     MessageID = obj.method,
@@ -246,7 +247,7 @@ namespace PuppeteerSharp
         internal CDPSession CreateSession(string targetType, string sessionId)
         {
             var session = new CDPSession(this, targetType, sessionId);
-            _sessions["sessionId"] = session;
+            _sessions[sessionId] = session;
             return session;
         }
         #endregion
