@@ -53,5 +53,32 @@ namespace PuppeteerSharp.Tests.WorkerTests
             var log = await consoleTcs.Task;
             Assert.Equal("1", log.Text);
         }
+
+        [Fact]
+        public async Task ShouldHaveJSHandlesForConsoleLogs()
+        {
+            var consoleTcs = new TaskCompletionSource<ConsoleMessage>();
+            Page.Console += (sender, e) =>
+            {
+                consoleTcs.TrySetResult(e.Message);
+            };
+            await Page.EvaluateFunctionAsync("() => new Worker(`data:text/javascript,console.log(1, 2, 3, this)`)");
+            var log = await consoleTcs.Task;
+            Assert.Equal("1 2 3 JSHandle@object", log.Text);
+            Assert.Equal(4, log.Args.Count);
+            var json = await (await log.Args[3].GetPropertyAsync("origin")).JsonValueAsync<object>();
+            Assert.Equal("null", json);
+        }
+
+        [Fact]
+        public async Task ShouldHaveAnExecutionContext()
+        {
+            var workerCreatedTcs = new TaskCompletionSource<Worker>();
+            Page.WorkerCreated += (sender, e) => workerCreatedTcs.TrySetResult(e.Worker);
+
+            await Page.EvaluateFunctionAsync("() => new Worker(`data:text/javascript,console.log(1)`)");
+            var worker = await workerCreatedTcs.Task;
+            Assert.Equal(2, await worker.EvaluateExpressionAsync<int>("1+1"));
+        }
     }
 }

@@ -36,7 +36,7 @@ namespace PuppeteerSharp
     /// </summary>
     public class CDPSession : IConnection
     {
-        internal CDPSession(IConnection connection, string targetType, string sessionId, ILoggerFactory loggerFactory = null)
+        internal CDPSession(IConnection connection, TargetType targetType, string sessionId, ILoggerFactory loggerFactory = null)
         {
             LoggerFactory = loggerFactory ?? new LoggerFactory();
             Connection = connection;
@@ -60,7 +60,7 @@ namespace PuppeteerSharp
         /// Gets the target identifier.
         /// </summary>
         /// <value>The target identifier.</value>
-        public string TargetType { get; }
+        public TargetType TargetType { get; }
         /// <summary>
         /// Gets the session identifier.
         /// </summary>
@@ -115,7 +115,7 @@ namespace PuppeteerSharp
         {
             if (Connection == null)
             {
-                throw new Exception($"Protocol error ({method}): Session closed. Most likely the page has been closed.");
+                throw new Exception($"Protocol error ({method}): Session closed. Most likely the {TargetType} has been closed.");
             }
             var id = ++_lastId;
             var message = JsonConvert.SerializeObject(new Dictionary<string, object>
@@ -244,7 +244,7 @@ namespace PuppeteerSharp
             Connection = null;
         }
 
-        internal CDPSession CreateSession(string targetType, string sessionId)
+        internal CDPSession CreateSession(TargetType targetType, string sessionId)
         {
             var session = new CDPSession(this, targetType, sessionId);
             _sessions[sessionId] = session;

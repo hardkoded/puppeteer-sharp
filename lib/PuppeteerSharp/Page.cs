@@ -1680,7 +1680,7 @@ namespace PuppeteerSharp
                 }
                 return;
             }
-            var session = Client.CreateSession("worker", sessionId);
+            var session = Client.CreateSession(TargetType.Worker, sessionId);
             var worker = new Worker(session, targetInfo.Url, AddConsoleMessage);
             _workers[sessionId] = worker;
             WorkerCreated?.Invoke(this, new WorkerEventArgs(worker));
@@ -1695,7 +1695,10 @@ namespace PuppeteerSharp
                     RemoteObjectHelper.ReleaseObject(Client, arg, _logger);
                 }
             }
-            Console?.Invoke(this, new ConsoleEventArgs(new ConsoleMessage(e.Entry.Level, e.Entry.Text)));
+            if (e.Entry.Source != TargetType.Worker)
+            {
+                Console?.Invoke(this, new ConsoleEventArgs(new ConsoleMessage(e.Entry.Level, e.Entry.Text)));
+            }
         }
 
         private void OnTargetCrashed()

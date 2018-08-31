@@ -14,7 +14,7 @@ namespace PuppeteerSharp
         #region Private members
         private TargetInfo _targetInfo;
         private string _targetId;
-        private Func<Task<CDPSession>> _sessionFactory;
+        private Func<TargetInfo, Task<CDPSession>> _sessionFactory;
         private Task<Page> _pageTask;
         #endregion
 
@@ -22,7 +22,7 @@ namespace PuppeteerSharp
 
         internal Target(
             TargetInfo targetInfo,
-            Func<Task<CDPSession>> sessionFactory,
+            Func<TargetInfo, Task<CDPSession>> sessionFactory,
             BrowserContext browserContext)
         {
             _targetInfo = targetInfo;
@@ -100,7 +100,7 @@ namespace PuppeteerSharp
 
         private async Task<Page> CreatePageAsync()
         {
-            var session = await _sessionFactory().ConfigureAwait(false);
+            var session = await _sessionFactory(_targetInfo).ConfigureAwait(false);
             return await Page.CreateAsync(session, this, Browser.IgnoreHTTPSErrors, Browser.SetDefaultViewport, Browser.ScreenshotTaskQueue).ConfigureAwait(false);
         }
 
@@ -126,6 +126,6 @@ namespace PuppeteerSharp
         /// Creates a Chrome Devtools Protocol session attached to the target.
         /// </summary>
         /// <returns>A task that returns a <see cref="CDPSession"/></returns>
-        public Task<CDPSession> CreateCDPSessionAsync() => Browser.Connection.CreateSessionAsync(TargetId);
+        public Task<CDPSession> CreateCDPSessionAsync() => Browser.Connection.CreateSessionAsync(_targetInfo);
     }
 }

@@ -111,7 +111,6 @@ namespace PuppeteerSharp
                         consoleData.Type,
                         consoleData.Args.Select<dynamic, JSHandle>(i => _jsHandleFactory(_executionContext, i)).ToArray());
                     break;
-
             }
         }
     }
