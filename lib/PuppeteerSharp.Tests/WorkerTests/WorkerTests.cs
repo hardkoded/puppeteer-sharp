@@ -14,8 +14,11 @@ namespace PuppeteerSharp.Tests.WorkerTests
         [Fact]
         public async Task PageWorkers()
         {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/worker/worker.html");
-            await Page.WaitForFunctionAsync("() => !!worker");
+            var pageCreatedCompletion = new TaskCompletionSource<bool>();
+            Page.WorkerCreated += (sender, e) => pageCreatedCompletion.TrySetResult(true);
+            await Task.WhenAll(
+                    pageCreatedCompletion.Task,
+                    Page.GoToAsync(TestConstants.ServerUrl + "/worker/worker.html"));
             var worker = Page.Workers[0];
             Assert.Contains("worker.js", worker.Url);
 
