@@ -1670,7 +1670,14 @@ namespace PuppeteerSharp
             var sessionId = e.MessageData.SelectToken("sessionId").ToObject<string>();
             if (targetInfo.Type != TargetType.Worker)
             {
-                await Client.SendAsync("Target.detachFromTarget", new { sessionId });
+                try
+                {
+                    await Client.SendAsync("Target.detachFromTarget", new { sessionId });
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.ToString());
+                }
                 return;
             }
             var session = Client.CreateSession("worker", sessionId);
