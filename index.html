@@ -8,7 +8,7 @@
     <title>Puppeteer Sharp </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Puppeteer Sharp ">
-    <meta name="generator" content="docfx 2.37.1.0">
+    <meta name="generator" content="docfx 2.38.1.0">
     
     <link rel="shortcut icon" href="favicon.ico">
     <link rel="stylesheet" href="styles/docfx.vendor.css">
@@ -63,6 +63,11 @@
 <h1 id="puppeteer-sharp">Puppeteer Sharp</h1>
 
 <p>Puppeteer Sharp is a .NET port of the official <a href="https://github.com/GoogleChrome/puppeteer">Node.JS Puppeteer API</a>.</p>
+<h1 id="prerequisites">Prerequisites</h1>
+<ul>
+<li>As Puppeteer-Sharp is a NetStandard 2.0 library, The minimum platform versions are .NET Framework 4.6.1 and .NET Core 2.0. <a href="https://docs.microsoft.com/en-us/dotnet/standard/net-standard">Read more</a>.</li>
+<li>The minimum Windows versions supporting the WebSocket library are Windows 8 and Windows Server 2012. <a href="https://docs.microsoft.com/en-us/dotnet/api/system.net.websockets?redirectedfrom=MSDN&amp;view=netframework-4.7.2">Read more</a>.</li>
+</ul>
 <h1 id="usage">Usage</h1>
 <h2 id="take-screenshots">Take screenshots</h2>
 <pre><code class="lang-cs">await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
