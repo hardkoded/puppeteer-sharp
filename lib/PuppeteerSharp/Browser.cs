@@ -154,7 +154,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>An Array of all active targets</returns>
         public Target[] Targets() => TargetsMap.Values.Where(target => target.IsInitialized).ToArray();
-        
+
         /// <summary>
         /// Creates a new incognito browser context. This won't share cookies/cache with other browser contexts.
         /// </summary>
@@ -349,7 +349,7 @@ namespace PuppeteerSharp
 
             var target = new Target(
                 e.TargetInfo,
-                () => Connection.CreateSessionAsync(e.TargetInfo.TargetId),
+                info => Connection.CreateSessionAsync(info),
                 context);
 
             if (TargetsMap.ContainsKey(e.TargetInfo.TargetId))

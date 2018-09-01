@@ -14,10 +14,14 @@ namespace PuppeteerSharp.Helpers
             {
                 switch (remoteObject.unserializableValue.ToString())
                 {
-                    case "-0": return -0;
-                    case "NaN": return double.NaN;
-                    case "Infinity": return double.PositiveInfinity;
-                    case "-Infinity": return double.NegativeInfinity;
+                    case "-0":
+                        return -0;
+                    case "NaN":
+                        return double.NaN;
+                    case "Infinity":
+                        return double.PositiveInfinity;
+                    case "-Infinity":
+                        return double.NegativeInfinity;
                     default:
                         throw new Exception("Unsupported unserializable value: " + remoteObject.unserializableValue);
                 }

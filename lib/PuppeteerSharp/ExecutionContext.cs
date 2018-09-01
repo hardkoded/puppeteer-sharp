@@ -19,23 +19,17 @@ namespace PuppeteerSharp
         internal ExecutionContext(
             CDPSession client,
             ContextPayload contextPayload,
-            Func<dynamic, JSHandle> objectHandleFactory,
+            Func<ExecutionContext, dynamic, JSHandle> objectHandleFactory,
             Frame frame)
         {
             _client = client;
             _contextId = contextPayload.Id;
-            FrameId = contextPayload.AuxData.FrameId;
-            IsDefault = contextPayload.AuxData.IsDefault;
             ObjectHandleFactory = objectHandleFactory;
             Frame = frame;
         }
 
-        internal Func<dynamic, JSHandle> ObjectHandleFactory { get; set; }
-        /// <summary>
-        /// Gets or sets the frame identifier.
-        /// </summary>
-        /// <value>The frame identifier.</value>
-        public string FrameId { get; internal set; }
+        internal Func<ExecutionContext, dynamic, JSHandle> ObjectHandleFactory { get; set; }
+
         /// <summary>
         /// Frame associated with this execution context.
         /// </summary>
@@ -48,8 +42,6 @@ namespace PuppeteerSharp
         /// default context of a <see cref="Frame"/>
         /// </summary>
         /// <value><c>true</c> if is default; otherwise, <c>false</c>.</value>
-        public bool IsDefault { get; internal set; }
-
         /// <summary>
         /// Executes a script in browser context
         /// </summary>
@@ -130,7 +122,7 @@ namespace PuppeteerSharp
                 {"prototypeObjectId", objectId.ToString()}
             }).ConfigureAwait(false);
 
-            return ObjectHandleFactory(response.objects);
+            return ObjectHandleFactory(this, response.objects);
         }
 
         internal async Task<JSHandle> EvaluateExpressionHandleAsync(string script)
@@ -201,7 +193,7 @@ namespace PuppeteerSharp
                     GetExceptionMessage(response.exceptionDetails.ToObject<EvaluateExceptionDetails>()));
             }
 
-            return ObjectHandleFactory(response.result);
+            return ObjectHandleFactory(this, response.result);
         }
 
         private object FormatArgument(object arg)
