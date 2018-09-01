@@ -28,11 +28,11 @@ namespace PuppeteerSharp.PageCoverage
             => _jsCoverage.StartAsync(options ?? new CoverageStartOptions());
 
         /// <summary>
-        /// Stops JS coverage and returns coverage reports for all non-anonymous scripts
+        /// Stops JS coverage and returns coverage reports for all scripts
         /// </summary>
         /// <returns>Task that resolves to the array of coverage reports for all stylesheets</returns>
         /// <remarks>
-        /// JavaScript Coverage doesn't include anonymous scripts; however, scripts with sourceURLs are reported.
+        /// JavaScript Coverage doesn't include anonymous scripts by default; however, scripts with sourceURLs are reported.
         /// </remarks>
         public Task<CoverageEntry[]> StopJSCoverageAsync() => _jsCoverage.StopAsync();
 
