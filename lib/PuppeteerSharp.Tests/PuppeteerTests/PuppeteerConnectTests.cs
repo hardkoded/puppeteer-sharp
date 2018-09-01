@@ -71,7 +71,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 var restoredPage = pages.FirstOrDefault(x => x.Url == url);
                 Assert.NotNull(restoredPage);
                 var frameDump = FrameUtils.DumpFrames(restoredPage.MainFrame);
-                Assert.Equal(TestUtils.CompressText(TestConstants.NestedFramesDumpResult), TestUtils.CompressText(frameDump));
+                Assert.Equal(TestConstants.NestedFramesDumpResult, frameDump);
                 var response = await restoredPage.EvaluateExpressionAsync<int>("7 * 8");
                 Assert.Equal(56, response);
             }

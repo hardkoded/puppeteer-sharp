@@ -123,7 +123,7 @@ namespace PuppeteerSharp
 
         internal async Task<T> SendAsync<T>(string method, dynamic args = null)
         {
-            JToken response = await SendAsync(method, args).ConfigureAwait(false);
+            JToken response = await SendAsync(method, args);
             return response.ToObject<T>();
         }
 

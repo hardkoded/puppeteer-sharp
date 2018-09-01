@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.Issues
         [Fact]
         public async Task LauncherShouldFailGracefully()
         {
-            await Assert.ThrowsAsync<ChromiumProcessException>(async () =>
+            await Assert.ThrowsAsync<ChromeProcessException>(async () =>
             {
                 var options = TestConstants.DefaultBrowserOptions();
                 options.Args = new[] { "-remote-debugging-port=-2" };

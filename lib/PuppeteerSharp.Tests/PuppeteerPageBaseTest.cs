@@ -11,13 +11,13 @@ namespace PuppeteerSharp.Tests
 
         protected Page Page { get; set; }
 
-        public override async Task InitializeAsync()
+        protected override async Task InitializeAsync()
         {
             await base.InitializeAsync();
             Page = await Browser.NewPageAsync();
         }
 
-        public override async Task DisposeAsync()
+        protected override async Task DisposeAsync()
         {
             await Page.CloseAsync();
             await base.DisposeAsync();
