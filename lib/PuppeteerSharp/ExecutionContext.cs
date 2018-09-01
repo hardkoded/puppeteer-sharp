@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using Newtonsoft.Json.Linq;
+using System.Text.RegularExpressions;
 
 namespace PuppeteerSharp
 {
@@ -13,29 +14,27 @@ namespace PuppeteerSharp
     /// </summary>
     public class ExecutionContext
     {
+        internal const string EvaluationScriptUrl = "__puppeteer_evaluation_script__";
+
+        private readonly string EvaluationScriptSuffix = $"//# sourceURL={EvaluationScriptUrl}";
+        private static Regex _sourceUrlRegex = new Regex(@"^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$", RegexOptions.Multiline);
         private readonly CDPSession _client;
         private readonly int _contextId;
 
         internal ExecutionContext(
             CDPSession client,
             ContextPayload contextPayload,
-            Func<dynamic, JSHandle> objectHandleFactory,
+            Func<ExecutionContext, dynamic, JSHandle> objectHandleFactory,
             Frame frame)
         {
             _client = client;
             _contextId = contextPayload.Id;
-            FrameId = contextPayload.AuxData.FrameId;
-            IsDefault = contextPayload.AuxData.IsDefault;
             ObjectHandleFactory = objectHandleFactory;
             Frame = frame;
         }
 
-        internal Func<dynamic, JSHandle> ObjectHandleFactory { get; set; }
-        /// <summary>
-        /// Gets or sets the frame identifier.
-        /// </summary>
-        /// <value>The frame identifier.</value>
-        public string FrameId { get; internal set; }
+        internal Func<ExecutionContext, dynamic, JSHandle> ObjectHandleFactory { get; set; }
+
         /// <summary>
         /// Frame associated with this execution context.
         /// </summary>
@@ -48,8 +47,6 @@ namespace PuppeteerSharp
         /// default context of a <see cref="Frame"/>
         /// </summary>
         /// <value><c>true</c> if is default; otherwise, <c>false</c>.</value>
-        public bool IsDefault { get; internal set; }
-
         /// <summary>
         /// Executes a script in browser context
         /// </summary>
@@ -130,7 +127,7 @@ namespace PuppeteerSharp
                 {"prototypeObjectId", objectId.ToString()}
             }).ConfigureAwait(false);
 
-            return ObjectHandleFactory(response.objects);
+            return ObjectHandleFactory(this, response.objects);
         }
 
         internal async Task<JSHandle> EvaluateExpressionHandleAsync(string script)
@@ -142,7 +139,7 @@ namespace PuppeteerSharp
 
             return await EvaluateHandleAsync("Runtime.evaluate", new Dictionary<string, object>
             {
-                ["expression"] = script,
+                ["expression"] = _sourceUrlRegex.IsMatch(script) ? script : $"{script}\n{EvaluationScriptSuffix}",
                 ["contextId"] = _contextId,
                 ["returnByValue"] = false,
                 ["awaitPromise"] = true,
@@ -159,7 +156,7 @@ namespace PuppeteerSharp
 
             return await EvaluateHandleAsync("Runtime.callFunctionOn", new Dictionary<string, object>
             {
-                ["functionDeclaration"] = script,
+                ["functionDeclaration"] = $"{script}\n{EvaluationScriptSuffix}\n",
                 ["executionContextId"] = _contextId,
                 ["arguments"] = args.Select(FormatArgument),
                 ["returnByValue"] = false,
@@ -201,7 +198,7 @@ namespace PuppeteerSharp
                     GetExceptionMessage(response.exceptionDetails.ToObject<EvaluateExceptionDetails>()));
             }
 
-            return ObjectHandleFactory(response.result);
+            return ObjectHandleFactory(this, response.result);
         }
 
         private object FormatArgument(object arg)

@@ -11,8 +11,10 @@ namespace PuppeteerSharp.Messaging
 
         internal class LogEntry
         {
+            [JsonProperty("source")]
+            public TargetType Source { get; set; }
             [JsonProperty("args")]
-            public List<dynamic> Args { get; internal set; }
+            internal dynamic[] Args { get; set; }
             [JsonProperty("level")]
             internal ConsoleType Level { get; set; }
             [JsonProperty("text")]

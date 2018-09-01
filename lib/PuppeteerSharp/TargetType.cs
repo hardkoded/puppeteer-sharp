@@ -34,6 +34,12 @@ namespace PuppeteerSharp
         /// Target type background page.
         /// </summary>
         [EnumMember(Value = "background_page")]
-        BackgroundPage
+        BackgroundPage,
+
+        /// <summary>
+        /// Target type worker.
+        /// </summary>
+        [EnumMember(Value = "worker")]
+        Worker,
     }
 }

@@ -16,6 +16,7 @@ namespace PuppeteerSharp.PageCoverage
 
         private bool _enabled;
         private bool _resetOnNavigation;
+        private bool _reportAnonymousScripts;
 
         public JSCoverage(CDPSession client)
         {
@@ -36,6 +37,7 @@ namespace PuppeteerSharp.PageCoverage
             }
 
             _resetOnNavigation = options.ResetOnNavigation;
+            _reportAnonymousScripts = options.ReportAnonymousScripts;
             _enabled = true;
             _scriptURLs.Clear();
             _scriptSources.Clear();
@@ -70,7 +72,12 @@ namespace PuppeteerSharp.PageCoverage
             var coverage = new List<CoverageEntry>();
             foreach (var entry in profileResponseTask.Result.Result)
             {
-                if (!_scriptURLs.TryGetValue(entry.ScriptId, out var url) ||
+                _scriptURLs.TryGetValue(entry.ScriptId, out var url);
+                if (string.IsNullOrEmpty(url) && _reportAnonymousScripts)
+                {
+                    url = "debugger://VM" + entry.ScriptId;
+                }
+                if (string.IsNullOrEmpty(url) ||
                     !_scriptSources.TryGetValue(entry.ScriptId, out var text))
                 {
                     continue;
@@ -103,7 +110,8 @@ namespace PuppeteerSharp.PageCoverage
 
         private async Task OnScriptParsed(DebuggerScriptParsedResponse scriptParseResponse)
         {
-            if (string.IsNullOrEmpty(scriptParseResponse.Url))
+            if (scriptParseResponse.Url == ExecutionContext.EvaluationScriptUrl ||
+                (string.IsNullOrEmpty(scriptParseResponse.Url) && !_reportAnonymousScripts))
             {
                 return;
             }
