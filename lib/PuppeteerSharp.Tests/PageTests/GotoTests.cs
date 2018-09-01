@@ -113,7 +113,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
             var exception = await Assert.ThrowsAnyAsync<Exception>(async ()
                 => await Page.GoToAsync(TestConstants.EmptyPage, new NavigationOptions { Timeout = 1 }));
-            Assert.Contains("Navigation Timeout Exceeded: 1ms", exception.Message);
+            Assert.Contains("Timeout Exceeded: 1ms", exception.Message);
         }
 
         [Fact]
@@ -123,7 +123,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
             Page.DefaultNavigationTimeout = 1;
             var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await Page.GoToAsync(TestConstants.EmptyPage));
-            Assert.Contains("Navigation Timeout Exceeded: 1ms", exception.Message);
+            Assert.Contains("Timeout Exceeded: 1ms", exception.Message);
         }
 
         [Fact]
