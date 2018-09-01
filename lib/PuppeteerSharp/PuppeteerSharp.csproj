@@ -23,13 +23,20 @@
  * Request.IsNavigationRequest.
  * Page.IsClosed.
  * Change accessibilty on Payload.
- * Page. ScreenshotBase64Async and ElementHandle.ScreenshotBase64Async.
+ * Page.ScreenshotBase64Async and ElementHandle.ScreenshotBase64Async.
+ * CDPSession.TargetType.
+ * Page.WorkerCreated.
+ * Page.WorkerDestroyed.
+ * Page.Workers.
 
 # Breaking Changes
 
  * Disable crash reporting by default.
  * Added .ConfigureAwait(false) to each await.
  * Change ScreenshotOptions.Quality type.
+ * Dropped CDPSession.TargetId.
+ * Dropped ExecutionContext.FrameId.
+ * Dropped ExecutionContext.IsDefault.
 
 # Changelog
 
