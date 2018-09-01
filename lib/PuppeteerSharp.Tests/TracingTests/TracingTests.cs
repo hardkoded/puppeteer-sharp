@@ -21,7 +21,7 @@ namespace PuppeteerSharp.Tests.TracingTests
             _file = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         }
 
-        protected override async Task DisposeAsync()
+        public override async Task DisposeAsync()
         {
             await base.DisposeAsync();
 

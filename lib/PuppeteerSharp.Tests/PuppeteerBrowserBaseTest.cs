@@ -1,11 +1,11 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests
 {
-    public class PuppeteerBrowserBaseTest : PuppeteerBaseTest, IDisposable
+    public class PuppeteerBrowserBaseTest : PuppeteerBaseTest, IAsyncLifetime
     {
         protected Browser Browser { get; set; }
 
@@ -18,16 +18,11 @@ namespace PuppeteerSharp.Tests
             {
                 dirInfo.Create();
             }
-
-            InitializeAsync().GetAwaiter().GetResult();
         }
 
-        protected virtual async Task InitializeAsync()
-        {
+        public virtual async Task InitializeAsync() => 
             Browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.LoggerFactory);
-        }
 
-        protected virtual async Task DisposeAsync() => await Browser.CloseAsync();
-        public void Dispose() => DisposeAsync().GetAwaiter().GetResult();
+        public virtual async Task DisposeAsync() => await Browser.CloseAsync();
     }
 }
