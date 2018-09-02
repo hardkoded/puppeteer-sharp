@@ -3,12 +3,8 @@ using Newtonsoft.Json;
 
 namespace PuppeteerSharp.Messaging
 {
-    public class GetContentQuadsResponse
+    internal class GetContentQuadsResponse
     {
-        public GetContentQuadsResponse()
-        {
-        }
-
         [JsonProperty("quads")]
         public decimal[][] Quads { get; internal set; }
     }
