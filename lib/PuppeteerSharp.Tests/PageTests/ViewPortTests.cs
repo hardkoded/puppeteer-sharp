@@ -74,6 +74,22 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Fact]
+        public async Task ShouldDetectTouchWhenApplyingViewportWithTouches()
+        {
+            await Page.SetViewportAsync(new ViewPortOptions
+            {
+                Width = 800,
+                Height = 600,
+                HasTouch = true
+            });
+            await Page.AddScriptTagAsync(new AddTagOptions
+            {
+                Url = TestConstants.ServerUrl + "/modernizr.js"
+            });
+            Assert.True(await Page.EvaluateFunctionAsync<bool>("() => Modernizr.touchevents"));
+        }
+
+        [Fact]
         public async Task ShouldSupportLandscapeEmulation()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/mobile.html");

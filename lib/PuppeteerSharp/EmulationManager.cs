@@ -7,7 +7,7 @@ namespace PuppeteerSharp
     internal class EmulationManager
     {
         private readonly CDPSession _client;
-        private string _injectedTouchScriptId;
+        private bool _hasTouch;
         private bool _emulatingMobile;
 
         public EmulationManager(CDPSession client)
@@ -21,7 +21,7 @@ namespace PuppeteerSharp
             var width = viewport.Width;
             var height = viewport.Height;
             var deviceScaleFactor = viewport.DeviceScaleFactor;
-            ScreenOrientation screenOrientation = viewport.IsLandscape ?
+            var screenOrientation = viewport.IsLandscape ?
                 new ScreenOrientation
                 {
                     Angle = 90,
@@ -32,6 +32,7 @@ namespace PuppeteerSharp
                     Angle = 0,
                     Type = ScreenOrientationType.PortraitPrimary
                 };
+            var hasTouch = viewport.HasTouch;
 
             await Task.WhenAll(new Task[]{
                 _client.SendAsync("Emulation.setDeviceMetricsOverride", new
@@ -44,36 +45,14 @@ namespace PuppeteerSharp
                 }),
                 _client.SendAsync("Emulation.setTouchEmulationEnabled", new
                 {
-                    enabled = viewport.HasTouch,
+                    enabled = hasTouch,
                     configuration = viewport.IsMobile ? "mobile" : "desktop"
                 })
             }).ConfigureAwait(false);
 
-            var reloadNeeded = false;
-            if (viewport.HasTouch && string.IsNullOrEmpty(_injectedTouchScriptId))
-            {
-                //TODO: It's not clear what to do here
-                /*
-                var source = $"({ injectedTouchEventsFunction})()";
-                this._injectedTouchScriptId = (await this._client.send('Page.addScriptToEvaluateOnNewDocument', { source }).ConfigureAwait(false)).identifier;
-                reloadNeeded = true;
-                */
-            }
-            else if (!viewport.HasTouch && !string.IsNullOrEmpty(_injectedTouchScriptId))
-            {
-                await _client.SendAsync("Page.removeScriptToEvaluateOnNewDocument", new
-                {
-                    identifier = _injectedTouchScriptId
-                }).ConfigureAwait(false);
-                _injectedTouchScriptId = null;
-                reloadNeeded = true;
-            }
-
-            if (_emulatingMobile != mobile)
-            {
-                reloadNeeded = true;
-            }
+            var reloadNeeded = _emulatingMobile != mobile || _hasTouch != hasTouch;
             _emulatingMobile = mobile;
+            _hasTouch = hasTouch;
             return reloadNeeded;
         }
     }
