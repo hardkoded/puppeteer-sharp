@@ -511,7 +511,7 @@ namespace PuppeteerSharp
             {
                 var p1 = quad[i];
                 var p2 = quad[(i + 1) % quad.Length];
-                area += (p1.X * p2.Y - p2.X * p1.Y) / 2;
+                area += ((p1.X * p2.Y) - (p2.X * p1.Y)) / 2;
             }
             return area;
         }
