@@ -63,6 +63,17 @@ namespace PuppeteerSharp.Tests.InputTests
         }
 
         [Fact]
+        public async Task ShouldClickWrappedLinks()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/wrappedlink.html");
+            await Task.WhenAll(
+                Page.ClickAsync("a"),
+                Page.WaitForNavigationAsync()
+            );
+            Assert.Equal(TestConstants.ServerUrl + "/wrappedlink.html#clicked", Page.Url);
+        }
+
+        [Fact]
         public async Task ShouldClickOnCheckboxInputAndToggle()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/checkbox.html");
