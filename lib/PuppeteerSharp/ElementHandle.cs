@@ -122,7 +122,7 @@ namespace PuppeteerSharp
 
             if (boundingBox == null)
             {
-                _logger.LogError("Node is either not visible or not an HTMLElement");
+                throw new PuppeteerException("Node is either not visible or not an HTMLElement");
             }
 
             var viewport = Page.Viewport;
@@ -146,7 +146,7 @@ namespace PuppeteerSharp
 
             if (boundingBox == null)
             {
-                _logger.LogError("Node is either not visible or not an HTMLElement");
+                throw new PuppeteerException("Node is either not visible or not an HTMLElement");
             }
             var getLayoutMetricsResponse = await Client.SendAsync<GetLayoutMetricsResponse>("Page.getLayoutMetrics").ConfigureAwait(false);
 
