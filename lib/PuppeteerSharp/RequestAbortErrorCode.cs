@@ -21,6 +21,17 @@
         AddressUnreachable,
 
         /// <summary>
+        /// The client chose to block the request.
+        /// </summary>
+        BlockedByClient,
+
+        /// <summary>
+        /// The request failed because the response was delivered along with requirements which are not met 
+        /// ('X-Frame-Options' and 'Content-Security-Policy' ancestor checks, for instance).
+        /// </summary>
+        BlockedByResponse,
+
+        /// <summary>
         /// A connection timed out as a result of not receiving an ACK for data sent.
         /// </summary>
         ConnectionAborted,
