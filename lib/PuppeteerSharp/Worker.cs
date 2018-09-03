@@ -28,15 +28,21 @@ namespace PuppeteerSharp
         private readonly CDPSession _client;
         private ExecutionContext _executionContext;
         private readonly Func<ConsoleType, JSHandle[], Task> _consoleAPICalled;
+        private readonly Action<EvaluateExceptionDetails> _exceptionThrown;
         private readonly TaskCompletionSource<ExecutionContext> _executionContextCallback;
         private Func<ExecutionContext, dynamic, JSHandle> _jsHandleFactory;
 
-        internal Worker(CDPSession client, string url, Func<ConsoleType, JSHandle[], Task> consoleAPICalled)
+        internal Worker(
+            CDPSession client,
+            string url,
+            Func<ConsoleType, JSHandle[], Task> consoleAPICalled,
+            Action<EvaluateExceptionDetails> exceptionThrown)
         {
             _logger = client.Connection.LoggerFactory.CreateLogger<Worker>();
             _client = client;
             Url = url;
             _consoleAPICalled = consoleAPICalled;
+            _exceptionThrown = exceptionThrown;
             _client.MessageReceived += OnMessageReceived;
 
             _executionContextCallback = new TaskCompletionSource<ExecutionContext>();
@@ -99,8 +105,14 @@ namespace PuppeteerSharp
                 case "Runtime.consoleAPICalled":
                     await OnConsoleAPICalled(e);
                     break;
+                case "Runtime.exceptionThrown":
+                    OnExceptionThrown(e);
+                    break;
             }
         }
+
+        private void OnExceptionThrown(MessageEventArgs e)
+            => _exceptionThrown(e.MessageData.SelectToken("exceptionDetails").ToObject<EvaluateExceptionDetails>());
 
         private async Task OnConsoleAPICalled(MessageEventArgs e)
         {

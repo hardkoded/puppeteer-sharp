@@ -1811,7 +1811,7 @@ namespace PuppeteerSharp
                 return;
             }
             var session = Client.CreateSession(TargetType.Worker, sessionId);
-            var worker = new Worker(session, targetInfo.Url, AddConsoleMessage);
+            var worker = new Worker(session, targetInfo.Url, AddConsoleMessage, HandleException);
             _workers[sessionId] = worker;
             WorkerCreated?.Invoke(this, new WorkerEventArgs(worker));
         }

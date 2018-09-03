@@ -80,5 +80,16 @@ namespace PuppeteerSharp.Tests.WorkerTests
             var worker = await workerCreatedTcs.Task;
             Assert.Equal(2, await worker.EvaluateExpressionAsync<int>("1+1"));
         }
+
+        [Fact]
+        public async Task ShouldReportErrors()
+        {
+            var errorTcs = new TaskCompletionSource<string>();
+            Page.PageError += (sender, e) => errorTcs.TrySetResult(e.Message);
+
+            await Page.EvaluateFunctionAsync("() => new Worker(`data:text/javascript, throw new Error('this is my error');`)");
+            var errorLog = await errorTcs.Task;
+            Assert.Contains("this is my error", errorLog);
+        }
     }
 }
