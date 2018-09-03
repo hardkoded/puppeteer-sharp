@@ -56,9 +56,14 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             var context = await Browser.CreateIncognitoBrowserContextAsync();
             var page = await context.NewPageAsync();
             await page.GoToAsync(TestConstants.EmptyPage);
-            _ = page.EvaluateFunctionAsync("url => window.open(url)", TestConstants.EmptyPage);
             var popupTargetCompletion = new TaskCompletionSource<Target>();
             Browser.TargetCreated += (sender, e) => popupTargetCompletion.SetResult(e.Target);
+
+            await Task.WhenAll(
+                popupTargetCompletion.Task,
+                page.EvaluateFunctionAsync("url => window.open(url)", TestConstants.EmptyPage)
+            );
+
             var popupTarget = await popupTargetCompletion.Task;
             Assert.Same(context, popupTarget.BrowserContext);
             await context.CloseAsync();
