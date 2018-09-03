@@ -63,10 +63,12 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             await Page.SetContentAsync("<a href='#foobar'>foobar</a>");
+            var navigationTask = Page.WaitForNavigationAsync();
             await Task.WhenAll(
-                Page.ClickAsync("a"),
-                Page.WaitForNavigationAsync()
+                navigationTask,
+                Page.ClickAsync("a")
             );
+            Assert.Null(await navigationTask);
             Assert.Equal(TestConstants.EmptyPage + "#foobar", Page.Url);
         }
 
@@ -80,10 +82,12 @@ namespace PuppeteerSharp.Tests.PageTests
                 function pushState() { history.pushState({}, '', 'wow.html') }
               </script>
             ");
+            var navigationTask = Page.WaitForNavigationAsync();
             await Task.WhenAll(
-                Page.ClickAsync("a"),
-                Page.WaitForNavigationAsync()
+                navigationTask,
+                Page.ClickAsync("a")
             );
+            Assert.Null(await navigationTask);
             Assert.Equal(TestConstants.ServerUrl + "/wow.html", Page.Url);
         }
 
@@ -97,10 +101,12 @@ namespace PuppeteerSharp.Tests.PageTests
                 function pushState() { history.pushState({}, '', 'replaced.html') }
               </script>
             ");
+            var navigationTask = Page.WaitForNavigationAsync();
             await Task.WhenAll(
-                Page.ClickAsync("a"),
-                Page.WaitForNavigationAsync()
+                navigationTask,
+                Page.ClickAsync("a")
             );
+            Assert.Null(await navigationTask);
             Assert.Equal(TestConstants.ServerUrl + "/replaced.html", Page.Url);
         }
 
@@ -119,15 +125,19 @@ namespace PuppeteerSharp.Tests.PageTests
               </script>
             ");
             Assert.Equal(TestConstants.ServerUrl + "/second.html", Page.Url);
+            var navigationTask = Page.WaitForNavigationAsync();
             await Task.WhenAll(
-                Page.ClickAsync("a#back"),
-                Page.WaitForNavigationAsync()
+                navigationTask,
+                Page.ClickAsync("a#back")
             );
+            Assert.Null(await navigationTask);
             Assert.Equal(TestConstants.ServerUrl + "/first.html", Page.Url);
+            navigationTask = Page.WaitForNavigationAsync();
             await Task.WhenAll(
-                Page.ClickAsync("a#forward"),
-                Page.WaitForNavigationAsync()
+                navigationTask,
+                Page.ClickAsync("a#forward")
             );
+            Assert.Null(await navigationTask);
             Assert.Equal(TestConstants.ServerUrl + "/second.html", Page.Url);
         }
 
