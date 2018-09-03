@@ -1357,7 +1357,10 @@ namespace PuppeteerSharp
         /// It is useful for when you run code which will indirectly cause the page to navigate.
         /// </summary>
         /// <param name="options">navigation options</param>
-        /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect</returns>
+        /// <returns>Task which resolves to the main resource response. 
+        /// In case of multiple redirects, the navigation will resolve with the response of the last redirect.
+        /// In case of navigation to a different anchor or navigation due to History API usage, the navigation will resolve with `null`.
+        /// </returns>
         /// <remarks>
         /// Usage of the <c>History API</c> <see href="https://developer.mozilla.org/en-US/docs/Web/API/History_API"/> to change the URL is considered a navigation
         /// </remarks>
