@@ -87,19 +87,22 @@ namespace PuppeteerSharp.Tests.PageTests.Events
         [Fact]
         public async Task ShouldNotFailForWindowObject()
         {
-            ConsoleMessage message = null;
+            var consoleTcs = new TaskCompletionSource<string>();
 
             void EventHandler(object sender, ConsoleEventArgs e)
             {
-                message = e.Message;
+                consoleTcs.TrySetResult(e.Message.Text);
                 Page.Console -= EventHandler;
             }
 
             Page.Console += EventHandler;
 
-            await Page.EvaluateExpressionAsync("console.error(window)");
+            await Task.WhenAll(
+                consoleTcs.Task,
+                Page.EvaluateExpressionAsync("console.error(window)")
+            );
 
-            Assert.Equal("JSHandle@object", message.Text);
+            Assert.Equal("JSHandle@object", await consoleTcs.Task);
         }
 
         [Fact]
