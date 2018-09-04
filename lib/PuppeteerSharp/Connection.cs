@@ -85,13 +85,7 @@ namespace PuppeteerSharp
 
         #region Public Methods
 
-        /// <summary>
-        /// Sends a message to chromium.
-        /// </summary>
-        /// <returns>The async.</returns>
-        /// <param name="method">Method to call.</param>
-        /// <param name="args">Method arguments.</param>
-        public async Task<dynamic> SendAsync(string method, dynamic args = null)
+        internal async Task<dynamic> SendAsync(string method, dynamic args = null)
         {
             var id = ++_lastId;
             var message = JsonConvert.SerializeObject(new Dictionary<string, object>
@@ -313,7 +307,12 @@ namespace PuppeteerSharp
             OnClose();
             WebSocket.Dispose();
         }
+        #endregion
 
+        #region IConnection
+        ILoggerFactory IConnection.LoggerFactory => LoggerFactory;
+        bool IConnection.IsClosed => IsClosed;
+        Task<dynamic> IConnection.SendAsync(string method, dynamic args) => SendAsync(method, args);
         #endregion
     }
 }
