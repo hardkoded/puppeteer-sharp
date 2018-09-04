@@ -76,5 +76,25 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 Assert.Equal(56, response);
             }
         }
+
+        [Fact]
+        public async Task ShouldSupportCustomWebSocket()
+        {
+            var customSocketCreated = false;
+            var options = new ConnectOptions()
+            {
+                BrowserWSEndpoint = Browser.WebSocketEndpoint,
+                WebSocketFactory = (uri, socketOptions, cancellationToken) =>
+                {
+                    customSocketCreated = true;
+                    return Connection.DefaultWebSocketFactory(uri, socketOptions, cancellationToken);
+                }
+            };
+
+            using (await Puppeteer.ConnectAsync(options, TestConstants.LoggerFactory))
+            {
+                Assert.True(customSocketCreated);
+            }
+        }
     }
 }

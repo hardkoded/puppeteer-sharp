@@ -200,7 +200,7 @@ namespace PuppeteerSharp
                 else
                 {
                     // Initial main frame navigation.
-                    frame = new Frame(_client, _page, null, framePayload.Id);
+                    frame = new Frame(_client, null, framePayload.Id);
                 }
 
                 Frames[framePayload.Id] = frame;
@@ -249,7 +249,7 @@ namespace PuppeteerSharp
             if (!Frames.ContainsKey(frameId) && Frames.ContainsKey(parentFrameId))
             {
                 var parentFrame = Frames[parentFrameId];
-                var frame = new Frame(_client, _page, parentFrame, frameId);
+                var frame = new Frame(_client, parentFrame, frameId);
                 Frames[frame.Id] = frame;
                 FrameAttached?.Invoke(this, new FrameEventArgs(frame));
             }

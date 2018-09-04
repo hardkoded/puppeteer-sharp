@@ -100,13 +100,7 @@ namespace PuppeteerSharp
             return JsonConvert.DeserializeObject<T>(content);
         }
 
-        /// <summary>
-        /// Sends a message to chromium.
-        /// </summary>
-        /// <returns>The async.</returns>
-        /// <param name="method">Method to call.</param>
-        /// <param name="args">Method arguments.</param>
-        public Task<dynamic> SendAsync(string method, dynamic args = null)
+        internal Task<dynamic> SendAsync(string method, dynamic args = null)
         {
             return SendAsync(method, false, args ?? new { });
         }
@@ -250,6 +244,11 @@ namespace PuppeteerSharp
             _sessions[sessionId] = session;
             return session;
         }
+        #endregion
+        #region IConnection
+        ILoggerFactory IConnection.LoggerFactory => LoggerFactory;
+        bool IConnection.IsClosed => IsClosed;
+        Task<dynamic> IConnection.SendAsync(string method, dynamic args) => SendAsync(method, args);
         #endregion
     }
 }

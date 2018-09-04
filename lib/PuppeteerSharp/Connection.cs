@@ -19,7 +19,7 @@ namespace PuppeteerSharp
     {
         private readonly ILogger _logger;
 
-        internal Connection(string url, int delay, ClientWebSocket ws, ILoggerFactory loggerFactory = null)
+        internal Connection(string url, int delay, WebSocket ws, ILoggerFactory loggerFactory = null)
         {
             LoggerFactory = loggerFactory ?? new LoggerFactory();
             Url = url;
@@ -85,14 +85,13 @@ namespace PuppeteerSharp
 
         #region Public Methods
 
-        /// <summary>
-        /// Sends a message to chromium.
-        /// </summary>
-        /// <returns>The async.</returns>
-        /// <param name="method">Method to call.</param>
-        /// <param name="args">Method arguments.</param>
-        public async Task<dynamic> SendAsync(string method, dynamic args = null)
+        internal async Task<dynamic> SendAsync(string method, dynamic args = null)
         {
+            if (IsClosed)
+            {
+                throw new TargetClosedException($"Protocol error({method}): Target closed.");
+            }
+
             var id = ++_lastId;
             var message = JsonConvert.SerializeObject(new Dictionary<string, object>
             {
@@ -103,9 +102,10 @@ namespace PuppeteerSharp
 
             _logger.LogTrace("Send ► {Id} Method {Method} Params {@Params}", id, method, (object)args);
 
+            var taskWrapper = new TaskCompletionSource<dynamic>();
             _responses[id] = new MessageTask
             {
-                TaskWrapper = new TaskCompletionSource<dynamic>(),
+                TaskWrapper = taskWrapper,
                 Method = method
             };
 
@@ -118,7 +118,7 @@ namespace PuppeteerSharp
                 StopReading();
             }
 
-            return await _responses[id].TaskWrapper.Task.ConfigureAwait(false);
+            return await taskWrapper.Task.ConfigureAwait(false);
         }
 
         internal async Task<T> SendAsync<T>(string method, dynamic args = null)
@@ -141,11 +141,15 @@ namespace PuppeteerSharp
 
         private void OnClose()
         {
-            if (!IsClosed)
+            if (IsClosed)
             {
-                _websocketReaderCancellationSource.Cancel();
-                Closed?.Invoke(this, new EventArgs());
+                return;
             }
+
+            IsClosed = true;
+
+            _websocketReaderCancellationSource.Cancel();
+            Closed?.Invoke(this, new EventArgs());
 
             foreach (var session in _sessions.Values)
             {
@@ -161,7 +165,6 @@ namespace PuppeteerSharp
 
             _responses.Clear();
             _sessions.Clear();
-            IsClosed = true;
         }
 
         internal void StopReading() => _stopReading = true;
@@ -291,12 +294,21 @@ namespace PuppeteerSharp
         #endregion
         #region Static Methods
 
-        internal static async Task<Connection> Create(string url, int delay = 0, int keepAliveInterval = 60, ILoggerFactory loggerFactory = null)
+        /// <summary>
+        /// Gets default web socket factory implementation.
+        /// </summary>
+        public static readonly Func<Uri, IConnectionOptions, CancellationToken, Task<WebSocket>> DefaultWebSocketFactory = async (uri, options, cancellationToken) =>
         {
-            var ws = new ClientWebSocket();
-            ws.Options.KeepAliveInterval = new TimeSpan(0, 0, keepAliveInterval);
-            await ws.ConnectAsync(new Uri(url), default).ConfigureAwait(false);
-            return new Connection(url, delay, ws, loggerFactory);
+            var result = new ClientWebSocket();
+            // result.Options.KeepAliveInterval = TimeSpan.FromMilliseconds(options.KeepAliveInterval);
+            await result.ConnectAsync(uri, cancellationToken).ConfigureAwait(false);
+            return result;
+        };
+
+        internal static async Task<Connection> Create(string url, IConnectionOptions connectionOptions, ILoggerFactory loggerFactory = null)
+        {
+            var ws = await (connectionOptions.WebSocketFactory ?? DefaultWebSocketFactory)(new Uri(url), connectionOptions, default);
+            return new Connection(url, connectionOptions.SlowMo, ws, loggerFactory);
         }
 
         /// <summary>
@@ -313,7 +325,12 @@ namespace PuppeteerSharp
             OnClose();
             WebSocket.Dispose();
         }
+        #endregion
 
+        #region IConnection
+        ILoggerFactory IConnection.LoggerFactory => LoggerFactory;
+        bool IConnection.IsClosed => IsClosed;
+        Task<dynamic> IConnection.SendAsync(string method, dynamic args) => SendAsync(method, args);
         #endregion
     }
 }

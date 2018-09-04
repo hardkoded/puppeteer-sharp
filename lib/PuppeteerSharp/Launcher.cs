@@ -57,9 +57,8 @@ namespace PuppeteerSharp
                 await Process.StartAsync().ConfigureAwait(false);
                 try
                 {
-                    var keepAliveInterval = 0;
                     var connection = await Connection
-                        .Create(Process.EndPoint, options.SlowMo, keepAliveInterval, _loggerFactory)
+                        .Create(Process.EndPoint, options, _loggerFactory)
                         .ConfigureAwait(false);
 
                     var browser = await Browser
@@ -92,8 +91,7 @@ namespace PuppeteerSharp
 
             try
             {
-                var keepAliveInterval = 0;
-                var connection = await Connection.Create(options.BrowserWSEndpoint, options.SlowMo, keepAliveInterval, _loggerFactory).ConfigureAwait(false);
+                var connection = await Connection.Create(options.BrowserWSEndpoint, options, _loggerFactory).ConfigureAwait(false);
                 var response = await connection.SendAsync<GetBrowserContextsResponse>("Target.getBrowserContexts");
                 return await Browser
                     .CreateAsync(connection, response.BrowserContextIds, options.IgnoreHTTPSErrors, true, null)

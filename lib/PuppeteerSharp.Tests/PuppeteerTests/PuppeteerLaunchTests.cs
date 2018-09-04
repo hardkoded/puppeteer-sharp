@@ -425,6 +425,23 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             }
         }
 
+        [Fact]
+        public async Task ShouldSupportCustomWebSocket()
+        {
+            var options = TestConstants.DefaultBrowserOptions();
+            var customSocketCreated = false;
+            options.WebSocketFactory = (uri, socketOptions, cancellationToken) =>
+            {
+                customSocketCreated = true;
+                return Connection.DefaultWebSocketFactory(uri, socketOptions, cancellationToken);
+            };
+
+            using (await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
+            {
+                Assert.True(customSocketCreated);
+            }
+        }
+
         private Process GetTestAppProcess(string appName, string arguments)
         {
             var process = new Process();
@@ -458,7 +475,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 build,
                 "netcoreapp2.0");
 #else
-                return Path.Combine(
+            return Path.Combine(
                 TestUtils.FindParentDirectory("lib"),
                 dir,
                 "bin",

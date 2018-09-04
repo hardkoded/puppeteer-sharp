@@ -40,7 +40,6 @@ namespace PuppeteerSharp
     public class Frame
     {
         private readonly CDPSession _client;
-        private readonly Page _page;
         private TaskCompletionSource<ElementHandle> _documentCompletionSource;
         private TaskCompletionSource<ExecutionContext> _contextResolveTaskWrapper;
 
@@ -50,10 +49,9 @@ namespace PuppeteerSharp
         internal List<string> LifecycleEvents { get; }
         internal string NavigationURL { get; private set; }
 
-        internal Frame(CDPSession client, Page page, Frame parentFrame, string frameId)
+        internal Frame(CDPSession client, Frame parentFrame, string frameId)
         {
             _client = client;
-            _page = page;
             ParentFrame = parentFrame;
             Id = frameId;
 

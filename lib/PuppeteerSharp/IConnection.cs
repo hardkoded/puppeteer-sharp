@@ -7,7 +7,7 @@ namespace PuppeteerSharp
     /// <summary>
     /// Connection interface implemented by <see cref="Connection"/> and <see cref="CDPSession"/>
     /// </summary>
-    public interface IConnection
+    internal interface IConnection
     {
         /// <summary>
         /// Gets the logger factory.
