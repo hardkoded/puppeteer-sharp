@@ -93,6 +93,11 @@ namespace PuppeteerSharp
         /// <param name="args">Method arguments.</param>
         public async Task<dynamic> SendAsync(string method, dynamic args = null)
         {
+            if (IsClosed)
+            {
+                throw new TargetClosedException($"Protocol error({method}): Target closed.");
+            }
+
             var id = ++_lastId;
             var message = JsonConvert.SerializeObject(new Dictionary<string, object>
             {
@@ -103,9 +108,10 @@ namespace PuppeteerSharp
 
             _logger.LogTrace("Send ► {Id} Method {Method} Params {@Params}", id, method, (object)args);
 
+            var taskWrapper = new TaskCompletionSource<dynamic>();
             _responses[id] = new MessageTask
             {
-                TaskWrapper = new TaskCompletionSource<dynamic>(),
+                TaskWrapper = taskWrapper,
                 Method = method
             };
 
@@ -118,12 +124,12 @@ namespace PuppeteerSharp
                 StopReading();
             }
 
-            return await _responses[id].TaskWrapper.Task.ConfigureAwait(false);
+            return await taskWrapper.Task.ConfigureAwait(false);
         }
 
         internal async Task<T> SendAsync<T>(string method, dynamic args = null)
         {
-            JToken response = await SendAsync(method, args);
+            JToken response = await SendAsync(method, args).ConfigureAwait(false);
             return response.ToObject<T>();
         }
 
@@ -141,11 +147,15 @@ namespace PuppeteerSharp
 
         private void OnClose()
         {
-            if (!IsClosed)
+            if (IsClosed)
             {
-                _websocketReaderCancellationSource.Cancel();
-                Closed?.Invoke(this, new EventArgs());
+                return;
             }
+
+            IsClosed = true;
+
+            _websocketReaderCancellationSource.Cancel();
+            Closed?.Invoke(this, new EventArgs());
 
             foreach (var session in _sessions.Values)
             {
@@ -161,7 +171,6 @@ namespace PuppeteerSharp
 
             _responses.Clear();
             _sessions.Clear();
-            IsClosed = true;
         }
 
         internal void StopReading() => _stopReading = true;
@@ -289,7 +298,6 @@ namespace PuppeteerSharp
             }
         }
         #endregion
-
         #region Static Methods
 
         /// <summary>
@@ -298,10 +306,7 @@ namespace PuppeteerSharp
         public static readonly Func<Uri, IConnectionOptions, CancellationToken, Task<WebSocket>> DefaultWebSocketFactory = async (uri, options, cancellationToken) =>
         {
             var result = new ClientWebSocket();
-#pragma warning disable 618
-            result.Options.KeepAliveInterval = TimeSpan.FromMilliseconds(options.KeepAliveInterval);
-#pragma warning restore 618
-
+            // result.Options.KeepAliveInterval = TimeSpan.FromMilliseconds(options.KeepAliveInterval);
             await result.ConnectAsync(uri, cancellationToken).ConfigureAwait(false);
             return result;
         };
