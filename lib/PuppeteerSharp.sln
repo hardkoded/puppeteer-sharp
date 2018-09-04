@@ -10,7 +10,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PuppeteerSharp.TestServer",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PuppeteerSharp.Tests.DumpIO", "PuppeteerSharp.Tests.DumpIO\PuppeteerSharp.Tests.DumpIO.csproj", "{B1892212-CEE3-4DC3-ADB8-04A2D9A081A0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PuppeteerSharp.Tests.CloseMe", "PuppeteerSharp.Tests.CloseMe\PuppeteerSharp.Tests.CloseMe.csproj", "{B1B0358F-88A2-4038-9974-7850D906C76B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PuppeteerSharp.Tests.CloseMe", "PuppeteerSharp.Tests.CloseMe\PuppeteerSharp.Tests.CloseMe.csproj", "{B1B0358F-88A2-4038-9974-7850D906C76B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +41,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F9F7978B-89C0-4A54-8D80-A1E93E401D4C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F9F7978B-89C0-4A54-8D80-A1E93E401D4C}

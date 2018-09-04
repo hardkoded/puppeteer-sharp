@@ -42,17 +42,14 @@ namespace PuppeteerSharp
         /// <param name="contextIds">The context ids></param>
         /// <param name="ignoreHTTPSErrors">The option to ignoreHTTPSErrors</param>
         /// <param name="setDefaultViewport">The option to setDefaultViewport</param>
-        /// <param name="process">The chrome process</param>
-        /// <param name="closeCallBack">An async function called before closing</param>
+        /// <param name="chromiumProcess">The Chromium process</param>
         public Browser(
             Connection connection,
             string[] contextIds,
             bool ignoreHTTPSErrors,
             bool setDefaultViewport,
-            Process process,
-            Func<Task> closeCallBack)
+            ChromiumProcess chromiumProcess)
         {
-            Process = process;
             Connection = connection;
             IgnoreHTTPSErrors = ignoreHTTPSErrors;
             SetDefaultViewport = setDefaultViewport;
@@ -65,7 +62,7 @@ namespace PuppeteerSharp
             Connection.Closed += (object sender, EventArgs e) => Disconnected?.Invoke(this, new EventArgs());
             Connection.MessageReceived += Connect_MessageReceived;
 
-            _closeCallBack = closeCallBack;
+            _chromiumProcess = chromiumProcess;
             _logger = Connection.LoggerFactory.CreateLogger<Browser>();
         }
 
@@ -74,9 +71,11 @@ namespace PuppeteerSharp
         internal readonly Dictionary<string, Target> TargetsMap;
 
         private readonly Dictionary<string, BrowserContext> _contexts;
-        private readonly Func<Task> _closeCallBack;
         private readonly ILogger<Browser> _logger;
         private readonly BrowserContext _defaultContext;
+        private readonly ChromiumProcess _chromiumProcess;
+        private Task _closeTask;
+        
         #endregion
 
         #region Properties
@@ -123,7 +122,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets the spawned browser process. Returns <c>null</c> if the browser instance was created with <see cref="Puppeteer.ConnectAsync(ConnectOptions, ILoggerFactory)"/> method.
         /// </summary>
-        public Process Process { get; }
+        public Process Process => _chromiumProcess?.Process;
 
         /// <summary>
         /// Gets or Sets whether to ignore HTTPS errors during navigation
@@ -133,7 +132,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets a value indicating if the browser is closed
         /// </summary>
-        public bool IsClosed { get; internal set; }
+        public bool IsClosed => _closeTask != null && _closeTask.IsCompleted && _closeTask.Exception != null;
 
         internal TaskQueue ScreenshotTaskQueue { get; set; }
         internal Connection Connection { get; }
@@ -236,24 +235,46 @@ namespace PuppeteerSharp
         /// Closes Chromium and all of its pages (if any were opened). The browser object itself is considered disposed and cannot be used anymore
         /// </summary>
         /// <returns>Task</returns>
-        public async Task CloseAsync()
+        public Task CloseAsync() => _closeTask ?? (_closeTask = CloseCoreAsync());
+
+        private async Task CloseCoreAsync()
         {
-            if (IsClosed)
-            {
-                return;
-            }
-
-            IsClosed = true;
             Connection.StopReading();
-
-            var closeTask = _closeCallBack();
-
-            if (closeTask != null)
+            try
             {
-                await closeTask.ConfigureAwait(false);
+                try
+                {
+                    // Initiate graceful browser close operation but don't await it just yet,
+                    // because we want to ensure chromium process shutdown first.
+                    var browserCloseTask = Connection.SendAsync("Browser.close", null);
+
+                    if (_chromiumProcess != null)
+                    {
+                        // Notify chromium process that exit is expected, but should be enforced if it
+                        // doesn't occur withing the close timeout.
+                        var closeTimeout = TimeSpan.FromMilliseconds(5000);
+                        await _chromiumProcess.EnsureExitAsync(closeTimeout).ConfigureAwait(false);
+                    }
+
+                    // Now we can safely await the browser close operation without risking keeping chromium
+                    // process running for indeterminate period.
+                    await browserCloseTask.ConfigureAwait(false);
+                }
+                finally
+                {
+                    Disconnect();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+
+                if (_chromiumProcess != null)
+                {
+                    await _chromiumProcess.KillAsync().ConfigureAwait(false);
+                }
             }
 
-            Disconnect();
             Closed?.Invoke(this, new EventArgs());
         }
 
@@ -372,10 +393,9 @@ namespace PuppeteerSharp
             string[] contextIds,
             bool ignoreHTTPSErrors,
             bool appMode,
-            Process process,
-            Func<Task> closeCallBack)
+            ChromiumProcess chromiumProcess)
         {
-            var browser = new Browser(connection, contextIds, ignoreHTTPSErrors, appMode, process, closeCallBack);
+            var browser = new Browser(connection, contextIds, ignoreHTTPSErrors, appMode, chromiumProcess);
             await connection.SendAsync("Target.setDiscoverTargets", new
             {
                 discover = true
@@ -386,8 +406,13 @@ namespace PuppeteerSharp
         #endregion
 
         #region IDisposable
-        /// <inheritdoc />
-        public void Dispose() => CloseAsync().GetAwaiter().GetResult();
+
+        /// <summary>
+        /// Closes <see cref="Connection"/> and any Chromium <see cref="Process"/> that was
+        /// created by Puppeteer.
+        /// </summary>
+        public void Dispose() => _ = CloseAsync();
+
         #endregion
     }
 }
