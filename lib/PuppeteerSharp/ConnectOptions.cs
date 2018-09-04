@@ -1,11 +1,15 @@
 ﻿using System;
+using System.Net.WebSockets;
 
 namespace PuppeteerSharp
 {
+    using System.Threading;
+    using System.Threading.Tasks;
+
     /// <summary>
     /// Options for connecting to an existing browser.
     /// </summary>
-    public class ConnectOptions : IBrowserOptions
+    public class ConnectOptions : IBrowserOptions, IConnectionOptions
     {
         /// <summary>
         /// Whether to ignore HTTPS errors during navigation. Defaults to false.
@@ -32,5 +36,10 @@ namespace PuppeteerSharp
         /// </summary>
         [Obsolete("Chromium doesn't support pings yet (see: https://bugs.chromium.org/p/chromium/issues/detail?id=865002)")]
         public int KeepAliveInterval { get; set; } = 0;
+
+        /// <summary>
+        /// Optional factory for <see cref="WebSocket"/> implementations.
+        /// </summary>
+        public Func<Uri, IConnectionOptions, CancellationToken, Task<WebSocket>> WebSocketFactory { get; set; }
     }
 }
