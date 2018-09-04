@@ -66,15 +66,14 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         }
 
         [Fact]
-        public async Task QuerySelectorAllShouldThrowInCaseOfMissingSelector()
+        public async Task QuerySelectorAllShouldNotThrowInCaseOfMissingSelector()
         {
             var htmlContent = "<div class='a'>not-a-child-div</div><div id='myId'></div>";
             await Page.SetContentAsync(htmlContent);
             var elementHandle = await Page.QuerySelectorAsync("#myId");
-            var exception = await Assert.ThrowsAsync<SelectorException>(
-                () => elementHandle.QuerySelectorAllHandleAsync(".a")
-                .EvaluateFunctionAsync<object>("nodes => nodes.map(n => n.innerText)"));
-            Assert.Equal("Error: failed to find elements matching selector", exception.Message);
+            var nodesLength = await elementHandle.QuerySelectorAllHandleAsync(".a")
+                .EvaluateFunctionAsync<int>("nodes => nodes.length");
+            Assert.Equal(0, nodesLength);
         }
     }
 }
