@@ -293,11 +293,11 @@ namespace PuppeteerSharp
         #region Static Methods
 
         /// <summary>
-        /// Gets default <see cref="WebSocketFactory"/> implementation.
+        /// Gets default web socket factory implementation.
         /// </summary>
-        public static readonly WebSocketFactory DefaultWebSocketFactory = async (uri, options, cancellationToken) =>
+        public static readonly Func<Uri, IConnectionOptions, CancellationToken, Task<WebSocket>> DefaultWebSocketFactory = async (uri, options, cancellationToken) =>
         {
-            var result = new System.Net.WebSockets.ClientWebSocket();
+            var result = new ClientWebSocket();
 #pragma warning disable 618
             result.Options.KeepAliveInterval = TimeSpan.FromMilliseconds(options.KeepAliveInterval);
 #pragma warning restore 618

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.WebSockets;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace PuppeteerSharp
 {
@@ -88,6 +90,6 @@ namespace PuppeteerSharp
         /// <summary>
         /// Optional factory for <see cref="WebSocket"/> implementations.
         /// </summary>
-        public WebSocketFactory WebSocketFactory { get; set; }
+        public Func<Uri, IConnectionOptions, CancellationToken, Task<WebSocket>> WebSocketFactory { get; set; }
     }
 }
