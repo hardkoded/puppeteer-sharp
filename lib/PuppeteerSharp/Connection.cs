@@ -37,12 +37,10 @@ namespace PuppeteerSharp
 
         #region Private Members
         private int _lastId;
-        private Dictionary<int, MessageTask> _responses;
-        private Dictionary<string, CDPSession> _sessions;
-        private TaskQueue _socketQueue;
-        private const string CloseMessage = "Browser.close";
-        private bool _stopReading;
-        private CancellationTokenSource _websocketReaderCancellationSource;
+        private readonly Dictionary<int, MessageTask> _responses;
+        private readonly Dictionary<string, CDPSession> _sessions;
+        private readonly TaskQueue _socketQueue;
+        private readonly CancellationTokenSource _websocketReaderCancellationSource;
         #endregion
 
         #region Properties
@@ -50,17 +48,17 @@ namespace PuppeteerSharp
         /// Gets the WebSocket URL.
         /// </summary>
         /// <value>The URL.</value>
-        public string Url { get; private set; }
+        public string Url { get; }
         /// <summary>
         /// Gets the sleep time when a message is received.
         /// </summary>
         /// <value>The delay.</value>
-        public int Delay { get; private set; }
+        public int Delay { get; }
         /// <summary>
         /// Gets the WebSocket.
         /// </summary>
         /// <value>The web socket.</value>
-        public WebSocket WebSocket { get; private set; }
+        public WebSocket WebSocket { get; }
         /// <summary>
         /// Occurs when the connection is closed.
         /// </summary>
@@ -102,23 +100,18 @@ namespace PuppeteerSharp
 
             _logger.LogTrace("Send ► {Id} Method {Method} Params {@Params}", id, method, (object)args);
 
-            var taskWrapper = new TaskCompletionSource<dynamic>();
-            _responses[id] = new MessageTask
+            var callback = new MessageTask
             {
-                TaskWrapper = taskWrapper,
+                TaskWrapper = new TaskCompletionSource<dynamic>(),
                 Method = method
             };
+            _responses[id] = callback;
 
             var encoded = Encoding.UTF8.GetBytes(message);
             var buffer = new ArraySegment<byte>(encoded, 0, encoded.Length);
             await _socketQueue.Enqueue(() => WebSocket.SendAsync(buffer, WebSocketMessageType.Text, true, default)).ConfigureAwait(false);
 
-            if (method == CloseMessage)
-            {
-                StopReading();
-            }
-
-            return await taskWrapper.Task.ConfigureAwait(false);
+            return await callback.TaskWrapper.Task.ConfigureAwait(false);
         }
 
         internal async Task<T> SendAsync<T>(string method, dynamic args = null)
@@ -145,29 +138,25 @@ namespace PuppeteerSharp
             {
                 return;
             }
-
             IsClosed = true;
 
             _websocketReaderCancellationSource.Cancel();
             Closed?.Invoke(this, new EventArgs());
 
-            foreach (var session in _sessions.Values)
+            foreach (var session in _sessions.Values.ToArray())
             {
                 session.OnClosed();
             }
+            _sessions.Clear();
 
-            foreach (var response in _responses.Values.Where(r => !r.TaskWrapper.Task.IsCompleted))
+            foreach (var response in _responses.Values.ToArray())
             {
-                response.TaskWrapper.SetException(new TargetClosedException(
+                response.TaskWrapper.TrySetException(new TargetClosedException(
                     $"Protocol error({response.Method}): Target closed."
                 ));
             }
-
             _responses.Clear();
-            _sessions.Clear();
         }
-
-        internal void StopReading() => _stopReading = true;
 
         #region Private Methods
 
@@ -193,16 +182,12 @@ namespace PuppeteerSharp
 
                 while (!endOfMessage)
                 {
-                    WebSocketReceiveResult result = null;
+                    WebSocketReceiveResult result;
                     try
                     {
                         result = await WebSocket.ReceiveAsync(
                             new ArraySegment<byte>(buffer),
                             _websocketReaderCancellationSource.Token).ConfigureAwait(false);
-                    }
-                    catch (Exception) when (_stopReading)
-                    {
-                        return null;
                     }
                     catch (OperationCanceledException)
                     {
@@ -210,11 +195,8 @@ namespace PuppeteerSharp
                     }
                     catch (Exception)
                     {
-                        if (!IsClosed)
-                        {
-                            OnClose();
-                            return null;
-                        }
+                        OnClose();
+                        return null;
                     }
 
                     endOfMessage = result.EndOfMessage;
@@ -245,7 +227,7 @@ namespace PuppeteerSharp
         private void ProcessResponse(string response)
         {
             dynamic obj = JsonConvert.DeserializeObject(response);
-            var objAsJObject = obj as JObject;
+            var objAsJObject = (JObject)obj;
 
             _logger.LogTrace("◀ Receive {Message}", response);
 
@@ -255,30 +237,27 @@ namespace PuppeteerSharp
 
                 //If we get the object we are waiting for we return if
                 //if not we add this to the list, sooner or later some one will come for it 
-                if (!_responses.ContainsKey(id))
+                if (_responses.TryGetValue(id, out var callback))
                 {
-                    _responses[id] = new MessageTask { TaskWrapper = new TaskCompletionSource<dynamic>() };
+                    callback.TaskWrapper.TrySetResult(obj.result);
                 }
-
-                _responses[id].TaskWrapper.SetResult(obj.result);
             }
             else
             {
                 if (obj.method == "Target.receivedMessageFromTarget")
                 {
-                    var session = _sessions.GetValueOrDefault(objAsJObject["params"]["sessionId"].ToString());
-                    if (session != null)
+                    var sessionId = objAsJObject["params"]["sessionId"].ToString();
+                    if (_sessions.TryGetValue(sessionId, out var session))
                     {
                         session.OnMessage(objAsJObject["params"]["message"].ToString());
                     }
                 }
                 else if (obj.method == "Target.detachedFromTarget")
                 {
-                    var session = _sessions.GetValueOrDefault(objAsJObject["params"]["sessionId"].ToString());
-                    if (!(session?.IsClosed ?? true))
+                    var sessionId = objAsJObject["params"]["sessionId"].ToString();
+                    if (_sessions.TryGetValue(sessionId, out var session) && _sessions.Remove(sessionId) && !session.IsClosed)
                     {
                         session.OnClosed();
-                        _sessions.Remove(objAsJObject["params"]["sessionId"].ToString());
                     }
                 }
                 else
@@ -286,12 +265,13 @@ namespace PuppeteerSharp
                     MessageReceived?.Invoke(this, new MessageEventArgs
                     {
                         MessageID = obj.method,
-                        MessageData = objAsJObject["params"] as dynamic
+                        MessageData = objAsJObject["params"]
                     });
                 }
             }
         }
         #endregion
+
         #region Static Methods
 
         /// <summary>
@@ -313,7 +293,7 @@ namespace PuppeteerSharp
 
         /// <summary>
         /// Releases all resource used by the <see cref="Connection"/> object.
-        /// It will raise the <see cref="Closed"/> event and call <see cref="WebSocket.CloseAsync(WebSocketCloseStatus, string, CancellationToken)"/>.
+        /// It will raise the <see cref="Closed"/> event and dispose <see cref="WebSocket"/>.
         /// </summary>
         /// <remarks>Call <see cref="Dispose"/> when you are finished using the <see cref="Connection"/>. The
         /// <see cref="Dispose"/> method leaves the <see cref="Connection"/> in an unusable state.

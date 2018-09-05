@@ -239,7 +239,6 @@ namespace PuppeteerSharp
 
         private async Task CloseCoreAsync()
         {
-            Connection.StopReading();
             try
             {
                 try
