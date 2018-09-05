@@ -36,6 +36,11 @@ namespace PuppeteerSharp
     public class Browser : IDisposable
     {
         /// <summary>
+        /// Time in milliseconds for chromium process to exit gracefully.
+        /// </summary>
+        private const int CloseTimeout = 5000;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Browser"/> class.
         /// </summary>
         /// <param name="connection">The connection</param>
@@ -251,7 +256,7 @@ namespace PuppeteerSharp
                     {
                         // Notify chromium process that exit is expected, but should be enforced if it
                         // doesn't occur withing the close timeout.
-                        var closeTimeout = TimeSpan.FromMilliseconds(5000);
+                        var closeTimeout = TimeSpan.FromMilliseconds(CloseTimeout);
                         await _chromiumProcess.EnsureExitAsync(closeTimeout).ConfigureAwait(false);
                     }
 
