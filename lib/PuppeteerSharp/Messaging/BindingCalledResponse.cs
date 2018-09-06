@@ -17,7 +17,6 @@ namespace PuppeteerSharp.Messaging
                 var json = JsonConvert.DeserializeObject(_payloadJson) as JObject;
                 Payload = json.ToObject<BindingPayload>();
                 Payload.JsonObject = json;
-
             }
         }
 

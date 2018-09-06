@@ -1829,7 +1829,6 @@ namespace PuppeteerSharp
                         result = ((dynamic)taskResult).Result;
                     }
                 }
-
             }
             catch (Exception ex)
             {
