@@ -7,6 +7,10 @@ namespace PuppeteerSharp.Messaging
     internal class BindingCalledResponse
     {
         private string _payloadJson;
+
+        [JsonProperty("executionContextId")]
+        public object ExecutionContextId { get; set; }
+        public BindingPayload Payload { get; set; }
         [JsonProperty("payload")]
         public string PayloadJson
         {
@@ -19,11 +23,6 @@ namespace PuppeteerSharp.Messaging
                 Payload.JsonObject = json;
             }
         }
-
-        public BindingPayload Payload { get; set; }
-
-        [JsonProperty("executionContextId")]
-        public object ExecutionContextId { get; set; }
 
         public class BindingPayload
         {

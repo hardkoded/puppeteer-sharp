@@ -1795,8 +1795,7 @@ namespace PuppeteerSharp
             var result = await ExecuteBinding(e);
 
             var expression = EvaluationString(
-                @"function deliverResult(name, seq, result)
-                {
+                @"function deliverResult(name, seq, result) {
                     window[name]['callbacks'].get(seq)(result);
                     window[name]['callbacks'].delete(seq);
                 }", e.Payload.Name, e.Payload.Seq, result);
@@ -1811,28 +1810,21 @@ namespace PuppeteerSharp
         private async Task<object> ExecuteBinding(BindingCalledResponse e)
         {
             object result;
-            try
+            var binding = _pageBindings[e.Payload.Name];
+            var methodParams = binding.Method.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
+
+            var args = e.Payload.JsonObject.GetValue("args").Select((token, i) => token.ToObject(methodParams[i])).ToArray();
+
+            result = binding.DynamicInvoke(args);
+            if (result is Task taskResult)
             {
-                var binding = _pageBindings[e.Payload.Name];
-                var methodParams = binding.Method.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
+                await taskResult.ConfigureAwait(false);
 
-                var args = e.Payload.JsonObject.GetValue("args").Select((token, i) => token.ToObject(methodParams[i])).ToArray();
-
-                result = binding.DynamicInvoke(args);
-                if (result is Task taskResult)
+                if (taskResult.GetType().IsGenericType)
                 {
-                    await taskResult.ConfigureAwait(false);
-
-                    if (taskResult.GetType().IsGenericType)
-                    {
-                        // the task is already awaited and therefore the call to property Result will not deadlock
-                        result = ((dynamic)taskResult).Result;
-                    }
+                    // the task is already awaited and therefore the call to property Result will not deadlock
+                    result = ((dynamic)taskResult).Result;
                 }
-            }
-            catch (Exception ex)
-            {
-                result = ex.ToString();
             }
 
             return result;
