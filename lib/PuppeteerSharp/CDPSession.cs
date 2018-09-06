@@ -1,10 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using Microsoft.Extensions.Logging;
-using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
 {
@@ -126,7 +126,6 @@ namespace PuppeteerSharp
                 Method = method,
                 RawContent = rawContent
             };
-
             _callbacks[id] = callback;
 
             try
@@ -163,18 +162,16 @@ namespace PuppeteerSharp
         internal void OnMessage(string message)
         {
             dynamic obj = JsonConvert.DeserializeObject(message);
-            var objAsJObject = obj as JObject;
+            var objAsJObject = (JObject)obj;
 
             _logger.LogTrace("◀ Receive {Message}", message);
 
-            if (objAsJObject["id"] != null && _callbacks.ContainsKey((int)obj.id))
+            var id = (int?)objAsJObject["id"];
+            if (id.HasValue && _callbacks.TryGetValue(id.Value, out var callback) && _callbacks.Remove(id.Value))
             {
-                var callback = _callbacks[(int)obj.id];
-                _callbacks.Remove((int)obj.id);
-
                 if (objAsJObject["error"] != null)
                 {
-                    callback.TaskWrapper.SetException(new MessageException(
+                    callback.TaskWrapper.TrySetException(new MessageException(
                         $"Protocol error ({ callback.Method }): {obj.error.message} {obj.error.data}"
                     ));
                 }
@@ -182,11 +179,11 @@ namespace PuppeteerSharp
                 {
                     if (callback.RawContent)
                     {
-                        callback.TaskWrapper.SetResult(JsonConvert.SerializeObject(obj.result));
+                        callback.TaskWrapper.TrySetResult(JsonConvert.SerializeObject(obj.result));
                     }
                     else
                     {
-                        callback.TaskWrapper.SetResult(obj.result);
+                        callback.TaskWrapper.TrySetResult(obj.result);
                     }
                 }
             }
@@ -201,19 +198,18 @@ namespace PuppeteerSharp
                 }
                 else if (obj.method == "Target.receivedMessageFromTarget")
                 {
-                    var session = _sessions.GetValueOrDefault(objAsJObject["params"]["sessionId"].ToString());
-                    if (session != null)
+                    var sessionId = objAsJObject["params"]["sessionId"].ToString();
+                    if (_sessions.TryGetValue(sessionId, out var session))
                     {
                         session.OnMessage(objAsJObject["params"]["message"].ToString());
                     }
                 }
                 else if (obj.method == "Target.detachedFromTarget")
                 {
-                    var session = _sessions.GetValueOrDefault(objAsJObject["params"]["sessionId"].ToString());
-                    if (!(session?.IsClosed ?? true))
+                    var sessionId = objAsJObject["params"]["sessionId"].ToString();
+                    if (_sessions.TryGetValue(sessionId, out var session) && _sessions.Remove(sessionId))
                     {
                         session.OnClosed();
-                        _sessions.Remove(objAsJObject["params"]["sessionId"].ToString());
                     }
                 }
 
@@ -227,14 +223,26 @@ namespace PuppeteerSharp
 
         internal void OnClosed()
         {
-            IsClosed = true;
-            foreach (var callback in _callbacks.Values)
+            if (IsClosed)
             {
-                callback.TaskWrapper.SetException(new TargetClosedException(
+                return;
+            }
+            IsClosed = true;
+
+            foreach (var session in _sessions.Values.ToArray())
+            {
+                session.OnClosed();
+            }
+            _sessions.Clear();
+
+            foreach (var callback in _callbacks.Values.ToArray())
+            {
+                callback.TaskWrapper.TrySetException(new TargetClosedException(
                     $"Protocol error({callback.Method}): Target closed."
                 ));
             }
             _callbacks.Clear();
+
             Connection = null;
         }
 
@@ -245,6 +253,7 @@ namespace PuppeteerSharp
             return session;
         }
         #endregion
+
         #region IConnection
         ILoggerFactory IConnection.LoggerFactory => LoggerFactory;
         bool IConnection.IsClosed => IsClosed;

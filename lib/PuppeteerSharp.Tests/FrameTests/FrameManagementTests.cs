@@ -17,7 +17,9 @@ namespace PuppeteerSharp.Tests.FrameTests
         public async Task ShouldHandleNestedFrames()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/nested-frames.html");
-            Assert.Equal(TestConstants.NestedFramesDumpResult, FrameUtils.DumpFrames(Page.MainFrame));
+            Assert.Equal(
+                TestUtils.CompressText(TestConstants.NestedFramesDumpResult), 
+                TestUtils.CompressText(FrameUtils.DumpFrames(Page.MainFrame)));
         }
 
         [Fact]
