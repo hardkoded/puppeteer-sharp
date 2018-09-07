@@ -1784,7 +1784,50 @@ namespace PuppeteerSharp
                 case "Log.entryAdded":
                     OnLogEntryAdded(e.MessageData.ToObject<LogEntryAddedResponse>());
                     break;
+                case "Runtime.bindingCalled":
+                    await OnBindingCalled(e.MessageData.ToObject<BindingCalledResponse>());
+                    break;
             }
+        }
+
+        private async Task OnBindingCalled(BindingCalledResponse e)
+        {
+            var result = await ExecuteBinding(e);
+
+            var expression = EvaluationString(
+                @"function deliverResult(name, seq, result) {
+                    window[name]['callbacks'].get(seq)(result);
+                    window[name]['callbacks'].delete(seq);
+                }", e.Payload.Name, e.Payload.Seq, result);
+
+            await Client.SendAsync("Runtime.evaluate", new
+            {
+                expression,
+                contextId = e.ExecutionContextId
+            });
+        }
+
+        private async Task<object> ExecuteBinding(BindingCalledResponse e)
+        {
+            object result;
+            var binding = _pageBindings[e.Payload.Name];
+            var methodParams = binding.Method.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
+
+            var args = e.Payload.JsonObject.GetValue("args").Select((token, i) => token.ToObject(methodParams[i])).ToArray();
+
+            result = binding.DynamicInvoke(args);
+            if (result is Task taskResult)
+            {
+                await taskResult.ConfigureAwait(false);
+
+                if (taskResult.GetType().IsGenericType)
+                {
+                    // the task is already awaited and therefore the call to property Result will not deadlock
+                    result = ((dynamic)taskResult).Result;
+                }
+            }
+
+            return result;
         }
 
         private void OnDetachedFromTarget(MessageEventArgs e)
@@ -1896,48 +1939,8 @@ namespace PuppeteerSharp
 
         private async Task OnConsoleAPI(PageConsoleResponse message)
         {
-            if (message.Type == ConsoleType.Debug && message.Args.Length > 0 && message.Args[0].value == "driver:page-binding")
-            {
-                const string deliverResult = @"function deliverResult(name, seq, result) {
-                  window[name]['callbacks'].get(seq)(result);
-                  window[name]['callbacks'].delete(seq);
-                }";
-                JObject arg1Value = JObject.Parse(message.Args[1].value.ToString());
-                var name = arg1Value.Value<string>("name");
-                var seq = arg1Value.Value<int>("seq");
-
-                var binding = _pageBindings[name];
-                var methodParams = binding.Method.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
-
-                var args = arg1Value.GetValue("args").Select((token, i) => token.ToObject(methodParams[i])).ToArray();
-
-                var result = binding.DynamicInvoke(args);
-                if (result is Task taskResult)
-                {
-                    await taskResult.ConfigureAwait(false);
-
-                    if (taskResult.GetType().IsGenericType)
-                    {
-                        // the task is already awaited and therefore the call to property Result will not deadlock
-                        result = ((dynamic)taskResult).Result;
-                    }
-                }
-
-                var expression = EvaluationString(deliverResult, name, seq, result);
-                _ = Client.SendAsync("Runtime.evaluate", new { expression, contextId = message.ExecutionContextId })
-                    .ContinueWith(task =>
-                    {
-                        if (task.IsFaulted)
-                        {
-                            _logger.LogError(task.Exception.ToString());
-                        }
-                    });
-                return;
-            }
-
             var values = message.Args.Select<dynamic, JSHandle>(i =>
                 _frameManager.CreateJSHandle(message.ExecutionContextId, i)).ToArray();
-
             await AddConsoleMessage(message.Type, values);
         }
 
@@ -1970,23 +1973,23 @@ namespace PuppeteerSharp
             _pageBindings.Add(name, puppeteerFunction);
 
             const string addPageBinding = @"function addPageBinding(bindingName) {
-                window[bindingName] = async(...args) => {
-                    const me = window[bindingName];
-                    let callbacks = me['callbacks'];
-                    if (!callbacks)
-                    {
-                        callbacks = new Map();
-                        me['callbacks'] = callbacks;
-                    }
-                    const seq = (me['lastSeq'] || 0) + 1;
-                    me['lastSeq'] = seq;
-                    const promise = new Promise(fulfill => callbacks.set(seq, fulfill));
-                    // eslint-disable-next-line no-console
-                    console.debug('driver:page-binding', JSON.stringify({ name: bindingName, seq, args}));
-                    return promise;
-                };
+              const binding = window[bindingName];
+              window[bindingName] = async(...args) => {
+                const me = window[bindingName];
+                let callbacks = me['callbacks'];
+                if (!callbacks) {
+                  callbacks = new Map();
+                  me['callbacks'] = callbacks;
+                }
+                const seq = (me['lastSeq'] || 0) + 1;
+                me['lastSeq'] = seq;
+                const promise = new Promise(fulfill => callbacks.set(seq, fulfill));
+                binding(JSON.stringify({name: bindingName, seq, args}));
+                return promise;
+              };
             }";
             var expression = EvaluationString(addPageBinding, name);
+            await Client.SendAsync("Runtime.addBinding", new { name });
             await Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new { source = expression }).ConfigureAwait(false);
 
             await Task.WhenAll(Frames.Select(frame => frame.EvaluateExpressionAsync(expression)
