@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Messaging
         private string _payloadJson;
 
         [JsonProperty("executionContextId")]
-        public object ExecutionContextId { get; set; }
+        public int ExecutionContextId { get; set; }
         public BindingPayload Payload { get; set; }
         [JsonProperty("payload")]
         public string PayloadJson
