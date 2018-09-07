@@ -97,7 +97,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             {
                 var neverResolves = page.EvaluateFunctionHandleAsync("() => new Promise(r => {})");
                 await browser.CloseAsync();
-                var exception = await Assert.ThrowsAsync<TargetClosedException>(() => neverResolves);
+                var exception = await Assert.ThrowsAnyAsync<PuppeteerException>(() => neverResolves);
                 Assert.Contains("Protocol error", exception.Message);
             }
         }
@@ -142,7 +142,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             {
                 var launcher = new Launcher(TestConstants.LoggerFactory);
                 var options = TestConstants.DefaultBrowserOptions();
-                options.Args = options.Args.Concat(new[] {$"--user-data-dir=\"{userDataDir}\""}).ToArray();
+                options.Args = options.Args.Concat(new[] { $"--user-data-dir=\"{userDataDir}\"" }).ToArray();
 
                 using (var browser = await launcher.LaunchAsync(options))
                 {
@@ -162,7 +162,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             {
                 var launcher = new Launcher(TestConstants.LoggerFactory);
                 var options = TestConstants.DefaultBrowserOptions();
-                options.Args = options.Args.Concat(new[] {$"--user-data-dir=\"{userDataDir}\""}).ToArray();
+                options.Args = options.Args.Concat(new[] { $"--user-data-dir=\"{userDataDir}\"" }).ToArray();
 
                 using (var browser = await launcher.LaunchAsync(options))
                 {
@@ -187,7 +187,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             {
                 var launcher = new Launcher(TestConstants.LoggerFactory);
                 var options = TestConstants.DefaultBrowserOptions();
-                options.Args = options.Args.Concat(new[] {$"--user-data-dir=\"{userDataDir}\""}).ToArray();
+                options.Args = options.Args.Concat(new[] { $"--user-data-dir=\"{userDataDir}\"" }).ToArray();
 
                 using (var browser = await launcher.LaunchAsync(options))
                 {
@@ -213,7 +213,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             {
                 var launcher = new Launcher(TestConstants.LoggerFactory);
                 var options = TestConstants.DefaultBrowserOptions();
-                options.Args = options.Args.Concat(new[] {$"--user-data-dir=\"{userDataDir}\""}).ToArray();
+                options.Args = options.Args.Concat(new[] { $"--user-data-dir=\"{userDataDir}\"" }).ToArray();
                 options.Headless = false;
 
                 using (var browser = await launcher.LaunchAsync(options))

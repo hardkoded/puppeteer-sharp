@@ -17,7 +17,7 @@ namespace PuppeteerSharp.Tests.PageTests
             // Put into a var to avoid warning
             var t = Page.CloseAsync();
 
-            var exception = await Assert.ThrowsAsync<TargetClosedException>(async () => await neverResolves);
+            var exception = await Assert.ThrowsAnyAsync<PuppeteerException>(async () => await neverResolves);
 
             Assert.Contains("Protocol error", exception.Message);
         }
