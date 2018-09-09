@@ -97,7 +97,8 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             {
                 var neverResolves = page.EvaluateFunctionHandleAsync("() => new Promise(r => {})");
                 await browser.CloseAsync();
-                var exception = await Assert.ThrowsAnyAsync<PuppeteerException>(() => neverResolves);
+                var exception = await Assert.ThrowsAsync<EvaluationFailedException>(() => neverResolves);
+                Assert.IsType<TargetClosedException>(exception.InnerException);
                 Assert.Contains("Protocol error", exception.Message);
             }
         }

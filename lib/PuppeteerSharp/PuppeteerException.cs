@@ -39,7 +39,7 @@ namespace PuppeteerSharp
         {
         }
 
-        protected static string RewriteErrorMeesage(string message)
+        internal static string RewriteErrorMeesage(string message)
             => message.Contains("Cannot find context with specified id")
                 ? "Execution context was destroyed, most likely because of a navigation."
                 : message;
