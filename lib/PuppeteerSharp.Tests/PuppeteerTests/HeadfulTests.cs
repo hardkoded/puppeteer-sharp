@@ -34,6 +34,20 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         }
 
         [Fact]
+        public async Task TargetPageShouldReturnABackgroundPage()
+        {
+            using (var browserWithExtension = await Puppeteer.LaunchAsync(
+                TestConstants.BrowserWithExtensionOptions(),
+                TestConstants.LoggerFactory))
+            {
+                var targets = browserWithExtension.Targets();
+                var backgroundPageTarget = targets.FirstOrDefault(target => target.Type == TargetType.BackgroundPage);
+                var page = await backgroundPageTarget.PageAsync();
+                Assert.Equal(6, await page.EvaluateFunctionAsync("() => 2 * 3"));
+            }
+        }
+
+        [Fact]
         public async Task ShouldHaveDefaultUrlWhenLaunchingBrowser()
         {
             using (var browser = await Puppeteer.LaunchAsync(
