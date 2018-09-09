@@ -17,7 +17,6 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
     {
         public HeadfulTests(ITestOutputHelper output) : base(output)
         {
-
         }
 
         [Fact]
