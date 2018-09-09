@@ -171,6 +171,22 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Fact]
+        public async Task ShouldSupportThrownStringsAsErrorMessages()
+        {
+            var exception = await Assert.ThrowsAsync<EvaluationFailedException>(
+                () => Page.EvaluateExpressionAsync("throw 'qwerty'"));
+            Assert.Contains("qwerty", exception.Message);
+        }
+
+        [Fact]
+        public async Task ShouldSupportThrownNumbersAsErrorMessages()
+        {
+            var exception = await Assert.ThrowsAsync<EvaluationFailedException>(
+                            () => Page.EvaluateExpressionAsync("throw 100500"));
+            Assert.Contains("100500", exception.Message);
+        }
+
+        [Fact]
         public async Task ShouldThrowWhenEvaluationTriggersReload()
         {
             var exception = await Assert.ThrowsAsync<MessageException>(() =>

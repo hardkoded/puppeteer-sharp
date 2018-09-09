@@ -233,7 +233,7 @@ namespace PuppeteerSharp
         {
             if (exceptionDetails.Exception != null)
             {
-                return exceptionDetails.Exception.Description;
+                return exceptionDetails.Exception.Description ?? exceptionDetails.Exception.Value;
             }
             var message = exceptionDetails.Text;
             if (exceptionDetails.StackTrace != null)
