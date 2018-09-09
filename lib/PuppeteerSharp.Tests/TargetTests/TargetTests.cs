@@ -35,18 +35,6 @@ namespace PuppeteerSharp.Tests.TargetTests
         }
 
         [Fact]
-        public async Task ShouldAllowBackgroundPageTargetTypeToPassThrough()
-        {
-            using (var browserWithExtension = await Puppeteer.LaunchAsync(TestConstants.BrowserWithExtensionOptions()))
-            using (var page = await browserWithExtension.NewPageAsync())
-            {
-                var targets = browserWithExtension.Targets();
-                var backgroundPageTarget = targets.FirstOrDefault(target => target.Type == TargetType.BackgroundPage);
-                Assert.NotNull(backgroundPageTarget);
-            }
-        }
-
-        [Fact]
         public void ShouldContainBrowserTarget()
         {
             var targets = Browser.Targets();
