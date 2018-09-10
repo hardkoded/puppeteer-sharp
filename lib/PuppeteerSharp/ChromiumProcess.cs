@@ -77,8 +77,8 @@ namespace PuppeteerSharp
         public ChromiumProcess(string chromiumExecutable, LaunchOptions options, ILoggerFactory loggerFactory)
         {
             _options = options;
-            _logger = options.LogProcess 
-                ? loggerFactory.CreateLogger<ChromiumProcess>() 
+            _logger = options.LogProcess
+                ? loggerFactory.CreateLogger<ChromiumProcess>()
                 : null;
 
             List<string> chromiumArgs;
@@ -138,8 +138,8 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets Chromium endpoint.
         /// </summary>
-        public string EndPoint => _startCompletionSource.Task.IsCompleted 
-            ? _startCompletionSource.Task.Result 
+        public string EndPoint => _startCompletionSource.Task.IsCompleted
+            ? _startCompletionSource.Task.Result
             : null;
 
         /// <summary>
@@ -168,8 +168,8 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="timeout">The maximum waiting time for a graceful process exit.</param>
         /// <returns></returns>
-        public Task EnsureExitAsync(TimeSpan? timeout) => timeout.HasValue 
-            ? _currentState.ExitAsync(this, timeout.Value) 
+        public Task EnsureExitAsync(TimeSpan? timeout) => timeout.HasValue
+            ? _currentState.ExitAsync(this, timeout.Value)
             : _currentState.KillAsync(this);
 
         /// <summary>
@@ -194,7 +194,7 @@ namespace PuppeteerSharp
 
             await _exitCompletionSource.Task.ConfigureAwait(false);
             return true;
-        } 
+        }
 
         /// <inheritdoc />
         public override string ToString() => $"Chromium process; EndPoint={EndPoint}; State={_currentState}";
@@ -257,7 +257,7 @@ namespace PuppeteerSharp
                 });
             }
 
-            if (!options.IgnoreDefaultArgs && options.Args.Any() && options.Args.All(arg => arg.StartsWith("-")))
+            if (options.Args.All(arg => arg.StartsWith("-", StringComparison.Ordinal)))
             {
                 chromiumArgs.Add("about:blank");
             }
@@ -462,7 +462,7 @@ namespace PuppeteerSharp
                 {
                     Exited.EnterFrom(p, this);
                     return Task.CompletedTask;
-                } 
+                }
 
                 public override Task KillAsync(ChromiumProcess p)
                 {
@@ -601,7 +601,7 @@ namespace PuppeteerSharp
             {
                 public Task EnterFromAsync(ChromiumProcess p, State fromState, TimeSpan timeout)
                 {
-                    if (!TryEnter(p, fromState)) 
+                    if (!TryEnter(p, fromState))
                     {
                         return p._currentState.ExitAsync(p, timeout);
                     }
