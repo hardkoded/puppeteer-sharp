@@ -179,7 +179,10 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
 
                 return;
             }
-            if (exception == null && await _frame.EvaluateFunctionAsync<bool>("s => !s", success).ConfigureAwait(false))
+            if (exception == null &&
+                await _frame.EvaluateFunctionAsync<bool>("s => !s", success)
+                    .ContinueWith(task => task.IsFaulted || task.Result)
+                    .ConfigureAwait(false))
             {
                 if (success != null)
                 {
