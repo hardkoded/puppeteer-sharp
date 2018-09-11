@@ -28,7 +28,7 @@ namespace PuppeteerSharp
 
             _logger = LoggerFactory.CreateLogger<Connection>();
             _socketQueue = new TaskQueue();
-            _responses = new Dictionary<int, MessageTask>();
+            _callbacks = new Dictionary<int, MessageTask>();
             _sessions = new Dictionary<string, CDPSession>();
             _websocketReaderCancellationSource = new CancellationTokenSource();
 
@@ -37,7 +37,7 @@ namespace PuppeteerSharp
 
         #region Private Members
         private int _lastId;
-        private readonly Dictionary<int, MessageTask> _responses;
+        private readonly Dictionary<int, MessageTask> _callbacks;
         private readonly Dictionary<string, CDPSession> _sessions;
         private readonly TaskQueue _socketQueue;
         private readonly CancellationTokenSource _websocketReaderCancellationSource;
@@ -105,7 +105,7 @@ namespace PuppeteerSharp
                 TaskWrapper = new TaskCompletionSource<dynamic>(),
                 Method = method
             };
-            _responses[id] = callback;
+            _callbacks[id] = callback;
 
             var encoded = Encoding.UTF8.GetBytes(message);
             var buffer = new ArraySegment<byte>(encoded, 0, encoded.Length);
@@ -149,13 +149,13 @@ namespace PuppeteerSharp
             }
             _sessions.Clear();
 
-            foreach (var response in _responses.Values.ToArray())
+            foreach (var response in _callbacks.Values.ToArray())
             {
                 response.TaskWrapper.TrySetException(new TargetClosedException(
                     $"Protocol error({response.Method}): Target closed."
                 ));
             }
-            _responses.Clear();
+            _callbacks.Clear();
         }
 
         #region Private Methods
@@ -237,9 +237,16 @@ namespace PuppeteerSharp
 
                 //If we get the object we are waiting for we return if
                 //if not we add this to the list, sooner or later some one will come for it 
-                if (_responses.TryGetValue(id, out var callback))
+                if (_callbacks.TryGetValue(id, out var callback))
                 {
-                    callback.TaskWrapper.TrySetResult(obj.result);
+                    if (objAsJObject["error"] != null)
+                    {
+                        callback.TaskWrapper.TrySetException(new MessageException(callback, obj));
+                    }
+                    else
+                    {
+                        callback.TaskWrapper.TrySetResult(obj.result);
+                    }
                 }
             }
             else

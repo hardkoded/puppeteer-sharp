@@ -126,7 +126,7 @@ namespace PuppeteerSharp.Tests.PageTests
             var element = await Page.QuerySelectorAsync("section");
             Assert.NotNull(element);
             await element.DisposeAsync();
-            var exception = await Assert.ThrowsAsync<PuppeteerException>(()
+            var exception = await Assert.ThrowsAsync<EvaluationFailedException>(()
                 => Page.EvaluateFunctionAsync<string>("e => e.textContent", element));
             Assert.Contains("JSHandle is disposed", exception.Message);
         }
@@ -136,7 +136,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
             var bodyHandle = await Page.Frames[1].QuerySelectorAsync("body");
-            var exception = await Assert.ThrowsAsync<PuppeteerException>(()
+            var exception = await Assert.ThrowsAsync<EvaluationFailedException>(()
                 => Page.EvaluateFunctionAsync<string>("body => body.innerHTML", bodyHandle));
             Assert.Contains("JSHandles can be evaluated only in the context they were created", exception.Message);
         }
@@ -171,9 +171,25 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Fact]
+        public async Task ShouldSupportThrownStringsAsErrorMessages()
+        {
+            var exception = await Assert.ThrowsAsync<EvaluationFailedException>(
+                () => Page.EvaluateExpressionAsync("throw 'qwerty'"));
+            Assert.Contains("qwerty", exception.Message);
+        }
+
+        [Fact]
+        public async Task ShouldSupportThrownNumbersAsErrorMessages()
+        {
+            var exception = await Assert.ThrowsAsync<EvaluationFailedException>(
+                            () => Page.EvaluateExpressionAsync("throw 100500"));
+            Assert.Contains("100500", exception.Message);
+        }
+
+        [Fact]
         public async Task ShouldThrowWhenEvaluationTriggersReload()
         {
-            var exception = await Assert.ThrowsAsync<MessageException>(() =>
+            var exception = await Assert.ThrowsAsync<EvaluationFailedException>(() =>
             {
                 return Page.EvaluateFunctionAsync<object>(@"() => {
                     location.reload();
@@ -209,5 +225,21 @@ namespace PuppeteerSharp.Tests.PageTests
                 // This returns a promise which throws if it was not triggered by a user gesture.
                 return audio.play();
             })()");
+
+        [Fact]
+        public async Task ShouldThrowANiceErrorAfterANavigation()
+        {
+            var executionContext = await Page.MainFrame.GetExecutionContextAsync();
+
+            await Task.WhenAll(
+                Page.WaitForNavigationAsync(),
+                executionContext.EvaluateFunctionAsync("() => window.location.reload()")
+            );
+            var ex = await Assert.ThrowsAsync<EvaluationFailedException>(() =>
+            {
+                return executionContext.EvaluateFunctionAsync("() => null");
+            });
+            Assert.Contains("navigation", ex.Message);
+        }
     }
 }
