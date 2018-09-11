@@ -137,14 +137,21 @@ namespace PuppeteerSharp
                 return null;
             }
 
-            return await EvaluateHandleAsync("Runtime.evaluate", new Dictionary<string, object>
+            try
             {
-                ["expression"] = _sourceUrlRegex.IsMatch(script) ? script : $"{script}\n{EvaluationScriptSuffix}",
-                ["contextId"] = _contextId,
-                ["returnByValue"] = false,
-                ["awaitPromise"] = true,
-                ["userGesture"] = true
-            }).ConfigureAwait(false);
+                return await EvaluateHandleAsync("Runtime.evaluate", new Dictionary<string, object>
+                {
+                    ["expression"] = _sourceUrlRegex.IsMatch(script) ? script : $"{script}\n{EvaluationScriptSuffix}",
+                    ["contextId"] = _contextId,
+                    ["returnByValue"] = false,
+                    ["awaitPromise"] = true,
+                    ["userGesture"] = true
+                }).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                throw new EvaluationFailedException(ex.Message, ex);
+            }
         }
 
         internal async Task<JSHandle> EvaluateFunctionHandleAsync(string script, params object[] args)
@@ -154,15 +161,22 @@ namespace PuppeteerSharp
                 return null;
             }
 
-            return await EvaluateHandleAsync("Runtime.callFunctionOn", new Dictionary<string, object>
+            try
             {
-                ["functionDeclaration"] = $"{script}\n{EvaluationScriptSuffix}\n",
-                ["executionContextId"] = _contextId,
-                ["arguments"] = args.Select(FormatArgument),
-                ["returnByValue"] = false,
-                ["awaitPromise"] = true,
-                ["userGesture"] = true
-            }).ConfigureAwait(false);
+                return await EvaluateHandleAsync("Runtime.callFunctionOn", new Dictionary<string, object>
+                {
+                    ["functionDeclaration"] = $"{script}\n{EvaluationScriptSuffix}\n",
+                    ["executionContextId"] = _contextId,
+                    ["arguments"] = args.Select(FormatArgument),
+                    ["returnByValue"] = false,
+                    ["awaitPromise"] = true,
+                    ["userGesture"] = true
+                }).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                throw new EvaluationFailedException(ex.Message, ex);
+            }
         }
 
         private async Task<T> EvaluateAsync<T>(Task<JSHandle> handleEvaluator)

@@ -171,9 +171,7 @@ namespace PuppeteerSharp
             {
                 if (objAsJObject["error"] != null)
                 {
-                    callback.TaskWrapper.TrySetException(new MessageException(
-                        $"Protocol error ({ callback.Method }): {obj.error.message} {obj.error.data}"
-                    ));
+                    callback.TaskWrapper.TrySetException(new MessageException(callback, obj));
                 }
                 else
                 {
