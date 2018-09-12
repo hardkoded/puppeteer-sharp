@@ -38,5 +38,10 @@ namespace PuppeteerSharp
         protected PuppeteerException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
+
+        internal static string RewriteErrorMeesage(string message)
+            => message.Contains("Cannot find context with specified id")
+                ? "Execution context was destroyed, most likely because of a navigation."
+                : message;
     }
 }
