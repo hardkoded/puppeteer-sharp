@@ -333,6 +333,21 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         }
 
         [Fact]
+        public async Task ShouldFilterOutIgnoredDefaultArguments()
+        {
+            var defaultArgs = ChromiumProcess.GetDefaultArgs(new LaunchOptions());
+            var options = TestConstants.DefaultBrowserOptions();
+            options.IgnoredDefaultArgs = new[] { defaultArgs[0], defaultArgs[2] };
+            using (var browser = await Puppeteer.LaunchAsync(options))
+            {
+                var spawnargs = browser.Process.StartInfo.Arguments;
+                Assert.DoesNotContain(defaultArgs[0], spawnargs);
+                Assert.Contains(defaultArgs[1], spawnargs);
+                Assert.DoesNotContain(defaultArgs[2], spawnargs);
+            }
+        }
+
+        [Fact]
         public async Task ShouldHaveDefaultUrlWhenLaunchingBrowser()
         {
             using (var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.LoggerFactory))

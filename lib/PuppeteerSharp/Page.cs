@@ -1533,7 +1533,7 @@ namespace PuppeteerSharp
             CDPSession client,
             Target target,
             bool ignoreHTTPSErrors,
-            bool setDefaultViewPort,
+            ViewPortOptions defaultViewPort,
             TaskQueue screenshotTaskQueue)
         {
             await client.SendAsync("Page.enable", null).ConfigureAwait(false);
@@ -1558,14 +1558,8 @@ namespace PuppeteerSharp
                 }).ConfigureAwait(false);
             }
 
-            if (setDefaultViewPort)
-            {
-                await page.SetViewportAsync(new ViewPortOptions
-                {
-                    Width = 800,
-                    Height = 600
-                }).ConfigureAwait(false);
-            }
+            await page.SetViewportAsync(defaultViewPort).ConfigureAwait(false);
+
             return page;
         }
 

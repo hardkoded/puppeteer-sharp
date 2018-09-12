@@ -235,7 +235,7 @@ namespace PuppeteerSharp
 
         #region Private Methods
 
-        private static Platform GetCurrentPlatform()
+        internal static Platform GetCurrentPlatform()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {

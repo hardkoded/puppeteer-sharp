@@ -12,6 +12,17 @@ namespace PuppeteerSharp
     public class ConnectOptions : IBrowserOptions, IConnectionOptions
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="T:PuppeteerSharp.ConnectOptions"/> class.
+        /// </summary>
+        public ConnectOptions()
+        {
+            DefaultViewport = new ViewPortOptions
+            {
+                Width = 800,
+                Height = 600
+            };
+        }
+        /// <summary>
         /// Whether to ignore HTTPS errors during navigation. Defaults to false.
         /// </summary>
         public bool IgnoreHTTPSErrors { get; set; }
@@ -41,5 +52,11 @@ namespace PuppeteerSharp
         /// Optional factory for <see cref="WebSocket"/> implementations.
         /// </summary>
         public Func<Uri, IConnectionOptions, CancellationToken, Task<WebSocket>> WebSocketFactory { get; set; }
+
+        /// <summary>
+        /// Gets or sets the default Viewport.
+        /// </summary>
+        /// <value>The default Viewport.</value>
+        public ViewPortOptions DefaultViewport { get; set; }
     }
 }

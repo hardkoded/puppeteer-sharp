@@ -11,19 +11,24 @@ namespace PuppeteerSharp
     /// </summary>
     public class LaunchOptions : IBrowserOptions, IConnectionOptions
     {
+        private string[] _ignoredDefaultArgs;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:PuppeteerSharp.LaunchOptions"/> class.
+        /// </summary>
+        public LaunchOptions()
+        {
+            DefaultViewport = new ViewPortOptions
+            {
+                Width = 800,
+                Height = 600
+            };
+        }
+
         /// <summary>
         /// Whether to ignore HTTPS errors during navigation. Defaults to false.
         /// </summary>
         public bool IgnoreHTTPSErrors { get; set; }
-
-        /// <summary>
-        /// If set to true, sets Headless = false, otherwise, enables automation.
-        /// </summary>
-        /// <remarks>
-        /// AppMode won't neither add the argument '--remote-debugging-pipe' nor implement Pipes
-        /// due to limitations in .NET see <see href="https://github.com/dotnet/corefx/issues/30575"/> 
-        /// </remarks>
-        public bool AppMode { get; set; }
 
         /// <summary>
         /// Whether to run browser in headless mode. Defaults to true unless the devtools option is true.
@@ -82,14 +87,34 @@ namespace PuppeteerSharp
         public bool LogProcess { get; set; }
 
         /// <summary>
-        /// Do not use it. Dangerous option; use with care. Defaults to false.
+        /// If <c>true</c>, then do not use <see cref="Puppeteer.DefaultArgs"/>.
+        /// Dangerous option; use with care. Defaults to <c>false</c>.
         /// </summary>
-        /// <value><c>true</c> if ignore default arguments; otherwise, <c>false</c>.</value>
         public bool IgnoreDefaultArgs { get; set; }
+
+        /// <summary>
+        /// if <see cref="IgnoreDefaultArgs"/> is set to <c>false</c> this list will be used to filter <see cref="Puppeteer.DefaultArgs"/>
+        /// </summary>
+        public string[] IgnoredDefaultArgs
+        {
+            get => _ignoredDefaultArgs;
+            set
+            {
+                IgnoreDefaultArgs = true;
+                _ignoredDefaultArgs = value;
+            }
+        }
+
 
         /// <summary>
         /// Optional factory for <see cref="WebSocket"/> implementations.
         /// </summary>
         public Func<Uri, IConnectionOptions, CancellationToken, Task<WebSocket>> WebSocketFactory { get; set; }
+
+        /// <summary>
+        /// Gets or sets the default Viewport.
+        /// </summary>
+        /// <value>The default Viewport.</value>
+        public ViewPortOptions DefaultViewport { get; set; }
     }
 }
