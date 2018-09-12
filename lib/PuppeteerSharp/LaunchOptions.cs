@@ -105,7 +105,6 @@ namespace PuppeteerSharp
             }
         }
 
-
         /// <summary>
         /// Optional factory for <see cref="WebSocket"/> implementations.
         /// </summary>
