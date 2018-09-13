@@ -105,6 +105,13 @@ namespace PuppeteerSharp.Mobile
 ";
             var end = @"
         };
+            
+        /// <summary>	
+        /// Get the specified device description.	
+        /// </summary>	
+        /// <returns>The device descriptor.</returns>	
+        /// <param name=""name"">Device Name.</param>	
+        public static DeviceDescriptor Get(DeviceDescriptorName name) => Devices[name];
     }
 }";
 
