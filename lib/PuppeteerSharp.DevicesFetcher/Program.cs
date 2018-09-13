@@ -182,7 +182,6 @@ namespace PuppeteerSharp.Mobile
             return output.ToString();
         }
 
-
         static OutputDevice CreateDevice(string chromeVersion, string deviceName, RootObject.Device descriptor, bool landscape)
         {
             var devicePayload = LoadFromJSONV1(descriptor);
