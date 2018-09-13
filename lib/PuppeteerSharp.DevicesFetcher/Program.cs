@@ -131,8 +131,7 @@ namespace PuppeteerSharp.Mobile
     /// Device descriptor name.
     /// </summary>
     public enum DeviceDescriptorName
-    {
-";
+    {";
             var end = @"
     }
 }";

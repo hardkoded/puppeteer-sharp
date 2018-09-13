@@ -5,7 +5,6 @@ namespace PuppeteerSharp.Mobile
     /// </summary>
     public enum DeviceDescriptorName
     {
-
         /// <summary>
         /// Blackberry PlayBook
         /// </summary>
