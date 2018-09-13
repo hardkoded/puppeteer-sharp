@@ -13,6 +13,18 @@ namespace PuppeteerSharp.Tests.FrameTests
         }
 
         [Fact]
+        public async Task ShouldWorkWhenResolvedRightBeforeExecutionContextDisposal()
+        {
+            await Page.EvaluateOnNewDocumentAsync("() => window.__RELOADED = true");
+            await Page.WaitForFunctionAsync(@"() =>
+            {
+                if (!window.__RELOADED)
+                    window.location.reload();
+                return true;
+            }");
+        }
+
+        [Fact]
         public async Task ShouldPollOnInterval()
         {
             var success = false;

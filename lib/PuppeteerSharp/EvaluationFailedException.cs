@@ -20,7 +20,7 @@ namespace PuppeteerSharp
         /// Initializes a new instance of the <see cref="EvaluationFailedException"/> class.
         /// </summary>
         /// <param name="message">Message.</param>
-        public EvaluationFailedException(string message) : base(message)
+        public EvaluationFailedException(string message) : base(RewriteErrorMeesage(message))
         {
         }
 
@@ -29,7 +29,8 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="message">Message.</param>
         /// <param name="innerException">Inner exception.</param>
-        public EvaluationFailedException(string message, Exception innerException) : base(message, innerException)
+        public EvaluationFailedException(string message, Exception innerException)
+            : base(RewriteErrorMeesage(message), innerException)
         {
         }
 
