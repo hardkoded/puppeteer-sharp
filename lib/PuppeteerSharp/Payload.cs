@@ -71,10 +71,12 @@ namespace PuppeteerSharp
                 {
                     foreach (var item in Headers.OrderBy(kv => kv.Key))
                     {
-                        if (item.Key.Equals("accept", StringComparison.OrdinalIgnoreCase)
-                            || item.Key.Equals("referer", StringComparison.OrdinalIgnoreCase)
-                            || item.Key.Equals("x-devtools-emulate-network-conditions-client-id", StringComparison.OrdinalIgnoreCase)
-                            || item.Key.Equals("cookie", StringComparison.OrdinalIgnoreCase))
+                        bool HeaderEquals(string name) => item.Key.Equals(name, StringComparison.OrdinalIgnoreCase);
+
+                        if (HeaderEquals("accept")
+                            || HeaderEquals("referer")
+                            || HeaderEquals("x-devtools-emulate-network-conditions-client-id")
+                            || HeaderEquals("cookie"))
                         {
                             continue;
                         }
