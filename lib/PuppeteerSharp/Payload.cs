@@ -13,7 +13,10 @@ namespace PuppeteerSharp
     /// </summary>
     public class Payload
     {
-        internal Payload()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PuppeteerSharp.Payload"/> class.
+        /// </summary>
+        public Payload()
         {
             Headers = new Dictionary<string, object>();
         }
