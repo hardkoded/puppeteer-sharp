@@ -42,6 +42,8 @@
  * Add support for target.page for 'backgroud_page'.
  * New devices.
  * Fix race condition in WaitTask.
+ * Make Payload constructor Public.
+ * Fix ContinueAsync payload override.       
     </PackageReleaseNotes>
     <ReleaseVersion>1.6.0</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
