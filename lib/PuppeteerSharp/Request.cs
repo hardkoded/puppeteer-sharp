@@ -180,7 +180,7 @@ namespace PuppeteerSharp
 
                 if (overrides?.Method != null)
                 {
-                    requestData["method"] = overrides.Method;
+                    requestData["method"] = overrides.Method.ToString();
                 }
 
                 if (overrides?.PostData != null)
@@ -188,7 +188,7 @@ namespace PuppeteerSharp
                     requestData["postData"] = overrides.PostData;
                 }
 
-                if (overrides?.Headers != null)
+                if (overrides?.Headers?.Count > 0)
                 {
                     requestData["headers"] = overrides.Headers;
                 }

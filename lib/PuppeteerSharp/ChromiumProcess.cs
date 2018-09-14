@@ -264,10 +264,12 @@ namespace PuppeteerSharp
                     chromeArguments.Add("--disable-gpu");
                 }
             }
+
             if (options.Args.All(arg => arg.StartsWith("-", StringComparison.Ordinal)))
             {
-                chromeArguments.Add("about:blank");
+                chromiumArgs.Add("about:blank");
             }
+
             chromeArguments.AddRange(options.Args);
             return chromeArguments.ToArray();
         }
