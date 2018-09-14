@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>1.5.0</PackageVersion>
+    <PackageVersion>1.6.0</PackageVersion>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
@@ -13,50 +13,39 @@
     <PackageId>PuppeteerSharp</PackageId>
     <PackageReleaseNotes>
 # New Features
-
- * Browser Contexts.
- * Workers
+ * Support thrown strings and numbers in getExceptionMessage.
+ * Implement PageError event from a worker.
+ * Click wrapped links support.
+ * Add an option to collect coverage of anonymous scripts.
+ * ElementHandle.IsIntersectingViewportAsync and Offsetclicks.
 
 # New APIs
 
- * Target.Opener.
- * Request.IsNavigationRequest.
- * Page.IsClosed.
- * Change accessibilty on Payload.
- * Page.ScreenshotBase64Async and ElementHandle.ScreenshotBase64Async.
- * CDPSession.TargetType.
- * Page.WorkerCreated.
- * Page.WorkerDestroyed.
- * Page.Workers.
+ * Page.WaitForRequestAsync and Page.WaitForResponseAsync.
 
 # Breaking Changes
 
- * Disable crash reporting by default.
- * Added .ConfigureAwait(false) to each await.
- * Change ScreenshotOptions.Quality type.
- * Dropped CDPSession.TargetId.
- * Dropped ExecutionContext.FrameId.
- * Dropped ExecutionContext.IsDefault.
+ * Remove throw in case of empty elementHandle.
+ * EvaluateFunctionAsync and EvaluateFunctionAsync now will throw and EvaluationFailedException.
 
 # Changelog
 
- * Chromium updated to r564778.
- * Update PuppeteerSharp.Tests packages versions.
- * Launch browser with 'about:blank' by default.
- * Respect timeout 0 in Page.waitForFunctionAsync.
- * Add a missing test for elementHandle.
- * Pass through "background_page" types.
- * Ensure first page is created when browser is launched.
- * Improve access to files to use true asynchronous methods.
- * Add test that validates that pages open with userDataDir arg.
- * Normalize scrollbars in headful tests.
- * Disable OOPIF by default.
- * Not pass user options to browser constructor.
- * Verify ignoreHTTPSErrors works with puppeteer.ConnectAsync.
- * Update ConsoleType.
- * ElementHandle.QuerySelectorAllHandleAsync.
+ * Roll Chromium to r571375.
+ * Migrate exposeFunction from console.debug to Runtime.installBinding.
+ * Don't pass a reference to the page into frames.
+ * Simplify EmulationManager.
+ * Clarify docs about waitForNavigation.
+ * Add new error reasons for request.abort().
+ * Fix random tests flakiness.
+ * Test that verifies pptr works with SVG nodes.
+ * Nicer protocol error messages.
+ * Add support for target.page for 'backgroud_page'.
+ * New devices.
+ * Fix race condition in WaitTask.
+ * Make Payload constructor Public.
+ * Fix ContinueAsync payload override.       
     </PackageReleaseNotes>
-    <ReleaseVersion>1.5.0</ReleaseVersion>
+    <ReleaseVersion>1.6.0</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>
