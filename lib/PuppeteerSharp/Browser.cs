@@ -80,7 +80,7 @@ namespace PuppeteerSharp
         private readonly BrowserContext _defaultContext;
         private readonly ChromiumProcess _chromiumProcess;
         private Task _closeTask;
-        
+
         #endregion
 
         #region Properties
@@ -200,10 +200,13 @@ namespace PuppeteerSharp
 
         /// <summary>
         /// Returns a Task which resolves to an array of all open pages.
+        /// Non visible pages, such as <c>"background_page"</c>, will not be listed here. You can find them using <see cref="Target.PageAsync"/>
         /// </summary>
         /// <returns>Task which resolves to an array of all open pages.</returns>
         public async Task<Page[]> PagesAsync()
-            => (await Task.WhenAll(Targets().Select(target => target.PageAsync())).ConfigureAwait(false)).Where(x => x != null).ToArray();
+            => (await Task.WhenAll(
+                    Targets().Where(t => t.Type == TargetType.Page).Select(target => target.PageAsync())
+                ).ConfigureAwait(false)).ToArray();
 
         /// <summary>
         /// Gets the browser's version

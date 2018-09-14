@@ -13,8 +13,8 @@ namespace PuppeteerSharp
     {
         #region Private members
         private TargetInfo _targetInfo;
-        private string _targetId;
-        private Func<TargetInfo, Task<CDPSession>> _sessionFactory;
+        private readonly string _targetId;
+        private readonly Func<TargetInfo, Task<CDPSession>> _sessionFactory;
         private Task<Page> _pageTask;
         #endregion
 
@@ -85,12 +85,12 @@ namespace PuppeteerSharp
         #endregion
 
         /// <summary>
-        /// Creates a new <see cref="Page"/>. If the target is not <c>"page"</c> returns <c>null</c>
+        /// Creates a new <see cref="Page"/>. If the target is not <c>"page"</c> or <c>"background_page"</c> returns <c>null</c>
         /// </summary>
         /// <returns>a task that returns a new <see cref="Page"/></returns>
         public Task<Page> PageAsync()
         {
-            if (_targetInfo.Type == TargetType.Page && _pageTask == null)
+            if ((_targetInfo.Type == TargetType.Page || _targetInfo.Type == TargetType.BackgroundPage) && _pageTask == null)
             {
                 _pageTask = CreatePageAsync();
             }
