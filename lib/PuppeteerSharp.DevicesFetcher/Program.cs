@@ -17,20 +17,18 @@ namespace PuppeteerSharp.DevicesFetcher
         static string deviceDescriptorsOutput = "../../../../PuppeteerSharp/Mobile/DeviceDescriptors.cs";
         static string deviceDescriptorNameOutput = "../../../../PuppeteerSharp/Mobile/DeviceDescriptorName.cs";
 
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            var url = DEVICES_URL ?? args[0];
-
-            MainAsync(url).GetAwaiter().GetResult();
-        }
-
-        static async Task MainAsync(string url)
-        {
-            string chromeVersion = null;
-            using (var browser = await Puppeteer.LaunchAsync(new LaunchOptions
+            var url = DEVICES_URL;
+            if (args.Length > 0)
             {
-                ExecutablePath = "../../../../PuppeteerSharp.Tests/bin/Debug/netcoreapp2.0/.local-chromium/Win64-571375/chrome-win32/chrome.exe"
-            }))
+                url = args[0];
+            }
+
+            string chromeVersion = null;
+            var fetcher = new BrowserFetcher();
+            await fetcher.DownloadAsync(BrowserFetcher.DefaultRevision);
+            using (var browser = await Puppeteer.LaunchAsync(new LaunchOptions()))
             {
                 chromeVersion = (await browser.GetVersionAsync()).Split('/').Last();
             }
@@ -106,11 +104,11 @@ namespace PuppeteerSharp.Mobile
             var end = @"
         };
             
-        /// <summary>	
-        /// Get the specified device description.	
-        /// </summary>	
-        /// <returns>The device descriptor.</returns>	
-        /// <param name=""name"">Device Name.</param>	
+        /// <summary>
+        /// Get the specified device description.
+        /// </summary>
+        /// <returns>The device descriptor.</returns>
+        /// <param name=""name"">Device Name.</param>
         public static DeviceDescriptor Get(DeviceDescriptorName name) => Devices[name];
     }
 }";
