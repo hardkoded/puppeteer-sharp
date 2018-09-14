@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace PuppeteerSharp.Tests.PageTests
+namespace PuppeteerSharp.Tests.Issues
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class Issue0616 : PuppeteerPageBaseTest
@@ -33,18 +33,18 @@ namespace PuppeteerSharp.Tests.PageTests
                 await e.Request.ContinueAsync(payload);
             };
 
-            var requestTask = Server.WaitForRequest<string>("/grid.html", request =>
+            Server.SetRoute("/grid.html", async (context) =>
             {
-                return request.Form.ToString();
+                using (var reader = new StreamReader(context.Request.Body, Encoding.UTF8))
+                {
+                    var request = await reader.ReadToEndAsync();
+                    await context.Response.WriteAsync(request);
+                }
             });
-            var gotoTask = Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
 
-            await Task.WhenAll(
-                requestTask,
-                gotoTask
-            );
-
-            Assert.Equal("http://google.com/", requestTask.Result);
+            Assert.Equal(TestConstants.ServerUrl + "/grid.html", response.Url);
+            Assert.Equal("foo", await response.TextAsync());
         }
     }
 }

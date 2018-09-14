@@ -14,7 +14,7 @@ namespace PuppeteerSharp
     public class Payload
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:PuppeteerSharp.Payload"/> class.
+        /// Initializes a new instance of the <see cref="PuppeteerSharp.Payload"/> class.
         /// </summary>
         public Payload()
         {
