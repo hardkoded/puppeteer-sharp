@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Namespace PuppeteerSharp
    ">
-    <meta name="generator" content="docfx 2.37.1.0">
+    <meta name="generator" content="docfx 2.39.2.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -89,6 +89,10 @@
       <h4><a class="xref" href="PuppeteerSharp.Browser.html">Browser</a></h4>
       <section><p>Provides methods to interact with a browser in Chromium.</p>
 </section>
+      <h4><a class="xref" href="PuppeteerSharp.BrowserContext.html">BrowserContext</a></h4>
+      <section><p>BrowserContexts provide a way to operate multiple independent browser sessions. When a browser is launched, it has
+a single <a class="xref" href="PuppeteerSharp.BrowserContext.html">BrowserContext</a> used by default. The method <a class="xref" href="PuppeteerSharp.Browser.html#PuppeteerSharp_Browser_NewPageAsync">NewPageAsync()</a> creates a <a class="xref" href="PuppeteerSharp.Page.html">Page</a> in the default <a class="xref" href="PuppeteerSharp.BrowserContext.html">BrowserContext</a></p>
+</section>
       <h4><a class="xref" href="PuppeteerSharp.BrowserFetcher.html">BrowserFetcher</a></h4>
       <section><p>BrowserFetcher can download and manage different versions of Chromium.
 BrowserFetcher operates on revision strings that specify a precise version of Chromium, e.g. 533271. Revision strings can be obtained from omahaproxy.appspot.com.</p>
@@ -119,8 +123,12 @@ await client.SendAsync(&quot;Animation.setPlaybackRate&quot;, new
     playbackRate = Convert.ToInt32(response.playbackRate / 2)
 });</code></pre>
 </section>
-      <h4><a class="xref" href="PuppeteerSharp.ChromeProcessException.html">ChromeProcessException</a></h4>
-      <section><p>Chrome process exception thrown by <a class="xref" href="PuppeteerSharp.Launcher.html">Launcher</a>.</p>
+      <h4><a class="xref" href="PuppeteerSharp.ChromiumProcess.html">ChromiumProcess</a></h4>
+      <section><p>Represents a Chromium process and any associated temporary user data directory that have created
+by Puppeteer and therefore must be cleaned up when no longer needed.</p>
+</section>
+      <h4><a class="xref" href="PuppeteerSharp.ChromiumProcessException.html">ChromiumProcessException</a></h4>
+      <section><p>Chromium process exception thrown by <a class="xref" href="PuppeteerSharp.Launcher.html">Launcher</a>.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.Connection.html">Connection</a></h4>
       <section><p>A connection handles the communication with a Chromium browser</p>
@@ -278,8 +286,18 @@ At every point of time, page exposes its current frame tree via the <a class="xr
       <h4><a class="xref" href="PuppeteerSharp.WaitForFunctionOptions.html">WaitForFunctionOptions</a></h4>
       <section><p>Optional waiting parameters.</p>
 </section>
+      <h4><a class="xref" href="PuppeteerSharp.WaitForOptions.html">WaitForOptions</a></h4>
+      <section><p>Optional waiting parameters.</p>
+</section>
       <h4><a class="xref" href="PuppeteerSharp.WaitForSelectorOptions.html">WaitForSelectorOptions</a></h4>
       <section><p>Optional waiting parameters.</p>
+</section>
+      <h4><a class="xref" href="PuppeteerSharp.Worker.html">Worker</a></h4>
+      <section><p>The Worker class represents a WebWorker (<a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API">https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API</a>).
+The events <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_WorkerCreated">WorkerCreated</a> and <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_WorkerDestroyed">WorkerDestroyed</a> are emitted on the page object to signal the worker lifecycle.</p>
+</section>
+      <h4><a class="xref" href="PuppeteerSharp.WorkerEventArgs.html">WorkerEventArgs</a></h4>
+      <section><p>Workder created event arguments.</p>
 </section>
     <h3 id="structs">Structs
   </h3>
@@ -293,6 +311,9 @@ At every point of time, page exposes its current frame tree via the <a class="xr
   </h3>
       <h4><a class="xref" href="PuppeteerSharp.IBrowserOptions.html">IBrowserOptions</a></h4>
       <section><p>Browser options.</p>
+</section>
+      <h4><a class="xref" href="PuppeteerSharp.IConnectionOptions.html">IConnectionOptions</a></h4>
+      <section><p>Options for <a class="xref" href="PuppeteerSharp.Connection.html">Connection</a> creation.</p>
 </section>
     <h3 id="enums">Enums
   </h3>

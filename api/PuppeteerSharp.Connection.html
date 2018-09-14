@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class Connection
    ">
-    <meta name="generator" content="docfx 2.37.1.0">
+    <meta name="generator" content="docfx 2.39.2.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -85,16 +85,48 @@
   <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
   <h5 id="PuppeteerSharp_Connection_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class Connection : IDisposable</code></pre>
+    <pre><code class="lang-csharp hljs">public class Connection : IDisposable, IConnection</code></pre>
   </div>
+  <h3 id="fields">Fields
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20DefaultWebSocketFactory&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Connection.cs/%23L287">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Connection.cs/#L287">View Source</a>
+  </span>
+  <h4 id="PuppeteerSharp_Connection_DefaultWebSocketFactory" data-uid="PuppeteerSharp.Connection.DefaultWebSocketFactory">DefaultWebSocketFactory</h4>
+  <div class="markdown level1 summary"><p>Gets default web socket factory implementation.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static readonly Func&lt;Uri, IConnectionOptions, CancellationToken, Task&lt;WebSocket&gt;&gt; DefaultWebSocketFactory</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Func</span>&lt;<span class="xref">Uri</span>, <a class="xref" href="PuppeteerSharp.IConnectionOptions.html">IConnectionOptions</a>, <span class="xref">CancellationToken</span>, <span class="xref">Task</span>&lt;<span class="xref">WebSocket</span>&gt;&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="properties">Properties
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Delay&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Connection.cs/%23L58">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Delay&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Connection.cs/%23L56">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Connection.cs/#L58">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Connection.cs/#L56">View Source</a>
   </span>
   <a id="PuppeteerSharp_Connection_Delay_" data-uid="PuppeteerSharp.Connection.Delay*"></a>
   <h4 id="PuppeteerSharp_Connection_Delay" data-uid="PuppeteerSharp.Connection.Delay">Delay</h4>
@@ -123,10 +155,10 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20IsClosed&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Connection.cs/%23L76">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20IsClosed&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Connection.cs/%23L74">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Connection.cs/#L76">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Connection.cs/#L74">View Source</a>
   </span>
   <a id="PuppeteerSharp_Connection_IsClosed_" data-uid="PuppeteerSharp.Connection.IsClosed*"></a>
   <h4 id="PuppeteerSharp_Connection_IsClosed" data-uid="PuppeteerSharp.Connection.IsClosed">IsClosed</h4>
@@ -155,10 +187,42 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Url&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Connection.cs/%23L53">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20LoggerFactory&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Connection.cs/%23L80">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Connection.cs/#L53">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Connection.cs/#L80">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Connection_LoggerFactory_" data-uid="PuppeteerSharp.Connection.LoggerFactory*"></a>
+  <h4 id="PuppeteerSharp_Connection_LoggerFactory" data-uid="PuppeteerSharp.Connection.LoggerFactory">LoggerFactory</h4>
+  <div class="markdown level1 summary"><p>Gets the logger factory.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ILoggerFactory LoggerFactory { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ILoggerFactory</span></td>
+        <td><p>The logger factory.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Url&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Connection.cs/%23L51">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Connection.cs/#L51">View Source</a>
   </span>
   <a id="PuppeteerSharp_Connection_Url_" data-uid="PuppeteerSharp.Connection.Url*"></a>
   <h4 id="PuppeteerSharp_Connection_Url" data-uid="PuppeteerSharp.Connection.Url">Url</h4>
@@ -187,10 +251,10 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WebSocket&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Connection.cs/%23L63">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WebSocket&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Connection.cs/%23L61">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Connection.cs/#L63">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Connection.cs/#L61">View Source</a>
   </span>
   <a id="PuppeteerSharp_Connection_WebSocket_" data-uid="PuppeteerSharp.Connection.WebSocket*"></a>
   <h4 id="PuppeteerSharp_Connection_WebSocket" data-uid="PuppeteerSharp.Connection.WebSocket">WebSocket</h4>
@@ -221,15 +285,15 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Dispose()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Connection.cs/%23L292">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Dispose()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Connection.cs/%23L310">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Connection.cs/#L292">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Connection.cs/#L310">View Source</a>
   </span>
   <a id="PuppeteerSharp_Connection_Dispose_" data-uid="PuppeteerSharp.Connection.Dispose*"></a>
   <h4 id="PuppeteerSharp_Connection_Dispose" data-uid="PuppeteerSharp.Connection.Dispose">Dispose()</h4>
   <div class="markdown level1 summary"><p>Releases all resource used by the <a class="xref" href="PuppeteerSharp.Connection.html">Connection</a> object.
-It will raise the <a class="xref" href="PuppeteerSharp.Connection.html#PuppeteerSharp_Connection_Closed">Closed</a> event and call <see cref="!:WebSocket.CloseAsync(WebSocketCloseStatus, string, CancellationToken)"></see>.</p>
+It will raise the <a class="xref" href="PuppeteerSharp.Connection.html#PuppeteerSharp_Connection_Closed">Closed</a> event and dispose <a class="xref" href="PuppeteerSharp.Connection.html#PuppeteerSharp_Connection_WebSocket">WebSocket</a>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -247,10 +311,10 @@ After calling <a class="xref" href="PuppeteerSharp.Connection.html#PuppeteerShar
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Closed&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Connection.cs/%23L67">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Closed&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Connection.cs/%23L65">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Connection.cs/#L67">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Connection.cs/#L65">View Source</a>
   </span>
   <h4 id="PuppeteerSharp_Connection_Closed" data-uid="PuppeteerSharp.Connection.Closed">Closed</h4>
   <div class="markdown level1 summary"><p>Occurs when the connection is closed.</p>
@@ -277,10 +341,10 @@ After calling <a class="xref" href="PuppeteerSharp.Connection.html#PuppeteerShar
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20MessageReceived&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Connection.cs/%23L71">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20MessageReceived&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Connection.cs/%23L69">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Connection.cs/#L71">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Connection.cs/#L69">View Source</a>
   </span>
   <h4 id="PuppeteerSharp_Connection_MessageReceived" data-uid="PuppeteerSharp.Connection.MessageReceived">MessageReceived</h4>
   <div class="markdown level1 summary"><p>Occurs when a message from chromium is received.</p>
