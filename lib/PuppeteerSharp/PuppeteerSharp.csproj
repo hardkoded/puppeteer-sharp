@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>1.6.0</PackageVersion>
+    <PackageVersion>1.6.2</PackageVersion>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
@@ -11,41 +11,16 @@
     <Title>PuppeteerSharp</Title>
     <Description>Headless Chrome .NET API</Description>
     <PackageId>PuppeteerSharp</PackageId>
-    <PackageReleaseNotes>
-# New Features
- * Support thrown strings and numbers in getExceptionMessage.
- * Implement PageError event from a worker.
- * Click wrapped links support.
- * Add an option to collect coverage of anonymous scripts.
- * ElementHandle.IsIntersectingViewportAsync and Offsetclicks.
+    <PackageReleaseNotes># Breaking Changes
 
-# New APIs
-
- * Page.WaitForRequestAsync and Page.WaitForResponseAsync.
-
-# Breaking Changes
-
- * Remove throw in case of empty elementHandle.
- * EvaluateFunctionAsync and EvaluateFunctionAsync now will throw and EvaluationFailedException.
+ * Always add àbout:blank` to default arguments.
 
 # Changelog
 
- * Roll Chromium to r571375.
- * Migrate exposeFunction from console.debug to Runtime.installBinding.
- * Don't pass a reference to the page into frames.
- * Simplify EmulationManager.
- * Clarify docs about waitForNavigation.
- * Add new error reasons for request.abort().
- * Fix random tests flakiness.
- * Test that verifies pptr works with SVG nodes.
- * Nicer protocol error messages.
- * Add support for target.page for 'backgroud_page'.
- * New devices.
- * Fix race condition in WaitTask.
- * Make Payload constructor Public.
- * Fix ContinueAsync payload override.       
+ * Bump Chromium to 575458
+ * Remove header 'cookie' from request hash 
     </PackageReleaseNotes>
-    <ReleaseVersion>1.6.0</ReleaseVersion>
+    <ReleaseVersion>1.6.2</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>
