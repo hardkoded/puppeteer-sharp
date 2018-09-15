@@ -45,7 +45,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             var context = await Browser.CreateIncognitoBrowserContextAsync();
             await context.NewPageAsync();
             Assert.Equal(2, (await Browser.PagesAsync()).Length);
-
+            Assert.Single((await context.PagesAsync()));
             await context.CloseAsync();
             Assert.Single((await Browser.PagesAsync()));
         }

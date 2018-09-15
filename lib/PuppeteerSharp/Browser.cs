@@ -194,7 +194,7 @@ namespace PuppeteerSharp
         {
             var allContexts = new BrowserContext[_contexts.Count + 1];
             allContexts[0] = _defaultContext;
-            _contexts.Values.CopyTo(allContexts, 0);
+            _contexts.Values.CopyTo(allContexts, 1);
             return allContexts;
         }
 
@@ -202,11 +202,13 @@ namespace PuppeteerSharp
         /// Returns a Task which resolves to an array of all open pages.
         /// Non visible pages, such as <c>"background_page"</c>, will not be listed here. You can find them using <see cref="Target.PageAsync"/>
         /// </summary>
-        /// <returns>Task which resolves to an array of all open pages.</returns>
+        /// <returns>Task which resolves to an array of all open pages inside the Browser. 
+        /// In case of multiple browser contexts, the method will return an array with all the pages in all browser contexts.
+        /// </returns>
         public async Task<Page[]> PagesAsync()
             => (await Task.WhenAll(
-                    Targets().Where(t => t.Type == TargetType.Page).Select(target => target.PageAsync())
-                ).ConfigureAwait(false)).ToArray();
+                BrowserContexts().Select(t => t.PagesAsync())).ConfigureAwait(false)
+               ).SelectMany(p => p).ToArray();
 
         /// <summary>
         /// Gets the browser's version
