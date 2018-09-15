@@ -13,7 +13,7 @@
     <PackageId>PuppeteerSharp</PackageId>
     <PackageReleaseNotes># Breaking Changes
 
- * Always add àbout:blank` to default arguments.
+ * Always add `about:blank` to default arguments.
 
 # Changelog
 
