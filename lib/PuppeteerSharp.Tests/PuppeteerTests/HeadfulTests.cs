@@ -27,8 +27,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 TestConstants.LoggerFactory))
             using (var page = await browserWithExtension.NewPageAsync())
             {
-                var targets = browserWithExtension.Targets();
-                var backgroundPageTarget = targets.FirstOrDefault(target => target.Type == TargetType.BackgroundPage);
+                var backgroundPageTarget = await WaitForBackgroundPageTargetAsync(browserWithExtension);
                 Assert.NotNull(backgroundPageTarget);
             }
         }
@@ -40,8 +39,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 TestConstants.BrowserWithExtensionOptions(),
                 TestConstants.LoggerFactory))
             {
-                var targets = browserWithExtension.Targets();
-                var backgroundPageTarget = targets.FirstOrDefault(target => target.Type == TargetType.BackgroundPage);
+                var backgroundPageTarget = await WaitForBackgroundPageTargetAsync(browserWithExtension);
                 var page = await backgroundPageTarget.PageAsync();
                 Assert.Equal(6, await page.EvaluateFunctionAsync("() => 2 * 3"));
             }
@@ -55,7 +53,6 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 TestConstants.LoggerFactory))
             {
                 var pages = (await browser.PagesAsync()).Select(page => page.Url).ToArray();
-
                 Assert.Equal(new[] { "about:blank" }, pages);
             }
         }
@@ -112,6 +109,28 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 Array.Sort(urls);
                 Assert.Equal(new[] { TestConstants.EmptyPage, "https://google.com/" }, urls);
             }
+        }
+
+        private Task<Target> WaitForBackgroundPageTargetAsync(Browser browser)
+        {
+            var target = browser.Targets().FirstOrDefault(t => t.Type == TargetType.BackgroundPage);
+            if (target != null)
+            {
+                return Task.FromResult(target);
+            }
+            var targetCreatedTcs = new TaskCompletionSource<Target>();
+            void targetCreated(object sender, TargetChangedArgs e)
+            {
+                if (e.Target.Type != TargetType.BackgroundPage)
+                {
+                    return;
+                }
+                targetCreatedTcs.TrySetResult(e.Target);
+                browser.TargetCreated -= targetCreated;
+            }
+            browser.TargetCreated += targetCreated;
+
+            return targetCreatedTcs.Task;
         }
     }
 }
