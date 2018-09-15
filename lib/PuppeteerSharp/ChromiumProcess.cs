@@ -211,7 +211,7 @@ namespace PuppeteerSharp
             }
             else if (options.IgnoredDefaultArgs?.Length > 0)
             {
-                chromiumArgs.AddRange(GetDefaultArgs(options).Where(a => !options.IgnoredDefaultArgs.Contains(a)));
+                chromiumArgs.AddRange(GetDefaultArgs(options).Except(options.IgnoredDefaultArgs));
             }
             else
             {
@@ -600,12 +600,7 @@ namespace PuppeteerSharp
             {
                 public Task EnterFromAsync(ChromiumProcess p, State fromState, TimeSpan timeout)
                 {
-                    if (!TryEnter(p, fromState))
-                    {
-                        return p._currentState.ExitAsync(p, timeout);
-                    }
-
-                    return ExitAsync(p, timeout);
+                    return !TryEnter(p, fromState) ? p._currentState.ExitAsync(p, timeout) : ExitAsync(p, timeout);
                 }
 
                 public override async Task ExitAsync(ChromiumProcess p, TimeSpan timeout)

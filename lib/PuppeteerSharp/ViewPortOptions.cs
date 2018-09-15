@@ -45,5 +45,14 @@
         /// </summary>
         /// <value>Specifies if viewport supports touch events. Defaults to <c>false</c>.</value>
         public bool HasTouch { get; set; }
+
+        /// <summary>
+        /// Default Viewport
+        /// </summary>
+        public static ViewPortOptions Default => new ViewPortOptions
+        {
+            Width = 800,
+            Height = 600
+        };
     }
 }

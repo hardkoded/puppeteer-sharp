@@ -14,18 +14,6 @@ namespace PuppeteerSharp
         private string[] _ignoredDefaultArgs;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:PuppeteerSharp.LaunchOptions"/> class.
-        /// </summary>
-        public LaunchOptions()
-        {
-            DefaultViewport = new ViewPortOptions
-            {
-                Width = 800,
-                Height = 600
-            };
-        }
-
-        /// <summary>
         /// Whether to ignore HTTPS errors during navigation. Defaults to false.
         /// </summary>
         public bool IgnoreHTTPSErrors { get; set; }
@@ -114,6 +102,6 @@ namespace PuppeteerSharp
         /// Gets or sets the default Viewport.
         /// </summary>
         /// <value>The default Viewport.</value>
-        public ViewPortOptions DefaultViewport { get; set; }
+        public ViewPortOptions DefaultViewport { get; set; } = ViewPortOptions.Default;
     }
 }
