@@ -267,7 +267,7 @@ namespace PuppeteerSharp
 
             if (options.Args.All(arg => arg.StartsWith("-", StringComparison.Ordinal)))
             {
-                chromiumArgs.Add("about:blank");
+                chromeArguments.Add("about:blank");
             }
 
             chromeArguments.AddRange(options.Args);
