@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests.Issues
             await Assert.ThrowsAsync<ChromiumProcessException>(async () =>
             {
                 var options = TestConstants.DefaultBrowserOptions();
-                options.Args = new[] { "-remote-debugging-port=-2" };
+                options.Args = new[] { "--remote-debugging-port=-2" };
                 await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
             });
         }

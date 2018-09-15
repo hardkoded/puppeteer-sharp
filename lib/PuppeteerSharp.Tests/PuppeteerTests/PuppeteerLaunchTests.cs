@@ -210,8 +210,16 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         [Fact]
         public void ShouldReturnTheDefaultChromeArguments()
         {
-            var args = Puppeteer.DefaultArgs;
-            Assert.Contains("--no-first-run", args);
+            Assert.Contains("--no-first-run", Puppeteer.GetDefaultArgs());
+            Assert.Contains("--headless", Puppeteer.GetDefaultArgs());
+            Assert.DoesNotContain("--headless", Puppeteer.GetDefaultArgs(new LaunchOptions
+            {
+                Headless = false
+            }));
+            Assert.Contains("--user-data-dir=\"foo\"", Puppeteer.GetDefaultArgs(new LaunchOptions
+            {
+                UserDataDir = "foo"
+            }));
         }
 
         [Fact]
@@ -333,6 +341,21 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         }
 
         [Fact]
+        public async Task ShouldFilterOutIgnoredDefaultArguments()
+        {
+            var defaultArgs = Puppeteer.GetDefaultArgs();
+            var options = TestConstants.DefaultBrowserOptions();
+            options.IgnoredDefaultArgs = new[] { defaultArgs[0], defaultArgs[2] };
+            using (var browser = await Puppeteer.LaunchAsync(options))
+            {
+                var spawnargs = browser.Process.StartInfo.Arguments;
+                Assert.DoesNotContain(defaultArgs[0], spawnargs);
+                Assert.Contains(defaultArgs[1], spawnargs);
+                Assert.DoesNotContain(defaultArgs[2], spawnargs);
+            }
+        }
+
+        [Fact]
         public async Task ShouldHaveDefaultUrlWhenLaunchingBrowser()
         {
             using (var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.LoggerFactory))
@@ -357,6 +380,37 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                     await pages[0].WaitForNavigationAsync();
                 }
                 Assert.Equal(customUrl, pages[0].Url);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldSetTheDefaultViewport()
+        {
+            var options = TestConstants.DefaultBrowserOptions();
+            options.DefaultViewport = new ViewPortOptions
+            {
+                Width = 456,
+                Height = 789
+            };
+
+            using (var browser = await Puppeteer.LaunchAsync(options))
+            using (var page = await browser.NewPageAsync())
+            {
+                Assert.Equal(456, await page.EvaluateExpressionAsync<int>("window.innerWidth"));
+                Assert.Equal(789, await page.EvaluateExpressionAsync<int>("window.innerHeight"));
+            }
+        }
+
+        [Fact]
+        public async Task ShouldDisableTheDefaultViewport()
+        {
+            var options = TestConstants.DefaultBrowserOptions();
+            options.DefaultViewport = null;
+
+            using (var browser = await Puppeteer.LaunchAsync(options))
+            using (var page = await browser.NewPageAsync())
+            {
+                Assert.Null(page.Viewport);
             }
         }
 

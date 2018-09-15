@@ -36,10 +36,7 @@ namespace PuppeteerSharp
             "--disable-translate",
             "--metrics-recording-only",
             "--no-first-run",
-            "--safebrowsing-disable-auto-update"
-        };
-
-        internal static readonly string[] AutomationArgs = {
+            "--safebrowsing-disable-auto-update",
             "--enable-automation",
             "--password-store=basic",
             "--use-mock-keychain"
@@ -205,69 +202,71 @@ namespace PuppeteerSharp
 
         private static (List<string> chromiumArgs, TempDirectory tempUserDataDir) PrepareChromiumArgs(LaunchOptions options)
         {
-            var chromiumArgs = new List<string>(DefaultArgs);
-            TempDirectory tempUserDataDir = null;
 
-            if (options.AppMode)
+            var chromiumArgs = new List<string>();
+
+            if (!options.IgnoreDefaultArgs)
             {
-                options.Headless = false;
+                chromiumArgs.AddRange(GetDefaultArgs(options));
+            }
+            else if (options.IgnoredDefaultArgs?.Length > 0)
+            {
+                chromiumArgs.AddRange(GetDefaultArgs(options).Except(options.IgnoredDefaultArgs));
             }
             else
-            {
-                chromiumArgs.AddRange(AutomationArgs);
-            }
-
-            if (!options.IgnoreDefaultArgs ||
-                !chromiumArgs.Any(argument => argument.StartsWith("--remote-debugging-", StringComparison.Ordinal)))
-            {
-                chromiumArgs.Add("--remote-debugging-port=0");
-            }
-
-            var userDataDirOption = options.Args.FirstOrDefault(i => i.StartsWith(UserDataDirArgument, StringComparison.Ordinal));
-            if (string.IsNullOrEmpty(userDataDirOption))
-            {
-                if (string.IsNullOrEmpty(options.UserDataDir))
-                {
-                    tempUserDataDir = new TempDirectory();
-                    chromiumArgs.Add($"{UserDataDirArgument}={tempUserDataDir.Path.Quote()}");
-                }
-                else
-                {
-                    chromiumArgs.Add($"{UserDataDirArgument}={options.UserDataDir.Quote()}");
-                }
-            }
-            else
-            {
-                options.UserDataDir = userDataDirOption.Replace($"{UserDataDirArgument}=", string.Empty).UnQuote();
-            }
-
-            if (options.Devtools)
-            {
-                chromiumArgs.Add("--auto-open-devtools-for-tabs");
-                options.Headless = false;
-            }
-
-            if (options.Headless)
-            {
-                chromiumArgs.AddRange(new[]{
-                    "--headless",
-                    "--disable-gpu",
-                    "--hide-scrollbars",
-                    "--mute-audio"
-                });
-            }
-
-            if (options.Args.All(arg => arg.StartsWith("-", StringComparison.Ordinal)))
-            {
-                chromiumArgs.Add("about:blank");
-            }
-
-            if (options.Args.Any())
             {
                 chromiumArgs.AddRange(options.Args);
             }
 
+            TempDirectory tempUserDataDir = null;
+
+            if (!chromiumArgs.Any(argument => argument.StartsWith("--remote-debugging-", StringComparison.Ordinal)))
+            {
+                chromiumArgs.Add("--remote-debugging-port=0");
+            }
+
+            var userDataDirOption = chromiumArgs.FirstOrDefault(i => i.StartsWith(UserDataDirArgument, StringComparison.Ordinal));
+            if (string.IsNullOrEmpty(userDataDirOption))
+            {
+                tempUserDataDir = new TempDirectory();
+                chromiumArgs.Add($"{UserDataDirArgument}={tempUserDataDir.Path.Quote()}");
+            }
+
             return (chromiumArgs, tempUserDataDir);
+        }
+
+        internal static string[] GetDefaultArgs(LaunchOptions options)
+        {
+            var chromeArguments = new List<string>(DefaultArgs);
+
+            if (!string.IsNullOrEmpty(options.UserDataDir))
+            {
+                chromeArguments.Add($"{UserDataDirArgument}={options.UserDataDir.Quote()}");
+            }
+            if (options.Devtools)
+            {
+                chromeArguments.Add("--auto-open-devtools-for-tabs");
+            }
+            if (options.Headless)
+            {
+                chromeArguments.AddRange(new[]{
+                    "--headless",
+                    "--hide-scrollbars",
+                    "--mute-audio"
+                });
+                if (BrowserFetcher.GetCurrentPlatform() == Platform.Win32)
+                {
+                    chromeArguments.Add("--disable-gpu");
+                }
+            }
+
+            if (options.Args.All(arg => arg.StartsWith("-", StringComparison.Ordinal)))
+            {
+                chromeArguments.Add("about:blank");
+            }
+
+            chromeArguments.AddRange(options.Args);
+            return chromeArguments.ToArray();
         }
 
         private static void SetEnvVariables(IDictionary<string, string> environment, IDictionary<string, string> customEnv, IDictionary realEnv)
@@ -601,12 +600,7 @@ namespace PuppeteerSharp
             {
                 public Task EnterFromAsync(ChromiumProcess p, State fromState, TimeSpan timeout)
                 {
-                    if (!TryEnter(p, fromState))
-                    {
-                        return p._currentState.ExitAsync(p, timeout);
-                    }
-
-                    return ExitAsync(p, timeout);
+                    return !TryEnter(p, fromState) ? p._currentState.ExitAsync(p, timeout) : ExitAsync(p, timeout);
                 }
 
                 public override async Task ExitAsync(ChromiumProcess p, TimeSpan timeout)

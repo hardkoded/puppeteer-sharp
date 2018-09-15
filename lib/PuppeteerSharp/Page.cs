@@ -50,7 +50,12 @@ namespace PuppeteerSharp
             {"mm", 3.78m}
         };
 
-        private Page(CDPSession client, Target target, FrameTree frameTree, bool ignoreHTTPSErrors, TaskQueue screenshotTaskQueue)
+        private Page(
+            CDPSession client,
+            Target target,
+            FrameTree frameTree,
+            bool ignoreHTTPSErrors,
+            TaskQueue screenshotTaskQueue)
         {
             Client = client;
             Target = target;
@@ -1533,7 +1538,7 @@ namespace PuppeteerSharp
             CDPSession client,
             Target target,
             bool ignoreHTTPSErrors,
-            bool setDefaultViewPort,
+            ViewPortOptions defaultViewPort,
             TaskQueue screenshotTaskQueue)
         {
             await client.SendAsync("Page.enable", null).ConfigureAwait(false);
@@ -1558,14 +1563,11 @@ namespace PuppeteerSharp
                 }).ConfigureAwait(false);
             }
 
-            if (setDefaultViewPort)
+            if (defaultViewPort != null)
             {
-                await page.SetViewportAsync(new ViewPortOptions
-                {
-                    Width = 800,
-                    Height = 600
-                }).ConfigureAwait(false);
+                await page.SetViewportAsync(defaultViewPort).ConfigureAwait(false);
             }
+
             return page;
         }
 

@@ -41,5 +41,11 @@ namespace PuppeteerSharp
         /// Optional factory for <see cref="WebSocket"/> implementations.
         /// </summary>
         public Func<Uri, IConnectionOptions, CancellationToken, Task<WebSocket>> WebSocketFactory { get; set; }
+
+        /// <summary>
+        /// Gets or sets the default Viewport.
+        /// </summary>
+        /// <value>The default Viewport.</value>
+        public ViewPortOptions DefaultViewport { get; set; } = ViewPortOptions.Default;
     }
 }

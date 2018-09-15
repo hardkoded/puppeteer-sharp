@@ -11,8 +11,9 @@
         bool IgnoreHTTPSErrors { get; }
 
         /// <summary>
-        /// If set to true, sets Headless = false, otherwise, enables automation.
+        /// Gets or sets the default Viewport.
         /// </summary>
-        bool AppMode { get; }
+        /// <value>The default Viewport.</value>
+        ViewPortOptions DefaultViewport { get; set; }
     }
 }

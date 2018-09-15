@@ -46,18 +46,18 @@ namespace PuppeteerSharp
         /// <param name="connection">The connection</param>
         /// <param name="contextIds">The context ids></param>
         /// <param name="ignoreHTTPSErrors">The option to ignoreHTTPSErrors</param>
-        /// <param name="setDefaultViewport">The option to setDefaultViewport</param>
+        /// <param name="defaultViewport">Default viewport</param>
         /// <param name="chromiumProcess">The Chromium process</param>
         public Browser(
             Connection connection,
             string[] contextIds,
             bool ignoreHTTPSErrors,
-            bool setDefaultViewport,
+            ViewPortOptions defaultViewport,
             ChromiumProcess chromiumProcess)
         {
             Connection = connection;
             IgnoreHTTPSErrors = ignoreHTTPSErrors;
-            SetDefaultViewport = setDefaultViewport;
+            DefaultViewport = defaultViewport;
             TargetsMap = new Dictionary<string, Target>();
             ScreenshotTaskQueue = new TaskQueue();
             _defaultContext = new BrowserContext(this, null);
@@ -141,7 +141,7 @@ namespace PuppeteerSharp
 
         internal TaskQueue ScreenshotTaskQueue { get; set; }
         internal Connection Connection { get; }
-        internal bool SetDefaultViewport { get; }
+        internal ViewPortOptions DefaultViewport { get; }
 
         #endregion
 
@@ -399,10 +399,10 @@ namespace PuppeteerSharp
             Connection connection,
             string[] contextIds,
             bool ignoreHTTPSErrors,
-            bool appMode,
+            ViewPortOptions defaultViewPort,
             ChromiumProcess chromiumProcess)
         {
-            var browser = new Browser(connection, contextIds, ignoreHTTPSErrors, appMode, chromiumProcess);
+            var browser = new Browser(connection, contextIds, ignoreHTTPSErrors, defaultViewPort, chromiumProcess);
             await connection.SendAsync("Target.setDiscoverTargets", new
             {
                 discover = true
