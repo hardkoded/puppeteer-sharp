@@ -39,21 +39,20 @@ namespace PuppeteerSharp
 
         #region Public Methods
 
-        internal JSHandle CreateJSHandle(int contextId, dynamic remoteObject)
-        {
-            _contextIdToContext.TryGetValue(contextId, out var storedContext);
+        internal JSHandle CreateJSHandle(ExecutionContext context, dynamic remoteObject)
+            => remoteObject.subtype == "node"
+                ? new ElementHandle(context, _client, remoteObject, _page, this)
+                : new JSHandle(context, _client, remoteObject);
 
-            if (storedContext == null)
+        internal ExecutionContext ExecutionContextById(int contextId)
+        {
+            _contextIdToContext.TryGetValue(contextId, out var context);
+
+            if (context == null)
             {
                 _logger.LogError("INTERNAL ERROR: missing context with id = {ContextId}", contextId);
             }
-
-            if (remoteObject.subtype == "node")
-            {
-                return new ElementHandle(storedContext, _client, remoteObject, _page, this);
-            }
-
-            return new JSHandle(storedContext, _client, remoteObject);
+            return context;
         }
 
         #endregion
@@ -150,7 +149,7 @@ namespace PuppeteerSharp
             var context = new ExecutionContext(
                 _client,
                 contextPayload,
-                (ctx, remoteObject) => CreateJSHandle(contextPayload.Id, remoteObject),
+                (ctx, remoteObject) => CreateJSHandle(ctx, remoteObject),
                 frame);
 
             _contextIdToContext[contextPayload.Id] = context;
