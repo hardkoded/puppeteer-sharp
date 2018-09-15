@@ -33,7 +33,8 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>Chromium arguments.</returns>
         /// <param name="options">Options.</param>
-        public static string[] GetDefaultArgs(LaunchOptions options = default) => ChromiumProcess.GetDefaultArgs();
+        public static string[] GetDefaultArgs(LaunchOptions options = null)
+            => ChromiumProcess.GetDefaultArgs(options ?? new LaunchOptions());
 
         /// <summary>
         /// The method launches a browser instance with given arguments. The browser will be closed when the Browser is disposed.

@@ -384,6 +384,37 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         }
 
         [Fact]
+        public async Task ShouldSetTheDefaultViewport()
+        {
+            var options = TestConstants.DefaultBrowserOptions();
+            options.DefaultViewport = new ViewPortOptions
+            {
+                Width = 456,
+                Height = 789
+            };
+
+            using (var browser = await Puppeteer.LaunchAsync(options))
+            using (var page = await browser.NewPageAsync())
+            {
+                Assert.Equal(456, await page.EvaluateExpressionAsync<int>("window.innerWidth"));
+                Assert.Equal(789, await page.EvaluateExpressionAsync<int>("window.innerHeight"));
+            }
+        }
+
+        [Fact]
+        public async Task ShouldDisableTheDefaultViewport()
+        {
+            var options = TestConstants.DefaultBrowserOptions();
+            options.DefaultViewport = null;
+
+            using (var browser = await Puppeteer.LaunchAsync(options))
+            using (var page = await browser.NewPageAsync())
+            {
+                Assert.Null(page.Viewport);
+            }
+        }
+
+        [Fact]
         public async Task ShouldSupportCustomWebSocket()
         {
             var options = TestConstants.DefaultBrowserOptions();

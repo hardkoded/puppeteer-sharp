@@ -235,7 +235,7 @@ namespace PuppeteerSharp
             return (chromiumArgs, tempUserDataDir);
         }
 
-        internal static string[] GetDefaultArgs(LaunchOptions options = default)
+        internal static string[] GetDefaultArgs(LaunchOptions options)
         {
             var chromeArguments = new List<string>(DefaultArgs);
 
