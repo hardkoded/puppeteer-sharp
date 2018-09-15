@@ -1939,9 +1939,8 @@ namespace PuppeteerSharp
 
         private async Task OnConsoleAPI(PageConsoleResponse message)
         {
-            var context = _frameManager.ExecutionContextById(message.ExecutionContextId);
-            var values = message.Args.Select<dynamic, JSHandle>(i =>
-                    _frameManager.CreateJSHandle(context, i)).ToArray();
+            var ctx = _frameManager.ExecutionContextById(message.ExecutionContextId);
+            var values = message.Args.Select<dynamic, JSHandle>(i => _frameManager.CreateJSHandle(ctx, i)).ToArray();
             await AddConsoleMessage(message.Type, values);
         }
 
