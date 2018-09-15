@@ -235,12 +235,7 @@ namespace PuppeteerSharp
             return (chromiumArgs, tempUserDataDir);
         }
 
-        /// <summary>
-        /// Returns an array of argument based on the options provided and the platform where the library is running 
-        /// </summary>
-        /// <returns>Chromium arguments.</returns>
-        /// <param name="options">Options.</param>
-        public static string[] GetDefaultArgs(LaunchOptions options)
+        internal static string[] GetDefaultArgs(LaunchOptions options = default)
         {
             var chromeArguments = new List<string>(DefaultArgs);
 

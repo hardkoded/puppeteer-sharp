@@ -210,8 +210,16 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         [Fact]
         public void ShouldReturnTheDefaultChromeArguments()
         {
-            var args = Puppeteer.DefaultArgs;
-            Assert.Contains("--no-first-run", args);
+            Assert.Contains("--no-first-run", Puppeteer.GetDefaultArgs());
+            Assert.Contains("--headless", Puppeteer.GetDefaultArgs());
+            Assert.DoesNotContain("--headless", Puppeteer.GetDefaultArgs(new LaunchOptions
+            {
+                Headless = false
+            }));
+            Assert.Contains("--user-data-dir=\"foo\"", Puppeteer.GetDefaultArgs(new LaunchOptions
+            {
+                UserDataDir = "foo"
+            }));
         }
 
         [Fact]
@@ -335,7 +343,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         [Fact]
         public async Task ShouldFilterOutIgnoredDefaultArguments()
         {
-            var defaultArgs = ChromiumProcess.GetDefaultArgs(new LaunchOptions());
+            var defaultArgs = Puppeteer.GetDefaultArgs();
             var options = TestConstants.DefaultBrowserOptions();
             options.IgnoredDefaultArgs = new[] { defaultArgs[0], defaultArgs[2] };
             using (var browser = await Puppeteer.LaunchAsync(options))

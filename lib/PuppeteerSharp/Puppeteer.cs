@@ -29,6 +29,13 @@ namespace PuppeteerSharp
         public static string GetExecutablePath() => Launcher.GetExecutablePath();
 
         /// <summary>
+        /// Returns an array of argument based on the options provided and the platform where the library is running 
+        /// </summary>
+        /// <returns>Chromium arguments.</returns>
+        /// <param name="options">Options.</param>
+        public static string[] GetDefaultArgs(LaunchOptions options = default) => ChromiumProcess.GetDefaultArgs();
+
+        /// <summary>
         /// The method launches a browser instance with given arguments. The browser will be closed when the Browser is disposed.
         /// </summary>
         /// <param name="options">Options for launching Chrome</param>
