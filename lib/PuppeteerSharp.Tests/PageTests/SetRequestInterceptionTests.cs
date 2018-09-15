@@ -40,6 +40,24 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Fact]
+        public async Task ShouldProperlyReturnNavigationResponseWhenURLHasCookies()
+        {
+            // Setup cookie.
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.SetCookieAsync(new CookieParam
+            {
+                Name = "foo",
+                Value = "bar"
+            });
+
+            // Setup request interception.
+            await Page.SetRequestInterceptionAsync(true);
+            Page.Request += (sender, e) => _ = e.Request.ContinueAsync();
+            var response = await Page.ReloadAsync();
+            Assert.Equal(HttpStatusCode.OK, response.Status);
+        }
+
+        [Fact]
         public async Task ShouldStopIntercepting()
         {
             await Page.SetRequestInterceptionAsync(true);
