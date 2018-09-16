@@ -605,6 +605,7 @@ namespace PuppeteerSharp.Tests.InputTests
                 "👹 Tokyo street Japan \uD83C\uDDEF\uD83C\uDDF5",
                 await Page.QuerySelectorAsync("textarea").EvaluateFunctionAsync<string>("t => t.value"));
         }
+
         [Fact]
         public async Task ShouldTypeEmojiIntoAniframe()
         {
