@@ -7,7 +7,6 @@ namespace PuppeteerSharp.Tests.CloseMe
     {
         public static async Task Main(string[] args)
         {
-            await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
             var options = new LaunchOptions
             {
                 Headless = true,
