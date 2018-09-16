@@ -226,6 +226,39 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Fact]
+        public async Task ShouldWorkWithRedirectsForSubresources()
+        {
+            await Page.SetRequestInterceptionAsync(true);
+            var requests = new List<Request>();
+            Page.Request += async (sender, e) =>
+            {
+                requests.Add(e.Request);
+                await e.Request.ContinueAsync();
+            };
+
+            Server.SetRedirect("/one-style.css", "/two-style.css");
+            Server.SetRedirect("/two-style.css", "/three-style.css");
+            Server.SetRedirect("/three-style.css", "/four-style.css");
+            Server.SetRoute("/four-style.css", async context =>
+            {
+                await context.Response.WriteAsync("body {box-sizing: border-box; }");
+            });
+
+            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
+            Assert.Equal(HttpStatusCode.OK, response.Status);
+            Assert.Contains("one-style.html", response.Url);
+            Assert.Equal(5, requests.Count);
+            Assert.Equal(ResourceType.Document, requests[0].ResourceType);
+            Assert.Equal(ResourceType.StyleSheet, requests[1].ResourceType);
+
+            // Check redirect chain
+            var redirectChain = requests[1].RedirectChain;
+            Assert.Equal(3, redirectChain.Length);
+            Assert.Contains("one-style.css", redirectChain[0].Url);
+            Assert.Contains("three-style.css", redirectChain[2].Url);
+        }
+
+        [Fact]
         public async Task ShouldBeAbleToAbortRedirects()
         {
             await Page.SetRequestInterceptionAsync(true);

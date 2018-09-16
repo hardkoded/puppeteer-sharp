@@ -2,7 +2,7 @@
 
 namespace PuppeteerSharp.Messaging
 {
-    internal class RequestWillBeSentResponse
+    internal class RequestWillBeSentPayload
     {
         [JsonProperty("requestId")]
         public string RequestId { get; set; }
