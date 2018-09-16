@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp.Input
@@ -103,7 +104,7 @@ namespace PuppeteerSharp.Input
                 delay = (int)options.Delay;
             }
 
-            var textParts = System.Globalization.StringInfo.GetTextElementEnumerator(text);
+            var textParts = StringInfo.GetTextElementEnumerator(text);
             while (textParts.MoveNext())
             {
                 var letter = textParts.Current;
