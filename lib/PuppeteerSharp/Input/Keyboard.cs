@@ -102,8 +102,11 @@ namespace PuppeteerSharp.Input
             {
                 delay = (int)options.Delay;
             }
-            foreach (var letter in text)
+
+            var textParts = System.Globalization.StringInfo.GetTextElementEnumerator(text);
+            while (textParts.MoveNext())
             {
+                var letter = textParts.Current;
                 if (KeyDefinitions.ContainsKey(letter.ToString()))
                 {
                     await PressAsync(letter.ToString(), new PressOptions { Delay = delay }).ConfigureAwait(false);

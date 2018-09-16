@@ -600,9 +600,9 @@ namespace PuppeteerSharp.Tests.InputTests
         public async Task ShouldTypeEmoji()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
-            await Page.TypeAsync("textarea", "👹 Tokyo street Japan");
+            await Page.TypeAsync("textarea", "👹 Tokyo street Japan \uD83C\uDDEF\uD83C\uDDF5");
             Assert.Equal(
-                "👹 Tokyo street Japan",
+                "👹 Tokyo street Japan \uD83C\uDDEF\uD83C\uDDF5",
                 await Page.QuerySelectorAsync("textarea").EvaluateFunctionAsync<string>("t => t.value"));
         }
         [Fact]
@@ -612,9 +612,9 @@ namespace PuppeteerSharp.Tests.InputTests
             await FrameUtils.AttachFrameAsync(Page, "emoji-test", TestConstants.ServerUrl + "/input/textarea.html");
             var frame = Page.Frames[1];
             var textarea = await frame.QuerySelectorAsync("textarea");
-            await textarea.TypeAsync("👹 Tokyo street Japan");
+            await textarea.TypeAsync("👹 Tokyo street Japan \uD83C\uDDEF\uD83C\uDDF5");
             Assert.Equal(
-                "👹 Tokyo street Japan",
+                "👹 Tokyo street Japan \uD83C\uDDEF\uD83C\uDDF5",
                 await frame.QuerySelectorAsync("textarea").EvaluateFunctionAsync<string>("t => t.value"));
         }
     }
