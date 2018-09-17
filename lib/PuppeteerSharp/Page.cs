@@ -763,6 +763,16 @@ namespace PuppeteerSharp
             => GoToAsync(url, new NavigationOptions { Timeout = timeout, WaitUntil = waitUntil });
 
         /// <summary>
+        /// Navigates to an url
+        /// </summary>
+        /// <param name="url">URL to navigate page to. The url should include scheme, e.g. https://.</param>
+        /// <param name="waitUntil">When to consider navigation succeeded.
+        /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect</returns>
+        /// <seealso cref="GoToAsync(string, NavigationOptions)"/>
+        public Task<Response> GoToAsync(string url, WaitUntilNavigation waitUntil)
+            => GoToAsync(url, new NavigationOptions { WaitUntil = new[] { waitUntil } });
+
+        /// <summary>
         /// generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaAsync(MediaType)"/> with <see cref="MediaType.Screen"/>
         /// </summary>
         /// <param name="file">The file path to save the PDF to. paths are resolved using <see cref="Path.GetFullPath(string)"/></param>
