@@ -8,13 +8,13 @@ namespace PuppeteerSharp.Tests
         public PuppeteerPageBaseTest(ITestOutputHelper output) : base(output)
         {
         }
-
-        protected Page Page { get; set; }
+        
+        protected Page Page { get; private set; }
 
         public override async Task InitializeAsync()
         {
             await base.InitializeAsync();
-            Page = await Browser.NewPageAsync();
+            Page = await Context.NewPageAsync();
         }
 
         public override async Task DisposeAsync()
@@ -25,7 +25,7 @@ namespace PuppeteerSharp.Tests
 
         protected Task WaitForError()
         {
-            TaskCompletionSource<bool> wrapper = new TaskCompletionSource<bool>();
+            var wrapper = new TaskCompletionSource<bool>();
 
             void errorEvent(object sender, ErrorEventArgs e)
             {
