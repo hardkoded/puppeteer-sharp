@@ -9,7 +9,6 @@ namespace PuppeteerSharp.Tests
     {
         protected Browser Browser { get; set; }
 
-
         public PuppeteerBrowserBaseTest(ITestOutputHelper output) : base(output)
         {
             BaseDirectory = Path.Combine(Directory.GetCurrentDirectory(), "workspace");
