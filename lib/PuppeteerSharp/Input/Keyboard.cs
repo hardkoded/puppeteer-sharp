@@ -42,7 +42,8 @@ namespace PuppeteerSharp.Input
 
             var text = options?.Text == null ? description.Text : options.Text;
 
-            return _client.SendAsync("Input.dispatchKeyEvent", new Dictionary<string, object>{
+            return _client.SendAsync("Input.dispatchKeyEvent", new Dictionary<string, object>
+            {
                 {"type", text != null ? "keyDown" : "rawKeyDown"},
                 {"modifiers", Modifiers},
                 {"windowsVirtualKeyCode", description.KeyCode},
