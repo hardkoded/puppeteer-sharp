@@ -162,8 +162,10 @@ namespace PuppeteerSharp.Tests.PageTests
                 }
             };
             await frameNavigatedTaskSource.Task;
-            var task = frame.EvaluateFunctionAsync("() => window.stop()");
-            await navigationTask;
+            await Task.WhenAll(
+                frame.EvaluateFunctionAsync("() => window.stop()"),
+                navigationTask
+            );
         }
     }
 }
