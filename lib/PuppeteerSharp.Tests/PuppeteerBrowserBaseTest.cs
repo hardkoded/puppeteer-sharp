@@ -8,7 +8,7 @@ namespace PuppeteerSharp.Tests
     public class PuppeteerBrowserBaseTest : PuppeteerBaseTest, IAsyncLifetime
     {
         protected Browser Browser { get; set; }
-        protected BrowserContext Context { get; set; }
+
 
         public PuppeteerBrowserBaseTest(ITestOutputHelper output) : base(output)
         {
@@ -22,10 +22,7 @@ namespace PuppeteerSharp.Tests
         }
 
         public virtual async Task InitializeAsync()
-        {
-            Browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.LoggerFactory);
-            Context = await Browser.CreateIncognitoBrowserContextAsync();
-        }
+            => Browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.LoggerFactory);
 
         public virtual async Task DisposeAsync() => await Browser.CloseAsync();
     }

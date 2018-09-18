@@ -3,7 +3,7 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests
 {
-    public class PuppeteerPageBaseTest : PuppeteerBrowserBaseTest
+    public class PuppeteerPageBaseTest : PuppeteerBrowserContextBaseTest
     {
         public PuppeteerPageBaseTest(ITestOutputHelper output) : base(output)
         {

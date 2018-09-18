@@ -9,7 +9,7 @@ using Xunit.Abstractions;
 namespace PuppeteerSharp.Tests.PageTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
-    public class ScreenshotTests : PuppeteerBrowserBaseTest
+    public class ScreenshotTests : PuppeteerBrowserContextBaseTest
     {
         public ScreenshotTests(ITestOutputHelper output) : base(output)
         {
