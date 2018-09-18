@@ -9,7 +9,7 @@ using Xunit.Abstractions;
 namespace PuppeteerSharp.Tests.PageTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
-    public class ScreenshotTests : PuppeteerBrowserBaseTest
+    public class ScreenshotTests : PuppeteerBrowserContextBaseTest
     {
         public ScreenshotTests(ITestOutputHelper output) : base(output)
         {
@@ -21,7 +21,7 @@ namespace PuppeteerSharp.Tests.PageTests
             var outputFile = Path.Combine(BaseDirectory, "output.png");
             var fileInfo = new FileInfo(outputFile);
 
-            using (var page = await Browser.NewPageAsync())
+            using (var page = await Context.NewPageAsync())
             {
                 await page.SetViewportAsync(new ViewPortOptions
                 {
@@ -52,7 +52,7 @@ namespace PuppeteerSharp.Tests.PageTests
         [Fact]
         public async Task ShouldWork()
         {
-            using (var page = await Browser.NewPageAsync())
+            using (var page = await Context.NewPageAsync())
             {
                 await page.SetViewportAsync(new ViewPortOptions
                 {
@@ -68,7 +68,7 @@ namespace PuppeteerSharp.Tests.PageTests
         [Fact]
         public async Task ShouldClipRect()
         {
-            using (var page = await Browser.NewPageAsync())
+            using (var page = await Context.NewPageAsync())
             {
                 await page.SetViewportAsync(new ViewPortOptions
                 {
@@ -93,7 +93,7 @@ namespace PuppeteerSharp.Tests.PageTests
         [Fact]
         public async Task ShouldWorkForOffscreenClip()
         {
-            using (var page = await Browser.NewPageAsync())
+            using (var page = await Context.NewPageAsync())
             {
                 await page.SetViewportAsync(new ViewPortOptions
                 {
@@ -118,7 +118,7 @@ namespace PuppeteerSharp.Tests.PageTests
         [Fact]
         public async Task ShouldRunInParallel()
         {
-            using (var page = await Browser.NewPageAsync())
+            using (var page = await Context.NewPageAsync())
             {
                 await page.SetViewportAsync(new ViewPortOptions
                 {
@@ -150,7 +150,7 @@ namespace PuppeteerSharp.Tests.PageTests
         [Fact]
         public async Task ShouldTakeFullPageScreenshots()
         {
-            using (var page = await Browser.NewPageAsync())
+            using (var page = await Context.NewPageAsync())
             {
                 await page.SetViewportAsync(new ViewPortOptions
                 {
@@ -175,7 +175,7 @@ namespace PuppeteerSharp.Tests.PageTests
             {
                 Func<Task<Page>> func = async () =>
                 {
-                    var page = await Browser.NewPageAsync();
+                    var page = await Context.NewPageAsync();
                     await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
                     return page;
                 };
@@ -219,7 +219,7 @@ namespace PuppeteerSharp.Tests.PageTests
         [Fact]
         public async Task ShouldAllowTransparency()
         {
-            using (var page = await Browser.NewPageAsync())
+            using (var page = await Context.NewPageAsync())
             {
                 await page.SetViewportAsync(new ViewPortOptions
                 {
@@ -239,7 +239,7 @@ namespace PuppeteerSharp.Tests.PageTests
         [Fact]
         public async Task ShouldWorkWithOddClipSizeOnRetinaDisplays()
         {
-            using (var page = await Browser.NewPageAsync())
+            using (var page = await Context.NewPageAsync())
             {
                 var screenshot = await page.ScreenshotDataAsync(new ScreenshotOptions
                 {
@@ -259,7 +259,7 @@ namespace PuppeteerSharp.Tests.PageTests
         [Fact]
         public async Task ShouldReturnBase64()
         {
-            using (var page = await Browser.NewPageAsync())
+            using (var page = await Context.NewPageAsync())
             {
                 await page.SetViewportAsync(new ViewPortOptions
                 {
@@ -286,7 +286,7 @@ namespace PuppeteerSharp.Tests.PageTests
         [Fact]
         public async Task ShouldWorkWithQuality()
         {
-            using (var page = await Browser.NewPageAsync())
+            using (var page = await Context.NewPageAsync())
             {
                 await page.SetViewportAsync(new ViewPortOptions
                 {

@@ -20,8 +20,8 @@ namespace PuppeteerSharp.Tests
             }
         }
 
-        public virtual async Task InitializeAsync() => 
-            Browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.LoggerFactory);
+        public virtual async Task InitializeAsync()
+            => Browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.LoggerFactory);
 
         public virtual async Task DisposeAsync() => await Browser.CloseAsync();
     }
