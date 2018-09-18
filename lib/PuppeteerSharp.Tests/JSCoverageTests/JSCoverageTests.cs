@@ -20,7 +20,7 @@ namespace PuppeteerSharp.Tests.JSCoverageTests
         public async Task ShouldWork()
         {
             await Page.Coverage.StartJSCoverageAsync();
-            await Page.GoToAsync(TestConstants.ServerUrl + "/jscoverage/simple.html");
+            await Page.GoToAsync(TestConstants.ServerUrl + "/jscoverage/simple.html", WaitUntilNavigation.Networkidle0);
             var coverage = await Page.Coverage.StopJSCoverageAsync();
             Assert.Single(coverage);
             Assert.Contains("/jscoverage/simple.html", coverage[0].Url);
