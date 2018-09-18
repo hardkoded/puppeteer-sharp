@@ -595,5 +595,28 @@ namespace PuppeteerSharp.Tests.InputTests
 
             await Assert.ThrowsAsync<KeyNotFoundException>(() => Page.Keyboard.PressAsync("😊"));
         }
+
+        [Fact]
+        public async Task ShouldTypeEmoji()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
+            await Page.TypeAsync("textarea", "👹 Tokyo street Japan \uD83C\uDDEF\uD83C\uDDF5");
+            Assert.Equal(
+                "👹 Tokyo street Japan \uD83C\uDDEF\uD83C\uDDF5",
+                await Page.QuerySelectorAsync("textarea").EvaluateFunctionAsync<string>("t => t.value"));
+        }
+
+        [Fact]
+        public async Task ShouldTypeEmojiIntoAniframe()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await FrameUtils.AttachFrameAsync(Page, "emoji-test", TestConstants.ServerUrl + "/input/textarea.html");
+            var frame = Page.Frames[1];
+            var textarea = await frame.QuerySelectorAsync("textarea");
+            await textarea.TypeAsync("👹 Tokyo street Japan \uD83C\uDDEF\uD83C\uDDF5");
+            Assert.Equal(
+                "👹 Tokyo street Japan \uD83C\uDDEF\uD83C\uDDF5",
+                await frame.QuerySelectorAsync("textarea").EvaluateFunctionAsync<string>("t => t.value"));
+        }
     }
 }

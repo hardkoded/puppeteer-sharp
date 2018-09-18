@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp.Input
@@ -41,7 +42,8 @@ namespace PuppeteerSharp.Input
 
             var text = options?.Text == null ? description.Text : options.Text;
 
-            return _client.SendAsync("Input.dispatchKeyEvent", new Dictionary<string, object>(){
+            return _client.SendAsync("Input.dispatchKeyEvent", new Dictionary<string, object>
+            {
                 {"type", text != null ? "keyDown" : "rawKeyDown"},
                 {"modifiers", Modifiers},
                 {"windowsVirtualKeyCode", description.KeyCode},
@@ -67,7 +69,8 @@ namespace PuppeteerSharp.Input
             Modifiers &= ~ModifierBit(key);
             _pressedKeys.Remove(description.Code);
 
-            return _client.SendAsync("Input.dispatchKeyEvent", new Dictionary<string, object>(){
+            return _client.SendAsync("Input.dispatchKeyEvent", new Dictionary<string, object>
+            {
                 {"type", "keyUp"},
                 {"modifiers", Modifiers},
                 {"key", description.Key},
@@ -83,15 +86,7 @@ namespace PuppeteerSharp.Input
         /// <param name="charText">Character to send into the page</param>
         /// <returns>Task</returns>
         public Task SendCharacterAsync(string charText)
-        {
-            return _client.SendAsync("Input.dispatchKeyEvent", new Dictionary<string, object>(){
-                {"type", "char"},
-                {"modifiers", Modifiers},
-                {"text", charText },
-                {"key", charText},
-                {"unmodifiedText", charText }
-            });
-        }
+            => _client.SendAsync("Input.insertText", new Dictionary<string, object> { ["text"] = charText });
 
         /// <summary>
         /// Sends a <c>keydown</c>, <c>keypress</c>/<c>input</c>, and <c>keyup</c> event for each character in the text.
@@ -109,8 +104,11 @@ namespace PuppeteerSharp.Input
             {
                 delay = (int)options.Delay;
             }
-            foreach (var letter in text)
+
+            var textParts = StringInfo.GetTextElementEnumerator(text);
+            while (textParts.MoveNext())
             {
+                var letter = textParts.Current;
                 if (KeyDefinitions.ContainsKey(letter.ToString()))
                 {
                     await PressAsync(letter.ToString(), new PressOptions { Delay = delay }).ConfigureAwait(false);
