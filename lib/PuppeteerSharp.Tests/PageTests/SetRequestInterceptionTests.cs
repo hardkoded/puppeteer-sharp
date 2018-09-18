@@ -40,6 +40,23 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Fact]
+        public async Task ShouldContainRefererHeader()
+        {
+            await Page.SetRequestInterceptionAsync(true);
+            var requests = new List<Request>();
+
+            Page.Request += async (sender, e) =>
+            {
+                await e.Request.ContinueAsync();
+                requests.Add(e.Request);
+            };
+
+            await Page.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
+            Assert.Contains("/one-style.css", requests[1].Url);
+            Assert.Contains("/one-style.html", requests[1].Headers["Referer"]);
+        }
+
+        [Fact]
         public async Task ShouldProperlyReturnNavigationResponseWhenURLHasCookies()
         {
             // Setup cookie.
@@ -167,8 +184,10 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.SetRequestInterceptionAsync(true);
             Page.Request += async (sender, e) =>
             {
-                var headers = new Dictionary<string, object>(e.Request.Headers);
-                headers["FOO"] = "bar";
+                var headers = new Dictionary<string, string>(e.Request.Headers)
+                {
+                    ["FOO"] = "bar"
+                };
                 await e.Request.ContinueAsync(new Payload { Headers = headers });
             };
             await Page.GoToAsync(TestConstants.EmptyPage);

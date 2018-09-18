@@ -57,7 +57,7 @@ namespace PuppeteerSharp
             Frame = frame;
             RedirectChainList = redirectChain;
 
-            Headers = new Dictionary<string, object>();
+            Headers = new Dictionary<string, string>();
             foreach (var keyValue in payload.Headers)
             {
                 Headers[keyValue.Key] = keyValue.Value;
@@ -115,7 +115,7 @@ namespace PuppeteerSharp
         /// Gets or sets the HTTP headers.
         /// </summary>
         /// <value>HTTP headers.</value>
-        public Dictionary<string, object> Headers { get; internal set; }
+        public Dictionary<string, string> Headers { get; internal set; }
         /// <summary>
         /// Gets or sets the URL.
         /// </summary>
