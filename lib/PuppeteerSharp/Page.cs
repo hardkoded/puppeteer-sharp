@@ -879,7 +879,8 @@ namespace PuppeteerSharp
                 marginBottom,
                 marginLeft,
                 marginRight,
-                pageRanges = options.PageRanges
+                pageRanges = options.PageRanges,
+                preferCSSPageSize = options.PreferCSSPageSize
             }).ConfigureAwait(false);
 
             var buffer = Convert.FromBase64String(result.GetValue("data").Value<string>());
