@@ -3,8 +3,11 @@ using System.Runtime.Serialization;
 
 namespace PuppeteerSharp
 {
+    /// <summary>
+    /// Timeout exception that might be thrown by <c>WaitFor</c> methods in <see cref="Frame"/>.
+    /// </summary>
     [Serializable]
-    internal class WaitTaskTimeoutException : PuppeteerException
+    public class WaitTaskTimeoutException : PuppeteerException
     {
         /// <summary>
         /// Timeout that caused the exception
