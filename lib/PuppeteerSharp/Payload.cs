@@ -14,14 +14,6 @@ namespace PuppeteerSharp
     public class Payload
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="PuppeteerSharp.Payload"/> class.
-        /// </summary>
-        public Payload()
-        {
-            Headers = new Dictionary<string, object>();
-        }
-
-        /// <summary>
         /// Gets or sets the HTTP method.
         /// </summary>
         /// <value>HTTP method.</value>
@@ -38,7 +30,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>HTTP headers.</value>
         [JsonProperty("headers")]
-        public Dictionary<string, object> Headers { get; set; }
+        public Dictionary<string, string> Headers { get; set; } = new Dictionary<string, string>();
         /// <summary>
         /// Gets or sets the URL.
         /// </summary>
