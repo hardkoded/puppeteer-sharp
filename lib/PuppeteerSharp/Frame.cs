@@ -547,7 +547,7 @@ namespace PuppeteerSharp
                 this,
                 predicate,
                 false,
-                $"{(isXPath ? "XPath" : "selector")} '{selectorOrXPath}'",
+                $"{(isXPath ? "XPath" : "selector")} '{selectorOrXPath}'{(options.Hidden ? " to be hidden" : "")}",
                 options.Polling,
                 options.PollingInterval,
                 options.Timeout,
@@ -557,7 +557,7 @@ namespace PuppeteerSharp
                     isXPath,
                     options.Visible,
                     options.Hidden
-            }).Task.ConfigureAwait(false);
+                }).Task.ConfigureAwait(false);
             return handle as ElementHandle;
         }
 

@@ -183,6 +183,17 @@ namespace PuppeteerSharp.Tests.FrameTests
         }
 
         [Fact]
+        public async Task ShouldHaveAnErrorMessageSpecificallyForAwaitingAnElementToBeHidden()
+        {
+            await Page.SetContentAsync("<div></div>");
+            var exception = await Assert.ThrowsAsync<WaitTaskTimeoutException>(async ()
+                => await Page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Hidden = true, Timeout = 10 }));
+
+            Assert.NotNull(exception);
+            Assert.Contains("waiting for selector 'div' to be hidden failed: timeout", exception.Message);
+        }
+
+        [Fact]
         public async Task ShouldRespondToNodeAttributeMutation()
         {
             var divFound = false;
