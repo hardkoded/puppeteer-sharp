@@ -221,7 +221,7 @@ namespace PuppeteerSharp
         /// <returns>A task that resolves when element specified by selector string is added to DOM</returns>
         /// <seealso cref="WaitForXPathAsync(string, WaitForSelectorOptions)"/>
         /// <seealso cref="Page.WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
-        /// <exception cref="WaitTaskTimeoutException">"If timeout occurred."</exception>
+        /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
         public Task<ElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
             => WaitForSelectorOrXPathAsync(selector, false, options);
 
@@ -261,7 +261,7 @@ namespace PuppeteerSharp
         /// <param name="milliseconds"></param>
         /// <returns>A task that resolves when after the timeout</returns>
         /// <seealso cref="Page.WaitForTimeoutAsync(int)"/>
-        /// <exception cref="WaitTaskTimeoutException">"If timeout occurred.</exception>
+        /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
         public Task WaitForTimeoutAsync(int milliseconds) => Task.Delay(milliseconds);
 
         /// <summary>
