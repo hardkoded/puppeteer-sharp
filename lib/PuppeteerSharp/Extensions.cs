@@ -24,6 +24,25 @@ namespace PuppeteerSharp
                 throw new SelectorException("Error: failed to find element matching selector");
             }
 
+            return await elementHandle.EvaluateFunctionAsync<T>(pageFunction, args);
+        }
+
+        /// <summary>
+        /// Runs <paramref name="pageFunction"/> within the frame and passes it the outcome the <paramref name="elementHandle"/> as the first argument
+        /// </summary>
+        /// <typeparam name="T">The type of the response</typeparam>
+        /// <param name="elementHandle">An <see cref="ElementHandle"/> that will be used as the first argument in <paramref name="pageFunction"/></param>
+        /// <param name="pageFunction">Function to be evaluated in browser context</param>
+        /// <param name="args">Arguments to pass to <c>pageFunction</c></param>
+        /// <returns>Task which resolves to the return value of <c>pageFunction</c></returns>
+        /// <exception cref="SelectorException">If <paramref name="elementHandle"/> is <c>null</c></exception>
+        public static async Task<T> EvaluateFunctionAsync<T>(this ElementHandle elementHandle, string pageFunction, params object[] args)
+        {
+            if (elementHandle == null)
+            {
+                throw new SelectorException("Error: failed to find element matching selector");
+            }
+
             var newArgs = new object[args.Length + 1];
             newArgs[0] = elementHandle;
             args.CopyTo(newArgs, 1);
@@ -41,8 +60,18 @@ namespace PuppeteerSharp
         /// <param name="args">Arguments to pass to <c>pageFunction</c></param>
         /// <returns>Task which resolves to the return value of <c>pageFunction</c></returns>
         public static async Task<T> EvaluateFunctionAsync<T>(this Task<JSHandle> arrayHandleTask, string pageFunction, params object[] args)
+            => await (await arrayHandleTask.ConfigureAwait(false)).EvaluateFunctionAsync<T>(pageFunction, args);
+
+        /// <summary>
+        /// Runs <paramref name="pageFunction"/> within the frame and passes it the outcome of <paramref name="arrayHandle"/> as the first argument. Use only after <see cref="Page.QuerySelectorAllHandleAsync(string)"/>
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="arrayHandle">An <see cref="JSHandle"/> that represents an array of <see cref="ElementHandle"/> that will be used as the first argument in <paramref name="pageFunction"/></param>
+        /// <param name="pageFunction">Function to be evaluated in browser context</param>
+        /// <param name="args">Arguments to pass to <c>pageFunction</c></param>
+        /// <returns>Task which resolves to the return value of <c>pageFunction</c></returns>
+        public static async Task<T> EvaluateFunctionAsync<T>(this JSHandle arrayHandle, string pageFunction, params object[] args)
         {
-            var arrayHandle = await arrayHandleTask.ConfigureAwait(false);
             var response = await arrayHandle.JsonValueAsync<object[]>().ConfigureAwait(false);
 
             var newArgs = new object[args.Length + 1];
