@@ -304,6 +304,7 @@ namespace PuppeteerSharp
         /// </summary>
         public bool IsClosed { get; private set; }
 
+        internal bool JavascriptEnabled { get; set; } = true;
         #endregion
 
         #region Public Methods
@@ -893,7 +894,14 @@ namespace PuppeteerSharp
         /// <returns>Task.</returns>
         /// <param name="enabled">Whether or not to enable JavaScript on the page.</param>
         public Task SetJavaScriptEnabledAsync(bool enabled)
-            => Client.SendAsync("Emulation.setScriptExecutionDisabled", new { value = !enabled });
+        {
+            if (enabled = JavascriptEnabled)
+            {
+                return Task.CompletedTask;
+            }
+            JavascriptEnabled = enabled;
+            return Client.SendAsync("Emulation.setScriptExecutionDisabled", new { value = !enabled });
+        }
 
         /// <summary>
         /// Toggles bypassing page's Content-Security-Policy.

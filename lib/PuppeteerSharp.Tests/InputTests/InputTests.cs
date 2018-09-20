@@ -34,6 +34,18 @@ namespace PuppeteerSharp.Tests.InputTests
         }
 
         [Fact]
+        public async Task ShouldClickWithDisabledJavascript()
+        {
+            await Page.SetJavaScriptEnabledAsync(false);
+            await Page.GoToAsync(TestConstants.ServerUrl + "/wrappedlink.html");
+            await Task.WhenAll(
+                Page.ClickAsync("a"),
+                Page.WaitForNavigationAsync()
+            );
+            Assert.Equal(TestConstants.ServerUrl + "/wrappedlink.html#clicked", Page.Url);
+        }
+
+        [Fact]
         public async Task ShouldClickOffscreenButtons()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/offscreenbuttons.html");
