@@ -178,7 +178,6 @@ namespace PuppeteerSharp.Tests.FrameTests
             var exception = await Assert.ThrowsAsync<WaitTaskTimeoutException>(async ()
                 => await Page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Timeout = 10 }));
 
-            Assert.NotNull(exception);
             Assert.Contains("waiting for selector 'div' failed: timeout", exception.Message);
         }
 
@@ -189,7 +188,6 @@ namespace PuppeteerSharp.Tests.FrameTests
             var exception = await Assert.ThrowsAsync<WaitTaskTimeoutException>(async ()
                 => await Page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Hidden = true, Timeout = 10 }));
 
-            Assert.NotNull(exception);
             Assert.Contains("waiting for selector 'div' to be hidden failed: timeout", exception.Message);
         }
 
