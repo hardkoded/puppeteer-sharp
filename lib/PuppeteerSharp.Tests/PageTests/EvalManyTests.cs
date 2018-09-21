@@ -18,5 +18,14 @@ namespace PuppeteerSharp.Tests.PageTests
             var divsCount = await Page.QuerySelectorAllHandleAsync("div").EvaluateFunctionAsync<int>("divs => divs.length");
             Assert.Equal(3, divsCount);
         }
+
+        [Fact]
+        public async Task ShouldWorkWithAwaitedElements()
+        {
+            await Page.SetContentAsync("<div>hello</div><div>beautiful</div><div>world!</div>");
+            var divs = await Page.QuerySelectorAllHandleAsync("div");
+            var divsCount = await divs.EvaluateFunctionAsync<int>("divs => divs.length");
+            Assert.Equal(3, divsCount);
+        }
     }
 }
