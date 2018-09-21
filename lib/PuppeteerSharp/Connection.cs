@@ -287,7 +287,7 @@ namespace PuppeteerSharp
         public static readonly Func<Uri, IConnectionOptions, CancellationToken, Task<WebSocket>> DefaultWebSocketFactory = async (uri, options, cancellationToken) =>
         {
             var result = new ClientWebSocket();
-            // result.Options.KeepAliveInterval = TimeSpan.FromMilliseconds(options.KeepAliveInterval);
+            result.Options.KeepAliveInterval = TimeSpan.Zero;
             await result.ConnectAsync(uri, cancellationToken).ConfigureAwait(false);
             return result;
         };
