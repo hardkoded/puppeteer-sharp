@@ -221,6 +221,7 @@ namespace PuppeteerSharp
         /// <returns>A task that resolves when element specified by selector string is added to DOM</returns>
         /// <seealso cref="WaitForXPathAsync(string, WaitForSelectorOptions)"/>
         /// <seealso cref="Page.WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
+        /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
         public Task<ElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
             => WaitForSelectorOrXPathAsync(selector, false, options);
 
@@ -250,6 +251,7 @@ namespace PuppeteerSharp
         /// </example>
         /// <seealso cref="WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
         /// <seealso cref="Page.WaitForXPathAsync(string, WaitForSelectorOptions)"/>
+        /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
         public Task<ElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
             => WaitForSelectorOrXPathAsync(xpath, true, options);
 
@@ -259,6 +261,7 @@ namespace PuppeteerSharp
         /// <param name="milliseconds"></param>
         /// <returns>A task that resolves when after the timeout</returns>
         /// <seealso cref="Page.WaitForTimeoutAsync(int)"/>
+        /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
         public Task WaitForTimeoutAsync(int milliseconds) => Task.Delay(milliseconds);
 
         /// <summary>
@@ -269,6 +272,7 @@ namespace PuppeteerSharp
         /// <param name="args">Arguments to pass to <c>script</c></param>
         /// <returns>A task that resolves when the <c>script</c> returns a truthy value</returns>
         /// <seealso cref="Page.WaitForFunctionAsync(string, WaitForFunctionOptions, object[])"/>
+        /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
         public Task<JSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args)
             => new WaitTask(this, script, false, "function", options.Polling, options.PollingInterval, options.Timeout, args).Task;
 
@@ -279,6 +283,7 @@ namespace PuppeteerSharp
         /// <param name="options">Optional waiting parameters</param>
         /// <returns>A task that resolves when the <c>script</c> returns a truthy value</returns>
         /// <seealso cref="Page.WaitForExpressionAsync(string, WaitForFunctionOptions)"/>
+        /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
         public Task<JSHandle> WaitForExpressionAsync(string script, WaitForFunctionOptions options)
             => new WaitTask(this, script, true, "function", options.Polling, options.PollingInterval, options.Timeout).Task;
 
