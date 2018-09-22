@@ -23,6 +23,18 @@ namespace PuppeteerSharp.Tests.ConnectionsTests
             Assert.Contains("ThisCommand.DoesNotExist", exception.Message);
         }
 
+        [Fact]
+        public async Task ShouldCleanCallbackList()
+        {
+            await Browser.GetVersionAsync();
+            await Browser.GetVersionAsync();
+            Assert.False(Browser.Connection.HasPendingCallbacks());
+
+            await Page.SetJavaScriptEnabledAsync(false);
+            await Page.SetJavaScriptEnabledAsync(true);
+            Assert.False(Page.Client.HasPendingCallbacks());
+        }
+
         private async Task TheSourceOfTheProblems()
         {
             await Page.Client.SendAsync("ThisCommand.DoesNotExist");
