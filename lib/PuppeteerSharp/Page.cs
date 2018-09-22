@@ -895,7 +895,7 @@ namespace PuppeteerSharp
         /// <param name="enabled">Whether or not to enable JavaScript on the page.</param>
         public Task SetJavaScriptEnabledAsync(bool enabled)
         {
-            if (enabled = JavascriptEnabled)
+            if (enabled == JavascriptEnabled)
             {
                 return Task.CompletedTask;
             }
