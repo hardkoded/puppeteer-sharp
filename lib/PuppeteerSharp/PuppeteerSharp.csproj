@@ -39,6 +39,7 @@
  * Don't emit an internal error when eval causes navigation.
  * Force KeepAliveInterval to 0.
  * Improve waiting for selector to be hidden error message.
+ * Fix Memory leaks in Connections.        
     </PackageReleaseNotes>
     <ReleaseVersion>1.7.0</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
