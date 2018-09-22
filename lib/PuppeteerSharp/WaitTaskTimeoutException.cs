@@ -20,14 +20,26 @@ namespace PuppeteerSharp
         /// <value>The element.</value>
         public string ElementType { get; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PuppeteerSharp.WaitTaskTimeoutException"/> class.
+        /// </summary>
         public WaitTaskTimeoutException()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PuppeteerSharp.WaitTaskTimeoutException"/> class.
+        /// </summary>
+        /// <param name="message">Message.</param>
         public WaitTaskTimeoutException(string message) : base(message)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PuppeteerSharp.WaitTaskTimeoutException"/> class.
+        /// </summary>
+        /// <param name="timeout">Timeout.</param>
+        /// <param name="elementType">Element type.</param>
         public WaitTaskTimeoutException(int timeout, string elementType) :
             base($"waiting for {elementType} failed: timeout {timeout}ms exceeded")
         {
@@ -35,10 +47,20 @@ namespace PuppeteerSharp
             ElementType = elementType;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PuppeteerSharp.WaitTaskTimeoutException"/> class.
+        /// </summary>
+        /// <param name="message">Message.</param>
+        /// <param name="innerException">Inner exception.</param>
         public WaitTaskTimeoutException(string message, Exception innerException) : base(message, innerException)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PuppeteerSharp.WaitTaskTimeoutException"/> class.
+        /// </summary>
+        /// <param name="info">Info.</param>
+        /// <param name="context">Context.</param>
         protected WaitTaskTimeoutException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }

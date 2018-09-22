@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
@@ -130,6 +131,8 @@ namespace PuppeteerSharp
             _sessions.Add(sessionId, session);
             return session;
         }
+
+        internal bool HasPendingCallbacks() => _callbacks.Count != 0;
         #endregion
 
         private void OnClose()
@@ -237,7 +240,7 @@ namespace PuppeteerSharp
 
                 //If we get the object we are waiting for we return if
                 //if not we add this to the list, sooner or later some one will come for it 
-                if (_callbacks.TryGetValue(id, out var callback))
+                if (_callbacks.TryGetValue(id, out var callback) && _callbacks.Remove(id))
                 {
                     if (objAsJObject["error"] != null)
                     {

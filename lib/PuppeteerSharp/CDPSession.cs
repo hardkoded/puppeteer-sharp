@@ -155,6 +155,8 @@ namespace PuppeteerSharp
         public Task DetachAsync()
             => Connection.SendAsync("Target.detachFromTarget", new { sessionId = SessionId });
 
+        internal bool HasPendingCallbacks() => _callbacks.Count != 0;
+
         #endregion
 
         #region Private Methods
