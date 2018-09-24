@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>1.6.2</PackageVersion>
+    <PackageVersion>1.7.0</PackageVersion>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
@@ -11,16 +11,37 @@
     <Title>PuppeteerSharp</Title>
     <Description>Headless Chrome .NET API</Description>
     <PackageId>PuppeteerSharp</PackageId>
-    <PackageReleaseNotes># Breaking Changes
+    <PackageReleaseNotes># New Features
 
- * Always add `about:blank` to default arguments.
+ * Typing emojis.
+ * Bump Chormium to r579032.
+ * [PENDING] Page.ClickAsync should work with disabled javascript
+
+# New APIs
+
+ * New PdfOptions.PreferCSSPageSize option.
+ * Page.GoToAsync(string url, WaitUntilNavigation waitUntil).
+ * LaunchOptions.DefaultViewport - ConnectOptions.DefaultViewport
+ * LaunchOptions. IgnoredDefaultArgs
+ * Puppeteer.DefaultArgs().
+ * BrowserContext.PagesAsync().
+ * Make WaitTaskTimeoutException public.
+ * Extension improvements: ElementHandle.EvaluateFunctionAsync and JSHandle.EvaluateFunctionAsync.
+
+# Breaking Changes
+
+ * Dropped LaunchOptions.AppMode - ConnectOptions.AppMode
 
 # Changelog
 
- * Bump Chromium to 575458
- * Remove header 'cookie' from request hash 
+ * Make sure referer header is reported with request interception.
+ * Using new browser context for every page test.
+ * Don't emit an internal error when eval causes navigation.
+ * Force KeepAliveInterval to 0.
+ * Improve waiting for selector to be hidden error message.
+ * Fix Memory leaks in Connections.        
     </PackageReleaseNotes>
-    <ReleaseVersion>1.6.2</ReleaseVersion>
+    <ReleaseVersion>1.7.0</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>
