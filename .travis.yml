@@ -32,7 +32,7 @@ install:
 after_install:
   - dotnet restore lib/PuppeteerSharp.sln
   - openssl genrsa -des3 -passout pass:12345 -out lib/PuppeteerSharp.TestServer/testCert.key 2048 -noout
-  - openssl req -new -key lib/PuppeteerSharp.TestServer/testCert.key -out lib/PuppeteerSharp.TestServer/testCert.csr -passin pass:12345 -subj "/C=GB/ST=London/L=London/O=Global Security/OU=IT Department/CN=example.com"
+  - openssl req -new -key lib/PuppeteerSharp.TestServer/testCert.key -out lib/PuppeteerSharp.TestServer/testCert.cer -passin pass:12345 -subj "/C=GB/ST=London/L=London/O=Global Security/OU=IT Department/CN=example.com"
 
 script:
 - cd lib/PuppeteerSharp.Tests
