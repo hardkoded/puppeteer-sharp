@@ -18,44 +18,6 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         public PuppeteerLaunchTests(ITestOutputHelper output) : base(output) { }
 
         [Fact]
-        public async Task ShouldSupportIgnoreHTTPSErrorsOption()
-        {
-            var options = TestConstants.DefaultBrowserOptions();
-            options.IgnoreHTTPSErrors = true;
-
-            using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
-            using (var page = await browser.NewPageAsync())
-            {
-                var response = await page.GoToAsync(TestConstants.HttpsPrefix + "/empty.html");
-                Assert.Equal(HttpStatusCode.OK, response.Status);
-                Assert.NotNull(response.SecurityDetails);
-                Assert.Equal("TLS 1.2", response.SecurityDetails.Protocol);
-            }
-        }
-
-        [Fact]
-        public async Task NetworkRedirectsShouldReportSecurityDetails()
-        {
-            var responses = new List<Response>();
-            var options = TestConstants.DefaultBrowserOptions();
-            options.IgnoreHTTPSErrors = true;
-
-            HttpsServer.SetRedirect("/plzredirect", "/empty.html");
-
-            using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
-            using (var page = await browser.NewPageAsync())
-            {
-                page.Response += (sender, e) => responses.Add(e.Response);
-
-                await page.GoToAsync(TestConstants.HttpsPrefix + "/plzredirect");
-
-                Assert.Equal(2, responses.Count);
-                Assert.Equal(HttpStatusCode.Found, responses[0].Status);
-                Assert.Equal("TLS 1.2", responses[0].SecurityDetails.Protocol);
-            }
-        }
-
-        [Fact]
         public async Task ShouldWorkInRealLife()
         {
             var options = TestConstants.DefaultBrowserOptions();
