@@ -44,7 +44,6 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             Assert.Equal(2, responses.Count);
             Assert.Equal(HttpStatusCode.Found, responses[0].Status);
             Assert.Equal("TLS 1.2", responses[0].SecurityDetails.Protocol);
-
         }
 
         [Fact]
