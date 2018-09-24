@@ -1,5 +1,6 @@
 language: csharp
 dotnet: none #2.1.402
+mono: none #5.10.0
 
 branches:
   only:
