@@ -1,5 +1,5 @@
 language: csharp
-dotnet: 2.1.402
+dotnet: none
 mono: none
 
 branches:
@@ -21,7 +21,17 @@ git:
 before_install:  
 - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get update && sudo apt-get install -y locales gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils ; fi
 
+# It is important that we actually install the .NET Core runtime for each that we intend to test.
+# Otherwise, the test will run on 2.1 (or whatever is installed on the machine).
+# Some failures can be unique to specific versions of the runtime that we claim to support, so we need to test on each.
 install:
+- export DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 DOTNET_CLI_TELEMETRY_OPTOUT=1
+- if [ "$LINUX" ]; then sudo apt install libunwind8; fi
+- wget https://dot.net/v1/dotnet-install.sh -O /tmp/dotnet-install.sh
+- chmod +x /tmp/dotnet-install.sh
+- /tmp/dotnet-install.sh -v 2.1.402
+- /tmp/dotnet-install.sh -v 2.0.7 --shared-runtime
+- export PATH=$DOTNETPATH:$PATH
 - dotnet --info
 
 before_script:
@@ -32,4 +42,5 @@ before_script:
   
 script:
 - cd lib/PuppeteerSharp.Tests
-- DOTNET_ROLL_FORWARD_ON_NO_CANDIDATE_FX=0 dotnet test -f netcoreapp2.1 -s test.runsettings
+- DOTNET_ROLL_FORWARD_ON_NO_CANDIDATE_FX=0 RuntimeFrameworkVersion=2.0.7 dotnet test -f netcoreapp2.0 -s test.runsettings
+#- DOTNET_ROLL_FORWARD_ON_NO_CANDIDATE_FX=0 RuntimeFrameworkVersion=2.1.0 dotnet test -f netcoreapp2.1 -s test.runsettings
