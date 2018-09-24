@@ -131,10 +131,10 @@ await Browser.CloseAsync();</code></pre>
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20ConnectAsync(ConnectOptions, ILoggerFactory)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs/%23L51">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20ConnectAsync(ConnectOptions, ILoggerFactory)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs/%23L59">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs/#L51">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs/#L59">View Source</a>
   </span>
   <a id="PuppeteerSharp_Puppeteer_ConnectAsync_" data-uid="PuppeteerSharp.Puppeteer.ConnectAsync*"></a>
   <h4 id="PuppeteerSharp_Puppeteer_ConnectAsync_PuppeteerSharp_ConnectOptions_ILoggerFactory_" data-uid="PuppeteerSharp.Puppeteer.ConnectAsync(PuppeteerSharp.ConnectOptions,ILoggerFactory)">ConnectAsync(ConnectOptions, ILoggerFactory)</h4>
@@ -187,10 +187,10 @@ await Browser.CloseAsync();</code></pre>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20CreateBrowserFetcher(BrowserFetcherOptions)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs/%23L59">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20CreateBrowserFetcher(BrowserFetcherOptions)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs/%23L67">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs/#L59">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs/#L67">View Source</a>
   </span>
   <a id="PuppeteerSharp_Puppeteer_CreateBrowserFetcher_" data-uid="PuppeteerSharp.Puppeteer.CreateBrowserFetcher*"></a>
   <h4 id="PuppeteerSharp_Puppeteer_CreateBrowserFetcher_PuppeteerSharp_BrowserFetcherOptions_" data-uid="PuppeteerSharp.Puppeteer.CreateBrowserFetcher(PuppeteerSharp.BrowserFetcherOptions)">CreateBrowserFetcher(BrowserFetcherOptions)</h4>
@@ -237,6 +237,56 @@ await Browser.CloseAsync();</code></pre>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20GetDefaultArgs(LaunchOptions)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs/%23L36">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs/#L36">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Puppeteer_GetDefaultArgs_" data-uid="PuppeteerSharp.Puppeteer.GetDefaultArgs*"></a>
+  <h4 id="PuppeteerSharp_Puppeteer_GetDefaultArgs_PuppeteerSharp_LaunchOptions_" data-uid="PuppeteerSharp.Puppeteer.GetDefaultArgs(PuppeteerSharp.LaunchOptions)">GetDefaultArgs(LaunchOptions)</h4>
+  <div class="markdown level1 summary"><p>Returns an array of argument based on the options provided and the platform where the library is running</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static string[] GetDefaultArgs(LaunchOptions options = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.LaunchOptions.html">LaunchOptions</a></td>
+        <td><span class="parametername">options</span></td>
+        <td><p>Options.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span>[]</td>
+        <td><p>Chromium arguments.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20GetExecutablePath()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs/%23L29">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
@@ -269,10 +319,10 @@ await Browser.CloseAsync();</code></pre>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20LaunchAsync(LaunchOptions, ILoggerFactory)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs/%23L42">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20LaunchAsync(LaunchOptions, ILoggerFactory)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs/%23L50">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs/#L42">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs/#L50">View Source</a>
   </span>
   <a id="PuppeteerSharp_Puppeteer_LaunchAsync_" data-uid="PuppeteerSharp.Puppeteer.LaunchAsync*"></a>
   <h4 id="PuppeteerSharp_Puppeteer_LaunchAsync_PuppeteerSharp_LaunchOptions_ILoggerFactory_" data-uid="PuppeteerSharp.Puppeteer.LaunchAsync(PuppeteerSharp.LaunchOptions,ILoggerFactory)">LaunchAsync(LaunchOptions, ILoggerFactory)</h4>

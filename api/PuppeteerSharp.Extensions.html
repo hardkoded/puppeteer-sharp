@@ -91,6 +91,177 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EvaluateFunctionAsync&lt;T&gt;(ElementHandle, String, Object[])&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Extensions.cs/%23L39">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Extensions.cs/#L39">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Extensions_EvaluateFunctionAsync_" data-uid="PuppeteerSharp.Extensions.EvaluateFunctionAsync*"></a>
+  <h4 id="PuppeteerSharp_Extensions_EvaluateFunctionAsync__1_PuppeteerSharp_ElementHandle_System_String_System_Object___" data-uid="PuppeteerSharp.Extensions.EvaluateFunctionAsync``1(PuppeteerSharp.ElementHandle,System.String,System.Object[])">EvaluateFunctionAsync&lt;T&gt;(ElementHandle, String, Object[])</h4>
+  <div class="markdown level1 summary"><p>Runs <code data-dev-comment-type="paramref" class="paramref">pageFunction</code> within the frame and passes it the outcome the <code data-dev-comment-type="paramref" class="paramref">elementHandle</code> as the first argument</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Task&lt;T&gt; EvaluateFunctionAsync&lt;T&gt;(this ElementHandle elementHandle, string pageFunction, params object[] args)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a></td>
+        <td><span class="parametername">elementHandle</span></td>
+        <td><p>An <a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a> that will be used as the first argument in <code data-dev-comment-type="paramref" class="paramref">pageFunction</code></p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">pageFunction</span></td>
+        <td><p>Function to be evaluated in browser context</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Object</span>[]</td>
+        <td><span class="parametername">args</span></td>
+        <td><p>Arguments to pass to <code>pageFunction</code></p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span>&lt;T&gt;</td>
+        <td><p>Task which resolves to the return value of <code>pageFunction</code></p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of the response</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.SelectorException.html">SelectorException</a></td>
+        <td><p>If <code data-dev-comment-type="paramref" class="paramref">elementHandle</code> is <code>null</code></p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EvaluateFunctionAsync&lt;T&gt;(JSHandle, String, Object[])&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Extensions.cs/%23L73">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Extensions.cs/#L73">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Extensions_EvaluateFunctionAsync_" data-uid="PuppeteerSharp.Extensions.EvaluateFunctionAsync*"></a>
+  <h4 id="PuppeteerSharp_Extensions_EvaluateFunctionAsync__1_PuppeteerSharp_JSHandle_System_String_System_Object___" data-uid="PuppeteerSharp.Extensions.EvaluateFunctionAsync``1(PuppeteerSharp.JSHandle,System.String,System.Object[])">EvaluateFunctionAsync&lt;T&gt;(JSHandle, String, Object[])</h4>
+  <div class="markdown level1 summary"><p>Runs <code data-dev-comment-type="paramref" class="paramref">pageFunction</code> within the frame and passes it the outcome of <code data-dev-comment-type="paramref" class="paramref">arrayHandle</code> as the first argument. Use only after <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_QuerySelectorAllHandleAsync_System_String_">QuerySelectorAllHandleAsync(String)</a></p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Task&lt;T&gt; EvaluateFunctionAsync&lt;T&gt;(this JSHandle arrayHandle, string pageFunction, params object[] args)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.JSHandle.html">JSHandle</a></td>
+        <td><span class="parametername">arrayHandle</span></td>
+        <td><p>An <a class="xref" href="PuppeteerSharp.JSHandle.html">JSHandle</a> that represents an array of <a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a> that will be used as the first argument in <code data-dev-comment-type="paramref" class="paramref">pageFunction</code></p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">pageFunction</span></td>
+        <td><p>Function to be evaluated in browser context</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Object</span>[]</td>
+        <td><span class="parametername">args</span></td>
+        <td><p>Arguments to pass to <code>pageFunction</code></p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span>&lt;T&gt;</td>
+        <td><p>Task which resolves to the return value of <code>pageFunction</code></p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EvaluateFunctionAsync&lt;T&gt;(Task&lt;ElementHandle&gt;, String, Object[])&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Extensions.cs/%23L19">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
@@ -185,10 +356,10 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EvaluateFunctionAsync&lt;T&gt;(Task&lt;JSHandle&gt;, String, Object[])&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Extensions.cs/%23L43">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EvaluateFunctionAsync&lt;T&gt;(Task&lt;JSHandle&gt;, String, Object[])&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Extensions.cs/%23L62">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Extensions.cs/#L43">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Extensions.cs/#L62">View Source</a>
   </span>
   <a id="PuppeteerSharp_Extensions_EvaluateFunctionAsync_" data-uid="PuppeteerSharp.Extensions.EvaluateFunctionAsync*"></a>
   <h4 id="PuppeteerSharp_Extensions_EvaluateFunctionAsync__1_Task_PuppeteerSharp_JSHandle__System_String_System_Object___" data-uid="PuppeteerSharp.Extensions.EvaluateFunctionAsync``1(Task{PuppeteerSharp.JSHandle},System.String,System.Object[])">EvaluateFunctionAsync&lt;T&gt;(Task&lt;JSHandle&gt;, String, Object[])</h4>

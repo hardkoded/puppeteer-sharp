@@ -296,15 +296,15 @@ references:
   commentId: T:PuppeteerSharp.Browser
   fullName: PuppeteerSharp.Browser
   nameWithType: Browser
-- uid: PuppeteerSharp.Browser.#ctor(PuppeteerSharp.Connection,System.String[],System.Boolean,System.Boolean,PuppeteerSharp.ChromiumProcess)
-  name: Browser(Connection, String[], Boolean, Boolean, ChromiumProcess)
-  href: api/PuppeteerSharp.Browser.html#PuppeteerSharp_Browser__ctor_PuppeteerSharp_Connection_System_String___System_Boolean_System_Boolean_PuppeteerSharp_ChromiumProcess_
-  commentId: M:PuppeteerSharp.Browser.#ctor(PuppeteerSharp.Connection,System.String[],System.Boolean,System.Boolean,PuppeteerSharp.ChromiumProcess)
-  name.vb: Browser(Connection, String(), Boolean, Boolean, ChromiumProcess)
-  fullName: PuppeteerSharp.Browser.Browser(PuppeteerSharp.Connection, System.String[], System.Boolean, System.Boolean, PuppeteerSharp.ChromiumProcess)
-  fullName.vb: PuppeteerSharp.Browser.Browser(PuppeteerSharp.Connection, System.String(), System.Boolean, System.Boolean, PuppeteerSharp.ChromiumProcess)
-  nameWithType: Browser.Browser(Connection, String[], Boolean, Boolean, ChromiumProcess)
-  nameWithType.vb: Browser.Browser(Connection, String(), Boolean, Boolean, ChromiumProcess)
+- uid: PuppeteerSharp.Browser.#ctor(PuppeteerSharp.Connection,System.String[],System.Boolean,PuppeteerSharp.ViewPortOptions,PuppeteerSharp.ChromiumProcess)
+  name: Browser(Connection, String[], Boolean, ViewPortOptions, ChromiumProcess)
+  href: api/PuppeteerSharp.Browser.html#PuppeteerSharp_Browser__ctor_PuppeteerSharp_Connection_System_String___System_Boolean_PuppeteerSharp_ViewPortOptions_PuppeteerSharp_ChromiumProcess_
+  commentId: M:PuppeteerSharp.Browser.#ctor(PuppeteerSharp.Connection,System.String[],System.Boolean,PuppeteerSharp.ViewPortOptions,PuppeteerSharp.ChromiumProcess)
+  name.vb: Browser(Connection, String(), Boolean, ViewPortOptions, ChromiumProcess)
+  fullName: PuppeteerSharp.Browser.Browser(PuppeteerSharp.Connection, System.String[], System.Boolean, PuppeteerSharp.ViewPortOptions, PuppeteerSharp.ChromiumProcess)
+  fullName.vb: PuppeteerSharp.Browser.Browser(PuppeteerSharp.Connection, System.String(), System.Boolean, PuppeteerSharp.ViewPortOptions, PuppeteerSharp.ChromiumProcess)
+  nameWithType: Browser.Browser(Connection, String[], Boolean, ViewPortOptions, ChromiumProcess)
+  nameWithType.vb: Browser.Browser(Connection, String(), Boolean, ViewPortOptions, ChromiumProcess)
 - uid: PuppeteerSharp.Browser.#ctor*
   name: Browser
   href: api/PuppeteerSharp.Browser.html#PuppeteerSharp_Browser__ctor_
@@ -582,6 +582,19 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.BrowserContext.NewPageAsync
   nameWithType: BrowserContext.NewPageAsync
+- uid: PuppeteerSharp.BrowserContext.PagesAsync
+  name: PagesAsync()
+  href: api/PuppeteerSharp.BrowserContext.html#PuppeteerSharp_BrowserContext_PagesAsync
+  commentId: M:PuppeteerSharp.BrowserContext.PagesAsync
+  fullName: PuppeteerSharp.BrowserContext.PagesAsync()
+  nameWithType: BrowserContext.PagesAsync()
+- uid: PuppeteerSharp.BrowserContext.PagesAsync*
+  name: PagesAsync
+  href: api/PuppeteerSharp.BrowserContext.html#PuppeteerSharp_BrowserContext_PagesAsync_
+  commentId: Overload:PuppeteerSharp.BrowserContext.PagesAsync
+  isSpec: "True"
+  fullName: PuppeteerSharp.BrowserContext.PagesAsync
+  nameWithType: BrowserContext.PagesAsync
 - uid: PuppeteerSharp.BrowserContext.TargetChanged
   name: TargetChanged
   href: api/PuppeteerSharp.BrowserContext.html#PuppeteerSharp_BrowserContext_TargetChanged
@@ -1234,6 +1247,19 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.ConnectOptions.BrowserWSEndpoint
   nameWithType: ConnectOptions.BrowserWSEndpoint
+- uid: PuppeteerSharp.ConnectOptions.DefaultViewport
+  name: DefaultViewport
+  href: api/PuppeteerSharp.ConnectOptions.html#PuppeteerSharp_ConnectOptions_DefaultViewport
+  commentId: P:PuppeteerSharp.ConnectOptions.DefaultViewport
+  fullName: PuppeteerSharp.ConnectOptions.DefaultViewport
+  nameWithType: ConnectOptions.DefaultViewport
+- uid: PuppeteerSharp.ConnectOptions.DefaultViewport*
+  name: DefaultViewport
+  href: api/PuppeteerSharp.ConnectOptions.html#PuppeteerSharp_ConnectOptions_DefaultViewport_
+  commentId: Overload:PuppeteerSharp.ConnectOptions.DefaultViewport
+  isSpec: "True"
+  fullName: PuppeteerSharp.ConnectOptions.DefaultViewport
+  nameWithType: ConnectOptions.DefaultViewport
 - uid: PuppeteerSharp.ConnectOptions.IgnoreHTTPSErrors
   name: IgnoreHTTPSErrors
   href: api/PuppeteerSharp.ConnectOptions.html#PuppeteerSharp_ConnectOptions_IgnoreHTTPSErrors
@@ -2254,6 +2280,24 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Extensions.EvaluateFunctionAsync
   nameWithType: Extensions.EvaluateFunctionAsync
+- uid: PuppeteerSharp.Extensions.EvaluateFunctionAsync``1(PuppeteerSharp.ElementHandle,System.String,System.Object[])
+  name: EvaluateFunctionAsync<T>(ElementHandle, String, Object[])
+  href: api/PuppeteerSharp.Extensions.html#PuppeteerSharp_Extensions_EvaluateFunctionAsync__1_PuppeteerSharp_ElementHandle_System_String_System_Object___
+  commentId: M:PuppeteerSharp.Extensions.EvaluateFunctionAsync``1(PuppeteerSharp.ElementHandle,System.String,System.Object[])
+  name.vb: EvaluateFunctionAsync(Of T)(ElementHandle, String, Object())
+  fullName: PuppeteerSharp.Extensions.EvaluateFunctionAsync<T>(PuppeteerSharp.ElementHandle, System.String, System.Object[])
+  fullName.vb: PuppeteerSharp.Extensions.EvaluateFunctionAsync(Of T)(PuppeteerSharp.ElementHandle, System.String, System.Object())
+  nameWithType: Extensions.EvaluateFunctionAsync<T>(ElementHandle, String, Object[])
+  nameWithType.vb: Extensions.EvaluateFunctionAsync(Of T)(ElementHandle, String, Object())
+- uid: PuppeteerSharp.Extensions.EvaluateFunctionAsync``1(PuppeteerSharp.JSHandle,System.String,System.Object[])
+  name: EvaluateFunctionAsync<T>(JSHandle, String, Object[])
+  href: api/PuppeteerSharp.Extensions.html#PuppeteerSharp_Extensions_EvaluateFunctionAsync__1_PuppeteerSharp_JSHandle_System_String_System_Object___
+  commentId: M:PuppeteerSharp.Extensions.EvaluateFunctionAsync``1(PuppeteerSharp.JSHandle,System.String,System.Object[])
+  name.vb: EvaluateFunctionAsync(Of T)(JSHandle, String, Object())
+  fullName: PuppeteerSharp.Extensions.EvaluateFunctionAsync<T>(PuppeteerSharp.JSHandle, System.String, System.Object[])
+  fullName.vb: PuppeteerSharp.Extensions.EvaluateFunctionAsync(Of T)(PuppeteerSharp.JSHandle, System.String, System.Object())
+  nameWithType: Extensions.EvaluateFunctionAsync<T>(JSHandle, String, Object[])
+  nameWithType.vb: Extensions.EvaluateFunctionAsync(Of T)(JSHandle, String, Object())
 - uid: PuppeteerSharp.Extensions.EvaluateFunctionAsync``1(Task{PuppeteerSharp.ElementHandle},System.String,System.Object[])
   name: EvaluateFunctionAsync<T>(Task<ElementHandle>, String, Object[])
   href: api/PuppeteerSharp.Extensions.html#PuppeteerSharp_Extensions_EvaluateFunctionAsync__1_Task_PuppeteerSharp_ElementHandle__System_String_System_Object___
@@ -2683,19 +2727,19 @@ references:
   commentId: T:PuppeteerSharp.IBrowserOptions
   fullName: PuppeteerSharp.IBrowserOptions
   nameWithType: IBrowserOptions
-- uid: PuppeteerSharp.IBrowserOptions.AppMode
-  name: AppMode
-  href: api/PuppeteerSharp.IBrowserOptions.html#PuppeteerSharp_IBrowserOptions_AppMode
-  commentId: P:PuppeteerSharp.IBrowserOptions.AppMode
-  fullName: PuppeteerSharp.IBrowserOptions.AppMode
-  nameWithType: IBrowserOptions.AppMode
-- uid: PuppeteerSharp.IBrowserOptions.AppMode*
-  name: AppMode
-  href: api/PuppeteerSharp.IBrowserOptions.html#PuppeteerSharp_IBrowserOptions_AppMode_
-  commentId: Overload:PuppeteerSharp.IBrowserOptions.AppMode
+- uid: PuppeteerSharp.IBrowserOptions.DefaultViewport
+  name: DefaultViewport
+  href: api/PuppeteerSharp.IBrowserOptions.html#PuppeteerSharp_IBrowserOptions_DefaultViewport
+  commentId: P:PuppeteerSharp.IBrowserOptions.DefaultViewport
+  fullName: PuppeteerSharp.IBrowserOptions.DefaultViewport
+  nameWithType: IBrowserOptions.DefaultViewport
+- uid: PuppeteerSharp.IBrowserOptions.DefaultViewport*
+  name: DefaultViewport
+  href: api/PuppeteerSharp.IBrowserOptions.html#PuppeteerSharp_IBrowserOptions_DefaultViewport_
+  commentId: Overload:PuppeteerSharp.IBrowserOptions.DefaultViewport
   isSpec: "True"
-  fullName: PuppeteerSharp.IBrowserOptions.AppMode
-  nameWithType: IBrowserOptions.AppMode
+  fullName: PuppeteerSharp.IBrowserOptions.DefaultViewport
+  nameWithType: IBrowserOptions.DefaultViewport
 - uid: PuppeteerSharp.IBrowserOptions.IgnoreHTTPSErrors
   name: IgnoreHTTPSErrors
   href: api/PuppeteerSharp.IBrowserOptions.html#PuppeteerSharp_IBrowserOptions_IgnoreHTTPSErrors
@@ -3951,19 +3995,6 @@ references:
   commentId: T:PuppeteerSharp.LaunchOptions
   fullName: PuppeteerSharp.LaunchOptions
   nameWithType: LaunchOptions
-- uid: PuppeteerSharp.LaunchOptions.AppMode
-  name: AppMode
-  href: api/PuppeteerSharp.LaunchOptions.html#PuppeteerSharp_LaunchOptions_AppMode
-  commentId: P:PuppeteerSharp.LaunchOptions.AppMode
-  fullName: PuppeteerSharp.LaunchOptions.AppMode
-  nameWithType: LaunchOptions.AppMode
-- uid: PuppeteerSharp.LaunchOptions.AppMode*
-  name: AppMode
-  href: api/PuppeteerSharp.LaunchOptions.html#PuppeteerSharp_LaunchOptions_AppMode_
-  commentId: Overload:PuppeteerSharp.LaunchOptions.AppMode
-  isSpec: "True"
-  fullName: PuppeteerSharp.LaunchOptions.AppMode
-  nameWithType: LaunchOptions.AppMode
 - uid: PuppeteerSharp.LaunchOptions.Args
   name: Args
   href: api/PuppeteerSharp.LaunchOptions.html#PuppeteerSharp_LaunchOptions_Args
@@ -3977,6 +4008,19 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.LaunchOptions.Args
   nameWithType: LaunchOptions.Args
+- uid: PuppeteerSharp.LaunchOptions.DefaultViewport
+  name: DefaultViewport
+  href: api/PuppeteerSharp.LaunchOptions.html#PuppeteerSharp_LaunchOptions_DefaultViewport
+  commentId: P:PuppeteerSharp.LaunchOptions.DefaultViewport
+  fullName: PuppeteerSharp.LaunchOptions.DefaultViewport
+  nameWithType: LaunchOptions.DefaultViewport
+- uid: PuppeteerSharp.LaunchOptions.DefaultViewport*
+  name: DefaultViewport
+  href: api/PuppeteerSharp.LaunchOptions.html#PuppeteerSharp_LaunchOptions_DefaultViewport_
+  commentId: Overload:PuppeteerSharp.LaunchOptions.DefaultViewport
+  isSpec: "True"
+  fullName: PuppeteerSharp.LaunchOptions.DefaultViewport
+  nameWithType: LaunchOptions.DefaultViewport
 - uid: PuppeteerSharp.LaunchOptions.Devtools
   name: Devtools
   href: api/PuppeteerSharp.LaunchOptions.html#PuppeteerSharp_LaunchOptions_Devtools
@@ -4042,6 +4086,19 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.LaunchOptions.Headless
   nameWithType: LaunchOptions.Headless
+- uid: PuppeteerSharp.LaunchOptions.IgnoredDefaultArgs
+  name: IgnoredDefaultArgs
+  href: api/PuppeteerSharp.LaunchOptions.html#PuppeteerSharp_LaunchOptions_IgnoredDefaultArgs
+  commentId: P:PuppeteerSharp.LaunchOptions.IgnoredDefaultArgs
+  fullName: PuppeteerSharp.LaunchOptions.IgnoredDefaultArgs
+  nameWithType: LaunchOptions.IgnoredDefaultArgs
+- uid: PuppeteerSharp.LaunchOptions.IgnoredDefaultArgs*
+  name: IgnoredDefaultArgs
+  href: api/PuppeteerSharp.LaunchOptions.html#PuppeteerSharp_LaunchOptions_IgnoredDefaultArgs_
+  commentId: Overload:PuppeteerSharp.LaunchOptions.IgnoredDefaultArgs
+  isSpec: "True"
+  fullName: PuppeteerSharp.LaunchOptions.IgnoredDefaultArgs
+  nameWithType: LaunchOptions.IgnoredDefaultArgs
 - uid: PuppeteerSharp.LaunchOptions.IgnoreDefaultArgs
   name: IgnoreDefaultArgs
   href: api/PuppeteerSharp.LaunchOptions.html#PuppeteerSharp_LaunchOptions_IgnoreDefaultArgs
@@ -5575,6 +5632,12 @@ references:
   commentId: M:PuppeteerSharp.Page.GoToAsync(System.String,PuppeteerSharp.NavigationOptions)
   fullName: PuppeteerSharp.Page.GoToAsync(System.String, PuppeteerSharp.NavigationOptions)
   nameWithType: Page.GoToAsync(String, NavigationOptions)
+- uid: PuppeteerSharp.Page.GoToAsync(System.String,PuppeteerSharp.WaitUntilNavigation)
+  name: GoToAsync(String, WaitUntilNavigation)
+  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_GoToAsync_System_String_PuppeteerSharp_WaitUntilNavigation_
+  commentId: M:PuppeteerSharp.Page.GoToAsync(System.String,PuppeteerSharp.WaitUntilNavigation)
+  fullName: PuppeteerSharp.Page.GoToAsync(System.String, PuppeteerSharp.WaitUntilNavigation)
+  nameWithType: Page.GoToAsync(String, WaitUntilNavigation)
 - uid: PuppeteerSharp.Page.GoToAsync(System.String,System.Nullable{System.Int32},PuppeteerSharp.WaitUntilNavigation[])
   name: GoToAsync(String, Nullable<Int32>, WaitUntilNavigation[])
   href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_GoToAsync_System_String_System_Nullable_System_Int32__PuppeteerSharp_WaitUntilNavigation___
@@ -6595,19 +6658,6 @@ references:
   commentId: T:PuppeteerSharp.Payload
   fullName: PuppeteerSharp.Payload
   nameWithType: Payload
-- uid: PuppeteerSharp.Payload.#ctor
-  name: Payload()
-  href: api/PuppeteerSharp.Payload.html#PuppeteerSharp_Payload__ctor
-  commentId: M:PuppeteerSharp.Payload.#ctor
-  fullName: PuppeteerSharp.Payload.Payload()
-  nameWithType: Payload.Payload()
-- uid: PuppeteerSharp.Payload.#ctor*
-  name: Payload
-  href: api/PuppeteerSharp.Payload.html#PuppeteerSharp_Payload__ctor_
-  commentId: Overload:PuppeteerSharp.Payload.#ctor
-  isSpec: "True"
-  fullName: PuppeteerSharp.Payload.Payload
-  nameWithType: Payload.Payload
 - uid: PuppeteerSharp.Payload.Headers
   name: Headers
   href: api/PuppeteerSharp.Payload.html#PuppeteerSharp_Payload_Headers
@@ -6770,6 +6820,19 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.PdfOptions.PageRanges
   nameWithType: PdfOptions.PageRanges
+- uid: PuppeteerSharp.PdfOptions.PreferCSSPageSize
+  name: PreferCSSPageSize
+  href: api/PuppeteerSharp.PdfOptions.html#PuppeteerSharp_PdfOptions_PreferCSSPageSize
+  commentId: P:PuppeteerSharp.PdfOptions.PreferCSSPageSize
+  fullName: PuppeteerSharp.PdfOptions.PreferCSSPageSize
+  nameWithType: PdfOptions.PreferCSSPageSize
+- uid: PuppeteerSharp.PdfOptions.PreferCSSPageSize*
+  name: PreferCSSPageSize
+  href: api/PuppeteerSharp.PdfOptions.html#PuppeteerSharp_PdfOptions_PreferCSSPageSize_
+  commentId: Overload:PuppeteerSharp.PdfOptions.PreferCSSPageSize
+  isSpec: "True"
+  fullName: PuppeteerSharp.PdfOptions.PreferCSSPageSize
+  nameWithType: PdfOptions.PreferCSSPageSize
 - uid: PuppeteerSharp.PdfOptions.PrintBackground
   name: PrintBackground
   href: api/PuppeteerSharp.PdfOptions.html#PuppeteerSharp_PdfOptions_PrintBackground
@@ -6890,6 +6953,19 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Puppeteer.DefaultArgs
   nameWithType: Puppeteer.DefaultArgs
+- uid: PuppeteerSharp.Puppeteer.GetDefaultArgs(PuppeteerSharp.LaunchOptions)
+  name: GetDefaultArgs(LaunchOptions)
+  href: api/PuppeteerSharp.Puppeteer.html#PuppeteerSharp_Puppeteer_GetDefaultArgs_PuppeteerSharp_LaunchOptions_
+  commentId: M:PuppeteerSharp.Puppeteer.GetDefaultArgs(PuppeteerSharp.LaunchOptions)
+  fullName: PuppeteerSharp.Puppeteer.GetDefaultArgs(PuppeteerSharp.LaunchOptions)
+  nameWithType: Puppeteer.GetDefaultArgs(LaunchOptions)
+- uid: PuppeteerSharp.Puppeteer.GetDefaultArgs*
+  name: GetDefaultArgs
+  href: api/PuppeteerSharp.Puppeteer.html#PuppeteerSharp_Puppeteer_GetDefaultArgs_
+  commentId: Overload:PuppeteerSharp.Puppeteer.GetDefaultArgs
+  isSpec: "True"
+  fullName: PuppeteerSharp.Puppeteer.GetDefaultArgs
+  nameWithType: Puppeteer.GetDefaultArgs
 - uid: PuppeteerSharp.Puppeteer.GetExecutablePath
   name: GetExecutablePath()
   href: api/PuppeteerSharp.Puppeteer.html#PuppeteerSharp_Puppeteer_GetExecutablePath
@@ -8298,6 +8374,19 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.ViewPortOptions.ViewPortOptions
   nameWithType: ViewPortOptions.ViewPortOptions
+- uid: PuppeteerSharp.ViewPortOptions.Default
+  name: Default
+  href: api/PuppeteerSharp.ViewPortOptions.html#PuppeteerSharp_ViewPortOptions_Default
+  commentId: P:PuppeteerSharp.ViewPortOptions.Default
+  fullName: PuppeteerSharp.ViewPortOptions.Default
+  nameWithType: ViewPortOptions.Default
+- uid: PuppeteerSharp.ViewPortOptions.Default*
+  name: Default
+  href: api/PuppeteerSharp.ViewPortOptions.html#PuppeteerSharp_ViewPortOptions_Default_
+  commentId: Overload:PuppeteerSharp.ViewPortOptions.Default
+  isSpec: "True"
+  fullName: PuppeteerSharp.ViewPortOptions.Default
+  nameWithType: ViewPortOptions.Default
 - uid: PuppeteerSharp.ViewPortOptions.DeviceScaleFactor
   name: DeviceScaleFactor
   href: api/PuppeteerSharp.ViewPortOptions.html#PuppeteerSharp_ViewPortOptions_DeviceScaleFactor
@@ -8490,6 +8579,75 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.WaitForSelectorOptions.Visible
   nameWithType: WaitForSelectorOptions.Visible
+- uid: PuppeteerSharp.WaitTaskTimeoutException
+  name: WaitTaskTimeoutException
+  href: api/PuppeteerSharp.WaitTaskTimeoutException.html
+  commentId: T:PuppeteerSharp.WaitTaskTimeoutException
+  fullName: PuppeteerSharp.WaitTaskTimeoutException
+  nameWithType: WaitTaskTimeoutException
+- uid: PuppeteerSharp.WaitTaskTimeoutException.#ctor
+  name: WaitTaskTimeoutException()
+  href: api/PuppeteerSharp.WaitTaskTimeoutException.html#PuppeteerSharp_WaitTaskTimeoutException__ctor
+  commentId: M:PuppeteerSharp.WaitTaskTimeoutException.#ctor
+  fullName: PuppeteerSharp.WaitTaskTimeoutException.WaitTaskTimeoutException()
+  nameWithType: WaitTaskTimeoutException.WaitTaskTimeoutException()
+- uid: PuppeteerSharp.WaitTaskTimeoutException.#ctor(SerializationInfo,StreamingContext)
+  name: WaitTaskTimeoutException(SerializationInfo, StreamingContext)
+  href: api/PuppeteerSharp.WaitTaskTimeoutException.html#PuppeteerSharp_WaitTaskTimeoutException__ctor_SerializationInfo_StreamingContext_
+  commentId: M:PuppeteerSharp.WaitTaskTimeoutException.#ctor(SerializationInfo,StreamingContext)
+  fullName: PuppeteerSharp.WaitTaskTimeoutException.WaitTaskTimeoutException(SerializationInfo, StreamingContext)
+  nameWithType: WaitTaskTimeoutException.WaitTaskTimeoutException(SerializationInfo, StreamingContext)
+- uid: PuppeteerSharp.WaitTaskTimeoutException.#ctor(System.Int32,System.String)
+  name: WaitTaskTimeoutException(Int32, String)
+  href: api/PuppeteerSharp.WaitTaskTimeoutException.html#PuppeteerSharp_WaitTaskTimeoutException__ctor_System_Int32_System_String_
+  commentId: M:PuppeteerSharp.WaitTaskTimeoutException.#ctor(System.Int32,System.String)
+  fullName: PuppeteerSharp.WaitTaskTimeoutException.WaitTaskTimeoutException(System.Int32, System.String)
+  nameWithType: WaitTaskTimeoutException.WaitTaskTimeoutException(Int32, String)
+- uid: PuppeteerSharp.WaitTaskTimeoutException.#ctor(System.String)
+  name: WaitTaskTimeoutException(String)
+  href: api/PuppeteerSharp.WaitTaskTimeoutException.html#PuppeteerSharp_WaitTaskTimeoutException__ctor_System_String_
+  commentId: M:PuppeteerSharp.WaitTaskTimeoutException.#ctor(System.String)
+  fullName: PuppeteerSharp.WaitTaskTimeoutException.WaitTaskTimeoutException(System.String)
+  nameWithType: WaitTaskTimeoutException.WaitTaskTimeoutException(String)
+- uid: PuppeteerSharp.WaitTaskTimeoutException.#ctor(System.String,Exception)
+  name: WaitTaskTimeoutException(String, Exception)
+  href: api/PuppeteerSharp.WaitTaskTimeoutException.html#PuppeteerSharp_WaitTaskTimeoutException__ctor_System_String_Exception_
+  commentId: M:PuppeteerSharp.WaitTaskTimeoutException.#ctor(System.String,Exception)
+  fullName: PuppeteerSharp.WaitTaskTimeoutException.WaitTaskTimeoutException(System.String, Exception)
+  nameWithType: WaitTaskTimeoutException.WaitTaskTimeoutException(String, Exception)
+- uid: PuppeteerSharp.WaitTaskTimeoutException.#ctor*
+  name: WaitTaskTimeoutException
+  href: api/PuppeteerSharp.WaitTaskTimeoutException.html#PuppeteerSharp_WaitTaskTimeoutException__ctor_
+  commentId: Overload:PuppeteerSharp.WaitTaskTimeoutException.#ctor
+  isSpec: "True"
+  fullName: PuppeteerSharp.WaitTaskTimeoutException.WaitTaskTimeoutException
+  nameWithType: WaitTaskTimeoutException.WaitTaskTimeoutException
+- uid: PuppeteerSharp.WaitTaskTimeoutException.ElementType
+  name: ElementType
+  href: api/PuppeteerSharp.WaitTaskTimeoutException.html#PuppeteerSharp_WaitTaskTimeoutException_ElementType
+  commentId: P:PuppeteerSharp.WaitTaskTimeoutException.ElementType
+  fullName: PuppeteerSharp.WaitTaskTimeoutException.ElementType
+  nameWithType: WaitTaskTimeoutException.ElementType
+- uid: PuppeteerSharp.WaitTaskTimeoutException.ElementType*
+  name: ElementType
+  href: api/PuppeteerSharp.WaitTaskTimeoutException.html#PuppeteerSharp_WaitTaskTimeoutException_ElementType_
+  commentId: Overload:PuppeteerSharp.WaitTaskTimeoutException.ElementType
+  isSpec: "True"
+  fullName: PuppeteerSharp.WaitTaskTimeoutException.ElementType
+  nameWithType: WaitTaskTimeoutException.ElementType
+- uid: PuppeteerSharp.WaitTaskTimeoutException.Timeout
+  name: Timeout
+  href: api/PuppeteerSharp.WaitTaskTimeoutException.html#PuppeteerSharp_WaitTaskTimeoutException_Timeout
+  commentId: P:PuppeteerSharp.WaitTaskTimeoutException.Timeout
+  fullName: PuppeteerSharp.WaitTaskTimeoutException.Timeout
+  nameWithType: WaitTaskTimeoutException.Timeout
+- uid: PuppeteerSharp.WaitTaskTimeoutException.Timeout*
+  name: Timeout
+  href: api/PuppeteerSharp.WaitTaskTimeoutException.html#PuppeteerSharp_WaitTaskTimeoutException_Timeout_
+  commentId: Overload:PuppeteerSharp.WaitTaskTimeoutException.Timeout
+  isSpec: "True"
+  fullName: PuppeteerSharp.WaitTaskTimeoutException.Timeout
+  nameWithType: WaitTaskTimeoutException.Timeout
 - uid: PuppeteerSharp.WaitUntilNavigation
   name: WaitUntilNavigation
   href: api/PuppeteerSharp.WaitUntilNavigation.html

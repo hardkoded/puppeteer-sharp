@@ -104,19 +104,19 @@ await browser2.CloseAsync();</code></pre>
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Browser(Connection, String[], Boolean, Boolean, ChromiumProcess)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Browser.cs/%23L51">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Browser(Connection, String[], Boolean, ViewPortOptions, ChromiumProcess)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Browser.cs/%23L51">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Browser.cs/#L51">View Source</a>
   </span>
   <a id="PuppeteerSharp_Browser__ctor_" data-uid="PuppeteerSharp.Browser.#ctor*"></a>
-  <h4 id="PuppeteerSharp_Browser__ctor_PuppeteerSharp_Connection_System_String___System_Boolean_System_Boolean_PuppeteerSharp_ChromiumProcess_" data-uid="PuppeteerSharp.Browser.#ctor(PuppeteerSharp.Connection,System.String[],System.Boolean,System.Boolean,PuppeteerSharp.ChromiumProcess)">Browser(Connection, String[], Boolean, Boolean, ChromiumProcess)</h4>
+  <h4 id="PuppeteerSharp_Browser__ctor_PuppeteerSharp_Connection_System_String___System_Boolean_PuppeteerSharp_ViewPortOptions_PuppeteerSharp_ChromiumProcess_" data-uid="PuppeteerSharp.Browser.#ctor(PuppeteerSharp.Connection,System.String[],System.Boolean,PuppeteerSharp.ViewPortOptions,PuppeteerSharp.ChromiumProcess)">Browser(Connection, String[], Boolean, ViewPortOptions, ChromiumProcess)</h4>
   <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="PuppeteerSharp.Browser.html">Browser</a> class.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Browser(Connection connection, string[] contextIds, bool ignoreHTTPSErrors, bool setDefaultViewport, ChromiumProcess chromiumProcess)</code></pre>
+    <pre><code class="lang-csharp hljs">public Browser(Connection connection, string[] contextIds, bool ignoreHTTPSErrors, ViewPortOptions defaultViewport, ChromiumProcess chromiumProcess)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -147,9 +147,9 @@ await browser2.CloseAsync();</code></pre>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">System.Boolean</span></td>
-        <td><span class="parametername">setDefaultViewport</span></td>
-        <td><p>The option to setDefaultViewport</p>
+        <td><a class="xref" href="PuppeteerSharp.ViewPortOptions.html">ViewPortOptions</a></td>
+        <td><span class="parametername">defaultViewport</span></td>
+        <td><p>Default viewport</p>
 </td>
       </tr>
       <tr>
@@ -329,10 +329,10 @@ and the browser endpoint <a href="https://chromedevtools.github.io/devtools-prot
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20CloseAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Browser.cs/%23L246">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20CloseAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Browser.cs/%23L248">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Browser.cs/#L246">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Browser.cs/#L248">View Source</a>
   </span>
   <a id="PuppeteerSharp_Browser_CloseAsync_" data-uid="PuppeteerSharp.Browser.CloseAsync*"></a>
   <h4 id="PuppeteerSharp_Browser_CloseAsync" data-uid="PuppeteerSharp.Browser.CloseAsync">CloseAsync()</h4>
@@ -404,10 +404,10 @@ and the browser endpoint <a href="https://chromedevtools.github.io/devtools-prot
 
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Disconnect()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Browser.cs/%23L240">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Disconnect()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Browser.cs/%23L242">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Browser.cs/#L240">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Browser.cs/#L242">View Source</a>
   </span>
   <a id="PuppeteerSharp_Browser_Disconnect_" data-uid="PuppeteerSharp.Browser.Disconnect*"></a>
   <h4 id="PuppeteerSharp_Browser_Disconnect" data-uid="PuppeteerSharp.Browser.Disconnect">Disconnect()</h4>
@@ -420,10 +420,10 @@ and the browser endpoint <a href="https://chromedevtools.github.io/devtools-prot
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Dispose()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Browser.cs/%23L421">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Dispose()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Browser.cs/%23L423">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Browser.cs/#L421">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Browser.cs/#L423">View Source</a>
   </span>
   <a id="PuppeteerSharp_Browser_Dispose_" data-uid="PuppeteerSharp.Browser.Dispose*"></a>
   <h4 id="PuppeteerSharp_Browser_Dispose" data-uid="PuppeteerSharp.Browser.Dispose">Dispose()</h4>
@@ -437,10 +437,10 @@ created by Puppeteer.</p>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20GetUserAgentAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Browser.cs/%23L231">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20GetUserAgentAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Browser.cs/%23L233">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Browser.cs/#L231">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Browser.cs/#L233">View Source</a>
   </span>
   <a id="PuppeteerSharp_Browser_GetUserAgentAsync_" data-uid="PuppeteerSharp.Browser.GetUserAgentAsync*"></a>
   <h4 id="PuppeteerSharp_Browser_GetUserAgentAsync" data-uid="PuppeteerSharp.Browser.GetUserAgentAsync">GetUserAgentAsync()</h4>
@@ -472,10 +472,10 @@ created by Puppeteer.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20GetVersionAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Browser.cs/%23L218">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20GetVersionAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Browser.cs/%23L220">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Browser.cs/#L218">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Browser.cs/#L220">View Source</a>
   </span>
   <a id="PuppeteerSharp_Browser_GetVersionAsync_" data-uid="PuppeteerSharp.Browser.GetVersionAsync*"></a>
   <h4 id="PuppeteerSharp_Browser_GetVersionAsync" data-uid="PuppeteerSharp.Browser.GetVersionAsync">GetVersionAsync()</h4>
@@ -539,10 +539,10 @@ created by Puppeteer.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20PagesAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Browser.cs/%23L206">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20PagesAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Browser.cs/%23L208">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Browser.cs/#L206">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Browser.cs/#L208">View Source</a>
   </span>
   <a id="PuppeteerSharp_Browser_PagesAsync_" data-uid="PuppeteerSharp.Browser.PagesAsync*"></a>
   <h4 id="PuppeteerSharp_Browser_PagesAsync" data-uid="PuppeteerSharp.Browser.PagesAsync">PagesAsync()</h4>
@@ -565,7 +565,8 @@ Non visible pages, such as <code>&quot;background_page&quot;</code>, will not be
     <tbody>
       <tr>
         <td><span class="xref">Task</span>&lt;<a class="xref" href="PuppeteerSharp.Page.html">Page</a>[]&gt;</td>
-        <td><p>Task which resolves to an array of all open pages.</p>
+        <td><p>Task which resolves to an array of all open pages inside the Browser.
+In case of multiple browser contexts, the method will return an array with all the pages in all browser contexts.</p>
 </td>
       </tr>
     </tbody>
