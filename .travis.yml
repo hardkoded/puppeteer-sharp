@@ -31,9 +31,9 @@ install:
 
 before_script:
   - dotnet restore lib/PuppeteerSharp.sln
-  - openssl genrsa -des3 -passout pass:12345 -out testCert.key 1024 -noout
-  - openssl req -new -x509 -key testCert.key -out testCert.cer -passin pass:12345 -subj "/C=GB/ST=London/L=London/O=Global Security/OU=IT Department/CN=example.com"
-
+  - openssl genrsa -des3 -passout pass:12345 -out lib/PuppeteerSharp.TestServer/testCert.key 1024 -noout
+  - openssl req -new -x509 -key lib/PuppeteerSharp.TestServer/testCert.key -out lib/PuppeteerSharp.TestServer/testCert.cer -passin pass:12345 -subj "/C=GB/ST=London/L=London/O=Global Security/OU=IT Department/CN=example.com"
+  
 script:
 - cd lib/PuppeteerSharp.Tests
 - DOTNET_ROLL_FORWARD_ON_NO_CANDIDATE_FX=0 RuntimeFrameworkVersion=2.1.0  dotnet test -f netcoreapp2.1 -s test.runsettings
