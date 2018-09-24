@@ -1,5 +1,4 @@
 language: csharp
-dotnet: none
 mono: none
 
 branches:
@@ -25,14 +24,6 @@ before_install:
 # Otherwise, the test will run on 2.1 (or whatever is installed on the machine).
 # Some failures can be unique to specific versions of the runtime that we claim to support, so we need to test on each.
 install:
-# install dotnet
-- export DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 DOTNET_CLI_TELEMETRY_OPTOUT=1
-- if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt install libunwind8; fi
-- wget https://dot.net/v1/dotnet-install.sh -O /tmp/dotnet-install.sh
-- chmod +x /tmp/dotnet-install.sh
-- /tmp/dotnet-install.sh -v 2.1.402
-- /tmp/dotnet-install.sh -v 2.1.4 --shared-runtime
-- export PATH=$DOTNETPATH:$PATH
 - dotnet --info
 
 before_script:
