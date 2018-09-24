@@ -1,6 +1,5 @@
 language: csharp
 dotnet: none #2.1.402
-mono: none #5.10.0
 
 branches:
   only:
@@ -29,7 +28,7 @@ install:
 - export PATH=$DOTNETPATH:$PATH
 - dotnet --info
 
-after_install:
+before_script:
   - dotnet restore lib/PuppeteerSharp.sln
   - openssl genrsa -des3 -passout pass:12345 -out lib/PuppeteerSharp.TestServer/testCert.key 2048 -noout
   - openssl req -new -key lib/PuppeteerSharp.TestServer/testCert.key -out lib/PuppeteerSharp.TestServer/testCert.cer -passin pass:12345 -subj "/C=GB/ST=London/L=London/O=Global Security/OU=IT Department/CN=example.com"
