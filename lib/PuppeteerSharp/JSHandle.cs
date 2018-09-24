@@ -92,7 +92,7 @@ namespace PuppeteerSharp
                     continue;
                 }
 
-                result.Add(property.name.ToString(), ExecutionContext.ObjectHandleFactory(ExecutionContext, property.value));
+                result.Add(property.name.ToString(), ExecutionContext.CreateJSHandle(property.value));
             }
             return result;
         }
