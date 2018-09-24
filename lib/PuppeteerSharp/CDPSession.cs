@@ -93,19 +93,34 @@ namespace PuppeteerSharp
         #endregion
 
         #region Public Methods
-
-        internal async Task<T> SendAsync<T>(string method, dynamic args = null)
+        /// <summary>
+        /// Protocol methods can be called with this method.
+        /// </summary>
+        /// <param name="method">The method name</param>
+        /// <param name="args">The method args</param>
+        /// <returns>The task.</returns>
+        public async Task<T> SendAsync<T>(string method, dynamic args = null)
         {
             var content = await SendAsync(method, true, args).ConfigureAwait(false);
             return JsonConvert.DeserializeObject<T>(content);
         }
 
-        internal Task<dynamic> SendAsync(string method, dynamic args = null)
-        {
-            return SendAsync(method, false, args ?? new { });
-        }
+        /// <summary>
+        /// Protocol methods can be called with this method.
+        /// </summary>
+        /// <param name="method">The method name</param>
+        /// <param name="args">The method args</param>
+        /// <returns>The task.</returns>
+        public Task<dynamic> SendAsync(string method, dynamic args = null) => SendAsync(method, false, args ?? new { });
 
-        internal async Task<dynamic> SendAsync(string method, bool rawContent, dynamic args = null)
+        /// <summary>
+        /// Protocol methods can be called with this method.
+        /// </summary>
+        /// <param name="method">The method name</param>
+        /// <param name="args">The method args</param>
+        /// <param name="rawContent"></param>
+        /// <returns>The task.</returns>
+        public async Task<dynamic> SendAsync(string method, bool rawContent, dynamic args = null)
         {
             if (Connection == null)
             {
