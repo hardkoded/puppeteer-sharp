@@ -696,10 +696,7 @@ namespace PuppeteerSharp
         /// <seealso cref="GoToAsync(string, int?, WaitUntilNavigation[])"/>
         public async Task<Response> GoToAsync(string url, NavigationOptions options)
         {
-            var referrer = _networkManager.ExtraHTTPHeaders != null
-                ? DictionaryExtensions.GetValueOrDefault(_networkManager.ExtraHTTPHeaders, "referer")
-                : null;
-
+            var referrer = _networkManager.ExtraHTTPHeaders?.GetValueOrDefault("referer");
             var requests = new Dictionary<string, Request>();
 
             void createRequestEventListener(object sender, RequestEventArgs e)
@@ -1420,7 +1417,8 @@ namespace PuppeteerSharp
             {
                 throw new NavigationException(exception.Message, exception);
             }
-            return DictionaryExtensions.GetValueOrDefault(responses, _frameManager.MainFrame.Url);
+
+            return responses.GetValueOrDefault(_frameManager.MainFrame.Url);
         }
 
         /// <summary>
