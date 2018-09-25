@@ -55,24 +55,28 @@ addons:
 matrix:
   include:
   - os: linux
-    env: DOTNETPATH=/home/travis/.dotnet LINUX=1
-    env: DOTNETVERSION=netcoreapp2.0
-    env: RUNTIMEVERSION=2.0.7
+    env:
+      - DOTNETPATH=/home/travis/.dotnet LINUX=1
+      - DOTNETVERSION=netcoreapp2.0
+      - RUNTIMEVERSION=2.0.7
     
   - os: linux
-    env: DOTNETPATH=/home/travis/.dotnet LINUX=1
-    env: DOTNETVERSION=netcoreapp2.1
-    env: RUNTIMEVERSION=2.1.0
+    env:
+      - DOTNETPATH=/home/travis/.dotnet LINUX=1
+      - DOTNETVERSION=netcoreapp2.1
+      - RUNTIMEVERSION=2.1.0
     
   - os: osx
-    env: DOTNETPATH=/Users/travis/.dotnet
-    env: DOTNETVERSION=netcoreapp2.0
-    env: RUNTIMEVERSION=2.0.7
+    env:
+      - DOTNETPATH=/Users/travis/.dotnet
+      - DOTNETVERSION=netcoreapp2.0
+      - RUNTIMEVERSION=2.0.7
     
   - os: osx
-    env: DOTNETPATH=/Users/travis/.dotnet
-    env: DOTNETVERSION=netcoreapp2.1
-    env: RUNTIMEVERSION=2.1.0
+    env:
+      - DOTNETPATH=/Users/travis/.dotnet
+      - DOTNETVERSION=netcoreapp2.1
+      - RUNTIMEVERSION=2.1.0
     
 git:
   depth: false
@@ -80,7 +84,7 @@ git:
 
 # install chrome dependencies https://docs.browserless.io/blog/2018/04/25/chrome-linux.html
 before_install:  
-- if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update; brew install openssl; brew link --force openssl; brew install Caskroom/versions/google-chrome-canary; fi
+- if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update; brew install Caskroom/versions/google-chrome-canary; fi
 
 # It is important that we actually install the .NET Core runtime for each that we intend to test.
 # Otherwise, the test will run on 2.1 (or whatever is installed on the machine).
@@ -90,7 +94,7 @@ install:
 - wget https://dot.net/v1/dotnet-install.sh -O /tmp/dotnet-install.sh
 - chmod +x /tmp/dotnet-install.sh
 - /tmp/dotnet-install.sh -v 2.1.402
-- /tmp/dotnet-install.sh -v 2.0.7 --shared-runtime
+- /tmp/dotnet-install.sh -v 2.0.7 --runtime dotnet
 - export PATH=$DOTNETPATH:$PATH
 - dotnet --info
 
