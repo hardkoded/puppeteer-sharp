@@ -1,0 +1,104 @@
+language: csharp
+dist: trusty
+dotnet: none
+
+branches:
+  only:
+  - master
+  
+addons:
+  apt:
+    packages:
+      # dotnet
+      - libunwind8
+      # chrome dependencies https://docs.browserless.io/blog/2018/04/25/chrome-linux.html
+      - locales
+      - gconf-service
+      - libasound2
+      - libatk1.0-0
+      - libc6
+      - libcairo2
+      - libcups2
+      - libdbus-1-3
+      - libexpat1
+      - libfontconfig1
+      - libgcc1
+      - libgconf-2-4
+      - libgdk-pixbuf2.0-0
+      - libglib2.0-0
+      - libgtk-3-0
+      - libnspr4
+      - libpango-1.0-0
+      - libpangocairo-1.0-0
+      - libstdc++6
+      - libx11-6
+      - libx11-xcb1
+      - libxcb1
+      - libxcomposite1
+      - libxcursor1
+      - libxdamage1
+      - libxext6
+      - libxfixes3
+      - libxi6
+      - libxrandr2
+      - libxrender1
+      - libxss1
+      - libxtst6
+      - ca-certificates
+      - fonts-liberation
+      - libappindicator1
+      - libnss3
+      - lsb-release
+      - xdg-utils
+    
+matrix:
+  include:
+  - os: linux
+    env:
+      - DOTNETPATH=/home/travis/.dotnet LINUX=1
+      - SDKVERSION=netcoreapp2.0
+      - RUNTIMEVERSION=2.0.9
+    
+  - os: linux
+    env:
+      - DOTNETPATH=/home/travis/.dotnet LINUX=1
+      - SDKVERSION=netcoreapp2.1
+      - RUNTIMEVERSION=2.1.4
+    
+  - os: osx
+    env:
+      - DOTNETPATH=/Users/travis/.dotnet
+      - SDKVERSION=netcoreapp2.0
+      - RUNTIMEVERSION=2.0.9
+    
+  - os: osx
+    env:
+      - DOTNETPATH=/Users/travis/.dotnet
+      - SDKVERSION=netcoreapp2.1
+      - RUNTIMEVERSION=2.1.4
+
+git:
+  depth: false
+
+# It is important that we actually install the .NET Core runtime for each that we intend to test.
+# Otherwise, the test will run on 2.1 (or whatever is installed on the machine).
+# Some failures can be unique to specific versions of the runtime that we claim to support, so we need to test on each.
+install:
+- export DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 DOTNET_CLI_TELEMETRY_OPTOUT=1
+- wget https://dot.net/v1/dotnet-install.sh -O /tmp/dotnet-install.sh
+- chmod +x /tmp/dotnet-install.sh
+- /tmp/dotnet-install.sh -v 2.1.402
+- /tmp/dotnet-install.sh -v 2.0.9 --runtime dotnet
+- export PATH=$DOTNETPATH:$PATH
+- dotnet --info
+
+before_script:
+  - dotnet restore lib/PuppeteerSharp.sln
+  # generate certificate
+  - openssl genrsa -des3 -passout pass:12345 -out lib/PuppeteerSharp.TestServer/testCert.key 1024 -noout
+  - openssl req -new -x509 -key lib/PuppeteerSharp.TestServer/testCert.key -out lib/PuppeteerSharp.TestServer/testCert.cer -passin pass:12345 -subj "/C=GB/ST=London/L=London/O=Global Security/OU=IT Department/CN=example.com"
+  
+script:
+- msbuild lib/PuppeteerSharp.sln /verbosity:minimal /p:GeneratePackageOnBuild=false
+- cd lib/PuppeteerSharp.Tests
+- DOTNET_ROLL_FORWARD_ON_NO_CANDIDATE_FX=0 RuntimeFrameworkVersion=$RUNTIMEVERSION dotnet test -f $SDKVERSION -s test.runsettings
