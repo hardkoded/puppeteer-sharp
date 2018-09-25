@@ -35,6 +35,18 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Fact]
+        public async Task ShouldWorkWhenPageCallsHistoryAPIInBeforeunload()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.EvaluateFunctionAsync(@"() =>
+            {
+                window.addEventListener('beforeunload', () => history.replaceState(null, 'initial', window.location.href), false);
+            }");
+            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+            Assert.Equal(HttpStatusCode.OK, response.Status);
+        }
+
+        [Fact]
         public async Task ShouldFailWhenServerReturns204()
         {
             Server.SetRoute("/empty.html", context =>
