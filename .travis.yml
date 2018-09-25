@@ -1,5 +1,6 @@
 language: csharp
 dist: trusty
+sudo: required
 dotnet: none
 mono: none
 
@@ -12,7 +13,7 @@ addons:
     packages:
       # dotnet
       - libunwind8
-      # chrome
+      # chrome dependencies https://docs.browserless.io/blog/2018/04/25/chrome-linux.html
       - locales
       - gconf-service
       - libasound2
@@ -80,11 +81,6 @@ matrix:
     
 git:
   depth: false
-
-
-# install chrome dependencies https://docs.browserless.io/blog/2018/04/25/chrome-linux.html
-before_install:  
-- if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update; brew install Caskroom/versions/google-chrome-canary; fi
 
 # It is important that we actually install the .NET Core runtime for each that we intend to test.
 # Otherwise, the test will run on 2.1 (or whatever is installed on the machine).
