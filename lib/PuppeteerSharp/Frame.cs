@@ -49,9 +49,9 @@ namespace PuppeteerSharp
         internal List<string> LifecycleEvents { get; }
         internal string NavigationURL { get; private set; }
 
-        internal Frame(FrameManager frame, CDPSession client, Frame parentFrame, string frameId)
+        internal Frame(FrameManager frameManager, CDPSession client, Frame parentFrame, string frameId)
         {
-            FrameManager = frame;
+            FrameManager = frameManager;
             _client = client;
             ParentFrame = parentFrame;
             Id = frameId;
