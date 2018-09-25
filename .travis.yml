@@ -1,6 +1,5 @@
 language: csharp
 dist: trusty
-sudo: false
 dotnet: none
 mono: none
 
