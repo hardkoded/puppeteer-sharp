@@ -64,6 +64,10 @@ namespace PuppeteerSharp
         /// </summary>
         Manifest,
         /// <summary>
+        /// Ping.
+        /// </summary>
+        Ping,
+        /// <summary>
         /// Other.
         /// </summary>
         Other
