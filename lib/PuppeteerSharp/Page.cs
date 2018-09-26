@@ -728,10 +728,15 @@ namespace PuppeteerSharp
             }
             else
             {
-                await Task.WhenAll(
+                await Task.WhenAny(
                     watcher.TimeoutTask,
                     _ensureNewDocumentNavigation ? watcher.NewDocumentNavigationTask : watcher.SameDocumentNavigationTask
                 ).ConfigureAwait(false);
+
+                if (watcher.TimeoutTask.IsFaulted)
+                {
+                    exception = watcher.TimeoutTask.Exception;
+                }
             }
 
             _networkManager.Request -= createRequestEventListener;
@@ -1402,7 +1407,7 @@ namespace PuppeteerSharp
 
             _networkManager.Response += createResponseEventListener;
 
-            await Task.WhenAny(
+            var raceTask = await Task.WhenAny(
                 watcher.NewDocumentNavigationTask,
                 watcher.SameDocumentNavigationTask,
                 watcher.TimeoutTask
@@ -1410,7 +1415,7 @@ namespace PuppeteerSharp
 
             _networkManager.Response -= createResponseEventListener;
 
-            var exception = watcher.NavigationTask.Exception;
+            var exception = raceTask.Exception;
             if (exception != null)
             {
                 throw new NavigationException(exception.Message, exception);

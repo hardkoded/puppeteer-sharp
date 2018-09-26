@@ -144,7 +144,7 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
             if (timeout > 0)
             {
                 _timeoutTimer = System.Threading.Tasks.Task.Delay(timeout, _cts.Token).ContinueWith(_
-                    => Termiante(new WaitTaskTimeoutException(timeout, title)));
+                    => Terminate(new WaitTaskTimeoutException(timeout, title)));
             }
 
             _taskCompletion = new TaskCompletionSource<JSHandle>();
@@ -213,7 +213,7 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
             Cleanup();
         }
 
-        internal void Termiante(Exception exception)
+        internal void Terminate(Exception exception)
         {
             _terminated = true;
             _taskCompletion.TrySetException(exception);

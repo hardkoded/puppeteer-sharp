@@ -88,7 +88,7 @@ namespace PuppeteerSharp
             }
             if (_frame.LoaderId != _initialLoaderId)
             {
-                SameDocumentNavigationTaskWrapper.TrySetResult(true);
+                NewDocumentNavigationTaskWrapper.TrySetResult(true);
             }
         }
 
