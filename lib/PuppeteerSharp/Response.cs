@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
@@ -101,12 +103,14 @@ namespace PuppeteerSharp
 
                 try
                 {
-                    var response = await _client.SendAsync("Network.getResponseBody", new Dictionary<string, object>
+                    var response = await _client.SendAsync<NetworkGetResponseBodyResponse>("Network.getResponseBody", new Dictionary<string, object>
                     {
                         {"requestId", Request.RequestId}
                     }).ConfigureAwait(false);
 
-                    _buffer = response.body.ToString();
+                    _buffer = response.Base64Encoded
+                        ? Encoding.UTF8.GetString(Convert.FromBase64String(response.Body))
+                        : response.Body;
                 }
                 catch (Exception ex)
                 {
