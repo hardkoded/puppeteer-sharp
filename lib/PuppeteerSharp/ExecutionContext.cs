@@ -131,7 +131,7 @@ namespace PuppeteerSharp
                 {
                     ["functionDeclaration"] = $"{script}\n{EvaluationScriptSuffix}\n",
                     ["executionContextId"] = _contextId,
-                    ["arguments"] = args.Select(FormatArgument),
+                    ["arguments"] = args.Select(FormatArgument).ToArray(),
                     ["returnByValue"] = false,
                     ["awaitPromise"] = true,
                     ["userGesture"] = true

@@ -41,7 +41,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             {
                 var backgroundPageTarget = await WaitForBackgroundPageTargetAsync(browserWithExtension);
                 var page = await backgroundPageTarget.PageAsync();
-                Assert.Equal(6, await page.EvaluateFunctionAsync<object>("() => 2 * 3"));
+                Assert.Equal(6, await page.EvaluateFunctionAsync<int>("() => 2 * 3"));
             }
         }
 

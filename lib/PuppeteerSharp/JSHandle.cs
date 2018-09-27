@@ -183,10 +183,14 @@ namespace PuppeteerSharp
 
             if (RemoteObject[Constants.OBJECT_ID] == null)
             {
-                return RemoteObject[Constants.VALUE];
+                var value = RemoteObject[Constants.VALUE];
+
+                return new { value };
             }
 
-            return RemoteObject[Constants.OBJECT_ID];
+            var objectId = RemoteObject[Constants.OBJECT_ID];
+
+            return new { objectId };
         }
     }
 }
