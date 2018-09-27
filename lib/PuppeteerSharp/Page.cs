@@ -42,6 +42,7 @@ namespace PuppeteerSharp
         private readonly Dictionary<string, Delegate> _pageBindings;
         private readonly Dictionary<string, Worker> _workers;
         private readonly ILogger _logger;
+        private bool _ensureNewDocumentNavigation;
 
         private static readonly Dictionary<string, decimal> _unitToPixels = new Dictionary<string, decimal> {
             {"px", 1},
@@ -716,7 +717,7 @@ namespace PuppeteerSharp
             var navigateTask = Navigate(Client, url, referrer);
 
             await Task.WhenAny(
-                watcher.NavigationTask,
+                watcher.TimeoutTask,
                 navigateTask).ConfigureAwait(false);
 
             AggregateException exception = null;
@@ -725,21 +726,19 @@ namespace PuppeteerSharp
             {
                 exception = navigateTask.Exception;
             }
-            else if (watcher.NavigationTask.IsCompleted &&
-                watcher.NavigationTask.Result.IsFaulted)
+            else
             {
-                exception = watcher.NavigationTask.Result?.Exception;
+                await Task.WhenAny(
+                    watcher.TimeoutTask,
+                    _ensureNewDocumentNavigation ? watcher.NewDocumentNavigationTask : watcher.SameDocumentNavigationTask
+                ).ConfigureAwait(false);
+
+                if (watcher.TimeoutTask.IsFaulted)
+                {
+                    exception = watcher.TimeoutTask.Exception;
+                }
             }
 
-            if (exception == null)
-            {
-                await Task.WhenAll(
-                    watcher.NavigationTask,
-                    navigateTask).ConfigureAwait(false);
-                exception = navigateTask.Exception ?? watcher.NavigationTask.Result.Exception;
-            }
-
-            watcher.Cancel();
             _networkManager.Request -= createRequestEventListener;
 
             if (exception != null)
@@ -1408,11 +1407,15 @@ namespace PuppeteerSharp
 
             _networkManager.Response += createResponseEventListener;
 
-            await watcher.NavigationTask.ConfigureAwait(false);
+            var raceTask = await Task.WhenAny(
+                watcher.NewDocumentNavigationTask,
+                watcher.SameDocumentNavigationTask,
+                watcher.TimeoutTask
+            ).ConfigureAwait(false);
 
             _networkManager.Response -= createResponseEventListener;
 
-            var exception = watcher.NavigationTask.Exception;
+            var exception = raceTask.Exception;
             if (exception != null)
             {
                 throw new NavigationException(exception.Message, exception);
@@ -2025,15 +2028,17 @@ namespace PuppeteerSharp
 
         private async Task Navigate(CDPSession client, string url, string referrer)
         {
-            dynamic response = await client.SendAsync("Page.navigate", new
+            var response = await client.SendAsync<PageNavigateResponse>("Page.navigate", new
             {
                 url,
                 referrer = referrer ?? string.Empty
             }).ConfigureAwait(false);
 
-            if (response.errorText != null)
+            _ensureNewDocumentNavigation = !string.IsNullOrEmpty(response.LoaderId);
+
+            if (!string.IsNullOrEmpty(response.ErrorText))
             {
-                throw new NavigationException(response.errorText.ToString(), url);
+                throw new NavigationException(response.ErrorText, url);
             }
         }
 

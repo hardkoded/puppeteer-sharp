@@ -52,29 +52,21 @@ namespace PuppeteerSharp
             frameManager.LifecycleEvent += CheckLifecycleComplete;
             frameManager.FrameNavigatedWithinDocument += NavigatedWithinDocument;
             frameManager.FrameDetached += CheckLifecycleComplete;
-            LifeCycleCompleteTaskWrapper = new TaskCompletionSource<bool>();
-
-            NavigationTask = Task.WhenAny(new[]
-            {
-                TaskHelper.CreateTimeoutTask(_timeout),
-                LifeCycleCompleteTask
-            }).ContinueWith((task) =>
-            {
-                CleanUp();
-                return task.GetAwaiter().GetResult();
-            });
+            SameDocumentNavigationTaskWrapper = new TaskCompletionSource<bool>();
+            NewDocumentNavigationTaskWrapper = new TaskCompletionSource<bool>();
+            TimeoutTask = TaskHelper.CreateTimeoutTask(timeout);
         }
 
         #region Properties
         public Task<Task> NavigationTask { get; internal set; }
-        public Task<bool> LifeCycleCompleteTask => LifeCycleCompleteTaskWrapper.Task;
-        public TaskCompletionSource<bool> LifeCycleCompleteTaskWrapper { get; }
+        public Task<bool> SameDocumentNavigationTask => SameDocumentNavigationTaskWrapper.Task;
+        public TaskCompletionSource<bool> SameDocumentNavigationTaskWrapper { get; }
+        public Task<bool> NewDocumentNavigationTask => NewDocumentNavigationTaskWrapper.Task;
+        public TaskCompletionSource<bool> NewDocumentNavigationTaskWrapper { get; }
+        public Task TimeoutTask { get; }
 
         #endregion
 
-        #region Public methods
-        public void Cancel() => CleanUp();
-        #endregion
         #region Private methods
 
         private void CheckLifecycleComplete(object sender, FrameEventArgs e)
@@ -89,7 +81,14 @@ namespace PuppeteerSharp
                 return;
             }
 
-            LifeCycleCompleteTaskWrapper.TrySetResult(true);
+            if (_hasSameDocumentNavigation)
+            {
+                SameDocumentNavigationTaskWrapper.TrySetResult(true);
+            }
+            if (_frame.LoaderId != _initialLoaderId)
+            {
+                NewDocumentNavigationTaskWrapper.TrySetResult(true);
+            }
         }
 
         private void NavigatedWithinDocument(object sender, FrameEventArgs e)
