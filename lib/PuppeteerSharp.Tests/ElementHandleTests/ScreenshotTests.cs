@@ -21,7 +21,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
                 Height = 500
             });
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
-            await Page.EvaluateExpressionAsync("window.scrollBy(50, 100)");
+            await Page.EvaluateExpressionAsync<object>("window.scrollBy(50, 100)");
             var elementHandle = await Page.QuerySelectorAsync(".box:nth-of-type(3)");
             var screenshot = await elementHandle.ScreenshotDataAsync();
             Assert.True(ScreenshotHelper.PixelMatch("screenshot-element-bounding-box.png", screenshot));
@@ -78,7 +78,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             var screenshot = await elementHandle.ScreenshotDataAsync();
             Assert.True(ScreenshotHelper.PixelMatch("screenshot-element-larger-than-viewport.png", screenshot));
             Assert.Equal(JToken.FromObject(new { w = 500, h = 500 }),
-                await Page.EvaluateExpressionAsync("({ w: window.innerWidth, h: window.innerHeight })"));
+                await Page.EvaluateExpressionAsync<object>("({ w: window.innerWidth, h: window.innerHeight })"));
         }
 
         [Fact]
@@ -138,7 +138,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         {
             await Page.SetContentAsync("<h1>remove this</h1>");
             var elementHandle = await Page.QuerySelectorAsync("h1");
-            await Page.EvaluateFunctionAsync("element => element.remove()", elementHandle);
+            await Page.EvaluateFunctionAsync<object>("element => element.remove()", elementHandle);
 
             var exception = await Assert.ThrowsAsync<PuppeteerException>(elementHandle.ScreenshotStreamAsync);
             Assert.Equal("Node is either not visible or not an HTMLElement", exception.Message);

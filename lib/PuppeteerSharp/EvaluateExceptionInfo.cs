@@ -7,7 +7,7 @@ namespace PuppeteerSharp
         [JsonProperty("description")]
         internal string Description { get; set; }
 
-        [JsonProperty("value")]
+        [JsonProperty(Constants.VALUE)]
         internal string Value { get; set; }
     }
 }

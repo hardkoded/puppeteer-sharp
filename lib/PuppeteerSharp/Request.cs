@@ -174,7 +174,7 @@ namespace PuppeteerSharp
 
                 if (overrides?.Method != null)
                 {
-                    requestData["method"] = overrides.Method.ToString();
+                    requestData[Constants.METHOD] = overrides.Method.ToString();
                 }
 
                 if (overrides?.PostData != null)

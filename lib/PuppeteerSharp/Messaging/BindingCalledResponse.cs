@@ -26,7 +26,7 @@ namespace PuppeteerSharp.Messaging
 
         public class BindingPayload
         {
-            [JsonProperty("name")]
+            [JsonProperty(Constants.NAME)]
             public string Name { get; set; }
             [JsonProperty("args")]
             public object[] Args { get; set; }

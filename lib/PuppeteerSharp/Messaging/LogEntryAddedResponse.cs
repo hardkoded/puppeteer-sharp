@@ -17,7 +17,7 @@ namespace PuppeteerSharp.Messaging
             internal dynamic[] Args { get; set; }
             [JsonProperty("level")]
             internal ConsoleType Level { get; set; }
-            [JsonProperty("text")]
+            [JsonProperty(Constants.TEXT)]
             internal string Text { get; set; }
         }
     }

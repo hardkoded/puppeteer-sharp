@@ -8,7 +8,7 @@ namespace PuppeteerSharp.Tests
     {
         public static async Task AttachFrameAsync(Page page, string frameId, string url)
         {
-            await page.EvaluateFunctionAsync(@"(frameId, url) => {
+            await page.EvaluateFunctionAsync<object>(@"(frameId, url) => {
               const frame = document.createElement('iframe');
               frame.src = url;
               frame.id = frameId;
@@ -19,7 +19,7 @@ namespace PuppeteerSharp.Tests
 
         public static async Task DetachFrameAsync(Page page, string frameId)
         {
-            await page.EvaluateFunctionAsync(@"function detachFrame(frameId) {
+            await page.EvaluateFunctionAsync<object>(@"function detachFrame(frameId) {
               const frame = document.getElementById(frameId);
               frame.remove();
             }", frameId);
@@ -38,7 +38,7 @@ namespace PuppeteerSharp.Tests
 
         internal static async Task NavigateFrameAsync(Page page, string frameId, string url)
         {
-            await page.EvaluateFunctionAsync(@"function navigateFrame(frameId, url) {
+            await page.EvaluateFunctionAsync<object>(@"function navigateFrame(frameId, url) {
               const frame = document.getElementById(frameId);
               frame.src = url;
               return new Promise(x => frame.onload = x);

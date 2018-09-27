@@ -66,7 +66,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 called = true;
                 return Task.CompletedTask;
             });
-            await Page.EvaluateExpressionAsync("changeFlag()");
+            await Page.EvaluateExpressionAsync<object>("changeFlag()");
             Assert.True(called);
         }
 
@@ -78,7 +78,7 @@ namespace PuppeteerSharp.Tests.PageTests
             {
                 called = true;
             });
-            await Page.EvaluateExpressionAsync("changeFlag()");
+            await Page.EvaluateExpressionAsync<object>("changeFlag()");
             Assert.True(called);
         }
     }

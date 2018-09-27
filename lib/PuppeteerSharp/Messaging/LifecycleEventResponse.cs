@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Messaging
         [JsonProperty("loaderId")]
         public string LoaderId { get; set; }
 
-        [JsonProperty("name")]
+        [JsonProperty(Constants.NAME)]
         public string Name { get; set; }
     }
 }

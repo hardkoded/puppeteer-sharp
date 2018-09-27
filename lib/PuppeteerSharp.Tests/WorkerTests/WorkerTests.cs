@@ -38,7 +38,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             var worker = await workerCreatedTcs.Task;
             var workerDestroyedTcs = new TaskCompletionSource<Worker>();
             Page.WorkerDestroyed += (sender, e) => workerDestroyedTcs.TrySetResult(e.Worker);
-            await Page.EvaluateFunctionAsync("workerObj => workerObj.terminate()", workerObj);
+            await Page.EvaluateFunctionAsync<object>("workerObj => workerObj.terminate()", workerObj);
             Assert.Same(worker, await workerDestroyedTcs.Task);
         }
 
@@ -48,7 +48,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             var consoleTcs = new TaskCompletionSource<ConsoleMessage>();
             Page.Console += (sender, e) => consoleTcs.TrySetResult(e.Message);
 
-            await Page.EvaluateFunctionAsync("() => new Worker(`data:text/javascript,console.log(1)`)");
+            await Page.EvaluateFunctionAsync<object>("() => new Worker(`data:text/javascript,console.log(1)`)");
 
             var log = await consoleTcs.Task;
             Assert.Equal("1", log.Text);
@@ -62,7 +62,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             {
                 consoleTcs.TrySetResult(e.Message);
             };
-            await Page.EvaluateFunctionAsync("() => new Worker(`data:text/javascript,console.log(1, 2, 3, this)`)");
+            await Page.EvaluateFunctionAsync<object>("() => new Worker(`data:text/javascript,console.log(1, 2, 3, this)`)");
             var log = await consoleTcs.Task;
             Assert.Equal("1 2 3 JSHandle@object", log.Text);
             Assert.Equal(4, log.Args.Count);
@@ -76,7 +76,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             var workerCreatedTcs = new TaskCompletionSource<Worker>();
             Page.WorkerCreated += (sender, e) => workerCreatedTcs.TrySetResult(e.Worker);
 
-            await Page.EvaluateFunctionAsync("() => new Worker(`data:text/javascript,console.log(1)`)");
+            await Page.EvaluateFunctionAsync<object>("() => new Worker(`data:text/javascript,console.log(1)`)");
             var worker = await workerCreatedTcs.Task;
             Assert.Equal(2, await worker.EvaluateExpressionAsync<int>("1+1"));
         }
@@ -87,7 +87,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             var errorTcs = new TaskCompletionSource<string>();
             Page.PageError += (sender, e) => errorTcs.TrySetResult(e.Message);
 
-            await Page.EvaluateFunctionAsync("() => new Worker(`data:text/javascript, throw new Error('this is my error');`)");
+            await Page.EvaluateFunctionAsync<object>("() => new Worker(`data:text/javascript, throw new Error('this is my error');`)");
             var errorLog = await errorTcs.Task;
             Assert.Contains("this is my error", errorLog);
         }

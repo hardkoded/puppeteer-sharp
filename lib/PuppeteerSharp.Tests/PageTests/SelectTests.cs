@@ -34,7 +34,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldSelectMultipleOptions()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
-            await Page.EvaluateExpressionAsync("makeMultiple()");
+            await Page.EvaluateExpressionAsync<object>("makeMultiple()");
             await Page.SelectAsync("select", "blue", "green", "red");
             Assert.Equal(new string[] { "blue", "green", "red" },
                          await Page.EvaluateExpressionAsync<string[]>("result.onInput"));
@@ -71,7 +71,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldReturnAnArrayOfMatchedValues()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
-            await Page.EvaluateExpressionAsync("makeMultiple()");
+            await Page.EvaluateExpressionAsync<object>("makeMultiple()");
             var result = await Page.SelectAsync("select", "blue", "black", "magenta");
             Array.Sort(result);
             Assert.Equal(new string[] { "black", "blue", "magenta" }, result);
@@ -95,7 +95,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldDeselectAllOptionsWhenPassedNoValuesForAMultipleSelect()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
-            await Page.EvaluateExpressionAsync("makeMultiple()");
+            await Page.EvaluateExpressionAsync<object>("makeMultiple()");
             await Page.SelectAsync("select", "blue", "black", "magenta");
             await Page.SelectAsync("select");
             Assert.True(await Page.QuerySelectorAsync("select").EvaluateFunctionAsync<bool>(

@@ -24,7 +24,7 @@ namespace PuppeteerSharp
         internal ElementHandle(
             ExecutionContext context,
             CDPSession client,
-            object remoteObject,
+            JToken remoteObject,
             Page page,
             FrameManager frameManager) :
             base(context, client, remoteObject)
@@ -137,7 +137,7 @@ namespace PuppeteerSharp
                 await Page.SetViewportAsync(newRawViewport.ToObject<ViewPortOptions>()).ConfigureAwait(false);
                 needsViewportReset = true;
             }
-            await ExecutionContext.EvaluateFunctionAsync(@"function(element) {
+            await ExecutionContext.EvaluateFunctionAsync<object>(@"function(element) {
                 element.scrollIntoView({ block: 'center', inline: 'center', behavior: 'instant'});
             }", this).ConfigureAwait(false);
 
@@ -198,7 +198,7 @@ namespace PuppeteerSharp
         public Task UploadFileAsync(params string[] filePaths)
         {
             var files = filePaths.Select(Path.GetFullPath).ToArray();
-            var objectId = RemoteObject.objectId.ToString();
+            var objectId = RemoteObject[Constants.OBJECT_ID].Value<string>();
             return Client.SendAsync("DOM.setFileInputFiles", new { objectId, files });
         }
 
@@ -218,7 +218,7 @@ namespace PuppeteerSharp
         /// Calls <c>focus</c> <see href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus"/> on the element.
         /// </summary>
         /// <returns>Task</returns>
-        public Task FocusAsync() => ExecutionContext.EvaluateFunctionAsync("element => element.focus()", this);
+        public Task FocusAsync() => ExecutionContext.EvaluateFunctionAsync<object>("element => element.focus()", this);
 
         /// <summary>
         /// Focuses the element, and sends a <c>keydown</c>, <c>keypress</c>/<c>input</c>, and <c>keyup</c> event for each character in the text.
@@ -384,9 +384,9 @@ namespace PuppeteerSharp
         /// <returns>Resolves to the content frame</returns>
         public async Task<Frame> ContentFrameAsync()
         {
-            var nodeInfo = await Client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new
+            var nodeInfo = await Client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new Dictionary<string, object>
             {
-                RemoteObject.objectId
+                { Constants.OBJECT_ID, RemoteObject[Constants.OBJECT_ID] }
             }).ConfigureAwait(false);
 
             return string.IsNullOrEmpty(nodeInfo.Node.FrameId) ? null : _frameManager.Frames[nodeInfo.Node.FrameId];
@@ -417,9 +417,9 @@ namespace PuppeteerSharp
 
             try
             {
-                result = await Client.SendAsync<GetContentQuadsResponse>("DOM.getContentQuads", new
+                result = await Client.SendAsync<GetContentQuadsResponse>("DOM.getContentQuads", new Dictionary<string, object>
                 {
-                    RemoteObject.objectId
+                    { Constants.OBJECT_ID, RemoteObject[Constants.OBJECT_ID] }
                 });
             }
             catch (Exception ex)
@@ -491,7 +491,7 @@ namespace PuppeteerSharp
             {
                 return await Client.SendAsync<BoxModelResponse>("DOM.getBoxModel", new
                 {
-                    objectId = RemoteObject.objectId.ToString()
+                    objectId = RemoteObject[Constants.OBJECT_ID].Value<string>()
                 }).ConfigureAwait(false);
             }
             catch (PuppeteerException ex)

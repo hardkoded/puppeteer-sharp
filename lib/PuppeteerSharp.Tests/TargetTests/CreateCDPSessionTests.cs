@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -60,10 +61,10 @@ namespace PuppeteerSharp.Tests.TargetTests
             var eventTask = WaitEvent(client, "Debugger.scriptParsed");
             await Task.WhenAll(
                 eventTask,
-                Page.EvaluateExpressionAsync("//# sourceURL=foo.js")
+                Page.EvaluateExpressionAsync<object>("//# sourceURL=foo.js")
             );
             // expect events to be dispatched.
-            Assert.Equal("foo.js", eventTask.Result.url.ToString());
+            Assert.Equal("foo.js", eventTask.Result[Constants.URL].Value<string>());
         }
 
         [Fact]
@@ -72,7 +73,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             var client = await Page.Target.CreateCDPSessionAsync();
             await client.SendAsync("Runtime.enable");
             var evalResponse = await client.SendAsync("Runtime.evaluate", new { expression = "1 + 2", returnByValue = true });
-            Assert.Equal(3, evalResponse.result.value.ToObject<int>());
+            Assert.Equal(3, evalResponse["result"]["value"].ToObject<int>());
             await client.DetachAsync();
 
             var exception = await Assert.ThrowsAnyAsync<Exception>(()

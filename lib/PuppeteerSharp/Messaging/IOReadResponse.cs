@@ -7,7 +7,7 @@ namespace PuppeteerSharp.Messaging
     {
         [JsonProperty("eof")]
         internal bool Eof { get; set; }
-        [JsonProperty("data")]
+        [JsonProperty(Constants.DATA)]
         internal string Data { get; set; }
     }
 }

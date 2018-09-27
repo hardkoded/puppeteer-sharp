@@ -38,23 +38,6 @@ namespace PuppeteerSharp
         /// NOTE Not every execution context is associated with a frame. For example, workers and extensions have execution contexts that are not associated with frames.
         /// </remarks>
         public Frame Frame { get; }
-        /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="ExecutionContext"/> is the 
-        /// default context of a <see cref="Frame"/>
-        /// </summary>
-        /// <value><c>true</c> if is default; otherwise, <c>false</c>.</value>
-        /// <summary>
-        /// Executes a script in browser context
-        /// </summary>
-        /// <param name="script">Script to be evaluated in browser context</param>
-        /// <remarks>
-        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
-        /// </remarks>
-        /// <seealso cref="EvaluateFunctionAsync(string, object[])"/>
-        /// <seealso cref="EvaluateExpressionHandleAsync(string)"/>
-        /// <returns>Task which resolves to script return value</returns>
-        public Task<object> EvaluateExpressionAsync(string script)
-            => EvaluateExpressionAsync<object>(script);
 
         /// <summary>
         /// Executes a script in browser context
@@ -69,21 +52,6 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to script return value</returns>
         public Task<T> EvaluateExpressionAsync<T>(string script)
             => EvaluateAsync<T>(EvaluateExpressionHandleAsync(script));
-
-        /// <summary>
-        /// Executes a function in browser context
-        /// </summary>
-        /// <param name="script">Script to be evaluated in browser context</param>
-        /// <param name="args">Arguments to pass to script</param>
-        /// <remarks>
-        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
-        /// <see cref="JSHandle"/> instances can be passed as arguments
-        /// </remarks>
-        /// <seealso cref="EvaluateExpressionAsync(string)"/>
-        /// <seealso cref="EvaluateFunctionHandleAsync(string, object[])"/>
-        /// <returns>Task which resolves to script return value</returns>
-        public Task<object> EvaluateFunctionAsync(string script, params object[] args)
-            => EvaluateFunctionAsync<object>(script, args);
 
         /// <summary>
         /// Executes a function in browser context
@@ -106,24 +74,24 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>A task which resolves to a handle to an array of objects with this prototype.</returns>
         /// <param name="prototypeHandle">A handle to the object prototype.</param>
-        public async Task<dynamic> QueryObjectsAsync(JSHandle prototypeHandle)
+        public async Task<JSHandle> QueryObjectsAsync(JSHandle prototypeHandle)
         {
             if (prototypeHandle.Disposed)
             {
                 throw new PuppeteerException("Prototype JSHandle is disposed!");
             }
 
-            if (!((JObject)prototypeHandle.RemoteObject).TryGetValue("objectId", out var objectId))
+            if (!((JObject)prototypeHandle.RemoteObject).TryGetValue(Constants.OBJECT_ID, out var objectId))
             {
                 throw new PuppeteerException("Prototype JSHandle must not be referencing primitive value");
             }
 
-            dynamic response = await _client.SendAsync("Runtime.queryObjects", new Dictionary<string, object>
+            var response = await _client.SendAsync("Runtime.queryObjects", new Dictionary<string, object>
             {
                 {"prototypeObjectId", objectId.ToString()}
             }).ConfigureAwait(false);
 
-            return CreateJSHandle(response.objects);
+            return CreateJSHandle(response[Constants.OBJECTS]);
         }
 
         internal async Task<JSHandle> EvaluateExpressionHandleAsync(string script)
@@ -205,12 +173,14 @@ namespace PuppeteerSharp
 
         private async Task<JSHandle> EvaluateHandleAsync(string method, dynamic args)
         {
-            dynamic response = await _client.SendAsync(method, args).ConfigureAwait(false);
+            var response = await _client.SendAsync(method, args).ConfigureAwait(false);
 
-            if (response.exceptionDetails != null)
+            var exceptionDetails = response[Constants.EXCEPTION_DETAILS];
+
+            if (exceptionDetails != null)
             {
                 throw new EvaluationFailedException("Evaluation failed: " +
-                    GetExceptionMessage(response.exceptionDetails.ToObject<EvaluateExceptionDetails>()));
+                    GetExceptionMessage(exceptionDetails.ToObject<EvaluateExceptionDetails>()));
             }
 
             return CreateJSHandle(response.result);

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
@@ -81,7 +82,7 @@ namespace PuppeteerSharp
                     break;
 
                 case "Runtime.executionContextCreated":
-                    OnExecutionContextCreated(e.MessageData.SelectToken("context").ToObject<ContextPayload>());
+                    OnExecutionContextCreated(e.MessageData.SelectToken(Constants.CONTEXT).ToObject<ContextPayload>());
                     break;
 
                 case "Runtime.executionContextDestroyed":

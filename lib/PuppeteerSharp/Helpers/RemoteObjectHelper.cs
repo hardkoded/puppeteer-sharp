@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,11 +9,13 @@ namespace PuppeteerSharp.Helpers
 {
     internal class RemoteObjectHelper
     {
-        internal static object ValueFromRemoteObject<T>(dynamic remoteObject)
+        internal static object ValueFromRemoteObject<T>(JToken remoteObject)
         {
-            if (remoteObject.unserializableValue != null)
+            var unserializableValue = remoteObject[Constants.UNSERIALIZABLE_VALUE]?.Value<string>();
+
+            if (unserializableValue != null)
             {
-                switch (remoteObject.unserializableValue.ToString())
+                switch (unserializableValue)
                 {
                     case "-0":
                         return -0;
@@ -23,50 +26,49 @@ namespace PuppeteerSharp.Helpers
                     case "-Infinity":
                         return double.NegativeInfinity;
                     default:
-                        throw new Exception("Unsupported unserializable value: " + remoteObject.unserializableValue);
+                        throw new Exception("Unsupported unserializable value: " + unserializableValue);
                 }
             }
 
-            if (remoteObject.value == null)
+            var value = remoteObject[Constants.VALUE];
+
+            if (value == null)
             {
                 return null;
             }
 
             // https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-RemoteObject
-            string objectValue = remoteObject.value.ToString();
-            string objectType = remoteObject.type.ToString();
+            var objectType = remoteObject[Constants.TYPE].Value<string>();
 
             switch (objectType)
             {
                 case "object":
-                    return JsonConvert.DeserializeObject<T>(objectValue);
+                    return value.ToObject<T>();
                 case "undefined":
                     return null;
                 case "number":
-                    switch (Type.GetTypeCode(typeof(T)))
-                    {
-                        case TypeCode.Int32:
-                        case TypeCode.Int64:
-                            return int.Parse(objectValue);
-                        default:
-                            return float.Parse(objectValue);
-                    }
+                    return value.Value<T>();
                 case "boolean":
-                    return bool.Parse(objectValue);
+                    return value.Value<bool>();
                 case "bigint":
-                    return double.Parse(objectValue);
+                    return value.Value<double>();
                 default: // string, symbol, function
-                    return objectValue;
+                    return value;
             }
         }
 
-        internal static async Task ReleaseObject(CDPSession client, dynamic remoteObject, ILogger logger)
+        internal static async Task ReleaseObject(CDPSession client, JToken remoteObject, ILogger logger)
         {
-            if (remoteObject.objectId == null)
+            var objectId = remoteObject[Constants.OBJECT_ID]?.Value<string>();
+
+            if (objectId == null)
+            {
                 return;
+            }
+
             try
             {
-                await client.SendAsync("Runtime.releaseObject", new { remoteObject.objectId }).ConfigureAwait(false);
+                await client.SendAsync("Runtime.releaseObject", new { objectId }).ConfigureAwait(false);
             }
             catch (Exception ex)
             {

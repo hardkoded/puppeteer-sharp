@@ -4,7 +4,7 @@ namespace PuppeteerSharp.Messaging
 {
     internal class PageConsoleResponse
     {
-        [JsonProperty("type")]
+        [JsonProperty(Constants.TYPE)]
         internal ConsoleType Type { get; set; }
 
         [JsonProperty("args")]

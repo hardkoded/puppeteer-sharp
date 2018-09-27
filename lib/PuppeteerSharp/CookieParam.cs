@@ -14,13 +14,13 @@ namespace PuppeteerSharp
         /// Gets or sets the name.
         /// </summary>
         /// <value>The name.</value>
-        [JsonProperty("name")]
+        [JsonProperty(Constants.NAME)]
         public string Name { get; set; }
         /// <summary>
         /// Gets or sets the value.
         /// </summary>
         /// <value>The value.</value>
-        [JsonProperty("value")]
+        [JsonProperty(Constants.VALUE)]
         public string Value { get; set; }
         /// <summary>
         /// Gets or sets the domain.

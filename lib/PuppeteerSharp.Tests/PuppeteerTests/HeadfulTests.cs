@@ -41,7 +41,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             {
                 var backgroundPageTarget = await WaitForBackgroundPageTargetAsync(browserWithExtension);
                 var page = await backgroundPageTarget.PageAsync();
-                Assert.Equal(6, await page.EvaluateFunctionAsync("() => 2 * 3"));
+                Assert.Equal(6, await page.EvaluateFunctionAsync<object>("() => 2 * 3"));
             }
         }
 
@@ -71,7 +71,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 {
                     var page = await browser.NewPageAsync();
                     await page.GoToAsync(TestConstants.EmptyPage);
-                    await page.EvaluateExpressionAsync(
+                    await page.EvaluateExpressionAsync<object>(
                         "document.cookie = 'foo=true; expires=Fri, 31 Dec 9999 23:59:59 GMT'");
                 }
 
@@ -80,7 +80,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 {
                     var page2 = await browser2.NewPageAsync();
                     await page2.GoToAsync(TestConstants.EmptyPage);
-                    Assert.Equal("foo=true", await page2.EvaluateExpressionAsync("document.cookie"));
+                    Assert.Equal("foo=true", await page2.EvaluateExpressionAsync<object>("document.cookie"));
                 }
             }
         }

@@ -17,7 +17,7 @@ namespace PuppeteerSharp.Tests.DumpIO
             using (var browser = await Puppeteer.LaunchAsync(options))
             using (var page = await browser.NewPageAsync())
             {
-                await page.EvaluateFunctionAsync("_dumpioTextToLog => console.log(_dumpioTextToLog)", args[0]);
+                await page.EvaluateFunctionAsync<object>("_dumpioTextToLog => console.log(_dumpioTextToLog)", args[0]);
             }
         }
     }

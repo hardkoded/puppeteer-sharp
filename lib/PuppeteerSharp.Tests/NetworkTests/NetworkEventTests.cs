@@ -98,7 +98,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Page.Response += (sender, e) => responses[e.Response.Url.Split('/').Last()] = e.Response;
             await Page.GoToAsync(TestConstants.ServerUrl + "/serviceworkers/fetch/sw.html",
                 waitUntil: new[] { WaitUntilNavigation.Networkidle2 });
-            await Page.EvaluateFunctionAsync("async () => await window.activationPromise");
+            await Page.EvaluateFunctionAsync<object>("async () => await window.activationPromise");
             await Page.ReloadAsync();
 
             Assert.Equal(2, responses.Count);
@@ -160,7 +160,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
                 return completion.Task;
             }
             await Task.WhenAll(
-                Page.EvaluateExpressionAsync("fetch('/get', { method: 'GET'})"),
+                Page.EvaluateExpressionAsync<object>("fetch('/get', { method: 'GET'})"),
                 WaitForPageResponseEvent()
             );
 

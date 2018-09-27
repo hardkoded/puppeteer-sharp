@@ -6,7 +6,7 @@ namespace PuppeteerSharp
     {
         [JsonProperty("exception")]
         internal EvaluateExceptionInfo Exception { get; set; }
-        [JsonProperty("text")]
+        [JsonProperty(Constants.TEXT)]
         internal string Text { get; set; }
         [JsonProperty("stackTrace")]
         internal EvaluateExceptionStackTrace StackTrace { get; set; }

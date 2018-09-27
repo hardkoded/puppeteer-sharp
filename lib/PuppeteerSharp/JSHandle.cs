@@ -12,11 +12,11 @@ namespace PuppeteerSharp
     /// </summary>
     public class JSHandle
     {
-        internal JSHandle(ExecutionContext context, CDPSession client, object remoteObject)
+        internal JSHandle(ExecutionContext context, CDPSession client, JToken remoteObject)
         {
             ExecutionContext = context;
             Client = client;
-            Logger = Client.Connection.LoggerFactory.CreateLogger(this.GetType());
+            Logger = Client.Connection.LoggerFactory.CreateLogger(GetType());
             RemoteObject = remoteObject;
         }
 
@@ -34,7 +34,7 @@ namespace PuppeteerSharp
         /// Gets or sets the remote object.
         /// </summary>
         /// <value>The remote object.</value>
-        public dynamic RemoteObject { get; }
+        public JToken RemoteObject { get; }
         /// <summary>
         /// Gets the client.
         /// </summary>
@@ -81,18 +81,20 @@ namespace PuppeteerSharp
         {
             var response = await Client.SendAsync("Runtime.getProperties", new
             {
-                objectId = RemoteObject.objectId.ToString(),
+                objectId = RemoteObject[Constants.OBJECT_ID].Value<string>(),
                 ownProperties = true
             }).ConfigureAwait(false);
+
             var result = new Dictionary<string, JSHandle>();
-            foreach (var property in response.result)
+
+            foreach (var property in response[Constants.RESULT])
             {
-                if (property.enumerable == null)
+                if (property[Constants.ENUMERABLE] == null)
                 {
                     continue;
                 }
 
-                result.Add(property.name.ToString(), ExecutionContext.CreateJSHandle(property.value));
+                result.Add(property[Constants.NAME].Value<string>(), ExecutionContext.CreateJSHandle(property[Constants.VALUE]));
             }
             return result;
         }
@@ -116,16 +118,18 @@ namespace PuppeteerSharp
         /// </remarks>
         public async Task<T> JsonValueAsync<T>()
         {
-            if (RemoteObject.objectId != null)
+            var objectId = RemoteObject[Constants.OBJECT_ID];
+
+            if (objectId != null)
             {
-                dynamic response = await Client.SendAsync("Runtime.callFunctionOn", new Dictionary<string, object>
+                var response = await Client.SendAsync("Runtime.callFunctionOn", new Dictionary<string, object>
                 {
                     ["functionDeclaration"] = "function() { return this; }",
-                    ["objectId"] = RemoteObject.objectId,
+                    [Constants.OBJECT_ID] = objectId,
                     ["returnByValue"] = true,
                     ["awaitPromise"] = true
                 }).ConfigureAwait(false);
-                return (T)RemoteObjectHelper.ValueFromRemoteObject<T>(response.result);
+                return (T)RemoteObjectHelper.ValueFromRemoteObject<T>(response[Constants.RESULT]);
             }
 
             return (T)RemoteObjectHelper.ValueFromRemoteObject<T>(RemoteObject);
@@ -149,9 +153,9 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public override string ToString()
         {
-            if (((JObject)RemoteObject)["objectId"] != null)
+            if ((RemoteObject)[Constants.OBJECT_ID] != null)
             {
-                var type = RemoteObject.subtype ?? RemoteObject.type;
+                var type = RemoteObject[Constants.SUBTYPE] ?? RemoteObject[Constants.TYPE];
                 return "JSHandle@" + type;
             }
 
@@ -170,17 +174,19 @@ namespace PuppeteerSharp
                 throw new PuppeteerException("JSHandle is disposed!");
             }
 
-            if (RemoteObject.unserializableValue != null)
+            var unserializableValue = RemoteObject[Constants.UNSERIALIZABLE_VALUE];
+
+            if (unserializableValue != null)
             {
-                return new { RemoteObject.unserializableValue };
+                return unserializableValue;
             }
 
-            if (RemoteObject.objectId == null)
+            if (RemoteObject[Constants.OBJECT_ID] == null)
             {
-                return new { RemoteObject.value };
+                return RemoteObject[Constants.VALUE];
             }
 
-            return new { RemoteObject.objectId };
+            return RemoteObject[Constants.OBJECT_ID];
         }
     }
 }

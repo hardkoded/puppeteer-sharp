@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Messaging;
 
@@ -219,8 +220,8 @@ namespace PuppeteerSharp
         /// </remarks>
         public async Task<string> GetVersionAsync()
         {
-            dynamic version = await Connection.SendAsync("Browser.getVersion").ConfigureAwait(false);
-            return version.product.ToString();
+           var version = await Connection.SendAsync("Browser.getVersion").ConfigureAwait(false);
+            return version[Constants.PRODUCT].Value<string>();
         }
 
         /// <summary>
@@ -232,8 +233,8 @@ namespace PuppeteerSharp
         /// </remarks>
         public async Task<string> GetUserAgentAsync()
         {
-            dynamic version = await Connection.SendAsync("Browser.getVersion").ConfigureAwait(false);
-            return version.userAgent.ToString();
+            var version = await Connection.SendAsync("Browser.getVersion").ConfigureAwait(false);
+            return version[Constants.USER_AGENT].Value<string>();
         }
 
         /// <summary>
@@ -305,7 +306,7 @@ namespace PuppeteerSharp
             {
                 args["browserContextId"] = contextId;
             }
-            string targetId = (await Connection.SendAsync("Target.createTarget", args)).targetId.ToString();
+            string targetId = (await Connection.SendAsync("Target.createTarget", args))[Constants.TARGET_ID].Value<string>();
 
             var target = TargetsMap[targetId];
             await target.InitializedTask;

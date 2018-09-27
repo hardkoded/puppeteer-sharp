@@ -116,7 +116,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         public async Task ShouldReportFrameName()
         {
             await FrameUtils.AttachFrameAsync(Page, "theFrameId", TestConstants.EmptyPage);
-            await Page.EvaluateFunctionAsync(@"url => {
+            await Page.EvaluateFunctionAsync<object>(@"url => {
                 const frame = document.createElement('iframe');
                 frame.name = 'theFrameName';
                 frame.src = url;

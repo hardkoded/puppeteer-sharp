@@ -481,7 +481,8 @@ namespace PuppeteerSharp
             {
                 { "urls", urls.Length > 0 ? urls : new string[] { Url } }
             }).ConfigureAwait(false);
-            return response.cookies.ToObject<CookieParam[]>();
+
+            return response[Constants.COOKIES].ToObject<CookieParam[]>();
         }
 
         /// <summary>
@@ -509,7 +510,7 @@ namespace PuppeteerSharp
             {
                 await Client.SendAsync("Network.setCookies", new Dictionary<string, object>
                 {
-                    { "cookies", cookies}
+                    { Constants.COOKIES, cookies }
                 }).ConfigureAwait(false);
             }
         }
@@ -697,7 +698,7 @@ namespace PuppeteerSharp
         /// <seealso cref="GoToAsync(string, int?, WaitUntilNavigation[])"/>
         public async Task<Response> GoToAsync(string url, NavigationOptions options)
         {
-            var referrer = _networkManager.ExtraHTTPHeaders?.GetValueOrDefault("referer");
+            var referrer = _networkManager.ExtraHTTPHeaders?.GetValueOrDefault(Constants.REFERER);
             var requests = new Dictionary<string, Request>();
 
             void createRequestEventListener(object sender, RequestEventArgs e)
@@ -883,7 +884,7 @@ namespace PuppeteerSharp
                 preferCSSPageSize = options.PreferCSSPageSize
             }).ConfigureAwait(false);
 
-            var buffer = Convert.FromBase64String(result.GetValue("data").Value<string>());
+            var buffer = Convert.FromBase64String(result.GetValue(Constants.DATA).Value<string>());
             return buffer;
         }
 
@@ -1151,18 +1152,6 @@ namespace PuppeteerSharp
         /// <summary>
         /// Executes a script in browser context
         /// </summary>
-        /// <param name="script">Script to be evaluated in browser context</param>
-        /// <remarks>
-        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
-        /// </remarks>
-        /// <seealso cref="EvaluateFunctionAsync(string, object[])"/>
-        /// <returns>Task which resolves to script return value</returns>
-        public Task<dynamic> EvaluateExpressionAsync(string script)
-            => _frameManager.MainFrame.EvaluateExpressionAsync(script);
-
-        /// <summary>
-        /// Executes a script in browser context
-        /// </summary>
         /// <typeparam name="T">The type to deserialize the result to</typeparam>
         /// <param name="script">Script to be evaluated in browser context</param>
         /// <remarks>
@@ -1172,20 +1161,6 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to script return value</returns>
         public Task<T> EvaluateExpressionAsync<T>(string script)
             => _frameManager.MainFrame.EvaluateExpressionAsync<T>(script);
-
-        /// <summary>
-        /// Executes a function in browser context
-        /// </summary>
-        /// <param name="script">Script to be evaluated in browser context</param>
-        /// <param name="args">Arguments to pass to script</param>
-        /// <remarks>
-        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
-        /// <see cref="JSHandle"/> instances can be passed as arguments
-        /// </remarks>
-        /// <seealso cref="EvaluateExpressionAsync(string)"/>
-        /// <returns>Task which resolves to script return value</returns>
-        public Task<dynamic> EvaluateFunctionAsync(string script, params object[] args)
-            => _frameManager.MainFrame.EvaluateFunctionAsync(script, args);
 
         /// <summary>
         /// Executes a function in browser context
@@ -1477,7 +1452,7 @@ namespace PuppeteerSharp
                 requestTcs.Task
             }).ConfigureAwait(false);
 
-            return requestTcs.Task.Result;
+            return await requestTcs.Task;
         }
 
         /// <summary>
@@ -1533,7 +1508,7 @@ namespace PuppeteerSharp
                 responseTcs.Task
             }).ConfigureAwait(false);
 
-            return responseTcs.Task.Result;
+            return await responseTcs.Task;
         }
 
         /// <summary>
@@ -1564,8 +1539,8 @@ namespace PuppeteerSharp
             TaskQueue screenshotTaskQueue)
         {
             await client.SendAsync("Page.enable", null).ConfigureAwait(false);
-            dynamic result = await client.SendAsync("Page.getFrameTree").ConfigureAwait(false);
-            var page = new Page(client, target, new FrameTree(result.frameTree), ignoreHTTPSErrors, screenshotTaskQueue);
+            var result = await client.SendAsync("Page.getFrameTree").ConfigureAwait(false);
+            var page = new Page(client, target, new FrameTree(result[Constants.FRAME_TREE]), ignoreHTTPSErrors, screenshotTaskQueue);
 
             await Task.WhenAll(
                 client.SendAsync("Target.setAutoAttach", new { autoAttach = true, waitForDebuggerOnStart = false }),
@@ -1645,9 +1620,11 @@ namespace PuppeteerSharp
 
             if (options != null && options.FullPage)
             {
-                dynamic metrics = await Client.SendAsync("Page.getLayoutMetrics").ConfigureAwait(false);
-                var width = Convert.ToInt32(Math.Ceiling(Convert.ToDecimal(metrics.contentSize.width.Value)));
-                var height = Convert.ToInt32(Math.Ceiling(Convert.ToDecimal(metrics.contentSize.height.Value)));
+                var metrics = await Client.SendAsync("Page.getLayoutMetrics").ConfigureAwait(false);
+                var contentSize = metrics[Constants.CONTENT_SIZE];
+
+                var width = Convert.ToInt32(Math.Ceiling(contentSize[Constants.WIDTH].Value<decimal>()));
+                var height = Convert.ToInt32(Math.Ceiling(contentSize[Constants.HEIGHT].Value<decimal>()));
 
                 // Overwrite clip for full page at all times.
                 clip = new Clip
@@ -1724,7 +1701,7 @@ namespace PuppeteerSharp
                 await SetViewportAsync(Viewport).ConfigureAwait(false);
             }
 
-            return result.GetValue("data").Value<string>();
+            return result.GetValue(Constants.DATA).Value<string>();
         }
 
         private decimal ConvertPrintParameterToInches(object parameter)
@@ -1788,7 +1765,7 @@ namespace PuppeteerSharp
                     OnDialog(e.MessageData.ToObject<PageJavascriptDialogOpeningResponse>());
                     break;
                 case "Runtime.exceptionThrown":
-                    HandleException(e.MessageData.SelectToken("exceptionDetails").ToObject<EvaluateExceptionDetails>());
+                    HandleException(e.MessageData.SelectToken(Constants.EXCEPTION_DETAILS).ToObject<EvaluateExceptionDetails>());
                     break;
                 case "Security.certificateError":
                     await OnCertificateError(e.MessageData.ToObject<CertificateErrorResponse>()).ConfigureAwait(false);
@@ -1856,7 +1833,7 @@ namespace PuppeteerSharp
 
         private void OnDetachedFromTarget(MessageEventArgs e)
         {
-            var sessionId = e.MessageData.SelectToken("sessionId").Value<string>();
+            var sessionId = e.MessageData.SelectToken(Constants.SESSION_ID).Value<string>();
             if (_workers.TryGetValue(sessionId, out var worker))
             {
                 WorkerDestroyed?.Invoke(this, new WorkerEventArgs(worker));
@@ -1867,7 +1844,7 @@ namespace PuppeteerSharp
         private async Task OnAttachedToTarget(MessageEventArgs e)
         {
             var targetInfo = e.MessageData.SelectToken("targetInfo").ToObject<TargetInfo>();
-            var sessionId = e.MessageData.SelectToken("sessionId").ToObject<string>();
+            var sessionId = e.MessageData.SelectToken(Constants.SESSION_ID).ToObject<string>();
             if (targetInfo.Type != TargetType.Worker)
             {
                 try
@@ -1961,11 +1938,11 @@ namespace PuppeteerSharp
             Dialog?.Invoke(this, new DialogEventArgs(dialog));
         }
 
-        private async Task OnConsoleAPI(PageConsoleResponse message)
+        private Task OnConsoleAPI(PageConsoleResponse message)
         {
             var ctx = _frameManager.ExecutionContextById(message.ExecutionContextId);
             var values = message.Args.Select<dynamic, JSHandle>(i => ctx.CreateJSHandle(i)).ToArray();
-            await AddConsoleMessage(message.Type, values);
+            return AddConsoleMessage(message.Type, values);
         }
 
         private async Task AddConsoleMessage(ConsoleType type, JSHandle[] values)
@@ -1974,13 +1951,13 @@ namespace PuppeteerSharp
             {
                 foreach (var arg in values)
                 {
-                    await RemoteObjectHelper.ReleaseObject(Client, arg, _logger).ConfigureAwait(false);
+                    await RemoteObjectHelper.ReleaseObject(Client, arg.RemoteObject, _logger).ConfigureAwait(false);
                 }
 
                 return;
             }
 
-            var tokens = values.Select(i => i.RemoteObject.objectId != null
+            var tokens = values.Select(i => i.RemoteObject[Constants.OBJECT_ID] != null
                 ? i.ToString()
                 : RemoteObjectHelper.ValueFromRemoteObject<string>(i.RemoteObject));
 
@@ -2016,7 +1993,7 @@ namespace PuppeteerSharp
             await Client.SendAsync("Runtime.addBinding", new { name });
             await Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new { source = expression }).ConfigureAwait(false);
 
-            await Task.WhenAll(Frames.Select(frame => frame.EvaluateExpressionAsync(expression)
+            await Task.WhenAll(Frames.Select(frame => frame.EvaluateExpressionAsync<object>(expression)
                 .ContinueWith(task =>
                 {
                     if (task.IsFaulted)

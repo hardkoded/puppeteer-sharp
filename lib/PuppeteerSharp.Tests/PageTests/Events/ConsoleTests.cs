@@ -26,7 +26,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
 
             Page.Console += EventHandler;
 
-            await Page.EvaluateExpressionAsync("console.log('hello', 5, {foo: 'bar'})");
+            await Page.EvaluateExpressionAsync<object>("console.log('hello', 5, {foo: 'bar'})");
 
             var obj = new Dictionary<string, object> { { "foo", "bar" } };
 
@@ -46,7 +46,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
 
             Page.Console += (sender, e) => messages.Add(e.Message);
 
-            await Page.EvaluateFunctionAsync(@"() => {
+            await Page.EvaluateFunctionAsync<object>(@"() => {
               // A pair of time/timeEnd generates only one Console API call.
               console.time('calling console.time');
               console.timeEnd('calling console.time');
@@ -99,7 +99,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
 
             await Task.WhenAll(
                 consoleTcs.Task,
-                Page.EvaluateExpressionAsync("console.error(window)")
+                Page.EvaluateExpressionAsync<object>("console.error(window)")
             );
 
             Assert.Equal("JSHandle@object", await consoleTcs.Task);
@@ -113,7 +113,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
 
             Page.Console += (sender, e) => messageTask.TrySetResult(e.Message);
 
-            await Page.EvaluateFunctionAsync("async url => fetch(url).catch(e => {})", TestConstants.EmptyPage);
+            await Page.EvaluateFunctionAsync<object>("async url => fetch(url).catch(e => {})", TestConstants.EmptyPage);
             var message = await messageTask.Task;
             Assert.Contains("No 'Access-Control-Allow-Origin'", message.Text);
             Assert.Equal(ConsoleType.Error, message.Type);

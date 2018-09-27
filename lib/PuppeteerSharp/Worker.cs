@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
@@ -30,7 +31,7 @@ namespace PuppeteerSharp
         private readonly Func<ConsoleType, JSHandle[], Task> _consoleAPICalled;
         private readonly Action<EvaluateExceptionDetails> _exceptionThrown;
         private readonly TaskCompletionSource<ExecutionContext> _executionContextCallback;
-        private Func<ExecutionContext, dynamic, JSHandle> _jsHandleFactory;
+        private Func<ExecutionContext, JToken, JSHandle> _jsHandleFactory;
 
         internal Worker(
             CDPSession client,
@@ -112,7 +113,7 @@ namespace PuppeteerSharp
         }
 
         private void OnExceptionThrown(MessageEventArgs e)
-            => _exceptionThrown(e.MessageData.SelectToken("exceptionDetails").ToObject<EvaluateExceptionDetails>());
+            => _exceptionThrown(e.MessageData.SelectToken(Constants.EXCEPTION_DETAILS).ToObject<EvaluateExceptionDetails>());
 
         private async Task OnConsoleAPICalled(MessageEventArgs e)
         {
@@ -129,7 +130,7 @@ namespace PuppeteerSharp
                 _jsHandleFactory = (ctx, remoteObject) => new JSHandle(ctx, _client, remoteObject);
                 _executionContext = new ExecutionContext(
                     _client,
-                    e.MessageData.SelectToken("context").ToObject<ContextPayload>(),
+                    e.MessageData.SelectToken(Constants.CONTEXT).ToObject<ContextPayload>(),
                     null);
                 _executionContextCallback.TrySetResult(_executionContext);
             }

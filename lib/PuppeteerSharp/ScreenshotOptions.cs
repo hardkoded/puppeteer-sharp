@@ -41,7 +41,7 @@ namespace PuppeteerSharp
         /// Specify screenshot type, can be either jpeg or png. Defaults to 'png'.
         /// </summary>
         /// <value>The type.</value>
-        [JsonProperty("type")]
+        [JsonProperty(Constants.TYPE)]
         public ScreenshotType? Type { get; set; }
         /// <summary>
         /// The quality of the image, between 0-100. Not applicable to png images.

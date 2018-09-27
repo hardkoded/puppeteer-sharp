@@ -27,8 +27,8 @@ namespace PuppeteerSharp.Tests.FrameTests
             Assert.Equal(Page.Frames[1], context2.Frame);
 
             await Task.WhenAll(
-                context1.EvaluateExpressionAsync("window.a = 1"),
-                context2.EvaluateExpressionAsync("window.a = 2")
+                context1.EvaluateExpressionAsync<object>("window.a = 1"),
+                context2.EvaluateExpressionAsync<object>("window.a = 2")
             );
 
             var a1 = context1.EvaluateExpressionAsync<int>("window.a");

@@ -4,9 +4,9 @@ namespace PuppeteerSharp
 {
     internal struct Metric
     {
-        [JsonProperty("name")]
+        [JsonProperty(Constants.NAME)]
         internal string Name { get; set; }
-        [JsonProperty("value")]
+        [JsonProperty(Constants.VALUE)]
         internal decimal Value { get; set; }
     }
 }

@@ -19,7 +19,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         {
             await Page.SetContentAsync("<p>red herring</p><p>hello  world  </p>");
             var waitForXPath = Page.WaitForXPathAsync("//p[normalize-space(.)=\"hello world\"]");
-            Assert.Equal("hello  world  ", await Page.EvaluateFunctionAsync("x => x.textContent", await waitForXPath));
+            Assert.Equal("hello  world  ", await Page.EvaluateFunctionAsync<object>("x => x.textContent", await waitForXPath));
         }
 
         [Fact]
@@ -30,8 +30,8 @@ namespace PuppeteerSharp.Tests.FrameTests
             var frame1 = Page.Frames[1];
             var frame2 = Page.Frames[2];
             var waitForXPathPromise = frame2.WaitForXPathAsync("//div");
-            await frame1.EvaluateFunctionAsync(addElement, "div");
-            await frame2.EvaluateFunctionAsync(addElement, "div");
+            await frame1.EvaluateFunctionAsync<object>(addElement, "div");
+            await frame2.EvaluateFunctionAsync<object>(addElement, "div");
             var eHandle = await waitForXPathPromise;
             Assert.Equal(frame2, eHandle.ExecutionContext.Frame);
         }
@@ -68,7 +68,7 @@ namespace PuppeteerSharp.Tests.FrameTests
                 .ContinueWith(_ => divHidden = true);
             await Page.WaitForXPathAsync("//div"); // do a round trip
             Assert.False(divHidden);
-            await Page.EvaluateExpressionAsync("document.querySelector('div').style.setProperty('display', 'none')");
+            await Page.EvaluateExpressionAsync<object>("document.querySelector('div').style.setProperty('display', 'none')");
             Assert.True(await waitForXPath);
             Assert.True(divHidden);
         }

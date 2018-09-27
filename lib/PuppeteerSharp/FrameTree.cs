@@ -11,14 +11,16 @@ namespace PuppeteerSharp
             Childs = new List<FrameTree>();
         }
 
-        internal FrameTree(dynamic frameTree)
+        internal FrameTree(JToken frameTree)
         {
+            var frame = frameTree[Constants.FRAME];
+
             Frame = new FramePayload
             {
-                Id = frameTree.frame.id,
-                ParentId = frameTree.frame.parentId,
-                Name = frameTree.frame.name,
-                Url = frameTree.frame.url
+                Id = frame[Constants.ID].Value<string>(),
+                ParentId = frame[Constants.PARENT_ID].Value<string>(),
+                Name = frame[Constants.NAME].Value<string>(),
+                Url = frame[Constants.URL].Value<string>()
             };
 
             Childs = new List<FrameTree>();
@@ -32,19 +34,23 @@ namespace PuppeteerSharp
 
         #region Private Functions
 
-        private void LoadChilds(FrameTree frame, dynamic frameTree)
+        private void LoadChilds(FrameTree frame, JToken frameTree)
         {
-            if ((frameTree as JObject)["childFrames"] != null)
+            var childFrames = frameTree[Constants.CHILD_FRAMES];
+
+            if (childFrames != null)
             {
-                foreach (dynamic item in frameTree.childFrames)
+                foreach (var item in childFrames)
                 {
+                    var childFrame = item[Constants.FRAME];
+
                     var newFrame = new FrameTree
                     {
                         Frame = new FramePayload
                         {
-                            Id = item.frame.id,
-                            ParentId = item.frame.parentId,
-                            Url = item.frame.url
+                            Id = childFrame[Constants.ID].Value<string>(),
+                            ParentId = childFrame[Constants.PARENT_ID].Value<string>(),
+                            Url = childFrame[Constants.URL].Value<string>()
                         }
                     };
 
@@ -52,6 +58,7 @@ namespace PuppeteerSharp
                     {
                         LoadChilds(newFrame, item);
                     }
+
                     frame.Childs.Add(newFrame);
                 }
             }

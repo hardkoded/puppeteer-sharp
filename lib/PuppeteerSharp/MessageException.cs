@@ -30,15 +30,15 @@ namespace PuppeteerSharp
 
         internal static string GetCallbackMessage(MessageTask callback, JObject obj)
         {
-            var error = obj.SelectToken("error");
-            var message = $"Protocol error ({callback.Method}): {error["message"]}";
+            var error = obj.SelectToken(Constants.ERROR);
+            var message = $"Protocol error ({callback.Method}): {error[Constants.MESSAGE]}";
 
-            if (error["data"] != null)
+            if (error[Constants.DATA] != null)
             {
-                message += $" {error["data"]}";
+                message += $" {error[Constants.DATA]}";
             }
 
-            return !string.IsNullOrEmpty(error["message"].ToString()) ? RewriteErrorMeesage(message) : string.Empty;
+            return !string.IsNullOrEmpty(error[Constants.MESSAGE].ToString()) ? RewriteErrorMeesage(message) : string.Empty;
         }
     }
 }

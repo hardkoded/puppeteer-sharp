@@ -55,7 +55,7 @@ namespace PuppeteerSharp.Tests.InputTests
             for (var i = 0; i < 11; ++i)
             {
                 // We might've scrolled to click a button - reset to (0, 0).
-                await Page.EvaluateFunctionAsync("() => window.scrollTo(0, 0)");
+                await Page.EvaluateFunctionAsync<object>("() => window.scrollTo(0, 0)");
                 await Page.ClickAsync($"#btn{i}");
             }
             Assert.Equal(new List<string>
@@ -89,7 +89,7 @@ namespace PuppeteerSharp.Tests.InputTests
         public async Task ShouldClickOnCheckboxInputAndToggle()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/checkbox.html");
-            Assert.Null(await Page.EvaluateExpressionAsync("result.check"));
+            Assert.Null(await Page.EvaluateExpressionAsync<object>("result.check"));
             await Page.ClickAsync("input#agree");
             Assert.True(await Page.EvaluateExpressionAsync<bool>("result.check"));
             Assert.Equal(new[] {
@@ -110,7 +110,7 @@ namespace PuppeteerSharp.Tests.InputTests
         public async Task ShouldClickOnCheckboxLabelAndToggle()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/checkbox.html");
-            Assert.Null(await Page.EvaluateExpressionAsync("result.check"));
+            Assert.Null(await Page.EvaluateExpressionAsync<object>("result.check"));
             await Page.ClickAsync("label[for=\"agree\"]");
             Assert.True(await Page.EvaluateExpressionAsync<bool>("result.check"));
             Assert.Equal(new[] {
@@ -170,7 +170,7 @@ namespace PuppeteerSharp.Tests.InputTests
             var input = await Page.QuerySelectorAsync("input");
             await input.UploadFileAsync(filePath);
             Assert.Equal("file-to-upload.txt", await Page.EvaluateFunctionAsync<string>("e => e.files[0].name", input));
-            Assert.Equal("contents of the file", await Page.EvaluateFunctionAsync(@"e => {
+            Assert.Equal("contents of the file", await Page.EvaluateFunctionAsync<object>(@"e => {
                 const reader = new FileReader();
                 const promise = new Promise(fulfill => reader.onload = fulfill);
                 reader.readAsText(e.files[0]);
@@ -210,7 +210,7 @@ namespace PuppeteerSharp.Tests.InputTests
             await textarea.PressAsync("a", new PressOptions { Text = "f" });
             Assert.Equal("f", await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
 
-            await Page.EvaluateExpressionAsync("window.addEventListener('keydown', e => e.preventDefault(), true)");
+            await Page.EvaluateExpressionAsync<object>("window.addEventListener('keydown', e => e.preventDefault(), true)");
 
             await textarea.PressAsync("a", new PressOptions { Text = "y" });
             Assert.Equal("f", await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
@@ -222,10 +222,10 @@ namespace PuppeteerSharp.Tests.InputTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
             await Page.FocusAsync("textarea");
             await Page.Keyboard.SendCharacterAsync("嗨");
-            Assert.Equal("嗨", await Page.EvaluateExpressionAsync("document.querySelector('textarea').value"));
-            await Page.EvaluateExpressionAsync("window.addEventListener('keydown', e => e.preventDefault(), true)");
+            Assert.Equal("嗨", await Page.EvaluateExpressionAsync<object>("document.querySelector('textarea').value"));
+            await Page.EvaluateExpressionAsync<object>("window.addEventListener('keydown', e => e.preventDefault(), true)");
             await Page.Keyboard.SendCharacterAsync("a");
-            Assert.Equal("嗨a", await Page.EvaluateExpressionAsync("document.querySelector('textarea').value"));
+            Assert.Equal("嗨a", await Page.EvaluateExpressionAsync<object>("document.querySelector('textarea').value"));
         }
 
         [Fact]
@@ -311,7 +311,7 @@ namespace PuppeteerSharp.Tests.InputTests
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
             await Page.FocusAsync("textarea");
-            await Page.EvaluateExpressionAsync(@"{
+            await Page.EvaluateExpressionAsync<object>(@"{
               window.addEventListener('keydown', event => {
                 event.stopPropagation();
                 event.stopImmediatePropagation();
@@ -368,7 +368,7 @@ namespace PuppeteerSharp.Tests.InputTests
         public async Task ShouldDoubleClickTheButton()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
-            await Page.EvaluateExpressionAsync(@"{
+            await Page.EvaluateExpressionAsync<object>(@"{
                window.double = false;
                const button = document.querySelector('button');
                button.addEventListener('dblclick', event => {
@@ -385,7 +385,7 @@ namespace PuppeteerSharp.Tests.InputTests
         public async Task ShouldClickAPartiallyObscuredButton()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
-            await Page.EvaluateExpressionAsync(@"{
+            await Page.EvaluateExpressionAsync<object>(@"{
                 const button = document.querySelector('button');
                 button.textContent = 'Some really long text that will go offscreen';
                 button.style.position = 'absolute';
@@ -402,7 +402,7 @@ namespace PuppeteerSharp.Tests.InputTests
             await Page.FocusAsync("textarea");
             const string text = "This is the text that we are going to try to select. Let's see how it goes.";
             await Page.Keyboard.TypeAsync(text);
-            await Page.EvaluateExpressionAsync("document.querySelector('textarea').scrollTop = 0");
+            await Page.EvaluateExpressionAsync<object>("document.querySelector('textarea').scrollTop = 0");
             var dimensions = await Page.EvaluateFunctionAsync<Dimensions>(Dimensions);
             await Page.Mouse.MoveAsync(dimensions.X + 2, dimensions.Y + 2);
             await Page.Mouse.DownAsync();
@@ -448,7 +448,7 @@ namespace PuppeteerSharp.Tests.InputTests
         public async Task ShouldSetModifierKeysOnClick()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
-            await Page.EvaluateExpressionAsync("document.querySelector('#button-3').addEventListener('mousedown', e => window.lastEvent = e, true)");
+            await Page.EvaluateExpressionAsync<object>("document.querySelector('#button-3').addEventListener('mousedown', e => window.lastEvent = e, true)");
             var modifiers = new Dictionary<string, string> { ["Shift"] = "shiftKey", ["Control"] = "ctrlKey", ["Alt"] = "altKey", ["Meta"] = "metaKey" };
             foreach (var modifier in modifiers)
             {
@@ -476,7 +476,7 @@ namespace PuppeteerSharp.Tests.InputTests
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
             await Page.FocusAsync("textarea");
-            await Page.EvaluateExpressionAsync("document.querySelector('textarea').addEventListener('keydown', e => window.lastEvent = e, true)");
+            await Page.EvaluateExpressionAsync<object>("document.querySelector('textarea').addEventListener('keydown', e => window.lastEvent = e, true)");
             await Page.Keyboard.DownAsync("a");
             Assert.False(await Page.EvaluateExpressionAsync<bool>("window.lastEvent.repeat"));
             await Page.Keyboard.PressAsync("a");
@@ -505,7 +505,7 @@ namespace PuppeteerSharp.Tests.InputTests
         public async Task ShouldTweenMouseMovement()
         {
             await Page.Mouse.MoveAsync(100, 100);
-            await Page.EvaluateExpressionAsync(@"{
+            await Page.EvaluateExpressionAsync<object>(@"{
               window.result = [];
               document.addEventListener('mousemove', event => {
                 window.result.push([event.clientX, event.clientY]);
@@ -538,7 +538,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.Equal(new object[] {
                 new { Touchstart = 0 },
                 new { Touchend = 0 }
-            }, await Page.EvaluateExpressionAsync("getResult()"));
+            }, await Page.EvaluateExpressionAsync<object>("getResult()"));
         }
 
         [Fact]
@@ -580,7 +580,7 @@ namespace PuppeteerSharp.Tests.InputTests
         public async Task ShouldSpecifyLocation()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
-            await Page.EvaluateExpressionAsync(@"{
+            await Page.EvaluateExpressionAsync<object>(@"{
               window.addEventListener('keydown', event => window.keyLocation = event.location, true);
             }");
             var textarea = await Page.QuerySelectorAsync("textarea");

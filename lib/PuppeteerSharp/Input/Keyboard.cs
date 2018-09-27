@@ -44,16 +44,16 @@ namespace PuppeteerSharp.Input
 
             return _client.SendAsync("Input.dispatchKeyEvent", new Dictionary<string, object>
             {
-                {"type", text != null ? "keyDown" : "rawKeyDown"},
-                {"modifiers", Modifiers},
-                {"windowsVirtualKeyCode", description.KeyCode},
-                {"code", description.Code },
-                {"key", description.Key},
-                {"text", text},
-                {"unmodifiedText", text},
-                {"autoRepeat", autoRepeat},
-                {"location", description.Location },
-                {"isKeypad", description.Location == 3 }
+                { Constants.TYPE, text != null ? "keyDown" : "rawKeyDown" },
+                { "modifiers", Modifiers },
+                { "windowsVirtualKeyCode", description.KeyCode },
+                { "code", description.Code },
+                { "key", description.Key },
+                { Constants.TEXT, text },
+                { "unmodifiedText", text },
+                { "autoRepeat", autoRepeat },
+                { "location", description.Location },
+                { "isKeypad", description.Location == 3 }
             });
         }
 
@@ -71,12 +71,12 @@ namespace PuppeteerSharp.Input
 
             return _client.SendAsync("Input.dispatchKeyEvent", new Dictionary<string, object>
             {
-                {"type", "keyUp"},
-                {"modifiers", Modifiers},
-                {"key", description.Key},
-                {"windowsVirtualKeyCode", description.KeyCode},
-                {"code", description.Code },
-                {"location", description.Location }
+                { Constants.TYPE, "keyUp" },
+                { "modifiers", Modifiers },
+                { "key", description.Key },
+                { "windowsVirtualKeyCode", description.KeyCode },
+                { "code", description.Code },
+                { "location", description.Location }
             });
         }
 
@@ -86,7 +86,7 @@ namespace PuppeteerSharp.Input
         /// <param name="charText">Character to send into the page</param>
         /// <returns>Task</returns>
         public Task SendCharacterAsync(string charText)
-            => _client.SendAsync("Input.insertText", new Dictionary<string, object> { ["text"] = charText });
+            => _client.SendAsync("Input.insertText", new Dictionary<string, object> { [Constants.TEXT] = charText });
 
         /// <summary>
         /// Sends a <c>keydown</c>, <c>keypress</c>/<c>input</c>, and <c>keyup</c> event for each character in the text.

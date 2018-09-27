@@ -33,7 +33,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldWorkWithHistoryAPI()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            await Page.EvaluateExpressionAsync(@"
+            await Page.EvaluateExpressionAsync<object>(@"
               history.pushState({ }, '', '/first.html');
               history.pushState({ }, '', '/second.html');
             ");

@@ -17,7 +17,7 @@ namespace PuppeteerSharp
         /// Gets or sets the HTTP method.
         /// </summary>
         /// <value>HTTP method.</value>
-        [JsonProperty("method"), JsonConverter(typeof(HttpMethodConverter))]
+        [JsonProperty(Constants.METHOD), JsonConverter(typeof(HttpMethodConverter))]
         public HttpMethod Method { get; set; }
         /// <summary>
         /// Gets or sets the post data.
@@ -68,10 +68,10 @@ namespace PuppeteerSharp
                     {
                         bool HeaderEquals(string name) => item.Key.Equals(name, StringComparison.OrdinalIgnoreCase);
 
-                        if (HeaderEquals("accept")
-                            || HeaderEquals("referer")
+                        if (HeaderEquals(Constants.ACCEPT)
+                            || HeaderEquals(Constants.REFERER)
                             || HeaderEquals("x-devtools-emulate-network-conditions-client-id")
-                            || HeaderEquals("cookie"))
+                            || HeaderEquals(Constants.COOKIE))
                         {
                             continue;
                         }

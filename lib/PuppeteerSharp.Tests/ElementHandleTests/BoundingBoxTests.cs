@@ -54,7 +54,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             await Page.SetViewportAsync(new ViewPortOptions { Width = 500, Height = 500 });
             await Page.SetContentAsync("<div style='width: 100px; height: 100px'>hello</div>");
             var elementHandle = await Page.QuerySelectorAsync("div");
-            await Page.EvaluateFunctionAsync("element => element.style.height = '200px'", elementHandle);
+            await Page.EvaluateFunctionAsync<object>("element => element.style.height = '200px'", elementHandle);
             var box = await elementHandle.BoundingBoxAsync();
             Assert.Equal(new BoundingBox(8, 8, 100, 200), box);
         }

@@ -16,7 +16,7 @@ namespace PuppeteerSharp.Messaging
         [JsonProperty("redirectResponse", NullValueHandling = NullValueHandling.Ignore)]
         public ResponsePayload RedirectResponse { get; set; }
 
-        [JsonProperty("type")]
+        [JsonProperty(Constants.TYPE)]
         public ResourceType Type { get; set; }
 
         [JsonProperty("frameId")]

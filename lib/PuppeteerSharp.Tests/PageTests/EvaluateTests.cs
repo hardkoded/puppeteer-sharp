@@ -63,7 +63,7 @@ namespace PuppeteerSharp.Tests.PageTests
             {
                 foo = "bar!"
             };
-            dynamic result = await Page.EvaluateFunctionAsync("a => a", obj);
+            var result = await Page.EvaluateFunctionAsync<object>("a => a", obj);
             Assert.Equal("bar!", result.foo.ToString());
         }
 
@@ -74,7 +74,7 @@ namespace PuppeteerSharp.Tests.PageTests
         [InlineData("() => -Infinity", double.NegativeInfinity)] //ShouldReturnNegativeInfinty
         public async Task BasicEvaluationTest(string script, object expected)
         {
-            dynamic result = await Page.EvaluateFunctionAsync(script);
+            var result = await Page.EvaluateFunctionAsync<object>(script);
             Assert.Equal(expected, result);
         }
 
@@ -106,8 +106,8 @@ namespace PuppeteerSharp.Tests.PageTests
         [Fact]
         public async Task ShouldReturnNullForNonSerializableObjects()
         {
-            Assert.Null(await Page.EvaluateFunctionAsync("() => window"));
-            Assert.Null(await Page.EvaluateFunctionAsync("() => [Symbol('foo4')]"));
+            Assert.Null(await Page.EvaluateFunctionAsync<object>("() => window"));
+            Assert.Null(await Page.EvaluateFunctionAsync<object>("() => [Symbol('foo4')]"));
         }
 
         [Fact]
@@ -162,7 +162,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.ExposeFunctionAsync("callController", async (int a, int b) =>
             {
-                return await Page.EvaluateFunctionAsync("(a, b) => a * b", a, b);
+                return await Page.EvaluateFunctionAsync<object>("(a, b) => a * b", a, b);
             });
             var result = await Page.EvaluateFunctionAsync<int>(@"async function() {
                 return await callController(9, 3);
@@ -174,7 +174,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldSupportThrownStringsAsErrorMessages()
         {
             var exception = await Assert.ThrowsAsync<EvaluationFailedException>(
-                () => Page.EvaluateExpressionAsync("throw 'qwerty'"));
+                () => Page.EvaluateExpressionAsync<object>("throw 'qwerty'"));
             Assert.Contains("qwerty", exception.Message);
         }
 
@@ -182,7 +182,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldSupportThrownNumbersAsErrorMessages()
         {
             var exception = await Assert.ThrowsAsync<EvaluationFailedException>(
-                            () => Page.EvaluateExpressionAsync("throw 100500"));
+                            () => Page.EvaluateExpressionAsync<object>("throw 100500"));
             Assert.Contains("100500", exception.Message);
         }
 
@@ -217,7 +217,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
         [Fact]
         public Task ShouldSimulateAUserGesture()
-            => Page.EvaluateExpressionAsync(@"(
+            => Page.EvaluateExpressionAsync<object>(@"(
             function playAudio()
             {
                 const audio = document.createElement('audio');
@@ -233,11 +233,11 @@ namespace PuppeteerSharp.Tests.PageTests
 
             await Task.WhenAll(
                 Page.WaitForNavigationAsync(),
-                executionContext.EvaluateFunctionAsync("() => window.location.reload()")
+                executionContext.EvaluateFunctionAsync<object>("() => window.location.reload()")
             );
             var ex = await Assert.ThrowsAsync<EvaluationFailedException>(() =>
             {
-                return executionContext.EvaluateFunctionAsync("() => null");
+                return executionContext.EvaluateFunctionAsync<object>("() => null");
             });
             Assert.Contains("navigation", ex.Message);
         }

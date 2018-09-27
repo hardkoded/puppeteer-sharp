@@ -102,22 +102,6 @@ namespace PuppeteerSharp
         /// <summary>
         /// Executes a script in browser context
         /// </summary>
-        /// <param name="script">Script to be evaluated in browser context</param>
-        /// <remarks>
-        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
-        /// </remarks>
-        /// <returns>Task which resolves to script return value</returns>
-        /// <seealso cref="EvaluateFunctionAsync(string, object[])"/>
-        /// <seealso cref="Page.EvaluateExpressionAsync(string)"/>
-        public async Task<dynamic> EvaluateExpressionAsync(string script)
-        {
-            var context = await GetExecutionContextAsync().ConfigureAwait(false);
-            return await context.EvaluateExpressionAsync(script).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Executes a script in browser context
-        /// </summary>
         /// <typeparam name="T">The type to deserialize the result to</typeparam>
         /// <param name="script">Script to be evaluated in browser context</param>
         /// <remarks>
@@ -132,23 +116,6 @@ namespace PuppeteerSharp
             return await context.EvaluateExpressionAsync<T>(script).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Executes a function in browser context
-        /// </summary>
-        /// <param name="script">Script to be evaluated in browser context</param>
-        /// <param name="args">Arguments to pass to script</param>
-        /// <remarks>
-        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
-        /// <see cref="JSHandle"/> instances can be passed as arguments
-        /// </remarks>
-        /// <returns>Task which resolves to script return value</returns>
-        /// <seealso cref="EvaluateExpressionAsync(string)"/>
-        /// <seealso cref="Page.EvaluateFunctionAsync(string, object[])"/>
-        public async Task<dynamic> EvaluateFunctionAsync(string script, params object[] args)
-        {
-            var context = await GetExecutionContextAsync().ConfigureAwait(false);
-            return await context.EvaluateFunctionAsync(script, args).ConfigureAwait(false);
-        }
 
         /// <summary>
         /// Executes a function in browser context
@@ -513,7 +480,7 @@ namespace PuppeteerSharp
         /// <returns>Task.</returns>
         /// <seealso cref="Page.SetContentAsync(string)"/>
         public Task SetContentAsync(string html)
-            => EvaluateFunctionAsync(@"html => {
+            => EvaluateFunctionAsync<object>(@"html => {
                 document.open();
                 document.write(html);
                 document.close();

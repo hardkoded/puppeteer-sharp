@@ -13,7 +13,7 @@ namespace PuppeteerSharp
     /// {
     ///     await e.Dialog.Accept();
     /// }
-    /// await Page.EvaluateExpressionAsync("alert('yo');");
+    /// await Page.EvaluateExpressionAsync%lt;object&gt;("alert('yo');");
     /// </code>
     /// </example>
     public class Dialog
@@ -60,8 +60,8 @@ namespace PuppeteerSharp
         {
             return _client.SendAsync("Page.handleJavaScriptDialog", new Dictionary<string, object>
             {
-                {"accept", true},
-                {"promptText", promptText}
+                { Constants.ACCEPT, true },
+                { Constants.PROMPT_TEXT, promptText }
             });
         }
 
@@ -73,7 +73,7 @@ namespace PuppeteerSharp
         {
             return _client.SendAsync("Page.handleJavaScriptDialog", new Dictionary<string, object>
             {
-                {"accept", false}
+                { Constants.ACCEPT, false }
             });
         }
     }

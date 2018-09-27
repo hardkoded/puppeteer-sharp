@@ -19,7 +19,7 @@ namespace PuppeteerSharp.Tests.PageTests
             var waitForNavigationResult = Page.WaitForNavigationAsync();
             await Task.WhenAll(
                 waitForNavigationResult,
-                Page.EvaluateFunctionAsync("url => window.location.href = url", TestConstants.ServerUrl + "/grid.html")
+                Page.EvaluateFunctionAsync<object>("url => window.location.href = url", TestConstants.ServerUrl + "/grid.html")
             );
             var response = await waitForNavigationResult;
             Assert.Equal(HttpStatusCode.OK, response.Status);
@@ -163,7 +163,7 @@ namespace PuppeteerSharp.Tests.PageTests
             };
             await frameNavigatedTaskSource.Task;
             await Task.WhenAll(
-                frame.EvaluateFunctionAsync("() => window.stop()"),
+                frame.EvaluateFunctionAsync<object>("() => window.stop()"),
                 navigationTask
             );
         }

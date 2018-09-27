@@ -18,7 +18,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
 
             // Step 1: Add Frame and position it absolutely.
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.ServerUrl + "/resetcss.html");
-            await Page.EvaluateExpressionAsync(@"
+            await Page.EvaluateExpressionAsync<object>(@"
               const frame = document.querySelector('#frame1');
               frame.style = `
                 position: absolute;

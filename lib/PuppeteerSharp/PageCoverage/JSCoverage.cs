@@ -4,6 +4,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 
 namespace PuppeteerSharp.PageCoverage
 {
@@ -120,7 +121,7 @@ namespace PuppeteerSharp.PageCoverage
             {
                 var response = await _client.SendAsync("Debugger.getScriptSource", new { scriptId = scriptParseResponse.ScriptId }).ConfigureAwait(false);
                 _scriptURLs.Add(scriptParseResponse.ScriptId, scriptParseResponse.Url);
-                _scriptSources.Add(scriptParseResponse.ScriptId, response.scriptSource.ToString());
+                _scriptSources.Add(scriptParseResponse.ScriptId, response[Constants.SCRIPT_SOURCE].Value<string>());
             }
             catch (Exception ex)
             {

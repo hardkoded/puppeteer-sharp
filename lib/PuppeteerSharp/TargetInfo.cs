@@ -15,7 +15,7 @@ namespace PuppeteerSharp
         /// Gets the type.
         /// </summary>
         /// <value>The type.</value>
-        [JsonProperty("type")]
+        [JsonProperty(Constants.TYPE)]
         public TargetType Type { get; internal set; }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace PuppeteerSharp
         /// Gets the target identifier.
         /// </summary>
         /// <value>The target identifier.</value>
-        [JsonProperty("targetId")]
+        [JsonProperty(Constants.TARGET_ID)]
         public string TargetId { get; internal set; }
 
         /// <summary>

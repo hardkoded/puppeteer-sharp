@@ -22,8 +22,8 @@ namespace PuppeteerSharp.Tests.FrameTests
             var frame1 = Page.Frames.ElementAt(0);
             var frame2 = Page.Frames.ElementAt(1);
 
-            await frame1.EvaluateExpressionAsync("window.FOO = 'foo'");
-            await frame2.EvaluateExpressionAsync("window.FOO = 'bar'");
+            await frame1.EvaluateExpressionAsync<object>("window.FOO = 'foo'");
+            await frame2.EvaluateExpressionAsync<object>("window.FOO = 'bar'");
 
             Assert.Equal("foo", await frame1.EvaluateExpressionAsync<string>("window.FOO"));
             Assert.Equal("bar", await frame2.EvaluateExpressionAsync<string>("window.FOO"));

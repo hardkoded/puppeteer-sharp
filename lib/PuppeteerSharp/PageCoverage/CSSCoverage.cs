@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Messaging;
 using System;
 using System.Collections.Generic;
@@ -126,7 +127,7 @@ namespace PuppeteerSharp.PageCoverage
                 }).ConfigureAwait(false);
 
                 _stylesheetURLs.Add(styleSheetAddedResponse.Header.StyleSheetId, styleSheetAddedResponse.Header.SourceURL);
-                _stylesheetSources.Add(styleSheetAddedResponse.Header.StyleSheetId, response.text.ToString());
+                _stylesheetSources.Add(styleSheetAddedResponse.Header.StyleSheetId, response[Constants.TEXT].Value<string>());
             }
             catch (Exception ex)
             {

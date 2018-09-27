@@ -6,7 +6,7 @@ namespace PuppeteerSharp.Media
     {
         [JsonProperty("angle")]
         public int Angle { get; internal set; }
-        [JsonProperty("type")]
+        [JsonProperty(Constants.TYPE)]
         public string Type { get; internal set; }
     }
 }
