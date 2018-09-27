@@ -65,7 +65,6 @@ namespace PuppeteerSharp
         public TaskCompletionSource<bool> NewDocumentNavigationTaskWrapper { get; }
         public Task TimeoutTask { get; }
 
-
         #endregion
 
         #region Private methods
