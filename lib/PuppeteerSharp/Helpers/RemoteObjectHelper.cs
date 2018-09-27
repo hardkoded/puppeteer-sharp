@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Helpers
     {
         internal static object ValueFromRemoteObject<T>(JToken remoteObject)
         {
-            var unserializableValue = remoteObject[Constants.UNSERIALIZABLE_VALUE]?.Value<string>();
+            var unserializableValue = remoteObject[Constants.UNSERIALIZABLE_VALUE]?.AsString();
 
             if (unserializableValue != null)
             {
@@ -38,7 +38,7 @@ namespace PuppeteerSharp.Helpers
             }
 
             // https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-RemoteObject
-            var objectType = remoteObject[Constants.TYPE].Value<string>();
+            var objectType = remoteObject[Constants.TYPE].AsString();
 
             switch (objectType)
             {
@@ -53,13 +53,13 @@ namespace PuppeteerSharp.Helpers
                 case "bigint":
                     return value.Value<double>();
                 default: // string, symbol, function
-                    return value;
+                    return value.ToObject<T>();
             }
         }
 
         internal static async Task ReleaseObject(CDPSession client, JToken remoteObject, ILogger logger)
         {
-            var objectId = remoteObject[Constants.OBJECT_ID]?.Value<string>();
+            var objectId = remoteObject[Constants.OBJECT_ID]?.AsString();
 
             if (objectId == null)
             {

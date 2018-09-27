@@ -126,7 +126,7 @@ namespace PuppeteerSharp
             var sessionId = (await SendAsync("Target.attachToTarget", new
             {
                 targetId = targetInfo.TargetId
-            }).ConfigureAwait(false))[Constants.SESSION_ID].Value<string>();
+            }).ConfigureAwait(false))[Constants.SESSION_ID].AsString();
             var session = new CDPSession(this, targetInfo.Type, sessionId);
             _sessions.Add(sessionId, session);
             return session;
@@ -264,20 +264,20 @@ namespace PuppeteerSharp
             }
             else
             {
-                var method = obj[Constants.METHOD].Value<string>();
+                var method = obj[Constants.METHOD].AsString();
                 var param = obj[Constants.PARAMS];
 
                 if (method == "Target.receivedMessageFromTarget")
                 {
-                    var sessionId = param[Constants.SESSION_ID].Value<string>();
+                    var sessionId = param[Constants.SESSION_ID].AsString();
                     if (_sessions.TryGetValue(sessionId, out var session))
                     {
-                        session.OnMessage(param[Constants.MESSAGE].Value<string>());
+                        session.OnMessage(param[Constants.MESSAGE].AsString());
                     }
                 }
                 else if (method == "Target.detachedFromTarget")
                 {
-                    var sessionId = param[Constants.SESSION_ID].Value<string>();
+                    var sessionId = param[Constants.SESSION_ID].AsString();
                     if (_sessions.TryGetValue(sessionId, out var session) && _sessions.Remove(sessionId) && !session.IsClosed)
                     {
                         session.OnClosed();

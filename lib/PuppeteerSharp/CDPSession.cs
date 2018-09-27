@@ -10,7 +10,7 @@ namespace PuppeteerSharp
 {
     /// <summary>
     /// The CDPSession instances are used to talk raw Chrome Devtools Protocol:
-    ///  * Protocol methods can be called with <see cref="CDPSession.SendAsync(string, bool, dynamic)"/> method.
+    ///  * Protocol methods can be called with <see cref="CDPSession.SendAsync(string, dynamic)"/> method.
     ///  * Protocol events, using the <see cref="CDPSession.MessageReceived"/> event.
     /// 
     /// Documentation on DevTools Protocol can be found here: <see href="https://chromedevtools.github.io/devtools-protocol/"/>.
@@ -101,7 +101,7 @@ namespace PuppeteerSharp
         /// <returns>The task.</returns>
         public async Task<T> SendAsync<T>(string method, dynamic args = null)
         {
-            JObject content = await SendAsync(method, true, args);
+            JObject content = await SendAsync(method, args);
 
             return content.ToObject<T>();
         }
@@ -112,16 +112,7 @@ namespace PuppeteerSharp
         /// <param name="method">The method name</param>
         /// <param name="args">The method args</param>
         /// <returns>The task.</returns>
-        public Task<JObject> SendAsync(string method, dynamic args = null) => SendAsync(method, false, args ?? new { });
-
-        /// <summary>
-        /// Protocol methods can be called with this method.
-        /// </summary>
-        /// <param name="method">The method name</param>
-        /// <param name="args">The method args</param>
-        /// <param name="rawContent"></param>
-        /// <returns>The task.</returns>
-        public async Task<JObject> SendAsync(string method, bool rawContent, dynamic args = null)
+        public async Task<JObject> SendAsync(string method, dynamic args = null)
         {
             if (Connection == null)
             {
@@ -139,8 +130,7 @@ namespace PuppeteerSharp
             var callback = new MessageTask
             {
                 TaskWrapper = new TaskCompletionSource<JObject>(),
-                Method = method,
-                RawContent = rawContent
+                Method = method
             };
             _callbacks[id] = callback;
 
@@ -204,40 +194,33 @@ namespace PuppeteerSharp
                 }
                 else
                 {
-                    if (callback.RawContent)
-                    {
-                        callback.TaskWrapper.TrySetResult(obj);
-                    }
-                    else
-                    {
-                        callback.TaskWrapper.TrySetResult(obj[Constants.RESULT].Value<JObject>());
-                    }
+                    callback.TaskWrapper.TrySetResult(obj[Constants.RESULT].Value<JObject>());
                 }
             }
             else
             {
-                var method = obj[Constants.METHOD].Value<string>();
+                var method = obj[Constants.METHOD].AsString();
                 var param = obj[Constants.PARAMS];
 
                 if (method == "Tracing.tracingComplete")
                 {
                     TracingComplete?.Invoke(this, new TracingCompleteEventArgs
                     {
-                        Stream = param[Constants.STREAM].Value<string>()
+                        Stream = param[Constants.STREAM].AsString()
                     });
                 }
                 else if (method == "Target.receivedMessageFromTarget")
                 {
-                    var sessionId = param[Constants.SESSION_ID].Value<string>();
+                    var sessionId = param[Constants.SESSION_ID].AsString();
 
                     if (_sessions.TryGetValue(sessionId, out var session))
                     {
-                        session.OnMessage(param[Constants.MESSAGE].Value<string>());
+                        session.OnMessage(param[Constants.MESSAGE].AsString());
                     }
                 }
                 else if (method == "Target.detachedFromTarget")
                 {
-                    var sessionId = param[Constants.SESSION_ID].Value<string>();
+                    var sessionId = param[Constants.SESSION_ID].AsString();
 
                     if (_sessions.TryGetValue(sessionId, out var session) && _sessions.Remove(sessionId))
                     {

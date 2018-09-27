@@ -81,7 +81,7 @@ namespace PuppeteerSharp
         {
             var response = await Client.SendAsync("Runtime.getProperties", new
             {
-                objectId = RemoteObject[Constants.OBJECT_ID].Value<string>(),
+                objectId = RemoteObject[Constants.OBJECT_ID].AsString(),
                 ownProperties = true
             }).ConfigureAwait(false);
 
@@ -94,7 +94,7 @@ namespace PuppeteerSharp
                     continue;
                 }
 
-                result.Add(property[Constants.NAME].Value<string>(), ExecutionContext.CreateJSHandle(property[Constants.VALUE]));
+                result.Add(property[Constants.NAME].AsString(), ExecutionContext.CreateJSHandle(property[Constants.VALUE]));
             }
             return result;
         }

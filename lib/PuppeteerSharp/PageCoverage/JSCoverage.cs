@@ -121,7 +121,7 @@ namespace PuppeteerSharp.PageCoverage
             {
                 var response = await _client.SendAsync("Debugger.getScriptSource", new { scriptId = scriptParseResponse.ScriptId }).ConfigureAwait(false);
                 _scriptURLs.Add(scriptParseResponse.ScriptId, scriptParseResponse.Url);
-                _scriptSources.Add(scriptParseResponse.ScriptId, response[Constants.SCRIPT_SOURCE].Value<string>());
+                _scriptSources.Add(scriptParseResponse.ScriptId, response[Constants.SCRIPT_SOURCE].AsString());
             }
             catch (Exception ex)
             {

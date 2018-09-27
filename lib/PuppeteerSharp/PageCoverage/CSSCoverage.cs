@@ -127,7 +127,7 @@ namespace PuppeteerSharp.PageCoverage
                 }).ConfigureAwait(false);
 
                 _stylesheetURLs.Add(styleSheetAddedResponse.Header.StyleSheetId, styleSheetAddedResponse.Header.SourceURL);
-                _stylesheetSources.Add(styleSheetAddedResponse.Header.StyleSheetId, response[Constants.TEXT].Value<string>());
+                _stylesheetSources.Add(styleSheetAddedResponse.Header.StyleSheetId, response[Constants.TEXT].AsString());
             }
             catch (Exception ex)
             {

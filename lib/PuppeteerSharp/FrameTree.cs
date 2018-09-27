@@ -17,10 +17,10 @@ namespace PuppeteerSharp
 
             Frame = new FramePayload
             {
-                Id = frame[Constants.ID].Value<string>(),
-                ParentId = frame[Constants.PARENT_ID].Value<string>(),
-                Name = frame[Constants.NAME].Value<string>(),
-                Url = frame[Constants.URL].Value<string>()
+                Id = frame[Constants.ID].AsString(),
+                ParentId = frame[Constants.PARENT_ID].AsString(),
+                Name = frame[Constants.NAME].AsString(),
+                Url = frame[Constants.URL].AsString()
             };
 
             Childs = new List<FrameTree>();
@@ -48,9 +48,9 @@ namespace PuppeteerSharp
                     {
                         Frame = new FramePayload
                         {
-                            Id = childFrame[Constants.ID].Value<string>(),
-                            ParentId = childFrame[Constants.PARENT_ID].Value<string>(),
-                            Url = childFrame[Constants.URL].Value<string>()
+                            Id = childFrame[Constants.ID].AsString(),
+                            ParentId = childFrame[Constants.PARENT_ID].AsString(),
+                            Url = childFrame[Constants.URL].AsString()
                         }
                     };
 

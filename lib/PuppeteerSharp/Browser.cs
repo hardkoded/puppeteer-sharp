@@ -221,7 +221,7 @@ namespace PuppeteerSharp
         public async Task<string> GetVersionAsync()
         {
            var version = await Connection.SendAsync("Browser.getVersion").ConfigureAwait(false);
-            return version[Constants.PRODUCT].Value<string>();
+            return version[Constants.PRODUCT].AsString();
         }
 
         /// <summary>
@@ -234,7 +234,7 @@ namespace PuppeteerSharp
         public async Task<string> GetUserAgentAsync()
         {
             var version = await Connection.SendAsync("Browser.getVersion").ConfigureAwait(false);
-            return version[Constants.USER_AGENT].Value<string>();
+            return version[Constants.USER_AGENT].AsString();
         }
 
         /// <summary>
@@ -306,7 +306,7 @@ namespace PuppeteerSharp
             {
                 args["browserContextId"] = contextId;
             }
-            string targetId = (await Connection.SendAsync("Target.createTarget", args))[Constants.TARGET_ID].Value<string>();
+            string targetId = (await Connection.SendAsync("Target.createTarget", args))[Constants.TARGET_ID].AsString();
 
             var target = TargetsMap[targetId];
             await target.InitializedTask;

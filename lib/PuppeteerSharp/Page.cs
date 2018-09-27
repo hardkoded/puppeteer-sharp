@@ -884,7 +884,7 @@ namespace PuppeteerSharp
                 preferCSSPageSize = options.PreferCSSPageSize
             }).ConfigureAwait(false);
 
-            var buffer = Convert.FromBase64String(result.GetValue(Constants.DATA).Value<string>());
+            var buffer = Convert.FromBase64String(result.GetValue(Constants.DATA).AsString());
             return buffer;
         }
 
@@ -1701,7 +1701,7 @@ namespace PuppeteerSharp
                 await SetViewportAsync(Viewport).ConfigureAwait(false);
             }
 
-            return result.GetValue(Constants.DATA).Value<string>();
+            return result.GetValue(Constants.DATA).AsString();
         }
 
         private decimal ConvertPrintParameterToInches(object parameter)
@@ -1833,7 +1833,7 @@ namespace PuppeteerSharp
 
         private void OnDetachedFromTarget(MessageEventArgs e)
         {
-            var sessionId = e.MessageData.SelectToken(Constants.SESSION_ID).Value<string>();
+            var sessionId = e.MessageData.SelectToken(Constants.SESSION_ID).AsString();
             if (_workers.TryGetValue(sessionId, out var worker))
             {
                 WorkerDestroyed?.Invoke(this, new WorkerEventArgs(worker));

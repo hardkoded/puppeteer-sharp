@@ -198,7 +198,7 @@ namespace PuppeteerSharp
         public Task UploadFileAsync(params string[] filePaths)
         {
             var files = filePaths.Select(Path.GetFullPath).ToArray();
-            var objectId = RemoteObject[Constants.OBJECT_ID].Value<string>();
+            var objectId = RemoteObject[Constants.OBJECT_ID].AsString();
             return Client.SendAsync("DOM.setFileInputFiles", new { objectId, files });
         }
 
@@ -491,7 +491,7 @@ namespace PuppeteerSharp
             {
                 return await Client.SendAsync<BoxModelResponse>("DOM.getBoxModel", new
                 {
-                    objectId = RemoteObject[Constants.OBJECT_ID].Value<string>()
+                    objectId = RemoteObject[Constants.OBJECT_ID].AsString()
                 }).ConfigureAwait(false);
             }
             catch (PuppeteerException ex)
