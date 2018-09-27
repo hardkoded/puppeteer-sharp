@@ -5,7 +5,7 @@ namespace PuppeteerSharp.Messaging
 {
     internal class DomDescribeNodeResponse
     {
-        [JsonProperty("node")]
+        [JsonProperty(Constants.NODE)]
         public DomNode Node { get; set; }
 
         internal class DomNode

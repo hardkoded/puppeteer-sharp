@@ -21,10 +21,10 @@ namespace PuppeteerSharp.Messaging
             [JsonProperty("margin")]
             public decimal[] Margin { get; set; }
 
-            [JsonProperty("width")]
+            [JsonProperty(Constants.WIDTH)]
             public int Width { get; set; }
 
-            [JsonProperty("height")]
+            [JsonProperty(Constants.HEIGHT)]
             public int Height { get; set; }
         }
     }

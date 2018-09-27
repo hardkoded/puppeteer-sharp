@@ -301,7 +301,7 @@ namespace PuppeteerSharp
 
         internal async Task<Page> CreatePageInContextAsync(string contextId)
         {
-            var args = new Dictionary<string, object> { ["url"] = "about:blank" };
+            var args = new Dictionary<string, object> { [Constants.URL] = "about:blank" };
             if (contextId != null)
             {
                 args["browserContextId"] = contextId;

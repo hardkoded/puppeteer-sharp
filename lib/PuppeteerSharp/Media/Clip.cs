@@ -26,13 +26,13 @@ namespace PuppeteerSharp.Media
         /// Width of clipping area.
         /// </summary>
         /// <value>The width.</value>
-        [JsonProperty("width")]
+        [JsonProperty(Constants.WIDTH)]
         public decimal Width { get; set; }
         /// <summary>
         /// Height of clipping area.
         /// </summary>
         /// <value>The height.</value>
-        [JsonProperty("height")]
+        [JsonProperty(Constants.HEIGHT)]
         public decimal Height { get; set; }
         /// <summary>
         /// Scale of the webpage rendering. Defaults to 1.

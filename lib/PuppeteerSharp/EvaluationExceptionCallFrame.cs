@@ -8,7 +8,7 @@ namespace PuppeteerSharp
         internal int ColumnNumber { get; set; }
         [JsonProperty("lineNumber")]
         internal int LineNumber { get; set; }
-        [JsonProperty("url")]
+        [JsonProperty(Constants.URL)]
         internal string Url { get; set; }
         [JsonProperty("functionName")]
         internal string FunctionName { get; set; }

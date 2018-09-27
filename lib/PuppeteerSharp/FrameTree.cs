@@ -54,7 +54,7 @@ namespace PuppeteerSharp
                         }
                     };
 
-                    if ((item as JObject)["childFrames"] != null)
+                    if ((item as JObject)[Constants.CHILD_FRAMES] != null)
                     {
                         LoadChilds(newFrame, item);
                     }

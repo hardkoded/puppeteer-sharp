@@ -66,7 +66,7 @@ namespace PuppeteerSharp
                     break;
 
                 case "Page.frameNavigated":
-                    OnFrameNavigated(e.MessageData.SelectToken("frame").ToObject<FramePayload>());
+                    OnFrameNavigated(e.MessageData.SelectToken(Constants.FRAME).ToObject<FramePayload>());
                     break;
 
                 case "Page.navigatedWithinDocument":

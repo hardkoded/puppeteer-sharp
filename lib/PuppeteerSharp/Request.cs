@@ -169,7 +169,7 @@ namespace PuppeteerSharp
                 var requestData = new Dictionary<string, object> { ["interceptionId"] = InterceptionId };
                 if (overrides?.Url != null)
                 {
-                    requestData["url"] = overrides.Url;
+                    requestData[Constants.URL] = overrides.Url;
                 }
 
                 if (overrides?.Method != null)

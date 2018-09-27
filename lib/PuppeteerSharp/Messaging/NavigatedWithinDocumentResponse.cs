@@ -7,7 +7,7 @@ namespace PuppeteerSharp.Messaging
         [JsonProperty("frameId")]
         public string FrameId { get; set; }
 
-        [JsonProperty("url")]
+        [JsonProperty(Constants.URL)]
         public string Url { get; set; }
     }
 }

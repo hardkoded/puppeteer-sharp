@@ -4,7 +4,7 @@ namespace PuppeteerSharp.Messaging
 {
     internal class DebuggerScriptParsedResponse
     {
-        [JsonProperty("url")]
+        [JsonProperty(Constants.URL)]
         public string Url { get; set; }
 
         [JsonProperty("scriptId")]

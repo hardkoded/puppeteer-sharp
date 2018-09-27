@@ -25,13 +25,13 @@ namespace PuppeteerSharp
         /// The width of the element in pixels.
         /// </summary>
         /// <value>The width.</value>
-        [JsonProperty("width")]
+        [JsonProperty(Constants.WIDTH)]
         public decimal Width { get; set; }
         /// <summary>
         /// The height of the element in pixels.
         /// </summary>
         /// <value>The height.</value>
-        [JsonProperty("height")]
+        [JsonProperty(Constants.HEIGHT)]
         public decimal Height { get; set; }
 
         /// <summary>

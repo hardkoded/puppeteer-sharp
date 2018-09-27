@@ -6,11 +6,11 @@ namespace PuppeteerSharp
     {
         [JsonProperty(Constants.ID)]
         internal string Id { get; set; }
-        [JsonProperty("parentId")]
+        [JsonProperty(Constants.PARENT_ID)]
         internal string ParentId { get; set; }
         [JsonProperty(Constants.NAME)]
         internal string Name { get; set; }
-        [JsonProperty("url")]
+        [JsonProperty(Constants.URL)]
         internal string Url { get; set; }
     }
 }

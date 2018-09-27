@@ -22,7 +22,7 @@ namespace PuppeteerSharp
         /// Gets the URL.
         /// </summary>
         /// <value>The URL.</value>
-        [JsonProperty("url")]
+        [JsonProperty(Constants.URL)]
         public string Url { get; internal set; }
 
         /// <summary>

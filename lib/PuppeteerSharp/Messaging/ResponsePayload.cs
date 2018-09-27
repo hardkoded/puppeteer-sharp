@@ -6,7 +6,7 @@ namespace PuppeteerSharp.Messaging
 {
     internal class ResponsePayload
     {
-        [JsonProperty("url")]
+        [JsonProperty(Constants.URL)]
         public string Url { get; set; }
         [JsonProperty("headers")]
         public Dictionary<string, object> Headers { get; set; }

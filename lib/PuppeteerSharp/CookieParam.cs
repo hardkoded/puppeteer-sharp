@@ -32,7 +32,7 @@ namespace PuppeteerSharp
         /// Gets or sets the URL.
         /// </summary>
         /// <value>The URL.</value>
-        [JsonProperty("url", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(Constants.URL, NullValueHandling = NullValueHandling.Ignore)]
         public string Url { get; set; }
         /// <summary>
         /// Gets or sets the path.

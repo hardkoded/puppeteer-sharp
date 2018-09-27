@@ -35,7 +35,7 @@ namespace PuppeteerSharp
         /// Gets or sets the URL.
         /// </summary>
         /// <value>The URL.</value>
-        [JsonProperty("url")]
+        [JsonProperty(Constants.URL)]
         public string Url { get; set; }
 
         internal string Hash
