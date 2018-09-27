@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
@@ -18,28 +19,25 @@ namespace PuppeteerSharp
         internal Response(
             CDPSession client,
             Request request,
-            HttpStatusCode status,
-            Dictionary<string, object> headers,
-            bool fromDiskCache,
-            bool fromServiceWorker,
-            SecurityDetails securityDetails)
+            ResponsePayload responseMessage)
         {
             _client = client;
             Request = request;
-            Status = status;
+            Status = responseMessage.Status;
+            StatusText = responseMessage.StatusText;
             Url = request.Url;
-            _fromDiskCache = fromDiskCache;
-            FromServiceWorker = fromServiceWorker;
+            _fromDiskCache = responseMessage.FromDiskCache;
+            FromServiceWorker = responseMessage.FromServiceWorker;
 
             Headers = new Dictionary<string, object>();
-            if (headers != null)
+            if (responseMessage.Headers != null)
             {
-                foreach (var keyValue in headers)
+                foreach (var keyValue in responseMessage.Headers)
                 {
                     Headers[keyValue.Key] = keyValue.Value;
                 }
             }
-            SecurityDetails = securityDetails;
+            SecurityDetails = responseMessage.SecurityDetails;
             BodyLoadedTaskWrapper = new TaskCompletionSource<bool>();
         }
 
@@ -83,7 +81,11 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value><c>true</c> if the <see cref="Response"/> was served by a service worker; otherwise, <c>false</c>.</value>
         public bool FromServiceWorker { get; }
-
+        /// <summary>
+        /// Contains the status text of the response (e.g. usually an "OK" for a success).
+        /// </summary>
+        /// <value>The status text.</value>
+        public string StatusText { get; }
         internal TaskCompletionSource<bool> BodyLoadedTaskWrapper { get; }
         #endregion
 
