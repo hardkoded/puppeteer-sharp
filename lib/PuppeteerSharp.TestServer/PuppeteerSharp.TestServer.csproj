@@ -3,14 +3,14 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <OutputType>Library</OutputType>
   </PropertyGroup>
-  
-  <ItemGroup>	
-    <None Remove="testCert.cer" />	
-  </ItemGroup>	
-  <ItemGroup>	
-    <Content Include="testCert.cer">	
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>	
-    </Content>	
+
+  <ItemGroup>
+    <None Remove="testCert.cer" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="testCert.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore" Version="2.0.2" />
