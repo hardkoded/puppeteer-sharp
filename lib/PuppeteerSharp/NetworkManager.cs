@@ -278,16 +278,20 @@ namespace PuppeteerSharp
                     redirectChain = request.RedirectChainList;
                 }
             }
-            var isNavigationRequest = e.RequestId == e.LoaderId && e.Type == ResourceType.Document;
-            HandleRequestStart(
-                e.RequestId,
+            var frame = !string.IsNullOrEmpty(e.FrameId) ? _frameManager.Frames[e.FrameId] : null;
+            var request = new Request(
+                _client,
+                frame,
                 interceptionId,
-                e.Request.Url,
-                isNavigationRequest,
-                e.Type,
-                e.Request,
-                e.FrameId,
+                _userRequestInterceptionEnabled,
+                e,
                 redirectChain);
+
+            _requestIdToRequest.Add(e.RequestId, request);
+            Request(this, new RequestEventArgs
+            {
+                Request = request
+            });
         }
 
         private void OnRequestServedFromCache(RequestServedFromCacheResponse response)
@@ -296,42 +300,6 @@ namespace PuppeteerSharp
             {
                 request.FromMemoryCache = true;
             }
-        }
-
-        private void HandleRequestStart(
-            string requestId,
-            string interceptionId,
-            string url,
-            bool isNavigationRequest,
-            ResourceType resourceType,
-            Payload requestPayload,
-            string frameId,
-            List<Request> redirectChain)
-        {
-            Frame frame = null;
-
-            if (!string.IsNullOrEmpty(frameId))
-            {
-                _frameManager.Frames.TryGetValue(frameId, out frame);
-            }
-
-            var request = new Request(
-                _client,
-                requestId,
-                interceptionId,
-                isNavigationRequest,
-                _userRequestInterceptionEnabled,
-                url,
-                resourceType,
-                requestPayload,
-                frame,
-                redirectChain);
-
-            _requestIdToRequest.Add(requestId, request);
-            Request(this, new RequestEventArgs
-            {
-                Request = request
-            });
         }
 
         private void HandleRequestRedirect(
