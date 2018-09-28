@@ -24,16 +24,12 @@ namespace PuppeteerSharp
         internal ExecutionContext(
             CDPSession client,
             ContextPayload contextPayload,
-            Func<ExecutionContext, dynamic, JSHandle> objectHandleFactory,
             Frame frame)
         {
             _client = client;
             _contextId = contextPayload.Id;
-            ObjectHandleFactory = objectHandleFactory;
             Frame = frame;
         }
-
-        internal Func<ExecutionContext, dynamic, JSHandle> ObjectHandleFactory { get; set; }
 
         /// <summary>
         /// Frame associated with this execution context.
@@ -127,7 +123,7 @@ namespace PuppeteerSharp
                 {"prototypeObjectId", objectId.ToString()}
             }).ConfigureAwait(false);
 
-            return ObjectHandleFactory(this, response.objects);
+            return CreateJSHandle(response.objects);
         }
 
         internal async Task<JSHandle> EvaluateExpressionHandleAsync(string script)
@@ -179,6 +175,11 @@ namespace PuppeteerSharp
             }
         }
 
+        internal JSHandle CreateJSHandle(dynamic remoteObject)
+            => (remoteObject.subtype == "node" && Frame != null)
+                ? new ElementHandle(this, _client, remoteObject, Frame.FrameManager.Page, Frame.FrameManager)
+                : new JSHandle(this, _client, remoteObject);
+
         private async Task<T> EvaluateAsync<T>(Task<JSHandle> handleEvaluator)
         {
             var handle = await handleEvaluator.ConfigureAwait(false);
@@ -212,7 +213,7 @@ namespace PuppeteerSharp
                     GetExceptionMessage(response.exceptionDetails.ToObject<EvaluateExceptionDetails>()));
             }
 
-            return ObjectHandleFactory(this, response.result);
+            return CreateJSHandle(response.result);
         }
 
         private object FormatArgument(object arg)

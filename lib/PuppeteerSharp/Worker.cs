@@ -130,7 +130,6 @@ namespace PuppeteerSharp
                 _executionContext = new ExecutionContext(
                     _client,
                     e.MessageData.SelectToken("context").ToObject<ContextPayload>(),
-                    _jsHandleFactory,
                     null);
                 _executionContextCallback.TrySetResult(_executionContext);
             }
