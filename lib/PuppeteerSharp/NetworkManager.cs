@@ -63,7 +63,7 @@ namespace PuppeteerSharp
             }
             return _client.SendAsync("Network.setExtraHTTPHeaders", new Dictionary<string, object>
             {
-                {"headers", _extraHTTPHeaders}
+                { Constants.HEADERS, _extraHTTPHeaders }
             });
         }
 
@@ -205,8 +205,8 @@ namespace PuppeteerSharp
                 {
                     await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object>
                     {
-                        {"interceptionId", e.InterceptionId},
-                        {"authChallengeResponse", new
+                        { Constants.INTERCEPTION_ID, e.InterceptionId },
+                        { "authChallengeResponse", new
                             {
                                 response,
                                 username = credentials.Username,
@@ -227,7 +227,7 @@ namespace PuppeteerSharp
                 {
                     await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object>
                     {
-                        { "interceptionId", e.InterceptionId}
+                        { Constants.INTERCEPTION_ID, e.InterceptionId }
                     }).ConfigureAwait(false);
                 }
                 catch (PuppeteerException ex)

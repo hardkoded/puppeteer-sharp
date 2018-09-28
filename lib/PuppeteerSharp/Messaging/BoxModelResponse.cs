@@ -4,21 +4,21 @@ namespace PuppeteerSharp.Messaging
 {
     internal class BoxModelResponse
     {
-        [JsonProperty("model")]
+        [JsonProperty(Constants.MODEL)]
         public BoxModelResponseModel Model { get; set; }
 
         public class BoxModelResponseModel
         {
-            [JsonProperty("content")]
+            [JsonProperty(Constants.CONTENT)]
             public decimal[] Content { get; set; }
 
-            [JsonProperty("padding")]
+            [JsonProperty(Constants.PADDING)]
             public decimal[] Padding { get; set; }
 
-            [JsonProperty("border")]
+            [JsonProperty(Constants.BORDER)]
             public decimal[] Border { get; set; }
 
-            [JsonProperty("margin")]
+            [JsonProperty(Constants.MARGIN)]
             public decimal[] Margin { get; set; }
 
             [JsonProperty(Constants.WIDTH)]

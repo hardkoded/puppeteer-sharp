@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Messaging;
 
@@ -304,7 +303,7 @@ namespace PuppeteerSharp
             var args = new Dictionary<string, object> { [Constants.URL] = "about:blank" };
             if (contextId != null)
             {
-                args["browserContextId"] = contextId;
+                args[Constants.BROWSER_CONTEXT_ID] = contextId;
             }
             string targetId = (await Connection.SendAsync("Target.createTarget", args))[Constants.TARGET_ID].AsString();
 

@@ -51,7 +51,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
             // We have to interact with a page so that 'beforeunload' handlers
             // fire.
-            await Page.ClickAsync("body");
+            await Page.ClickAsync(Constants.BODY);
             await Page.CloseAsync(new PageCloseOptions { RunBeforeUnload = true });
 
             await Task.WhenAll(

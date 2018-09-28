@@ -23,19 +23,19 @@ namespace PuppeteerSharp
         /// Specifies clipping region of the page.
         /// </summary>
         /// <value>The clip.</value>
-        [JsonProperty("clip")]
+        [JsonProperty(Constants.CLIP)]
         public Clip Clip { get; set; }
         /// <summary>
         /// When <c>true</c>, takes a screenshot of the full scrollable page. Defaults to <c>false</c>.
         /// </summary>
         /// <value><c>true</c> if full page; otherwise, <c>false</c>.</value>
-        [JsonProperty("fullPage")]
+        [JsonProperty(Constants.FULL_PAGE)]
         public bool FullPage { get; set; }
         /// <summary>
         /// Hides default white background and allows capturing screenshots with transparency. Defaults to <c>false</c>
         /// </summary>
         /// <value><c>true</c> if omit background; otherwise, <c>false</c>.</value>
-        [JsonProperty("omitBackground")]
+        [JsonProperty(Constants.OMIT_BACKGROUND)]
         public bool OmitBackground { get; set; }
         /// <summary>
         /// Specify screenshot type, can be either jpeg or png. Defaults to 'png'.
@@ -47,7 +47,7 @@ namespace PuppeteerSharp
         /// The quality of the image, between 0-100. Not applicable to png images.
         /// </summary>
         /// <value>The quality.</value>
-        [JsonProperty("quality")]
+        [JsonProperty(Constants.QUALITY)]
         public int? Quality { get; set; }
 
         internal static ScreenshotType? GetScreenshotTypeFromFile(string file)

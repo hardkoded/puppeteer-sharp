@@ -4,7 +4,7 @@ namespace PuppeteerSharp.Messaging
 {
     internal class CreateBrowserContextResponse
     {
-        [JsonProperty("browserContextId")]
+        [JsonProperty(Constants.BROWSER_CONTEXT_ID)]
         public string BrowserContextId { get; set; }
     }
 }

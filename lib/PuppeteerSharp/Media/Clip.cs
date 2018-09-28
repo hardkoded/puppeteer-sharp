@@ -14,13 +14,13 @@ namespace PuppeteerSharp.Media
         /// x-coordinate of top-left corner of clip area.
         /// </summary>
         /// <value>The x.</value>
-        [JsonProperty("x")]
+        [JsonProperty(Constants.X)]
         public decimal X { get; set; }
         /// <summary>
         /// y-coordinate of top-left corner of clip area.
         /// </summary>
         /// <value>The y.</value>
-        [JsonProperty("y")]
+        [JsonProperty(Constants.Y)]
         public decimal Y { get; set; }
         /// <summary>
         /// Width of clipping area.
@@ -38,7 +38,7 @@ namespace PuppeteerSharp.Media
         /// Scale of the webpage rendering. Defaults to 1.
         /// </summary>
         /// <value>The scale.</value>
-        [JsonProperty("scale")]
+        [JsonProperty(Constants.SCALE)]
         public int Scale { get; internal set; }
 
         internal Clip Clone()

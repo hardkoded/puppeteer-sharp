@@ -5,7 +5,7 @@ namespace PuppeteerSharp
 {
     internal class EvaluateExceptionStackTrace
     {
-        [JsonProperty("callFrames")]
+        [JsonProperty(Constants.CALL_FRAMES)]
         internal EvaluationExceptionCallFrame[] CallFrames { get; set; }
     }
 }

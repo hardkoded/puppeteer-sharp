@@ -130,7 +130,7 @@ namespace PuppeteerSharp
                 return await EvaluateHandleAsync("Runtime.callFunctionOn", new Dictionary<string, object>
                 {
                     ["functionDeclaration"] = $"{script}\n{EvaluationScriptSuffix}\n",
-                    ["executionContextId"] = _contextId,
+                    [Constants.EXECUTION_CONTEXT_ID] = _contextId,
                     ["arguments"] = args.Select(FormatArgument).ToArray(),
                     ["returnByValue"] = false,
                     ["awaitPromise"] = true,

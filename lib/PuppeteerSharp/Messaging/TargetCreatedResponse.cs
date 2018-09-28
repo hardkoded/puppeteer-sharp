@@ -4,7 +4,7 @@ namespace PuppeteerSharp.Messaging
 {
     internal class TargetCreatedResponse
     {
-        [JsonProperty("targetInfo")]
+        [JsonProperty(Constants.TARGET_INFO)]
         public TargetInfo TargetInfo { get; set; }
     }
 }

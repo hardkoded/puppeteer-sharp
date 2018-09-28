@@ -13,13 +13,13 @@ namespace PuppeteerSharp
         /// The x coordinate of the element in pixels.
         /// </summary>
         /// <value>The x.</value>
-        [JsonProperty("x")]
+        [JsonProperty(Constants.X)]
         public decimal X { get; set; }
         /// <summary>
         /// The y coordinate of the element in pixels.
         /// </summary>
         /// <value>The y.</value>
-        [JsonProperty("y")]
+        [JsonProperty(Constants.Y)]
         public decimal Y { get; set; }
         /// <summary>
         /// The width of the element in pixels.

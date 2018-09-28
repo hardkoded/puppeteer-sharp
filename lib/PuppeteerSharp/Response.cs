@@ -82,6 +82,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value><c>true</c> if the <see cref="Response"/> was served by a service worker; otherwise, <c>false</c>.</value>
         public bool FromServiceWorker { get; }
+
         /// <summary>
         /// Contains the status text of the response (e.g. usually an "OK" for a success).
         /// </summary>
@@ -106,7 +107,7 @@ namespace PuppeteerSharp
                 {
                     var response = await _client.SendAsync<NetworkGetResponseBodyResponse>("Network.getResponseBody", new Dictionary<string, object>
                     {
-                        {"requestId", Request.RequestId}
+                        { Constants.REQUEST_ID, Request.RequestId }
                     }).ConfigureAwait(false);
 
                     _buffer = response.Base64Encoded

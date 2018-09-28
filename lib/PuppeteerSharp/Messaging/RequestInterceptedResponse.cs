@@ -6,45 +6,45 @@ namespace PuppeteerSharp.Messaging
 {
     internal class RequestInterceptedResponse
     {
-        [JsonProperty("interceptionId")]
+        [JsonProperty(Constants.INTERCEPTION_ID)]
         public string InterceptionId { get; set; }
         
-        [JsonProperty("request")]
+        [JsonProperty(Constants.REQUEST)]
         public Payload Request { get; set; }
 
-        [JsonProperty("frameId")]
+        [JsonProperty(Constants.FRAME_ID)]
         public string FrameId { get; set; }
 
-        [JsonProperty("resourceType")]
+        [JsonProperty(Constants.RESOURCE_TYPE)]
         public ResourceType ResourceType { get; set; }
 
-        [JsonProperty("isNavigationRequest")]
+        [JsonProperty(Constants.IS_NAVIGATION_REQUEST)]
         public bool IsNavigationRequest { get; set; }
         
-        [JsonProperty("responseHeaders", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(Constants.RESPONSE_HEADERS, NullValueHandling = NullValueHandling.Ignore)]
         public Dictionary<string, object> ResponseHeaders { get; set; }
 
-        [JsonProperty("responseStatusCode", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(Constants.RESPONSE_STATUS_CODE, NullValueHandling = NullValueHandling.Ignore)]
         public HttpStatusCode ResponseStatusCode { get; set; }
 
-        [JsonProperty("redirectUrl", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(Constants.REDIRECT_URL, NullValueHandling = NullValueHandling.Ignore)]
         public string RedirectUrl { get; set; }
 
-        [JsonProperty("authChallenge", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(Constants.AUTH_CHALLENGE, NullValueHandling = NullValueHandling.Ignore)]
         public AuthChallengeData AuthChallenge { get; set; }
 
         internal class AuthChallengeData
         {
-            [JsonProperty("source", NullValueHandling = NullValueHandling.Ignore)]
+            [JsonProperty(Constants.SOURCE, NullValueHandling = NullValueHandling.Ignore)]
             public string Source { get; set; }
 
-            [JsonProperty("origin")]
+            [JsonProperty(Constants.ORIGIN)]
             public string Origin { get; set; }
 
-            [JsonProperty("scheme")]
+            [JsonProperty(Constants.SCHEME)]
             public string Scheme { get; set; }
 
-            [JsonProperty("realm")]
+            [JsonProperty(Constants.REALM)]
             public string Realm { get; set; }
         }
     }

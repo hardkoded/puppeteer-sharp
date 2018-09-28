@@ -1814,7 +1814,7 @@ namespace PuppeteerSharp
             var binding = _pageBindings[e.Payload.Name];
             var methodParams = binding.Method.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
 
-            var args = e.Payload.JsonObject.GetValue("args").Select((token, i) => token.ToObject(methodParams[i])).ToArray();
+            var args = e.Payload.JsonObject.GetValue(Constants.ARGS).Select((token, i) => token.ToObject(methodParams[i])).ToArray();
 
             result = binding.DynamicInvoke(args);
             if (result is Task taskResult)
@@ -1843,7 +1843,7 @@ namespace PuppeteerSharp
 
         private async Task OnAttachedToTarget(MessageEventArgs e)
         {
-            var targetInfo = e.MessageData.SelectToken("targetInfo").ToObject<TargetInfo>();
+            var targetInfo = e.MessageData.SelectToken(Constants.TARGET_INFO).ToObject<TargetInfo>();
             var sessionId = e.MessageData.SelectToken(Constants.SESSION_ID).ToObject<string>();
             if (targetInfo.Type != TargetType.Worker)
             {
@@ -1899,8 +1899,8 @@ namespace PuppeteerSharp
                 {
                     await Client.SendAsync("Security.handleCertificateError", new Dictionary<string, object>
                     {
-                        {"eventId", e.EventId },
-                        {"action", "continue"}
+                        { Constants.EVENT_ID, e.EventId },
+                        { "action", "continue"}
                     }).ConfigureAwait(false);
                 }
                 catch (PuppeteerException ex)

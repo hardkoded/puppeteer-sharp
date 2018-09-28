@@ -7,16 +7,16 @@ namespace PuppeteerSharp.Messaging
     internal class ResponsePayload
     {
         [JsonProperty(Constants.URL)]
-        public string Url { get; set; }
-        [JsonProperty("headers")]
+        public string Url { get; internal set; }
+        [JsonProperty(Constants.HEADERS)]
         public Dictionary<string, object> Headers { get; set; }
-        [JsonProperty("status")]
+        [JsonProperty(Constants.STATUS)]
         public HttpStatusCode Status { get; set; }
-        [JsonProperty("securityDetails")]
+        [JsonProperty(Constants.SECURITY_DETAILS)]
         public SecurityDetails SecurityDetails { get; set; }
-        [JsonProperty("fromDiskCache")]
+        [JsonProperty(Constants.FROM_DISK_CACHE)]
         public bool FromDiskCache { get; set; }
-        [JsonProperty("fromServiceWorker")]
+        [JsonProperty(Constants.FROM_SERVICE_WORKER)]
         public bool FromServiceWorker { get; set; }
         [JsonProperty("statusText")]
         public string StatusText { get; set; }

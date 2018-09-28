@@ -4,10 +4,10 @@ namespace PuppeteerSharp.Messaging
 {
     internal class LoadingFailedResponse
     {
-        [JsonProperty("requestId")]
+        [JsonProperty(Constants.REQUEST_ID)]
         public string RequestId { get; set; }
 
-        [JsonProperty("errorText")]
+        [JsonProperty(Constants.ERROR_TEXT)]
         public string ErrorText { get; set; }        
     }
 }

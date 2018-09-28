@@ -4,7 +4,7 @@ namespace PuppeteerSharp.Messaging
 {
     internal class NavigatedWithinDocumentResponse
     {
-        [JsonProperty("frameId")]
+        [JsonProperty(Constants.FRAME_ID)]
         public string FrameId { get; set; }
 
         [JsonProperty(Constants.URL)]

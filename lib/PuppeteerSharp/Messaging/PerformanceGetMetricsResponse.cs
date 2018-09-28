@@ -6,7 +6,7 @@ namespace PuppeteerSharp.Messaging
 {
     internal class PerformanceGetMetricsResponse
     {
-        [JsonProperty("metrics")]
+        [JsonProperty(Constants.METRICS)]
         internal List<Metric> Metrics { get; set; }
     }
 }

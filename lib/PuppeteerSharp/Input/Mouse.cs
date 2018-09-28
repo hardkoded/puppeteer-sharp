@@ -49,8 +49,8 @@ namespace PuppeteerSharp.Input
                 {
                     { Constants.TYPE, "mouseMoved" },
                     { "button", _button },
-                    { "x", fromX + ((_x - fromX) * ((decimal)i / steps)) },
-                    { "y", fromY + ((_y - fromY) * ((decimal)i / steps)) },
+                    { Constants.X, fromX + ((_x - fromX) * ((decimal)i / steps)) },
+                    { Constants.Y, fromY + ((_y - fromY) * ((decimal)i / steps)) },
                     { "modifiers", _keyboard.Modifiers}
                 }).ConfigureAwait(false);
             }
@@ -92,8 +92,8 @@ namespace PuppeteerSharp.Input
             {
                 { Constants.TYPE, "mousePressed" },
                 { "button", _button },
-                { "x", _x },
-                { "y", _y },
+                { Constants.X, _x },
+                { Constants.Y, _y },
                 { "modifiers", _keyboard.Modifiers },
                 { "clickCount", options.ClickCount }
             });

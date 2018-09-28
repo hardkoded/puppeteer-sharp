@@ -4,9 +4,9 @@ namespace PuppeteerSharp
 {
     internal class ContextPayloadAuxData
     {
-        [JsonProperty("frameId")]
+        [JsonProperty(Constants.FRAME_ID)]
         internal string FrameId { get; set; }
-        [JsonProperty("isDefault")]
+        [JsonProperty(Constants.IS_DEFAULT)]
         internal bool IsDefault { get; set; }
     }
 }

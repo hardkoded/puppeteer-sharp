@@ -4,15 +4,15 @@ namespace PuppeteerSharp.Messaging
 {
     internal class GetLayoutMetricsResponse
     {
-        [JsonProperty("layoutViewport")]
+        [JsonProperty(Constants.LAYOUT_VIEWPORT)]
         public GetLayoutMetricsLayoutViewport LayoutViewport { get; set; }
 
         internal class GetLayoutMetricsLayoutViewport
         {
-            [JsonProperty("pageX")]
+            [JsonProperty(Constants.PAGE_X)]
             public decimal PageX { get; set; }
 
-            [JsonProperty("pageY")]
+            [JsonProperty(Constants.PAGE_Y)]
             public decimal PageY { get; set; }
         }
     }

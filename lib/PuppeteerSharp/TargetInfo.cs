@@ -35,13 +35,13 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets or sets the target browser contextId
         /// </summary>
-        [JsonProperty("browserContextId")]        
+        [JsonProperty(Constants.BROWSER_CONTEXT_ID)]        
         public string BrowserContextId { get; internal set; }
         
         /// <summary>
         /// Get the target that opened this target
         /// </summary>
-        [JsonProperty("openerId")]
+        [JsonProperty(Constants.OPENER_ID)]
         public string OpenerId { get; internal set; }
     }
 }

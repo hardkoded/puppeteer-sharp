@@ -26,7 +26,7 @@ namespace PuppeteerSharp
         /// Gets or sets the domain.
         /// </summary>
         /// <value>The domain.</value>
-        [JsonProperty("domain", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(Constants.DOMAIN, NullValueHandling = NullValueHandling.Ignore)]
         public string Domain { get; set; }
         /// <summary>
         /// Gets or sets the URL.
@@ -38,37 +38,37 @@ namespace PuppeteerSharp
         /// Gets or sets the path.
         /// </summary>
         /// <value>The path.</value>
-        [JsonProperty("path", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(Constants.PATH, NullValueHandling = NullValueHandling.Ignore)]
         public string Path { get; set; }
         /// <summary>
         /// Gets or sets the expiration.
         /// </summary>
         /// <value>Expiration.</value>
-        [JsonProperty("expires", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(Constants.EXPIRES, NullValueHandling = NullValueHandling.Ignore)]
         public double? Expires { get; set; }
         /// <summary>
         /// Gets or sets the size.
         /// </summary>
         /// <value>The size.</value>
-        [JsonProperty("size", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(Constants.SIZE, NullValueHandling = NullValueHandling.Ignore)]
         public int? Size { get; set; }
         /// <summary>
         /// Gets or sets if it's HTTP only.
         /// </summary>
         /// <value>Whether it's http only or not.</value>
-        [JsonProperty("httpOnly", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(Constants.HTTP_ONLY, NullValueHandling = NullValueHandling.Ignore)]
         public bool? HttpOnly { get; set; }
         /// <summary>
         /// Gets or sets if it's secure.
         /// </summary>
         /// <value>Whether it's secure or not.</value>
-        [JsonProperty("secure", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(Constants.SECURE, NullValueHandling = NullValueHandling.Ignore)]
         public bool? Secure { get; set; }
         /// <summary>
         /// Gets or sets if it's session only.
         /// </summary>
         /// <value>Whether it's session only or not.</value>
-        [JsonProperty("session", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(Constants.SESSION, NullValueHandling = NullValueHandling.Ignore)]
         public bool? Session { get; set; }
     }
 }

@@ -4,10 +4,10 @@ namespace PuppeteerSharp.Messaging
 {
     internal class ResponseReceivedResponse
     {
-        [JsonProperty("requestId")]
+        [JsonProperty(Constants.REQUEST_ID)]
         public string RequestId { get; set; }
 
-        [JsonProperty("response")]
+        [JsonProperty(Constants.RESPONSE)]
         public ResponsePayload Response { get; set; }
     }
 }

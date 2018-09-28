@@ -5,10 +5,10 @@ namespace PuppeteerSharp.Messaging
 {
     internal class PageNavigateResponse
     {
-        [JsonProperty("errorText")]
+        [JsonProperty(Constants.ERROR_TEXT)]
         internal string ErrorText { get; set; }
 
-        [JsonProperty("loaderId")]
+        [JsonProperty(Constants.LOADER_ID)]
         internal string LoaderId { get; set; }
     }
 }

@@ -4,7 +4,7 @@ namespace PuppeteerSharp
 {
     internal class EvaluateExceptionInfo
     {
-        [JsonProperty("description")]
+        [JsonProperty(Constants.DESCRIPTION)]
         internal string Description { get; set; }
 
         [JsonProperty(Constants.VALUE)]

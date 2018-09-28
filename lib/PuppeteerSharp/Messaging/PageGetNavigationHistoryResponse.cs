@@ -6,9 +6,9 @@ namespace PuppeteerSharp.Messaging
 {
     internal class PageGetNavigationHistoryResponse
     {
-        [JsonProperty("currentIndex")]
+        [JsonProperty(Constants.CURRENT_INDEX)]
         public int CurrentIndex { get; set; }
-        [JsonProperty("entries")]
+        [JsonProperty(Constants.ENTRIES)]
         public List<HistoryEntry> Entries { get; set; }
 
         internal class HistoryEntry

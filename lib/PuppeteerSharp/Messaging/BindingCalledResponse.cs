@@ -8,10 +8,10 @@ namespace PuppeteerSharp.Messaging
     {
         private string _payloadJson;
 
-        [JsonProperty("executionContextId")]
+        [JsonProperty(Constants.EXECUTION_CONTEXT_ID)]
         public int ExecutionContextId { get; set; }
         public BindingPayload Payload { get; set; }
-        [JsonProperty("payload")]
+        [JsonProperty(Constants.PAYLOAD)]
         public string PayloadJson
         {
             get => _payloadJson;
@@ -28,9 +28,9 @@ namespace PuppeteerSharp.Messaging
         {
             [JsonProperty(Constants.NAME)]
             public string Name { get; set; }
-            [JsonProperty("args")]
+            [JsonProperty(Constants.ARGS)]
             public object[] Args { get; set; }
-            [JsonProperty("seq")]
+            [JsonProperty(Constants.SEQ)]
             public int Seq { get; set; }
 
             public JObject JsonObject { get; set; }

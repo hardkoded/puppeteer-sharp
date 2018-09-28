@@ -7,10 +7,10 @@ namespace PuppeteerSharp.Messaging
         [JsonProperty(Constants.TYPE)]
         internal ConsoleType Type { get; set; }
 
-        [JsonProperty("args")]
+        [JsonProperty(Constants.ARGS)]
         internal dynamic[] Args { get; set; }
 
-        [JsonProperty("executionContextId")]
+        [JsonProperty(Constants.EXECUTION_CONTEXT_ID)]
         internal int ExecutionContextId { get; set; }
     }
 }

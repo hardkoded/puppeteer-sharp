@@ -23,13 +23,13 @@ namespace PuppeteerSharp
         /// Gets or sets the post data.
         /// </summary>
         /// <value>The post data.</value>
-        [JsonProperty("postData")]
+        [JsonProperty(Constants.POST_DATA)]
         public object PostData { get; set; }
         /// <summary>
         /// Gets or sets the HTTP headers.
         /// </summary>
         /// <value>HTTP headers.</value>
-        [JsonProperty("headers")]
+        [JsonProperty(Constants.HEADERS)]
         public Dictionary<string, string> Headers { get; set; } = new Dictionary<string, string>();
         /// <summary>
         /// Gets or sets the URL.

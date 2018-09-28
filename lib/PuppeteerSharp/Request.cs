@@ -166,7 +166,7 @@ namespace PuppeteerSharp
 
             try
             {
-                var requestData = new Dictionary<string, object> { ["interceptionId"] = InterceptionId };
+                var requestData = new Dictionary<string, object> { [Constants.INTERCEPTION_ID] = InterceptionId };
                 if (overrides?.Url != null)
                 {
                     requestData[Constants.URL] = overrides.Url;
@@ -179,12 +179,12 @@ namespace PuppeteerSharp
 
                 if (overrides?.PostData != null)
                 {
-                    requestData["postData"] = overrides.PostData;
+                    requestData[Constants.POST_DATA] = overrides.PostData;
                 }
 
                 if (overrides?.Headers?.Count > 0)
                 {
-                    requestData["headers"] = overrides.Headers;
+                    requestData[Constants.HEADERS] = overrides.Headers;
                 }
 
                 await _client.SendAsync("Network.continueInterceptedRequest", requestData).ConfigureAwait(false);
@@ -265,8 +265,8 @@ namespace PuppeteerSharp
             {
                 await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object>
                 {
-                    {"interceptionId", InterceptionId},
-                    {"rawResponse", Convert.ToBase64String(responseData)}
+                    { Constants.INTERCEPTION_ID, InterceptionId },
+                    { "rawResponse", Convert.ToBase64String(responseData) }
                 }).ConfigureAwait(false);
             }
             catch (PuppeteerException ex)
@@ -302,8 +302,8 @@ namespace PuppeteerSharp
             {
                 await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object>
                 {
-                    {"interceptionId", InterceptionId},
-                    {"errorReason", errorReason}
+                    { Constants.INTERCEPTION_ID, InterceptionId },
+                    { "errorReason", errorReason }
                 }).ConfigureAwait(false);
             }
             catch (PuppeteerException ex)

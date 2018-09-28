@@ -6,16 +6,16 @@ namespace PuppeteerSharp.Messaging
 {
     internal class LogEntryAddedResponse
     {
-        [JsonProperty("entry")]
+        [JsonProperty(Constants.ENTRY)]
         internal LogEntry Entry { get; set; }
 
         internal class LogEntry
         {
-            [JsonProperty("source")]
+            [JsonProperty(Constants.SOURCE)]
             public TargetType Source { get; set; }
-            [JsonProperty("args")]
+            [JsonProperty(Constants.ARGS)]
             internal dynamic[] Args { get; set; }
-            [JsonProperty("level")]
+            [JsonProperty(Constants.LEVEL)]
             internal ConsoleType Level { get; set; }
             [JsonProperty(Constants.TEXT)]
             internal string Text { get; set; }
