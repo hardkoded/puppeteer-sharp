@@ -138,7 +138,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         {
             await Page.SetContentAsync("<h1>remove this</h1>");
             var elementHandle = await Page.QuerySelectorAsync("h1");
-            await Page.EvaluateFunctionAsync<object>("element => element.remove()", elementHandle);
+            await Page.EvaluateFunctionAsync("element => element.remove()", elementHandle);
 
             var exception = await Assert.ThrowsAsync<PuppeteerException>(elementHandle.ScreenshotStreamAsync);
             Assert.Equal("Node is either not visible or not an HTMLElement", exception.Message);

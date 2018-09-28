@@ -80,7 +80,7 @@ namespace PuppeteerSharp.Tests.JSCoverageTests
             });
             await Page.GoToAsync(TestConstants.EmptyPage);
             await Page.EvaluateExpressionAsync("console.log('foo')");
-            await Page.EvaluateFunctionAsync<object>("() => console.log('bar')");
+            await Page.EvaluateFunctionAsync("() => console.log('bar')");
             var coverage = await Page.Coverage.StopJSCoverageAsync();
             Assert.Empty(coverage);
         }

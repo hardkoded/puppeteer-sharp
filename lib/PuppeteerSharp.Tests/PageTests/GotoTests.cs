@@ -38,7 +38,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldWorkWhenPageCallsHistoryAPIInBeforeunload()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            await Page.EvaluateFunctionAsync<object>(@"() =>
+            await Page.EvaluateFunctionAsync(@"() =>
             {
                 window.addEventListener('beforeunload', () => history.replaceState(null, 'initial', window.location.href), false);
             }");

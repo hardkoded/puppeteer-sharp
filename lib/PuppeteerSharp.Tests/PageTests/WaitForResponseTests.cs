@@ -20,7 +20,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
             await Task.WhenAll(
                 task,
-                Page.EvaluateFunctionAsync<object>(@"() => {
+                Page.EvaluateFunctionAsync(@"() => {
                     fetch('/digits/1.png');
                     fetch('/digits/2.png');
                     fetch('/digits/3.png');
@@ -37,7 +37,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
             await Task.WhenAll(
             task,
-            Page.EvaluateFunctionAsync<object>(@"() => {
+            Page.EvaluateFunctionAsync(@"() => {
                 fetch('/digits/1.png');
                 fetch('/digits/2.png');
                 fetch('/digits/3.png');
@@ -57,7 +57,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
             await Task.WhenAll(
                 task,
-                Page.EvaluateFunctionAsync<object>(@"() => setTimeout(() => {
+                Page.EvaluateFunctionAsync(@"() => setTimeout(() => {
                     fetch('/digits/1.png');
                     fetch('/digits/2.png');
                     fetch('/digits/3.png');

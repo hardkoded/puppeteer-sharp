@@ -173,7 +173,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             await Page.SetCookieAsync(new CookieParam { Name = "localhost-cookie", Value = "best" });
-            await Page.EvaluateFunctionAsync<object>(@"src => {
+            await Page.EvaluateFunctionAsync(@"src => {
                     let fulfill;
                     const promise = new Promise(x => fulfill = x);
                     const iframe = document.createElement('iframe');

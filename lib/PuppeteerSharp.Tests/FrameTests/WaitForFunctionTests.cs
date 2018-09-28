@@ -104,7 +104,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             var waitForFunction = Page.WaitForFunctionAsync("element => !element.parentElement", div)
                 .ContinueWith(_ => resolved = true);
             Assert.False(resolved);
-            await Page.EvaluateFunctionAsync<object>("element => element.remove()", div);
+            await Page.EvaluateFunctionAsync("element => element.remove()", div);
             await waitForFunction;
         }
 

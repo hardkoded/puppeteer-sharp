@@ -61,7 +61,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
 
             await Task.WhenAll(
                 popupTargetCompletion.Task,
-                page.EvaluateFunctionAsync<object>("url => window.open(url)", TestConstants.EmptyPage)
+                page.EvaluateFunctionAsync("url => window.open(url)", TestConstants.EmptyPage)
             );
 
             var popupTarget = await popupTargetCompletion.Task;

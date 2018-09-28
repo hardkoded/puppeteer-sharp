@@ -51,7 +51,7 @@ namespace PuppeteerSharp.Tests.RequestTests
                 });
             };
 
-            await Page.EvaluateFunctionAsync<object>(@"PREFIX =>
+            await Page.EvaluateFunctionAsync(@"PREFIX =>
             {
                 const img = document.createElement('img');
                 img.src = PREFIX + '/does-not-exist.png';

@@ -34,7 +34,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             var aHandle = await Page.EvaluateExpressionHandleAsync("document.querySelector('div').firstChild");
             var element = aHandle as ElementHandle;
             Assert.NotNull(element);
-            Assert.NotNull(await Page.EvaluateFunctionAsync<object>("e => e.nodeType === HTMLElement.TEXT_NODE", element));
+            Assert.True(await Page.EvaluateFunctionAsync<bool>("e => e.nodeType === HTMLElement.TEXT_NODE", element));
         }
     }
 }

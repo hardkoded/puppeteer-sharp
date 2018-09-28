@@ -46,7 +46,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
 
             Page.Console += (sender, e) => messages.Add(e.Message);
 
-            await Page.EvaluateFunctionAsync<object>(@"() => {
+            await Page.EvaluateFunctionAsync(@"() => {
               // A pair of time/timeEnd generates only one Console API call.
               console.time('calling console.time');
               console.timeEnd('calling console.time');
@@ -113,7 +113,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
 
             Page.Console += (sender, e) => messageTask.TrySetResult(e.Message);
 
-            await Page.EvaluateFunctionAsync<object>("async url => fetch(url).catch(e => {})", TestConstants.EmptyPage);
+            await Page.EvaluateFunctionAsync("async url => fetch(url).catch(e => {})", TestConstants.EmptyPage);
             var message = await messageTask.Task;
             Assert.Contains("No 'Access-Control-Allow-Origin'", message.Text);
             Assert.Equal(ConsoleType.Error, message.Type);

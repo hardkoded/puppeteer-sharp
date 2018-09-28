@@ -49,8 +49,17 @@ namespace PuppeteerSharp
         /// <seealso cref="EvaluateFunctionAsync{T}(string, object[])"/>
         /// <seealso cref="EvaluateExpressionHandleAsync(string)"/>
         /// <returns>Task which resolves to script return value</returns>
-        public Task<object> EvaluateExpressionAsync(string script)
-            => EvaluateAsync<object>(EvaluateExpressionHandleAsync(script));
+        public async Task<JToken> EvaluateExpressionAsync(string script)
+        {
+            var result = await EvaluateAsync<JToken>(EvaluateExpressionHandleAsync(script));
+
+            if (result == null || !result.HasValues)
+            {
+                return null;
+            }
+
+            return result;
+        }
 
         /// <summary>
         /// Executes a script in browser contextF
@@ -65,6 +74,31 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to script return value</returns>
         public Task<T> EvaluateExpressionAsync<T>(string script)
             => EvaluateAsync<T>(EvaluateExpressionHandleAsync(script));
+
+        /// <summary>
+        /// Executes a function in browser context
+        /// </summary>
+        /// <param name="script">Script to be evaluated in browser context</param>
+        /// <param name="args">Arguments to pass to script</param>
+        /// <remarks>
+        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+        /// <see cref="JSHandle"/> instances can be passed as arguments
+        /// </remarks>
+        /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
+        /// <seealso cref="EvaluateFunctionHandleAsync(string, object[])"/>
+        /// <returns>Task which resolves to script return value</returns>
+        public async Task<JToken> EvaluateFunctionAsync(string script, params object[] args)
+        {
+            var result = await EvaluateAsync<JToken>(EvaluateFunctionHandleAsync(script, args));
+
+            if (result == null || !result.HasValues)
+            {
+                return null;
+            }
+
+            return result;
+        }
+        
 
         /// <summary>
         /// Executes a function in browser context

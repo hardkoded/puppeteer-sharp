@@ -55,7 +55,7 @@ namespace PuppeteerSharp.Tests.InputTests
             for (var i = 0; i < 11; ++i)
             {
                 // We might've scrolled to click a button - reset to (0, 0).
-                await Page.EvaluateFunctionAsync<object>("() => window.scrollTo(0, 0)");
+                await Page.EvaluateFunctionAsync("() => window.scrollTo(0, 0)");
                 await Page.ClickAsync($"#btn{i}");
             }
             Assert.Equal(new List<string>
@@ -89,7 +89,8 @@ namespace PuppeteerSharp.Tests.InputTests
         public async Task ShouldClickOnCheckboxInputAndToggle()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/checkbox.html");
-            Assert.Null(await Page.EvaluateExpressionAsync("result.check"));
+            var foo = await Page.EvaluateExpressionAsync("result.check");
+            Assert.Null(foo);
             await Page.ClickAsync("input#agree");
             Assert.True(await Page.EvaluateExpressionAsync<bool>("result.check"));
             Assert.Equal(new[] {
@@ -170,7 +171,7 @@ namespace PuppeteerSharp.Tests.InputTests
             var input = await Page.QuerySelectorAsync("input");
             await input.UploadFileAsync(filePath);
             Assert.Equal("file-to-upload.txt", await Page.EvaluateFunctionAsync<string>("e => e.files[0].name", input));
-            Assert.Equal("contents of the file", await Page.EvaluateFunctionAsync<object>(@"e => {
+            Assert.Equal("contents of the file", await Page.EvaluateFunctionAsync<string>(@"e => {
                 const reader = new FileReader();
                 const promise = new Promise(fulfill => reader.onload = fulfill);
                 reader.readAsText(e.files[0]);
@@ -222,10 +223,10 @@ namespace PuppeteerSharp.Tests.InputTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
             await Page.FocusAsync("textarea");
             await Page.Keyboard.SendCharacterAsync("嗨");
-            Assert.Equal("嗨", await Page.EvaluateExpressionAsync("document.querySelector('textarea').value"));
+            Assert.Equal("嗨", await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
             await Page.EvaluateExpressionAsync("window.addEventListener('keydown', e => e.preventDefault(), true)");
             await Page.Keyboard.SendCharacterAsync("a");
-            Assert.Equal("嗨a", await Page.EvaluateExpressionAsync("document.querySelector('textarea').value"));
+            Assert.Equal("嗨a", await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
         }
 
         [Fact]

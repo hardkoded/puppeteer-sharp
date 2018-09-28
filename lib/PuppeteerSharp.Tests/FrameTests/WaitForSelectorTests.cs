@@ -20,7 +20,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             await Page.GoToAsync(TestConstants.EmptyPage);
             var frame = Page.MainFrame;
             await frame.WaitForSelectorAsync("*");
-            await frame.EvaluateFunctionAsync<object>(AddElement, "div");
+            await frame.EvaluateFunctionAsync(AddElement, "div");
             await frame.WaitForSelectorAsync("div");
         }
 
@@ -30,8 +30,8 @@ namespace PuppeteerSharp.Tests.FrameTests
             await Page.GoToAsync(TestConstants.EmptyPage);
             var frame = Page.MainFrame;
             var watchdog = frame.WaitForSelectorAsync("div");
-            await frame.EvaluateFunctionAsync<object>(AddElement, "br");
-            await frame.EvaluateFunctionAsync<object>(AddElement, "div");
+            await frame.EvaluateFunctionAsync(AddElement, "br");
+            await frame.EvaluateFunctionAsync(AddElement, "div");
             var eHandle = await watchdog;
             var property = await eHandle.GetPropertyAsync("tagName");
             var tagName = await property.JsonValueAsync<string>();
@@ -43,7 +43,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             var watchdog = Page.WaitForSelectorAsync("h3 div");
-            await Page.EvaluateFunctionAsync<object>(AddElement, "span");
+            await Page.EvaluateFunctionAsync(AddElement, "span");
             await Page.EvaluateExpressionAsync("document.querySelector('span').innerHTML = '<h3><div></div></h3>'");
             await watchdog;
         }
@@ -55,8 +55,8 @@ namespace PuppeteerSharp.Tests.FrameTests
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
             var otherFrame = Page.Frames.ElementAt(1);
             var watchdog = Page.WaitForSelectorAsync("div");
-            await otherFrame.EvaluateFunctionAsync<object>(AddElement, "div");
-            await Page.EvaluateFunctionAsync<object>(AddElement, "div");
+            await otherFrame.EvaluateFunctionAsync(AddElement, "div");
+            await Page.EvaluateFunctionAsync(AddElement, "div");
             var eHandle = await watchdog;
             Assert.Equal(Page.MainFrame, eHandle.ExecutionContext.Frame);
         }
@@ -69,8 +69,8 @@ namespace PuppeteerSharp.Tests.FrameTests
             var frame1 = Page.Frames.ElementAt(1);
             var frame2 = Page.Frames.ElementAt(2);
             var waitForSelectorPromise = frame2.WaitForSelectorAsync("div");
-            await frame1.EvaluateFunctionAsync<object>(AddElement, "div");
-            await frame2.EvaluateFunctionAsync<object>(AddElement, "div");
+            await frame1.EvaluateFunctionAsync(AddElement, "div");
+            await frame2.EvaluateFunctionAsync(AddElement, "div");
             var eHandle = await waitForSelectorPromise;
             Assert.Equal(frame2, eHandle.ExecutionContext.Frame);
         }

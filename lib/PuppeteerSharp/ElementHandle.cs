@@ -137,7 +137,7 @@ namespace PuppeteerSharp
                 await Page.SetViewportAsync(newRawViewport.ToObject<ViewPortOptions>()).ConfigureAwait(false);
                 needsViewportReset = true;
             }
-            await ExecutionContext.EvaluateFunctionAsync<object>(@"function(element) {
+            await ExecutionContext.EvaluateFunctionAsync(@"function(element) {
                 element.scrollIntoView({ block: 'center', inline: 'center', behavior: 'instant'});
             }", this).ConfigureAwait(false);
 
@@ -218,7 +218,7 @@ namespace PuppeteerSharp
         /// Calls <c>focus</c> <see href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus"/> on the element.
         /// </summary>
         /// <returns>Task</returns>
-        public Task FocusAsync() => ExecutionContext.EvaluateFunctionAsync<object>("element => element.focus()", this);
+        public Task FocusAsync() => ExecutionContext.EvaluateFunctionAsync("element => element.focus()", this);
 
         /// <summary>
         /// Focuses the element, and sends a <c>keydown</c>, <c>keypress</c>/<c>input</c>, and <c>keyup</c> event for each character in the text.
