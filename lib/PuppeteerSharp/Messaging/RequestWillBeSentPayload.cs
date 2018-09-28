@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Messaging
         public Payload Request { get; set; }
 
         [JsonProperty("redirectResponse", NullValueHandling = NullValueHandling.Ignore)]
-        public ResponseData RedirectResponse { get; set; }
+        public ResponsePayload RedirectResponse { get; set; }
 
         [JsonProperty("type")]
         public ResourceType Type { get; set; }

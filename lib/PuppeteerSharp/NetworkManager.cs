@@ -175,11 +175,7 @@ namespace PuppeteerSharp
                 var response = new Response(
                     _client,
                     request,
-                    e.Response.Status,
-                    e.Response.Headers,
-                    e.Response.FromDiskCache,
-                    e.Response.FromServiceWorker,
-                    e.Response.SecurityDetails);
+                    e.Response);
 
                 request.Response = response;
 
@@ -268,13 +264,7 @@ namespace PuppeteerSharp
                 // If we connect late to the target, we could have missed the requestWillBeSent event.
                 if (request != null)
                 {
-                    HandleRequestRedirect(
-                        request,
-                        e.RedirectResponse.Status,
-                        e.RedirectResponse.Headers,
-                        e.RedirectResponse.FromDiskCache,
-                        e.RedirectResponse.FromServiceWorker,
-                        e.RedirectResponse.SecurityDetails);
+                    HandleRequestRedirect(request, e.RedirectResponse);
                     redirectChain = request.RedirectChainList;
                 }
             }
@@ -334,22 +324,12 @@ namespace PuppeteerSharp
             });
         }
 
-        private void HandleRequestRedirect(
-            Request request,
-            HttpStatusCode redirectStatus,
-            Dictionary<string, object> redirectHeaders,
-            bool fromDiskCache,
-            bool fromServiceWorker,
-            SecurityDetails securityDetails = null)
+        private void HandleRequestRedirect(Request request, Messaging.ResponsePayload responseMessage)
         {
             var response = new Response(
                 _client,
                 request,
-                redirectStatus,
-                redirectHeaders,
-                fromDiskCache,
-                fromServiceWorker,
-                securityDetails);
+                responseMessage);
 
             request.Response = response;
             request.RedirectChainList.Add(request);
