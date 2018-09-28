@@ -257,10 +257,11 @@ namespace PuppeteerSharp
 
         private void OnRequest(RequestWillBeSentPayload e, string interceptionId)
         {
+            Request request;
             var redirectChain = new List<Request>();
             if (e.RedirectResponse != null)
             {
-                _requestIdToRequest.TryGetValue(e.RequestId, out var request);
+                _requestIdToRequest.TryGetValue(e.RequestId, out request);
                 // If we connect late to the target, we could have missed the requestWillBeSent event.
                 if (request != null)
                 {
@@ -269,7 +270,7 @@ namespace PuppeteerSharp
                 }
             }
             var frame = !string.IsNullOrEmpty(e.FrameId) ? _frameManager.Frames[e.FrameId] : null;
-            var request = new Request(
+            request = new Request(
                 _client,
                 frame,
                 interceptionId,
