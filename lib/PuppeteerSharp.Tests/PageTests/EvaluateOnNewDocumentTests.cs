@@ -40,7 +40,7 @@ namespace PuppeteerSharp.Tests.PageTests
             {
                 Content = "window.e = 10;"
             }).ContinueWith(_ => Task.CompletedTask);
-            Assert.Null(await Page.EvaluateExpressionAsync<object>("window.e"));
+            Assert.Null(await Page.EvaluateExpressionAsync("window.e"));
         }
     }
 }

@@ -19,7 +19,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             Assert.Empty(await Page.GetCookiesAsync());
 
-            await Page.EvaluateExpressionAsync<object>("document.cookie = 'username=John Doe'");
+            await Page.EvaluateExpressionAsync("document.cookie = 'username=John Doe'");
             var cookie = Assert.Single(await Page.GetCookiesAsync());
             Assert.Equal("username", cookie.Name);
             Assert.Equal("John Doe", cookie.Value);

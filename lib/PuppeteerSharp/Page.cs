@@ -1152,6 +1152,18 @@ namespace PuppeteerSharp
         /// <summary>
         /// Executes a script in browser context
         /// </summary>
+        /// <param name="script">Script to be evaluated in browser context</param>
+        /// <remarks>
+        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+        /// </remarks>
+        /// <seealso cref="EvaluateFunctionAsync{T}(string, object[])"/>
+        /// <returns>Task which resolves to script return value</returns>
+        public Task<object> EvaluateExpressionAsync(string script)
+            => _frameManager.MainFrame.EvaluateExpressionAsync<object>(script);
+
+        /// <summary>
+        /// Executes a script in browser context
+        /// </summary>
         /// <typeparam name="T">The type to deserialize the result to</typeparam>
         /// <param name="script">Script to be evaluated in browser context</param>
         /// <remarks>
@@ -1993,7 +2005,7 @@ namespace PuppeteerSharp
             await Client.SendAsync("Runtime.addBinding", new { name });
             await Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new { source = expression }).ConfigureAwait(false);
 
-            await Task.WhenAll(Frames.Select(frame => frame.EvaluateExpressionAsync<object>(expression)
+            await Task.WhenAll(Frames.Select(frame => frame.EvaluateExpressionAsync(expression)
                 .ContinueWith(task =>
                 {
                     if (task.IsFaulted)

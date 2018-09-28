@@ -112,7 +112,7 @@ namespace PuppeteerSharp.Tests.TargetTests
                 Context.TargetDestroyed -= TargetDestroyedEventHandler;
             }
             Context.TargetDestroyed += TargetDestroyedEventHandler;
-            await Page.EvaluateExpressionAsync<object>("window.registrationPromise.then(registration => registration.unregister())");
+            await Page.EvaluateExpressionAsync("window.registrationPromise.then(registration => registration.unregister())");
             Assert.Equal(createdTarget, await targetDestroyedTaskCompletion.Task);
         }
 

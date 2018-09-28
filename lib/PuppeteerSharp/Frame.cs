@@ -102,6 +102,22 @@ namespace PuppeteerSharp
         /// <summary>
         /// Executes a script in browser context
         /// </summary>
+        /// <param name="script">Script to be evaluated in browser context</param>
+        /// <remarks>
+        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+        /// </remarks>
+        /// <returns>Task which resolves to script return value</returns>
+        /// <seealso cref="EvaluateFunctionAsync{T}(string, object[])"/>
+        /// <seealso cref="Page.EvaluateExpressionAsync{T}(string)"/>
+        public async Task<object> EvaluateExpressionAsync(string script)
+        {
+            var context = await GetExecutionContextAsync().ConfigureAwait(false);
+            return await context.EvaluateExpressionAsync<object>(script).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Executes a script in browser context
+        /// </summary>
         /// <typeparam name="T">The type to deserialize the result to</typeparam>
         /// <param name="script">Script to be evaluated in browser context</param>
         /// <remarks>
@@ -115,7 +131,6 @@ namespace PuppeteerSharp
             var context = await GetExecutionContextAsync().ConfigureAwait(false);
             return await context.EvaluateExpressionAsync<T>(script).ConfigureAwait(false);
         }
-
 
         /// <summary>
         /// Executes a function in browser context

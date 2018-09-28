@@ -42,6 +42,19 @@ namespace PuppeteerSharp
         /// <summary>
         /// Executes a script in browser context
         /// </summary>
+        /// <param name="script">Script to be evaluated in browser context</param>
+        /// <remarks>
+        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+        /// </remarks>
+        /// <seealso cref="EvaluateFunctionAsync{T}(string, object[])"/>
+        /// <seealso cref="EvaluateExpressionHandleAsync(string)"/>
+        /// <returns>Task which resolves to script return value</returns>
+        public Task<object> EvaluateExpressionAsync(string script)
+            => EvaluateAsync<object>(EvaluateExpressionHandleAsync(script));
+
+        /// <summary>
+        /// Executes a script in browser contextF
+        /// </summary>
         /// <typeparam name="T">The type to deserialize the result to</typeparam>
         /// <param name="script">Script to be evaluated in browser context</param>
         /// <remarks>

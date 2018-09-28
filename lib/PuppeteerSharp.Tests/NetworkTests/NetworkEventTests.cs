@@ -160,7 +160,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
                 return completion.Task;
             }
             await Task.WhenAll(
-                Page.EvaluateExpressionAsync<object>("fetch('/get', { method: 'GET'})"),
+                Page.EvaluateExpressionAsync("fetch('/get', { method: 'GET'})"),
                 WaitForPageResponseEvent()
             );
 

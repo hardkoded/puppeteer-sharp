@@ -32,9 +32,9 @@ namespace PuppeteerSharp.Tests.FrameTests
             var polling = 100;
             var watchdog = Page.WaitForFunctionAsync("() => window.__FOO === 'hit'", new WaitForFunctionOptions { PollingInterval = polling })
                 .ContinueWith(_ => success = true);
-            await Page.EvaluateExpressionAsync<object>("window.__FOO = 'hit'");
+            await Page.EvaluateExpressionAsync("window.__FOO = 'hit'");
             Assert.False(success);
-            await Page.EvaluateExpressionAsync<object>("document.body.appendChild(document.createElement('div'))");
+            await Page.EvaluateExpressionAsync("document.body.appendChild(document.createElement('div'))");
             await watchdog;
             Assert.True((DateTime.Now - startTime).TotalMilliseconds > polling / 2);
         }
@@ -46,9 +46,9 @@ namespace PuppeteerSharp.Tests.FrameTests
             var watchdog = Page.WaitForFunctionAsync("() => window.__FOO === 'hit'",
                 new WaitForFunctionOptions { Polling = WaitForFunctionPollingOption.Mutation })
                 .ContinueWith(_ => success = true);
-            await Page.EvaluateExpressionAsync<object>("window.__FOO = 'hit'");
+            await Page.EvaluateExpressionAsync("window.__FOO = 'hit'");
             Assert.False(success);
-            await Page.EvaluateExpressionAsync<object>("document.body.appendChild(document.createElement('div'))");
+            await Page.EvaluateExpressionAsync("document.body.appendChild(document.createElement('div'))");
             await watchdog;
         }
 
@@ -57,7 +57,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         {
             var watchdog = Page.WaitForFunctionAsync("() => window.__FOO === 'hit'",
                 new WaitForFunctionOptions { Polling = WaitForFunctionPollingOption.Raf });
-            await Page.EvaluateExpressionAsync<object>("window.__FOO = 'hit'");
+            await Page.EvaluateExpressionAsync("window.__FOO = 'hit'");
             await watchdog;
         }
 
@@ -70,7 +70,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             {
                 Polling = WaitForFunctionPollingOption.Raf
             });
-            await Page.EvaluateExpressionAsync<object>("window.__FOO = 'hit'");
+            await Page.EvaluateExpressionAsync("window.__FOO = 'hit'");
             await watchdog;
         }
 
@@ -125,7 +125,7 @@ namespace PuppeteerSharp.Tests.FrameTests
                 return window.__injected;
             }", new WaitForFunctionOptions { Timeout = 0, PollingInterval = 10 });
             await Page.WaitForFunctionAsync("() => window.__counter > 10");
-            await Page.EvaluateExpressionAsync<object>("window.__injected = true");
+            await Page.EvaluateExpressionAsync("window.__injected = true");
             await watchdog;
         }
     }

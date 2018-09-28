@@ -194,7 +194,7 @@ namespace PuppeteerSharp.Tests.PageTests
             var requestTask = Server.WaitForRequest("/sleep.zzz", request => request.Headers["foo"].ToString());
             await Task.WhenAll(
                 requestTask,
-                Page.EvaluateExpressionAsync<object>("fetch('/sleep.zzz')")
+                Page.EvaluateExpressionAsync("fetch('/sleep.zzz')")
             );
             Assert.Equal("bar", requestTask.Result);
         }

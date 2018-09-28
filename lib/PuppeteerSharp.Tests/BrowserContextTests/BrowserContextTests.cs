@@ -100,7 +100,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             // Create a page in first incognito context.
             var page1 = await context1.NewPageAsync();
             await page1.GoToAsync(TestConstants.EmptyPage);
-            await page1.EvaluateExpressionAsync<object>(@"{
+            await page1.EvaluateExpressionAsync(@"{
                 localStorage.setItem('name', 'page1');
                 document.cookie = 'name=page1';
             }");
@@ -111,7 +111,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             // Create a page in second incognito context.
             var page2 = await context2.NewPageAsync();
             await page2.GoToAsync(TestConstants.EmptyPage);
-            await page2.EvaluateExpressionAsync<object>(@"{
+            await page2.EvaluateExpressionAsync(@"{
                 localStorage.setItem('name', 'page2');
                 document.cookie = 'name=page2';
             }");

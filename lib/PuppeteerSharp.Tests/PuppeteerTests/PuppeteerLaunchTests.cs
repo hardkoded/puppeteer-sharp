@@ -131,14 +131,14 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 {
                     var page = await browser.NewPageAsync();
                     await page.GoToAsync(TestConstants.EmptyPage);
-                    await page.EvaluateExpressionAsync<object>("localStorage.hey = 'hello'");
+                    await page.EvaluateExpressionAsync("localStorage.hey = 'hello'");
                 }
 
                 using (var browser2 = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
                 {
                     var page2 = await browser2.NewPageAsync();
                     await page2.GoToAsync(TestConstants.EmptyPage);
-                    Assert.Equal("hello", await page2.EvaluateExpressionAsync<object>("localStorage.hey"));
+                    Assert.Equal("hello", await page2.EvaluateExpressionAsync<string>("localStorage.hey"));
                 }
             }
         }
@@ -156,7 +156,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 {
                     var page = await browser.NewPageAsync();
                     await page.GoToAsync(TestConstants.EmptyPage);
-                    await page.EvaluateExpressionAsync<object>(
+                    await page.EvaluateExpressionAsync(
                         "document.cookie = 'doSomethingOnlyOnce=true; expires=Fri, 31 Dec 9999 23:59:59 GMT'");
                 }
 
@@ -164,7 +164,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 {
                     var page2 = await browser2.NewPageAsync();
                     await page2.GoToAsync(TestConstants.EmptyPage);
-                    Assert.Equal("doSomethingOnlyOnce=true", await page2.EvaluateExpressionAsync<object>("document.cookie"));
+                    Assert.Equal("doSomethingOnlyOnce=true", await page2.EvaluateExpressionAsync<string>("document.cookie"));
                 }
             }
         }

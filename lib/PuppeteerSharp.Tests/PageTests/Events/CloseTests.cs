@@ -17,12 +17,12 @@ namespace PuppeteerSharp.Tests.PageTests.Events
             var newPageTaskSource = new TaskCompletionSource<Page>();
             Context.TargetCreated += async (sender, e) => newPageTaskSource.TrySetResult(await e.Target.PageAsync());
 
-            await Page.EvaluateExpressionAsync<object>("window['newPage'] = window.open('about:blank');");
+            await Page.EvaluateExpressionAsync("window['newPage'] = window.open('about:blank');");
             var newPage = await newPageTaskSource.Task;
 
             var closeTaskSource = new TaskCompletionSource<bool>();
             newPage.Close += (sender, e) => closeTaskSource.SetResult(true);
-            await Page.EvaluateExpressionAsync<object>("window['newPage'].close();");
+            await Page.EvaluateExpressionAsync("window['newPage'].close();");
             await closeTaskSource.Task;
         }
 

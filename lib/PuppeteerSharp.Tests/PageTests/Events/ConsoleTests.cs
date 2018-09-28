@@ -26,7 +26,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
 
             Page.Console += EventHandler;
 
-            await Page.EvaluateExpressionAsync<object>("console.log('hello', 5, {foo: 'bar'})");
+            await Page.EvaluateExpressionAsync("console.log('hello', 5, {foo: 'bar'})");
 
             var obj = new Dictionary<string, object> { { "foo", "bar" } };
 
@@ -99,7 +99,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
 
             await Task.WhenAll(
                 consoleTcs.Task,
-                Page.EvaluateExpressionAsync<object>("console.error(window)")
+                Page.EvaluateExpressionAsync("console.error(window)")
             );
 
             Assert.Equal("JSHandle@object", await consoleTcs.Task);

@@ -71,7 +71,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 {
                     var page = await browser.NewPageAsync();
                     await page.GoToAsync(TestConstants.EmptyPage);
-                    await page.EvaluateExpressionAsync<object>(
+                    await page.EvaluateExpressionAsync(
                         "document.cookie = 'foo=true; expires=Fri, 31 Dec 9999 23:59:59 GMT'");
                 }
 
@@ -80,7 +80,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 {
                     var page2 = await browser2.NewPageAsync();
                     await page2.GoToAsync(TestConstants.EmptyPage);
-                    Assert.Equal("foo=true", await page2.EvaluateExpressionAsync<object>("document.cookie"));
+                    Assert.Equal("foo=true", await page2.EvaluateExpressionAsync("document.cookie"));
                 }
             }
         }

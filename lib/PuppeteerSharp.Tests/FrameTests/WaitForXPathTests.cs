@@ -68,7 +68,7 @@ namespace PuppeteerSharp.Tests.FrameTests
                 .ContinueWith(_ => divHidden = true);
             await Page.WaitForXPathAsync("//div"); // do a round trip
             Assert.False(divHidden);
-            await Page.EvaluateExpressionAsync<object>("document.querySelector('div').style.setProperty('display', 'none')");
+            await Page.EvaluateExpressionAsync("document.querySelector('div').style.setProperty('display', 'none')");
             Assert.True(await waitForXPath);
             Assert.True(divHidden);
         }

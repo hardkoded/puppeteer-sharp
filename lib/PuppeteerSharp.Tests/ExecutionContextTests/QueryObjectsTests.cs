@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Tests.ExecutionContextTests
         public async Task ShouldWork()
         {
             // Instantiate an object
-            await Page.EvaluateExpressionAsync<object>("window.set = new Set(['hello', 'world'])");
+            await Page.EvaluateExpressionAsync("window.set = new Set(['hello', 'world'])");
             var prototypeHandle = await Page.EvaluateExpressionHandleAsync("Set.prototype");
             var objectsHandle = await Page.QueryObjectsAsync(prototypeHandle);
             var count = await Page.EvaluateFunctionAsync<int>("objects => objects.length", objectsHandle);

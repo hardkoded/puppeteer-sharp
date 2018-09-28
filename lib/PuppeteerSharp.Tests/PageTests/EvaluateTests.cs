@@ -174,7 +174,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldSupportThrownStringsAsErrorMessages()
         {
             var exception = await Assert.ThrowsAsync<EvaluationFailedException>(
-                () => Page.EvaluateExpressionAsync<object>("throw 'qwerty'"));
+                () => Page.EvaluateExpressionAsync("throw 'qwerty'"));
             Assert.Contains("qwerty", exception.Message);
         }
 
@@ -182,7 +182,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldSupportThrownNumbersAsErrorMessages()
         {
             var exception = await Assert.ThrowsAsync<EvaluationFailedException>(
-                            () => Page.EvaluateExpressionAsync<object>("throw 100500"));
+                            () => Page.EvaluateExpressionAsync("throw 100500"));
             Assert.Contains("100500", exception.Message);
         }
 
@@ -217,7 +217,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
         [Fact]
         public Task ShouldSimulateAUserGesture()
-            => Page.EvaluateExpressionAsync<object>(@"(
+            => Page.EvaluateExpressionAsync(@"(
             function playAudio()
             {
                 const audio = document.createElement('audio');
