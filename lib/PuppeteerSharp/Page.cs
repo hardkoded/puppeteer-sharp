@@ -479,7 +479,7 @@ namespace PuppeteerSharp
         {
             var response = await Client.SendAsync("Network.getCookies", new Dictionary<string, object>
             {
-                { "urls", urls.Length > 0 ? urls : new string[] { Url } }
+                { Constants.URLS, urls.Length > 0 ? urls : new string[] { Url } }
             }).ConfigureAwait(false);
 
             return response[Constants.COOKIES].ToObject<CookieParam[]>();
@@ -1900,7 +1900,7 @@ namespace PuppeteerSharp
                     await Client.SendAsync("Security.handleCertificateError", new Dictionary<string, object>
                     {
                         { Constants.EVENT_ID, e.EventId },
-                        { "action", "continue"}
+                        { Constants.ACTION, "continue"}
                     }).ConfigureAwait(false);
                 }
                 catch (PuppeteerException ex)

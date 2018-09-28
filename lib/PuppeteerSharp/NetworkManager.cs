@@ -75,10 +75,10 @@ namespace PuppeteerSharp
 
                 await _client.SendAsync("Network.emulateNetworkConditions", new Dictionary<string, object>
                 {
-                    { "offline", value},
-                    { "latency", 0},
-                    { "downloadThroughput", -1},
-                    { "uploadThroughput", -1}
+                    { Constants.OFFLINE, value},
+                    { Constants.LATENCY, 0},
+                    { Constants.DOWNLOAD_THROUGHPUT, -1},
+                    { Constants.UPLOAD_THROUGHPUT, -1}
                 }).ConfigureAwait(false);
             }
         }
@@ -206,7 +206,7 @@ namespace PuppeteerSharp
                     await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object>
                     {
                         { Constants.INTERCEPTION_ID, e.InterceptionId },
-                        { "authChallengeResponse", new
+                        { Constants.AUTH_CHALLENGE_RESPONSE, new
                             {
                                 response,
                                 username = credentials.Username,
@@ -364,11 +364,11 @@ namespace PuppeteerSharp
             await Task.WhenAll(
                 _client.SendAsync("Network.setCacheDisabled", new Dictionary<string, object>
                 {
-                    { "cacheDisabled", enabled}
+                    { Constants.CACHING_DISABLED, enabled}
                 }),
                 _client.SendAsync("Network.setRequestInterception", new Dictionary<string, object>
                 {
-                    { "patterns", patterns}
+                    { Constants.PATTERNS, patterns}
                 })
             ).ConfigureAwait(false);
         }

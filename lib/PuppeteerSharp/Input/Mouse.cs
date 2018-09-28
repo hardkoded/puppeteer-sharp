@@ -48,10 +48,10 @@ namespace PuppeteerSharp.Input
                 await _client.SendAsync("Input.dispatchMouseEvent", new Dictionary<string, object>()
                 {
                     { Constants.TYPE, "mouseMoved" },
-                    { "button", _button },
+                    { Constants.BUTTON, _button },
                     { Constants.X, fromX + ((_x - fromX) * ((decimal)i / steps)) },
                     { Constants.Y, fromY + ((_y - fromY) * ((decimal)i / steps)) },
-                    { "modifiers", _keyboard.Modifiers}
+                    { Constants.MODIFIERS, _keyboard.Modifiers}
                 }).ConfigureAwait(false);
             }
         }
@@ -91,11 +91,11 @@ namespace PuppeteerSharp.Input
             return _client.SendAsync("Input.dispatchMouseEvent", new Dictionary<string, object>()
             {
                 { Constants.TYPE, "mousePressed" },
-                { "button", _button },
+                { Constants.BUTTON, _button },
                 { Constants.X, _x },
                 { Constants.Y, _y },
-                { "modifiers", _keyboard.Modifiers },
-                { "clickCount", options.ClickCount }
+                { Constants.MODIFIERS, _keyboard.Modifiers },
+                { Constants.CLICK_COUNT, options.ClickCount }
             });
         }
 
@@ -113,11 +113,11 @@ namespace PuppeteerSharp.Input
             return _client.SendAsync("Input.dispatchMouseEvent", new Dictionary<string, object>()
             {
                 { Constants.TYPE, "mouseReleased" },
-                { "button", options.Button },
-                { "x", _x },
-                { "y", _y },
-                { "modifiers", _keyboard.Modifiers },
-                { "clickCount", options.ClickCount }
+                { Constants.BUTTON, options.Button },
+                { Constants.X, _x },
+                { Constants.Y, _y },
+                { Constants.MODIFIERS, _keyboard.Modifiers },
+                { Constants.CLICK_COUNT, options.ClickCount }
             });
         }
     }

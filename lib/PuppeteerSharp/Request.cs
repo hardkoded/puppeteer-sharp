@@ -266,7 +266,7 @@ namespace PuppeteerSharp
                 await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object>
                 {
                     { Constants.INTERCEPTION_ID, InterceptionId },
-                    { "rawResponse", Convert.ToBase64String(responseData) }
+                    { Constants.RAW_RESPONSE, Convert.ToBase64String(responseData) }
                 }).ConfigureAwait(false);
             }
             catch (PuppeteerException ex)
@@ -303,7 +303,7 @@ namespace PuppeteerSharp
                 await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object>
                 {
                     { Constants.INTERCEPTION_ID, InterceptionId },
-                    { "errorReason", errorReason }
+                    { Constants.ERROR_REASON, errorReason }
                 }).ConfigureAwait(false);
             }
             catch (PuppeteerException ex)

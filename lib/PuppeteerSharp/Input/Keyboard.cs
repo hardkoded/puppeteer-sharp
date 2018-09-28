@@ -45,15 +45,15 @@ namespace PuppeteerSharp.Input
             return _client.SendAsync("Input.dispatchKeyEvent", new Dictionary<string, object>
             {
                 { Constants.TYPE, text != null ? "keyDown" : "rawKeyDown" },
-                { "modifiers", Modifiers },
-                { "windowsVirtualKeyCode", description.KeyCode },
-                { "code", description.Code },
-                { "key", description.Key },
+                { Constants.MODIFIERS, Modifiers },
+                { Constants.WINDOWS_VIRTUAL_KEY_CODE, description.KeyCode },
+                { Constants.CODE, description.Code },
+                { Constants.KEY, description.Key },
                 { Constants.TEXT, text },
-                { "unmodifiedText", text },
-                { "autoRepeat", autoRepeat },
-                { "location", description.Location },
-                { "isKeypad", description.Location == 3 }
+                { Constants.UNMODIFIED_TEXT, text },
+                { Constants.AUTO_REPEAT, autoRepeat },
+                { Constants.LOCATION, description.Location },
+                { Constants.IS_KEYPAD, description.Location == 3 }
             });
         }
 
@@ -72,11 +72,11 @@ namespace PuppeteerSharp.Input
             return _client.SendAsync("Input.dispatchKeyEvent", new Dictionary<string, object>
             {
                 { Constants.TYPE, "keyUp" },
-                { "modifiers", Modifiers },
-                { "key", description.Key },
-                { "windowsVirtualKeyCode", description.KeyCode },
-                { "code", description.Code },
-                { "location", description.Location }
+                { Constants.MODIFIERS, Modifiers },
+                { Constants.KEY, description.Key },
+                { Constants.WINDOWS_VIRTUAL_KEY_CODE, description.KeyCode },
+                { Constants.CODE, description.Code },
+                { Constants.LOCATION, description.Location }
             });
         }
 

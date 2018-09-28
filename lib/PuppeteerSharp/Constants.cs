@@ -38,6 +38,7 @@
         public const string FRAME = "frame";
         public const string PARENT_ID = "parentId";
         public const string URL = "url";
+        public const string URLS = "urls";
         public const string CHILD_FRAMES = "childFrames";
         public const string FRAME_TREE = "frameTree";
         public const string CONTENT_SIZE = "contentSize";
@@ -135,5 +136,25 @@
         public const string VALID_TO = "validTo";
         public const string PROTOCOL = "protocol";
         public const string OPENER_ID = "openerId";
+        public const string MODIFIERS = "modifiers";
+        public const string WINDOWS_VIRTUAL_KEY_CODE = "windowsVirtualKeyCode";
+        public const string CODE = "code";
+        public const string KEY = "key";
+        public const string UNMODIFIED_TEXT = "unmodifiedText";
+        public const string AUTO_REPEAT = "autoRepeat";
+        public const string LOCATION = "location";
+        public const string IS_KEYPAD = "isKeypad";
+        public const string BUTTON = "button";
+        public const string CLICK_COUNT = "clickCount";
+        public const string OFFLINE = "offline";
+        public const string LATENCY = "latency";
+        public const string DOWNLOAD_THROUGHPUT = "downloadThroughput";
+        public const string UPLOAD_THROUGHPUT = "uploadThroughput";
+        public const string AUTH_CHALLENGE_RESPONSE = "authChallengeResponse";
+        public const string CACHING_DISABLED = "cacheDisabled";
+        public const string PATTERNS = "patterns";
+        public const string ACTION = "action";
+        public const string RAW_RESPONSE = "rawResponse";
+        public const string ERROR_REASON = "errorReason";
     }
 }
