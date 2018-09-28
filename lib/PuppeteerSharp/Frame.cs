@@ -49,8 +49,9 @@ namespace PuppeteerSharp
         internal List<string> LifecycleEvents { get; }
         internal string NavigationURL { get; private set; }
 
-        internal Frame(CDPSession client, Frame parentFrame, string frameId)
+        internal Frame(FrameManager frameManager, CDPSession client, Frame parentFrame, string frameId)
         {
+            FrameManager = frameManager;
             _client = client;
             ParentFrame = parentFrame;
             Id = frameId;
@@ -92,6 +93,8 @@ namespace PuppeteerSharp
         /// Gets the parent frame, if any. Detached frames and main frames return <c>null</c>
         /// </summary>
         public Frame ParentFrame { get; private set; }
+
+        internal FrameManager FrameManager { get; }
         #endregion
 
         #region Public Methods
@@ -403,7 +406,7 @@ namespace PuppeteerSharp
 
             if (!string.IsNullOrEmpty(options.Path))
             {
-                string contents = await AsyncFileHelper.ReadAllText(options.Path).ConfigureAwait(false);
+                var contents = await AsyncFileHelper.ReadAllText(options.Path).ConfigureAwait(false);
                 contents += "//# sourceURL=" + options.Path.Replace("\n", string.Empty);
                 var context = await GetExecutionContextAsync().ConfigureAwait(false);
                 return (await context.EvaluateFunctionHandleAsync(addStyleContent, contents).ConfigureAwait(false)) as ElementHandle;
@@ -475,7 +478,7 @@ namespace PuppeteerSharp
 
             if (!string.IsNullOrEmpty(options.Path))
             {
-                string contents = await AsyncFileHelper.ReadAllText(options.Path).ConfigureAwait(false);
+                var contents = await AsyncFileHelper.ReadAllText(options.Path).ConfigureAwait(false);
                 contents += "//# sourceURL=" + options.Path.Replace("\n", string.Empty);
                 return await AddScriptTagPrivate(addScriptContent, contents, options.Type).ConfigureAwait(false);
             }
@@ -613,7 +616,7 @@ namespace PuppeteerSharp
         {
             while (WaitTasks.Count > 0)
             {
-                WaitTasks[0].Termiante(new Exception("waitForFunction failed: frame got detached."));
+                WaitTasks[0].Terminate(new Exception("waitForFunction failed: frame got detached."));
             }
             Detached = true;
             if (ParentFrame != null)

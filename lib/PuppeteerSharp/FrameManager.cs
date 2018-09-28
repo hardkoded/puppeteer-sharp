@@ -9,14 +9,13 @@ namespace PuppeteerSharp
     internal class FrameManager
     {
         private readonly CDPSession _client;
-        private readonly Page _page;
         private Dictionary<int, ExecutionContext> _contextIdToContext;
         private readonly ILogger _logger;
 
         internal FrameManager(CDPSession client, FrameTree frameTree, Page page)
         {
             _client = client;
-            _page = page;
+            Page = page;
             Frames = new Dictionary<string, Frame>();
             _contextIdToContext = new Dictionary<int, ExecutionContext>();
             _logger = _client.Connection.LoggerFactory.CreateLogger<FrameManager>();
@@ -34,15 +33,11 @@ namespace PuppeteerSharp
 
         internal Dictionary<string, Frame> Frames { get; set; }
         internal Frame MainFrame { get; set; }
+        internal Page Page { get; }
 
         #endregion
 
         #region Public Methods
-
-        internal JSHandle CreateJSHandle(ExecutionContext context, dynamic remoteObject)
-            => remoteObject.subtype == "node"
-                ? new ElementHandle(context, _client, remoteObject, _page, this)
-                : new JSHandle(context, _client, remoteObject);
 
         internal ExecutionContext ExecutionContextById(int contextId)
         {
@@ -149,7 +144,6 @@ namespace PuppeteerSharp
             var context = new ExecutionContext(
                 _client,
                 contextPayload,
-                (ctx, remoteObject) => CreateJSHandle(ctx, remoteObject),
                 frame);
 
             _contextIdToContext[contextPayload.Id] = context;
@@ -199,7 +193,7 @@ namespace PuppeteerSharp
                 else
                 {
                     // Initial main frame navigation.
-                    frame = new Frame(_client, null, framePayload.Id);
+                    frame = new Frame(this, _client, null, framePayload.Id);
                 }
 
                 Frames[framePayload.Id] = frame;
@@ -248,7 +242,7 @@ namespace PuppeteerSharp
             if (!Frames.ContainsKey(frameId) && Frames.ContainsKey(parentFrameId))
             {
                 var parentFrame = Frames[parentFrameId];
-                var frame = new Frame(_client, parentFrame, frameId);
+                var frame = new Frame(this, _client, parentFrame, frameId);
                 Frames[frame.Id] = frame;
                 FrameAttached?.Invoke(this, new FrameEventArgs(frame));
             }

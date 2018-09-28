@@ -8,6 +8,6 @@ namespace PuppeteerSharp.Messaging
         public string RequestId { get; set; }
 
         [JsonProperty("response")]
-        public ResponseData Response { get; set; }
+        public ResponsePayload Response { get; set; }
     }
 }
