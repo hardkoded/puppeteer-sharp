@@ -64,7 +64,7 @@ namespace PuppeteerSharp.Tests.TargetTests
                 Page.EvaluateExpressionAsync<object>("//# sourceURL=foo.js")
             );
             // expect events to be dispatched.
-            Assert.Equal("foo.js", eventTask.Result[Constants.URL].Value<string>());
+            Assert.Equal("foo.js", eventTask.Result["url"].Value<string>());
         }
 
         [Fact]

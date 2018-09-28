@@ -5,13 +5,13 @@ namespace PuppeteerSharp.Tests.InputTests
 {
     public class Dimensions
     {
-        [JsonProperty(Constants.X)]
+        [JsonProperty("x")]
         public decimal X { get; set; }
-        [JsonProperty(Constants.Y)]
+        [JsonProperty("y")]
         public decimal Y { get; set; }
-        [JsonProperty(Constants.WIDTH)]
+        [JsonProperty("width")]
         public decimal Width { get; set; }
-        [JsonProperty(Constants.HEIGHT)]
+        [JsonProperty("height")]
         public decimal Height { get; set; }
     }
 }
