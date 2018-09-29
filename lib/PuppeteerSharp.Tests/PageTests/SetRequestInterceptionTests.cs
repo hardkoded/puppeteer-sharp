@@ -37,6 +37,7 @@ namespace PuppeteerSharp.Tests.PageTests
             };
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.True(response.Ok);
+            Assert.Equal(TestConstants.Port, response.RemoteAddress.Port);
         }
 
         [Fact]

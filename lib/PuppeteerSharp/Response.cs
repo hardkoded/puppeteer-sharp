@@ -14,7 +14,7 @@ namespace PuppeteerSharp
     public class Response
     {
         private readonly CDPSession _client;
-        private bool _fromDiskCache;
+        private readonly bool _fromDiskCache;
         private string _buffer;
 
         internal Response(
@@ -39,6 +39,12 @@ namespace PuppeteerSharp
                 }
             }
             SecurityDetails = responseMessage.SecurityDetails;
+            RemoteAddress = new RemoteAddress
+            {
+                IP = responseMessage.RemoteIPAddress,
+                Port = responseMessage.RemotePort
+            };
+
             BodyLoadedTaskWrapper = new TaskCompletionSource<bool>();
         }
 
@@ -87,6 +93,10 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The status text.</value>
         public string StatusText { get; }
+        /// <summary>
+        /// Remove server address.
+        /// </summary>
+        public RemoteAddress RemoteAddress { get; }
         internal TaskCompletionSource<bool> BodyLoadedTaskWrapper { get; }
         #endregion
 
