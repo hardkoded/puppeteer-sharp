@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using PuppeteerSharp.Messaging;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -27,19 +28,12 @@ namespace PuppeteerSharp
         private bool _interceptionHandled;
         #endregion
 
-        internal Request()
-        {
-        }
         internal Request(
             CDPSession client,
-            string requestId,
-            string interceptionId,
-            bool isNavigationRequest,
-            bool allowInterception,
-            string url,
-            ResourceType resourceType,
-            Payload payload,
             Frame frame,
+            string interceptionId,
+            bool allowInterception,
+            RequestWillBeSentPayload e,
             List<Request> redirectChain)
         {
             _client = client;
@@ -47,18 +41,18 @@ namespace PuppeteerSharp
             _interceptionHandled = false;
             _logger = _client.Connection.LoggerFactory.CreateLogger<Request>();
 
-            RequestId = requestId;
+            RequestId = e.RequestId;
             InterceptionId = interceptionId;
-            IsNavigationRequest = isNavigationRequest;
-            Url = url;
-            ResourceType = resourceType;
-            Method = payload.Method;
-            PostData = payload.PostData;
+            IsNavigationRequest = e.RequestId == e.LoaderId && e.Type == ResourceType.Document;
+            Url = e.Request.Url;
+            ResourceType = e.Type;
+            Method = e.Request.Method;
+            PostData = e.Request.PostData;
             Frame = frame;
             RedirectChainList = redirectChain;
 
             Headers = new Dictionary<string, string>();
-            foreach (var keyValue in payload.Headers)
+            foreach (var keyValue in e.Request.Headers)
             {
                 Headers[keyValue.Key] = keyValue.Value;
             }
