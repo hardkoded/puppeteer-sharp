@@ -8,7 +8,7 @@ namespace PuppeteerSharp
     public class PdfOptions
     {
         /// <summary>
-        /// Scale of the webpage rendering. Defaults to <c>1</c>
+        /// Scale of the webpage rendering. Defaults to <c>1</c>. Scale amount must be between 0.1 and 2.
         /// </summary>
         public decimal Scale { get; set; } = 1;
 
