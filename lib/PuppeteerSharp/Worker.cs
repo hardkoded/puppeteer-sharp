@@ -113,7 +113,7 @@ namespace PuppeteerSharp
         }
 
         private void OnExceptionThrown(MessageEventArgs e)
-            => _exceptionThrown(e.MessageData.SelectToken(Constants.EXCEPTION_DETAILS).ToObject<EvaluateExceptionDetails>());
+            => _exceptionThrown(e.MessageData.SelectToken(MessageKeys.ExceptionDetails).ToObject<EvaluateExceptionDetails>());
 
         private async Task OnConsoleAPICalled(MessageEventArgs e)
         {
@@ -130,7 +130,7 @@ namespace PuppeteerSharp
                 _jsHandleFactory = (ctx, remoteObject) => new JSHandle(ctx, _client, remoteObject);
                 _executionContext = new ExecutionContext(
                     _client,
-                    e.MessageData.SelectToken(Constants.CONTEXT).ToObject<ContextPayload>(),
+                    e.MessageData.SelectToken(MessageKeys.Context).ToObject<ContextPayload>(),
                     null);
                 _executionContextCallback.TrySetResult(_executionContext);
             }

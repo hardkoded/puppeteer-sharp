@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
@@ -60,8 +61,8 @@ namespace PuppeteerSharp
         {
             return _client.SendAsync("Page.handleJavaScriptDialog", new Dictionary<string, object>
             {
-                { Constants.ACCEPT, true },
-                { Constants.PROMPT_TEXT, promptText }
+                { MessageKeys.Accept, true },
+                { MessageKeys.PromptText, promptText }
             });
         }
 
@@ -73,7 +74,7 @@ namespace PuppeteerSharp
         {
             return _client.SendAsync("Page.handleJavaScriptDialog", new Dictionary<string, object>
             {
-                { Constants.ACCEPT, false }
+                { MessageKeys.Accept, false }
             });
         }
     }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp.Input
 {
@@ -44,16 +45,16 @@ namespace PuppeteerSharp.Input
 
             return _client.SendAsync("Input.dispatchKeyEvent", new Dictionary<string, object>
             {
-                { Constants.TYPE, text != null ? "keyDown" : "rawKeyDown" },
-                { Constants.MODIFIERS, Modifiers },
-                { Constants.WINDOWS_VIRTUAL_KEY_CODE, description.KeyCode },
-                { Constants.CODE, description.Code },
-                { Constants.KEY, description.Key },
-                { Constants.TEXT, text },
-                { Constants.UNMODIFIED_TEXT, text },
-                { Constants.AUTO_REPEAT, autoRepeat },
-                { Constants.LOCATION, description.Location },
-                { Constants.IS_KEYPAD, description.Location == 3 }
+                { MessageKeys.Type, text != null ? "keyDown" : "rawKeyDown" },
+                { MessageKeys.Modifiers, Modifiers },
+                { MessageKeys.WindowsVirtualKeyCode, description.KeyCode },
+                { MessageKeys.Code, description.Code },
+                { MessageKeys.Key, description.Key },
+                { MessageKeys.Text, text },
+                { MessageKeys.UnmodifiedText, text },
+                { MessageKeys.AutoRepeat, autoRepeat },
+                { MessageKeys.Location, description.Location },
+                { MessageKeys.IsKeypad, description.Location == 3 }
             });
         }
 
@@ -71,12 +72,12 @@ namespace PuppeteerSharp.Input
 
             return _client.SendAsync("Input.dispatchKeyEvent", new Dictionary<string, object>
             {
-                { Constants.TYPE, "keyUp" },
-                { Constants.MODIFIERS, Modifiers },
-                { Constants.KEY, description.Key },
-                { Constants.WINDOWS_VIRTUAL_KEY_CODE, description.KeyCode },
-                { Constants.CODE, description.Code },
-                { Constants.LOCATION, description.Location }
+                { MessageKeys.Type, "keyUp" },
+                { MessageKeys.Modifiers, Modifiers },
+                { MessageKeys.Key, description.Key },
+                { MessageKeys.WindowsVirtualKeyCode, description.KeyCode },
+                { MessageKeys.Code, description.Code },
+                { MessageKeys.Location, description.Location }
             });
         }
 
@@ -86,7 +87,7 @@ namespace PuppeteerSharp.Input
         /// <param name="charText">Character to send into the page</param>
         /// <returns>Task</returns>
         public Task SendCharacterAsync(string charText)
-            => _client.SendAsync("Input.insertText", new Dictionary<string, object> { [Constants.TEXT] = charText });
+            => _client.SendAsync("Input.insertText", new Dictionary<string, object> { [MessageKeys.Text] = charText });
 
         /// <summary>
         /// Sends a <c>keydown</c>, <c>keypress</c>/<c>input</c>, and <c>keyup</c> event for each character in the text.

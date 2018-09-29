@@ -61,12 +61,12 @@ namespace PuppeteerSharp
             {
                 case "Page.frameAttached":
                     OnFrameAttached(
-                        e.MessageData.SelectToken(Constants.FRAME_ID).ToObject<string>(),
+                        e.MessageData.SelectToken(MessageKeys.FrameId).ToObject<string>(),
                         e.MessageData.SelectToken("parentFrameId").ToObject<string>());
                     break;
 
                 case "Page.frameNavigated":
-                    OnFrameNavigated(e.MessageData.SelectToken(Constants.FRAME).ToObject<FramePayload>());
+                    OnFrameNavigated(e.MessageData.SelectToken(MessageKeys.Frame).ToObject<FramePayload>());
                     break;
 
                 case "Page.navigatedWithinDocument":
@@ -82,11 +82,11 @@ namespace PuppeteerSharp
                     break;
 
                 case "Runtime.executionContextCreated":
-                    OnExecutionContextCreated(e.MessageData.SelectToken(Constants.CONTEXT).ToObject<ContextPayload>());
+                    OnExecutionContextCreated(e.MessageData.SelectToken(MessageKeys.Context).ToObject<ContextPayload>());
                     break;
 
                 case "Runtime.executionContextDestroyed":
-                    OnExecutionContextDestroyed(e.MessageData.SelectToken(Constants.EXECUTION_CONTEXT_ID).ToObject<int>());
+                    OnExecutionContextDestroyed(e.MessageData.SelectToken(MessageKeys.ExecutionContextId).ToObject<int>());
                     break;
                 case "Runtime.executionContextsCleared":
                     OnExecutionContextsCleared();

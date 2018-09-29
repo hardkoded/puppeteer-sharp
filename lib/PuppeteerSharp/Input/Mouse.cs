@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp.Input
 {
@@ -47,11 +48,11 @@ namespace PuppeteerSharp.Input
             {
                 await _client.SendAsync("Input.dispatchMouseEvent", new Dictionary<string, object>()
                 {
-                    { Constants.TYPE, "mouseMoved" },
-                    { Constants.BUTTON, _button },
-                    { Constants.X, fromX + ((_x - fromX) * ((decimal)i / steps)) },
-                    { Constants.Y, fromY + ((_y - fromY) * ((decimal)i / steps)) },
-                    { Constants.MODIFIERS, _keyboard.Modifiers}
+                    { MessageKeys.Type, "mouseMoved" },
+                    { MessageKeys.Button, _button },
+                    { MessageKeys.X, fromX + ((_x - fromX) * ((decimal)i / steps)) },
+                    { MessageKeys.Y, fromY + ((_y - fromY) * ((decimal)i / steps)) },
+                    { MessageKeys.Modifiers, _keyboard.Modifiers}
                 }).ConfigureAwait(false);
             }
         }
@@ -90,12 +91,12 @@ namespace PuppeteerSharp.Input
 
             return _client.SendAsync("Input.dispatchMouseEvent", new Dictionary<string, object>()
             {
-                { Constants.TYPE, "mousePressed" },
-                { Constants.BUTTON, _button },
-                { Constants.X, _x },
-                { Constants.Y, _y },
-                { Constants.MODIFIERS, _keyboard.Modifiers },
-                { Constants.CLICK_COUNT, options.ClickCount }
+                { MessageKeys.Type, "mousePressed" },
+                { MessageKeys.Button, _button },
+                { MessageKeys.X, _x },
+                { MessageKeys.Y, _y },
+                { MessageKeys.Modifiers, _keyboard.Modifiers },
+                { MessageKeys.ClickCount, options.ClickCount }
             });
         }
 
@@ -112,12 +113,12 @@ namespace PuppeteerSharp.Input
 
             return _client.SendAsync("Input.dispatchMouseEvent", new Dictionary<string, object>()
             {
-                { Constants.TYPE, "mouseReleased" },
-                { Constants.BUTTON, options.Button },
-                { Constants.X, _x },
-                { Constants.Y, _y },
-                { Constants.MODIFIERS, _keyboard.Modifiers },
-                { Constants.CLICK_COUNT, options.ClickCount }
+                { MessageKeys.Type, "mouseReleased" },
+                { MessageKeys.Button, options.Button },
+                { MessageKeys.X, _x },
+                { MessageKeys.Y, _y },
+                { MessageKeys.Modifiers, _keyboard.Modifiers },
+                { MessageKeys.ClickCount, options.ClickCount }
             });
         }
     }

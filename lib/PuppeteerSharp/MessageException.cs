@@ -1,5 +1,6 @@
 ﻿using System;
 using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
@@ -30,15 +31,15 @@ namespace PuppeteerSharp
 
         internal static string GetCallbackMessage(MessageTask callback, JObject obj)
         {
-            var error = obj.SelectToken(Constants.ERROR);
-            var message = $"Protocol error ({callback.Method}): {error[Constants.MESSAGE]}";
+            var error = obj.SelectToken(MessageKeys.Error);
+            var message = $"Protocol error ({callback.Method}): {error[MessageKeys.Message]}";
 
-            if (error[Constants.DATA] != null)
+            if (error[MessageKeys.Data] != null)
             {
-                message += $" {error[Constants.DATA]}";
+                message += $" {error[MessageKeys.Data]}";
             }
 
-            return !string.IsNullOrEmpty(error[Constants.MESSAGE].ToString()) ? RewriteErrorMeesage(message) : string.Empty;
+            return !string.IsNullOrEmpty(error[MessageKeys.Message].ToString()) ? RewriteErrorMeesage(message) : string.Empty;
         }
     }
 }

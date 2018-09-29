@@ -1,9 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Linq;
+﻿using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp.Helpers
 {
@@ -11,7 +10,7 @@ namespace PuppeteerSharp.Helpers
     {
         internal static object ValueFromRemoteObject<T>(JToken remoteObject)
         {
-            var unserializableValue = remoteObject[Constants.UNSERIALIZABLE_VALUE]?.AsString();
+            var unserializableValue = remoteObject[MessageKeys.UnserializableValue]?.AsString();
 
             if (unserializableValue != null)
             {
@@ -30,7 +29,7 @@ namespace PuppeteerSharp.Helpers
                 }
             }
 
-            var value = remoteObject[Constants.VALUE];
+            var value = remoteObject[MessageKeys.Value];
 
             if (value == null)
             {
@@ -38,7 +37,7 @@ namespace PuppeteerSharp.Helpers
             }
 
             // https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-RemoteObject
-            var objectType = remoteObject[Constants.TYPE].AsString();
+            var objectType = remoteObject[MessageKeys.Type].AsString();
 
             switch (objectType)
             {
@@ -59,7 +58,7 @@ namespace PuppeteerSharp.Helpers
 
         internal static async Task ReleaseObject(CDPSession client, JToken remoteObject, ILogger logger)
         {
-            var objectId = remoteObject[Constants.OBJECT_ID]?.AsString();
+            var objectId = remoteObject[MessageKeys.ObjectId]?.AsString();
 
             if (objectId == null)
             {

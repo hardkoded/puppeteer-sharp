@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
@@ -121,9 +123,9 @@ namespace PuppeteerSharp
             var id = ++_lastId;
             var message = JsonConvert.SerializeObject(new Dictionary<string, object>
             {
-                { Constants.ID, id },
-                { Constants.METHOD, method },
-                { Constants.PARAMS, args }
+                { MessageKeys.Id, id },
+                { MessageKeys.Method, method },
+                { MessageKeys.Params, args }
             });
             _logger.LogTrace("Send ► {Id} Method {Method} Params {@Params}", id, method, (object)args);
 
@@ -138,8 +140,8 @@ namespace PuppeteerSharp
             {
                 await Connection.SendAsync("Target.sendMessageToTarget", new Dictionary<string, object>
                 {
-                    { Constants.SESSION_ID, SessionId },
-                    { Constants.MESSAGE, message }
+                    { MessageKeys.SessionId, SessionId },
+                    { MessageKeys.Message, message }
                 }).ConfigureAwait(false);
             }
             catch (Exception ex)
@@ -180,47 +182,46 @@ namespace PuppeteerSharp
             catch (JsonException exc)
             {
                 _logger.LogError(exc, "Failed to deserialize message", message);
-
                 return;
             }
 
-            var id = obj[Constants.ID]?.Value<int>();
+            var id = obj[MessageKeys.Id]?.Value<int>();
 
             if (id.HasValue && _callbacks.TryGetValue(id.Value, out var callback) && _callbacks.Remove(id.Value))
             {
-                if (obj[Constants.ERROR] != null)
+                if (obj[MessageKeys.Error] != null)
                 {
                     callback.TaskWrapper.TrySetException(new MessageException(callback, obj));
                 }
                 else
                 {
-                    callback.TaskWrapper.TrySetResult(obj[Constants.RESULT].Value<JObject>());
+                    callback.TaskWrapper.TrySetResult(obj[MessageKeys.Result].Value<JObject>());
                 }
             }
             else
             {
-                var method = obj[Constants.METHOD].AsString();
-                var param = obj[Constants.PARAMS];
+                var method = obj[MessageKeys.Method].AsString();
+                var param = obj[MessageKeys.Params];
 
                 if (method == "Tracing.tracingComplete")
                 {
                     TracingComplete?.Invoke(this, new TracingCompleteEventArgs
                     {
-                        Stream = param[Constants.STREAM].AsString()
+                        Stream = param[MessageKeys.Stream].AsString()
                     });
                 }
                 else if (method == "Target.receivedMessageFromTarget")
                 {
-                    var sessionId = param[Constants.SESSION_ID].AsString();
+                    var sessionId = param[MessageKeys.SessionId].AsString();
 
                     if (_sessions.TryGetValue(sessionId, out var session))
                     {
-                        session.OnMessage(param[Constants.MESSAGE].AsString());
+                        session.OnMessage(param[MessageKeys.Message].AsString());
                     }
                 }
                 else if (method == "Target.detachedFromTarget")
                 {
-                    var sessionId = param[Constants.SESSION_ID].AsString();
+                    var sessionId = param[MessageKeys.SessionId].AsString();
 
                     if (_sessions.TryGetValue(sessionId, out var session) && _sessions.Remove(sessionId))
                     {

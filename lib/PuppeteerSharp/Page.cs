@@ -479,10 +479,10 @@ namespace PuppeteerSharp
         {
             var response = await Client.SendAsync("Network.getCookies", new Dictionary<string, object>
             {
-                { Constants.URLS, urls.Length > 0 ? urls : new string[] { Url } }
+                { MessageKeys.Urls, urls.Length > 0 ? urls : new string[] { Url } }
             }).ConfigureAwait(false);
 
-            return response[Constants.COOKIES].ToObject<CookieParam[]>();
+            return response[MessageKeys.Cookies].ToObject<CookieParam[]>();
         }
 
         /// <summary>
@@ -510,7 +510,7 @@ namespace PuppeteerSharp
             {
                 await Client.SendAsync("Network.setCookies", new Dictionary<string, object>
                 {
-                    { Constants.COOKIES, cookies }
+                    { MessageKeys.Cookies, cookies }
                 }).ConfigureAwait(false);
             }
         }
@@ -698,7 +698,7 @@ namespace PuppeteerSharp
         /// <seealso cref="GoToAsync(string, int?, WaitUntilNavigation[])"/>
         public async Task<Response> GoToAsync(string url, NavigationOptions options)
         {
-            var referrer = _networkManager.ExtraHTTPHeaders?.GetValueOrDefault(Constants.REFERER);
+            var referrer = _networkManager.ExtraHTTPHeaders?.GetValueOrDefault(MessageKeys.Referer);
             var requests = new Dictionary<string, Request>();
 
             void createRequestEventListener(object sender, RequestEventArgs e)
@@ -884,7 +884,7 @@ namespace PuppeteerSharp
                 preferCSSPageSize = options.PreferCSSPageSize
             }).ConfigureAwait(false);
 
-            var buffer = Convert.FromBase64String(result.GetValue(Constants.DATA).AsString());
+            var buffer = Convert.FromBase64String(result.GetValue(MessageKeys.Data).AsString());
             return buffer;
         }
 
@@ -1584,7 +1584,7 @@ namespace PuppeteerSharp
         {
             await client.SendAsync("Page.enable", null).ConfigureAwait(false);
             var result = await client.SendAsync("Page.getFrameTree").ConfigureAwait(false);
-            var page = new Page(client, target, new FrameTree(result[Constants.FRAME_TREE]), ignoreHTTPSErrors, screenshotTaskQueue);
+            var page = new Page(client, target, new FrameTree(result[MessageKeys.FrameTree]), ignoreHTTPSErrors, screenshotTaskQueue);
 
             await Task.WhenAll(
                 client.SendAsync("Target.setAutoAttach", new { autoAttach = true, waitForDebuggerOnStart = false }),
@@ -1665,10 +1665,10 @@ namespace PuppeteerSharp
             if (options != null && options.FullPage)
             {
                 var metrics = await Client.SendAsync("Page.getLayoutMetrics").ConfigureAwait(false);
-                var contentSize = metrics[Constants.CONTENT_SIZE];
+                var contentSize = metrics[MessageKeys.ContentSize];
 
-                var width = Convert.ToInt32(Math.Ceiling(contentSize[Constants.WIDTH].Value<decimal>()));
-                var height = Convert.ToInt32(Math.Ceiling(contentSize[Constants.HEIGHT].Value<decimal>()));
+                var width = Convert.ToInt32(Math.Ceiling(contentSize[MessageKeys.Width].Value<decimal>()));
+                var height = Convert.ToInt32(Math.Ceiling(contentSize[MessageKeys.Height].Value<decimal>()));
 
                 // Overwrite clip for full page at all times.
                 clip = new Clip
@@ -1745,7 +1745,7 @@ namespace PuppeteerSharp
                 await SetViewportAsync(Viewport).ConfigureAwait(false);
             }
 
-            return result.GetValue(Constants.DATA).AsString();
+            return result.GetValue(MessageKeys.Data).AsString();
         }
 
         private decimal ConvertPrintParameterToInches(object parameter)
@@ -1809,7 +1809,7 @@ namespace PuppeteerSharp
                     OnDialog(e.MessageData.ToObject<PageJavascriptDialogOpeningResponse>());
                     break;
                 case "Runtime.exceptionThrown":
-                    HandleException(e.MessageData.SelectToken(Constants.EXCEPTION_DETAILS).ToObject<EvaluateExceptionDetails>());
+                    HandleException(e.MessageData.SelectToken(MessageKeys.ExceptionDetails).ToObject<EvaluateExceptionDetails>());
                     break;
                 case "Security.certificateError":
                     await OnCertificateError(e.MessageData.ToObject<CertificateErrorResponse>()).ConfigureAwait(false);
@@ -1858,7 +1858,7 @@ namespace PuppeteerSharp
             var binding = _pageBindings[e.Payload.Name];
             var methodParams = binding.Method.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
 
-            var args = e.Payload.JsonObject.GetValue(Constants.ARGS).Select((token, i) => token.ToObject(methodParams[i])).ToArray();
+            var args = e.Payload.JsonObject.GetValue(MessageKeys.Args).Select((token, i) => token.ToObject(methodParams[i])).ToArray();
 
             result = binding.DynamicInvoke(args);
             if (result is Task taskResult)
@@ -1877,7 +1877,7 @@ namespace PuppeteerSharp
 
         private void OnDetachedFromTarget(MessageEventArgs e)
         {
-            var sessionId = e.MessageData.SelectToken(Constants.SESSION_ID).AsString();
+            var sessionId = e.MessageData.SelectToken(MessageKeys.SessionId).AsString();
             if (_workers.TryGetValue(sessionId, out var worker))
             {
                 WorkerDestroyed?.Invoke(this, new WorkerEventArgs(worker));
@@ -1887,8 +1887,8 @@ namespace PuppeteerSharp
 
         private async Task OnAttachedToTarget(MessageEventArgs e)
         {
-            var targetInfo = e.MessageData.SelectToken(Constants.TARGET_INFO).ToObject<TargetInfo>();
-            var sessionId = e.MessageData.SelectToken(Constants.SESSION_ID).ToObject<string>();
+            var targetInfo = e.MessageData.SelectToken(MessageKeys.TargetInfo).ToObject<TargetInfo>();
+            var sessionId = e.MessageData.SelectToken(MessageKeys.SessionId).ToObject<string>();
             if (targetInfo.Type != TargetType.Worker)
             {
                 try
@@ -1943,8 +1943,8 @@ namespace PuppeteerSharp
                 {
                     await Client.SendAsync("Security.handleCertificateError", new Dictionary<string, object>
                     {
-                        { Constants.EVENT_ID, e.EventId },
-                        { Constants.ACTION, "continue"}
+                        { MessageKeys.EventId, e.EventId },
+                        { MessageKeys.Action, "continue"}
                     }).ConfigureAwait(false);
                 }
                 catch (PuppeteerException ex)
@@ -2001,7 +2001,7 @@ namespace PuppeteerSharp
                 return;
             }
 
-            var tokens = values.Select(i => i.RemoteObject[Constants.OBJECT_ID] != null
+            var tokens = values.Select(i => i.RemoteObject[MessageKeys.ObjectId] != null
                 ? i.ToString()
                 : RemoteObjectHelper.ValueFromRemoteObject<string>(i.RemoteObject));
 

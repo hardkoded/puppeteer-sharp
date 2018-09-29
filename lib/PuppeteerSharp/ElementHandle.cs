@@ -198,7 +198,7 @@ namespace PuppeteerSharp
         public Task UploadFileAsync(params string[] filePaths)
         {
             var files = filePaths.Select(Path.GetFullPath).ToArray();
-            var objectId = RemoteObject[Constants.OBJECT_ID].AsString();
+            var objectId = RemoteObject[MessageKeys.ObjectId].AsString();
             return Client.SendAsync("DOM.setFileInputFiles", new { objectId, files });
         }
 
@@ -386,7 +386,7 @@ namespace PuppeteerSharp
         {
             var nodeInfo = await Client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new Dictionary<string, object>
             {
-                { Constants.OBJECT_ID, RemoteObject[Constants.OBJECT_ID] }
+                { MessageKeys.ObjectId, RemoteObject[MessageKeys.ObjectId] }
             }).ConfigureAwait(false);
 
             return string.IsNullOrEmpty(nodeInfo.Node.FrameId) ? null : _frameManager.Frames[nodeInfo.Node.FrameId];
@@ -419,7 +419,7 @@ namespace PuppeteerSharp
             {
                 result = await Client.SendAsync<GetContentQuadsResponse>("DOM.getContentQuads", new Dictionary<string, object>
                 {
-                    { Constants.OBJECT_ID, RemoteObject[Constants.OBJECT_ID] }
+                    { MessageKeys.ObjectId, RemoteObject[MessageKeys.ObjectId] }
                 });
             }
             catch (Exception ex)
@@ -491,7 +491,7 @@ namespace PuppeteerSharp
             {
                 return await Client.SendAsync<BoxModelResponse>("DOM.getBoxModel", new
                 {
-                    objectId = RemoteObject[Constants.OBJECT_ID].AsString()
+                    objectId = RemoteObject[MessageKeys.ObjectId].AsString()
                 }).ConfigureAwait(false);
             }
             catch (PuppeteerException ex)

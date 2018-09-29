@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 
-namespace PuppeteerSharp
+namespace PuppeteerSharp.Helpers
 {
     /// <summary>
     /// A set of extension methods for JToken

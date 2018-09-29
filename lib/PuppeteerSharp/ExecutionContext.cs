@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Linq;
-using Newtonsoft.Json.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
@@ -62,7 +63,7 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Executes a script in browser contextF
+        /// Executes a script in browser context
         /// </summary>
         /// <typeparam name="T">The type to deserialize the result to</typeparam>
         /// <param name="script">Script to be evaluated in browser context</param>
@@ -128,7 +129,7 @@ namespace PuppeteerSharp
                 throw new PuppeteerException("Prototype JSHandle is disposed!");
             }
 
-            if (!((JObject)prototypeHandle.RemoteObject).TryGetValue(Constants.OBJECT_ID, out var objectId))
+            if (!((JObject)prototypeHandle.RemoteObject).TryGetValue(MessageKeys.ObjectId, out var objectId))
             {
                 throw new PuppeteerException("Prototype JSHandle must not be referencing primitive value");
             }
@@ -138,7 +139,7 @@ namespace PuppeteerSharp
                 {"prototypeObjectId", objectId.ToString()}
             }).ConfigureAwait(false);
 
-            return CreateJSHandle(response[Constants.OBJECTS]);
+            return CreateJSHandle(response[MessageKeys.Objects]);
         }
 
         internal async Task<JSHandle> EvaluateExpressionHandleAsync(string script)
@@ -177,7 +178,7 @@ namespace PuppeteerSharp
                 return await EvaluateHandleAsync("Runtime.callFunctionOn", new Dictionary<string, object>
                 {
                     ["functionDeclaration"] = $"{script}\n{EvaluationScriptSuffix}\n",
-                    [Constants.EXECUTION_CONTEXT_ID] = _contextId,
+                    [MessageKeys.ExecutionContextId] = _contextId,
                     ["arguments"] = args.Select(FormatArgument).ToArray(),
                     ["returnByValue"] = false,
                     ["awaitPromise"] = true,
@@ -222,7 +223,7 @@ namespace PuppeteerSharp
         {
             var response = await _client.SendAsync(method, args).ConfigureAwait(false);
 
-            var exceptionDetails = response[Constants.EXCEPTION_DETAILS];
+            var exceptionDetails = response[MessageKeys.ExceptionDetails];
 
             if (exceptionDetails != null)
             {
