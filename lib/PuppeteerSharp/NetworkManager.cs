@@ -324,7 +324,7 @@ namespace PuppeteerSharp
             });
         }
 
-        private void HandleRequestRedirect(Request request, Messaging.ResponsePayload responseMessage)
+        private void HandleRequestRedirect(Request request, ResponsePayload responseMessage)
         {
             var response = new Response(
                 _client,
