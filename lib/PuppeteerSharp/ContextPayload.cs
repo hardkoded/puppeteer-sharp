@@ -4,9 +4,9 @@ namespace PuppeteerSharp
 {
     internal class ContextPayload
     {
-        [JsonProperty(Constants.ID)]
+        [JsonProperty("id")]
         internal int Id { get; set; }
-        [JsonProperty(Constants.AUX_DATA)]
+        [JsonProperty("auxData")]
         internal ContextPayloadAuxData AuxData { get; set; }
     }
 }

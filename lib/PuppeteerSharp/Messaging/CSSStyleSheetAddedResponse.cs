@@ -5,14 +5,14 @@ namespace PuppeteerSharp.Messaging
 {
     internal class CSSStyleSheetAddedResponse
     {
-        [JsonProperty(Constants.HEADER)]
+        [JsonProperty("header")]
         public CSSStyleSheetAddedResponseHeader Header { get; set; }
 
         public class CSSStyleSheetAddedResponseHeader
         {
-            [JsonProperty(Constants.STYLE_SHEET_ID)]
+            [JsonProperty("styleSheetId")]
             public string StyleSheetId { get; set; }
-            [JsonProperty(Constants.SOURCE_URL)]
+            [JsonProperty("sourceURL")]
             public string SourceURL { get; set; }
         }
     }

@@ -4,13 +4,13 @@ namespace PuppeteerSharp
 {
     internal class EvaluationExceptionCallFrame
     {
-        [JsonProperty(Constants.COLUMN_NUMBER)]
+        [JsonProperty("columnNumber")]
         internal int ColumnNumber { get; set; }
-        [JsonProperty(Constants.LINE_NUMBER)]
+        [JsonProperty("lineNumber")]
         internal int LineNumber { get; set; }
-        [JsonProperty(Constants.URL)]
+        [JsonProperty("url")]
         internal string Url { get; set; }
-        [JsonProperty(Constants.FUNCTION_NAME)]
+        [JsonProperty("functionName")]
         internal string FunctionName { get; set; }
     }
 }

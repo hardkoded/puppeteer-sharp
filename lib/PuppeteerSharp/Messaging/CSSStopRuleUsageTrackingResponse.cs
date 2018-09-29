@@ -4,18 +4,18 @@ namespace PuppeteerSharp.Messaging
 {
     internal class CSSStopRuleUsageTrackingResponse
     {
-        [JsonProperty(Constants.RULE_USAGE)]
+        [JsonProperty("ruleUsage")]
         internal CSSStopRuleUsageTrackingRuleUsage[] RuleUsage { get; set; }
 
         internal class CSSStopRuleUsageTrackingRuleUsage
         {
-            [JsonProperty(Constants.STYLE_SHEET_ID)]
+            [JsonProperty("styleSheetId")]
             public string StyleSheetId { get; set; }
-            [JsonProperty(Constants.START_OFFSET)]
+            [JsonProperty("startOffset")]
             public int StartOffset { get; set; }
-            [JsonProperty(Constants.END_OFFSET)]
+            [JsonProperty("endOffset")]
             public int EndOffset { get; set; }
-            [JsonProperty(Constants.USED)]
+            [JsonProperty("used")]
             public bool Used { get; set; }
         }
     }

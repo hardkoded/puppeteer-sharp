@@ -17,25 +17,25 @@ namespace PuppeteerSharp
         /// Gets or sets the HTTP method.
         /// </summary>
         /// <value>HTTP method.</value>
-        [JsonProperty(Constants.METHOD), JsonConverter(typeof(HttpMethodConverter))]
+        [JsonProperty("method"), JsonConverter(typeof(HttpMethodConverter))]
         public HttpMethod Method { get; set; }
         /// <summary>
         /// Gets or sets the post data.
         /// </summary>
         /// <value>The post data.</value>
-        [JsonProperty(Constants.POST_DATA)]
+        [JsonProperty("postData")]
         public object PostData { get; set; }
         /// <summary>
         /// Gets or sets the HTTP headers.
         /// </summary>
         /// <value>HTTP headers.</value>
-        [JsonProperty(Constants.HEADERS)]
+        [JsonProperty("headers")]
         public Dictionary<string, string> Headers { get; set; } = new Dictionary<string, string>();
         /// <summary>
         /// Gets or sets the URL.
         /// </summary>
         /// <value>The URL.</value>
-        [JsonProperty(Constants.URL)]
+        [JsonProperty("url")]
         public string Url { get; set; }
 
         internal string Hash
@@ -68,10 +68,10 @@ namespace PuppeteerSharp
                     {
                         bool HeaderEquals(string name) => item.Key.Equals(name, StringComparison.OrdinalIgnoreCase);
 
-                        if (HeaderEquals(Constants.ACCEPT)
-                            || HeaderEquals(Constants.REFERER)
+                        if (HeaderEquals("accept")
+                            || HeaderEquals("referer")
                             || HeaderEquals("x-devtools-emulate-network-conditions-client-id")
-                            || HeaderEquals(Constants.COOKIE))
+                            || HeaderEquals("cookie"))
                         {
                             continue;
                         }

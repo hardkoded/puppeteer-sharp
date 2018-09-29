@@ -4,13 +4,13 @@ namespace PuppeteerSharp.Messaging
 {
     internal class CoverageResponseRange
     {
-        [JsonProperty(Constants.START_OFFSET)]
+        [JsonProperty("startOffset")]
         public int StartOffset { get; set; }
-        [JsonProperty(Constants.END_OFFSET)]
+        [JsonProperty("endOffset")]
         public int EndOffset { get; set; }
-        [JsonProperty(Constants.COUNT)]
+        [JsonProperty("count")]
         public int Count { get; set; }
-        [JsonProperty(Constants.STYLE_SHEET_ID)]
+        [JsonProperty("styleSheetId")]
         public string StyleSheetId { get; set; }
     }
 }

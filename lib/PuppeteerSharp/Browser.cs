@@ -219,7 +219,7 @@ namespace PuppeteerSharp
         /// </remarks>
         public async Task<string> GetVersionAsync()
         {
-           var version = await Connection.SendAsync("Browser.getVersion").ConfigureAwait(false);
+            var version = await Connection.SendAsync("Browser.getVersion").ConfigureAwait(false);
             return version[Constants.PRODUCT].AsString();
         }
 

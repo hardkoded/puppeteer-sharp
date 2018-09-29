@@ -4,7 +4,7 @@ namespace PuppeteerSharp.Messaging
 {
     internal class BasicFrameResponse
     {
-        [JsonProperty(Constants.FRAME_ID)]
+        [JsonProperty("frameId")]
         public string FrameId { get; set; }
     }
 }

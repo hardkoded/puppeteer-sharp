@@ -4,13 +4,13 @@ namespace PuppeteerSharp
 {
     internal class FramePayload
     {
-        [JsonProperty(Constants.ID)]
+        [JsonProperty("id")]
         internal string Id { get; set; }
-        [JsonProperty(Constants.PARENT_ID)]
+        [JsonProperty("parentId")]
         internal string ParentId { get; set; }
-        [JsonProperty(Constants.NAME)]
+        [JsonProperty("name")]
         internal string Name { get; set; }
-        [JsonProperty(Constants.URL)]
+        [JsonProperty("url")]
         internal string Url { get; set; }
     }
 }

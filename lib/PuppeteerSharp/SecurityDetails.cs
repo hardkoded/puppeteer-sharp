@@ -40,31 +40,31 @@ namespace PuppeteerSharp
         /// Gets the name of the subject.
         /// </summary>
         /// <value>The name of the subject.</value>
-        [JsonProperty(Constants.SUBJECT_NAME)]
+        [JsonProperty("subjectName")]
         public string SubjectName { get; internal set; }
         /// <summary>
         /// Gets the issuer.
         /// </summary>
         /// <value>The issuer.</value>
-        [JsonProperty(Constants.ISSUER)]
+        [JsonProperty("issuer")]
         public string Issuer { get; internal set; }
         /// <summary>
         /// Gets the valid from.
         /// </summary>
         /// <value>The valid from.</value>
-        [JsonProperty(Constants.VALID_FROM)]
+        [JsonProperty("validFrom")]
         public int ValidFrom { get; internal set; }
         /// <summary>
         /// Gets the valid to.
         /// </summary>
         /// <value>The valid to.</value>
-        [JsonProperty(Constants.VALID_TO)]
+        [JsonProperty("validTo")]
         public int ValidTo { get; internal set; }
         /// <summary>
         /// Gets the protocol.
         /// </summary>
         /// <value>The protocol.</value>
-        [JsonProperty(Constants.PROTOCOL)]
+        [JsonProperty("protocol")]
         public string Protocol { get; internal set; }
     }
 }

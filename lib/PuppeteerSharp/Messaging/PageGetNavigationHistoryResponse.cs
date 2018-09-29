@@ -6,14 +6,14 @@ namespace PuppeteerSharp.Messaging
 {
     internal class PageGetNavigationHistoryResponse
     {
-        [JsonProperty(Constants.CURRENT_INDEX)]
+        [JsonProperty("currentIndex")]
         public int CurrentIndex { get; set; }
-        [JsonProperty(Constants.ENTRIES)]
+        [JsonProperty("entries")]
         public List<HistoryEntry> Entries { get; set; }
 
         internal class HistoryEntry
         {
-            [JsonProperty(Constants.ID)]
+            [JsonProperty("id")]
             internal int Id { get; set; }
         }
     }

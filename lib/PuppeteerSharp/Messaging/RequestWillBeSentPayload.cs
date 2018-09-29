@@ -4,22 +4,22 @@ namespace PuppeteerSharp.Messaging
 {
     internal class RequestWillBeSentPayload
     {
-        [JsonProperty(Constants.REQUEST_ID)]
+        [JsonProperty("requestId")]
         public string RequestId { get; set; }
 
-        [JsonProperty(Constants.LOADER_ID)]
+        [JsonProperty("loaderId")]
         public string LoaderId { get; set; }
 
-        [JsonProperty(Constants.REQUEST)]
+        [JsonProperty("request")]
         public Payload Request { get; set; }
 
-        [JsonProperty(Constants.REDIRECT_RESPONSE, NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty("redirectResponse", NullValueHandling = NullValueHandling.Ignore)]
         public ResponsePayload RedirectResponse { get; set; }
 
-        [JsonProperty(Constants.TYPE)]
+        [JsonProperty("type")]
         public ResourceType Type { get; set; }
 
-        [JsonProperty(Constants.FRAME_ID)]
+        [JsonProperty("frameId")]
         public string FrameId { get; set; }
     }
 }

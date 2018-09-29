@@ -5,9 +5,9 @@ namespace PuppeteerSharp.Messaging
 {
     internal class IOReadResponse
     {
-        [JsonProperty(Constants.EOF)]
+        [JsonProperty("eof")]
         internal bool Eof { get; set; }
-        [JsonProperty(Constants.DATA)]
+        [JsonProperty("data")]
         internal string Data { get; set; }
     }
 }

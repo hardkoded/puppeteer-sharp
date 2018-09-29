@@ -5,9 +5,9 @@ namespace PuppeteerSharp.Messaging
 {
     internal class NetworkGetResponseBodyResponse
     {
-        [JsonProperty(Constants.BODY)]
+        [JsonProperty("body")]
         public string Body { get; set; }
-        [JsonProperty(Constants.BASE_64_ENCODED)]
+        [JsonProperty("base64Encoded")]
         public bool Base64Encoded { get; set; }
     }
 }

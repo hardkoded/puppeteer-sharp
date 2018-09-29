@@ -89,8 +89,7 @@ namespace PuppeteerSharp.Tests.InputTests
         public async Task ShouldClickOnCheckboxInputAndToggle()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/checkbox.html");
-            var foo = await Page.EvaluateExpressionAsync("result.check");
-            Assert.Null(foo);
+            Assert.Null(await Page.EvaluateExpressionAsync("result.check"));
             await Page.ClickAsync("input#agree");
             Assert.True(await Page.EvaluateExpressionAsync<bool>("result.check"));
             Assert.Equal(new[] {

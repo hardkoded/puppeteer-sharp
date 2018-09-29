@@ -4,7 +4,7 @@ namespace PuppeteerSharp.Messaging
 {
     internal class TargetDestroyedResponse
     {
-        [JsonProperty(Constants.TARGET_ID)]
+        [JsonProperty("targetId")]
         public string TargetId { get; set; }
     }
 }

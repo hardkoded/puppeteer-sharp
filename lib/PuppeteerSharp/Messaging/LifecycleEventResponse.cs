@@ -4,13 +4,13 @@ namespace PuppeteerSharp.Messaging
 {
     internal class LifecycleEventResponse
     {
-        [JsonProperty(Constants.FRAME_ID)]
+        [JsonProperty("frameId")]
         public string FrameId { get; set; }
 
-        [JsonProperty(Constants.LOADER_ID)]
+        [JsonProperty("loaderId")]
         public string LoaderId { get; set; }
 
-        [JsonProperty(Constants.NAME)]
+        [JsonProperty("name")]
         public string Name { get; set; }
     }
 }

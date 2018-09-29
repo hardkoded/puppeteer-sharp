@@ -4,7 +4,7 @@ namespace PuppeteerSharp.Messaging
 {
     internal class CertificateErrorResponse
     {
-        [JsonProperty(Constants.EVENT_ID)]
+        [JsonProperty("eventId")]
         public int EventId { get; set; }
     }
 }

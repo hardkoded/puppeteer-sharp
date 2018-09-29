@@ -4,9 +4,9 @@ namespace PuppeteerSharp.Media
 {
     internal class ScreenOrientation
     {
-        [JsonProperty(Constants.ANGLE)]
+        [JsonProperty("angle")]
         public int Angle { get; internal set; }
-        [JsonProperty(Constants.TYPE)]
+        [JsonProperty("type")]
         public string Type { get; internal set; }
     }
 }

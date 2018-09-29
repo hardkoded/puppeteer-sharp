@@ -4,7 +4,7 @@ namespace PuppeteerSharp.Messaging
 {
     internal class LoadingFinishedResponse
     {
-        [JsonProperty(Constants.REQUEST_ID)]
+        [JsonProperty("requestId")]
         public string RequestId { get; set; }
     }
 }

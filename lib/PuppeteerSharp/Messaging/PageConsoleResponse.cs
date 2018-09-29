@@ -4,13 +4,13 @@ namespace PuppeteerSharp.Messaging
 {
     internal class PageConsoleResponse
     {
-        [JsonProperty(Constants.TYPE)]
+        [JsonProperty("type")]
         internal ConsoleType Type { get; set; }
 
-        [JsonProperty(Constants.ARGS)]
+        [JsonProperty("args")]
         internal dynamic[] Args { get; set; }
 
-        [JsonProperty(Constants.EXECUTION_CONTEXT_ID)]
+        [JsonProperty("executionContextId")]
         internal int ExecutionContextId { get; set; }
     }
 }

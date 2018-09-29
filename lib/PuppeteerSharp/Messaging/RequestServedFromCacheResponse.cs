@@ -4,7 +4,7 @@ namespace PuppeteerSharp.Messaging
 {
     internal class RequestServedFromCacheResponse
     {
-        [JsonProperty(Constants.REQUEST_ID)]
+        [JsonProperty("requestId")]
         internal string RequestId { get; set; }
     }
 }

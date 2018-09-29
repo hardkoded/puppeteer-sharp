@@ -4,20 +4,20 @@ namespace PuppeteerSharp.Messaging
 {
     internal class ProfilerTakePreciseCoverageResponse
     {
-        [JsonProperty(Constants.RESULT)]
+        [JsonProperty("result")]
         public ProfilerTakePreciseCoverageResponseItem[] Result { get; set; }
 
         internal class ProfilerTakePreciseCoverageResponseItem
         {
-            [JsonProperty(Constants.SCRIPT_ID)]
+            [JsonProperty("scriptId")]
             public string ScriptId { get; set; }
-            [JsonProperty(Constants.FUNCTIONS)]
+            [JsonProperty("functions")]
             public ProfilerTakePreciseCoverageResponseFunction[] Functions { get; set; }
         }
 
         internal class ProfilerTakePreciseCoverageResponseFunction
         {
-            [JsonProperty(Constants.RANGES)]
+            [JsonProperty("ranges")]
             public CoverageResponseRange[] Ranges { get; set; }
         }
     }

@@ -5,7 +5,7 @@ namespace PuppeteerSharp.Messaging
 {
     internal class GetContentQuadsResponse
     {
-        [JsonProperty(Constants.QUADS)]
+        [JsonProperty("quads")]
         public decimal[][] Quads { get; internal set; }
     }
 }
