@@ -92,23 +92,7 @@ namespace PuppeteerSharp
         /// <returns>The task.</returns>
         /// <param name="origin">The origin to grant permissions to, e.g. "https://example.com"</param>
         /// <param name="permissions">
-        /// An array of permissions to grant. All permissions that are not listed here will be automatically denied. Permissions can be one of the following values:
-        /// - <c>geolocation'</c>
-        /// - <c>'midi'</c>
-        /// - <c>'midi-sysex'</c> (system-exclusive midi)
-        /// - <c>'notifications'</c>
-        /// - <c>'push'</c>
-        /// - <c>'camera'</c>
-        /// - <c>'microphone'</c>
-        /// - <c>'background-sync'</c>
-        /// - <c>'ambient-light-sensor'</c>
-        /// - <c>'accelerometer'</c>
-        /// - <c>'gyroscope'</c>
-        /// - <c>'magnetometer'</c>
-        /// - <c>'accessibility-events'</c>
-        /// - <c>'clipboard-read'</c>
-        /// - <c>'clipboard-write'</c>
-        /// - <c>'payment-handler'</c>
+        /// An array of permissions to grant. All permissions that are not listed here will be automatically denied.
         /// </param>
         /// <example>
         /// <![CDATA[
