@@ -316,7 +316,7 @@ namespace PuppeteerSharp
         /// <returns>The task.</returns>
         /// <param name="options">Geolocation options.</param>
         /// <remarks>
-        /// Consider using <seealso cref="BrowserContext.OverridePermissions"/> to grant permissions for the page to read its geolocation.
+        /// Consider using <seealso cref="BrowserContext.OverridePermissionsAsync(string, IEnumerable{OverridePermission})"/> to grant permissions for the page to read its geolocation.
         /// </remarks>
         public async Task SetGeolocationAsync(GeolocationOption options)
         {
