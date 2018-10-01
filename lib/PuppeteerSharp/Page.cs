@@ -697,7 +697,10 @@ namespace PuppeteerSharp
         /// <seealso cref="GoToAsync(string, int?, WaitUntilNavigation[])"/>
         public async Task<Response> GoToAsync(string url, NavigationOptions options)
         {
-            var referrer = _networkManager.ExtraHTTPHeaders?.GetValueOrDefault("referer");
+            var referrer = string.IsNullOrEmpty(options.Referer)
+                ? _networkManager.ExtraHTTPHeaders?.GetValueOrDefault("referer")
+                : options.Referer;
+
             var requests = new Dictionary<string, Request>();
 
             void createRequestEventListener(object sender, RequestEventArgs e)
