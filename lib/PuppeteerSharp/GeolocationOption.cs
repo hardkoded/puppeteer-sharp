@@ -43,8 +43,8 @@ namespace PuppeteerSharp
         public override bool Equals(object obj) => Equals(obj as GeolocationOption);
         /// <inheritdoc/>
         public override int GetHashCode()
-            => Latitude.GetHashCode() * 2014 +
-                Longitude.GetHashCode() * 2014 +
-                Accuracy.GetHashCode() * 2014;
+            => (Latitude.GetHashCode() ^ 2014) +
+                (Longitude.GetHashCode() ^ 2014) +
+                (Accuracy.GetHashCode() ^ 2014);
     }
 }
