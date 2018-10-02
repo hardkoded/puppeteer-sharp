@@ -72,7 +72,6 @@ namespace PuppeteerSharp
         public static Task EvaluateFunctionAsync(this Task<JSHandle> arrayHandleTask, string pageFunction, params object[] args)
             => arrayHandleTask.EvaluateFunctionAsync<object>(pageFunction, args);
 
-
         /// <summary>
         /// Runs <paramref name="pageFunction"/> within the frame and passes it the outcome of <paramref name="arrayHandleTask"/> as the first argument. Use only after <see cref="Page.QuerySelectorAllHandleAsync(string)"/>
         /// </summary>
