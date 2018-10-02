@@ -40,6 +40,25 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(TestConstants.Port, response.RemoteAddress.Port);
         }
 
+        [Fact(Skip = "Ignored on Puppeteer")]
+        public async Task ShouldWorkWhenPostIsEedirectedWith302()
+        {
+            Server.SetRedirect("/rredirect", "/empty.html");
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.SetRequestInterceptionAsync(true);
+            Page.Request += async (sender, e) => await e.Request.ContinueAsync();
+
+            await Page.SetContentAsync(@"
+                <form action='/rredirect' method='post'>
+                    <input type='hidden' id='foo' name='foo' value='FOOBAR'>
+                </form>
+            ");
+            await Task.WhenAll(
+                Page.QuerySelectorAsync("form").EvaluateFunctionAsync("form => form.submit()"),
+                Page.WaitForNavigationAsync()
+            );
+        }
+
         [Fact]
         public async Task ShouldContainRefererHeader()
         {
