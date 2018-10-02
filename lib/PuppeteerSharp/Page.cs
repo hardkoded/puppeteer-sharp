@@ -318,7 +318,7 @@ namespace PuppeteerSharp
         /// <remarks>
         /// Consider using <seealso cref="BrowserContext.OverridePermissionsAsync(string, IEnumerable{OverridePermission})"/> to grant permissions for the page to read its geolocation.
         /// </remarks>
-        public async Task SetGeolocationAsync(GeolocationOption options)
+        public Task SetGeolocationAsync(GeolocationOption options)
         {
             if (options.Longitude < -180 || options.Longitude > 180)
             {
@@ -333,7 +333,7 @@ namespace PuppeteerSharp
                 throw new ArgumentException($"Invalid accuracy '{options.Accuracy}': precondition 0 <= ACCURACY failed.");
             }
 
-            await Client.SendAsync("Emulation.setGeolocationOverride", options);
+            return Client.SendAsync("Emulation.setGeolocationOverride", options);
         }
 
         /// <summary>
