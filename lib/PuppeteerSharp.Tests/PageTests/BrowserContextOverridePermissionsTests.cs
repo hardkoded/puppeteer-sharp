@@ -35,15 +35,6 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Fact]
-        public async Task ShouldFailWhenBadPermissionIsGiven()
-        {
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            var exception = await Assert.ThrowsAsync<ArgumentException>(()
-                => Context.OverridePermissionsAsync(TestConstants.EmptyPage, new OverridePermission[] { (OverridePermission)100 }));
-            Assert.Equal("Unknown permission: 100", exception.Message);
-        }
-
-        [Fact]
         public async Task ShouldGrantPermissionWwhenListed()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

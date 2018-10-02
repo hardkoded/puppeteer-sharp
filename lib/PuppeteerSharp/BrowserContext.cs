@@ -102,23 +102,12 @@ namespace PuppeteerSharp
         /// </example>
         /// <seealso href="https://developer.mozilla.org/en-US/docs/Glossary/Origin"/>
         public Task OverridePermissionsAsync(string origin, IEnumerable<OverridePermission> permissions)
-        {
-            var invalidPermission = permissions
-                .Cast<OverridePermission?>()
-                .FirstOrDefault(p => !Enum.IsDefined(typeof(OverridePermission), p));
-
-            if (invalidPermission.HasValue)
-            {
-                throw new ArgumentException("Unknown permission: " + invalidPermission.Value);
-            }
-
-            return _connection.SendAsync("Browser.grantPermissions", new
+            => _connection.SendAsync("Browser.grantPermissions", new
             {
                 origin,
                 browserContextId = _id,
                 permissions
             });
-        }
 
         /// <summary>
         /// Clears all permission overrides for the browser context.
