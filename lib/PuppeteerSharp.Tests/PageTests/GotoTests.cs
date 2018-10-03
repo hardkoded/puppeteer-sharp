@@ -324,5 +324,27 @@ namespace PuppeteerSharp.Tests.PageTests
             var response = await Page.GoToAsync(url);
             Assert.True(response.Ok);
         }
+
+        [Fact]
+        public async Task ShouldSendReferer()
+        {
+            await Page.SetRequestInterceptionAsync(true);
+            Page.Request += async (sender, e) => await e.Request.ContinueAsync();
+            string referer1 = null;
+            string referer2 = null;
+
+            await Task.WhenAll(
+                Server.WaitForRequest("/grid.html", r => referer1 = r.Headers["Referer"]),
+                Server.WaitForRequest("/digits/1.png", r => referer2 = r.Headers["Referer"]),
+                Page.GoToAsync(TestConstants.ServerUrl + "/grid.html", new NavigationOptions
+                {
+                    Referer = "http://google.com/"
+                })
+            );
+
+            Assert.Equal("http://google.com/", referer1);
+            // Make sure subresources do not inherit referer.
+            Assert.Equal(TestConstants.ServerUrl + "/grid.html", referer2);
+        }
     }
 }

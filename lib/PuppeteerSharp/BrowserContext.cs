@@ -14,27 +14,6 @@ namespace PuppeteerSharp
         private readonly IConnection _connection;
         private readonly string _id;
 
-        private static readonly Dictionary<OverridePermission, string> _webPermissionToProtocol = new Dictionary<OverridePermission, string>
-        {
-            [OverridePermission.Geolocation] = "geolocation",
-            [OverridePermission.Midi] = "midi",
-            [OverridePermission.Notifications] = "notifications",
-            [OverridePermission.Push] = "push",
-            [OverridePermission.Camera] = "videoCapture",
-            [OverridePermission.Microphone] = "audioCapture",
-            [OverridePermission.BackgroundSync] = "backgroundSync",
-            [OverridePermission.AmbientLightSensor] = "sensors",
-            [OverridePermission.Accelerometer] = "sensors",
-            [OverridePermission.Gyroscope] = "sensors",
-            [OverridePermission.Magnetometer] = "sensors",
-            [OverridePermission.AccessibilityEvents] = "accessibilityEvents",
-            [OverridePermission.ClipboardRead] = "clipboardRead",
-            [OverridePermission.ClipboardWrite] = "clipboardWrite",
-            [OverridePermission.PaymentHandler] = "paymentHandler",
-            // chrome-specific permissions we have.
-            [OverridePermission.MidiSysex] = "midiSysex"
-        };
-
         internal BrowserContext(IConnection connection, Browser browser, string contextId)
         {
             _connection = connection;
@@ -122,23 +101,13 @@ namespace PuppeteerSharp
         /// ]]>
         /// </example>
         /// <seealso href="https://developer.mozilla.org/en-US/docs/Glossary/Origin"/>
-        public async Task OverridePermissionsAsync(string origin, IEnumerable<OverridePermission> permissions)
-        {
-            var permissionList = permissions.Select(permission =>
-            {
-                if (!_webPermissionToProtocol.TryGetValue(permission, out var protocolPermission))
-                {
-                    throw new ArgumentException("Unknown permission: " + permission);
-                }
-                return protocolPermission;
-            });
-            await _connection.SendAsync("Browser.grantPermissions", new
+        public Task OverridePermissionsAsync(string origin, IEnumerable<OverridePermission> permissions)
+            => _connection.SendAsync("Browser.grantPermissions", new
             {
                 origin,
                 browserContextId = _id,
-                permissions = permissionList
+                permissions
             });
-        }
 
         /// <summary>
         /// Clears all permission overrides for the browser context.

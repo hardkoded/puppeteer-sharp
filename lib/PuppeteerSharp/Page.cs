@@ -311,6 +311,32 @@ namespace PuppeteerSharp
         #region Public Methods
 
         /// <summary>
+        /// Sets the page's geolocation.
+        /// </summary>
+        /// <returns>The task.</returns>
+        /// <param name="options">Geolocation options.</param>
+        /// <remarks>
+        /// Consider using <seealso cref="BrowserContext.OverridePermissionsAsync(string, IEnumerable{OverridePermission})"/> to grant permissions for the page to read its geolocation.
+        /// </remarks>
+        public Task SetGeolocationAsync(GeolocationOption options)
+        {
+            if (options.Longitude < -180 || options.Longitude > 180)
+            {
+                throw new ArgumentException($"Invalid longitude '{ options.Longitude }': precondition - 180 <= LONGITUDE <= 180 failed.");
+            }
+            if (options.Latitude < -90 || options.Latitude > 90)
+            {
+                throw new ArgumentException($"Invalid latitude '{ options.Latitude }': precondition - 90 <= LATITUDE <= 90 failed.");
+            }
+            if (options.Accuracy < 0)
+            {
+                throw new ArgumentException($"Invalid accuracy '{options.Accuracy}': precondition 0 <= ACCURACY failed.");
+            }
+
+            return Client.SendAsync("Emulation.setGeolocationOverride", options);
+        }
+
+        /// <summary>
         /// Returns metrics
         /// </summary>
         /// <returns>Task which resolves into a list of metrics</returns>
@@ -697,7 +723,10 @@ namespace PuppeteerSharp
         /// <seealso cref="GoToAsync(string, int?, WaitUntilNavigation[])"/>
         public async Task<Response> GoToAsync(string url, NavigationOptions options)
         {
-            var referrer = _networkManager.ExtraHTTPHeaders?.GetValueOrDefault("referer");
+            var referrer = string.IsNullOrEmpty(options.Referer)
+                ? _networkManager.ExtraHTTPHeaders?.GetValueOrDefault("referer")
+                : options.Referer;
+
             var requests = new Dictionary<string, Request>();
 
             void createRequestEventListener(object sender, RequestEventArgs e)
@@ -1645,6 +1674,10 @@ namespace PuppeteerSharp
 
             if (options != null && options.FullPage)
             {
+                if (Viewport == null)
+                {
+                    throw new PuppeteerException("FullPage screenshots do not work without first setting viewport.");
+                }
                 dynamic metrics = await Client.SendAsync("Page.getLayoutMetrics").ConfigureAwait(false);
                 var width = Convert.ToInt32(Math.Ceiling(Convert.ToDecimal(metrics.contentSize.width.Value)));
                 var height = Convert.ToInt32(Math.Ceiling(Convert.ToDecimal(metrics.contentSize.height.Value)));
