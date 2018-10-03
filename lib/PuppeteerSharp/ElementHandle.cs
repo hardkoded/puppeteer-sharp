@@ -126,7 +126,7 @@ namespace PuppeteerSharp
             }
 
             var viewport = Page.Viewport;
-            if (boundingBox.Width > viewport.Width || boundingBox.Height > viewport.Height)
+            if (viewport != null && (boundingBox.Width > viewport.Width || boundingBox.Height > viewport.Height))
             {
                 var newRawViewport = JObject.FromObject(viewport);
                 newRawViewport.Merge(new ViewPortOptions

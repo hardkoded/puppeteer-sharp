@@ -1674,6 +1674,10 @@ namespace PuppeteerSharp
 
             if (options != null && options.FullPage)
             {
+                if (Viewport == null)
+                {
+                    throw new PuppeteerException("FullPage screenshots do not work without first setting viewport.");
+                }
                 dynamic metrics = await Client.SendAsync("Page.getLayoutMetrics").ConfigureAwait(false);
                 var width = Convert.ToInt32(Math.Ceiling(Convert.ToDecimal(metrics.contentSize.width.Value)));
                 var height = Convert.ToInt32(Math.Ceiling(Convert.ToDecimal(metrics.contentSize.height.Value)));
