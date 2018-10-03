@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -10,10 +11,12 @@ namespace PuppeteerSharp
     /// </summary>
     public class BrowserContext
     {
+        private readonly IConnection _connection;
         private readonly string _id;
 
-        internal BrowserContext(Browser browser, string contextId)
+        internal BrowserContext(IConnection connection, Browser browser, string contextId)
         {
+            _connection = connection;
             Browser = browser;
             _id = contextId;
         }
@@ -82,6 +85,36 @@ namespace PuppeteerSharp
             }
             return Browser.DisposeContextAsync(_id);
         }
+
+        /// <summary>
+        /// Overrides the browser context permissions.
+        /// </summary>
+        /// <returns>The task.</returns>
+        /// <param name="origin">The origin to grant permissions to, e.g. "https://example.com"</param>
+        /// <param name="permissions">
+        /// An array of permissions to grant. All permissions that are not listed here will be automatically denied.
+        /// </param>
+        /// <example>
+        /// <![CDATA[
+        /// var context = browser.DefaultBrowserContext;
+        /// await context.OverridePermissionsAsync("https://html5demos.com", new List<string> {"geolocation"});
+        /// ]]>
+        /// </example>
+        /// <seealso href="https://developer.mozilla.org/en-US/docs/Glossary/Origin"/>
+        public Task OverridePermissionsAsync(string origin, IEnumerable<OverridePermission> permissions)
+            => _connection.SendAsync("Browser.grantPermissions", new
+            {
+                origin,
+                browserContextId = _id,
+                permissions
+            });
+
+        /// <summary>
+        /// Clears all permission overrides for the browser context.
+        /// </summary>
+        /// <returns>The task.</returns>
+        public Task ClearPermissionOverridesAsync()
+            => _connection.SendAsync("Browser.resetPermissions", new { browserContextId = _id });
 
         internal void OnTargetCreated(Browser browser, TargetChangedArgs args) => TargetCreated?.Invoke(browser, args);
 
