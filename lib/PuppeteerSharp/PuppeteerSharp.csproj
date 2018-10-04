@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>1.7.0</PackageVersion>
+    <PackageVersion>1.8.0</PackageVersion>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
@@ -11,37 +11,32 @@
     <Title>PuppeteerSharp</Title>
     <Description>Headless Chrome .NET API</Description>
     <PackageId>PuppeteerSharp</PackageId>
-    <PackageReleaseNotes># New Features
+    <PackageReleaseNotes><![CDATA[# New Features
 
- * Typing emojis.
- * Bump Chormium to r579032.
- * [PENDING] Page.ClickAsync should work with disabled javascript
+ * Roll Chromium to r588429.
 
 # New APIs
 
- * New PdfOptions.PreferCSSPageSize option.
- * Page.GoToAsync(string url, WaitUntilNavigation waitUntil).
- * LaunchOptions.DefaultViewport - ConnectOptions.DefaultViewport
- * LaunchOptions. IgnoredDefaultArgs
- * Puppeteer.DefaultArgs().
- * BrowserContext.PagesAsync().
- * Make WaitTaskTimeoutException public.
- * Extension improvements: ElementHandle.EvaluateFunctionAsync and JSHandle.EvaluateFunctionAsync.
-
-# Breaking Changes
-
- * Dropped LaunchOptions.AppMode - ConnectOptions.AppMode
+ * Task<ElementHandle>EvaluateFunctionAsync and Task<JSHandle>EvaluateFunctionAsync.
+ * BrowserContext.OverridePermissionsAsync.
+ * BrowserContext. ClearPermissionOverridesAsync.
+ * Page. SetGeolocationAsync.
+ * NavigationOptions.Referer.
+ * Response.RemoteAddress.
+ * Response.StatusText
 
 # Changelog
 
- * Make sure referer header is reported with request interception.
- * Using new browser context for every page test.
- * Don't emit an internal error when eval causes navigation.
- * Force KeepAliveInterval to 0.
- * Improve waiting for selector to be hidden error message.
- * Fix Memory leaks in Connections.        
+ * Fix null-type bugs.
+ * Improve PdfOptions documentation.
+ * Create Request class right away from payload.
+ * Drop object factory from execution context.
+ * Page.goto should properly handle historyAPI in beforeunload.
+ * New ResourceType.Ping.
+ * Launch with Environment Variables.
+]]>
     </PackageReleaseNotes>
-    <ReleaseVersion>1.7.0</ReleaseVersion>
+    <ReleaseVersion>1.8.0</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>
