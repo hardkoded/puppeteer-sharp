@@ -11,7 +11,7 @@
     <Title>PuppeteerSharp</Title>
     <Description>Headless Chrome .NET API</Description>
     <PackageId>PuppeteerSharp</PackageId>
-    <PackageReleaseNotes># New Features
+    <PackageReleaseNotes><![CDATA[# New Features
 
  * Roll Chromium to r588429.
 
@@ -23,7 +23,7 @@
  * Page. SetGeolocationAsync.
  * NavigationOptions.Referer.
  * Response.RemoteAddress.
- *  Response.StatusText
+ * Response.StatusText
 
 # Changelog
 
@@ -34,6 +34,7 @@
  * Page.goto should properly handle historyAPI in beforeunload.
  * New ResourceType.Ping.
  * Launch with Environment Variables.
+]]>
     </PackageReleaseNotes>
     <ReleaseVersion>1.8.0</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
