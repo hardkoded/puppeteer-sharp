@@ -61,7 +61,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Browser.html",
-          "hash": "gXvQvHlZ/r7A6qJeQ8ytkA=="
+          "hash": "F1dYnIUJy6G9AW3OiDwWHw=="
         }
       },
       "is_incremental": false,
@@ -73,7 +73,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.BrowserContext.html",
-          "hash": "NwppQyde5TkuZTfQqPXTgA=="
+          "hash": "bkuL0xBzzw5J3PJfOGuDEQ=="
         }
       },
       "is_incremental": false,
@@ -109,7 +109,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.CDPSession.html",
-          "hash": "QLJqaQwe5NCsg2xKmKxzCA=="
+          "hash": "fBKUWA87Hz65FsozfluexA=="
         }
       },
       "is_incremental": false,
@@ -301,7 +301,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.ExecutionContext.html",
-          "hash": "fKlUvUdGonqEQXLQkkl8iQ=="
+          "hash": "F8M0E5Dj8JfVIP7Y58nysw=="
         }
       },
       "is_incremental": false,
@@ -313,7 +313,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Extensions.html",
-          "hash": "t1dR5qbRPoVEj+wsJjMh6g=="
+          "hash": "h0bYfTloSp+u47ymzvhZ0g=="
         }
       },
       "is_incremental": false,
@@ -325,7 +325,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Frame.html",
-          "hash": "c+sAIjvnFnr6MZyfD5sVeg=="
+          "hash": "LQqMgW0x/avNAVHGBKF+YQ=="
         }
       },
       "is_incremental": false,
@@ -338,6 +338,18 @@
         ".html": {
           "relative_path": "api/PuppeteerSharp.FrameEventArgs.html",
           "hash": "SyK8Tn0V2I8mIiYkjoz+5A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PuppeteerSharp.GeolocationOption.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PuppeteerSharp.GeolocationOption.html",
+          "hash": "F2/D4NNWCPjcccNnM7NaRw=="
         }
       },
       "is_incremental": false,
@@ -637,7 +649,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.MessageException.html",
-          "hash": "lHdbfhM7KvBl5GPwY8Tr3A=="
+          "hash": "E36v9J6JsqrH6tN4jnekjA=="
         }
       },
       "is_incremental": false,
@@ -721,7 +733,19 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.NavigationOptions.html",
-          "hash": "I4IbOP9kJToV73PKm15NuA=="
+          "hash": "arH2FPk8rhvdexv4+4+hZg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PuppeteerSharp.OverridePermission.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PuppeteerSharp.OverridePermission.html",
+          "hash": "IYWcvFivrau1cFAbD74sAw=="
         }
       },
       "is_incremental": false,
@@ -733,7 +757,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Page.html",
-          "hash": "3od8RmWvJaDXtHl7cvfr8A=="
+          "hash": "fkZpHebncXgUwWSBzIy5jw=="
         }
       },
       "is_incremental": false,
@@ -841,7 +865,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.PdfOptions.html",
-          "hash": "FcrDMfEUYljZi0G/jOXv9w=="
+          "hash": "UTRfgUA0dPUyJhwYMBwlrQ=="
         }
       },
       "is_incremental": false,
@@ -865,7 +889,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Puppeteer.html",
-          "hash": "PF4cUjOY0JkRqVH/ITiXTg=="
+          "hash": "UcXrpy0tY2w/K6qUV3Yiog=="
         }
       },
       "is_incremental": false,
@@ -885,11 +909,23 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/PuppeteerSharp.RemoteAddress.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PuppeteerSharp.RemoteAddress.html",
+          "hash": "jHnCn9SaN2jbkK998Lv5cg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/PuppeteerSharp.Request.yml",
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Request.html",
-          "hash": "mLwa/EgoLTK7MGRYxcWqMg=="
+          "hash": "ugUkydReYDs9UEDfbeavgg=="
         }
       },
       "is_incremental": false,
@@ -925,7 +961,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.ResourceType.html",
-          "hash": "YyJZ5VyOWinB/6QIMH+PRw=="
+          "hash": "nyBpz8pHEMFdP6XywHWOVA=="
         }
       },
       "is_incremental": false,
@@ -937,7 +973,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Response.html",
-          "hash": "IB5rHXJccbbXJGVYowpQ4g=="
+          "hash": "GRqql6r5lYpWBf9S40EjPg=="
         }
       },
       "is_incremental": false,
@@ -1237,7 +1273,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.html",
-          "hash": "LquCpTvbEU89f5kELnLJlg=="
+          "hash": "zjp9qT5rZSaehJN/kgknCg=="
         }
       },
       "is_incremental": false,
@@ -1261,7 +1297,7 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "crKUIK8P0mTxQf5j2Kjj4Q=="
+          "hash": "QmRzClxEAvCc4lWcwZe/bg=="
         }
       },
       "is_incremental": false,
@@ -1305,11 +1341,11 @@
           "details": "Processor TocDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
           "incrementalPhase": "build"
         },
-        "ManagedReferenceDocumentProcessor": {
+        "ConceptualDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build"
         },
-        "ConceptualDocumentProcessor": {
+        "ManagedReferenceDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build"
         }

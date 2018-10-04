@@ -131,10 +131,10 @@ await Browser.CloseAsync();</code></pre>
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20ConnectAsync(ConnectOptions, ILoggerFactory)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs/%23L59">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20ConnectAsync(ConnectOptions, ILoggerFactory)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs/%23L66">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs/#L59">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs/#L66">View Source</a>
   </span>
   <a id="PuppeteerSharp_Puppeteer_ConnectAsync_" data-uid="PuppeteerSharp.Puppeteer.ConnectAsync*"></a>
   <h4 id="PuppeteerSharp_Puppeteer_ConnectAsync_PuppeteerSharp_ConnectOptions_ILoggerFactory_" data-uid="PuppeteerSharp.Puppeteer.ConnectAsync(PuppeteerSharp.ConnectOptions,ILoggerFactory)">ConnectAsync(ConnectOptions, ILoggerFactory)</h4>
@@ -187,10 +187,10 @@ await Browser.CloseAsync();</code></pre>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20CreateBrowserFetcher(BrowserFetcherOptions)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs/%23L67">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20CreateBrowserFetcher(BrowserFetcherOptions)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs/%23L74">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs/#L67">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs/#L74">View Source</a>
   </span>
   <a id="PuppeteerSharp_Puppeteer_CreateBrowserFetcher_" data-uid="PuppeteerSharp.Puppeteer.CreateBrowserFetcher*"></a>
   <h4 id="PuppeteerSharp_Puppeteer_CreateBrowserFetcher_PuppeteerSharp_BrowserFetcherOptions_" data-uid="PuppeteerSharp.Puppeteer.CreateBrowserFetcher(PuppeteerSharp.BrowserFetcherOptions)">CreateBrowserFetcher(BrowserFetcherOptions)</h4>
@@ -319,10 +319,10 @@ await Browser.CloseAsync();</code></pre>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20LaunchAsync(LaunchOptions, ILoggerFactory)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs/%23L50">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20LaunchAsync(LaunchOptions, ILoggerFactory)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs/%23L57">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs/#L50">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs/#L57">View Source</a>
   </span>
   <a id="PuppeteerSharp_Puppeteer_LaunchAsync_" data-uid="PuppeteerSharp.Puppeteer.LaunchAsync*"></a>
   <h4 id="PuppeteerSharp_Puppeteer_LaunchAsync_PuppeteerSharp_LaunchOptions_ILoggerFactory_" data-uid="PuppeteerSharp.Puppeteer.LaunchAsync(PuppeteerSharp.LaunchOptions,ILoggerFactory)">LaunchAsync(LaunchOptions, ILoggerFactory)</h4>
@@ -377,6 +377,14 @@ await Browser.CloseAsync();</code></pre>
   <div class="markdown level1 remarks"><p>See <a href="https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/">this article</a>
 for a description of the differences between Chromium and Chrome.
 <a href="https://chromium.googlesource.com/chromium/src/+/lkcr/docs/chromium_browser_vs_google_chrome.md">This article</a> describes some differences for Linux users.</p>
+<p>Environment Variables
+Puppeteer looks for certain <a href="https://en.wikipedia.org/wiki/Environment_variable">environment variables</a>() to aid its operations.</p>
+<ul>
+<li><code>PUPPETEER_CHROMIUM_REVISION</code> - specify a certain version of Chromium you'd like Puppeteer to use. See <a class="xref" href="PuppeteerSharp.Puppeteer.html#PuppeteerSharp_Puppeteer_LaunchAsync_PuppeteerSharp_LaunchOptions_ILoggerFactory_">LaunchAsync(LaunchOptions, ILoggerFactory)</a> on how executable path is inferred.
+<strong>BEWARE</strong>: Puppeteer is only <a href="https://github.com/GoogleChrome/puppeteer/#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy">guaranteed to work</a> with the bundled Chromium, use at your own risk.</li>
+<li><code>PUPPETEER_EXECUTABLE_PATH</code> - specify an executable path to be used in <a class="xref" href="PuppeteerSharp.Puppeteer.html#PuppeteerSharp_Puppeteer_LaunchAsync_PuppeteerSharp_LaunchOptions_ILoggerFactory_">LaunchAsync(LaunchOptions, ILoggerFactory)</a>.
+<strong>BEWARE</strong>: Puppeteer is only <a href="https://github.com/GoogleChrome/puppeteer/#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy">guaranteed to work</a> with the bundled Chromium, use at your own risk.</li>
+</ul>
 </div>
 </article>
           </div>

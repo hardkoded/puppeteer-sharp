@@ -357,6 +357,19 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Browser.CreateIncognitoBrowserContextAsync
   nameWithType: Browser.CreateIncognitoBrowserContextAsync
+- uid: PuppeteerSharp.Browser.DefaultContext
+  name: DefaultContext
+  href: api/PuppeteerSharp.Browser.html#PuppeteerSharp_Browser_DefaultContext
+  commentId: P:PuppeteerSharp.Browser.DefaultContext
+  fullName: PuppeteerSharp.Browser.DefaultContext
+  nameWithType: Browser.DefaultContext
+- uid: PuppeteerSharp.Browser.DefaultContext*
+  name: DefaultContext
+  href: api/PuppeteerSharp.Browser.html#PuppeteerSharp_Browser_DefaultContext_
+  commentId: Overload:PuppeteerSharp.Browser.DefaultContext
+  isSpec: "True"
+  fullName: PuppeteerSharp.Browser.DefaultContext
+  nameWithType: Browser.DefaultContext
 - uid: PuppeteerSharp.Browser.Disconnect
   name: Disconnect()
   href: api/PuppeteerSharp.Browser.html#PuppeteerSharp_Browser_Disconnect
@@ -543,6 +556,19 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.BrowserContext.Browser
   nameWithType: BrowserContext.Browser
+- uid: PuppeteerSharp.BrowserContext.ClearPermissionOverridesAsync
+  name: ClearPermissionOverridesAsync()
+  href: api/PuppeteerSharp.BrowserContext.html#PuppeteerSharp_BrowserContext_ClearPermissionOverridesAsync
+  commentId: M:PuppeteerSharp.BrowserContext.ClearPermissionOverridesAsync
+  fullName: PuppeteerSharp.BrowserContext.ClearPermissionOverridesAsync()
+  nameWithType: BrowserContext.ClearPermissionOverridesAsync()
+- uid: PuppeteerSharp.BrowserContext.ClearPermissionOverridesAsync*
+  name: ClearPermissionOverridesAsync
+  href: api/PuppeteerSharp.BrowserContext.html#PuppeteerSharp_BrowserContext_ClearPermissionOverridesAsync_
+  commentId: Overload:PuppeteerSharp.BrowserContext.ClearPermissionOverridesAsync
+  isSpec: "True"
+  fullName: PuppeteerSharp.BrowserContext.ClearPermissionOverridesAsync
+  nameWithType: BrowserContext.ClearPermissionOverridesAsync
 - uid: PuppeteerSharp.BrowserContext.CloseAsync
   name: CloseAsync()
   href: api/PuppeteerSharp.BrowserContext.html#PuppeteerSharp_BrowserContext_CloseAsync
@@ -582,6 +608,22 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.BrowserContext.NewPageAsync
   nameWithType: BrowserContext.NewPageAsync
+- uid: PuppeteerSharp.BrowserContext.OverridePermissionsAsync(System.String,IEnumerable{PuppeteerSharp.OverridePermission})
+  name: OverridePermissionsAsync(String, IEnumerable<OverridePermission>)
+  href: api/PuppeteerSharp.BrowserContext.html#PuppeteerSharp_BrowserContext_OverridePermissionsAsync_System_String_IEnumerable_PuppeteerSharp_OverridePermission__
+  commentId: M:PuppeteerSharp.BrowserContext.OverridePermissionsAsync(System.String,IEnumerable{PuppeteerSharp.OverridePermission})
+  name.vb: OverridePermissionsAsync(String, IEnumerable(Of OverridePermission))
+  fullName: PuppeteerSharp.BrowserContext.OverridePermissionsAsync(System.String, IEnumerable<PuppeteerSharp.OverridePermission>)
+  fullName.vb: PuppeteerSharp.BrowserContext.OverridePermissionsAsync(System.String, IEnumerable(Of PuppeteerSharp.OverridePermission))
+  nameWithType: BrowserContext.OverridePermissionsAsync(String, IEnumerable<OverridePermission>)
+  nameWithType.vb: BrowserContext.OverridePermissionsAsync(String, IEnumerable(Of OverridePermission))
+- uid: PuppeteerSharp.BrowserContext.OverridePermissionsAsync*
+  name: OverridePermissionsAsync
+  href: api/PuppeteerSharp.BrowserContext.html#PuppeteerSharp_BrowserContext_OverridePermissionsAsync_
+  commentId: Overload:PuppeteerSharp.BrowserContext.OverridePermissionsAsync
+  isSpec: "True"
+  fullName: PuppeteerSharp.BrowserContext.OverridePermissionsAsync
+  nameWithType: BrowserContext.OverridePermissionsAsync
 - uid: PuppeteerSharp.BrowserContext.PagesAsync
   name: PagesAsync()
   href: api/PuppeteerSharp.BrowserContext.html#PuppeteerSharp_BrowserContext_PagesAsync
@@ -882,6 +924,34 @@ references:
   commentId: E:PuppeteerSharp.CDPSession.MessageReceived
   fullName: PuppeteerSharp.CDPSession.MessageReceived
   nameWithType: CDPSession.MessageReceived
+- uid: PuppeteerSharp.CDPSession.SendAsync(System.String,System.Boolean,System.Object)
+  name: SendAsync(String, Boolean, Object)
+  href: api/PuppeteerSharp.CDPSession.html#PuppeteerSharp_CDPSession_SendAsync_System_String_System_Boolean_System_Object_
+  commentId: M:PuppeteerSharp.CDPSession.SendAsync(System.String,System.Boolean,System.Object)
+  fullName: PuppeteerSharp.CDPSession.SendAsync(System.String, System.Boolean, System.Object)
+  nameWithType: CDPSession.SendAsync(String, Boolean, Object)
+- uid: PuppeteerSharp.CDPSession.SendAsync(System.String,System.Object)
+  name: SendAsync(String, Object)
+  href: api/PuppeteerSharp.CDPSession.html#PuppeteerSharp_CDPSession_SendAsync_System_String_System_Object_
+  commentId: M:PuppeteerSharp.CDPSession.SendAsync(System.String,System.Object)
+  fullName: PuppeteerSharp.CDPSession.SendAsync(System.String, System.Object)
+  nameWithType: CDPSession.SendAsync(String, Object)
+- uid: PuppeteerSharp.CDPSession.SendAsync*
+  name: SendAsync
+  href: api/PuppeteerSharp.CDPSession.html#PuppeteerSharp_CDPSession_SendAsync_
+  commentId: Overload:PuppeteerSharp.CDPSession.SendAsync
+  isSpec: "True"
+  fullName: PuppeteerSharp.CDPSession.SendAsync
+  nameWithType: CDPSession.SendAsync
+- uid: PuppeteerSharp.CDPSession.SendAsync``1(System.String,System.Object)
+  name: SendAsync<T>(String, Object)
+  href: api/PuppeteerSharp.CDPSession.html#PuppeteerSharp_CDPSession_SendAsync__1_System_String_System_Object_
+  commentId: M:PuppeteerSharp.CDPSession.SendAsync``1(System.String,System.Object)
+  name.vb: SendAsync(Of T)(String, Object)
+  fullName: PuppeteerSharp.CDPSession.SendAsync<T>(System.String, System.Object)
+  fullName.vb: PuppeteerSharp.CDPSession.SendAsync(Of T)(System.String, System.Object)
+  nameWithType: CDPSession.SendAsync<T>(String, Object)
+  nameWithType.vb: CDPSession.SendAsync(Of T)(String, Object)
 - uid: PuppeteerSharp.CDPSession.SessionId
   name: SessionId
   href: api/PuppeteerSharp.CDPSession.html#PuppeteerSharp_CDPSession_SessionId
@@ -2273,6 +2343,24 @@ references:
   commentId: T:PuppeteerSharp.Extensions
   fullName: PuppeteerSharp.Extensions
   nameWithType: Extensions
+- uid: PuppeteerSharp.Extensions.EvaluateFunctionAsync(Task{PuppeteerSharp.ElementHandle},System.String,System.Object[])
+  name: EvaluateFunctionAsync(Task<ElementHandle>, String, Object[])
+  href: api/PuppeteerSharp.Extensions.html#PuppeteerSharp_Extensions_EvaluateFunctionAsync_Task_PuppeteerSharp_ElementHandle__System_String_System_Object___
+  commentId: M:PuppeteerSharp.Extensions.EvaluateFunctionAsync(Task{PuppeteerSharp.ElementHandle},System.String,System.Object[])
+  name.vb: EvaluateFunctionAsync(Task(Of ElementHandle), String, Object())
+  fullName: PuppeteerSharp.Extensions.EvaluateFunctionAsync(Task<PuppeteerSharp.ElementHandle>, System.String, System.Object[])
+  fullName.vb: PuppeteerSharp.Extensions.EvaluateFunctionAsync(Task(Of PuppeteerSharp.ElementHandle), System.String, System.Object())
+  nameWithType: Extensions.EvaluateFunctionAsync(Task<ElementHandle>, String, Object[])
+  nameWithType.vb: Extensions.EvaluateFunctionAsync(Task(Of ElementHandle), String, Object())
+- uid: PuppeteerSharp.Extensions.EvaluateFunctionAsync(Task{PuppeteerSharp.JSHandle},System.String,System.Object[])
+  name: EvaluateFunctionAsync(Task<JSHandle>, String, Object[])
+  href: api/PuppeteerSharp.Extensions.html#PuppeteerSharp_Extensions_EvaluateFunctionAsync_Task_PuppeteerSharp_JSHandle__System_String_System_Object___
+  commentId: M:PuppeteerSharp.Extensions.EvaluateFunctionAsync(Task{PuppeteerSharp.JSHandle},System.String,System.Object[])
+  name.vb: EvaluateFunctionAsync(Task(Of JSHandle), String, Object())
+  fullName: PuppeteerSharp.Extensions.EvaluateFunctionAsync(Task<PuppeteerSharp.JSHandle>, System.String, System.Object[])
+  fullName.vb: PuppeteerSharp.Extensions.EvaluateFunctionAsync(Task(Of PuppeteerSharp.JSHandle), System.String, System.Object())
+  nameWithType: Extensions.EvaluateFunctionAsync(Task<JSHandle>, String, Object[])
+  nameWithType.vb: Extensions.EvaluateFunctionAsync(Task(Of JSHandle), String, Object())
 - uid: PuppeteerSharp.Extensions.EvaluateFunctionAsync*
   name: EvaluateFunctionAsync
   href: api/PuppeteerSharp.Extensions.html#PuppeteerSharp_Extensions_EvaluateFunctionAsync_
@@ -2696,6 +2784,83 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.FrameEventArgs.Frame
   nameWithType: FrameEventArgs.Frame
+- uid: PuppeteerSharp.GeolocationOption
+  name: GeolocationOption
+  href: api/PuppeteerSharp.GeolocationOption.html
+  commentId: T:PuppeteerSharp.GeolocationOption
+  fullName: PuppeteerSharp.GeolocationOption
+  nameWithType: GeolocationOption
+- uid: PuppeteerSharp.GeolocationOption.Accuracy
+  name: Accuracy
+  href: api/PuppeteerSharp.GeolocationOption.html#PuppeteerSharp_GeolocationOption_Accuracy
+  commentId: P:PuppeteerSharp.GeolocationOption.Accuracy
+  fullName: PuppeteerSharp.GeolocationOption.Accuracy
+  nameWithType: GeolocationOption.Accuracy
+- uid: PuppeteerSharp.GeolocationOption.Accuracy*
+  name: Accuracy
+  href: api/PuppeteerSharp.GeolocationOption.html#PuppeteerSharp_GeolocationOption_Accuracy_
+  commentId: Overload:PuppeteerSharp.GeolocationOption.Accuracy
+  isSpec: "True"
+  fullName: PuppeteerSharp.GeolocationOption.Accuracy
+  nameWithType: GeolocationOption.Accuracy
+- uid: PuppeteerSharp.GeolocationOption.Equals(PuppeteerSharp.GeolocationOption)
+  name: Equals(GeolocationOption)
+  href: api/PuppeteerSharp.GeolocationOption.html#PuppeteerSharp_GeolocationOption_Equals_PuppeteerSharp_GeolocationOption_
+  commentId: M:PuppeteerSharp.GeolocationOption.Equals(PuppeteerSharp.GeolocationOption)
+  fullName: PuppeteerSharp.GeolocationOption.Equals(PuppeteerSharp.GeolocationOption)
+  nameWithType: GeolocationOption.Equals(GeolocationOption)
+- uid: PuppeteerSharp.GeolocationOption.Equals(System.Object)
+  name: Equals(Object)
+  href: api/PuppeteerSharp.GeolocationOption.html#PuppeteerSharp_GeolocationOption_Equals_System_Object_
+  commentId: M:PuppeteerSharp.GeolocationOption.Equals(System.Object)
+  fullName: PuppeteerSharp.GeolocationOption.Equals(System.Object)
+  nameWithType: GeolocationOption.Equals(Object)
+- uid: PuppeteerSharp.GeolocationOption.Equals*
+  name: Equals
+  href: api/PuppeteerSharp.GeolocationOption.html#PuppeteerSharp_GeolocationOption_Equals_
+  commentId: Overload:PuppeteerSharp.GeolocationOption.Equals
+  isSpec: "True"
+  fullName: PuppeteerSharp.GeolocationOption.Equals
+  nameWithType: GeolocationOption.Equals
+- uid: PuppeteerSharp.GeolocationOption.GetHashCode
+  name: GetHashCode()
+  href: api/PuppeteerSharp.GeolocationOption.html#PuppeteerSharp_GeolocationOption_GetHashCode
+  commentId: M:PuppeteerSharp.GeolocationOption.GetHashCode
+  fullName: PuppeteerSharp.GeolocationOption.GetHashCode()
+  nameWithType: GeolocationOption.GetHashCode()
+- uid: PuppeteerSharp.GeolocationOption.GetHashCode*
+  name: GetHashCode
+  href: api/PuppeteerSharp.GeolocationOption.html#PuppeteerSharp_GeolocationOption_GetHashCode_
+  commentId: Overload:PuppeteerSharp.GeolocationOption.GetHashCode
+  isSpec: "True"
+  fullName: PuppeteerSharp.GeolocationOption.GetHashCode
+  nameWithType: GeolocationOption.GetHashCode
+- uid: PuppeteerSharp.GeolocationOption.Latitude
+  name: Latitude
+  href: api/PuppeteerSharp.GeolocationOption.html#PuppeteerSharp_GeolocationOption_Latitude
+  commentId: P:PuppeteerSharp.GeolocationOption.Latitude
+  fullName: PuppeteerSharp.GeolocationOption.Latitude
+  nameWithType: GeolocationOption.Latitude
+- uid: PuppeteerSharp.GeolocationOption.Latitude*
+  name: Latitude
+  href: api/PuppeteerSharp.GeolocationOption.html#PuppeteerSharp_GeolocationOption_Latitude_
+  commentId: Overload:PuppeteerSharp.GeolocationOption.Latitude
+  isSpec: "True"
+  fullName: PuppeteerSharp.GeolocationOption.Latitude
+  nameWithType: GeolocationOption.Latitude
+- uid: PuppeteerSharp.GeolocationOption.Longitude
+  name: Longitude
+  href: api/PuppeteerSharp.GeolocationOption.html#PuppeteerSharp_GeolocationOption_Longitude
+  commentId: P:PuppeteerSharp.GeolocationOption.Longitude
+  fullName: PuppeteerSharp.GeolocationOption.Longitude
+  nameWithType: GeolocationOption.Longitude
+- uid: PuppeteerSharp.GeolocationOption.Longitude*
+  name: Longitude
+  href: api/PuppeteerSharp.GeolocationOption.html#PuppeteerSharp_GeolocationOption_Longitude_
+  commentId: Overload:PuppeteerSharp.GeolocationOption.Longitude
+  isSpec: "True"
+  fullName: PuppeteerSharp.GeolocationOption.Longitude
+  nameWithType: GeolocationOption.Longitude
 - uid: PuppeteerSharp.Helpers
   name: PuppeteerSharp.Helpers
   href: api/PuppeteerSharp.Helpers.html
@@ -5118,6 +5283,19 @@ references:
   commentId: T:PuppeteerSharp.NavigationOptions
   fullName: PuppeteerSharp.NavigationOptions
   nameWithType: NavigationOptions
+- uid: PuppeteerSharp.NavigationOptions.Referer
+  name: Referer
+  href: api/PuppeteerSharp.NavigationOptions.html#PuppeteerSharp_NavigationOptions_Referer
+  commentId: P:PuppeteerSharp.NavigationOptions.Referer
+  fullName: PuppeteerSharp.NavigationOptions.Referer
+  nameWithType: NavigationOptions.Referer
+- uid: PuppeteerSharp.NavigationOptions.Referer*
+  name: Referer
+  href: api/PuppeteerSharp.NavigationOptions.html#PuppeteerSharp_NavigationOptions_Referer_
+  commentId: Overload:PuppeteerSharp.NavigationOptions.Referer
+  isSpec: "True"
+  fullName: PuppeteerSharp.NavigationOptions.Referer
+  nameWithType: NavigationOptions.Referer
 - uid: PuppeteerSharp.NavigationOptions.Timeout
   name: Timeout
   href: api/PuppeteerSharp.NavigationOptions.html#PuppeteerSharp_NavigationOptions_Timeout
@@ -5144,6 +5322,90 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.NavigationOptions.WaitUntil
   nameWithType: NavigationOptions.WaitUntil
+- uid: PuppeteerSharp.OverridePermission
+  name: OverridePermission
+  href: api/PuppeteerSharp.OverridePermission.html
+  commentId: T:PuppeteerSharp.OverridePermission
+  fullName: PuppeteerSharp.OverridePermission
+  nameWithType: OverridePermission
+- uid: PuppeteerSharp.OverridePermission.AccessibilityEvents
+  name: AccessibilityEvents
+  href: api/PuppeteerSharp.OverridePermission.html#PuppeteerSharp_OverridePermission_AccessibilityEvents
+  commentId: F:PuppeteerSharp.OverridePermission.AccessibilityEvents
+  fullName: PuppeteerSharp.OverridePermission.AccessibilityEvents
+  nameWithType: OverridePermission.AccessibilityEvents
+- uid: PuppeteerSharp.OverridePermission.BackgroundSync
+  name: BackgroundSync
+  href: api/PuppeteerSharp.OverridePermission.html#PuppeteerSharp_OverridePermission_BackgroundSync
+  commentId: F:PuppeteerSharp.OverridePermission.BackgroundSync
+  fullName: PuppeteerSharp.OverridePermission.BackgroundSync
+  nameWithType: OverridePermission.BackgroundSync
+- uid: PuppeteerSharp.OverridePermission.Camera
+  name: Camera
+  href: api/PuppeteerSharp.OverridePermission.html#PuppeteerSharp_OverridePermission_Camera
+  commentId: F:PuppeteerSharp.OverridePermission.Camera
+  fullName: PuppeteerSharp.OverridePermission.Camera
+  nameWithType: OverridePermission.Camera
+- uid: PuppeteerSharp.OverridePermission.ClipboardRead
+  name: ClipboardRead
+  href: api/PuppeteerSharp.OverridePermission.html#PuppeteerSharp_OverridePermission_ClipboardRead
+  commentId: F:PuppeteerSharp.OverridePermission.ClipboardRead
+  fullName: PuppeteerSharp.OverridePermission.ClipboardRead
+  nameWithType: OverridePermission.ClipboardRead
+- uid: PuppeteerSharp.OverridePermission.ClipboardWrite
+  name: ClipboardWrite
+  href: api/PuppeteerSharp.OverridePermission.html#PuppeteerSharp_OverridePermission_ClipboardWrite
+  commentId: F:PuppeteerSharp.OverridePermission.ClipboardWrite
+  fullName: PuppeteerSharp.OverridePermission.ClipboardWrite
+  nameWithType: OverridePermission.ClipboardWrite
+- uid: PuppeteerSharp.OverridePermission.Geolocation
+  name: Geolocation
+  href: api/PuppeteerSharp.OverridePermission.html#PuppeteerSharp_OverridePermission_Geolocation
+  commentId: F:PuppeteerSharp.OverridePermission.Geolocation
+  fullName: PuppeteerSharp.OverridePermission.Geolocation
+  nameWithType: OverridePermission.Geolocation
+- uid: PuppeteerSharp.OverridePermission.Microphone
+  name: Microphone
+  href: api/PuppeteerSharp.OverridePermission.html#PuppeteerSharp_OverridePermission_Microphone
+  commentId: F:PuppeteerSharp.OverridePermission.Microphone
+  fullName: PuppeteerSharp.OverridePermission.Microphone
+  nameWithType: OverridePermission.Microphone
+- uid: PuppeteerSharp.OverridePermission.Midi
+  name: Midi
+  href: api/PuppeteerSharp.OverridePermission.html#PuppeteerSharp_OverridePermission_Midi
+  commentId: F:PuppeteerSharp.OverridePermission.Midi
+  fullName: PuppeteerSharp.OverridePermission.Midi
+  nameWithType: OverridePermission.Midi
+- uid: PuppeteerSharp.OverridePermission.MidiSysex
+  name: MidiSysex
+  href: api/PuppeteerSharp.OverridePermission.html#PuppeteerSharp_OverridePermission_MidiSysex
+  commentId: F:PuppeteerSharp.OverridePermission.MidiSysex
+  fullName: PuppeteerSharp.OverridePermission.MidiSysex
+  nameWithType: OverridePermission.MidiSysex
+- uid: PuppeteerSharp.OverridePermission.Notifications
+  name: Notifications
+  href: api/PuppeteerSharp.OverridePermission.html#PuppeteerSharp_OverridePermission_Notifications
+  commentId: F:PuppeteerSharp.OverridePermission.Notifications
+  fullName: PuppeteerSharp.OverridePermission.Notifications
+  nameWithType: OverridePermission.Notifications
+- uid: PuppeteerSharp.OverridePermission.PaymentHandler
+  name: PaymentHandler
+  href: api/PuppeteerSharp.OverridePermission.html#PuppeteerSharp_OverridePermission_PaymentHandler
+  commentId: F:PuppeteerSharp.OverridePermission.PaymentHandler
+  fullName: PuppeteerSharp.OverridePermission.PaymentHandler
+  nameWithType: OverridePermission.PaymentHandler
+- uid: PuppeteerSharp.OverridePermission.Push
+  name: Push
+  href: api/PuppeteerSharp.OverridePermission.html#PuppeteerSharp_OverridePermission_Push
+  commentId: F:PuppeteerSharp.OverridePermission.Push
+  fullName: PuppeteerSharp.OverridePermission.Push
+  nameWithType: OverridePermission.Push
+- uid: PuppeteerSharp.OverridePermission.Sensors
+  name: Sensors
+  href: api/PuppeteerSharp.OverridePermission.html#PuppeteerSharp_OverridePermission_Sensors
+  commentId: F:PuppeteerSharp.OverridePermission.Sensors
+  fullName: PuppeteerSharp.OverridePermission.Sensors
+  nameWithType: OverridePermission.Sensors
 - uid: PuppeteerSharp.Page
   name: Page
   href: api/PuppeteerSharp.Page.html
@@ -6068,6 +6330,19 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Page.SetExtraHttpHeadersAsync
   nameWithType: Page.SetExtraHttpHeadersAsync
+- uid: PuppeteerSharp.Page.SetGeolocationAsync(PuppeteerSharp.GeolocationOption)
+  name: SetGeolocationAsync(GeolocationOption)
+  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_SetGeolocationAsync_PuppeteerSharp_GeolocationOption_
+  commentId: M:PuppeteerSharp.Page.SetGeolocationAsync(PuppeteerSharp.GeolocationOption)
+  fullName: PuppeteerSharp.Page.SetGeolocationAsync(PuppeteerSharp.GeolocationOption)
+  nameWithType: Page.SetGeolocationAsync(GeolocationOption)
+- uid: PuppeteerSharp.Page.SetGeolocationAsync*
+  name: SetGeolocationAsync
+  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_SetGeolocationAsync_
+  commentId: Overload:PuppeteerSharp.Page.SetGeolocationAsync
+  isSpec: "True"
+  fullName: PuppeteerSharp.Page.SetGeolocationAsync
+  nameWithType: Page.SetGeolocationAsync
 - uid: PuppeteerSharp.Page.SetJavaScriptEnabledAsync(System.Boolean)
   name: SetJavaScriptEnabledAsync(Boolean)
   href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_SetJavaScriptEnabledAsync_System_Boolean_
@@ -7029,6 +7304,38 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.PuppeteerException.PuppeteerException
   nameWithType: PuppeteerException.PuppeteerException
+- uid: PuppeteerSharp.RemoteAddress
+  name: RemoteAddress
+  href: api/PuppeteerSharp.RemoteAddress.html
+  commentId: T:PuppeteerSharp.RemoteAddress
+  fullName: PuppeteerSharp.RemoteAddress
+  nameWithType: RemoteAddress
+- uid: PuppeteerSharp.RemoteAddress.IP
+  name: IP
+  href: api/PuppeteerSharp.RemoteAddress.html#PuppeteerSharp_RemoteAddress_IP
+  commentId: P:PuppeteerSharp.RemoteAddress.IP
+  fullName: PuppeteerSharp.RemoteAddress.IP
+  nameWithType: RemoteAddress.IP
+- uid: PuppeteerSharp.RemoteAddress.IP*
+  name: IP
+  href: api/PuppeteerSharp.RemoteAddress.html#PuppeteerSharp_RemoteAddress_IP_
+  commentId: Overload:PuppeteerSharp.RemoteAddress.IP
+  isSpec: "True"
+  fullName: PuppeteerSharp.RemoteAddress.IP
+  nameWithType: RemoteAddress.IP
+- uid: PuppeteerSharp.RemoteAddress.Port
+  name: Port
+  href: api/PuppeteerSharp.RemoteAddress.html#PuppeteerSharp_RemoteAddress_Port
+  commentId: P:PuppeteerSharp.RemoteAddress.Port
+  fullName: PuppeteerSharp.RemoteAddress.Port
+  nameWithType: RemoteAddress.Port
+- uid: PuppeteerSharp.RemoteAddress.Port*
+  name: Port
+  href: api/PuppeteerSharp.RemoteAddress.html#PuppeteerSharp_RemoteAddress_Port_
+  commentId: Overload:PuppeteerSharp.RemoteAddress.Port
+  isSpec: "True"
+  fullName: PuppeteerSharp.RemoteAddress.Port
+  nameWithType: RemoteAddress.Port
 - uid: PuppeteerSharp.Request
   name: Request
   href: api/PuppeteerSharp.Request.html
@@ -7393,6 +7700,12 @@ references:
   commentId: F:PuppeteerSharp.ResourceType.Other
   fullName: PuppeteerSharp.ResourceType.Other
   nameWithType: ResourceType.Other
+- uid: PuppeteerSharp.ResourceType.Ping
+  name: Ping
+  href: api/PuppeteerSharp.ResourceType.html#PuppeteerSharp_ResourceType_Ping
+  commentId: F:PuppeteerSharp.ResourceType.Ping
+  fullName: PuppeteerSharp.ResourceType.Ping
+  nameWithType: ResourceType.Ping
 - uid: PuppeteerSharp.ResourceType.Script
   name: Script
   href: api/PuppeteerSharp.ResourceType.html#PuppeteerSharp_ResourceType_Script
@@ -7516,6 +7829,19 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Response.Ok
   nameWithType: Response.Ok
+- uid: PuppeteerSharp.Response.RemoteAddress
+  name: RemoteAddress
+  href: api/PuppeteerSharp.Response.html#PuppeteerSharp_Response_RemoteAddress
+  commentId: P:PuppeteerSharp.Response.RemoteAddress
+  fullName: PuppeteerSharp.Response.RemoteAddress
+  nameWithType: Response.RemoteAddress
+- uid: PuppeteerSharp.Response.RemoteAddress*
+  name: RemoteAddress
+  href: api/PuppeteerSharp.Response.html#PuppeteerSharp_Response_RemoteAddress_
+  commentId: Overload:PuppeteerSharp.Response.RemoteAddress
+  isSpec: "True"
+  fullName: PuppeteerSharp.Response.RemoteAddress
+  nameWithType: Response.RemoteAddress
 - uid: PuppeteerSharp.Response.Request
   name: Request
   href: api/PuppeteerSharp.Response.html#PuppeteerSharp_Response_Request
@@ -7555,6 +7881,19 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Response.Status
   nameWithType: Response.Status
+- uid: PuppeteerSharp.Response.StatusText
+  name: StatusText
+  href: api/PuppeteerSharp.Response.html#PuppeteerSharp_Response_StatusText
+  commentId: P:PuppeteerSharp.Response.StatusText
+  fullName: PuppeteerSharp.Response.StatusText
+  nameWithType: Response.StatusText
+- uid: PuppeteerSharp.Response.StatusText*
+  name: StatusText
+  href: api/PuppeteerSharp.Response.html#PuppeteerSharp_Response_StatusText_
+  commentId: Overload:PuppeteerSharp.Response.StatusText
+  isSpec: "True"
+  fullName: PuppeteerSharp.Response.StatusText
+  nameWithType: Response.StatusText
 - uid: PuppeteerSharp.Response.TextAsync
   name: TextAsync()
   href: api/PuppeteerSharp.Response.html#PuppeteerSharp_Response_TextAsync

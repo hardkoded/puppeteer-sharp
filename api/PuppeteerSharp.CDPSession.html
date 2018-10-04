@@ -75,7 +75,7 @@
   </h1>
   <div class="markdown level0 summary"><p>The CDPSession instances are used to talk raw Chrome Devtools Protocol:</p>
 <ul>
-<li>Protocol methods can be called with <span class="xref">PuppeteerSharp.CDPSession.SendAsync(System.String,System.Boolean,System.Object)</span> method.</li>
+<li>Protocol methods can be called with <a class="xref" href="PuppeteerSharp.CDPSession.html#PuppeteerSharp_CDPSession_SendAsync_System_String_System_Boolean_System_Object_">SendAsync(String, Boolean, Object)</a> method.</li>
 <li>Protocol events, using the <a class="xref" href="PuppeteerSharp.CDPSession.html#PuppeteerSharp_CDPSession_MessageReceived">MessageReceived</a> event.</li>
 </ul>
 <p>Documentation on DevTools Protocol can be found here: <a href="https://chromedevtools.github.io/devtools-protocol/">https://chromedevtools.github.io/devtools-protocol/</a>.</p>
@@ -241,10 +241,10 @@ await client.SendAsync(&quot;Animation.setPlaybackRate&quot;, new
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20DetachAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/%23L155">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20DetachAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/%23L172">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/#L155">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/#L172">View Source</a>
   </span>
   <a id="PuppeteerSharp_CDPSession_DetachAsync_" data-uid="PuppeteerSharp.CDPSession.DetachAsync*"></a>
   <h4 id="PuppeteerSharp_CDPSession_DetachAsync" data-uid="PuppeteerSharp.CDPSession.DetachAsync">DetachAsync()</h4>
@@ -266,6 +266,224 @@ await client.SendAsync(&quot;Animation.setPlaybackRate&quot;, new
     <tbody>
       <tr>
         <td><span class="xref">Task</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.PuppeteerException.html">PuppeteerException</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20SendAsync(String, Boolean, Object)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/%23L124">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/#L124">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_CDPSession_SendAsync_" data-uid="PuppeteerSharp.CDPSession.SendAsync*"></a>
+  <h4 id="PuppeteerSharp_CDPSession_SendAsync_System_String_System_Boolean_System_Object_" data-uid="PuppeteerSharp.CDPSession.SendAsync(System.String,System.Boolean,System.Object)">SendAsync(String, Boolean, Object)</h4>
+  <div class="markdown level1 summary"><p>Protocol methods can be called with this method.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;dynamic&gt; SendAsync(string method, bool rawContent, dynamic args = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">method</span></td>
+        <td><p>The method name</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><span class="parametername">rawContent</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Object</span></td>
+        <td><span class="parametername">args</span></td>
+        <td><p>The method args</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span>&lt;<span class="xref">System.Object</span>&gt;</td>
+        <td><p>The task.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.PuppeteerException.html">PuppeteerException</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20SendAsync(String, Object)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/%23L114">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/#L114">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_CDPSession_SendAsync_" data-uid="PuppeteerSharp.CDPSession.SendAsync*"></a>
+  <h4 id="PuppeteerSharp_CDPSession_SendAsync_System_String_System_Object_" data-uid="PuppeteerSharp.CDPSession.SendAsync(System.String,System.Object)">SendAsync(String, Object)</h4>
+  <div class="markdown level1 summary"><p>Protocol methods can be called with this method.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;dynamic&gt; SendAsync(string method, dynamic args = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">method</span></td>
+        <td><p>The method name</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Object</span></td>
+        <td><span class="parametername">args</span></td>
+        <td><p>The method args</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span>&lt;<span class="xref">System.Object</span>&gt;</td>
+        <td><p>The task.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20SendAsync&lt;T&gt;(String, Object)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/%23L102">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/#L102">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_CDPSession_SendAsync_" data-uid="PuppeteerSharp.CDPSession.SendAsync*"></a>
+  <h4 id="PuppeteerSharp_CDPSession_SendAsync__1_System_String_System_Object_" data-uid="PuppeteerSharp.CDPSession.SendAsync``1(System.String,System.Object)">SendAsync&lt;T&gt;(String, Object)</h4>
+  <div class="markdown level1 summary"><p>Protocol methods can be called with this method.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;T&gt; SendAsync&lt;T&gt;(string method, dynamic args = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">method</span></td>
+        <td><p>The method name</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Object</span></td>
+        <td><span class="parametername">args</span></td>
+        <td><p>The method args</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span>&lt;T&gt;</td>
+        <td><p>The task.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
         <td></td>
       </tr>
     </tbody>
