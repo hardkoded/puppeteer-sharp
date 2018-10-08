@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// Security details.
+    /// Represents the security details when response was received over the secure connection.
     /// </summary>
     /// <seealso cref="Response.SecurityDetails"/>
     public class SecurityDetails
