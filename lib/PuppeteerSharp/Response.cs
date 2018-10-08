@@ -44,6 +44,7 @@ namespace PuppeteerSharp
                 IP = responseMessage.RemoteIPAddress,
                 Port = responseMessage.RemotePort
             };
+
             BodyLoadedTaskWrapper = new TaskCompletionSource<bool>();
         }
 
@@ -115,7 +116,7 @@ namespace PuppeteerSharp
                 {
                     var response = await _client.SendAsync<NetworkGetResponseBodyResponse>("Network.getResponseBody", new Dictionary<string, object>
                     {
-                        { MessageKeys.RequestId, Request.RequestId }
+                        { MessageKeys.RequestId, Request.RequestId}
                     }).ConfigureAwait(false);
 
                     _buffer = response.Base64Encoded
