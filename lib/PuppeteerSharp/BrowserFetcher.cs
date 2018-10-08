@@ -270,8 +270,7 @@ namespace PuppeteerSharp
             {
                 return 0;
             }
-            Platform platform;
-            if (!Enum.TryParse<Platform>(splits[0], out platform))
+            if (!Enum.TryParse<Platform>(splits[0], out var platform))
             {
                 platform = Platform.Unknown;
             }
@@ -285,22 +284,18 @@ namespace PuppeteerSharp
 
         private static string GetArchiveName(Platform platform, int revision)
         {
-            if (platform == Platform.Linux)
+            switch (platform)
             {
-                return "chrome-linux";
+                case Platform.Linux:
+                    return "chrome-linux";
+                case Platform.MacOS:
+                    return "chrome-mac";
+                case Platform.Win32:
+                case Platform.Win64:
+                    return revision > 591479 ? "chrome-win" : "chrome-win32";
+                default:
+                    throw new ArgumentException("Invalid platform", nameof(platform));
             }
-
-            if (platform == Platform.MacOS)
-            {
-                return "chrome-mac";
-            }
-
-            if (platform == Platform.Win32 || platform == Platform.Win64)
-            {
-                // Windows archive name changed at r591479.
-                return revision > 591479 ? "chrome-win" : "chrome-win32";
-            }
-            return null;
         }
 
         private static string GetDownloadURL(Platform platform, string host, int revision)
