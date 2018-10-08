@@ -44,7 +44,6 @@ namespace PuppeteerSharp
                 IP = responseMessage.RemoteIPAddress,
                 Port = responseMessage.RemotePort
             };
-
             BodyLoadedTaskWrapper = new TaskCompletionSource<bool>();
         }
 
@@ -88,7 +87,6 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value><c>true</c> if the <see cref="Response"/> was served by a service worker; otherwise, <c>false</c>.</value>
         public bool FromServiceWorker { get; }
-
         /// <summary>
         /// Contains the status text of the response (e.g. usually an "OK" for a success).
         /// </summary>
