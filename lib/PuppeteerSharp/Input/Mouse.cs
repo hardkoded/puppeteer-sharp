@@ -46,7 +46,7 @@ namespace PuppeteerSharp.Input
 
             for (var i = 1; i <= steps; i++)
             {
-                await _client.SendAsync("Input.dispatchMouseEvent", new Dictionary<string, object>()
+                await _client.SendAsync("Input.dispatchMouseEvent", new Dictionary<string, object>
                 {
                     { MessageKeys.Type, "mouseMoved" },
                     { MessageKeys.Button, _button },

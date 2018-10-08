@@ -103,7 +103,7 @@ namespace PuppeteerSharp
         /// <returns>The task.</returns>
         public async Task<T> SendAsync<T>(string method, dynamic args = null)
         {
-            JObject content = await SendAsync(method, args);
+            JObject content = await SendAsync(method, args).ConfigureAwait(false);
 
             return content.ToObject<T>();
         }

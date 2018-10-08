@@ -1187,17 +1187,8 @@ namespace PuppeteerSharp
         /// </remarks>
         /// <seealso cref="EvaluateFunctionAsync{T}(string, object[])"/>
         /// <returns>Task which resolves to script return value</returns>
-        public async Task<JToken> EvaluateExpressionAsync(string script)
-        {
-            var result = await _frameManager.MainFrame.EvaluateExpressionAsync<JToken>(script);
-
-            if (result == null || !result.HasValues)
-            {
-                return null;
-            }
-
-            return result;
-        }
+        public Task<JToken> EvaluateExpressionAsync(string script)
+            => _frameManager.MainFrame.EvaluateExpressionAsync<JToken>(script);
 
         /// <summary>
         /// Executes a script in browser context
@@ -1223,17 +1214,8 @@ namespace PuppeteerSharp
         /// </remarks>
         /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
         /// <returns>Task which resolves to script return value</returns>
-        public async Task<JToken> EvaluateFunctionAsync(string script, params object[] args)
-        {
-            var result = await _frameManager.MainFrame.EvaluateFunctionAsync<JToken>(script, args);
-
-            if (result == null || !result.HasValues)
-            {
-                return null;
-            }
-
-            return result;
-        }
+        public Task<JToken> EvaluateFunctionAsync(string script, params object[] args)
+            => _frameManager.MainFrame.EvaluateFunctionAsync<JToken>(script, args);
 
         /// <summary>
         /// Executes a function in browser context

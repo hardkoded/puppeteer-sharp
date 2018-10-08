@@ -458,7 +458,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 requestIntercepted.SetResult(true);
             };
 
-            var _ = (await Page.QuerySelectorAsync("iframe")).EvaluateFunctionAsync<object>("(frame, url) => frame.src = url", TestConstants.ServerUrl);
+            var _ = Page.QuerySelectorAsync("iframe").EvaluateFunctionAsync<object>("(frame, url) => frame.src = url", TestConstants.ServerUrl);
             // Wait for request interception.
             await requestIntercepted.Task;
             // Delete frame to cause request to be canceled.

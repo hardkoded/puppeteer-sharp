@@ -111,14 +111,7 @@ namespace PuppeteerSharp
         public async Task<JToken> EvaluateExpressionAsync(string script)
         {
             var context = await GetExecutionContextAsync().ConfigureAwait(false);
-            var result = await context.EvaluateExpressionAsync<JToken>(script).ConfigureAwait(false);
-
-            if (result == null || !result.HasValues)
-            {
-                return null;
-            }
-
-            return result;
+            return await context.EvaluateExpressionAsync<JToken>(script).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -153,14 +146,7 @@ namespace PuppeteerSharp
         public async Task<JToken> EvaluateFunctionAsync(string script, params object[] args)
         {
             var context = await GetExecutionContextAsync().ConfigureAwait(false);
-            var result = await context.EvaluateFunctionAsync<JToken>(script, args).ConfigureAwait(false);
-
-            if (result == null || !result.HasValues)
-            {
-                return null;
-            }
-
-            return result;
+            return await context.EvaluateFunctionAsync<JToken>(script, args).ConfigureAwait(false);
         }
 
         /// <summary>

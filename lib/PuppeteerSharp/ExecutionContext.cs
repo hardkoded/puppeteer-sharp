@@ -50,17 +50,8 @@ namespace PuppeteerSharp
         /// <seealso cref="EvaluateFunctionAsync{T}(string, object[])"/>
         /// <seealso cref="EvaluateExpressionHandleAsync(string)"/>
         /// <returns>Task which resolves to script return value</returns>
-        public async Task<JToken> EvaluateExpressionAsync(string script)
-        {
-            var result = await EvaluateAsync<JToken>(EvaluateExpressionHandleAsync(script));
-
-            if (result == null || !result.HasValues)
-            {
-                return null;
-            }
-
-            return result;
-        }
+        public Task<JToken> EvaluateExpressionAsync(string script)
+            => EvaluateAsync<JToken>(EvaluateExpressionHandleAsync(script));
 
         /// <summary>
         /// Executes a script in browser context
@@ -88,18 +79,8 @@ namespace PuppeteerSharp
         /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
         /// <seealso cref="EvaluateFunctionHandleAsync(string, object[])"/>
         /// <returns>Task which resolves to script return value</returns>
-        public async Task<JToken> EvaluateFunctionAsync(string script, params object[] args)
-        {
-            var result = await EvaluateAsync<JToken>(EvaluateFunctionHandleAsync(script, args));
-
-            if (result == null || !result.HasValues)
-            {
-                return null;
-            }
-
-            return result;
-        }
-        
+        public Task<JToken> EvaluateFunctionAsync(string script, params object[] args)
+            => EvaluateAsync<JToken>(EvaluateFunctionHandleAsync(script, args));
 
         /// <summary>
         /// Executes a function in browser context
@@ -179,7 +160,7 @@ namespace PuppeteerSharp
                 {
                     ["functionDeclaration"] = $"{script}\n{EvaluationScriptSuffix}\n",
                     [MessageKeys.ExecutionContextId] = _contextId,
-                    ["arguments"] = args.Select(FormatArgument).ToArray(),
+                    ["arguments"] = args.Select(FormatArgument),
                     ["returnByValue"] = false,
                     ["awaitPromise"] = true,
                     ["userGesture"] = true
@@ -216,7 +197,7 @@ namespace PuppeteerSharp
                 throw new EvaluationFailedException(ex.Message, ex);
             }
             await handle.DisposeAsync().ConfigureAwait(false);
-            return result;
+            return result is JToken token && !token.HasValues ? default : result;
         }
 
         private async Task<JSHandle> EvaluateHandleAsync(string method, dynamic args)
