@@ -114,11 +114,12 @@ namespace PuppeteerSharp
         /// <param name="method">The method name</param>
         /// <param name="args">The method args</param>
         /// <returns>The task.</returns>
+        /// <exception cref="T:PuppeteerSharp.PuppeteerException"></exception>
         public async Task<JObject> SendAsync(string method, dynamic args = null)
         {
             if (Connection == null)
             {
-                throw new Exception($"Protocol error ({method}): Session closed. Most likely the {TargetType} has been closed.");
+                throw new PuppeteerException($"Protocol error ({method}): Session closed. Most likely the {TargetType} has been closed.");
             }
             var id = ++_lastId;
             var message = JsonConvert.SerializeObject(new Dictionary<string, object>
@@ -160,8 +161,15 @@ namespace PuppeteerSharp
         /// Detaches session from target. Once detached, session won't emit any events and can't be used to send messages.
         /// </summary>
         /// <returns></returns>
+        /// <exception cref="T:PuppeteerSharp.PuppeteerException"></exception>
         public Task DetachAsync()
-            => Connection.SendAsync("Target.detachFromTarget", new { sessionId = SessionId });
+        {
+            if (Connection == null)
+            {
+                throw new PuppeteerException($"Session already detached.Most likely the { TargetType } has been closed.");
+            }
+            return Connection.SendAsync("Target.detachFromTarget", new { sessionId = SessionId });
+        }
 
         internal bool HasPendingCallbacks() => _callbacks.Count != 0;
 

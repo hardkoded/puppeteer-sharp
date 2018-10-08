@@ -108,7 +108,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>The executable path.</returns>
         public static string GetExecutablePath()
-            => new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath;
+            => ResolveExecutablePath();
 
         #endregion
 
@@ -129,8 +129,7 @@ namespace PuppeteerSharp
             var chromeExecutable = options.ExecutablePath;
             if (string.IsNullOrEmpty(chromeExecutable))
             {
-                var browserFetcher = new BrowserFetcher();
-                chromeExecutable = browserFetcher.RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath;
+                chromeExecutable = ResolveExecutablePath();
             }
 
             if (!File.Exists(chromeExecutable))
@@ -139,6 +138,38 @@ namespace PuppeteerSharp
             }
 
             return chromeExecutable;
+        }
+
+        private static string ResolveExecutablePath()
+        {
+            var executablePath = Environment.GetEnvironmentVariable("PUPPETEER_EXECUTABLE_PATH");
+            if (!string.IsNullOrEmpty(executablePath))
+            {
+                if (!File.Exists(executablePath))
+                {
+                    throw new FileNotFoundException("Tried to use PUPPETEER_EXECUTABLE_PATH env variable to launch browser but did not find any executable", executablePath);
+                }
+                return executablePath;
+            }
+
+            var browserFetcher = new BrowserFetcher();
+            var revision = Environment.GetEnvironmentVariable("PUPPETEER_CHROMIUM_REVISION");
+            RevisionInfo revisionInfo;
+            if (!string.IsNullOrEmpty(revision) && int.TryParse(revision, out var revisionNumber))
+            {
+                revisionInfo = browserFetcher.RevisionInfo(revisionNumber);
+                if (!revisionInfo.Local)
+                {
+                    throw new FileNotFoundException("Tried to use PUPPETEER_CHROMIUM_REVISION env variable to launch browser but did not find executable", revisionInfo.ExecutablePath);
+                }
+                return revisionInfo.ExecutablePath;
+            }
+            revisionInfo = browserFetcher.RevisionInfo(BrowserFetcher.DefaultRevision);
+            if (!revisionInfo.Local)
+            {
+                throw new FileNotFoundException("Chromium revision is not downloaded. Run BrowserFetcher.DownloadAsync or download Chromium manually", revisionInfo.ExecutablePath);
+            }
+            return revisionInfo.ExecutablePath;
         }
 
         private static Task EnsureInitialPageAsync(Browser browser)

@@ -20,5 +20,9 @@ namespace PuppeteerSharp.Messaging
         public bool FromServiceWorker { get; set; }
         [JsonProperty("statusText")]
         public string StatusText { get; set; }
+        [JsonProperty("remoteIPAddress")]
+        public string RemoteIPAddress { get; set; }
+        [JsonProperty("remotePort")]
+        public int RemotePort { get; set; }
     }
 }

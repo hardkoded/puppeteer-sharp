@@ -60,9 +60,9 @@ namespace PuppeteerSharp
             DefaultViewport = defaultViewport;
             TargetsMap = new Dictionary<string, Target>();
             ScreenshotTaskQueue = new TaskQueue();
-            _defaultContext = new BrowserContext(this, null);
+            DefaultContext = new BrowserContext(Connection, this, null);
             _contexts = contextIds.ToDictionary(keySelector: contextId => contextId,
-                elementSelector: contextId => new BrowserContext(this, contextId));
+                elementSelector: contextId => new BrowserContext(Connection, this, contextId));
 
             Connection.Closed += (object sender, EventArgs e) => Disconnected?.Invoke(this, new EventArgs());
             Connection.MessageReceived += Connect_MessageReceived;
@@ -77,7 +77,6 @@ namespace PuppeteerSharp
 
         private readonly Dictionary<string, BrowserContext> _contexts;
         private readonly ILogger<Browser> _logger;
-        private readonly BrowserContext _defaultContext;
         private readonly ChromiumProcess _chromiumProcess;
         private Task _closeTask;
 
@@ -139,6 +138,12 @@ namespace PuppeteerSharp
         /// </summary>
         public bool IsClosed => _closeTask != null && _closeTask.IsCompleted && _closeTask.Exception != null;
 
+        /// <summary>
+        /// Returns the default browser context. The default browser context can not be closed.
+        /// </summary>
+        /// <value>The default context.</value>
+        public BrowserContext DefaultContext { get; }
+
         internal TaskQueue ScreenshotTaskQueue { get; set; }
         internal Connection Connection { get; }
         internal ViewPortOptions DefaultViewport { get; }
@@ -151,7 +156,7 @@ namespace PuppeteerSharp
         /// Creates a new page
         /// </summary>
         /// <returns>Task which resolves to a new <see cref="Page"/> object</returns>
-        public Task<Page> NewPageAsync() => _defaultContext.NewPageAsync();
+        public Task<Page> NewPageAsync() => DefaultContext.NewPageAsync();
 
         /// <summary>
         /// Returns An Array of all active targets
@@ -181,7 +186,7 @@ namespace PuppeteerSharp
         public async Task<BrowserContext> CreateIncognitoBrowserContextAsync()
         {
             var response = await Connection.SendAsync<CreateBrowserContextResponse>("Target.createBrowserContext", new { });
-            var context = new BrowserContext(this, response.BrowserContextId);
+            var context = new BrowserContext(Connection, this, response.BrowserContextId);
             _contexts[response.BrowserContextId] = context;
             return context;
         }
@@ -193,7 +198,7 @@ namespace PuppeteerSharp
         public BrowserContext[] BrowserContexts()
         {
             var allContexts = new BrowserContext[_contexts.Count + 1];
-            allContexts[0] = _defaultContext;
+            allContexts[0] = DefaultContext;
             _contexts.Values.CopyTo(allContexts, 1);
             return allContexts;
         }
@@ -374,7 +379,7 @@ namespace PuppeteerSharp
 
             if (!(browserContextId != null && _contexts.TryGetValue(browserContextId, out var context)))
             {
-                context = _defaultContext;
+                context = DefaultContext;
             }
 
             var target = new Target(

@@ -22,6 +22,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             var defaultContext = Browser.BrowserContexts()[0];
             Assert.False(defaultContext.IsIncognito);
             var exception = await Assert.ThrowsAsync<PuppeteerException>(defaultContext.CloseAsync);
+            Assert.Same(defaultContext, Browser.DefaultContext);
             Assert.Contains("cannot be closed", exception.Message);
         }
 

@@ -57,6 +57,11 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.False(responses[0].FromCache);
             Assert.False(responses[0].FromServiceWorker);
             Assert.NotNull(responses[0].Request);
+
+            var remoteAddress = responses[0].RemoteAddress;
+            // Either IPv6 or IPv4, depending on environment.
+            Assert.True(remoteAddress.IP == "[::1]" || remoteAddress.IP == "127.0.0.1");
+            Assert.Equal(TestConstants.Port, remoteAddress.Port);
         }
 
         [Fact]
@@ -254,6 +259,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             var redirectChain = response.Request.RedirectChain;
             Assert.Single(redirectChain);
             Assert.Contains("/foo.html", redirectChain[0].Url);
+            Assert.Equal(TestConstants.Port, redirectChain[0].Response.RemoteAddress.Port);
         }
     }
 }
