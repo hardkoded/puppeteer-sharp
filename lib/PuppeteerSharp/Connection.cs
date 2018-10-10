@@ -116,7 +116,7 @@ namespace PuppeteerSharp
             var buffer = new ArraySegment<byte>(encoded, 0, encoded.Length);
             await _socketQueue.Enqueue(() => WebSocket.SendAsync(buffer, WebSocketMessageType.Text, true, default)).ConfigureAwait(false);
 
-            return waitForCallback ? await callback.TaskWrapper.Task : null;
+            return waitForCallback ? await callback.TaskWrapper.Task.ConfigureAwait(false) : null;
         }
 
         internal async Task<T> SendAsync<T>(string method, dynamic args = null)
