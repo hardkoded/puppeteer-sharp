@@ -512,7 +512,7 @@ namespace PuppeteerSharp
         /// <returns>Task.</returns>
         /// <seealso cref="Page.SetContentAsync(string)"/>
         public Task SetContentAsync(string html)
-            => EvaluateFunctionAsync<object>(@"html => {
+            => EvaluateFunctionAsync(@"html => {
                 document.open();
                 document.write(html);
                 document.close();
