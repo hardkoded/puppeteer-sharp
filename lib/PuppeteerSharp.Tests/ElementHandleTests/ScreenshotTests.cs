@@ -143,5 +143,14 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             var exception = await Assert.ThrowsAsync<PuppeteerException>(elementHandle.ScreenshotStreamAsync);
             Assert.Equal("Node is either not visible or not an HTMLElement", exception.Message);
         }
+
+        [Fact]
+        public async Task ShouldNotHangWithZeroWidthHeightElement()
+        {
+            await Page.SetContentAsync(@"<div style='width: 0; height: 0'></div>");
+            var elementHandle = await Page.QuerySelectorAsync("div");
+            var screenshot = await elementHandle.ScreenshotDataAsync();
+            Assert.NotNull(screenshot); 
+        }
     }
 }
