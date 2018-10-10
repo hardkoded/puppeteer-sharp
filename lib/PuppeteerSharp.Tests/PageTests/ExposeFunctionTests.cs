@@ -81,5 +81,13 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.EvaluateExpressionAsync("changeFlag()");
             Assert.True(called);
         }
+
+        [Fact]
+        public async Task ShouldKeepTheCallbackClean()
+        {
+            await Page.ExposeFunctionAsync("compute", (int a, int b) => a * b);
+            var result = await Page.EvaluateExpressionAsync<int>("compute(9, 4)");
+            Assert.False(Page.Client.HasPendingCallbacks());
+        }
     }
 }
