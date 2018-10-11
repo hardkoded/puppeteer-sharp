@@ -164,7 +164,7 @@ namespace PuppeteerSharp
                         {"sessionId", SessionId},
                         {"message", message}
                     },
-                    false).ConfigureAwait(false);
+                    waitForCallback).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
