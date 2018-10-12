@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
@@ -10,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
@@ -84,7 +84,7 @@ namespace PuppeteerSharp
 
         #region Public Methods
 
-        internal async Task<dynamic> SendAsync(string method, dynamic args = null)
+        internal async Task<JObject> SendAsync(string method, dynamic args = null)
         {
             if (IsClosed)
             {
@@ -94,16 +94,16 @@ namespace PuppeteerSharp
             var id = ++_lastId;
             var message = JsonConvert.SerializeObject(new Dictionary<string, object>
             {
-                {"id", id},
-                {"method", method},
-                {"params", args}
+                { MessageKeys.Id, id },
+                { MessageKeys.Method, method },
+                { MessageKeys.Params, args }
             });
 
             _logger.LogTrace("Send ► {Id} Method {Method} Params {@Params}", id, method, (object)args);
 
             var callback = new MessageTask
             {
-                TaskWrapper = new TaskCompletionSource<dynamic>(),
+                TaskWrapper = new TaskCompletionSource<JObject>(),
                 Method = method
             };
             _callbacks[id] = callback;
@@ -123,10 +123,10 @@ namespace PuppeteerSharp
 
         internal async Task<CDPSession> CreateSessionAsync(TargetInfo targetInfo)
         {
-            string sessionId = (await SendAsync("Target.attachToTarget", new
+            var sessionId = (await SendAsync("Target.attachToTarget", new
             {
                 targetId = targetInfo.TargetId
-            }).ConfigureAwait(false)).sessionId;
+            }).ConfigureAwait(false))[MessageKeys.SessionId].AsString();
             var session = new CDPSession(this, targetInfo.Type, sessionId);
             _sessions.Add(sessionId, session);
             return session;
@@ -181,7 +181,7 @@ namespace PuppeteerSharp
                 }
 
                 var endOfMessage = false;
-                var response = string.Empty;
+                var response = new StringBuilder();
 
                 while (!endOfMessage)
                 {
@@ -206,7 +206,7 @@ namespace PuppeteerSharp
 
                     if (result.MessageType == WebSocketMessageType.Text)
                     {
-                        response += Encoding.UTF8.GetString(buffer, 0, result.Count);
+                        response.Append(Encoding.UTF8.GetString(buffer, 0, result.Count));
                     }
                     else if (result.MessageType == WebSocketMessageType.Close)
                     {
@@ -215,56 +215,68 @@ namespace PuppeteerSharp
                     }
                 }
 
-                if (!string.IsNullOrEmpty(response))
+                if (response.Length > 0)
                 {
                     if (Delay > 0)
                     {
                         await Task.Delay(Delay).ConfigureAwait(false);
                     }
 
-                    ProcessResponse(response);
+                    ProcessResponse(response.ToString());
                 }
             }
         }
 
         private void ProcessResponse(string response)
         {
-            dynamic obj = JsonConvert.DeserializeObject(response);
-            var objAsJObject = (JObject)obj;
+            JObject obj = null;
+
+            try
+            {
+                obj = JObject.Parse(response);
+            }
+            catch (JsonException exc)
+            {
+                _logger.LogError(exc, "Failed to deserialize response", response);
+                return;
+            }
 
             _logger.LogTrace("◀ Receive {Message}", response);
 
-            if (objAsJObject["id"] != null)
-            {
-                var id = (int)objAsJObject["id"];
+            var id = obj[MessageKeys.Id]?.Value<int>();
 
+            if (id.HasValue)
+            {
                 //If we get the object we are waiting for we return if
                 //if not we add this to the list, sooner or later some one will come for it 
-                if (_callbacks.TryGetValue(id, out var callback) && _callbacks.Remove(id))
+                if (_callbacks.TryGetValue(id.Value, out var callback) && _callbacks.Remove(id.Value))
                 {
-                    if (objAsJObject["error"] != null)
+                    if (obj[MessageKeys.Error] != null)
                     {
                         callback.TaskWrapper.TrySetException(new MessageException(callback, obj));
                     }
                     else
                     {
-                        callback.TaskWrapper.TrySetResult(obj.result);
+                        callback.TaskWrapper.TrySetResult(obj[MessageKeys.Result].Value<JObject>());
                     }
                 }
             }
             else
             {
-                if (obj.method == "Target.receivedMessageFromTarget")
+                var method = obj[MessageKeys.Method].AsString();
+                var param = obj[MessageKeys.Params];
+
+                if (method == "Target.receivedMessageFromTarget")
                 {
-                    var sessionId = objAsJObject["params"]["sessionId"].ToString();
+                    var sessionId = param[MessageKeys.SessionId].AsString();
                     if (_sessions.TryGetValue(sessionId, out var session))
                     {
-                        session.OnMessage(objAsJObject["params"]["message"].ToString());
+                        session.OnMessage(param[MessageKeys.Message].AsString());
                     }
                 }
-                else if (obj.method == "Target.detachedFromTarget")
+                else if (method == "Target.detachedFromTarget")
                 {
-                    var sessionId = objAsJObject["params"]["sessionId"].ToString();
+                    var sessionId = param[MessageKeys.SessionId].AsString();
                     if (_sessions.TryGetValue(sessionId, out var session) && _sessions.Remove(sessionId) && !session.IsClosed)
                     {
                         session.OnClosed();
@@ -274,8 +286,8 @@ namespace PuppeteerSharp
                 {
                     MessageReceived?.Invoke(this, new MessageEventArgs
                     {
-                        MessageID = obj.method,
-                        MessageData = objAsJObject["params"]
+                        MessageID = method,
+                        MessageData = param
                     });
                 }
             }
@@ -320,7 +332,7 @@ namespace PuppeteerSharp
         #region IConnection
         ILoggerFactory IConnection.LoggerFactory => LoggerFactory;
         bool IConnection.IsClosed => IsClosed;
-        Task<dynamic> IConnection.SendAsync(string method, dynamic args) => SendAsync(method, args);
+        Task<JObject> IConnection.SendAsync(string method, dynamic args) => SendAsync(method, args);
         #endregion
     }
 }

@@ -19,7 +19,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         {
             await Page.SetContentAsync("<p>red herring</p><p>hello  world  </p>");
             var waitForXPath = Page.WaitForXPathAsync("//p[normalize-space(.)=\"hello world\"]");
-            Assert.Equal("hello  world  ", await Page.EvaluateFunctionAsync("x => x.textContent", await waitForXPath));
+            Assert.Equal("hello  world  ", await Page.EvaluateFunctionAsync<string>("x => x.textContent", await waitForXPath));
         }
 
         [Fact]

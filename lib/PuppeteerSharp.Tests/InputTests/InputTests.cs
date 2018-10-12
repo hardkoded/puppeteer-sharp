@@ -170,7 +170,7 @@ namespace PuppeteerSharp.Tests.InputTests
             var input = await Page.QuerySelectorAsync("input");
             await input.UploadFileAsync(filePath);
             Assert.Equal("file-to-upload.txt", await Page.EvaluateFunctionAsync<string>("e => e.files[0].name", input));
-            Assert.Equal("contents of the file", await Page.EvaluateFunctionAsync(@"e => {
+            Assert.Equal("contents of the file", await Page.EvaluateFunctionAsync<string>(@"e => {
                 const reader = new FileReader();
                 const promise = new Promise(fulfill => reader.onload = fulfill);
                 reader.readAsText(e.files[0]);
@@ -222,10 +222,10 @@ namespace PuppeteerSharp.Tests.InputTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
             await Page.FocusAsync("textarea");
             await Page.Keyboard.SendCharacterAsync("嗨");
-            Assert.Equal("嗨", await Page.EvaluateExpressionAsync("document.querySelector('textarea').value"));
+            Assert.Equal("嗨", await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
             await Page.EvaluateExpressionAsync("window.addEventListener('keydown', e => e.preventDefault(), true)");
             await Page.Keyboard.SendCharacterAsync("a");
-            Assert.Equal("嗨a", await Page.EvaluateExpressionAsync("document.querySelector('textarea').value"));
+            Assert.Equal("嗨a", await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
         }
 
         [Fact]

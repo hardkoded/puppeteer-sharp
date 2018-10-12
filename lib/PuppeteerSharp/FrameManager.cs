@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
@@ -60,12 +61,12 @@ namespace PuppeteerSharp
             {
                 case "Page.frameAttached":
                     OnFrameAttached(
-                        e.MessageData.SelectToken("frameId").ToObject<string>(),
+                        e.MessageData.SelectToken(MessageKeys.FrameId).ToObject<string>(),
                         e.MessageData.SelectToken("parentFrameId").ToObject<string>());
                     break;
 
                 case "Page.frameNavigated":
-                    OnFrameNavigated(e.MessageData.SelectToken("frame").ToObject<FramePayload>());
+                    OnFrameNavigated(e.MessageData.SelectToken(MessageKeys.Frame).ToObject<FramePayload>());
                     break;
 
                 case "Page.navigatedWithinDocument":
@@ -81,11 +82,11 @@ namespace PuppeteerSharp
                     break;
 
                 case "Runtime.executionContextCreated":
-                    OnExecutionContextCreated(e.MessageData.SelectToken("context").ToObject<ContextPayload>());
+                    OnExecutionContextCreated(e.MessageData.SelectToken(MessageKeys.Context).ToObject<ContextPayload>());
                     break;
 
                 case "Runtime.executionContextDestroyed":
-                    OnExecutionContextDestroyed(e.MessageData.SelectToken("executionContextId").ToObject<int>());
+                    OnExecutionContextDestroyed(e.MessageData.SelectToken(MessageKeys.ExecutionContextId).ToObject<int>());
                     break;
                 case "Runtime.executionContextsCleared":
                     OnExecutionContextsCleared();
