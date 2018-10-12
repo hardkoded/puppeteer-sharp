@@ -1,8 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
-using PuppeteerSharp.Messaging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp.PageCoverage
 {
@@ -126,7 +127,7 @@ namespace PuppeteerSharp.PageCoverage
                 }).ConfigureAwait(false);
 
                 _stylesheetURLs.Add(styleSheetAddedResponse.Header.StyleSheetId, styleSheetAddedResponse.Header.SourceURL);
-                _stylesheetSources.Add(styleSheetAddedResponse.Header.StyleSheetId, response.text.ToString());
+                _stylesheetSources.Add(styleSheetAddedResponse.Header.StyleSheetId, response[MessageKeys.Text].AsString());
             }
             catch (Exception ex)
             {

@@ -50,7 +50,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             var exception = await Assert.ThrowsAsync<EvaluationFailedException>(() =>
             {
-                return Page.EvaluateFunctionAsync<object>("() => not.existing.object.property");
+                return Page.EvaluateFunctionAsync("() => not.existing.object.property");
             });
 
             Assert.Contains("not is not defined", exception.Message);
@@ -63,7 +63,7 @@ namespace PuppeteerSharp.Tests.PageTests
             {
                 foo = "bar!"
             };
-            dynamic result = await Page.EvaluateFunctionAsync("a => a", obj);
+            var result = await Page.EvaluateFunctionAsync("a => a", obj);
             Assert.Equal("bar!", result.foo.ToString());
         }
 
@@ -74,7 +74,7 @@ namespace PuppeteerSharp.Tests.PageTests
         [InlineData("() => -Infinity", double.NegativeInfinity)] //ShouldReturnNegativeInfinty
         public async Task BasicEvaluationTest(string script, object expected)
         {
-            dynamic result = await Page.EvaluateFunctionAsync(script);
+            var result = await Page.EvaluateFunctionAsync<object>(script);
             Assert.Equal(expected, result);
         }
 
@@ -162,7 +162,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.ExposeFunctionAsync("callController", async (int a, int b) =>
             {
-                return await Page.EvaluateFunctionAsync("(a, b) => a * b", a, b);
+                return await Page.EvaluateFunctionAsync<int>("(a, b) => a * b", a, b);
             });
             var result = await Page.EvaluateFunctionAsync<int>(@"async function() {
                 return await callController(9, 3);
@@ -191,7 +191,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             var exception = await Assert.ThrowsAsync<EvaluationFailedException>(() =>
             {
-                return Page.EvaluateFunctionAsync<object>(@"() => {
+                return Page.EvaluateFunctionAsync(@"() => {
                     location.reload();
                     return new Promise(resolve => {
                         setTimeout(() => resolve(1), 0);
@@ -205,7 +205,7 @@ namespace PuppeteerSharp.Tests.PageTests
         [Fact]
         public async Task ShouldFailForCircularObject()
         {
-            var result = await Page.EvaluateFunctionAsync<object>(@"() => {
+            var result = await Page.EvaluateFunctionAsync(@"() => {
                 const a = {};
                 const b = {a};
                 a.b = b;

@@ -224,8 +224,8 @@ namespace PuppeteerSharp
         /// </remarks>
         public async Task<string> GetVersionAsync()
         {
-            dynamic version = await Connection.SendAsync("Browser.getVersion").ConfigureAwait(false);
-            return version.product.ToString();
+            var version = await Connection.SendAsync("Browser.getVersion").ConfigureAwait(false);
+            return version[MessageKeys.Product].AsString();
         }
 
         /// <summary>
@@ -237,8 +237,8 @@ namespace PuppeteerSharp
         /// </remarks>
         public async Task<string> GetUserAgentAsync()
         {
-            dynamic version = await Connection.SendAsync("Browser.getVersion").ConfigureAwait(false);
-            return version.userAgent.ToString();
+            var version = await Connection.SendAsync("Browser.getVersion").ConfigureAwait(false);
+            return version[MessageKeys.UserAgent].AsString();
         }
 
         /// <summary>
@@ -305,13 +305,12 @@ namespace PuppeteerSharp
 
         internal async Task<Page> CreatePageInContextAsync(string contextId)
         {
-            var args = new Dictionary<string, object> { ["url"] = "about:blank" };
+            var args = new Dictionary<string, object> { [MessageKeys.Url] = "about:blank" };
             if (contextId != null)
             {
-                args["browserContextId"] = contextId;
+                args[MessageKeys.BrowserContextId] = contextId;
             }
-            string targetId = (await Connection.SendAsync("Target.createTarget", args).ConfigureAwait(false)).targetId.ToString();
-
+            var targetId = (await Connection.SendAsync("Target.createTarget", args).ConfigureAwait(false))[MessageKeys.TargetId].ToString();
             var target = TargetsMap[targetId];
             await target.InitializedTask.ConfigureAwait(false);
             return await target.PageAsync().ConfigureAwait(false);

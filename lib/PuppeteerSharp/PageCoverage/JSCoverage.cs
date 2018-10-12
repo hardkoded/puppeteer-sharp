@@ -1,9 +1,10 @@
-﻿using PuppeteerSharp.Messaging;
-using System;
-using System.Linq;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp.PageCoverage
 {
@@ -120,7 +121,7 @@ namespace PuppeteerSharp.PageCoverage
             {
                 var response = await _client.SendAsync("Debugger.getScriptSource", new { scriptId = scriptParseResponse.ScriptId }).ConfigureAwait(false);
                 _scriptURLs.Add(scriptParseResponse.ScriptId, scriptParseResponse.Url);
-                _scriptSources.Add(scriptParseResponse.ScriptId, response.scriptSource.ToString());
+                _scriptSources.Add(scriptParseResponse.ScriptId, response[MessageKeys.ScriptSource].AsString());
             }
             catch (Exception ex)
             {

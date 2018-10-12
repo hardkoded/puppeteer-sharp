@@ -1,4 +1,5 @@
-﻿using PuppeteerSharp.TestServer;
+﻿using Newtonsoft.Json.Linq;
+using PuppeteerSharp.TestServer;
 using System.IO;
 using System.Threading.Tasks;
 using Xunit.Abstractions;
@@ -33,9 +34,9 @@ namespace PuppeteerSharp.Tests
             HttpsServer.Reset();
         }
 
-        protected static Task<dynamic> WaitEvent(CDPSession emitter, string eventName)
+        protected static Task<JToken> WaitEvent(CDPSession emitter, string eventName)
         {
-            var completion = new TaskCompletionSource<dynamic>();
+            var completion = new TaskCompletionSource<JToken>();
             void handler(object sender, MessageEventArgs e)
             {
                 if (e.MessageID != eventName)

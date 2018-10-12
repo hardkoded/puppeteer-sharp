@@ -63,7 +63,7 @@ namespace PuppeteerSharp
             }
             return _client.SendAsync("Network.setExtraHTTPHeaders", new Dictionary<string, object>
             {
-                {"headers", _extraHTTPHeaders}
+                { MessageKeys.Headers, _extraHTTPHeaders }
             });
         }
 
@@ -75,10 +75,10 @@ namespace PuppeteerSharp
 
                 await _client.SendAsync("Network.emulateNetworkConditions", new Dictionary<string, object>
                 {
-                    { "offline", value},
-                    { "latency", 0},
-                    { "downloadThroughput", -1},
-                    { "uploadThroughput", -1}
+                    { MessageKeys.Offline, value},
+                    { MessageKeys.Latency, 0},
+                    { MessageKeys.DownloadThroughput, -1},
+                    { MessageKeys.UploadThroughput, -1}
                 }).ConfigureAwait(false);
             }
         }
@@ -86,7 +86,7 @@ namespace PuppeteerSharp
         internal Task SetUserAgentAsync(string userAgent)
             => _client.SendAsync("Network.setUserAgentOverride", new Dictionary<string, object>
             {
-                { "userAgent", userAgent }
+                { MessageKeys.UserAgent, userAgent }
             });
 
         internal Task SetRequestInterceptionAsync(bool value)
@@ -205,8 +205,8 @@ namespace PuppeteerSharp
                 {
                     await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object>
                     {
-                        {"interceptionId", e.InterceptionId},
-                        {"authChallengeResponse", new
+                        { MessageKeys.InterceptionId, e.InterceptionId },
+                        { MessageKeys.AuthChallengeResponse, new
                             {
                                 response,
                                 username = credentials.Username,
@@ -227,7 +227,7 @@ namespace PuppeteerSharp
                 {
                     await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object>
                     {
-                        { "interceptionId", e.InterceptionId}
+                        { MessageKeys.InterceptionId, e.InterceptionId }
                     }).ConfigureAwait(false);
                 }
                 catch (PuppeteerException ex)
@@ -364,11 +364,11 @@ namespace PuppeteerSharp
             await Task.WhenAll(
                 _client.SendAsync("Network.setCacheDisabled", new Dictionary<string, object>
                 {
-                    { "cacheDisabled", enabled}
+                    { MessageKeys.CachingDisabled, enabled}
                 }),
                 _client.SendAsync("Network.setRequestInterception", new Dictionary<string, object>
                 {
-                    { "patterns", patterns}
+                    { MessageKeys.Patterns, patterns}
                 })
             ).ConfigureAwait(false);
         }

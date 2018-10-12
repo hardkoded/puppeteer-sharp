@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 
 namespace PuppeteerSharp
 {
@@ -25,6 +25,6 @@ namespace PuppeteerSharp
         /// <returns>The async.</returns>
         /// <param name="method">Method to call.</param>
         /// <param name="args">Method arguments.</param>
-        Task<dynamic> SendAsync(string method, dynamic args = null);
+        Task<JObject> SendAsync(string method, dynamic args = null);
     }
 }
