@@ -3,21 +3,21 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests
 {
-    public class PuppeteerPageBaseTest : PuppeteerBrowserBaseTest
+    public class PuppeteerPageBaseTest : PuppeteerBrowserContextBaseTest
     {
         public PuppeteerPageBaseTest(ITestOutputHelper output) : base(output)
         {
         }
+        
+        protected Page Page { get; private set; }
 
-        protected Page Page { get; set; }
-
-        protected override async Task InitializeAsync()
+        public override async Task InitializeAsync()
         {
             await base.InitializeAsync();
-            Page = await Browser.NewPageAsync();
+            Page = await Context.NewPageAsync();
         }
 
-        protected override async Task DisposeAsync()
+        public override async Task DisposeAsync()
         {
             await Page.CloseAsync();
             await base.DisposeAsync();
@@ -25,7 +25,7 @@ namespace PuppeteerSharp.Tests
 
         protected Task WaitForError()
         {
-            TaskCompletionSource<bool> wrapper = new TaskCompletionSource<bool>();
+            var wrapper = new TaskCompletionSource<bool>();
 
             void errorEvent(object sender, ErrorEventArgs e)
             {

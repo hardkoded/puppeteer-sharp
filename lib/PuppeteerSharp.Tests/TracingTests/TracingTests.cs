@@ -14,18 +14,18 @@ namespace PuppeteerSharp.Tests.TracingTests
     [Collection("PuppeteerLoaderFixture collection")]
     public class TracingTests : PuppeteerPageBaseTest
     {
-        private string _file;
-        
+        private readonly string _file;
+
         public TracingTests(ITestOutputHelper output) : base(output)
         {
             _file = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         }
 
-        protected override async Task DisposeAsync()
+        public override async Task DisposeAsync()
         {
             await base.DisposeAsync();
 
-            int attempts = 0;
+            var attempts = 0;
             const int maxAttempts = 5;
 
             while (true)
@@ -93,19 +93,45 @@ namespace PuppeteerSharp.Tests.TracingTests
         {
             await Page.Tracing.StartAsync(new TracingOptions
             {
-                Path = _file,
+                Path = _file
             });
             var newPage = await Browser.NewPageAsync();
             var exception = await Assert.ThrowsAsync<InvalidOperationException>(async () =>
             {
                 await Page.Tracing.StartAsync(new TracingOptions
                 {
-                    Path = _file,
+                    Path = _file
                 });
             });
 
             await newPage.CloseAsync();
             await Page.Tracing.StopAsync();
+        }
+
+        [Fact]
+        public async Task ShouldReturnABuffer()
+        {
+            await Page.Tracing.StartAsync(new TracingOptions
+            {
+                Screenshots = true,
+                Path = _file
+            });
+            await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+            var trace = await Page.Tracing.StopAsync();
+            var buf = File.ReadAllText(_file);
+            Assert.Equal(trace, buf);
+        }
+
+        [Fact]
+        public async Task ShouldSupportABufferWithoutAPath()
+        {
+            await Page.Tracing.StartAsync(new TracingOptions
+            {
+                Screenshots = true
+            });
+            await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+            var trace = await Page.Tracing.StopAsync();
+            Assert.Contains("screenshot", trace);
         }
     }
 }

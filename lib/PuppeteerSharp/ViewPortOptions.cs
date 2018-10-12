@@ -34,16 +34,25 @@
         /// Gets or sets the device scale factor.
         /// </summary>
         /// <value>Specify device scale factor (can be thought of as dpr). Defaults to 1.</value>
-        public double DeviceScaleFactor { get; internal set; }
+        public double DeviceScaleFactor { get; set; }
         /// <summary>
         /// Gets or sets if viewport is in landscape mode.
         /// </summary>
         ///<value>Specifies if viewport is in landscape mode. Defaults to <c>false</c>.</value>
-        public bool IsLandscape { get; internal set; }
+        public bool IsLandscape { get; set; }
         /// <summary>
         /// Gets or sets if viewport supports touch events.
         /// </summary>
         /// <value>Specifies if viewport supports touch events. Defaults to <c>false</c>.</value>
-        public bool HasTouch { get; internal set; }
+        public bool HasTouch { get; set; }
+
+        /// <summary>
+        /// Default Viewport
+        /// </summary>
+        public static ViewPortOptions Default => new ViewPortOptions
+        {
+            Width = 800,
+            Height = 600
+        };
     }
 }

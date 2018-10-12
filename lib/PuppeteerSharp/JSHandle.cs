@@ -1,9 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
@@ -12,11 +12,11 @@ namespace PuppeteerSharp
     /// </summary>
     public class JSHandle
     {
-        internal JSHandle(ExecutionContext context, CDPSession client, object remoteObject)
+        internal JSHandle(ExecutionContext context, CDPSession client, JToken remoteObject)
         {
             ExecutionContext = context;
             Client = client;
-            Logger = Client.Connection.LoggerFactory.CreateLogger(this.GetType());
+            Logger = Client.Connection.LoggerFactory.CreateLogger(GetType());
             RemoteObject = remoteObject;
         }
 
@@ -34,7 +34,7 @@ namespace PuppeteerSharp
         /// Gets or sets the remote object.
         /// </summary>
         /// <value>The remote object.</value>
-        public dynamic RemoteObject { get; }
+        public JToken RemoteObject { get; }
         /// <summary>
         /// Gets the client.
         /// </summary>
@@ -57,10 +57,10 @@ namespace PuppeteerSharp
               const result = { __proto__: null};
               result[propertyName] = object[propertyName];
               return result;
-            }", this, propertyName);
-            var properties = await objectHandle.GetPropertiesAsync();
+            }", this, propertyName).ConfigureAwait(false);
+            var properties = await objectHandle.GetPropertiesAsync().ConfigureAwait(false);
             properties.TryGetValue(propertyName, out var result);
-            await objectHandle.DisposeAsync();
+            await objectHandle.DisposeAsync().ConfigureAwait(false);
             return result;
         }
 
@@ -81,18 +81,20 @@ namespace PuppeteerSharp
         {
             var response = await Client.SendAsync("Runtime.getProperties", new
             {
-                objectId = RemoteObject.objectId.ToString(),
+                objectId = RemoteObject[MessageKeys.ObjectId].AsString(),
                 ownProperties = true
-            });
+            }).ConfigureAwait(false);
+
             var result = new Dictionary<string, JSHandle>();
-            foreach (var property in response.result)
+
+            foreach (var property in response[MessageKeys.Result])
             {
-                if (property.enumerable == null)
+                if (property[MessageKeys.Enumerable] == null)
                 {
                     continue;
                 }
 
-                result.Add(property.name.ToString(), ExecutionContext.ObjectHandleFactory(property.value));
+                result.Add(property[MessageKeys.Name].AsString(), ExecutionContext.CreateJSHandle(property[MessageKeys.Value]));
             }
             return result;
         }
@@ -104,7 +106,7 @@ namespace PuppeteerSharp
         /// <remarks>
         /// The method will return an empty JSON if the referenced object is not stringifiable. It will throw an error if the object has circular references
         /// </remarks>
-        public async Task<object> JsonValueAsync() => await JsonValueAsync<object>();
+        public async Task<object> JsonValueAsync() => await JsonValueAsync<object>().ConfigureAwait(false);
 
         /// <summary>
         /// Returns a JSON representation of the object
@@ -116,16 +118,18 @@ namespace PuppeteerSharp
         /// </remarks>
         public async Task<T> JsonValueAsync<T>()
         {
-            if (RemoteObject.objectId != null)
+            var objectId = RemoteObject[MessageKeys.ObjectId];
+
+            if (objectId != null)
             {
-                dynamic response = await Client.SendAsync("Runtime.callFunctionOn", new Dictionary<string, object>
+                var response = await Client.SendAsync("Runtime.callFunctionOn", new Dictionary<string, object>
                 {
                     ["functionDeclaration"] = "function() { return this; }",
-                    ["objectId"] = RemoteObject.objectId,
+                    [MessageKeys.ObjectId] = objectId,
                     ["returnByValue"] = true,
                     ["awaitPromise"] = true
-                });
-                return (T)RemoteObjectHelper.ValueFromRemoteObject<T>(response.result);
+                }).ConfigureAwait(false);
+                return (T)RemoteObjectHelper.ValueFromRemoteObject<T>(response[MessageKeys.Result]);
             }
 
             return (T)RemoteObjectHelper.ValueFromRemoteObject<T>(RemoteObject);
@@ -143,15 +147,15 @@ namespace PuppeteerSharp
             }
 
             Disposed = true;
-            await RemoteObjectHelper.ReleaseObject(Client, RemoteObject, Logger);
+            await RemoteObjectHelper.ReleaseObject(Client, RemoteObject, Logger).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
         public override string ToString()
         {
-            if (((JObject)RemoteObject)["objectId"] != null)
+            if ((RemoteObject)[MessageKeys.ObjectId] != null)
             {
-                var type = RemoteObject.subtype ?? RemoteObject.type;
+                var type = RemoteObject[MessageKeys.Subtype] ?? RemoteObject[MessageKeys.Type];
                 return "JSHandle@" + type;
             }
 
@@ -170,17 +174,23 @@ namespace PuppeteerSharp
                 throw new PuppeteerException("JSHandle is disposed!");
             }
 
-            if (RemoteObject.unserializableValue != null)
+            var unserializableValue = RemoteObject[MessageKeys.UnserializableValue];
+
+            if (unserializableValue != null)
             {
-                return new { RemoteObject.unserializableValue };
+                return unserializableValue;
             }
 
-            if (RemoteObject.objectId == null)
+            if (RemoteObject[MessageKeys.ObjectId] == null)
             {
-                return new { RemoteObject.value };
+                var value = RemoteObject[MessageKeys.Value];
+
+                return new { value };
             }
 
-            return new { RemoteObject.objectId };
+            var objectId = RemoteObject[MessageKeys.ObjectId];
+
+            return new { objectId };
         }
     }
 }

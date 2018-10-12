@@ -34,6 +34,49 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Null(response.SecurityDetails);
         }
 
+        [Fact]
+        public async Task ShouldWorkWhenPageCallsHistoryAPIInBeforeunload()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.EvaluateFunctionAsync(@"() =>
+            {
+                window.addEventListener('beforeunload', () => history.replaceState(null, 'initial', window.location.href), false);
+            }");
+            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+            Assert.Equal(HttpStatusCode.OK, response.Status);
+        }
+
+        [Fact]
+        public async Task ShouldFailWhenServerReturns204()
+        {
+            Server.SetRoute("/empty.html", context =>
+            {
+                context.Response.StatusCode = 204;
+                return Task.CompletedTask;
+            });
+            var exception = await Assert.ThrowsAnyAsync<PuppeteerException>(
+                () => Page.GoToAsync(TestConstants.EmptyPage));
+            Assert.Contains("net::ERR_ABORTED", exception.Message);
+        }
+
+        [Fact]
+        public async Task ShouldReturnResponseWhenPageChangesItsURLAfterLoad()
+        {
+            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/historyapi.html");
+            Assert.Equal(HttpStatusCode.OK, response.Status);
+        }
+
+        [Fact]
+        public async Task ShouldWorkWithSubframesReturn204()
+        {
+            Server.SetRoute("/frames/frame.html", context =>
+            {
+                context.Response.StatusCode = 204;
+                return Task.CompletedTask;
+            });
+            await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
+        }
+
         [Theory]
         [InlineData(WaitUntilNavigation.Networkidle0)]
         [InlineData(WaitUntilNavigation.Networkidle2)]
@@ -82,7 +125,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
             var exception = await Assert.ThrowsAnyAsync<Exception>(async ()
                 => await Page.GoToAsync(TestConstants.EmptyPage, new NavigationOptions { Timeout = 1 }));
-            Assert.Contains("Navigation Timeout Exceeded: 1ms", exception.Message);
+            Assert.Contains("Timeout Exceeded: 1ms", exception.Message);
         }
 
         [Fact]
@@ -92,7 +135,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
             Page.DefaultNavigationTimeout = 1;
             var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await Page.GoToAsync(TestConstants.EmptyPage));
-            Assert.Contains("Navigation Timeout Exceeded: 1ms", exception.Message);
+            Assert.Contains("Timeout Exceeded: 1ms", exception.Message);
         }
 
         [Fact]
@@ -280,6 +323,28 @@ namespace PuppeteerSharp.Tests.PageTests
 
             var response = await Page.GoToAsync(url);
             Assert.True(response.Ok);
+        }
+
+        [Fact]
+        public async Task ShouldSendReferer()
+        {
+            await Page.SetRequestInterceptionAsync(true);
+            Page.Request += async (sender, e) => await e.Request.ContinueAsync();
+            string referer1 = null;
+            string referer2 = null;
+
+            await Task.WhenAll(
+                Server.WaitForRequest("/grid.html", r => referer1 = r.Headers["Referer"]),
+                Server.WaitForRequest("/digits/1.png", r => referer2 = r.Headers["Referer"]),
+                Page.GoToAsync(TestConstants.ServerUrl + "/grid.html", new NavigationOptions
+                {
+                    Referer = "http://google.com/"
+                })
+            );
+
+            Assert.Equal("http://google.com/", referer1);
+            // Make sure subresources do not inherit referer.
+            Assert.Equal(TestConstants.ServerUrl + "/grid.html", referer2);
         }
     }
 }

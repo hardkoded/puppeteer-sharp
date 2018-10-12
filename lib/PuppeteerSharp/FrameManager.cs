@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
@@ -9,14 +10,13 @@ namespace PuppeteerSharp
     internal class FrameManager
     {
         private readonly CDPSession _client;
-        private readonly Page _page;
         private Dictionary<int, ExecutionContext> _contextIdToContext;
         private readonly ILogger _logger;
 
         internal FrameManager(CDPSession client, FrameTree frameTree, Page page)
         {
             _client = client;
-            _page = page;
+            Page = page;
             Frames = new Dictionary<string, Frame>();
             _contextIdToContext = new Dictionary<int, ExecutionContext>();
             _logger = _client.Connection.LoggerFactory.CreateLogger<FrameManager>();
@@ -34,26 +34,21 @@ namespace PuppeteerSharp
 
         internal Dictionary<string, Frame> Frames { get; set; }
         internal Frame MainFrame { get; set; }
+        internal Page Page { get; }
 
         #endregion
 
         #region Public Methods
 
-        internal JSHandle CreateJSHandle(int contextId, dynamic remoteObject)
+        internal ExecutionContext ExecutionContextById(int contextId)
         {
-            _contextIdToContext.TryGetValue(contextId, out var storedContext);
+            _contextIdToContext.TryGetValue(contextId, out var context);
 
-            if (storedContext == null)
+            if (context == null)
             {
                 _logger.LogError("INTERNAL ERROR: missing context with id = {ContextId}", contextId);
             }
-
-            if (remoteObject.subtype == "node")
-            {
-                return new ElementHandle(storedContext, _client, remoteObject, _page, this);
-            }
-
-            return new JSHandle(storedContext, _client, remoteObject);
+            return context;
         }
 
         #endregion
@@ -66,12 +61,12 @@ namespace PuppeteerSharp
             {
                 case "Page.frameAttached":
                     OnFrameAttached(
-                        e.MessageData.SelectToken("frameId").ToObject<string>(),
+                        e.MessageData.SelectToken(MessageKeys.FrameId).ToObject<string>(),
                         e.MessageData.SelectToken("parentFrameId").ToObject<string>());
                     break;
 
                 case "Page.frameNavigated":
-                    OnFrameNavigated(e.MessageData.SelectToken("frame").ToObject<FramePayload>());
+                    OnFrameNavigated(e.MessageData.SelectToken(MessageKeys.Frame).ToObject<FramePayload>());
                     break;
 
                 case "Page.navigatedWithinDocument":
@@ -87,11 +82,11 @@ namespace PuppeteerSharp
                     break;
 
                 case "Runtime.executionContextCreated":
-                    OnExecutionContextCreated(e.MessageData.SelectToken("context").ToObject<ContextPayload>());
+                    OnExecutionContextCreated(e.MessageData.SelectToken(MessageKeys.Context).ToObject<ContextPayload>());
                     break;
 
                 case "Runtime.executionContextDestroyed":
-                    OnExecutionContextDestroyed(e.MessageData.SelectToken("executionContextId").ToObject<int>());
+                    OnExecutionContextDestroyed(e.MessageData.SelectToken(MessageKeys.ExecutionContextId).ToObject<int>());
                     break;
                 case "Runtime.executionContextsCleared":
                     OnExecutionContextsCleared();
@@ -150,7 +145,6 @@ namespace PuppeteerSharp
             var context = new ExecutionContext(
                 _client,
                 contextPayload,
-                remoteObject => CreateJSHandle(contextPayload.Id, remoteObject),
                 frame);
 
             _contextIdToContext[contextPayload.Id] = context;
@@ -200,7 +194,7 @@ namespace PuppeteerSharp
                 else
                 {
                     // Initial main frame navigation.
-                    frame = new Frame(_client, _page, null, framePayload.Id);
+                    frame = new Frame(this, _client, null, framePayload.Id);
                 }
 
                 Frames[framePayload.Id] = frame;
@@ -249,7 +243,7 @@ namespace PuppeteerSharp
             if (!Frames.ContainsKey(frameId) && Frames.ContainsKey(parentFrameId))
             {
                 var parentFrame = Frames[parentFrameId];
-                var frame = new Frame(_client, _page, parentFrame, frameId);
+                var frame = new Frame(this, _client, parentFrame, frameId);
                 Frames[frame.Id] = frame;
                 FrameAttached?.Invoke(this, new FrameEventArgs(frame));
             }

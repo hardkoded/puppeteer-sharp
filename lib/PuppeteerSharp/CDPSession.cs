@@ -1,15 +1,18 @@
 ﻿using System;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
 using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
     /// <summary>
     /// The CDPSession instances are used to talk raw Chrome Devtools Protocol:
-    ///  * Protocol methods can be called with <see cref="CDPSession.SendAsync(string, bool, dynamic)"/> method.
+    ///  * Protocol methods can be called with <see cref="CDPSession.SendAsync(string, dynamic)"/> method.
     ///  * Protocol events, using the <see cref="CDPSession.MessageReceived"/> event.
     /// 
     /// Documentation on DevTools Protocol can be found here: <see href="https://chromedevtools.github.io/devtools-protocol/"/>.
@@ -25,7 +28,7 @@ namespace PuppeteerSharp
     ///          Console.WriteLine("Animation created!");
     ///      }
     /// };
-    /// dynamic response = await client.SendAsync("Animation.getPlaybackRate");
+    /// JObject response = await client.SendAsync("Animation.getPlaybackRate");
     /// Console.WriteLine("playback rate is " + response.playbackRate);
     /// await client.SendAsync("Animation.setPlaybackRate", new
     /// {
@@ -33,30 +36,33 @@ namespace PuppeteerSharp
     /// });
     /// ]]></code>
     /// </summary>
-    public class CDPSession : IDisposable
+    public class CDPSession : IConnection
     {
-        internal CDPSession(Connection connection, string targetId, string sessionId)
+        internal CDPSession(IConnection connection, TargetType targetType, string sessionId, ILoggerFactory loggerFactory = null)
         {
+            LoggerFactory = loggerFactory ?? new LoggerFactory();
             Connection = connection;
-            TargetId = targetId;
+            TargetType = targetType;
             SessionId = sessionId;
 
             _callbacks = new Dictionary<int, MessageTask>();
             _logger = Connection.LoggerFactory.CreateLogger<CDPSession>();
+            _sessions = new Dictionary<string, CDPSession>();
         }
 
         #region Private Members
         private int _lastId;
         private readonly Dictionary<int, MessageTask> _callbacks;
         private readonly ILogger _logger;
+        private readonly Dictionary<string, CDPSession> _sessions;
         #endregion
 
         #region Properties
         /// <summary>
-        /// Gets the target identifier.
+        /// Gets the target type.
         /// </summary>
-        /// <value>The target identifier.</value>
-        public string TargetId { get; }
+        /// <value>The target type.</value>
+        public TargetType TargetType { get; }
         /// <summary>
         /// Gets the session identifier.
         /// </summary>
@@ -66,7 +72,7 @@ namespace PuppeteerSharp
         /// Gets the connection.
         /// </summary>
         /// <value>The connection.</value>
-        public Connection Connection { get; private set; }
+        internal IConnection Connection { get; private set; }
         /// <summary>
         /// Occurs when message received from Chromium.
         /// </summary>
@@ -80,52 +86,64 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value><c>true</c> if is closed; otherwise, <c>false</c>.</value>
         public bool IsClosed { get; internal set; }
+
+        /// <summary>
+        /// Gets the logger factory.
+        /// </summary>
+        /// <value>The logger factory.</value>
+        public ILoggerFactory LoggerFactory { get; }
         #endregion
 
         #region Public Methods
-
-        internal async Task<T> SendAsync<T>(string method, dynamic args = null)
+        /// <summary>
+        /// Protocol methods can be called with this method.
+        /// </summary>
+        /// <param name="method">The method name</param>
+        /// <param name="args">The method args</param>
+        /// <returns>The task.</returns>
+        public async Task<T> SendAsync<T>(string method, dynamic args = null)
         {
-            var content = await SendAsync(method, true, args);
-            return JsonConvert.DeserializeObject<T>(content);
+            JObject content = await SendAsync(method, args).ConfigureAwait(false);
+
+            return content.ToObject<T>();
         }
 
-        internal Task<dynamic> SendAsync(string method, dynamic args = null)
-        {
-            return SendAsync(method, false, args ?? new { });
-        }
-
-        internal async Task<dynamic> SendAsync(string method, bool rawContent, dynamic args = null)
+        /// <summary>
+        /// Protocol methods can be called with this method.
+        /// </summary>
+        /// <param name="method">The method name</param>
+        /// <param name="args">The method args</param>
+        /// <returns>The task.</returns>
+        /// <exception cref="T:PuppeteerSharp.PuppeteerException"></exception>
+        public async Task<JObject> SendAsync(string method, dynamic args = null)
         {
             if (Connection == null)
             {
-                throw new Exception($"Protocol error ({method}): Session closed. Most likely the page has been closed.");
+                throw new PuppeteerException($"Protocol error ({method}): Session closed. Most likely the {TargetType} has been closed.");
             }
-            int id = ++_lastId;
+            var id = ++_lastId;
             var message = JsonConvert.SerializeObject(new Dictionary<string, object>
             {
-                {"id", id},
-                {"method", method},
-                {"params", args}
+                { MessageKeys.Id, id },
+                { MessageKeys.Method, method },
+                { MessageKeys.Params, args }
             });
             _logger.LogTrace("Send ► {Id} Method {Method} Params {@Params}", id, method, (object)args);
 
             var callback = new MessageTask
             {
-                TaskWrapper = new TaskCompletionSource<dynamic>(),
-                Method = method,
-                RawContent = rawContent
+                TaskWrapper = new TaskCompletionSource<JObject>(),
+                Method = method
             };
-
             _callbacks[id] = callback;
 
             try
             {
                 await Connection.SendAsync("Target.sendMessageToTarget", new Dictionary<string, object>
                 {
-                    {"sessionId", SessionId},
-                    {"message", message}
-                });
+                    { MessageKeys.SessionId, SessionId },
+                    { MessageKeys.Message, message }
+                }).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -136,97 +154,134 @@ namespace PuppeteerSharp
                 }
             }
 
-            return await callback.TaskWrapper.Task;
+            return await callback.TaskWrapper.Task.ConfigureAwait(false);
         }
 
         /// <summary>
         /// Detaches session from target. Once detached, session won't emit any events and can't be used to send messages.
         /// </summary>
         /// <returns></returns>
+        /// <exception cref="T:PuppeteerSharp.PuppeteerException"></exception>
         public Task DetachAsync()
-            => Connection.SendAsync("Target.detachFromTarget", new { sessionId = SessionId });
+        {
+            if (Connection == null)
+            {
+                throw new PuppeteerException($"Session already detached.Most likely the { TargetType } has been closed.");
+            }
+            return Connection.SendAsync("Target.detachFromTarget", new { sessionId = SessionId });
+        }
+
+        internal bool HasPendingCallbacks() => _callbacks.Count != 0;
 
         #endregion
 
         #region Private Methods
 
-        /// <summary>
-        /// Releases all resource used by the <see cref="CDPSession"/> object by sending a ""Target.closeTarget"
-        /// using the <see cref="Connection.SendAsync(string, dynamic)"/> method.
-        /// </summary>
-        /// <remarks>Call <see cref="Dispose"/> when you are finished using the <see cref="CDPSession"/>. The
-        /// <see cref="Dispose"/> method leaves the <see cref="CDPSession"/> in an unusable state.
-        /// After calling <see cref="Dispose"/>, you must release all references to the
-        /// <see cref="CDPSession"/> so the garbage collector can reclaim the memory that the
-        /// <see cref="CDPSession"/> was occupying.</remarks>
-        public void Dispose()
-        {
-            Connection.SendAsync("Target.closeTarget", new Dictionary<string, object>
-            {
-                ["targetId"] = TargetId
-            }).GetAwaiter().GetResult();
-        }
-
         internal void OnMessage(string message)
         {
-            dynamic obj = JsonConvert.DeserializeObject(message);
-            var objAsJObject = obj as JObject;
-
             _logger.LogTrace("◀ Receive {Message}", message);
 
-            if (objAsJObject["id"] != null && _callbacks.ContainsKey((int)obj.id))
-            {
-                var callback = _callbacks[(int)obj.id];
-                _callbacks.Remove((int)obj.id);
+            JObject obj = null;
 
-                if (objAsJObject["error"] != null)
+            try
+            {
+                obj = JObject.Parse(message);
+            }
+            catch (JsonException exc)
+            {
+                _logger.LogError(exc, "Failed to deserialize message", message);
+                return;
+            }
+
+            var id = obj[MessageKeys.Id]?.Value<int>();
+
+            if (id.HasValue && _callbacks.TryGetValue(id.Value, out var callback) && _callbacks.Remove(id.Value))
+            {
+                if (obj[MessageKeys.Error] != null)
                 {
-                    callback.TaskWrapper.SetException(new MessageException(
-                        $"Protocol error ({ callback.Method }): {obj.error.message} {obj.error.data}"
-                    ));
+                    callback.TaskWrapper.TrySetException(new MessageException(callback, obj));
                 }
                 else
                 {
-                    if (callback.RawContent)
-                    {
-                        callback.TaskWrapper.SetResult(JsonConvert.SerializeObject(obj.result));
-                    }
-                    else
-                    {
-                        callback.TaskWrapper.SetResult(obj.result);
-                    }
+                    callback.TaskWrapper.TrySetResult(obj[MessageKeys.Result].Value<JObject>());
                 }
-            }
-            else if (obj.method == "Tracing.tracingComplete")
-            {
-                TracingComplete?.Invoke(this, new TracingCompleteEventArgs
-                {
-                    Stream = objAsJObject["params"].Value<string>("stream")
-                });
             }
             else
             {
+                var method = obj[MessageKeys.Method].AsString();
+                var param = obj[MessageKeys.Params];
+
+                if (method == "Tracing.tracingComplete")
+                {
+                    TracingComplete?.Invoke(this, new TracingCompleteEventArgs
+                    {
+                        Stream = param[MessageKeys.Stream].AsString()
+                    });
+                }
+                else if (method == "Target.receivedMessageFromTarget")
+                {
+                    var sessionId = param[MessageKeys.SessionId].AsString();
+
+                    if (_sessions.TryGetValue(sessionId, out var session))
+                    {
+                        session.OnMessage(param[MessageKeys.Message].AsString());
+                    }
+                }
+                else if (method == "Target.detachedFromTarget")
+                {
+                    var sessionId = param[MessageKeys.SessionId].AsString();
+
+                    if (_sessions.TryGetValue(sessionId, out var session) && _sessions.Remove(sessionId))
+                    {
+                        session.OnClosed();
+                    }
+                }
+
                 MessageReceived?.Invoke(this, new MessageEventArgs
                 {
-                    MessageID = obj.method,
-                    MessageData = objAsJObject["params"]
+                    MessageID = method,
+                    MessageData = param
                 });
             }
         }
 
         internal void OnClosed()
         {
-            IsClosed = true;
-            foreach (var callback in _callbacks.Values)
+            if (IsClosed)
             {
-                callback.TaskWrapper.SetException(new TargetClosedException(
+                return;
+            }
+            IsClosed = true;
+
+            foreach (var session in _sessions.Values.ToArray())
+            {
+                session.OnClosed();
+            }
+            _sessions.Clear();
+
+            foreach (var callback in _callbacks.Values.ToArray())
+            {
+                callback.TaskWrapper.TrySetException(new TargetClosedException(
                     $"Protocol error({callback.Method}): Target closed."
                 ));
             }
             _callbacks.Clear();
+
             Connection = null;
         }
 
+        internal CDPSession CreateSession(TargetType targetType, string sessionId)
+        {
+            var session = new CDPSession(this, targetType, sessionId);
+            _sessions[sessionId] = session;
+            return session;
+        }
+        #endregion
+
+        #region IConnection
+        ILoggerFactory IConnection.LoggerFactory => LoggerFactory;
+        bool IConnection.IsClosed => IsClosed;
+        Task<JObject> IConnection.SendAsync(string method, dynamic args) => SendAsync(method, args);
         #endregion
     }
 }

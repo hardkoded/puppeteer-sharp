@@ -29,6 +29,17 @@ namespace PuppeteerSharp
         /// Target type browser.
         /// </summary>
         [EnumMember(Value = "browser")]
-        Browser
+        Browser,
+        /// <summary>
+        /// Target type background page.
+        /// </summary>
+        [EnumMember(Value = "background_page")]
+        BackgroundPage,
+
+        /// <summary>
+        /// Target type worker.
+        /// </summary>
+        [EnumMember(Value = "worker")]
+        Worker,
     }
 }

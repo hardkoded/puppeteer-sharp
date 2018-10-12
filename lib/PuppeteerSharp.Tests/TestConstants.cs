@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Xunit;
 using PuppeteerSharp.Mobile;
@@ -9,15 +10,16 @@ namespace PuppeteerSharp.Tests
 {
     public static class TestConstants
     {
-        public const int Port = 8907;
+        public const int Port = 8081;
         public const int HttpsPort = Port + 1;
-        public const string ServerUrl = "http://localhost:8907";
-        public const string ServerIpUrl = "http://127.0.0.1:8907";
-        public const string HttpsPrefix = "https://localhost:8908";
+        public const string ServerUrl = "http://localhost:8081";
+        public const string ServerIpUrl = "http://127.0.0.1:8081";
+        public const string HttpsPrefix = "https://localhost:8082";
         public const string AboutBlank = "about:blank";
-        public static readonly string CrossProcessHttpPrefix = "http://127.0.0.1:8907";
+        public static readonly string CrossProcessHttpPrefix = "http://127.0.0.1:8081";
         public static readonly string EmptyPage = $"{ServerUrl}/empty.html";
         public static readonly string CrossProcessUrl = ServerIpUrl;
+        public static readonly string ExtensionPath = Path.Combine(Directory.GetCurrentDirectory(), "Assets", "simple-extension");
 
         public static readonly DeviceDescriptor IPhone = DeviceDescriptors.Get(DeviceDescriptorName.IPhone6);
         public static readonly DeviceDescriptor IPhone6Landscape = DeviceDescriptors.Get(DeviceDescriptorName.IPhone6Landscape);
@@ -36,8 +38,18 @@ namespace PuppeteerSharp.Tests
             Headless = Convert.ToBoolean(Environment.GetEnvironmentVariable("HEADLESS") ?? "true"),
             Args = new[] { "--no-sandbox" },
             Timeout = 0,
-            KeepAliveInterval = 120,
             LogProcess = true
+        };
+
+        public static LaunchOptions BrowserWithExtensionOptions() => new LaunchOptions
+        {
+            Headless = false,
+            Args = new[]
+            {
+                "--no-sandbox",
+                $"--disable-extensions-except={ExtensionPath}",
+                $"--load-extension={ExtensionPath}"
+            }
         };
 
         public static void SetupLogging(ITestOutputHelper output)

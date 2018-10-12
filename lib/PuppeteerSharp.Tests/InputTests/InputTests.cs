@@ -34,6 +34,58 @@ namespace PuppeteerSharp.Tests.InputTests
         }
 
         [Fact]
+        public async Task ShouldClickWithDisabledJavascript()
+        {
+            await Page.SetJavaScriptEnabledAsync(false);
+            await Page.GoToAsync(TestConstants.ServerUrl + "/wrappedlink.html");
+            await Task.WhenAll(
+                Page.ClickAsync("a"),
+                Page.WaitForNavigationAsync()
+            );
+            Assert.Equal(TestConstants.ServerUrl + "/wrappedlink.html#clicked", Page.Url);
+        }
+
+        [Fact]
+        public async Task ShouldClickOffscreenButtons()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/offscreenbuttons.html");
+            var messages = new List<string>();
+            Page.Console += (sender, e) => messages.Add(e.Message.Text);
+
+            for (var i = 0; i < 11; ++i)
+            {
+                // We might've scrolled to click a button - reset to (0, 0).
+                await Page.EvaluateFunctionAsync("() => window.scrollTo(0, 0)");
+                await Page.ClickAsync($"#btn{i}");
+            }
+            Assert.Equal(new List<string>
+            {
+                "button #0 clicked",
+                "button #1 clicked",
+                "button #2 clicked",
+                "button #3 clicked",
+                "button #4 clicked",
+                "button #5 clicked",
+                "button #6 clicked",
+                "button #7 clicked",
+                "button #8 clicked",
+                "button #9 clicked",
+                "button #10 clicked"
+            }, messages);
+        }
+
+        [Fact]
+        public async Task ShouldClickWrappedLinks()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/wrappedlink.html");
+            await Task.WhenAll(
+                Page.ClickAsync("a"),
+                Page.WaitForNavigationAsync()
+            );
+            Assert.Equal(TestConstants.ServerUrl + "/wrappedlink.html#clicked", Page.Url);
+        }
+
+        [Fact]
         public async Task ShouldClickOnCheckboxInputAndToggle()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/checkbox.html");
@@ -118,7 +170,7 @@ namespace PuppeteerSharp.Tests.InputTests
             var input = await Page.QuerySelectorAsync("input");
             await input.UploadFileAsync(filePath);
             Assert.Equal("file-to-upload.txt", await Page.EvaluateFunctionAsync<string>("e => e.files[0].name", input));
-            Assert.Equal("contents of the file", await Page.EvaluateFunctionAsync(@"e => {
+            Assert.Equal("contents of the file", await Page.EvaluateFunctionAsync<string>(@"e => {
                 const reader = new FileReader();
                 const promise = new Promise(fulfill => reader.onload = fulfill);
                 reader.readAsText(e.files[0]);
@@ -170,10 +222,10 @@ namespace PuppeteerSharp.Tests.InputTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
             await Page.FocusAsync("textarea");
             await Page.Keyboard.SendCharacterAsync("嗨");
-            Assert.Equal("嗨", await Page.EvaluateExpressionAsync("document.querySelector('textarea').value"));
+            Assert.Equal("嗨", await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
             await Page.EvaluateExpressionAsync("window.addEventListener('keydown', e => e.preventDefault(), true)");
             await Page.Keyboard.SendCharacterAsync("a");
-            Assert.Equal("嗨a", await Page.EvaluateExpressionAsync("document.querySelector('textarea').value"));
+            Assert.Equal("嗨a", await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
         }
 
         [Fact]
@@ -554,6 +606,29 @@ namespace PuppeteerSharp.Tests.InputTests
             await Assert.ThrowsAsync<KeyNotFoundException>(() => Page.Keyboard.PressAsync("ё"));
 
             await Assert.ThrowsAsync<KeyNotFoundException>(() => Page.Keyboard.PressAsync("😊"));
+        }
+
+        [Fact]
+        public async Task ShouldTypeEmoji()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
+            await Page.TypeAsync("textarea", "👹 Tokyo street Japan \uD83C\uDDEF\uD83C\uDDF5");
+            Assert.Equal(
+                "👹 Tokyo street Japan \uD83C\uDDEF\uD83C\uDDF5",
+                await Page.QuerySelectorAsync("textarea").EvaluateFunctionAsync<string>("t => t.value"));
+        }
+
+        [Fact]
+        public async Task ShouldTypeEmojiIntoAniframe()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await FrameUtils.AttachFrameAsync(Page, "emoji-test", TestConstants.ServerUrl + "/input/textarea.html");
+            var frame = Page.Frames[1];
+            var textarea = await frame.QuerySelectorAsync("textarea");
+            await textarea.TypeAsync("👹 Tokyo street Japan \uD83C\uDDEF\uD83C\uDDF5");
+            Assert.Equal(
+                "👹 Tokyo street Japan \uD83C\uDDEF\uD83C\uDDF5",
+                await frame.QuerySelectorAsync("textarea").EvaluateFunctionAsync<string>("t => t.value"));
         }
     }
 }

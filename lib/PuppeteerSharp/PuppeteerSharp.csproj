@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>1.2.0</PackageVersion>
+    <PackageVersion>1.8.0</PackageVersion>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
@@ -11,23 +11,32 @@
     <Title>PuppeteerSharp</Title>
     <Description>Headless Chrome .NET API</Description>
     <PackageId>PuppeteerSharp</PackageId>
-    <PackageReleaseNotes>
-New Features
- * New RequestChain property.
- * Chromium updated to r543305.
+    <PackageReleaseNotes><![CDATA[# New Features
 
-New APIs
- * Request.RedirectChain.
- * ElementHandle.ContentFrameAsync.
- * AddTagOptions.Type. Allowing the user to declare script tags (using Page.AddScriptTagAsync) as modules.
+ * Roll Chromium to r588429.
 
-Changes
- * Response.Ok() returns true for local files.
- * Target.TargetType is now an enum.
- * NavigationException Improvements.
- * PaperFormat Height and Width now are public.
+# New APIs
+
+ * Task<ElementHandle>EvaluateFunctionAsync and Task<JSHandle>EvaluateFunctionAsync.
+ * BrowserContext.OverridePermissionsAsync.
+ * BrowserContext. ClearPermissionOverridesAsync.
+ * Page. SetGeolocationAsync.
+ * NavigationOptions.Referer.
+ * Response.RemoteAddress.
+ * Response.StatusText
+
+# Changelog
+
+ * Fix null-type bugs.
+ * Improve PdfOptions documentation.
+ * Create Request class right away from payload.
+ * Drop object factory from execution context.
+ * Page.goto should properly handle historyAPI in beforeunload.
+ * New ResourceType.Ping.
+ * Launch with Environment Variables.
+]]>
     </PackageReleaseNotes>
-    <ReleaseVersion>1.2.0</ReleaseVersion>
+    <ReleaseVersion>1.8.0</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>
@@ -35,6 +44,13 @@ Changes
   </PropertyGroup>
   <PropertyGroup>
     <LangVersion>7.1</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType></DebugType>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.2" />

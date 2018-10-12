@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
@@ -9,11 +10,13 @@ namespace PuppeteerSharp
     /// <example>
     /// An example of using Dialog class:
     ///<code>
+    ///<![CDATA[
     /// Page.Dialog += async (sender, e) =>
     /// {
     ///     await e.Dialog.Accept();
     /// }
     /// await Page.EvaluateExpressionAsync("alert('yo');");
+    /// ]]>
     /// </code>
     /// </example>
     public class Dialog
@@ -56,12 +59,12 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>Task which resolves when the dialog has been accepted.</returns>
         /// <param name="promptText">A text to enter in prompt. Does not cause any effects if the dialog's type is not prompt.</param>
-        public async Task Accept(string promptText = "")
+        public Task Accept(string promptText = "")
         {
-            await _client.SendAsync("Page.handleJavaScriptDialog", new Dictionary<string, object>
+            return _client.SendAsync("Page.handleJavaScriptDialog", new Dictionary<string, object>
             {
-                {"accept", true},
-                {"promptText", promptText}
+                { MessageKeys.Accept, true },
+                { MessageKeys.PromptText, promptText }
             });
         }
 
@@ -69,11 +72,11 @@ namespace PuppeteerSharp
         /// Dismiss the dialog.
         /// </summary>
         /// <returns>Task which resolves when the dialog has been dismissed.</returns>
-        public async Task Dismiss()
+        public Task Dismiss()
         {
-            await _client.SendAsync("Page.handleJavaScriptDialog", new Dictionary<string, object>
+            return _client.SendAsync("Page.handleJavaScriptDialog", new Dictionary<string, object>
             {
-                {"accept", false}
+                { MessageKeys.Accept, false }
             });
         }
     }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -28,13 +29,69 @@ namespace PuppeteerSharp.Tests.PageTests
                 Assert.NotNull(e.Request.Headers);
                 Assert.Equal(HttpMethod.Get, e.Request.Method);
                 Assert.Null(e.Request.PostData);
+                Assert.True(e.Request.IsNavigationRequest);
                 Assert.Equal(ResourceType.Document, e.Request.ResourceType);
                 Assert.Equal(Page.MainFrame, e.Request.Frame);
-                Assert.Equal("about:blank", e.Request.Frame.Url);
+                Assert.Equal(TestConstants.AboutBlank, e.Request.Frame.Url);
                 await e.Request.ContinueAsync();
             };
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.True(response.Ok);
+            Assert.Equal(TestConstants.Port, response.RemoteAddress.Port);
+        }
+
+        [Fact(Skip = "Ignored on Puppeteer")]
+        public async Task ShouldWorkWhenPostIsEedirectedWith302()
+        {
+            Server.SetRedirect("/rredirect", "/empty.html");
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.SetRequestInterceptionAsync(true);
+            Page.Request += async (sender, e) => await e.Request.ContinueAsync();
+
+            await Page.SetContentAsync(@"
+                <form action='/rredirect' method='post'>
+                    <input type='hidden' id='foo' name='foo' value='FOOBAR'>
+                </form>
+            ");
+            await Task.WhenAll(
+                Page.QuerySelectorAsync("form").EvaluateFunctionAsync("form => form.submit()"),
+                Page.WaitForNavigationAsync()
+            );
+        }
+
+        [Fact]
+        public async Task ShouldContainRefererHeader()
+        {
+            await Page.SetRequestInterceptionAsync(true);
+            var requests = new List<Request>();
+
+            Page.Request += async (sender, e) =>
+            {
+                await e.Request.ContinueAsync();
+                requests.Add(e.Request);
+            };
+
+            await Page.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
+            Assert.Contains("/one-style.css", requests[1].Url);
+            Assert.Contains("/one-style.html", requests[1].Headers["Referer"]);
+        }
+
+        [Fact]
+        public async Task ShouldProperlyReturnNavigationResponseWhenURLHasCookies()
+        {
+            // Setup cookie.
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.SetCookieAsync(new CookieParam
+            {
+                Name = "foo",
+                Value = "bar"
+            });
+
+            // Setup request interception.
+            await Page.SetRequestInterceptionAsync(true);
+            Page.Request += (sender, e) => _ = e.Request.ContinueAsync();
+            var response = await Page.ReloadAsync();
+            Assert.Equal(HttpStatusCode.OK, response.Status);
         }
 
         [Fact]
@@ -147,8 +204,10 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.SetRequestInterceptionAsync(true);
             Page.Request += async (sender, e) =>
             {
-                var headers = new Dictionary<string, object>(e.Request.Headers);
-                headers["FOO"] = "bar";
+                var headers = new Dictionary<string, string>(e.Request.Headers)
+                {
+                    ["FOO"] = "bar"
+                };
                 await e.Request.ContinueAsync(new Payload { Headers = headers });
             };
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -200,8 +259,42 @@ namespace PuppeteerSharp.Tests.PageTests
             for (var i = 0; i < redirectChain.Length; ++i)
             {
                 var request = redirectChain[i];
+                Assert.True(request.IsNavigationRequest);
                 Assert.Equal(request, request.RedirectChain.ElementAt(i));
             }
+        }
+
+        [Fact]
+        public async Task ShouldWorkWithRedirectsForSubresources()
+        {
+            await Page.SetRequestInterceptionAsync(true);
+            var requests = new List<Request>();
+            Page.Request += async (sender, e) =>
+            {
+                requests.Add(e.Request);
+                await e.Request.ContinueAsync();
+            };
+
+            Server.SetRedirect("/one-style.css", "/two-style.css");
+            Server.SetRedirect("/two-style.css", "/three-style.css");
+            Server.SetRedirect("/three-style.css", "/four-style.css");
+            Server.SetRoute("/four-style.css", async context =>
+            {
+                await context.Response.WriteAsync("body {box-sizing: border-box; }");
+            });
+
+            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
+            Assert.Equal(HttpStatusCode.OK, response.Status);
+            Assert.Contains("one-style.html", response.Url);
+            Assert.Equal(5, requests.Count);
+            Assert.Equal(ResourceType.Document, requests[0].ResourceType);
+            Assert.Equal(ResourceType.StyleSheet, requests[1].ResourceType);
+
+            // Check redirect chain
+            var redirectChain = requests[1].RedirectChain;
+            Assert.Equal(3, redirectChain.Length);
+            Assert.Contains("one-style.css", redirectChain[0].Url);
+            Assert.Contains("three-style.css", redirectChain[2].Url);
         }
 
         [Fact]
@@ -390,6 +483,24 @@ namespace PuppeteerSharp.Tests.PageTests
             };
             await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.Contains("Request Interception is not enabled", exception.Message);
+        }
+
+        [Fact]
+        public async Task ShouldWorkWithFileURLs()
+        {
+            await Page.SetRequestInterceptionAsync(true);
+            var urls = new List<string>();
+            Page.Request += async (sender, e) =>
+            {
+                urls.Add(e.Request.Url.Split('/').Last());
+                await e.Request.ContinueAsync();
+            };
+
+            var uri = new Uri(Path.Combine(Directory.GetCurrentDirectory(), "assets", "one-style.html")).AbsoluteUri;
+            await Page.GoToAsync(uri);
+            Assert.Equal(2, urls.Count);
+            Assert.Contains("one-style.html", urls);
+            Assert.Contains("one-style.css", urls);
         }
     }
 }

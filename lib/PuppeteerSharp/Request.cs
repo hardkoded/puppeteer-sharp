@@ -1,9 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
@@ -17,7 +19,7 @@ namespace PuppeteerSharp
     /// 
     /// If request gets a 'redirect' response, the request is successfully finished with the <see cref="Page.RequestFinished"/> event, and a new request is issued to a redirected url.
     /// </summary>
-    public class Request : Payload
+    public class Request
     {
         #region Private Members
         private readonly CDPSession _client;
@@ -26,18 +28,12 @@ namespace PuppeteerSharp
         private bool _interceptionHandled;
         #endregion
 
-        internal Request()
-        {
-        }
         internal Request(
             CDPSession client,
-            string requestId,
+            Frame frame,
             string interceptionId,
             bool allowInterception,
-            string url,
-            ResourceType resourceType,
-            Payload payload,
-            Frame frame,
+            RequestWillBeSentPayload e,
             List<Request> redirectChain)
         {
             _client = client;
@@ -45,17 +41,18 @@ namespace PuppeteerSharp
             _interceptionHandled = false;
             _logger = _client.Connection.LoggerFactory.CreateLogger<Request>();
 
-            RequestId = requestId;
+            RequestId = e.RequestId;
             InterceptionId = interceptionId;
-            Url = url;
-            ResourceType = resourceType;
-            Method = payload.Method;
-            PostData = payload.PostData;
+            IsNavigationRequest = e.RequestId == e.LoaderId && e.Type == ResourceType.Document;
+            Url = e.Request.Url;
+            ResourceType = e.Type;
+            Method = e.Request.Method;
+            PostData = e.Request.PostData;
             Frame = frame;
             RedirectChainList = redirectChain;
 
-            Headers = new Dictionary<string, object>();
-            foreach (var keyValue in payload.Headers)
+            Headers = new Dictionary<string, string>();
+            foreach (var keyValue in e.Request.Headers)
             {
                 Headers[keyValue.Key] = keyValue.Value;
             }
@@ -94,6 +91,30 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The frame.</value>
         public Frame Frame { get; }
+        /// <summary>
+        /// Gets whether this request is driving frame's navigation
+        /// </summary>
+        public bool IsNavigationRequest { get; }
+        /// <summary>
+        /// Gets or sets the HTTP method.
+        /// </summary>
+        /// <value>HTTP method.</value>
+        public HttpMethod Method { get; internal set; }
+        /// <summary>
+        /// Gets or sets the post data.
+        /// </summary>
+        /// <value>The post data.</value>
+        public object PostData { get; internal set; }
+        /// <summary>
+        /// Gets or sets the HTTP headers.
+        /// </summary>
+        /// <value>HTTP headers.</value>
+        public Dictionary<string, string> Headers { get; internal set; }
+        /// <summary>
+        /// Gets or sets the URL.
+        /// </summary>
+        /// <value>The URL.</value>
+        public string Url { get; internal set; }
 
         /// <summary>
         /// A redirectChain is a chain of requests initiated to fetch a resource.
@@ -145,28 +166,28 @@ namespace PuppeteerSharp
 
             try
             {
-                var requestData = new Dictionary<string, object> { ["interceptionId"] = InterceptionId };
+                var requestData = new Dictionary<string, object> { [MessageKeys.InterceptionId] = InterceptionId };
                 if (overrides?.Url != null)
                 {
-                    requestData["url"] = overrides.Url;
+                    requestData[MessageKeys.Url] = overrides.Url;
                 }
 
                 if (overrides?.Method != null)
                 {
-                    requestData["method"] = overrides.Method;
+                    requestData[MessageKeys.Method] = overrides.Method.ToString();
                 }
 
                 if (overrides?.PostData != null)
                 {
-                    requestData["postData"] = overrides.PostData;
+                    requestData[MessageKeys.PostData] = overrides.PostData;
                 }
 
-                if (overrides?.Headers != null)
+                if (overrides?.Headers?.Count > 0)
                 {
-                    requestData["headers"] = overrides.Headers;
+                    requestData[MessageKeys.Headers] = overrides.Headers;
                 }
 
-                await _client.SendAsync("Network.continueInterceptedRequest", requestData);
+                await _client.SendAsync("Network.continueInterceptedRequest", requestData).ConfigureAwait(false);
             }
             catch (PuppeteerException ex)
             {
@@ -244,9 +265,9 @@ namespace PuppeteerSharp
             {
                 await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object>
                 {
-                    {"interceptionId", InterceptionId},
-                    {"rawResponse", Convert.ToBase64String(responseData)}
-                });
+                    { MessageKeys.InterceptionId, InterceptionId },
+                    { MessageKeys.RawResponse, Convert.ToBase64String(responseData) }
+                }).ConfigureAwait(false);
             }
             catch (PuppeteerException ex)
             {
@@ -281,9 +302,9 @@ namespace PuppeteerSharp
             {
                 await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object>
                 {
-                    {"interceptionId", InterceptionId},
-                    {"errorReason", errorReason}
-                });
+                    { MessageKeys.InterceptionId, InterceptionId },
+                    { MessageKeys.ErrorReason, errorReason }
+                }).ConfigureAwait(false);
             }
             catch (PuppeteerException ex)
             {

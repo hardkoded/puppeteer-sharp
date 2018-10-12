@@ -8,7 +8,7 @@ namespace PuppeteerSharp
     public class PdfOptions
     {
         /// <summary>
-        /// Scale of the webpage rendering. Defaults to <c>1</c>
+        /// Scale of the webpage rendering. Defaults to <c>1</c>. Scale amount must be between 0.1 and 2.
         /// </summary>
         public decimal Scale { get; set; } = 1;
 
@@ -71,5 +71,11 @@ namespace PuppeteerSharp
         /// Paper margins, defaults to none
         /// </summary>
         public MarginOptions MarginOptions { get; set; } = new MarginOptions();
+
+        /// <summary>
+        /// Give any CSS <c>@page</c> size declared in the page priority over what is declared in <c>width</c> and <c>height</c> or <c>format</c> options. 
+        /// Defaults to <c>false</c>, which will scale the content to fit the paper size.
+        /// </summary>
+        public bool PreferCSSPageSize { get; set; }
     }
 }

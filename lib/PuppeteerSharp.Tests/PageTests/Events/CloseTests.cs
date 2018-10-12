@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -18,7 +15,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
         public async Task ShouldWorkWithWindowClose()
         {
             var newPageTaskSource = new TaskCompletionSource<Page>();
-            Browser.TargetCreated += async (sender, e) => newPageTaskSource.TrySetResult(await e.Target.PageAsync());
+            Context.TargetCreated += async (sender, e) => newPageTaskSource.TrySetResult(await e.Target.PageAsync());
 
             await Page.EvaluateExpressionAsync("window['newPage'] = window.open('about:blank');");
             var newPage = await newPageTaskSource.Task;
@@ -32,7 +29,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
         [Fact]
         public async Task ShouldWorkWithPageClose()
         {
-            var newPage = await Browser.NewPageAsync();
+            var newPage = await Context.NewPageAsync();
             var closeTaskSource = new TaskCompletionSource<bool>();
             newPage.Close += (sender, e) => closeTaskSource.SetResult(true);
             await newPage.CloseAsync();

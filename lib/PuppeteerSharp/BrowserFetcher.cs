@@ -28,10 +28,10 @@ namespace PuppeteerSharp
     {
         private const string DefaultDownloadHost = "https://storage.googleapis.com";
         private static readonly Dictionary<Platform, string> _downloadUrls = new Dictionary<Platform, string> {
-            {Platform.Linux, "{0}/chromium-browser-snapshots/Linux_x64/{1}/chrome-linux.zip"},
-            {Platform.MacOS, "{0}/chromium-browser-snapshots/Mac/{1}/chrome-mac.zip"},
-            {Platform.Win32, "{0}/chromium-browser-snapshots/Win/{1}/chrome-win32.zip"},
-            {Platform.Win64, "{0}/chromium-browser-snapshots/Win_x64/{1}/chrome-win32.zip"}
+            {Platform.Linux, "{0}/chromium-browser-snapshots/Linux_x64/{1}/{2}.zip"},
+            {Platform.MacOS, "{0}/chromium-browser-snapshots/Mac/{1}/{2}.zip"},
+            {Platform.Win32, "{0}/chromium-browser-snapshots/Win/{1}/{2}.zip"},
+            {Platform.Win64, "{0}/chromium-browser-snapshots/Win_x64/{1}/{2}.zip"}
         };
 
         internal static readonly FilePermissions BrowserPermissionsInLinux =
@@ -44,7 +44,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Default chromiumg revision.
         /// </summary>
-        public const int DefaultRevision = 549031;
+        public const int DefaultRevision = 594312;
 
         /// <summary>
         /// Gets the downloads folder.
@@ -98,14 +98,14 @@ namespace PuppeteerSharp
         /// <param name="revision">A revision to check availability.</param>
         public async Task<bool> CanDownloadAsync(int revision)
         {
-            var url = string.Format(_downloadUrls[Platform], DownloadHost, revision);
+            var url = GetDownloadURL(Platform, DownloadHost, revision);
 
             var client = new HttpClient();
             var response = await client.SendAsync(new HttpRequestMessage
             {
                 RequestUri = new Uri(url),
                 Method = HttpMethod.Head
-            });
+            }).ConfigureAwait(false);
 
             return response.IsSuccessStatusCode;
         }
@@ -149,11 +149,11 @@ namespace PuppeteerSharp
             var result = new RevisionInfo
             {
                 FolderPath = GetFolderPath(revision),
-                Url = string.Format(_downloadUrls[Platform], DownloadHost, revision),
+                Url = GetDownloadURL(Platform, DownloadHost, revision),
                 Revision = revision,
                 Platform = Platform
             };
-            result.ExecutablePath = GetExecutablePath(Platform, result.FolderPath);
+            result.ExecutablePath = GetExecutablePath(Platform, revision, result.FolderPath);
             result.Local = new DirectoryInfo(result.FolderPath).Exists;
 
             return result;
@@ -166,7 +166,7 @@ namespace PuppeteerSharp
         /// <param name="revision">Revision.</param>
         public async Task<RevisionInfo> DownloadAsync(int revision)
         {
-            var url = string.Format(_downloadUrls[Platform], DownloadHost, revision);
+            var url = GetDownloadURL(Platform, DownloadHost, revision);
             var zipPath = Path.Combine(DownloadsFolder, $"download-{Platform.ToString()}-{revision}.zip");
             var folderPath = GetFolderPath(revision);
 
@@ -187,7 +187,7 @@ namespace PuppeteerSharp
             {
                 webClient.DownloadProgressChanged += DownloadProgressChanged;
             }
-            await webClient.DownloadFileTaskAsync(new Uri(url), zipPath);
+            await webClient.DownloadFileTaskAsync(new Uri(url), zipPath).ConfigureAwait(false);
 
             if (Platform == Platform.MacOS)
             {
@@ -218,28 +218,27 @@ namespace PuppeteerSharp
         /// <returns>The executable path.</returns>
         /// <param name="revision">Revision.</param>
         public string GetExecutablePath(int revision)
-        {
-            return GetExecutablePath(Platform, GetFolderPath(revision));
-        }
+            => GetExecutablePath(Platform, revision, GetFolderPath(revision));
 
         /// <summary>
         /// Gets the executable path.
         /// </summary>
         /// <returns>The executable path.</returns>
         /// <param name="platform">Platform.</param>
+        /// <param name="revision">Revision.</param>
         /// <param name="folderPath">Folder path.</param>
-        public static string GetExecutablePath(Platform platform, string folderPath)
+        public static string GetExecutablePath(Platform platform, int revision, string folderPath)
         {
             switch (platform)
             {
                 case Platform.MacOS:
-                    return Path.Combine(folderPath, "chrome-mac", "Chromium.app", "Contents",
+                    return Path.Combine(folderPath, GetArchiveName(platform, revision), "Chromium.app", "Contents",
                                                          "MacOS", "Chromium");
                 case Platform.Linux:
-                    return Path.Combine(folderPath, "chrome-linux", "chrome");
+                    return Path.Combine(folderPath, GetArchiveName(platform, revision), "chrome");
                 case Platform.Win32:
                 case Platform.Win64:
-                    return Path.Combine(folderPath, "chrome-win32", "chrome.exe");
+                    return Path.Combine(folderPath, GetArchiveName(platform, revision), "chrome.exe");
                 default:
                     throw new ArgumentException("Invalid platform", nameof(platform));
             }
@@ -249,7 +248,7 @@ namespace PuppeteerSharp
 
         #region Private Methods
 
-        private static Platform GetCurrentPlatform()
+        internal static Platform GetCurrentPlatform()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
@@ -267,9 +266,7 @@ namespace PuppeteerSharp
             return Platform.Unknown;
         }
         private string GetFolderPath(int revision)
-        {
-            return Path.Combine(DownloadsFolder, $"{Platform.ToString()}-{revision}");
-        }
+            => Path.Combine(DownloadsFolder, $"{Platform.ToString()}-{revision}");
 
         private void NativeExtractToDirectory(string zipPath, string folderPath)
         {
@@ -287,8 +284,7 @@ namespace PuppeteerSharp
             {
                 return 0;
             }
-            Platform platform;
-            if (!Enum.TryParse<Platform>(splits[0], out platform))
+            if (!Enum.TryParse<Platform>(splits[0], out var platform))
             {
                 platform = Platform.Unknown;
             }
@@ -299,6 +295,25 @@ namespace PuppeteerSharp
             int.TryParse(splits[1], out var revision);
             return revision;
         }
+
+        private static string GetArchiveName(Platform platform, int revision)
+        {
+            switch (platform)
+            {
+                case Platform.Linux:
+                    return "chrome-linux";
+                case Platform.MacOS:
+                    return "chrome-mac";
+                case Platform.Win32:
+                case Platform.Win64:
+                    return revision > 591479 ? "chrome-win" : "chrome-win32";
+                default:
+                    throw new ArgumentException("Invalid platform", nameof(platform));
+            }
+        }
+
+        private static string GetDownloadURL(Platform platform, string host, int revision)
+            => string.Format(_downloadUrls[platform], host, revision, GetArchiveName(platform, revision));
 
         #endregion
     }

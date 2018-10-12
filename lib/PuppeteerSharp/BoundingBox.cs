@@ -1,33 +1,43 @@
 ﻿using System;
 using PuppeteerSharp.Media;
+using Newtonsoft.Json;
 
 namespace PuppeteerSharp
 {
     /// <summary>
     /// Bounding box data returned by <see cref="ElementHandle.BoundingBoxAsync"/>.
     /// </summary>
-    public class BoundingBox
+    public class BoundingBox : IEquatable<BoundingBox>
     {
         /// <summary>
         /// The x coordinate of the element in pixels.
         /// </summary>
         /// <value>The x.</value>
+        [JsonProperty("x")]
         public decimal X { get; set; }
         /// <summary>
         /// The y coordinate of the element in pixels.
         /// </summary>
         /// <value>The y.</value>
+        [JsonProperty("y")]
         public decimal Y { get; set; }
         /// <summary>
         /// The width of the element in pixels.
         /// </summary>
         /// <value>The width.</value>
+        [JsonProperty("width")]
         public decimal Width { get; set; }
         /// <summary>
         /// The height of the element in pixels.
         /// </summary>
         /// <value>The height.</value>
+        [JsonProperty("height")]
         public decimal Height { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:PuppeteerSharp.BoundingBox"/> class.
+        /// </summary>
+        public BoundingBox() { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BoundingBox"/> class.
@@ -63,13 +73,21 @@ namespace PuppeteerSharp
                 return false;
             }
 
-            var boundingBox = obj as BoundingBox;
-
-            return boundingBox.X == X &&
-               boundingBox.Y == Y &&
-               boundingBox.Height == Height &&
-               boundingBox.Width == Width;
+            return Equals((BoundingBox)obj);
         }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="PuppeteerSharp.BoundingBox"/> is equal to the current <see cref="T:PuppeteerSharp.BoundingBox"/>.
+        /// </summary>
+        /// <param name="obj">The <see cref="PuppeteerSharp.BoundingBox"/> to compare with the current <see cref="T:PuppeteerSharp.BoundingBox"/>.</param>
+        /// <returns><c>true</c> if the specified <see cref="PuppeteerSharp.BoundingBox"/> is equal to the current
+        /// <see cref="T:PuppeteerSharp.BoundingBox"/>; otherwise, <c>false</c>.</returns>
+        public bool Equals(BoundingBox obj)
+            => obj != null &&
+                obj.X == X &&
+                obj.Y == Y &&
+                obj.Height == Height &&
+                obj.Width == Width;
 
         /// <inheritdoc/>
         public override int GetHashCode()

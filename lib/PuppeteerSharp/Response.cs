@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
@@ -12,34 +14,37 @@ namespace PuppeteerSharp
     public class Response
     {
         private readonly CDPSession _client;
-        private bool _fromDiskCache;
+        private readonly bool _fromDiskCache;
         private string _buffer;
 
         internal Response(
             CDPSession client,
             Request request,
-            HttpStatusCode status,
-            Dictionary<string, object> headers,
-            bool fromDiskCache,
-            bool fromServiceWorker,
-            SecurityDetails securityDetails)
+            ResponsePayload responseMessage)
         {
             _client = client;
             Request = request;
-            Status = status;
+            Status = responseMessage.Status;
+            StatusText = responseMessage.StatusText;
             Url = request.Url;
-            _fromDiskCache = fromDiskCache;
-            FromServiceWorker = fromServiceWorker;
+            _fromDiskCache = responseMessage.FromDiskCache;
+            FromServiceWorker = responseMessage.FromServiceWorker;
 
             Headers = new Dictionary<string, object>();
-            if (headers != null)
+            if (responseMessage.Headers != null)
             {
-                foreach (var keyValue in headers)
+                foreach (var keyValue in responseMessage.Headers)
                 {
                     Headers[keyValue.Key] = keyValue.Value;
                 }
             }
-            SecurityDetails = securityDetails;
+            SecurityDetails = responseMessage.SecurityDetails;
+            RemoteAddress = new RemoteAddress
+            {
+                IP = responseMessage.RemoteIPAddress,
+                Port = responseMessage.RemotePort
+            };
+
             BodyLoadedTaskWrapper = new TaskCompletionSource<bool>();
         }
 
@@ -83,7 +88,15 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value><c>true</c> if the <see cref="Response"/> was served by a service worker; otherwise, <c>false</c>.</value>
         public bool FromServiceWorker { get; }
-
+        /// <summary>
+        /// Contains the status text of the response (e.g. usually an "OK" for a success).
+        /// </summary>
+        /// <value>The status text.</value>
+        public string StatusText { get; }
+        /// <summary>
+        /// Remove server address.
+        /// </summary>
+        public RemoteAddress RemoteAddress { get; }
         internal TaskCompletionSource<bool> BodyLoadedTaskWrapper { get; }
         #endregion
 
@@ -97,16 +110,18 @@ namespace PuppeteerSharp
         {
             if (_buffer == null)
             {
-                await BodyLoadedTaskWrapper.Task;
+                await BodyLoadedTaskWrapper.Task.ConfigureAwait(false);
 
                 try
                 {
-                    var response = await _client.SendAsync("Network.getResponseBody", new Dictionary<string, object>
+                    var response = await _client.SendAsync<NetworkGetResponseBodyResponse>("Network.getResponseBody", new Dictionary<string, object>
                     {
-                        {"requestId", Request.RequestId}
-                    });
+                        { MessageKeys.RequestId, Request.RequestId}
+                    }).ConfigureAwait(false);
 
-                    _buffer = response.body.ToString();
+                    _buffer = response.Base64Encoded
+                        ? Encoding.UTF8.GetString(Convert.FromBase64String(response.Body))
+                        : response.Body;
                 }
                 catch (Exception ex)
                 {
@@ -128,7 +143,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <seealso cref="JsonAsync{T}"/>
         /// <returns>A Task which resolves to a <see cref="JObject"/> representation of response body</returns>
-        public async Task<JObject> JsonAsync() => JObject.Parse(await TextAsync());
+        public async Task<JObject> JsonAsync() => JObject.Parse(await TextAsync().ConfigureAwait(false));
 
         /// <summary>
         /// Returns a Task which resolves to a <typeparamref name="T"/> representation of response body
@@ -136,7 +151,7 @@ namespace PuppeteerSharp
         /// <typeparam name="T">The type of the response</typeparam>
         /// <seealso cref="JsonAsync"/>
         /// <returns>A Task which resolves to a <typeparamref name="T"/> representation of response body</returns>
-        public async Task<T> JsonAsync<T>() => (await JsonAsync()).ToObject<T>();
+        public async Task<T> JsonAsync<T>() => (await JsonAsync().ConfigureAwait(false)).ToObject<T>();
 
         #endregion
     }

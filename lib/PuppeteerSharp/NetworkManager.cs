@@ -14,7 +14,8 @@ namespace PuppeteerSharp
 
         private readonly CDPSession _client;
         private readonly Dictionary<string, Request> _requestIdToRequest = new Dictionary<string, Request>();
-        private readonly Dictionary<string, Request> _interceptionIdToRequest = new Dictionary<string, Request>();
+        private readonly Dictionary<string, RequestWillBeSentPayload> _requestIdToRequestWillBeSentEvent =
+            new Dictionary<string, RequestWillBeSentPayload>();
         private readonly MultiMap<string, string> _requestHashToRequestIds = new MultiMap<string, string>();
         private readonly MultiMap<string, string> _requestHashToInterceptionIds = new MultiMap<string, string>();
         private readonly FrameManager _frameManager;
@@ -46,13 +47,13 @@ namespace PuppeteerSharp
 
         #region Public Methods
 
-        internal async Task AuthenticateAsync(Credentials credentials)
+        internal Task AuthenticateAsync(Credentials credentials)
         {
             _credentials = credentials;
-            await UpdateProtocolRequestInterceptionAsync();
+            return UpdateProtocolRequestInterceptionAsync();
         }
 
-        internal async Task SetExtraHTTPHeadersAsync(Dictionary<string, string> extraHTTPHeaders)
+        internal Task SetExtraHTTPHeadersAsync(Dictionary<string, string> extraHTTPHeaders)
         {
             _extraHTTPHeaders = new Dictionary<string, string>();
 
@@ -60,9 +61,9 @@ namespace PuppeteerSharp
             {
                 _extraHTTPHeaders[item.Key.ToLower()] = item.Value;
             }
-            await _client.SendAsync("Network.setExtraHTTPHeaders", new Dictionary<string, object>
+            return _client.SendAsync("Network.setExtraHTTPHeaders", new Dictionary<string, object>
             {
-                {"headers", _extraHTTPHeaders}
+                { MessageKeys.Headers, _extraHTTPHeaders }
             });
         }
 
@@ -74,24 +75,24 @@ namespace PuppeteerSharp
 
                 await _client.SendAsync("Network.emulateNetworkConditions", new Dictionary<string, object>
                 {
-                    { "offline", value},
-                    { "latency", 0},
-                    { "downloadThroughput", -1},
-                    { "uploadThroughput", -1}
-                });
+                    { MessageKeys.Offline, value},
+                    { MessageKeys.Latency, 0},
+                    { MessageKeys.DownloadThroughput, -1},
+                    { MessageKeys.UploadThroughput, -1}
+                }).ConfigureAwait(false);
             }
         }
 
         internal Task SetUserAgentAsync(string userAgent)
             => _client.SendAsync("Network.setUserAgentOverride", new Dictionary<string, object>
             {
-                { "userAgent", userAgent }
+                { MessageKeys.UserAgent, userAgent }
             });
 
-        internal async Task SetRequestInterceptionAsync(bool value)
+        internal Task SetRequestInterceptionAsync(bool value)
         {
             _userRequestInterceptionEnabled = value;
-            await UpdateProtocolRequestInterceptionAsync();
+            return UpdateProtocolRequestInterceptionAsync();
         }
 
         #endregion
@@ -103,10 +104,10 @@ namespace PuppeteerSharp
             switch (e.MessageID)
             {
                 case "Network.requestWillBeSent":
-                    OnRequestWillBeSent(e.MessageData.ToObject<RequestWillBeSentResponse>());
+                    OnRequestWillBeSent(e.MessageData.ToObject<RequestWillBeSentPayload>());
                     break;
                 case "Network.requestIntercepted":
-                    await OnRequestInterceptedAsync(e.MessageData.ToObject<RequestInterceptedResponse>());
+                    await OnRequestInterceptedAsync(e.MessageData.ToObject<RequestInterceptedResponse>()).ConfigureAwait(false);
                     break;
                 case "Network.requestServedFromCache":
                     OnRequestServedFromCache(e.MessageData.ToObject<RequestServedFromCacheResponse>());
@@ -135,9 +136,9 @@ namespace PuppeteerSharp
 
                 if (request.InterceptionId != null)
                 {
-                    _interceptionIdToRequest.Remove(request.InterceptionId);
                     _attemptedAuthentications.Remove(request.InterceptionId);
                 }
+
                 RequestFailed(this, new RequestEventArgs
                 {
                     Request = request
@@ -156,7 +157,6 @@ namespace PuppeteerSharp
 
                 if (request.InterceptionId != null)
                 {
-                    _interceptionIdToRequest.Remove(request.InterceptionId);
                     _attemptedAuthentications.Remove(request.InterceptionId);
                 }
 
@@ -175,11 +175,7 @@ namespace PuppeteerSharp
                 var response = new Response(
                     _client,
                     request,
-                    e.Response.Status,
-                    e.Response.Headers,
-                    e.Response.FromDiskCache,
-                    e.Response.FromServiceWorker,
-                    e.Response.SecurityDetails);
+                    e.Response);
 
                 request.Response = response;
 
@@ -209,15 +205,15 @@ namespace PuppeteerSharp
                 {
                     await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object>
                     {
-                        {"interceptionId", e.InterceptionId},
-                        {"authChallengeResponse", new
+                        { MessageKeys.InterceptionId, e.InterceptionId },
+                        { MessageKeys.AuthChallengeResponse, new
                             {
                                 response,
                                 username = credentials.Username,
                                 password = credentials.Password
                             }
                         }
-                    });
+                    }).ConfigureAwait(false);
                 }
                 catch (PuppeteerException ex)
                 {
@@ -231,8 +227,8 @@ namespace PuppeteerSharp
                 {
                     await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object>
                     {
-                        { "interceptionId", e.InterceptionId}
-                    });
+                        { MessageKeys.InterceptionId, e.InterceptionId }
+                    }).ConfigureAwait(false);
                 }
                 catch (PuppeteerException ex)
                 {
@@ -240,48 +236,53 @@ namespace PuppeteerSharp
                 }
             }
 
-            if (!string.IsNullOrEmpty(e.RedirectUrl))
-            {
-                var request = _interceptionIdToRequest[e.InterceptionId];
-
-                HandleRequestRedirect(request, e.ResponseStatusCode, e.ResponseHeaders, false, false);
-                HandleRequestStart(
-                    request.RequestId,
-                    e.InterceptionId,
-                    e.RedirectUrl,
-                    e.ResourceType,
-                    e.Request,
-                    e.FrameId,
-                    request.RedirectChainList);
-                return;
-            }
-
             var requestHash = e.Request.Hash;
             var requestId = _requestHashToRequestIds.FirstValue(requestHash);
             if (requestId != null)
             {
-                _requestHashToRequestIds.Delete(requestHash, requestId);
-                HandleRequestStart(
-                    requestId,
-                    e.InterceptionId,
-                    e.Request.Url,
-                    e.ResourceType,
-                    e.Request,
-                    e.FrameId,
-                    new List<Request>());
+                _requestIdToRequestWillBeSentEvent.TryGetValue(requestId, out var requestWillBeSentEvent);
+
+                if (requestWillBeSentEvent != null)
+                {
+                    OnRequest(requestWillBeSentEvent, e.InterceptionId);
+                    _requestHashToRequestIds.Delete(requestHash, requestId);
+                    _requestIdToRequestWillBeSentEvent.Remove(requestId);
+                }
             }
             else
             {
                 _requestHashToInterceptionIds.Add(requestHash, e.InterceptionId);
-                HandleRequestStart(
-                    null,
-                    e.InterceptionId,
-                    e.Request.Url,
-                    e.ResourceType,
-                    e.Request,
-                    e.FrameId,
-                    new List<Request>());
             }
+        }
+
+        private void OnRequest(RequestWillBeSentPayload e, string interceptionId)
+        {
+            Request request;
+            var redirectChain = new List<Request>();
+            if (e.RedirectResponse != null)
+            {
+                _requestIdToRequest.TryGetValue(e.RequestId, out request);
+                // If we connect late to the target, we could have missed the requestWillBeSent event.
+                if (request != null)
+                {
+                    HandleRequestRedirect(request, e.RedirectResponse);
+                    redirectChain = request.RedirectChainList;
+                }
+            }
+            var frame = !string.IsNullOrEmpty(e.FrameId) ? _frameManager.Frames[e.FrameId] : null;
+            request = new Request(
+                _client,
+                frame,
+                interceptionId,
+                _userRequestInterceptionEnabled,
+                e,
+                redirectChain);
+
+            _requestIdToRequest.Add(e.RequestId, request);
+            Request(this, new RequestEventArgs
+            {
+                Request = request
+            });
         }
 
         private void OnRequestServedFromCache(RequestServedFromCacheResponse response)
@@ -292,64 +293,12 @@ namespace PuppeteerSharp
             }
         }
 
-        private void HandleRequestStart(
-            string requestId,
-            string interceptionId,
-            string url,
-            ResourceType resourceType,
-            Payload requestPayload,
-            string frameId,
-            List<Request> redirectChain)
-        {
-            Frame frame = null;
-
-            if (!string.IsNullOrEmpty(frameId))
-            {
-                _frameManager.Frames.TryGetValue(frameId, out frame);
-            }
-
-            var request = new Request(
-                _client,
-                requestId,
-                interceptionId,
-                _userRequestInterceptionEnabled,
-                url,
-                resourceType,
-                requestPayload,
-                frame,
-                redirectChain);
-
-            if (!string.IsNullOrEmpty(requestId))
-            {
-                _requestIdToRequest.Add(requestId, request);
-            }
-            if (!string.IsNullOrEmpty(interceptionId))
-            {
-                _interceptionIdToRequest.Add(interceptionId, request);
-            }
-
-            Request(this, new RequestEventArgs
-            {
-                Request = request
-            });
-        }
-
-        private void HandleRequestRedirect(
-            Request request,
-            HttpStatusCode redirectStatus,
-            Dictionary<string, object> redirectHeaders,
-            bool fromDiskCache,
-            bool fromServiceWorker,
-            SecurityDetails securityDetails = null)
+        private void HandleRequestRedirect(Request request, ResponsePayload responseMessage)
         {
             var response = new Response(
                 _client,
                 request,
-                redirectStatus,
-                redirectHeaders,
-                fromDiskCache,
-                fromServiceWorker,
-                securityDetails);
+                responseMessage);
 
             request.Response = response;
             request.RedirectChainList.Add(request);
@@ -363,7 +312,6 @@ namespace PuppeteerSharp
 
             if (request.InterceptionId != null)
             {
-                _interceptionIdToRequest.Remove(request.InterceptionId);
                 _attemptedAuthentications.Remove(request.InterceptionId);
             }
 
@@ -378,48 +326,25 @@ namespace PuppeteerSharp
             });
         }
 
-        private void OnRequestWillBeSent(RequestWillBeSentResponse e)
+        private void OnRequestWillBeSent(RequestWillBeSentPayload e)
         {
-            var redirectChain = new List<Request>();
-
             if (_protocolRequestInterceptionEnabled)
             {
-                // All redirects are handled in requestIntercepted.
-                if (e.RedirectResponse != null)
-                {
-                    return;
-                }
                 var requestHash = e.Request.Hash;
                 var interceptionId = _requestHashToInterceptionIds.FirstValue(requestHash);
-                if (interceptionId != null && _interceptionIdToRequest.TryGetValue(interceptionId, out var request))
+                if (interceptionId != null)
                 {
-                    request.RequestId = e.RequestId;
-                    _requestIdToRequest[e.RequestId] = request;
+                    OnRequest(e, interceptionId);
                     _requestHashToInterceptionIds.Delete(requestHash, interceptionId);
                 }
                 else
                 {
                     _requestHashToRequestIds.Add(requestHash, e.RequestId);
+                    _requestIdToRequestWillBeSentEvent.Add(e.RequestId, e);
                 }
                 return;
             }
-
-            if (e.RedirectResponse != null && _requestIdToRequest.ContainsKey(e.RequestId))
-            {
-                var request = _requestIdToRequest[e.RequestId];
-                // If we connect late to the target, we could have missed the requestWillBeSent event.
-                HandleRequestRedirect(
-                    request,
-                    e.RedirectResponse.Status,
-                    e.RedirectResponse.Headers,
-                    e.RedirectResponse.FromDiskCache,
-                    e.RedirectResponse.FromServiceWorker,
-                    e.RedirectResponse.SecurityDetails);
-
-                redirectChain = request.RedirectChainList;
-            }
-
-            HandleRequestStart(e.RequestId, null, e.Request.Url, e.Type, e.Request, e.FrameId, redirectChain);
+            OnRequest(e, null);
         }
 
         private async Task UpdateProtocolRequestInterceptionAsync()
@@ -439,13 +364,13 @@ namespace PuppeteerSharp
             await Task.WhenAll(
                 _client.SendAsync("Network.setCacheDisabled", new Dictionary<string, object>
                 {
-                    { "cacheDisabled", enabled}
+                    { MessageKeys.CachingDisabled, enabled}
                 }),
                 _client.SendAsync("Network.setRequestInterception", new Dictionary<string, object>
                 {
-                    { "patterns", patterns}
+                    { MessageKeys.Patterns, patterns}
                 })
-            );
+            ).ConfigureAwait(false);
         }
         #endregion
     }

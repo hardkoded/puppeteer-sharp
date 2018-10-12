@@ -1,22 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Diagnostics.Contracts;
 using PuppeteerSharp.Helpers;
-using System.Threading;
 
 namespace PuppeteerSharp
 {
     internal class NavigatorWatcher
     {
-        private static readonly Dictionary<WaitUntilNavigation, string> _puppeteerToProtocolLifecycle = new Dictionary<WaitUntilNavigation, string>()
-        {
-            [WaitUntilNavigation.Load] = "load",
-            [WaitUntilNavigation.DOMContentLoaded] = "DOMContentLoaded",
-            [WaitUntilNavigation.Networkidle0] = "networkIdle",
-            [WaitUntilNavigation.Networkidle2] = "networkAlmostIdle"
-        };
+        private static readonly Dictionary<WaitUntilNavigation, string> _puppeteerToProtocolLifecycle =
+            new Dictionary<WaitUntilNavigation, string>
+            {
+                [WaitUntilNavigation.Load] = "load",
+                [WaitUntilNavigation.DOMContentLoaded] = "DOMContentLoaded",
+                [WaitUntilNavigation.Networkidle0] = "networkIdle",
+                [WaitUntilNavigation.Networkidle2] = "networkAlmostIdle"
+            };
 
         private readonly FrameManager _frameManager;
         private readonly Frame _frame;
@@ -53,29 +52,21 @@ namespace PuppeteerSharp
             frameManager.LifecycleEvent += CheckLifecycleComplete;
             frameManager.FrameNavigatedWithinDocument += NavigatedWithinDocument;
             frameManager.FrameDetached += CheckLifecycleComplete;
-            LifeCycleCompleteTaskWrapper = new TaskCompletionSource<bool>();
-
-            NavigationTask = Task.WhenAny(new[]
-            {
-                CreateTimeoutTask(),
-                LifeCycleCompleteTask,
-            }).ContinueWith((task) =>
-            {
-                CleanUp();
-                return task.GetAwaiter().GetResult();
-            });
+            SameDocumentNavigationTaskWrapper = new TaskCompletionSource<bool>();
+            NewDocumentNavigationTaskWrapper = new TaskCompletionSource<bool>();
+            TimeoutTask = TaskHelper.CreateTimeoutTask(timeout);
         }
 
         #region Properties
         public Task<Task> NavigationTask { get; internal set; }
-        public Task<bool> LifeCycleCompleteTask => LifeCycleCompleteTaskWrapper.Task;
-        public TaskCompletionSource<bool> LifeCycleCompleteTaskWrapper { get; }
+        public Task<bool> SameDocumentNavigationTask => SameDocumentNavigationTaskWrapper.Task;
+        public TaskCompletionSource<bool> SameDocumentNavigationTaskWrapper { get; }
+        public Task<bool> NewDocumentNavigationTask => NewDocumentNavigationTaskWrapper.Task;
+        public TaskCompletionSource<bool> NewDocumentNavigationTaskWrapper { get; }
+        public Task TimeoutTask { get; }
 
         #endregion
 
-        #region Public methods
-        public void Cancel() => CleanUp();
-        #endregion
         #region Private methods
 
         private void CheckLifecycleComplete(object sender, FrameEventArgs e)
@@ -90,7 +81,14 @@ namespace PuppeteerSharp
                 return;
             }
 
-            LifeCycleCompleteTaskWrapper.TrySetResult(true);
+            if (_hasSameDocumentNavigation)
+            {
+                SameDocumentNavigationTaskWrapper.TrySetResult(true);
+            }
+            if (_frame.LoaderId != _initialLoaderId)
+            {
+                NewDocumentNavigationTaskWrapper.TrySetResult(true);
+            }
         }
 
         private void NavigatedWithinDocument(object sender, FrameEventArgs e)
@@ -126,21 +124,6 @@ namespace PuppeteerSharp
         {
             _frameManager.LifecycleEvent -= CheckLifecycleComplete;
             _frameManager.FrameDetached -= CheckLifecycleComplete;
-        }
-
-        private async Task CreateTimeoutTask()
-        {
-            var wrapper = new TaskCompletionSource<bool>();
-
-            if (_timeout == 0)
-            {
-                await Task.Delay(-1);
-            }
-            else
-            {
-                await Task.Delay(_timeout);
-                throw new NavigationException($"Navigation Timeout Exceeded: {_timeout}ms exceeded");
-            }
         }
 
         #endregion

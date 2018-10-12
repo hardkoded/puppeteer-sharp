@@ -13,6 +13,18 @@ namespace PuppeteerSharp.Tests.FrameTests
         }
 
         [Fact]
+        public async Task ShouldWorkWhenResolvedRightBeforeExecutionContextDisposal()
+        {
+            await Page.EvaluateOnNewDocumentAsync("() => window.__RELOADED = true");
+            await Page.WaitForFunctionAsync(@"() =>
+            {
+                if (!window.__RELOADED)
+                    window.location.reload();
+                return true;
+            }");
+        }
+
+        [Fact]
         public async Task ShouldPollOnInterval()
         {
             var success = false;
@@ -108,10 +120,13 @@ namespace PuppeteerSharp.Tests.FrameTests
         [Fact]
         public async Task ShouldDisableTimeoutWhenItsSetTo0()
         {
-            var handle = await Page.WaitForFunctionAsync(
-                "() => new Promise(res => setTimeout(() => res(42), 100))",
-                new WaitForFunctionOptions { Timeout = 0 });
-            Assert.Equal(42, await handle.JsonValueAsync<int>());
+            var watchdog = Page.WaitForFunctionAsync(@"() => {
+                window.__counter = (window.__counter || 0) + 1;
+                return window.__injected;
+            }", new WaitForFunctionOptions { Timeout = 0, PollingInterval = 10 });
+            await Page.WaitForFunctionAsync("() => window.__counter > 10");
+            await Page.EvaluateExpressionAsync("window.__injected = true");
+            await watchdog;
         }
     }
 }

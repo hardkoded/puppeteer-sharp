@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Linq;
@@ -56,6 +57,28 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.False(responses[0].FromCache);
             Assert.False(responses[0].FromServiceWorker);
             Assert.NotNull(responses[0].Request);
+
+            var remoteAddress = responses[0].RemoteAddress;
+            // Either IPv6 or IPv4, depending on environment.
+            Assert.True(remoteAddress.IP == "[::1]" || remoteAddress.IP == "127.0.0.1");
+            Assert.Equal(TestConstants.Port, remoteAddress.Port);
+        }
+
+        [Fact]
+        public async Task ResponseStatusText()
+        {
+            Server.SetRoute("/cool", (context) =>
+            {
+                context.Response.StatusCode = 200;
+                //There are some debates about this on these issues
+                //https://github.com/aspnet/HttpAbstractions/issues/395
+                //https://github.com/aspnet/HttpAbstractions/issues/486
+                //https://github.com/aspnet/HttpAbstractions/issues/794
+                context.Features.Get<IHttpResponseFeature>().ReasonPhrase = "cool!";
+                return Task.CompletedTask;
+            });
+            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/cool");
+            Assert.Equal("cool!", response.StatusText);
         }
 
         [Fact]
@@ -236,6 +259,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             var redirectChain = response.Request.RedirectChain;
             Assert.Single(redirectChain);
             Assert.Contains("/foo.html", redirectChain[0].Url);
+            Assert.Equal(TestConstants.Port, redirectChain[0].Response.RemoteAddress.Port);
         }
     }
 }

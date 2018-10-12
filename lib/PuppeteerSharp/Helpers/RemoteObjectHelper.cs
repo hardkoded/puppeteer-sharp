@@ -1,68 +1,73 @@
-﻿using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System;
-using System.Linq;
+﻿using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp.Helpers
 {
     internal class RemoteObjectHelper
     {
-        internal static object ValueFromRemoteObject<T>(dynamic remoteObject)
+        internal static object ValueFromRemoteObject<T>(JToken remoteObject)
         {
-            if (remoteObject.unserializableValue != null)
+            var unserializableValue = remoteObject[MessageKeys.UnserializableValue]?.AsString();
+
+            if (unserializableValue != null)
             {
-                switch (remoteObject.unserializableValue.ToString())
+                switch (unserializableValue)
                 {
-                    case "-0": return -0;
-                    case "NaN": return double.NaN;
-                    case "Infinity": return double.PositiveInfinity;
-                    case "-Infinity": return double.NegativeInfinity;
+                    case "-0":
+                        return -0;
+                    case "NaN":
+                        return double.NaN;
+                    case "Infinity":
+                        return double.PositiveInfinity;
+                    case "-Infinity":
+                        return double.NegativeInfinity;
                     default:
-                        throw new Exception("Unsupported unserializable value: " + remoteObject.unserializableValue);
+                        throw new Exception("Unsupported unserializable value: " + unserializableValue);
                 }
             }
 
-            if (remoteObject.value == null)
+            var value = remoteObject[MessageKeys.Value];
+
+            if (value == null)
             {
                 return null;
             }
 
             // https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-RemoteObject
-            string objectValue = remoteObject.value.ToString();
-            string objectType = remoteObject.type.ToString();
+            var objectType = remoteObject[MessageKeys.Type].AsString();
 
             switch (objectType)
             {
                 case "object":
-                    return JsonConvert.DeserializeObject<T>(objectValue);
+                    return value.ToObject<T>();
                 case "undefined":
                     return null;
                 case "number":
-                    switch (Type.GetTypeCode(typeof(T)))
-                    {
-                        case TypeCode.Int32:
-                        case TypeCode.Int64:
-                            return int.Parse(objectValue);
-                        default:
-                            return float.Parse(objectValue);
-                    }
+                    return value.Value<T>();
                 case "boolean":
-                    return bool.Parse(objectValue);
+                    return value.Value<bool>();
                 case "bigint":
-                    return double.Parse(objectValue);
+                    return value.Value<double>();
                 default: // string, symbol, function
-                    return objectValue;
+                    return value.ToObject<T>();
             }
         }
 
-        internal static async Task ReleaseObject(CDPSession client, dynamic remoteObject, ILogger logger)
+        internal static async Task ReleaseObject(CDPSession client, JToken remoteObject, ILogger logger)
         {
-            if (remoteObject.objectId == null)
+            var objectId = remoteObject[MessageKeys.ObjectId]?.AsString();
+
+            if (objectId == null)
+            {
                 return;
+            }
+
             try
             {
-                await client.SendAsync("Runtime.releaseObject", new { remoteObject.objectId });
+                await client.SendAsync("Runtime.releaseObject", new { objectId }).ConfigureAwait(false);
             }
             catch (Exception ex)
             {

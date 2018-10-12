@@ -20,7 +20,7 @@ namespace PuppeteerSharp.Tests.JSCoverageTests
         public async Task ShouldWork()
         {
             await Page.Coverage.StartJSCoverageAsync();
-            await Page.GoToAsync(TestConstants.ServerUrl + "/jscoverage/simple.html");
+            await Page.GoToAsync(TestConstants.ServerUrl + "/jscoverage/simple.html", WaitUntilNavigation.Networkidle0);
             var coverage = await Page.Coverage.StopJSCoverageAsync();
             Assert.Single(coverage);
             Assert.Contains("/jscoverage/simple.html", coverage[0].Url);
@@ -50,11 +50,37 @@ namespace PuppeteerSharp.Tests.JSCoverageTests
         }
 
         [Fact]
-        public async Task ShouldIgnoreAnonymousScripts()
+        public async Task ShouldIgnoreEvalScriptsByDefault()
         {
             await Page.Coverage.StartJSCoverageAsync();
+            await Page.GoToAsync(TestConstants.ServerUrl + "/jscoverage/eval.html");
+            var coverage = await Page.Coverage.StopJSCoverageAsync();
+            Assert.Single(coverage);
+        }
+
+        [Fact]
+        public async Task ShouldntIgnoreEvalScriptsIfReportAnonymousScriptsIsTrue()
+        {
+            await Page.Coverage.StartJSCoverageAsync(new CoverageStartOptions
+            {
+                ReportAnonymousScripts = true
+            });
+            await Page.GoToAsync(TestConstants.ServerUrl + "/jscoverage/eval.html");
+            var coverage = await Page.Coverage.StopJSCoverageAsync();
+            Assert.NotNull(coverage.FirstOrDefault(entry => entry.Url.StartsWith("debugger://", StringComparison.Ordinal)));
+            Assert.Equal(2, coverage.Count());
+        }
+
+        [Fact]
+        public async Task ShouldIgnorePptrInternalScriptsIfReportAnonymousScriptsIsTrue()
+        {
+            await Page.Coverage.StartJSCoverageAsync(new CoverageStartOptions
+            {
+                ReportAnonymousScripts = true
+            });
             await Page.GoToAsync(TestConstants.EmptyPage);
-            await Page.EvaluateExpressionAsync("console.log(1);");
+            await Page.EvaluateExpressionAsync("console.log('foo')");
+            await Page.EvaluateFunctionAsync("() => console.log('bar')");
             var coverage = await Page.Coverage.StopJSCoverageAsync();
             Assert.Empty(coverage);
         }

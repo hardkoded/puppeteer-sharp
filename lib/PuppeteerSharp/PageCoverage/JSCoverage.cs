@@ -1,9 +1,10 @@
-﻿using PuppeteerSharp.Messaging;
-using System;
-using System.Linq;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp.PageCoverage
 {
@@ -16,6 +17,7 @@ namespace PuppeteerSharp.PageCoverage
 
         private bool _enabled;
         private bool _resetOnNavigation;
+        private bool _reportAnonymousScripts;
 
         public JSCoverage(CDPSession client)
         {
@@ -28,7 +30,7 @@ namespace PuppeteerSharp.PageCoverage
             _resetOnNavigation = false;
         }
 
-        internal async Task StartAsync(CoverageStartOptions options)
+        internal Task StartAsync(CoverageStartOptions options)
         {
             if (_enabled)
             {
@@ -36,13 +38,14 @@ namespace PuppeteerSharp.PageCoverage
             }
 
             _resetOnNavigation = options.ResetOnNavigation;
+            _reportAnonymousScripts = options.ReportAnonymousScripts;
             _enabled = true;
             _scriptURLs.Clear();
             _scriptSources.Clear();
 
             _client.MessageReceived += client_MessageReceived;
 
-            await Task.WhenAll(
+            return Task.WhenAll(
                 _client.SendAsync("Profiler.enable"),
                 _client.SendAsync("Profiler.startPreciseCoverage", new { callCount = false, detailed = true }),
                 _client.SendAsync("Debugger.enable"),
@@ -64,13 +67,18 @@ namespace PuppeteerSharp.PageCoverage
                _client.SendAsync("Profiler.stopPreciseCoverage"),
                _client.SendAsync("Profiler.disable"),
                _client.SendAsync("Debugger.disable")
-           );
+           ).ConfigureAwait(false);
             _client.MessageReceived -= client_MessageReceived;
 
             var coverage = new List<CoverageEntry>();
             foreach (var entry in profileResponseTask.Result.Result)
             {
-                if (!_scriptURLs.TryGetValue(entry.ScriptId, out var url) ||
+                _scriptURLs.TryGetValue(entry.ScriptId, out var url);
+                if (string.IsNullOrEmpty(url) && _reportAnonymousScripts)
+                {
+                    url = "debugger://VM" + entry.ScriptId;
+                }
+                if (string.IsNullOrEmpty(url) ||
                     !_scriptSources.TryGetValue(entry.ScriptId, out var text))
                 {
                     continue;
@@ -93,7 +101,7 @@ namespace PuppeteerSharp.PageCoverage
             switch (e.MessageID)
             {
                 case "Debugger.scriptParsed":
-                    await OnScriptParsed(e.MessageData.ToObject<DebuggerScriptParsedResponse>());
+                    await OnScriptParsed(e.MessageData.ToObject<DebuggerScriptParsedResponse>()).ConfigureAwait(false);
                     break;
                 case "Runtime.executionContextsCleared":
                     OnExecutionContextsCleared();
@@ -103,16 +111,17 @@ namespace PuppeteerSharp.PageCoverage
 
         private async Task OnScriptParsed(DebuggerScriptParsedResponse scriptParseResponse)
         {
-            if (string.IsNullOrEmpty(scriptParseResponse.Url))
+            if (scriptParseResponse.Url == ExecutionContext.EvaluationScriptUrl ||
+                (string.IsNullOrEmpty(scriptParseResponse.Url) && !_reportAnonymousScripts))
             {
                 return;
             }
 
             try
             {
-                var response = await _client.SendAsync("Debugger.getScriptSource", new { scriptId = scriptParseResponse.ScriptId });
+                var response = await _client.SendAsync("Debugger.getScriptSource", new { scriptId = scriptParseResponse.ScriptId }).ConfigureAwait(false);
                 _scriptURLs.Add(scriptParseResponse.ScriptId, scriptParseResponse.Url);
-                _scriptSources.Add(scriptParseResponse.ScriptId, response.scriptSource.ToString());
+                _scriptSources.Add(scriptParseResponse.ScriptId, response[MessageKeys.ScriptSource].AsString());
             }
             catch (Exception ex)
             {

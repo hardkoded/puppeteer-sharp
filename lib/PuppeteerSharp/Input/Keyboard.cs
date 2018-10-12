@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp.Input
 {
@@ -31,7 +33,7 @@ namespace PuppeteerSharp.Input
         /// After the key is pressed once, subsequent calls to <see cref="DownAsync(string, DownOptions)"/> will have <see href="https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/repeat">repeat</see> set to <c>true</c>. To release the key, use <see cref="UpAsync(string)"/>
         /// </remarks>
         /// <returns>Task</returns>
-        public async Task DownAsync(string key, DownOptions options = null)
+        public Task DownAsync(string key, DownOptions options = null)
         {
             var description = KeyDescriptionForString(key);
 
@@ -41,17 +43,18 @@ namespace PuppeteerSharp.Input
 
             var text = options?.Text == null ? description.Text : options.Text;
 
-            await _client.SendAsync("Input.dispatchKeyEvent", new Dictionary<string, object>(){
-                {"type", text != null ? "keyDown" : "rawKeyDown"},
-                {"modifiers", Modifiers},
-                {"windowsVirtualKeyCode", description.KeyCode},
-                {"code", description.Code },
-                {"key", description.Key},
-                {"text", text},
-                {"unmodifiedText", text},
-                {"autoRepeat", autoRepeat},
-                {"location", description.Location },
-                {"isKeypad", description.Location == 3 }
+            return _client.SendAsync("Input.dispatchKeyEvent", new Dictionary<string, object>
+            {
+                { MessageKeys.Type, text != null ? "keyDown" : "rawKeyDown" },
+                { MessageKeys.Modifiers, Modifiers },
+                { MessageKeys.WindowsVirtualKeyCode, description.KeyCode },
+                { MessageKeys.Code, description.Code },
+                { MessageKeys.Key, description.Key },
+                { MessageKeys.Text, text },
+                { MessageKeys.UnmodifiedText, text },
+                { MessageKeys.AutoRepeat, autoRepeat },
+                { MessageKeys.Location, description.Location },
+                { MessageKeys.IsKeypad, description.Location == 3 }
             });
         }
 
@@ -60,20 +63,21 @@ namespace PuppeteerSharp.Input
         /// </summary>
         /// <param name="key">Name of key to release, such as `ArrowLeft`. See <see cref="KeyDefinitions"/> for a list of all key names.</param>
         /// <returns>Task</returns>
-        public async Task UpAsync(string key)
+        public Task UpAsync(string key)
         {
             var description = KeyDescriptionForString(key);
 
             Modifiers &= ~ModifierBit(key);
             _pressedKeys.Remove(description.Code);
 
-            await _client.SendAsync("Input.dispatchKeyEvent", new Dictionary<string, object>(){
-                {"type", "keyUp"},
-                {"modifiers", Modifiers},
-                {"key", description.Key},
-                {"windowsVirtualKeyCode", description.KeyCode},
-                {"code", description.Code },
-                {"location", description.Location }
+            return _client.SendAsync("Input.dispatchKeyEvent", new Dictionary<string, object>
+            {
+                { MessageKeys.Type, "keyUp" },
+                { MessageKeys.Modifiers, Modifiers },
+                { MessageKeys.Key, description.Key },
+                { MessageKeys.WindowsVirtualKeyCode, description.KeyCode },
+                { MessageKeys.Code, description.Code },
+                { MessageKeys.Location, description.Location }
             });
         }
 
@@ -82,16 +86,8 @@ namespace PuppeteerSharp.Input
         /// </summary>
         /// <param name="charText">Character to send into the page</param>
         /// <returns>Task</returns>
-        public async Task SendCharacterAsync(string charText)
-        {
-            await _client.SendAsync("Input.dispatchKeyEvent", new Dictionary<string, object>(){
-                {"type", "char"},
-                {"modifiers", Modifiers},
-                {"text", charText },
-                {"key", charText},
-                {"unmodifiedText", charText }
-            });
-        }
+        public Task SendCharacterAsync(string charText)
+            => _client.SendAsync("Input.insertText", new Dictionary<string, object> { [MessageKeys.Text] = charText });
 
         /// <summary>
         /// Sends a <c>keydown</c>, <c>keypress</c>/<c>input</c>, and <c>keyup</c> event for each character in the text.
@@ -109,19 +105,22 @@ namespace PuppeteerSharp.Input
             {
                 delay = (int)options.Delay;
             }
-            foreach (var letter in text)
+
+            var textParts = StringInfo.GetTextElementEnumerator(text);
+            while (textParts.MoveNext())
             {
+                var letter = textParts.Current;
                 if (KeyDefinitions.ContainsKey(letter.ToString()))
                 {
-                    await PressAsync(letter.ToString(), new PressOptions { Delay = delay });
+                    await PressAsync(letter.ToString(), new PressOptions { Delay = delay }).ConfigureAwait(false);
                 }
                 else
                 {
-                    await SendCharacterAsync(letter.ToString());
+                    await SendCharacterAsync(letter.ToString()).ConfigureAwait(false);
                 }
                 if (delay > 0)
                 {
-                    await Task.Delay(delay);
+                    await Task.Delay(delay).ConfigureAwait(false);
                 }
             }
         }
@@ -138,12 +137,12 @@ namespace PuppeteerSharp.Input
         /// <returns>Task</returns>
         public async Task PressAsync(string key, PressOptions options = null)
         {
-            await DownAsync(key, options);
+            await DownAsync(key, options).ConfigureAwait(false);
             if (options?.Delay > 0)
             {
-                await Task.Delay((int)options.Delay);
+                await Task.Delay((int)options.Delay).ConfigureAwait(false);
             }
-            await UpAsync(key);
+            await UpAsync(key).ConfigureAwait(false);
         }
 
         private int ModifierBit(string key)

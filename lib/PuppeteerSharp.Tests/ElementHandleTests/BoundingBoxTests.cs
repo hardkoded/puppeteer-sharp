@@ -58,5 +58,24 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             var box = await elementHandle.BoundingBoxAsync();
             Assert.Equal(new BoundingBox(8, 8, 100, 200), box);
         }
+
+        [Fact]
+        public async Task ShouldWworkWithSVGNodes()
+        {
+            await Page.SetContentAsync(@"
+                <svg xmlns=""http://www.w3.org/2000/svg"" width=""500"" height=""500"">
+                  <rect id=""theRect"" x=""30"" y=""50"" width=""200"" height=""300""></rect>
+                </svg>
+            ");
+
+            var element = await Page.QuerySelectorAsync("#therect");
+            var pptrBoundingBox = await element.BoundingBoxAsync();
+            var webBoundingBox = await Page.EvaluateFunctionAsync<BoundingBox>(@"e =>
+            {
+                const rect = e.getBoundingClientRect();
+                return { x: rect.x, y: rect.y, width: rect.width, height: rect.height};
+            }", element);
+            Assert.Equal(webBoundingBox, pptrBoundingBox);
+        }
     }
 }

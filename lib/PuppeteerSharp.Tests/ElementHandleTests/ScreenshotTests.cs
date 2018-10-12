@@ -68,6 +68,9 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
                   height: 600px;
                   margin-left: 50px;
                 }
+                ::-webkit-scrollbar{
+                  display: none;
+                }
                 </style>
                 <div class='to-screenshot'></div>"
             );
@@ -139,6 +142,15 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
 
             var exception = await Assert.ThrowsAsync<PuppeteerException>(elementHandle.ScreenshotStreamAsync);
             Assert.Equal("Node is either not visible or not an HTMLElement", exception.Message);
+        }
+
+        [Fact(Skip = "Skipped in Puppeteer")]
+        public async Task ShouldNotHangWithZeroWidthHeightElement()
+        {
+            await Page.SetContentAsync(@"<div style='width: 0; height: 0'></div>");
+            var elementHandle = await Page.QuerySelectorAsync("div");
+            var screenshot = await elementHandle.ScreenshotDataAsync();
+            Assert.NotNull(screenshot); 
         }
     }
 }

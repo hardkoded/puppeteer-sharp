@@ -59,9 +59,9 @@ namespace PuppeteerSharp.Tests.TargetTests
             async void TargetCreatedEventHandler(object sender, TargetChangedArgs e)
             {
                 otherPageTaskCompletion.SetResult(await e.Target.PageAsync());
-                Browser.TargetCreated -= TargetCreatedEventHandler;
+                Context.TargetCreated -= TargetCreatedEventHandler;
             }
-            Browser.TargetCreated += TargetCreatedEventHandler;
+            Context.TargetCreated += TargetCreatedEventHandler;
             await Page.EvaluateFunctionHandleAsync("url => window.open(url)", TestConstants.CrossProcessUrl);
             var otherPage = await otherPageTaskCompletion.Task;
             Assert.Contains(TestConstants.CrossProcessUrl, otherPage.Url);
@@ -69,7 +69,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             Assert.Equal("Hello world", await otherPage.EvaluateExpressionAsync<string>("['Hello', 'world'].join(' ')"));
             Assert.NotNull(await otherPage.QuerySelectorAsync("body"));
 
-            var allPages = await Browser.PagesAsync();
+            var allPages = await Context.PagesAsync();
             Assert.Contains(Page, allPages);
             Assert.Contains(otherPage, allPages);
 
@@ -77,13 +77,13 @@ namespace PuppeteerSharp.Tests.TargetTests
             async void TargetDestroyedEventHandler(object sender, TargetChangedArgs e)
             {
                 closePageTaskCompletion.SetResult(await e.Target.PageAsync());
-                Browser.TargetDestroyed -= TargetDestroyedEventHandler;
+                Context.TargetDestroyed -= TargetDestroyedEventHandler;
             }
-            Browser.TargetDestroyed += TargetDestroyedEventHandler;
+            Context.TargetDestroyed += TargetDestroyedEventHandler;
             await otherPage.CloseAsync();
             Assert.Equal(otherPage, await closePageTaskCompletion.Task);
 
-            allPages = await Task.WhenAll(Browser.Targets().Select(target => target.PageAsync()));
+            allPages = await Task.WhenAll(Context.Targets().Select(target => target.PageAsync()));
             Assert.Contains(Page, allPages);
             Assert.DoesNotContain(otherPage, allPages);
         }
@@ -96,9 +96,9 @@ namespace PuppeteerSharp.Tests.TargetTests
             void TargetCreatedEventHandler(object sender, TargetChangedArgs e)
             {
                 createdTargetTaskCompletion.SetResult(e.Target);
-                Browser.TargetCreated -= TargetCreatedEventHandler;
+                Context.TargetCreated -= TargetCreatedEventHandler;
             }
-            Browser.TargetCreated += TargetCreatedEventHandler;
+            Context.TargetCreated += TargetCreatedEventHandler;
             await Page.GoToAsync(TestConstants.ServerUrl + "/serviceworkers/empty/sw.html");
 
             var createdTarget = await createdTargetTaskCompletion.Task;
@@ -109,9 +109,9 @@ namespace PuppeteerSharp.Tests.TargetTests
             void TargetDestroyedEventHandler(object sender, TargetChangedArgs e)
             {
                 targetDestroyedTaskCompletion.SetResult(e.Target);
-                Browser.TargetDestroyed -= TargetDestroyedEventHandler;
+                Context.TargetDestroyed -= TargetDestroyedEventHandler;
             }
-            Browser.TargetDestroyed += TargetDestroyedEventHandler;
+            Context.TargetDestroyed += TargetDestroyedEventHandler;
             await Page.EvaluateExpressionAsync("window.registrationPromise.then(registration => registration.unregister())");
             Assert.Equal(createdTarget, await targetDestroyedTaskCompletion.Task);
         }
@@ -125,16 +125,16 @@ namespace PuppeteerSharp.Tests.TargetTests
             void ChangedTargetEventHandler(object sender, TargetChangedArgs e)
             {
                 changedTargetTaskCompletion.SetResult(e.Target);
-                Browser.TargetChanged -= ChangedTargetEventHandler;
+                Context.TargetChanged -= ChangedTargetEventHandler;
             }
-            Browser.TargetChanged += ChangedTargetEventHandler;
+            Context.TargetChanged += ChangedTargetEventHandler;
 
             await Page.GoToAsync(TestConstants.CrossProcessUrl + "/");
             var changedTarget = await changedTargetTaskCompletion.Task;
             Assert.Equal(TestConstants.CrossProcessUrl + "/", changedTarget.Url);
 
             changedTargetTaskCompletion = new TaskCompletionSource<Target>();
-            Browser.TargetChanged += ChangedTargetEventHandler;
+            Context.TargetChanged += ChangedTargetEventHandler;
             await Page.GoToAsync(TestConstants.EmptyPage);
             changedTarget = await changedTargetTaskCompletion.Task;
             Assert.Equal(TestConstants.EmptyPage, changedTarget.Url);
@@ -145,28 +145,28 @@ namespace PuppeteerSharp.Tests.TargetTests
         {
             var targetChanged = false;
             void listener(object sender, TargetChangedArgs e) => targetChanged = true;
-            Browser.TargetChanged += listener;
+            Context.TargetChanged += listener;
             var targetCompletionTask = new TaskCompletionSource<Target>();
             void TargetCreatedEventHandler(object sender, TargetChangedArgs e)
             {
                 targetCompletionTask.SetResult(e.Target);
-                Browser.TargetCreated -= TargetCreatedEventHandler;
+                Context.TargetCreated -= TargetCreatedEventHandler;
             }
-            Browser.TargetCreated += TargetCreatedEventHandler;
-            var newPageTask = Browser.NewPageAsync();
+            Context.TargetCreated += TargetCreatedEventHandler;
+            var newPageTask = Context.NewPageAsync();
             var target = await targetCompletionTask.Task;
             Assert.Equal(TestConstants.AboutBlank, target.Url);
 
             var newPage = await newPageTask;
             targetCompletionTask = new TaskCompletionSource<Target>();
-            Browser.TargetCreated += TargetCreatedEventHandler;
+            Context.TargetCreated += TargetCreatedEventHandler;
             var evaluateTask = newPage.EvaluateExpressionHandleAsync("window.open('about:blank')");
             var target2 = await targetCompletionTask.Task;
             Assert.Equal(TestConstants.AboutBlank, target2.Url);
             await evaluateTask;
             await newPage.CloseAsync();
             Assert.False(targetChanged, "target should not be reported as changed");
-            Browser.TargetChanged -= listener;
+            Context.TargetChanged -= listener;
         }
 
         [Fact]
@@ -190,6 +190,20 @@ namespace PuppeteerSharp.Tests.TargetTests
             await WaitEvent(newPage.Client, "Page.loadEventFired");
             // Cleanup.
             await newPage.CloseAsync();
+        }
+
+        [Fact]
+        public async Task ShouldHaveAnOpener()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var targetCreatedCompletion = new TaskCompletionSource<Target>();
+            Browser.TargetCreated += (sender, e) => targetCreatedCompletion.TrySetResult(e.Target);
+            await Page.GoToAsync(TestConstants.ServerUrl + "/popup/window-open.html");
+            var createdTarget = await targetCreatedCompletion.Task;
+
+            Assert.Equal(TestConstants.ServerUrl + "/popup/popup.html", (await createdTarget.PageAsync()).Url);
+            Assert.Same(Page.Target, createdTarget.Opener);
+            Assert.Null(Page.Target.Opener);
         }
     }
 }

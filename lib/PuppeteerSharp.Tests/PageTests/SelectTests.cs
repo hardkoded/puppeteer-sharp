@@ -25,7 +25,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldSelectOnlyFirstOption()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
-            await Page.SelectAsync("select", "blue", "green", "red");            
+            await Page.SelectAsync("select", "blue", "green", "red");
             Assert.Equal(new string[] { "blue" }, await Page.EvaluateExpressionAsync<string[]>("result.onInput"));
             Assert.Equal(new string[] { "blue" }, await Page.EvaluateExpressionAsync<string[]>("result.onChange"));
         }
@@ -110,6 +110,16 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.SelectAsync("select");
             Assert.True(await Page.QuerySelectorAsync("select").EvaluateFunctionAsync<bool>(
                 "select => Array.from(select.options).every(option => !option.selected)"));
+        }
+
+        [Fact(Skip = "see https://github.com/GoogleChrome/puppeteer/issues/3327")]
+        public async Task ShouldWorkWhenRedefiningTopLevelEventClass()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
+            await Page.EvaluateFunctionAsync("() => window.Event = null");
+            await Page.SelectAsync("select", "blue");
+            Assert.Equal(new[] { "blue" }, await Page.EvaluateExpressionAsync<string[]>("result.onInput"));
+            Assert.Equal(new[] { "blue" }, await Page.EvaluateExpressionAsync<string[]>("result.onChange"));
         }
     }
 }

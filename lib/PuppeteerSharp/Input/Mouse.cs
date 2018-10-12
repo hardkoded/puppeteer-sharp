@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp.Input
 {
@@ -45,13 +46,14 @@ namespace PuppeteerSharp.Input
 
             for (var i = 1; i <= steps; i++)
             {
-                await _client.SendAsync("Input.dispatchMouseEvent", new Dictionary<string, object>(){
-                    {"type", "mouseMoved"},
-                    {"button", _button},
-                    {"x", fromX + ((_x - fromX) * ((decimal)i / steps))},
-                    {"y", fromY + ((_y - fromY) * ((decimal)i / steps))},
-                    {"modifiers", _keyboard.Modifiers}
-                });
+                await _client.SendAsync("Input.dispatchMouseEvent", new Dictionary<string, object>
+                {
+                    { MessageKeys.Type, "mouseMoved" },
+                    { MessageKeys.Button, _button },
+                    { MessageKeys.X, fromX + ((_x - fromX) * ((decimal)i / steps)) },
+                    { MessageKeys.Y, fromY + ((_y - fromY) * ((decimal)i / steps)) },
+                    { MessageKeys.Modifiers, _keyboard.Modifiers}
+                }).ConfigureAwait(false);
             }
         }
 
@@ -66,14 +68,14 @@ namespace PuppeteerSharp.Input
         {
             options = options ?? new ClickOptions();
 
-            await MoveAsync(x, y);
-            await DownAsync(options);
+            await MoveAsync(x, y).ConfigureAwait(false);
+            await DownAsync(options).ConfigureAwait(false);
 
             if (options.Delay > 0)
             {
-                await Task.Delay(options.Delay);
+                await Task.Delay(options.Delay).ConfigureAwait(false);
             }
-            await UpAsync(options);
+            await UpAsync(options).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -81,19 +83,20 @@ namespace PuppeteerSharp.Input
         /// </summary>
         /// <param name="options"></param>
         /// <returns>Task</returns>
-        public async Task DownAsync(ClickOptions options = null)
+        public Task DownAsync(ClickOptions options = null)
         {
             options = options ?? new ClickOptions();
 
             _button = options.Button;
 
-            await _client.SendAsync("Input.dispatchMouseEvent", new Dictionary<string, object>(){
-                {"type", "mousePressed"},
-                {"button", _button},
-                {"x", _x},
-                {"y", _y},
-                {"modifiers", _keyboard.Modifiers},
-                {"clickCount", options.ClickCount }
+            return _client.SendAsync("Input.dispatchMouseEvent", new Dictionary<string, object>()
+            {
+                { MessageKeys.Type, "mousePressed" },
+                { MessageKeys.Button, _button },
+                { MessageKeys.X, _x },
+                { MessageKeys.Y, _y },
+                { MessageKeys.Modifiers, _keyboard.Modifiers },
+                { MessageKeys.ClickCount, options.ClickCount }
             });
         }
 
@@ -102,19 +105,20 @@ namespace PuppeteerSharp.Input
         /// </summary>
         /// <param name="options"></param>
         /// <returns>Task</returns>
-        public async Task UpAsync(ClickOptions options = null)
+        public Task UpAsync(ClickOptions options = null)
         {
             options = options ?? new ClickOptions();
 
             _button = MouseButton.None;
 
-            await _client.SendAsync("Input.dispatchMouseEvent", new Dictionary<string, object>(){
-                {"type", "mouseReleased"},
-                {"button", options.Button},
-                {"x", _x},
-                {"y", _y},
-                {"modifiers", _keyboard.Modifiers},
-                {"clickCount", options.ClickCount }
+            return _client.SendAsync("Input.dispatchMouseEvent", new Dictionary<string, object>()
+            {
+                { MessageKeys.Type, "mouseReleased" },
+                { MessageKeys.Button, options.Button },
+                { MessageKeys.X, _x },
+                { MessageKeys.Y, _y },
+                { MessageKeys.Modifiers, _keyboard.Modifiers },
+                { MessageKeys.ClickCount, options.ClickCount }
             });
         }
     }

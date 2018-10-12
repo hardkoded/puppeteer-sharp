@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using PuppeteerSharp.Helpers;
 using System.Linq;
 using System.IO;
-using System.Diagnostics;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Collections;
 using Microsoft.Extensions.Logging;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
@@ -17,52 +12,11 @@ namespace PuppeteerSharp
     /// </summary>
     public class Launcher
     {
-        #region Constants
-        internal static readonly string[] DefaultArgs = {
-            "--disable-background-networking",
-            "--disable-background-timer-throttling",
-            "--disable-client-side-phishing-detection",
-            "--disable-default-apps",
-            "--disable-dev-shm-usage",
-            "--disable-extensions",
-            "--disable-hang-monitor",
-            "--disable-popup-blocking",
-            "--disable-prompt-on-repost",
-            "--disable-sync",
-            "--disable-translate",
-            "--metrics-recording-only",
-            "--no-first-run",
-            "--safebrowsing-disable-auto-update"
-        };
-        internal static readonly string[] AutomationArgs = {
-            "--enable-automation",
-            "--password-store=basic",
-            "--use-mock-keychain"
-        };
-        private const string UserDataDirArgument = "--user-data-dir";
-        #endregion
-
         #region Private members
-        private static int _processCount;
-        private readonly ILoggerFactory _loggerFactory;
-        private readonly ILogger _logger;
-        private Process _chromeProcess;
-        private string _temporaryUserDataDir;
-        private Connection _connection;
-        private Timer _timer;
-        private LaunchOptions _options;
-        private TaskCompletionSource<bool> _waitForChromeToClose;
-        private bool _processLoaded;
-        private bool _chromiumLaunched;
-        private object _isChromeCloseLock = new object();
-        #endregion
 
-        #region Properties
-        /// <summary>
-        /// Gets or sets a value indicating whether the process created by the instance is closed.
-        /// </summary>
-        /// <value><c>true</c> if is the process is closed; otherwise, <c>false</c>.</value>
-        public bool IsChromeClosed { get; internal set; }
+        private readonly ILoggerFactory _loggerFactory;
+        private bool _chromiumLaunched;
+
         #endregion
 
         /// <summary>
@@ -70,12 +24,16 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="loggerFactory">Logger factory.</param>
         public Launcher(ILoggerFactory loggerFactory = null)
-
         {
             _loggerFactory = loggerFactory ?? new LoggerFactory();
-            _logger = _loggerFactory.CreateLogger<Launcher>();
-            _waitForChromeToClose = new TaskCompletionSource<bool>();
         }
+
+        #region Properties
+        /// <summary>
+        /// Gets Chromium process, if any was created by this launcher.
+        /// </summary>
+        public ChromiumProcess Process { get; private set; }
+        #endregion
 
         #region Public methods
         /// <summary>
@@ -90,46 +48,35 @@ namespace PuppeteerSharp
         /// </remarks>
         public async Task<Browser> LaunchAsync(LaunchOptions options)
         {
-            if (_chromiumLaunched)
-            {
-                throw new InvalidOperationException("Unable to create or connect to another chromium process");
-            }
-            _chromiumLaunched = true;
-            var chromeArguments = InitChromeArgument(options);
-            var chromeExecutable = options.ExecutablePath;
+            EnsureSingleLaunchOrConnect();
 
-            if (string.IsNullOrEmpty(chromeExecutable))
-            {
-                var browserFetcher = new BrowserFetcher();
-                chromeExecutable = browserFetcher.RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath;
-            }
-            if (!File.Exists(chromeExecutable))
-            {
-                throw new FileNotFoundException("Failed to launch chrome! path to executable does not exist", chromeExecutable);
-            }
-
-            CreateChromeProcess(options, chromeArguments, chromeExecutable);
-
+            var chromiumExecutable = GetOrFetchChromeExecutable(options);
+            Process = new ChromiumProcess(chromiumExecutable, options, _loggerFactory);
             try
             {
-                var connectionDelay = options.SlowMo;
-                var browserWSEndpoint = await WaitForEndpoint(_chromeProcess, options.Timeout);
-                var keepAliveInterval = 0;
-
-                _connection = await Connection.Create(browserWSEndpoint, connectionDelay, keepAliveInterval, _loggerFactory);
-                _processLoaded = true;
-
-                if (options.LogProcess)
+                await Process.StartAsync().ConfigureAwait(false);
+                try
                 {
-                    _logger.LogInformation("Process Count: {ProcessCount}", Interlocked.Increment(ref _processCount));
-                }
+                    var connection = await Connection
+                        .Create(Process.EndPoint, options, _loggerFactory)
+                        .ConfigureAwait(false);
 
-                return await Browser.CreateAsync(_connection, options, _chromeProcess, GracefullyCloseChrome);
+                    var browser = await Browser
+                        .CreateAsync(connection, Array.Empty<string>(), options.IgnoreHTTPSErrors, options.DefaultViewport, Process)
+                        .ConfigureAwait(false);
+
+                    await EnsureInitialPageAsync(browser).ConfigureAwait(false);
+                    return browser;
+                }
+                catch (Exception ex)
+                {
+                    throw new ChromiumProcessException("Failed to create connection", ex);
+                }
             }
-            catch (Exception ex)
+            catch
             {
-                KillChrome();
-                throw new ChromeProcessException("Failed to create connection", ex);
+                await Process.KillAsync().ConfigureAwait(false);
+                throw;
             }
         }
 
@@ -140,80 +87,19 @@ namespace PuppeteerSharp
         /// <returns>A connected browser.</returns>
         public async Task<Browser> ConnectAsync(ConnectOptions options)
         {
+            EnsureSingleLaunchOrConnect();
+
             try
             {
-                if (_chromiumLaunched)
-                {
-                    throw new InvalidOperationException("Unable to create or connect to another chromium process");
-                }
-                _chromiumLaunched = true;
-
-                var connectionDelay = options.SlowMo;
-                var keepAliveInterval = 0;
-
-                _connection = await Connection.Create(options.BrowserWSEndpoint, connectionDelay, keepAliveInterval, _loggerFactory);
-
-                return await Browser.CreateAsync(_connection, options, null, () =>
-                {
-                    try
-                    {
-                        var closeTask = _connection.SendAsync("Browser.close", null);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, ex.Message);
-                    }
-                    return null;
-                });
+                var connection = await Connection.Create(options.BrowserWSEndpoint, options, _loggerFactory).ConfigureAwait(false);
+                var response = await connection.SendAsync<GetBrowserContextsResponse>("Target.getBrowserContexts");
+                return await Browser
+                    .CreateAsync(connection, response.BrowserContextIds, options.IgnoreHTTPSErrors, options.DefaultViewport, null)
+                    .ConfigureAwait(false);
             }
             catch (Exception ex)
             {
-                throw new Exception("Failed to create connection", ex);
-            }
-        }
-
-        /// <summary>
-        /// Tries the delete user data dir.
-        /// </summary>
-        /// <returns>The task.</returns>
-        /// <param name="times">How many times it should try to delete the folder</param>
-        /// <param name="delay">Time to wait between tries.</param>
-        public async Task TryDeleteUserDataDir(int times = 10, TimeSpan? delay = null)
-        {
-            if (!IsChromeClosed)
-            {
-                throw new InvalidOperationException("Unable to delete user data dir, Chorme is still open");
-            }
-
-            if (times <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(times));
-            }
-
-            if (delay == null)
-            {
-                delay = new TimeSpan(0, 0, 0, 0, 100);
-            }
-
-            var folder = string.IsNullOrEmpty(_temporaryUserDataDir) ? _options.UserDataDir : _temporaryUserDataDir;
-            var attempts = 0;
-            while (true)
-            {
-                try
-                {
-                    attempts++;
-                    Directory.Delete(folder, true);
-                    break;
-                }
-                catch (UnauthorizedAccessException)
-                {
-                    if (attempts == times)
-                    {
-                        throw;
-                    }
-
-                    await Task.Delay(delay.Value);
-                }
+                throw new ChromiumProcessException("Failed to create connection", ex);
             }
         }
 
@@ -222,256 +108,88 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>The executable path.</returns>
         public static string GetExecutablePath()
-            => new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath;
-
-        /// <summary>
-        /// Gets a temporary directory using <see cref="Path.GetTempPath"/> and <see cref="Path.GetRandomFileName"/>.
-        /// </summary>
-        /// <returns>A temporary directory.</returns>
-        public static string GetTemporaryDirectory()
-        {
-            var tempDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-            Directory.CreateDirectory(tempDirectory);
-            return tempDirectory;
-        }
+            => ResolveExecutablePath();
 
         #endregion
 
         #region Private methods
 
-        private void CreateChromeProcess(LaunchOptions options, List<string> chromeArguments, string chromeExecutable)
+        private void EnsureSingleLaunchOrConnect()
         {
-            _chromeProcess = new Process
+            if (_chromiumLaunched)
             {
-                EnableRaisingEvents = true
-            };
-            _chromeProcess.StartInfo.UseShellExecute = false;
-            _chromeProcess.StartInfo.FileName = chromeExecutable;
-            _chromeProcess.StartInfo.Arguments = string.Join(" ", chromeArguments);
-            _chromeProcess.StartInfo.RedirectStandardError = true;
+                throw new InvalidOperationException("Unable to create or connect to another chromium process");
+            }
 
-            SetEnvVariables(_chromeProcess.StartInfo.Environment, options.Env, Environment.GetEnvironmentVariables());
-
-            _chromeProcess.Exited += async (sender, e) =>
-            {
-                await AfterProcessExit();
-            };
-
-            _chromeProcess.ErrorDataReceived += (sender, e) =>
-            {
-                if (options.DumpIO)
-                {
-                    Console.Error.WriteLine(e.Data);
-                }
-            };
+            _chromiumLaunched = true;
         }
 
-        private List<string> InitChromeArgument(LaunchOptions options)
+        private static string GetOrFetchChromeExecutable(LaunchOptions options)
         {
-            var chromeArguments = new List<string>(DefaultArgs);
-
-            _options = options;
-
-            if (options.AppMode)
+            var chromeExecutable = options.ExecutablePath;
+            if (string.IsNullOrEmpty(chromeExecutable))
             {
-                options.Headless = false;
-            }
-            else
-            {
-                chromeArguments.AddRange(AutomationArgs);
+                chromeExecutable = ResolveExecutablePath();
             }
 
-            if (!options.IgnoreDefaultArgs ||
-                !chromeArguments.Any(argument => argument.StartsWith("--remote-debugging-", StringComparison.Ordinal)))
+            if (!File.Exists(chromeExecutable))
             {
-                chromeArguments.Add("--remote-debugging-port=0");
+                throw new FileNotFoundException("Failed to launch chrome! path to executable does not exist", chromeExecutable);
             }
 
-            var userDataDirOption = options.Args.FirstOrDefault(i => i.StartsWith(UserDataDirArgument, StringComparison.Ordinal));
-            if (string.IsNullOrEmpty(userDataDirOption))
-            {
-                if (string.IsNullOrEmpty(options.UserDataDir))
-                {
-                    _temporaryUserDataDir = GetTemporaryDirectory();
-                    chromeArguments.Add($"{UserDataDirArgument}={_temporaryUserDataDir.Quote()}");
-                }
-                else
-                {
-                    chromeArguments.Add($"{UserDataDirArgument}={options.UserDataDir.Quote()}");
-                }
-            }
-            else
-            {
-                _options.UserDataDir = userDataDirOption.Replace($"{UserDataDirArgument}=", string.Empty).UnQuote();
-            }
-
-            if (options.Devtools)
-            {
-                chromeArguments.Add("--auto-open-devtools-for-tabs");
-                options.Headless = false;
-            }
-
-            if (options.Headless)
-            {
-                chromeArguments.AddRange(new[]{
-                    "--headless",
-                    "--disable-gpu",
-                    "--hide-scrollbars",
-                    "--mute-audio"
-                });
-            }
-
-            if (options.Args.Any())
-            {
-                chromeArguments.AddRange(options.Args);
-            }
-
-            return chromeArguments;
+            return chromeExecutable;
         }
 
-        private Task<string> WaitForEndpoint(Process chromeProcess, int timeout)
+        private static string ResolveExecutablePath()
         {
-            var taskWrapper = new TaskCompletionSource<string>();
-            var output = string.Empty;
-
-            void exitedEvent(object sender, EventArgs e)
+            var executablePath = Environment.GetEnvironmentVariable("PUPPETEER_EXECUTABLE_PATH");
+            if (!string.IsNullOrEmpty(executablePath))
             {
-                if (_options.LogProcess && !_processLoaded)
+                if (!File.Exists(executablePath))
                 {
-                    _logger.LogInformation("Process Count: {ProcessCount}", Interlocked.Increment(ref _processCount));
+                    throw new FileNotFoundException("Tried to use PUPPETEER_EXECUTABLE_PATH env variable to launch browser but did not find any executable", executablePath);
                 }
-
-                CleanUp();
-
-                taskWrapper.SetException(new ChromeProcessException($"Failed to launch chrome! {output}"));
+                return executablePath;
             }
 
-            void errorDataReceivedEvent(object sender, DataReceivedEventArgs e)
+            var browserFetcher = new BrowserFetcher();
+            var revision = Environment.GetEnvironmentVariable("PUPPETEER_CHROMIUM_REVISION");
+            RevisionInfo revisionInfo;
+            if (!string.IsNullOrEmpty(revision) && int.TryParse(revision, out var revisionNumber))
             {
-                if (e.Data != null)
+                revisionInfo = browserFetcher.RevisionInfo(revisionNumber);
+                if (!revisionInfo.Local)
                 {
-                    output += e.Data + "\n";
-                    var match = Regex.Match(e.Data, "^DevTools listening on (ws:\\/\\/.*)");
-
-                    if (!match.Success)
-                    {
-                        return;
-                    }
-
-                    CleanUp();
-                    chromeProcess.Exited -= exitedEvent;
-                    chromeProcess.ErrorDataReceived -= errorDataReceivedEvent;
-                    taskWrapper.SetResult(match.Groups[1].Value);
+                    throw new FileNotFoundException("Tried to use PUPPETEER_CHROMIUM_REVISION env variable to launch browser but did not find executable", revisionInfo.ExecutablePath);
                 }
+                return revisionInfo.ExecutablePath;
             }
-
-            chromeProcess.ErrorDataReceived += errorDataReceivedEvent;
-            chromeProcess.Exited += exitedEvent;
-
-            if (timeout > 0)
+            revisionInfo = browserFetcher.RevisionInfo(BrowserFetcher.DefaultRevision);
+            if (!revisionInfo.Local)
             {
-                //We have to declare timer before initializing it because if we don't do this 
-                //we can't dispose it in the action created in the constructor
-                _timer = new Timer((state) =>
-                {
-                    taskWrapper.SetException(
-                        new ChromeProcessException($"Timed out after {timeout} ms while trying to connect to Chrome! "));
-                    _timer.Dispose();
-                }, null, timeout, 0);
+                throw new FileNotFoundException("Chromium revision is not downloaded. Run BrowserFetcher.DownloadAsync or download Chromium manually", revisionInfo.ExecutablePath);
             }
-
-            chromeProcess.Start();
-            chromeProcess.BeginErrorReadLine();
-            return taskWrapper.Task;
+            return revisionInfo.ExecutablePath;
         }
 
-        private void CleanUp()
+        private static Task EnsureInitialPageAsync(Browser browser)
         {
-            _timer?.Dispose();
-            _timer = null;
-            _chromeProcess?.RemoveExitedEvent();
-        }
-
-        private async Task AfterProcessExit()
-        {
-            lock (_isChromeCloseLock)
+            // Wait for initial page target to be created.
+            if (browser.Targets().Any(target => target.Type == TargetType.Page))
             {
-                if (IsChromeClosed)
+                return Task.CompletedTask;
+            }
+            var initialPageCompletion = new TaskCompletionSource<bool>();
+            void InitialPageCallback(object sender, TargetChangedArgs e)
+            {
+                if (e.Target.Type == TargetType.Page)
                 {
-                    return;
-                }
-                IsChromeClosed = true;
-            }
-            if (_options.LogProcess)
-            {
-                _logger.LogInformation("Process Count: {ProcessCount}", Interlocked.Decrement(ref _processCount));
-            }
-
-            if (_temporaryUserDataDir != null)
-            {
-                await TryDeleteUserDataDir();
-            }
-
-            if (_waitForChromeToClose.Task.Status != TaskStatus.RanToCompletion)
-            {
-                _waitForChromeToClose.SetResult(true);
-            }
-        }
-
-        private async Task GracefullyCloseChrome()
-        {
-            if (!string.IsNullOrEmpty(_temporaryUserDataDir))
-            {
-                KillChrome();
-                await AfterProcessExit();
-            }
-            else if (_connection != null)
-            {
-                try
-                {
-                    await _connection.SendAsync("Browser.close", null);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, ex.Message);
-                    KillChrome();
+                    initialPageCompletion.SetResult(true);
+                    browser.TargetCreated -= InitialPageCallback;
                 }
             }
-
-            await _waitForChromeToClose.Task;
-        }
-
-        private void KillChrome()
-        {
-            try
-            {
-                if (_chromeProcess.Id != 0 && !_chromeProcess.HasExited && Process.GetProcessById(_chromeProcess.Id) != null)
-                {
-                    _chromeProcess.Kill();
-                    _chromeProcess.WaitForExit();
-                }
-            }
-            catch (InvalidOperationException ex) when (ex.Message == "No process is associated with this object.")
-            {
-                // swallow
-            }
-        }
-
-        private static void SetEnvVariables(IDictionary<string, string> environment, IDictionary<string, string> customEnv,
-                                            IDictionary realEnv)
-        {
-            foreach (DictionaryEntry item in realEnv)
-            {
-                environment[item.Key.ToString()] = item.Value.ToString();
-            }
-
-            if (customEnv != null)
-            {
-                foreach (var item in customEnv)
-                {
-                    environment[item.Key] = item.Value;
-                }
-            }
+            browser.TargetCreated += InitialPageCallback;
+            return initialPageCompletion.Task;
         }
 
         #endregion

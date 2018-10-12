@@ -13,37 +13,31 @@ namespace PuppeteerSharp
     /// </summary>
     public class Payload
     {
-        internal Payload()
-        {
-            Headers = new Dictionary<string, object>();
-        }
-
         /// <summary>
         /// Gets or sets the HTTP method.
         /// </summary>
         /// <value>HTTP method.</value>
         [JsonProperty("method"), JsonConverter(typeof(HttpMethodConverter))]
-        public HttpMethod Method { get; internal set; }
+        public HttpMethod Method { get; set; }
         /// <summary>
         /// Gets or sets the post data.
         /// </summary>
         /// <value>The post data.</value>
         [JsonProperty("postData")]
-        public object PostData { get; internal set; }
+        public object PostData { get; set; }
         /// <summary>
         /// Gets or sets the HTTP headers.
         /// </summary>
         /// <value>HTTP headers.</value>
         [JsonProperty("headers")]
-        public Dictionary<string, object> Headers { get; internal set; }
+        public Dictionary<string, string> Headers { get; set; } = new Dictionary<string, string>();
         /// <summary>
         /// Gets or sets the URL.
         /// </summary>
         /// <value>The URL.</value>
         [JsonProperty("url")]
-        public string Url { get; internal set; }
+        public string Url { get; set; }
 
-        [JsonIgnore]
         internal string Hash
         {
             get
@@ -72,9 +66,12 @@ namespace PuppeteerSharp
                 {
                     foreach (var item in Headers.OrderBy(kv => kv.Key))
                     {
-                        if (item.Key.Equals("Accept", StringComparison.OrdinalIgnoreCase)
-                            || item.Key.Equals("Referer", StringComparison.OrdinalIgnoreCase)
-                            || item.Key.Equals("X-DevTools-Emulate-Network-Conditions-Client-Id", StringComparison.OrdinalIgnoreCase))
+                        bool HeaderEquals(string name) => item.Key.Equals(name, StringComparison.OrdinalIgnoreCase);
+
+                        if (HeaderEquals("accept")
+                            || HeaderEquals("referer")
+                            || HeaderEquals("x-devtools-emulate-network-conditions-client-id")
+                            || HeaderEquals("cookie"))
                         {
                             continue;
                         }

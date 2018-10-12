@@ -20,6 +20,15 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Fact]
+        public async Task ShouldWorkWithAwaitedElements()
+        {
+            await Page.SetContentAsync("<section id='testAttribute'>43543</section>");
+            var section = await Page.QuerySelectorAsync("section");
+            var idAttribute = await section.EvaluateFunctionAsync<string>("e => e.id");
+            Assert.Equal("testAttribute", idAttribute);
+        }
+
+        [Fact]
         public async Task ShouldAcceptArguments()
         {
             await Page.SetContentAsync("<section>hello</section>");

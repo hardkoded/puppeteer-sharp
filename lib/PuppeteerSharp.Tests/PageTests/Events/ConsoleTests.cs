@@ -27,8 +27,8 @@ namespace PuppeteerSharp.Tests.PageTests.Events
             Page.Console += EventHandler;
 
             await Page.EvaluateExpressionAsync("console.log('hello', 5, {foo: 'bar'})");
-            
-            var obj = new Dictionary<string, object> {{"foo", "bar"}};
+
+            var obj = new Dictionary<string, object> { { "foo", "bar" } };
 
             Assert.Equal("hello 5 JSHandle@object", message.Text);
             Assert.Equal(ConsoleType.Log, message.Type);
@@ -87,19 +87,36 @@ namespace PuppeteerSharp.Tests.PageTests.Events
         [Fact]
         public async Task ShouldNotFailForWindowObject()
         {
-            ConsoleMessage message = null;
+            var consoleTcs = new TaskCompletionSource<string>();
 
             void EventHandler(object sender, ConsoleEventArgs e)
             {
-                message = e.Message;
+                consoleTcs.TrySetResult(e.Message.Text);
                 Page.Console -= EventHandler;
             }
 
             Page.Console += EventHandler;
 
-            await Page.EvaluateExpressionAsync("console.error(window)");
+            await Task.WhenAll(
+                consoleTcs.Task,
+                Page.EvaluateExpressionAsync("console.error(window)")
+            );
 
-            Assert.Equal("JSHandle@object", message.Text);
+            Assert.Equal("JSHandle@object", await consoleTcs.Task);
+        }
+
+        [Fact]
+        public async Task ShouldTriggerCorrectLog()
+        {
+            await Page.GoToAsync(TestConstants.AboutBlank);
+            var messageTask = new TaskCompletionSource<ConsoleMessage>();
+
+            Page.Console += (sender, e) => messageTask.TrySetResult(e.Message);
+
+            await Page.EvaluateFunctionAsync("async url => fetch(url).catch(e => {})", TestConstants.EmptyPage);
+            var message = await messageTask.Task;
+            Assert.Contains("No 'Access-Control-Allow-Origin'", message.Text);
+            Assert.Equal(ConsoleType.Error, message.Type);
         }
     }
 }
