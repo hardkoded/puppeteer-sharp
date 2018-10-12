@@ -61,7 +61,7 @@ namespace PuppeteerSharp.PageCoverage
                 ruleTrackingResponseTask,
                 _client.SendAsync("CSS.disable"),
                 _client.SendAsync("DOM.disable")
-           ).ConfigureAwait(false);
+            ).ConfigureAwait(false);
             _client.MessageReceived -= client_MessageReceived;
 
             var styleSheetIdToCoverage = new Dictionary<string, List<CoverageResponseRange>>();

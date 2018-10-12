@@ -103,7 +103,7 @@ namespace PuppeteerSharp
                     OnExecutionContextCreated(e);
                     break;
                 case "Runtime.consoleAPICalled":
-                    await OnConsoleAPICalled(e);
+                    await OnConsoleAPICalled(e).ConfigureAwait(false);
                     break;
                 case "Runtime.exceptionThrown":
                     OnExceptionThrown(e);
@@ -119,7 +119,8 @@ namespace PuppeteerSharp
             var consoleData = e.MessageData.ToObject<PageConsoleResponse>();
             await _consoleAPICalled(
                 consoleData.Type,
-                consoleData.Args.Select<dynamic, JSHandle>(i => _jsHandleFactory(_executionContext, i)).ToArray());
+                consoleData.Args.Select<dynamic, JSHandle>(i => _jsHandleFactory(_executionContext, i)).ToArray())
+                    .ConfigureAwait(false);
         }
 
         private void OnExecutionContextCreated(MessageEventArgs e)

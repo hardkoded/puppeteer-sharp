@@ -297,7 +297,10 @@ namespace PuppeteerSharp
 
         internal static async Task<Connection> Create(string url, IConnectionOptions connectionOptions, ILoggerFactory loggerFactory = null)
         {
-            var ws = await (connectionOptions.WebSocketFactory ?? DefaultWebSocketFactory)(new Uri(url), connectionOptions, default);
+            var ws = await (connectionOptions.WebSocketFactory ?? DefaultWebSocketFactory)(
+                new Uri(url),
+                connectionOptions,
+                default).ConfigureAwait(false);
             return new Connection(url, connectionOptions.SlowMo, ws, loggerFactory);
         }
 

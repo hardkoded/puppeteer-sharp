@@ -420,7 +420,7 @@ namespace PuppeteerSharp
                 result = await Client.SendAsync<GetContentQuadsResponse>("DOM.getContentQuads", new
                 {
                     RemoteObject.objectId
-                });
+                }).ConfigureAwait(false);
             }
             catch (Exception ex)
             {

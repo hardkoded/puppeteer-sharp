@@ -185,7 +185,7 @@ namespace PuppeteerSharp
         /// </example>
         public async Task<BrowserContext> CreateIncognitoBrowserContextAsync()
         {
-            var response = await Connection.SendAsync<CreateBrowserContextResponse>("Target.createBrowserContext", new { });
+            var response = await Connection.SendAsync<CreateBrowserContextResponse>("Target.createBrowserContext", new { }).ConfigureAwait(false);
             var context = new BrowserContext(Connection, this, response.BrowserContextId);
             _contexts[response.BrowserContextId] = context;
             return context;
@@ -310,16 +310,16 @@ namespace PuppeteerSharp
             {
                 args["browserContextId"] = contextId;
             }
-            string targetId = (await Connection.SendAsync("Target.createTarget", args)).targetId.ToString();
+            string targetId = (await Connection.SendAsync("Target.createTarget", args).ConfigureAwait(false)).targetId.ToString();
 
             var target = TargetsMap[targetId];
-            await target.InitializedTask;
-            return await target.PageAsync();
+            await target.InitializedTask.ConfigureAwait(false);
+            return await target.PageAsync().ConfigureAwait(false);
         }
 
         internal async Task DisposeContextAsync(string contextId)
         {
-            await Connection.SendAsync("Target.disposeBrowserContext", new { browserContextId = contextId });
+            await Connection.SendAsync("Target.disposeBrowserContext", new { browserContextId = contextId }).ConfigureAwait(false);
             _contexts.Remove(contextId);
         }
 

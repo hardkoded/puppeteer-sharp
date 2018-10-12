@@ -1905,7 +1905,7 @@ namespace PuppeteerSharp
             {
                 try
                 {
-                    await Client.SendAsync("Target.detachFromTarget", new { sessionId });
+                    await Client.SendAsync("Target.detachFromTarget", new { sessionId }).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
@@ -1998,7 +1998,7 @@ namespace PuppeteerSharp
         {
             var ctx = _frameManager.ExecutionContextById(message.ExecutionContextId);
             var values = message.Args.Select<dynamic, JSHandle>(i => ctx.CreateJSHandle(i)).ToArray();
-            await AddConsoleMessage(message.Type, values);
+            await AddConsoleMessage(message.Type, values).ConfigureAwait(false);
         }
 
         private async Task AddConsoleMessage(ConsoleType type, JSHandle[] values)
@@ -2046,7 +2046,7 @@ namespace PuppeteerSharp
               };
             }";
             var expression = EvaluationString(addPageBinding, name);
-            await Client.SendAsync("Runtime.addBinding", new { name });
+            await Client.SendAsync("Runtime.addBinding", new { name }).ConfigureAwait(false);
             await Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new { source = expression }).ConfigureAwait(false);
 
             await Task.WhenAll(Frames.Select(frame => frame.EvaluateExpressionAsync(expression)
