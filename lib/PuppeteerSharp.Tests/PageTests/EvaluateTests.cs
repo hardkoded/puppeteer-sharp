@@ -246,34 +246,23 @@ namespace PuppeteerSharp.Tests.PageTests
         [Fact]
         public async Task ShouldWorkWithoutGenerics()
         {
-            var objectEmpty = await Page.EvaluateExpressionAsync("{}");
-            var arrayEmpty = await Page.EvaluateExpressionAsync("[]");
-            var stringEmpty = await Page.EvaluateExpressionAsync("''");
-            
+            Assert.NotNull(await Page.EvaluateExpressionAsync("var obj = {}; obj;"));
+            Assert.NotNull(await Page.EvaluateExpressionAsync("[]"));
+            Assert.NotNull(await Page.EvaluateExpressionAsync("''"));
+
             var objectPopulated = await Page.EvaluateExpressionAsync("var obj = {a:1}; obj;");
-            var arrayPopulated = await Page.EvaluateExpressionAsync("[1]");
-            var stringPopulated = await Page.EvaluateExpressionAsync("'1'");
-
-            var numberInt16Populated = await Page.EvaluateExpressionAsync("1");
-            var numberInt32Populated = await Page.EvaluateExpressionAsync("11111111");
-            var numberInt64Populated = await Page.EvaluateExpressionAsync("11111111111111");
-            var numberFloatPopulated = await Page.EvaluateExpressionAsync("1.1");
-
-            Assert.Null(objectEmpty);
-            Assert.Null(arrayEmpty);
-            Assert.Null(stringEmpty);
-
             Assert.NotNull(objectPopulated);
             Assert.Equal(1, objectPopulated["a"]);
 
+            var arrayPopulated = await Page.EvaluateExpressionAsync("[1]");
             Assert.IsType<JArray>(arrayPopulated);
             Assert.Equal(1, ((JArray)arrayPopulated)[0]);
 
-            Assert.Equal("1", stringPopulated);
-            Assert.Equal(1, numberInt16Populated);
-            Assert.Equal(11111111, numberInt32Populated);
-            Assert.Equal(11111111111111, numberInt64Populated);
-            Assert.Equal(1.1, numberFloatPopulated);
+            Assert.Equal("1", await Page.EvaluateExpressionAsync("'1'"));
+            Assert.Equal(1, await Page.EvaluateExpressionAsync("1"));
+            Assert.Equal(11111111, await Page.EvaluateExpressionAsync("11111111"));
+            Assert.Equal(11111111111111, await Page.EvaluateExpressionAsync("11111111111111"));
+            Assert.Equal(1.1, await Page.EvaluateExpressionAsync("1.1"));
         }
     }
 }
