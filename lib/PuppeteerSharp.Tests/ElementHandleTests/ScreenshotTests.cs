@@ -144,7 +144,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.Equal("Node is either not visible or not an HTMLElement", exception.Message);
         }
 
-        [Fact]
+        [Fact(Skip = "Skipped in Puppeteer")]
         public async Task ShouldNotHangWithZeroWidthHeightElement()
         {
             await Page.SetContentAsync(@"<div style='width: 0; height: 0'></div>");
