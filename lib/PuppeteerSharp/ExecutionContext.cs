@@ -197,7 +197,7 @@ namespace PuppeteerSharp
                 throw new EvaluationFailedException(ex.Message, ex);
             }
             await handle.DisposeAsync().ConfigureAwait(false);
-            return result is JToken token && !token.HasValues ? default : result;
+            return result is JToken token && IsJTokenEmpty(token) ? default : result;
         }
 
         private async Task<JSHandle> EvaluateHandleAsync(string method, dynamic args)
@@ -261,5 +261,11 @@ namespace PuppeteerSharp
             }
             return message;
         }
+
+        private static bool IsJTokenEmpty(JToken token) => (token == null) ||
+                   (token.Type == JTokenType.Array && !token.HasValues) ||
+                   (token.Type == JTokenType.Object && !token.HasValues) ||
+                   (token.Type == JTokenType.String && token.ToString() == string.Empty) ||
+                   (token.Type == JTokenType.Null);
     }
 }

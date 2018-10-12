@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -240,6 +241,39 @@ namespace PuppeteerSharp.Tests.PageTests
                 return executionContext.EvaluateFunctionAsync("() => null");
             });
             Assert.Contains("navigation", ex.Message);
+        }
+
+        [Fact]
+        public async Task ShouldWorkWithoutGenerics()
+        {
+            var objectEmpty = await Page.EvaluateExpressionAsync("{}");
+            var arrayEmpty = await Page.EvaluateExpressionAsync("[]");
+            var stringEmpty = await Page.EvaluateExpressionAsync("''");
+            
+            var objectPopulated = await Page.EvaluateExpressionAsync("var obj = {a:1}; obj;");
+            var arrayPopulated = await Page.EvaluateExpressionAsync("[1]");
+            var stringPopulated = await Page.EvaluateExpressionAsync("'1'");
+
+            var numberInt16Populated = await Page.EvaluateExpressionAsync("1");
+            var numberInt32Populated = await Page.EvaluateExpressionAsync("11111111");
+            var numberInt64Populated = await Page.EvaluateExpressionAsync("11111111111111");
+            var numberFloatPopulated = await Page.EvaluateExpressionAsync("1.1");
+
+            Assert.Null(objectEmpty);
+            Assert.Null(arrayEmpty);
+            Assert.Null(stringEmpty);
+
+            Assert.NotNull(objectPopulated);
+            Assert.Equal(1, objectPopulated["a"]);
+
+            Assert.IsType<JArray>(arrayPopulated);
+            Assert.Equal(1, ((JArray)arrayPopulated)[0]);
+
+            Assert.Equal("1", stringPopulated);
+            Assert.Equal(1, numberInt16Populated);
+            Assert.Equal(11111111, numberInt32Populated);
+            Assert.Equal(11111111111111, numberInt64Populated);
+            Assert.Equal(1.1, numberFloatPopulated);
         }
     }
 }
