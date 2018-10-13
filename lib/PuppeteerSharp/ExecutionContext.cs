@@ -197,7 +197,7 @@ namespace PuppeteerSharp
                 throw new EvaluationFailedException(ex.Message, ex);
             }
             await handle.DisposeAsync().ConfigureAwait(false);
-            return result is JToken token && !token.HasValues ? default : result;
+            return result is JToken token && token.Type == JTokenType.Null ? default : result;
         }
 
         private async Task<JSHandle> EvaluateHandleAsync(string method, dynamic args)
