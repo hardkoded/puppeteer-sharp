@@ -141,7 +141,6 @@ namespace PuppeteerSharp
             MessageTask callback = null;
             if (waitForCallback)
             {
-
                 callback = new MessageTask
                 {
                     TaskWrapper = new TaskCompletionSource<JObject>(),
