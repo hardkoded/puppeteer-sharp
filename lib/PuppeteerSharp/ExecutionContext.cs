@@ -147,7 +147,7 @@ namespace PuppeteerSharp
             }
         }
 
-        internal Task<JSHandle> EvaluateFunctionHandleAsync(string script, params object[] args)
+        internal async Task<JSHandle> EvaluateFunctionHandleAsync(string script, params object[] args)
         {
             if (string.IsNullOrEmpty(script))
             {
@@ -156,7 +156,7 @@ namespace PuppeteerSharp
 
             try
             {
-                return EvaluateHandleAsync("Runtime.callFunctionOn", new Dictionary<string, object>
+                return await EvaluateHandleAsync("Runtime.callFunctionOn", new Dictionary<string, object>
                 {
                     ["functionDeclaration"] = $"{script}\n{EvaluationScriptSuffix}\n",
                     [MessageKeys.ExecutionContextId] = _contextId,
@@ -164,7 +164,7 @@ namespace PuppeteerSharp
                     ["returnByValue"] = false,
                     ["awaitPromise"] = true,
                     ["userGesture"] = true
-                });
+                }).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
