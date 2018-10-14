@@ -1,16 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
     /// <summary>
     /// The CDPSession instances are used to talk raw Chrome Devtools Protocol:
-    ///  * Protocol methods can be called with <see cref="CDPSession.SendAsync(string, bool, dynamic, bool)"/> method.
+    ///  * Protocol methods can be called with <see cref="CDPSession.SendAsync(string, dynamic, bool)"/> method.
     ///  * Protocol events, using the <see cref="CDPSession.MessageReceived"/> event.
     /// 
     /// Documentation on DevTools Protocol can be found here: <see href="https://chromedevtools.github.io/devtools-protocol/"/>.
@@ -26,7 +28,7 @@ namespace PuppeteerSharp
     ///          Console.WriteLine("Animation created!");
     ///      }
     /// };
-    /// dynamic response = await client.SendAsync("Animation.getPlaybackRate");
+    /// JObject response = await client.SendAsync("Animation.getPlaybackRate");
     /// Console.WriteLine("playback rate is " + response.playbackRate);
     /// await client.SendAsync("Animation.setPlaybackRate", new
     /// {
@@ -95,7 +97,7 @@ namespace PuppeteerSharp
         #region Public Methods
 
         internal void Send(string method, dynamic args = null)
-            => _ = SendAsync(method, false, args, false);
+            => _ = SendAsync(method, args, false);
 
         /// <summary>
         /// Protocol methods can be called with this method.
@@ -105,8 +107,9 @@ namespace PuppeteerSharp
         /// <returns>The task.</returns>
         public async Task<T> SendAsync<T>(string method, dynamic args = null)
         {
-            var content = await SendAsync(method, true, args).ConfigureAwait(false);
-            return JsonConvert.DeserializeObject<T>(content);
+            JObject content = await SendAsync(method, args).ConfigureAwait(false);
+
+            return content.ToObject<T>();
         }
 
         /// <summary>
@@ -114,22 +117,13 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="method">The method name</param>
         /// <param name="args">The method args</param>
-        /// <returns>The task.</returns>
-        public Task<dynamic> SendAsync(string method, dynamic args = null) => SendAsync(method, false, args ?? new { });
-
-        /// <summary>
-        /// Protocol methods can be called with this method.
-        /// </summary>
-        /// <param name="method">The method name</param>
-        /// <param name="args">The method args</param>
-        /// <param name="rawContent">If <c>true</c> the JSON response won't be serialized</param>
         /// <param name="waitForCallback">
         /// If <c>true</c> the method will return a task to be completed when the message is confirmed by Chromium.
         /// If <c>false</c> the task will be considered complete after sending the message to Chromium.
         /// </param>
         /// <returns>The task.</returns>
-        /// <exception cref="T:PuppeteerSharp.PuppeteerException"></exception>
-        public async Task<dynamic> SendAsync(string method, bool rawContent, dynamic args = null, bool waitForCallback = true)
+        /// <exception cref="PuppeteerSharp.PuppeteerException"></exception>
+        public async Task<JObject> SendAsync(string method, dynamic args = null, bool waitForCallback = true)
         {
             if (Connection == null)
             {
@@ -138,20 +132,20 @@ namespace PuppeteerSharp
             var id = ++_lastId;
             var message = JsonConvert.SerializeObject(new Dictionary<string, object>
             {
-                {"id", id},
-                {"method", method},
-                {"params", args}
+                { MessageKeys.Id, id },
+                { MessageKeys.Method, method },
+                { MessageKeys.Params, args }
             });
             _logger.LogTrace("Send ► {Id} Method {Method} Params {@Params}", id, method, (object)args);
 
             MessageTask callback = null;
             if (waitForCallback)
             {
+
                 callback = new MessageTask
                 {
-                    TaskWrapper = new TaskCompletionSource<dynamic>(),
-                    Method = method,
-                    RawContent = rawContent
+                    TaskWrapper = new TaskCompletionSource<JObject>(),
+                    Method = method
                 };
                 _callbacks[id] = callback;
             }
@@ -200,50 +194,58 @@ namespace PuppeteerSharp
 
         internal void OnMessage(string message)
         {
-            dynamic obj = JsonConvert.DeserializeObject(message);
-            var objAsJObject = (JObject)obj;
-
             _logger.LogTrace("◀ Receive {Message}", message);
 
-            var id = (int?)objAsJObject["id"];
+            JObject obj = null;
+
+            try
+            {
+                obj = JObject.Parse(message);
+            }
+            catch (JsonException exc)
+            {
+                _logger.LogError(exc, "Failed to deserialize message", message);
+                return;
+            }
+
+            var id = obj[MessageKeys.Id]?.Value<int>();
+
             if (id.HasValue && _callbacks.TryGetValue(id.Value, out var callback) && _callbacks.Remove(id.Value))
             {
-                if (objAsJObject["error"] != null)
+                if (obj[MessageKeys.Error] != null)
                 {
                     callback.TaskWrapper.TrySetException(new MessageException(callback, obj));
                 }
                 else
                 {
-                    if (callback.RawContent)
-                    {
-                        callback.TaskWrapper.TrySetResult(JsonConvert.SerializeObject(obj.result));
-                    }
-                    else
-                    {
-                        callback.TaskWrapper.TrySetResult(obj.result);
-                    }
+                    callback.TaskWrapper.TrySetResult(obj[MessageKeys.Result].Value<JObject>());
                 }
             }
             else
             {
-                if (obj.method == "Tracing.tracingComplete")
+                var method = obj[MessageKeys.Method].AsString();
+                var param = obj[MessageKeys.Params];
+
+                if (method == "Tracing.tracingComplete")
                 {
                     TracingComplete?.Invoke(this, new TracingCompleteEventArgs
                     {
-                        Stream = objAsJObject["params"].Value<string>("stream")
+                        Stream = param[MessageKeys.Stream].AsString()
                     });
                 }
-                else if (obj.method == "Target.receivedMessageFromTarget")
+                else if (method == "Target.receivedMessageFromTarget")
                 {
-                    var sessionId = objAsJObject["params"]["sessionId"].ToString();
+                    var sessionId = param[MessageKeys.SessionId].AsString();
+
                     if (_sessions.TryGetValue(sessionId, out var session))
                     {
-                        session.OnMessage(objAsJObject["params"]["message"].ToString());
+                        session.OnMessage(param[MessageKeys.Message].AsString());
                     }
                 }
-                else if (obj.method == "Target.detachedFromTarget")
+                else if (method == "Target.detachedFromTarget")
                 {
-                    var sessionId = objAsJObject["params"]["sessionId"].ToString();
+                    var sessionId = param[MessageKeys.SessionId].AsString();
+
                     if (_sessions.TryGetValue(sessionId, out var session) && _sessions.Remove(sessionId))
                     {
                         session.OnClosed();
@@ -252,8 +254,8 @@ namespace PuppeteerSharp
 
                 MessageReceived?.Invoke(this, new MessageEventArgs
                 {
-                    MessageID = obj.method,
-                    MessageData = objAsJObject["params"]
+                    MessageID = method,
+                    MessageData = param
                 });
             }
         }
@@ -294,7 +296,7 @@ namespace PuppeteerSharp
         #region IConnection
         ILoggerFactory IConnection.LoggerFactory => LoggerFactory;
         bool IConnection.IsClosed => IsClosed;
-        Task<dynamic> IConnection.SendAsync(string method, dynamic args, bool waitForCallback)
+        Task<JObject> IConnection.SendAsync(string method, dynamic args, bool waitForCallback)
             => SendAsync(method, args, waitForCallback);
         #endregion
     }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
@@ -9,11 +10,13 @@ namespace PuppeteerSharp
     /// <example>
     /// An example of using Dialog class:
     ///<code>
+    ///<![CDATA[
     /// Page.Dialog += async (sender, e) =>
     /// {
     ///     await e.Dialog.Accept();
     /// }
     /// await Page.EvaluateExpressionAsync("alert('yo');");
+    /// ]]>
     /// </code>
     /// </example>
     public class Dialog
@@ -60,8 +63,8 @@ namespace PuppeteerSharp
         {
             return _client.SendAsync("Page.handleJavaScriptDialog", new Dictionary<string, object>
             {
-                {"accept", true},
-                {"promptText", promptText}
+                { MessageKeys.Accept, true },
+                { MessageKeys.PromptText, promptText }
             });
         }
 
@@ -73,7 +76,7 @@ namespace PuppeteerSharp
         {
             return _client.SendAsync("Page.handleJavaScriptDialog", new Dictionary<string, object>
             {
-                {"accept", false}
+                { MessageKeys.Accept, false }
             });
         }
     }

@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 
 namespace PuppeteerSharp
 {
@@ -29,6 +29,6 @@ namespace PuppeteerSharp
         /// If <c>true</c> the method will return a task to be completed when the message is confirmed by Chromium.
         /// If <c>false</c> the task will be considered complete after sending the message to Chromium.
         /// </param>
-        Task<dynamic> SendAsync(string method, dynamic args = null, bool waitForCallback = false);
+        Task<JObject> SendAsync(string method, dynamic args = null, bool waitForCallback = false);
     }
 }

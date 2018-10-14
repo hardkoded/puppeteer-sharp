@@ -505,9 +505,10 @@ namespace PuppeteerSharp
         {
             var response = await Client.SendAsync("Network.getCookies", new Dictionary<string, object>
             {
-                { "urls", urls.Length > 0 ? urls : new string[] { Url } }
+                { MessageKeys.Urls, urls.Length > 0 ? urls : new string[] { Url } }
             }).ConfigureAwait(false);
-            return response.cookies.ToObject<CookieParam[]>();
+
+            return response[MessageKeys.Cookies].ToObject<CookieParam[]>();
         }
 
         /// <summary>
@@ -535,7 +536,7 @@ namespace PuppeteerSharp
             {
                 await Client.SendAsync("Network.setCookies", new Dictionary<string, object>
                 {
-                    { "cookies", cookies}
+                    { MessageKeys.Cookies, cookies }
                 }).ConfigureAwait(false);
             }
         }
@@ -724,7 +725,7 @@ namespace PuppeteerSharp
         public async Task<Response> GoToAsync(string url, NavigationOptions options)
         {
             var referrer = string.IsNullOrEmpty(options.Referer)
-                ? _networkManager.ExtraHTTPHeaders?.GetValueOrDefault("referer")
+                ? _networkManager.ExtraHTTPHeaders?.GetValueOrDefault(MessageKeys.Referer)
                 : options.Referer;
 
             var requests = new Dictionary<string, Request>();
@@ -912,7 +913,7 @@ namespace PuppeteerSharp
                 preferCSSPageSize = options.PreferCSSPageSize
             }).ConfigureAwait(false);
 
-            var buffer = Convert.FromBase64String(result.GetValue("data").Value<string>());
+            var buffer = Convert.FromBase64String(result.GetValue(MessageKeys.Data).AsString());
             return buffer;
         }
 
@@ -1184,10 +1185,10 @@ namespace PuppeteerSharp
         /// <remarks>
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
         /// </remarks>
-        /// <seealso cref="EvaluateFunctionAsync(string, object[])"/>
+        /// <seealso cref="EvaluateFunctionAsync{T}(string, object[])"/>
         /// <returns>Task which resolves to script return value</returns>
-        public Task<dynamic> EvaluateExpressionAsync(string script)
-            => _frameManager.MainFrame.EvaluateExpressionAsync(script);
+        public Task<JToken> EvaluateExpressionAsync(string script)
+            => _frameManager.MainFrame.EvaluateExpressionAsync<JToken>(script);
 
         /// <summary>
         /// Executes a script in browser context
@@ -1211,10 +1212,10 @@ namespace PuppeteerSharp
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
         /// <see cref="JSHandle"/> instances can be passed as arguments
         /// </remarks>
-        /// <seealso cref="EvaluateExpressionAsync(string)"/>
+        /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
         /// <returns>Task which resolves to script return value</returns>
-        public Task<dynamic> EvaluateFunctionAsync(string script, params object[] args)
-            => _frameManager.MainFrame.EvaluateFunctionAsync(script, args);
+        public Task<JToken> EvaluateFunctionAsync(string script, params object[] args)
+            => _frameManager.MainFrame.EvaluateFunctionAsync<JToken>(script, args);
 
         /// <summary>
         /// Executes a function in browser context
@@ -1506,7 +1507,7 @@ namespace PuppeteerSharp
                 requestTcs.Task
             }).ConfigureAwait(false);
 
-            return requestTcs.Task.Result;
+            return await requestTcs.Task;
         }
 
         /// <summary>
@@ -1562,7 +1563,7 @@ namespace PuppeteerSharp
                 responseTcs.Task
             }).ConfigureAwait(false);
 
-            return responseTcs.Task.Result;
+            return await responseTcs.Task;
         }
 
         /// <summary>
@@ -1593,8 +1594,8 @@ namespace PuppeteerSharp
             TaskQueue screenshotTaskQueue)
         {
             await client.SendAsync("Page.enable", null).ConfigureAwait(false);
-            dynamic result = await client.SendAsync("Page.getFrameTree").ConfigureAwait(false);
-            var page = new Page(client, target, new FrameTree(result.frameTree), ignoreHTTPSErrors, screenshotTaskQueue);
+            var result = await client.SendAsync("Page.getFrameTree").ConfigureAwait(false);
+            var page = new Page(client, target, new FrameTree(result[MessageKeys.FrameTree]), ignoreHTTPSErrors, screenshotTaskQueue);
 
             await Task.WhenAll(
                 client.SendAsync("Target.setAutoAttach", new { autoAttach = true, waitForDebuggerOnStart = false }),
@@ -1678,9 +1679,11 @@ namespace PuppeteerSharp
                 {
                     throw new PuppeteerException("FullPage screenshots do not work without first setting viewport.");
                 }
-                dynamic metrics = await Client.SendAsync("Page.getLayoutMetrics").ConfigureAwait(false);
-                var width = Convert.ToInt32(Math.Ceiling(Convert.ToDecimal(metrics.contentSize.width.Value)));
-                var height = Convert.ToInt32(Math.Ceiling(Convert.ToDecimal(metrics.contentSize.height.Value)));
+                var metrics = await Client.SendAsync("Page.getLayoutMetrics").ConfigureAwait(false);
+                var contentSize = metrics[MessageKeys.ContentSize];
+
+                var width = Convert.ToInt32(Math.Ceiling(contentSize[MessageKeys.Width].Value<decimal>()));
+                var height = Convert.ToInt32(Math.Ceiling(contentSize[MessageKeys.Height].Value<decimal>()));
 
                 // Overwrite clip for full page at all times.
                 clip = new Clip
@@ -1757,7 +1760,7 @@ namespace PuppeteerSharp
                 await SetViewportAsync(Viewport).ConfigureAwait(false);
             }
 
-            return result.GetValue("data").Value<string>();
+            return result.GetValue(MessageKeys.Data).AsString();
         }
 
         private decimal ConvertPrintParameterToInches(object parameter)
@@ -1821,7 +1824,7 @@ namespace PuppeteerSharp
                     OnDialog(e.MessageData.ToObject<PageJavascriptDialogOpeningResponse>());
                     break;
                 case "Runtime.exceptionThrown":
-                    HandleException(e.MessageData.SelectToken("exceptionDetails").ToObject<EvaluateExceptionDetails>());
+                    HandleException(e.MessageData.SelectToken(MessageKeys.ExceptionDetails).ToObject<EvaluateExceptionDetails>());
                     break;
                 case "Security.certificateError":
                     await OnCertificateError(e.MessageData.ToObject<CertificateErrorResponse>()).ConfigureAwait(false);
@@ -1870,7 +1873,7 @@ namespace PuppeteerSharp
             var binding = _pageBindings[e.Payload.Name];
             var methodParams = binding.Method.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
 
-            var args = e.Payload.JsonObject.GetValue("args").Select((token, i) => token.ToObject(methodParams[i])).ToArray();
+            var args = e.Payload.JsonObject.GetValue(MessageKeys.Args).Select((token, i) => token.ToObject(methodParams[i])).ToArray();
 
             result = binding.DynamicInvoke(args);
             if (result is Task taskResult)
@@ -1889,7 +1892,7 @@ namespace PuppeteerSharp
 
         private void OnDetachedFromTarget(MessageEventArgs e)
         {
-            var sessionId = e.MessageData.SelectToken("sessionId").Value<string>();
+            var sessionId = e.MessageData.SelectToken(MessageKeys.SessionId).AsString();
             if (_workers.TryGetValue(sessionId, out var worker))
             {
                 WorkerDestroyed?.Invoke(this, new WorkerEventArgs(worker));
@@ -1899,8 +1902,8 @@ namespace PuppeteerSharp
 
         private async Task OnAttachedToTarget(MessageEventArgs e)
         {
-            var targetInfo = e.MessageData.SelectToken("targetInfo").ToObject<TargetInfo>();
-            var sessionId = e.MessageData.SelectToken("sessionId").ToObject<string>();
+            var targetInfo = e.MessageData.SelectToken(MessageKeys.TargetInfo).ToObject<TargetInfo>();
+            var sessionId = e.MessageData.SelectToken(MessageKeys.SessionId).ToObject<string>();
             if (targetInfo.Type != TargetType.Worker)
             {
                 try
@@ -1955,8 +1958,8 @@ namespace PuppeteerSharp
                 {
                     await Client.SendAsync("Security.handleCertificateError", new Dictionary<string, object>
                     {
-                        {"eventId", e.EventId },
-                        {"action", "continue"}
+                        { MessageKeys.EventId, e.EventId },
+                        { MessageKeys.Action, "continue"}
                     }).ConfigureAwait(false);
                 }
                 catch (PuppeteerException ex)
@@ -1994,11 +1997,11 @@ namespace PuppeteerSharp
             Dialog?.Invoke(this, new DialogEventArgs(dialog));
         }
 
-        private async Task OnConsoleAPI(PageConsoleResponse message)
+        private Task OnConsoleAPI(PageConsoleResponse message)
         {
             var ctx = _frameManager.ExecutionContextById(message.ExecutionContextId);
             var values = message.Args.Select<dynamic, JSHandle>(i => ctx.CreateJSHandle(i)).ToArray();
-            await AddConsoleMessage(message.Type, values);
+            return AddConsoleMessage(message.Type, values);
         }
 
         private async Task AddConsoleMessage(ConsoleType type, JSHandle[] values)
@@ -2007,13 +2010,13 @@ namespace PuppeteerSharp
             {
                 foreach (var arg in values)
                 {
-                    await RemoteObjectHelper.ReleaseObject(Client, arg, _logger).ConfigureAwait(false);
+                    await RemoteObjectHelper.ReleaseObject(Client, arg.RemoteObject, _logger).ConfigureAwait(false);
                 }
 
                 return;
             }
 
-            var tokens = values.Select(i => i.RemoteObject.objectId != null
+            var tokens = values.Select(i => i.RemoteObject[MessageKeys.ObjectId] != null
                 ? i.ToString()
                 : RemoteObjectHelper.ValueFromRemoteObject<string>(i.RemoteObject));
 
