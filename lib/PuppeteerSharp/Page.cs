@@ -1507,7 +1507,7 @@ namespace PuppeteerSharp
                 requestTcs.Task
             }).ConfigureAwait(false);
 
-            return await requestTcs.Task;
+            return await requestTcs.Task.ConfigureAwait(false);
         }
 
         /// <summary>
@@ -1563,7 +1563,7 @@ namespace PuppeteerSharp
                 responseTcs.Task
             }).ConfigureAwait(false);
 
-            return await responseTcs.Task;
+            return await responseTcs.Task.ConfigureAwait(false);
         }
 
         /// <summary>
@@ -1836,7 +1836,7 @@ namespace PuppeteerSharp
                     EmitMetrics(e.MessageData.ToObject<PerformanceMetricsResponse>());
                     break;
                 case "Target.attachedToTarget":
-                    await OnAttachedToTarget(e);
+                    await OnAttachedToTarget(e).ConfigureAwait(false);
                     break;
                 case "Target.detachedFromTarget":
                     OnDetachedFromTarget(e);
@@ -1845,14 +1845,14 @@ namespace PuppeteerSharp
                     OnLogEntryAdded(e.MessageData.ToObject<LogEntryAddedResponse>());
                     break;
                 case "Runtime.bindingCalled":
-                    await OnBindingCalled(e.MessageData.ToObject<BindingCalledResponse>());
+                    await OnBindingCalled(e.MessageData.ToObject<BindingCalledResponse>()).ConfigureAwait(false);
                     break;
             }
         }
 
         private async Task OnBindingCalled(BindingCalledResponse e)
         {
-            var result = await ExecuteBinding(e);
+            var result = await ExecuteBinding(e).ConfigureAwait(false);
 
             var expression = EvaluationString(
                 @"function deliverResult(name, seq, result) {
@@ -1864,7 +1864,7 @@ namespace PuppeteerSharp
             {
                 expression,
                 contextId = e.ExecutionContextId
-            });
+            }).ConfigureAwait(false);
         }
 
         private async Task<object> ExecuteBinding(BindingCalledResponse e)
@@ -1908,7 +1908,7 @@ namespace PuppeteerSharp
             {
                 try
                 {
-                    await Client.SendAsync("Target.detachFromTarget", new { sessionId });
+                    await Client.SendAsync("Target.detachFromTarget", new { sessionId }).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
@@ -2049,7 +2049,7 @@ namespace PuppeteerSharp
               };
             }";
             var expression = EvaluationString(addPageBinding, name);
-            await Client.SendAsync("Runtime.addBinding", new { name });
+            await Client.SendAsync("Runtime.addBinding", new { name }).ConfigureAwait(false);
             await Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new { source = expression }).ConfigureAwait(false);
 
             await Task.WhenAll(Frames.Select(frame => frame.EvaluateExpressionAsync(expression)
