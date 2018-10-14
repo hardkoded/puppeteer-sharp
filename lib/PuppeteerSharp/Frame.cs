@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
@@ -107,12 +106,12 @@ namespace PuppeteerSharp
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
         /// </remarks>
         /// <returns>Task which resolves to script return value</returns>
-        /// <seealso cref="EvaluateFunctionAsync(string, object[])"/>
-        /// <seealso cref="Page.EvaluateExpressionAsync(string)"/>
-        public async Task<dynamic> EvaluateExpressionAsync(string script)
+        /// <seealso cref="EvaluateFunctionAsync{T}(string, object[])"/>
+        /// <seealso cref="Page.EvaluateExpressionAsync{T}(string)"/>
+        public async Task<JToken> EvaluateExpressionAsync(string script)
         {
             var context = await GetExecutionContextAsync().ConfigureAwait(false);
-            return await context.EvaluateExpressionAsync(script).ConfigureAwait(false);
+            return await context.EvaluateExpressionAsync<JToken>(script).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -142,12 +141,12 @@ namespace PuppeteerSharp
         /// <see cref="JSHandle"/> instances can be passed as arguments
         /// </remarks>
         /// <returns>Task which resolves to script return value</returns>
-        /// <seealso cref="EvaluateExpressionAsync(string)"/>
-        /// <seealso cref="Page.EvaluateFunctionAsync(string, object[])"/>
-        public async Task<dynamic> EvaluateFunctionAsync(string script, params object[] args)
+        /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
+        /// <seealso cref="Page.EvaluateFunctionAsync{T}(string, object[])"/>
+        public async Task<JToken> EvaluateFunctionAsync(string script, params object[] args)
         {
             var context = await GetExecutionContextAsync().ConfigureAwait(false);
-            return await context.EvaluateFunctionAsync(script, args).ConfigureAwait(false);
+            return await context.EvaluateFunctionAsync<JToken>(script, args).ConfigureAwait(false);
         }
 
         /// <summary>

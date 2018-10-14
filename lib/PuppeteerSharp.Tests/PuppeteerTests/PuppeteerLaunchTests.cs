@@ -138,7 +138,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 {
                     var page2 = await browser2.NewPageAsync();
                     await page2.GoToAsync(TestConstants.EmptyPage);
-                    Assert.Equal("hello", await page2.EvaluateExpressionAsync("localStorage.hey"));
+                    Assert.Equal("hello", await page2.EvaluateExpressionAsync<string>("localStorage.hey"));
                 }
             }
         }
@@ -164,7 +164,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 {
                     var page2 = await browser2.NewPageAsync();
                     await page2.GoToAsync(TestConstants.EmptyPage);
-                    Assert.Equal("doSomethingOnlyOnce=true", await page2.EvaluateExpressionAsync("document.cookie"));
+                    Assert.Equal("doSomethingOnlyOnce=true", await page2.EvaluateExpressionAsync<string>("document.cookie"));
                 }
             }
         }

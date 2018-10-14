@@ -1,6 +1,6 @@
 # Puppeteer Sharp
 
-Puppeteer Sharp is a .NET port of the official [Node.JS Puppeteer API](https://github.com/GoogleChrome/puppeteer). 
+Puppeteer Sharp is a .NET port of the official [Node.JS Puppeteer API](https://github.com/GoogleChrome/puppeteer).
 
 # Prerequisites
 
@@ -24,7 +24,6 @@ await page.ScreenshotAsync(outputFile);
 
 You can also change the view port before generating the screenshot
 
-
 ```cs
 await page.SetViewport(new ViewPortOptions
 {
@@ -32,7 +31,6 @@ await page.SetViewport(new ViewPortOptions
     Height = 500
 });
 ```
-
 
 ## Generate PDF files
 
@@ -50,7 +48,7 @@ await page.PdfAsync(outputFile);
 ## Inject HTML
 
 ```cs
-using(var page = await Browser.NewPageAsync())
+using(var page = await browser.NewPageAsync())
 {
     await page.SetContentAsync("<div>My Receipt</div>");
     var result = await page.GetContentAsync();
@@ -62,9 +60,9 @@ using(var page = await Browser.NewPageAsync())
 ## Evaluate Javascript
 
 ```cs
-using (var page = await Browser.NewPageAsync())
+using (var page = await browser.NewPageAsync())
 {
-    var seven = await page.EvaluateFunctionAsync<int>(“4 + 3”);
+    var seven = await page.EvaluateFunctionAsync<int>("()=> 4 + 3");
     var someObject = await page.EvaluateFunctionAsync<dynamic>("(value) => ({a: value})", 5);
     Console.WriteLine(someObject.a);
 }
@@ -73,7 +71,7 @@ using (var page = await Browser.NewPageAsync())
 ## Wait For Selector
 
 ```cs
-using (var page = await Browser.NewPageAsync())
+using (var page = await browser.NewPageAsync())
 {
     await page.GoToAsync("http://www.spapage.com");
     await page.WaitForSelectorAsync("div.main-content")
@@ -82,12 +80,13 @@ using (var page = await Browser.NewPageAsync())
 ```
 
 ## Wait For Function
+
 ```cs
 using (var page = await Browser.NewPageAsync())
 {
     await page.GoToAsync("http://www.spapage.com");
-    var watchDog = page.WaitForFunctionAsync("window.innerWidth < 100");
-    await Page.SetViewport(new ViewPortOptions { Width = 50, Height = 50 });
+    var watchDog = page.WaitForFunctionAsync(" () => window.innerWidth < 100");
+    await page.SetViewportAsync(new ViewPortOptions { Width = 50, Height = 50 });
     await watchDog;
 }
 ```

@@ -1,6 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
@@ -11,14 +12,16 @@ namespace PuppeteerSharp
             Childs = new List<FrameTree>();
         }
 
-        internal FrameTree(dynamic frameTree)
+        internal FrameTree(JToken frameTree)
         {
+            var frame = frameTree[MessageKeys.Frame];
+
             Frame = new FramePayload
             {
-                Id = frameTree.frame.id,
-                ParentId = frameTree.frame.parentId,
-                Name = frameTree.frame.name,
-                Url = frameTree.frame.url
+                Id = frame[MessageKeys.Id].AsString(),
+                ParentId = frame[MessageKeys.ParentId].AsString(),
+                Name = frame[MessageKeys.Name].AsString(),
+                Url = frame[MessageKeys.Url].AsString()
             };
 
             Childs = new List<FrameTree>();
@@ -32,26 +35,31 @@ namespace PuppeteerSharp
 
         #region Private Functions
 
-        private void LoadChilds(FrameTree frame, dynamic frameTree)
+        private void LoadChilds(FrameTree frame, JToken frameTree)
         {
-            if ((frameTree as JObject)["childFrames"] != null)
+            var childFrames = frameTree[MessageKeys.ChildFrames];
+
+            if (childFrames != null)
             {
-                foreach (dynamic item in frameTree.childFrames)
+                foreach (var item in childFrames)
                 {
+                    var childFrame = item[MessageKeys.Frame];
+
                     var newFrame = new FrameTree
                     {
                         Frame = new FramePayload
                         {
-                            Id = item.frame.id,
-                            ParentId = item.frame.parentId,
-                            Url = item.frame.url
+                            Id = childFrame[MessageKeys.Id].AsString(),
+                            ParentId = childFrame[MessageKeys.ParentId].AsString(),
+                            Url = childFrame[MessageKeys.Url].AsString()
                         }
                     };
 
-                    if ((item as JObject)["childFrames"] != null)
+                    if ((item as JObject)[MessageKeys.ChildFrames] != null)
                     {
                         LoadChilds(newFrame, item);
                     }
+
                     frame.Childs.Add(newFrame);
                 }
             }

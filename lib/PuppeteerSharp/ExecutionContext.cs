@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Linq;
-using Newtonsoft.Json.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
@@ -38,11 +39,7 @@ namespace PuppeteerSharp
         /// NOTE Not every execution context is associated with a frame. For example, workers and extensions have execution contexts that are not associated with frames.
         /// </remarks>
         public Frame Frame { get; }
-        /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="ExecutionContext"/> is the 
-        /// default context of a <see cref="Frame"/>
-        /// </summary>
-        /// <value><c>true</c> if is default; otherwise, <c>false</c>.</value>
+
         /// <summary>
         /// Executes a script in browser context
         /// </summary>
@@ -50,11 +47,11 @@ namespace PuppeteerSharp
         /// <remarks>
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
         /// </remarks>
-        /// <seealso cref="EvaluateFunctionAsync(string, object[])"/>
+        /// <seealso cref="EvaluateFunctionAsync{T}(string, object[])"/>
         /// <seealso cref="EvaluateExpressionHandleAsync(string)"/>
         /// <returns>Task which resolves to script return value</returns>
-        public Task<object> EvaluateExpressionAsync(string script)
-            => EvaluateExpressionAsync<object>(script);
+        public Task<JToken> EvaluateExpressionAsync(string script)
+            => EvaluateAsync<JToken>(EvaluateExpressionHandleAsync(script));
 
         /// <summary>
         /// Executes a script in browser context
@@ -79,11 +76,11 @@ namespace PuppeteerSharp
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
         /// <see cref="JSHandle"/> instances can be passed as arguments
         /// </remarks>
-        /// <seealso cref="EvaluateExpressionAsync(string)"/>
+        /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
         /// <seealso cref="EvaluateFunctionHandleAsync(string, object[])"/>
         /// <returns>Task which resolves to script return value</returns>
-        public Task<object> EvaluateFunctionAsync(string script, params object[] args)
-            => EvaluateFunctionAsync<object>(script, args);
+        public Task<JToken> EvaluateFunctionAsync(string script, params object[] args)
+            => EvaluateAsync<JToken>(EvaluateFunctionHandleAsync(script, args));
 
         /// <summary>
         /// Executes a function in browser context
@@ -106,24 +103,24 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>A task which resolves to a handle to an array of objects with this prototype.</returns>
         /// <param name="prototypeHandle">A handle to the object prototype.</param>
-        public async Task<dynamic> QueryObjectsAsync(JSHandle prototypeHandle)
+        public async Task<JSHandle> QueryObjectsAsync(JSHandle prototypeHandle)
         {
             if (prototypeHandle.Disposed)
             {
                 throw new PuppeteerException("Prototype JSHandle is disposed!");
             }
 
-            if (!((JObject)prototypeHandle.RemoteObject).TryGetValue("objectId", out var objectId))
+            if (!((JObject)prototypeHandle.RemoteObject).TryGetValue(MessageKeys.ObjectId, out var objectId))
             {
                 throw new PuppeteerException("Prototype JSHandle must not be referencing primitive value");
             }
 
-            dynamic response = await _client.SendAsync("Runtime.queryObjects", new Dictionary<string, object>
+            var response = await _client.SendAsync("Runtime.queryObjects", new Dictionary<string, object>
             {
                 {"prototypeObjectId", objectId.ToString()}
             }).ConfigureAwait(false);
 
-            return CreateJSHandle(response.objects);
+            return CreateJSHandle(response[MessageKeys.Objects]);
         }
 
         internal async Task<JSHandle> EvaluateExpressionHandleAsync(string script)
@@ -162,7 +159,7 @@ namespace PuppeteerSharp
                 return await EvaluateHandleAsync("Runtime.callFunctionOn", new Dictionary<string, object>
                 {
                     ["functionDeclaration"] = $"{script}\n{EvaluationScriptSuffix}\n",
-                    ["executionContextId"] = _contextId,
+                    [MessageKeys.ExecutionContextId] = _contextId,
                     ["arguments"] = args.Select(FormatArgument),
                     ["returnByValue"] = false,
                     ["awaitPromise"] = true,
@@ -200,17 +197,19 @@ namespace PuppeteerSharp
                 throw new EvaluationFailedException(ex.Message, ex);
             }
             await handle.DisposeAsync().ConfigureAwait(false);
-            return result;
+            return result is JToken token && token.Type == JTokenType.Null ? default : result;
         }
 
         private async Task<JSHandle> EvaluateHandleAsync(string method, dynamic args)
         {
-            dynamic response = await _client.SendAsync(method, args).ConfigureAwait(false);
+            var response = await _client.SendAsync(method, args).ConfigureAwait(false);
 
-            if (response.exceptionDetails != null)
+            var exceptionDetails = response[MessageKeys.ExceptionDetails];
+
+            if (exceptionDetails != null)
             {
                 throw new EvaluationFailedException("Evaluation failed: " +
-                    GetExceptionMessage(response.exceptionDetails.ToObject<EvaluateExceptionDetails>()));
+                    GetExceptionMessage(exceptionDetails.ToObject<EvaluateExceptionDetails>()));
             }
 
             return CreateJSHandle(response.result);

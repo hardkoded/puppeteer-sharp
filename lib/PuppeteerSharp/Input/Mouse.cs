@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp.Input
 {
@@ -45,12 +46,13 @@ namespace PuppeteerSharp.Input
 
             for (var i = 1; i <= steps; i++)
             {
-                await _client.SendAsync("Input.dispatchMouseEvent", new Dictionary<string, object>(){
-                    {"type", "mouseMoved"},
-                    {"button", _button},
-                    {"x", fromX + ((_x - fromX) * ((decimal)i / steps))},
-                    {"y", fromY + ((_y - fromY) * ((decimal)i / steps))},
-                    {"modifiers", _keyboard.Modifiers}
+                await _client.SendAsync("Input.dispatchMouseEvent", new Dictionary<string, object>
+                {
+                    { MessageKeys.Type, "mouseMoved" },
+                    { MessageKeys.Button, _button },
+                    { MessageKeys.X, fromX + ((_x - fromX) * ((decimal)i / steps)) },
+                    { MessageKeys.Y, fromY + ((_y - fromY) * ((decimal)i / steps)) },
+                    { MessageKeys.Modifiers, _keyboard.Modifiers}
                 }).ConfigureAwait(false);
             }
         }
@@ -87,13 +89,14 @@ namespace PuppeteerSharp.Input
 
             _button = options.Button;
 
-            return _client.SendAsync("Input.dispatchMouseEvent", new Dictionary<string, object>(){
-                {"type", "mousePressed"},
-                {"button", _button},
-                {"x", _x},
-                {"y", _y},
-                {"modifiers", _keyboard.Modifiers},
-                {"clickCount", options.ClickCount }
+            return _client.SendAsync("Input.dispatchMouseEvent", new Dictionary<string, object>()
+            {
+                { MessageKeys.Type, "mousePressed" },
+                { MessageKeys.Button, _button },
+                { MessageKeys.X, _x },
+                { MessageKeys.Y, _y },
+                { MessageKeys.Modifiers, _keyboard.Modifiers },
+                { MessageKeys.ClickCount, options.ClickCount }
             });
         }
 
@@ -108,13 +111,14 @@ namespace PuppeteerSharp.Input
 
             _button = MouseButton.None;
 
-            return _client.SendAsync("Input.dispatchMouseEvent", new Dictionary<string, object>(){
-                {"type", "mouseReleased"},
-                {"button", options.Button},
-                {"x", _x},
-                {"y", _y},
-                {"modifiers", _keyboard.Modifiers},
-                {"clickCount", options.ClickCount }
+            return _client.SendAsync("Input.dispatchMouseEvent", new Dictionary<string, object>()
+            {
+                { MessageKeys.Type, "mouseReleased" },
+                { MessageKeys.Button, options.Button },
+                { MessageKeys.X, _x },
+                { MessageKeys.Y, _y },
+                { MessageKeys.Modifiers, _keyboard.Modifiers },
+                { MessageKeys.ClickCount, options.ClickCount }
             });
         }
     }
