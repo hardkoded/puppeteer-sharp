@@ -895,7 +895,7 @@ namespace PuppeteerSharp
             var marginBottom = ConvertPrintParameterToInches(options.MarginOptions.Bottom);
             var marginRight = ConvertPrintParameterToInches(options.MarginOptions.Right);
 
-            JObject result = await Client.SendAsync("Page.printToPDF", new
+            var result = await Client.SendAsync("Page.printToPDF", new
             {
                 landscape = options.Landscape,
                 displayHeaderFooter = options.DisplayHeaderFooter,
@@ -1675,10 +1675,6 @@ namespace PuppeteerSharp
 
             if (options != null && options.FullPage)
             {
-                if (Viewport == null)
-                {
-                    throw new PuppeteerException("FullPage screenshots do not work without first setting viewport.");
-                }
                 var metrics = await Client.SendAsync("Page.getLayoutMetrics").ConfigureAwait(false);
                 var contentSize = metrics[MessageKeys.ContentSize];
 
@@ -1695,10 +1691,10 @@ namespace PuppeteerSharp
                     Scale = 1
                 };
 
-                var mobile = Viewport.IsMobile;
-                var deviceScaleFactor = Viewport.DeviceScaleFactor;
-                var landscape = Viewport.IsLandscape;
-                var screenOrientation = landscape ?
+                var isMobile = Viewport?.IsMobile ?? false;
+                var deviceScaleFactor = Viewport?.DeviceScaleFactor ?? 1;
+                var isLandscape = Viewport?.IsLandscape ?? false;
+                var screenOrientation = isLandscape ?
                     new ScreenOrientation
                     {
                         Angle = 90,
@@ -1712,7 +1708,7 @@ namespace PuppeteerSharp
 
                 await Client.SendAsync("Emulation.setDeviceMetricsOverride", new
                 {
-                    mobile,
+                    mobile = isMobile,
                     width,
                     height,
                     deviceScaleFactor,
@@ -1755,7 +1751,7 @@ namespace PuppeteerSharp
                 await Client.SendAsync("Emulation.setDefaultBackgroundColorOverride").ConfigureAwait(false);
             }
 
-            if (options != null && options.FullPage)
+            if (options?.FullPage == true && Viewport != null)
             {
                 await SetViewportAsync(Viewport).ConfigureAwait(false);
             }
