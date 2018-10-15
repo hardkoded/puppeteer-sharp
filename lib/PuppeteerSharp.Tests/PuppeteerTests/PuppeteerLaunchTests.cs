@@ -377,6 +377,20 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         }
 
         [Fact]
+        public async Task ShouldTakeFullPageScreenshotsWhenDefaultViewportIsNull()
+        {
+            var options = TestConstants.DefaultBrowserOptions();
+            options.DefaultViewport = null;
+
+            using (var browser = await Puppeteer.LaunchAsync(options))
+            using (var page = await browser.NewPageAsync())
+            {
+                await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+                Assert.NotEmpty(await page.ScreenshotDataAsync(new ScreenshotOptions { FullPage = true }));
+            }
+        }
+
+        [Fact]
         public async Task ShouldSupportCustomWebSocket()
         {
             var options = TestConstants.DefaultBrowserOptions();
