@@ -23,10 +23,15 @@ namespace PuppeteerSharp
         private readonly IEnumerable<string> _expectedLifecycle;
         private readonly int _timeout;
         private readonly string _initialLoaderId;
-
+        private Request _navigationRequest;
         private bool _hasSameDocumentNavigation;
 
-        public NavigatorWatcher(FrameManager frameManager, Frame mainFrame, int timeout, NavigationOptions options)
+        public NavigatorWatcher(
+            FrameManager frameManager,
+            Frame mainFrame,
+            NetworkManager networkManager,
+            int timeout,
+            NavigationOptions options)
         {
             var waitUntil = new[] { WaitUntilNavigation.Load };
 
@@ -52,6 +57,8 @@ namespace PuppeteerSharp
             frameManager.LifecycleEvent += CheckLifecycleComplete;
             frameManager.FrameNavigatedWithinDocument += NavigatedWithinDocument;
             frameManager.FrameDetached += CheckLifecycleComplete;
+            networkManager.Request += OnRequest;
+
             SameDocumentNavigationTaskWrapper = new TaskCompletionSource<bool>();
             NewDocumentNavigationTaskWrapper = new TaskCompletionSource<bool>();
             TimeoutTask = TaskHelper.CreateTimeoutTask(timeout);
@@ -63,8 +70,8 @@ namespace PuppeteerSharp
         public TaskCompletionSource<bool> SameDocumentNavigationTaskWrapper { get; }
         public Task<bool> NewDocumentNavigationTask => NewDocumentNavigationTaskWrapper.Task;
         public TaskCompletionSource<bool> NewDocumentNavigationTaskWrapper { get; }
+        public Response NavigationResponse => _navigationRequest?.Response;
         public Task TimeoutTask { get; }
-
         #endregion
 
         #region Private methods
@@ -89,6 +96,15 @@ namespace PuppeteerSharp
             {
                 NewDocumentNavigationTaskWrapper.TrySetResult(true);
             }
+        }
+
+        private void OnRequest(object sender, RequestEventArgs e)
+        {
+            if (e.Request.Frame != _frame || !e.Request.IsNavigationRequest)
+            {
+                return;
+            }
+            _navigationRequest = e.Request;
         }
 
         private void NavigatedWithinDocument(object sender, FrameEventArgs e)
