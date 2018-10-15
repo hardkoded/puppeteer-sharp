@@ -728,22 +728,10 @@ namespace PuppeteerSharp
                 ? _networkManager.ExtraHTTPHeaders?.GetValueOrDefault(MessageKeys.Referer)
                 : options.Referer;
 
-            var requests = new Dictionary<string, Request>();
-
-            void createRequestEventListener(object sender, RequestEventArgs e)
-            {
-                if (!requests.ContainsKey(e.Request.Url))
-                {
-                    requests.Add(e.Request.Url, e.Request);
-                }
-            }
-
-            _networkManager.Request += createRequestEventListener;
-
             var mainFrame = _frameManager.MainFrame;
             var timeout = options?.Timeout ?? DefaultNavigationTimeout;
 
-            var watcher = new NavigatorWatcher(_frameManager, mainFrame, timeout, options);
+            var watcher = new NavigatorWatcher(_frameManager, mainFrame, _networkManager, timeout, options);
             var navigateTask = Navigate(Client, url, referrer);
 
             await Task.WhenAny(
@@ -769,16 +757,12 @@ namespace PuppeteerSharp
                 }
             }
 
-            _networkManager.Request -= createRequestEventListener;
-
             if (exception != null)
             {
                 throw new NavigationException(exception.InnerException.Message, exception.InnerException);
             }
 
-            requests.TryGetValue(MainFrame.NavigationURL, out var request);
-
-            return request?.Response;
+            return watcher.NavigationResponse;
         }
 
         /// <summary>
@@ -1430,12 +1414,7 @@ namespace PuppeteerSharp
         {
             var mainFrame = _frameManager.MainFrame;
             var timeout = options?.Timeout ?? DefaultNavigationTimeout;
-            var watcher = new NavigatorWatcher(_frameManager, mainFrame, timeout, options);
-            var responses = new Dictionary<string, Response>();
-
-            void createResponseEventListener(object sender, ResponseCreatedEventArgs e) => responses[e.Response.Url] = e.Response;
-
-            _networkManager.Response += createResponseEventListener;
+            var watcher = new NavigatorWatcher(_frameManager, mainFrame, _networkManager, timeout, options);
 
             var raceTask = await Task.WhenAny(
                 watcher.NewDocumentNavigationTask,
@@ -1443,15 +1422,13 @@ namespace PuppeteerSharp
                 watcher.TimeoutTask
             ).ConfigureAwait(false);
 
-            _networkManager.Response -= createResponseEventListener;
-
             var exception = raceTask.Exception;
             if (exception != null)
             {
                 throw new NavigationException(exception.Message, exception);
             }
 
-            return responses.GetValueOrDefault(_frameManager.MainFrame.Url);
+            return watcher.NavigationResponse;
         }
 
         /// <summary>
