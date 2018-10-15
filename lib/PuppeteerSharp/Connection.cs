@@ -161,6 +161,15 @@ namespace PuppeteerSharp
             _callbacks.Clear();
         }
 
+        internal static IConnection FromSession(CDPSession session)
+        {
+            var connection = session.Connection;
+            while (connection is CDPSession)
+            {
+                connection = connection.Connection;
+            }
+            return connection;
+        }
         #region Private Methods
 
         /// <summary>
@@ -336,6 +345,7 @@ namespace PuppeteerSharp
         ILoggerFactory IConnection.LoggerFactory => LoggerFactory;
         bool IConnection.IsClosed => IsClosed;
         Task<JObject> IConnection.SendAsync(string method, dynamic args) => SendAsync(method, args);
+        IConnection IConnection.Connection => null;
         #endregion
     }
 }

@@ -82,6 +82,10 @@ namespace PuppeteerSharp
         /// </summary>
         public event EventHandler<TracingCompleteEventArgs> TracingComplete;
         /// <summary>
+        /// Occurs when the connection is closed.
+        /// </summary>
+        public event EventHandler Closed;
+        /// <summary>
         /// Gets or sets a value indicating whether this <see cref="CDPSession"/> is closed.
         /// </summary>
         /// <value><c>true</c> if is closed; otherwise, <c>false</c>.</value>
@@ -266,7 +270,7 @@ namespace PuppeteerSharp
                 ));
             }
             _callbacks.Clear();
-
+            Closed?.Invoke(this, EventArgs.Empty);
             Connection = null;
         }
 
@@ -282,6 +286,7 @@ namespace PuppeteerSharp
         ILoggerFactory IConnection.LoggerFactory => LoggerFactory;
         bool IConnection.IsClosed => IsClosed;
         Task<JObject> IConnection.SendAsync(string method, dynamic args) => SendAsync(method, args);
+        IConnection IConnection.Connection => Connection;
         #endregion
     }
 }

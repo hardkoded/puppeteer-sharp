@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 
@@ -26,5 +27,13 @@ namespace PuppeteerSharp
         /// <param name="method">Method to call.</param>
         /// <param name="args">Method arguments.</param>
         Task<JObject> SendAsync(string method, dynamic args = null);
+        /// <summary>
+        /// Gets the parent connection
+        /// </summary>
+        IConnection Connection { get; }
+        /// <summary>
+        /// Occurs when the connection is closed.
+        /// </summary>
+        event EventHandler Closed;
     }
 }
