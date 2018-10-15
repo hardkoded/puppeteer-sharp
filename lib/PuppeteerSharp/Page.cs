@@ -1833,7 +1833,7 @@ namespace PuppeteerSharp
                     window[name]['callbacks'].delete(seq);
                 }", e.Payload.Name, e.Payload.Seq, result);
 
-            await Client.SendAsync("Runtime.evaluate", new
+            Client.Send("Runtime.evaluate", new
             {
                 expression,
                 contextId = e.ExecutionContextId
