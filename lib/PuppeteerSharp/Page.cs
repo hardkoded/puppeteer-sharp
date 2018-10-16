@@ -730,8 +730,8 @@ namespace PuppeteerSharp
 
             var mainFrame = _frameManager.MainFrame;
             var timeout = options?.Timeout ?? DefaultNavigationTimeout;
-
             var watcher = new NavigatorWatcher(Client, _frameManager, mainFrame, _networkManager, timeout, options);
+
             var navigateTask = Navigate(Client, url, referrer);
 
             await Task.WhenAny(
@@ -751,7 +751,7 @@ namespace PuppeteerSharp
                     _ensureNewDocumentNavigation ? watcher.NewDocumentNavigationTask : watcher.SameDocumentNavigationTask
                 ).ConfigureAwait(false);
 
-                if (watcher.TimeoutOrTerminationTask.Result.IsFaulted)
+                if (watcher.TimeoutOrTerminationTask.IsCompleted && watcher.TimeoutOrTerminationTask.Result.IsFaulted)
                 {
                     exception = watcher.TimeoutOrTerminationTask.Result.Exception;
                 }
@@ -879,7 +879,7 @@ namespace PuppeteerSharp
             var marginBottom = ConvertPrintParameterToInches(options.MarginOptions.Bottom);
             var marginRight = ConvertPrintParameterToInches(options.MarginOptions.Right);
 
-            JObject result = await Client.SendAsync("Page.printToPDF", new
+            var result = await Client.SendAsync("Page.printToPDF", new
             {
                 landscape = options.Landscape,
                 displayHeaderFooter = options.DisplayHeaderFooter,
@@ -1416,6 +1416,7 @@ namespace PuppeteerSharp
             var timeout = options?.Timeout ?? DefaultNavigationTimeout;
             var watcher = new NavigatorWatcher(Client, _frameManager, mainFrame, _networkManager, timeout, options);
 
+
             var raceTask = await Task.WhenAny(
                 watcher.NewDocumentNavigationTask,
                 watcher.SameDocumentNavigationTask,
@@ -1423,7 +1424,9 @@ namespace PuppeteerSharp
             ).ConfigureAwait(false);
 
             var exception = raceTask.Exception;
-            if (exception == null && watcher.TimeoutOrTerminationTask.Result.IsFaulted)
+            if (exception == null &&
+                watcher.TimeoutOrTerminationTask.IsCompleted &&
+                watcher.TimeoutOrTerminationTask.Result.IsFaulted)
             {
                 exception = watcher.TimeoutOrTerminationTask.Result.Exception;
             }
@@ -1431,6 +1434,7 @@ namespace PuppeteerSharp
             {
                 throw new NavigationException(exception.Message, exception);
             }
+
             return watcher.NavigationResponse;
         }
 
@@ -1655,10 +1659,6 @@ namespace PuppeteerSharp
 
             if (options != null && options.FullPage)
             {
-                if (Viewport == null)
-                {
-                    throw new PuppeteerException("FullPage screenshots do not work without first setting viewport.");
-                }
                 var metrics = await Client.SendAsync("Page.getLayoutMetrics").ConfigureAwait(false);
                 var contentSize = metrics[MessageKeys.ContentSize];
 
@@ -1675,10 +1675,10 @@ namespace PuppeteerSharp
                     Scale = 1
                 };
 
-                var mobile = Viewport.IsMobile;
-                var deviceScaleFactor = Viewport.DeviceScaleFactor;
-                var landscape = Viewport.IsLandscape;
-                var screenOrientation = landscape ?
+                var isMobile = Viewport?.IsMobile ?? false;
+                var deviceScaleFactor = Viewport?.DeviceScaleFactor ?? 1;
+                var isLandscape = Viewport?.IsLandscape ?? false;
+                var screenOrientation = isLandscape ?
                     new ScreenOrientation
                     {
                         Angle = 90,
@@ -1692,7 +1692,7 @@ namespace PuppeteerSharp
 
                 await Client.SendAsync("Emulation.setDeviceMetricsOverride", new
                 {
-                    mobile,
+                    mobile = isMobile,
                     width,
                     height,
                     deviceScaleFactor,
@@ -1735,7 +1735,7 @@ namespace PuppeteerSharp
                 await Client.SendAsync("Emulation.setDefaultBackgroundColorOverride").ConfigureAwait(false);
             }
 
-            if (options != null && options.FullPage)
+            if (options?.FullPage == true && Viewport != null)
             {
                 await SetViewportAsync(Viewport).ConfigureAwait(false);
             }
@@ -1840,11 +1840,11 @@ namespace PuppeteerSharp
                     window[name]['callbacks'].delete(seq);
                 }", e.Payload.Name, e.Payload.Seq, result);
 
-            await Client.SendAsync("Runtime.evaluate", new
+            Client.Send("Runtime.evaluate", new
             {
                 expression,
                 contextId = e.ExecutionContextId
-            }).ConfigureAwait(false);
+            });
         }
 
         private async Task<object> ExecuteBinding(BindingCalledResponse e)

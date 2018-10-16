@@ -79,6 +79,7 @@ namespace PuppeteerSharp
         public Task<bool> NewDocumentNavigationTask => _newDocumentNavigationTaskWrapper.Task;
         public Response NavigationResponse => _navigationRequest?.Response;
         public Task<Task> TimeoutOrTerminationTask => Task.WhenAny(_timeoutTask, _terminationTaskWrapper.Task);
+
         #endregion
 
         #region Private methods

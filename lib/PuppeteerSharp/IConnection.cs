@@ -26,7 +26,11 @@ namespace PuppeteerSharp
         /// <returns>The async.</returns>
         /// <param name="method">Method to call.</param>
         /// <param name="args">Method arguments.</param>
-        Task<JObject> SendAsync(string method, dynamic args = null);
+        /// <param name="waitForCallback">
+        /// If <c>true</c> the method will return a task to be completed when the message is confirmed by Chromium.
+        /// If <c>false</c> the task will be considered complete after sending the message to Chromium.
+        /// </param>
+        Task<JObject> SendAsync(string method, dynamic args = null, bool waitForCallback = true);
         /// <summary>
         /// Gets the parent connection
         /// </summary>
