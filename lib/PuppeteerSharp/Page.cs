@@ -1416,7 +1416,6 @@ namespace PuppeteerSharp
             var timeout = options?.Timeout ?? DefaultNavigationTimeout;
             var watcher = new NavigatorWatcher(Client, _frameManager, mainFrame, _networkManager, timeout, options);
 
-
             var raceTask = await Task.WhenAny(
                 watcher.NewDocumentNavigationTask,
                 watcher.SameDocumentNavigationTask,

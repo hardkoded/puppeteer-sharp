@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.Diagnostics.Contracts;
 using PuppeteerSharp.Helpers;
-using System;
 
 namespace PuppeteerSharp
 {
