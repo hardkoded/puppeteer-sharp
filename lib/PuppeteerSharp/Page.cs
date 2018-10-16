@@ -1837,7 +1837,7 @@ namespace PuppeteerSharp
             {
                 expression,
                 contextId = e.ExecutionContextId
-            }).ConfigureAwait(false);
+            });
         }
 
         private async Task<object> ExecuteBinding(BindingCalledResponse e)
