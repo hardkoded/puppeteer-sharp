@@ -237,6 +237,22 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Fact]
+        public async Task ShouldRenderWhiteBackgroundOnJpegFile()
+        {
+            using (var page = await Context.NewPageAsync())
+            {
+                await page.SetViewportAsync(new ViewPortOptions { Width = 100, Height = 100 });
+                await page.GoToAsync(TestConstants.EmptyPage);
+                var screenshot = await page.ScreenshotDataAsync(new ScreenshotOptions
+                {
+                    OmitBackground = true,
+                    Type = ScreenshotType.Jpeg
+                });
+                Assert.True(ScreenshotHelper.PixelMatch("white.jpg", screenshot));
+            }
+        }
+
+        [Fact]
         public async Task ShouldWorkWithOddClipSizeOnRetinaDisplays()
         {
             using (var page = await Context.NewPageAsync())

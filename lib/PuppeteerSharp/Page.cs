@@ -1693,7 +1693,8 @@ namespace PuppeteerSharp
                 }).ConfigureAwait(false);
             }
 
-            if (options != null && options.OmitBackground)
+            var shouldSetDefaultBackground = options?.OmitBackground == true && type == ScreenshotType.Png;
+            if (shouldSetDefaultBackground)
             {
                 await Client.SendAsync("Emulation.setDefaultBackgroundColorOverride", new
                 {
@@ -1723,7 +1724,7 @@ namespace PuppeteerSharp
 
             JObject result = await Client.SendAsync("Page.captureScreenshot", screenMessage).ConfigureAwait(false);
 
-            if (options != null && options.OmitBackground)
+            if (shouldSetDefaultBackground)
             {
                 await Client.SendAsync("Emulation.setDefaultBackgroundColorOverride").ConfigureAwait(false);
             }
@@ -1837,7 +1838,7 @@ namespace PuppeteerSharp
             {
                 expression,
                 contextId = e.ExecutionContextId
-            }).ConfigureAwait(false);
+            });
         }
 
         private async Task<object> ExecuteBinding(BindingCalledResponse e)
