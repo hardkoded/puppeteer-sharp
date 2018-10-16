@@ -730,12 +730,12 @@ namespace PuppeteerSharp
 
             var mainFrame = _frameManager.MainFrame;
             var timeout = options?.Timeout ?? DefaultNavigationTimeout;
+            var watcher = new NavigatorWatcher(Client, _frameManager, mainFrame, _networkManager, timeout, options);
 
-            var watcher = new NavigatorWatcher(_frameManager, mainFrame, _networkManager, timeout, options);
             var navigateTask = Navigate(Client, url, referrer);
 
             await Task.WhenAny(
-                watcher.TimeoutTask,
+                watcher.TimeoutOrTerminationTask,
                 navigateTask).ConfigureAwait(false);
 
             AggregateException exception = null;
@@ -747,13 +747,13 @@ namespace PuppeteerSharp
             else
             {
                 await Task.WhenAny(
-                    watcher.TimeoutTask,
+                    watcher.TimeoutOrTerminationTask,
                     _ensureNewDocumentNavigation ? watcher.NewDocumentNavigationTask : watcher.SameDocumentNavigationTask
                 ).ConfigureAwait(false);
 
-                if (watcher.TimeoutTask.IsFaulted)
+                if (watcher.TimeoutOrTerminationTask.IsCompleted && watcher.TimeoutOrTerminationTask.Result.IsFaulted)
                 {
-                    exception = watcher.TimeoutTask.Exception;
+                    exception = watcher.TimeoutOrTerminationTask.Result.Exception;
                 }
             }
 
@@ -1414,15 +1414,21 @@ namespace PuppeteerSharp
         {
             var mainFrame = _frameManager.MainFrame;
             var timeout = options?.Timeout ?? DefaultNavigationTimeout;
-            var watcher = new NavigatorWatcher(_frameManager, mainFrame, _networkManager, timeout, options);
+            var watcher = new NavigatorWatcher(Client, _frameManager, mainFrame, _networkManager, timeout, options);
 
             var raceTask = await Task.WhenAny(
                 watcher.NewDocumentNavigationTask,
                 watcher.SameDocumentNavigationTask,
-                watcher.TimeoutTask
+                watcher.TimeoutOrTerminationTask
             ).ConfigureAwait(false);
 
             var exception = raceTask.Exception;
+            if (exception == null &&
+                watcher.TimeoutOrTerminationTask.IsCompleted &&
+                watcher.TimeoutOrTerminationTask.Result.IsFaulted)
+            {
+                exception = watcher.TimeoutOrTerminationTask.Result.Exception;
+            }
             if (exception != null)
             {
                 throw new NavigationException(exception.Message, exception);
@@ -1837,7 +1843,7 @@ namespace PuppeteerSharp
             {
                 expression,
                 contextId = e.ExecutionContextId
-            }).ConfigureAwait(false);
+            });
         }
 
         private async Task<object> ExecuteBinding(BindingCalledResponse e)
