@@ -35,7 +35,7 @@ namespace PuppeteerSharp
                 throw new SelectorException("Error: failed to find element matching selector");
             }
 
-            return await elementHandle.EvaluateFunctionAsync<T>(pageFunction, args);
+            return await elementHandle.EvaluateFunctionAsync<T>(pageFunction, args).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace PuppeteerSharp
         /// <param name="args">Arguments to pass to <c>pageFunction</c></param>
         /// <returns>Task which resolves to the return value of <c>pageFunction</c></returns>
         public static async Task<T> EvaluateFunctionAsync<T>(this Task<JSHandle> arrayHandleTask, string pageFunction, params object[] args)
-            => await (await arrayHandleTask.ConfigureAwait(false)).EvaluateFunctionAsync<T>(pageFunction, args);
+            => await (await arrayHandleTask.ConfigureAwait(false)).EvaluateFunctionAsync<T>(pageFunction, args).ConfigureAwait(false);
 
         /// <summary>
         /// Runs <paramref name="pageFunction"/> within the frame and passes it the outcome of <paramref name="arrayHandle"/> as the first argument. Use only after <see cref="Page.QuerySelectorAllHandleAsync(string)"/>

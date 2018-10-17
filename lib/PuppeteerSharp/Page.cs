@@ -728,26 +728,14 @@ namespace PuppeteerSharp
                 ? _networkManager.ExtraHTTPHeaders?.GetValueOrDefault(MessageKeys.Referer)
                 : options.Referer;
 
-            var requests = new Dictionary<string, Request>();
-
-            void createRequestEventListener(object sender, RequestEventArgs e)
-            {
-                if (!requests.ContainsKey(e.Request.Url))
-                {
-                    requests.Add(e.Request.Url, e.Request);
-                }
-            }
-
-            _networkManager.Request += createRequestEventListener;
-
             var mainFrame = _frameManager.MainFrame;
             var timeout = options?.Timeout ?? DefaultNavigationTimeout;
+            var watcher = new NavigatorWatcher(Client, _frameManager, mainFrame, _networkManager, timeout, options);
 
-            var watcher = new NavigatorWatcher(_frameManager, mainFrame, timeout, options);
             var navigateTask = Navigate(Client, url, referrer);
 
             await Task.WhenAny(
-                watcher.TimeoutTask,
+                watcher.TimeoutOrTerminationTask,
                 navigateTask).ConfigureAwait(false);
 
             AggregateException exception = null;
@@ -759,26 +747,22 @@ namespace PuppeteerSharp
             else
             {
                 await Task.WhenAny(
-                    watcher.TimeoutTask,
+                    watcher.TimeoutOrTerminationTask,
                     _ensureNewDocumentNavigation ? watcher.NewDocumentNavigationTask : watcher.SameDocumentNavigationTask
                 ).ConfigureAwait(false);
 
-                if (watcher.TimeoutTask.IsFaulted)
+                if (watcher.TimeoutOrTerminationTask.IsCompleted && watcher.TimeoutOrTerminationTask.Result.IsFaulted)
                 {
-                    exception = watcher.TimeoutTask.Exception;
+                    exception = watcher.TimeoutOrTerminationTask.Result.Exception;
                 }
             }
-
-            _networkManager.Request -= createRequestEventListener;
 
             if (exception != null)
             {
                 throw new NavigationException(exception.InnerException.Message, exception.InnerException);
             }
 
-            requests.TryGetValue(MainFrame.NavigationURL, out var request);
-
-            return request?.Response;
+            return watcher.NavigationResponse;
         }
 
         /// <summary>
@@ -895,7 +879,7 @@ namespace PuppeteerSharp
             var marginBottom = ConvertPrintParameterToInches(options.MarginOptions.Bottom);
             var marginRight = ConvertPrintParameterToInches(options.MarginOptions.Right);
 
-            JObject result = await Client.SendAsync("Page.printToPDF", new
+            var result = await Client.SendAsync("Page.printToPDF", new
             {
                 landscape = options.Landscape,
                 displayHeaderFooter = options.DisplayHeaderFooter,
@@ -1430,28 +1414,27 @@ namespace PuppeteerSharp
         {
             var mainFrame = _frameManager.MainFrame;
             var timeout = options?.Timeout ?? DefaultNavigationTimeout;
-            var watcher = new NavigatorWatcher(_frameManager, mainFrame, timeout, options);
-            var responses = new Dictionary<string, Response>();
-
-            void createResponseEventListener(object sender, ResponseCreatedEventArgs e) => responses[e.Response.Url] = e.Response;
-
-            _networkManager.Response += createResponseEventListener;
+            var watcher = new NavigatorWatcher(Client, _frameManager, mainFrame, _networkManager, timeout, options);
 
             var raceTask = await Task.WhenAny(
                 watcher.NewDocumentNavigationTask,
                 watcher.SameDocumentNavigationTask,
-                watcher.TimeoutTask
+                watcher.TimeoutOrTerminationTask
             ).ConfigureAwait(false);
 
-            _networkManager.Response -= createResponseEventListener;
-
             var exception = raceTask.Exception;
+            if (exception == null &&
+                watcher.TimeoutOrTerminationTask.IsCompleted &&
+                watcher.TimeoutOrTerminationTask.Result.IsFaulted)
+            {
+                exception = watcher.TimeoutOrTerminationTask.Result.Exception;
+            }
             if (exception != null)
             {
                 throw new NavigationException(exception.Message, exception);
             }
 
-            return responses.GetValueOrDefault(_frameManager.MainFrame.Url);
+            return watcher.NavigationResponse;
         }
 
         /// <summary>
@@ -1507,7 +1490,7 @@ namespace PuppeteerSharp
                 requestTcs.Task
             }).ConfigureAwait(false);
 
-            return await requestTcs.Task;
+            return await requestTcs.Task.ConfigureAwait(false);
         }
 
         /// <summary>
@@ -1563,7 +1546,7 @@ namespace PuppeteerSharp
                 responseTcs.Task
             }).ConfigureAwait(false);
 
-            return await responseTcs.Task;
+            return await responseTcs.Task.ConfigureAwait(false);
         }
 
         /// <summary>
@@ -1675,10 +1658,6 @@ namespace PuppeteerSharp
 
             if (options != null && options.FullPage)
             {
-                if (Viewport == null)
-                {
-                    throw new PuppeteerException("FullPage screenshots do not work without first setting viewport.");
-                }
                 var metrics = await Client.SendAsync("Page.getLayoutMetrics").ConfigureAwait(false);
                 var contentSize = metrics[MessageKeys.ContentSize];
 
@@ -1695,10 +1674,10 @@ namespace PuppeteerSharp
                     Scale = 1
                 };
 
-                var mobile = Viewport.IsMobile;
-                var deviceScaleFactor = Viewport.DeviceScaleFactor;
-                var landscape = Viewport.IsLandscape;
-                var screenOrientation = landscape ?
+                var isMobile = Viewport?.IsMobile ?? false;
+                var deviceScaleFactor = Viewport?.DeviceScaleFactor ?? 1;
+                var isLandscape = Viewport?.IsLandscape ?? false;
+                var screenOrientation = isLandscape ?
                     new ScreenOrientation
                     {
                         Angle = 90,
@@ -1712,7 +1691,7 @@ namespace PuppeteerSharp
 
                 await Client.SendAsync("Emulation.setDeviceMetricsOverride", new
                 {
-                    mobile,
+                    mobile = isMobile,
                     width,
                     height,
                     deviceScaleFactor,
@@ -1755,7 +1734,7 @@ namespace PuppeteerSharp
                 await Client.SendAsync("Emulation.setDefaultBackgroundColorOverride").ConfigureAwait(false);
             }
 
-            if (options != null && options.FullPage)
+            if (options?.FullPage == true && Viewport != null)
             {
                 await SetViewportAsync(Viewport).ConfigureAwait(false);
             }
@@ -1836,7 +1815,7 @@ namespace PuppeteerSharp
                     EmitMetrics(e.MessageData.ToObject<PerformanceMetricsResponse>());
                     break;
                 case "Target.attachedToTarget":
-                    await OnAttachedToTarget(e);
+                    await OnAttachedToTarget(e).ConfigureAwait(false);
                     break;
                 case "Target.detachedFromTarget":
                     OnDetachedFromTarget(e);
@@ -1845,14 +1824,14 @@ namespace PuppeteerSharp
                     OnLogEntryAdded(e.MessageData.ToObject<LogEntryAddedResponse>());
                     break;
                 case "Runtime.bindingCalled":
-                    await OnBindingCalled(e.MessageData.ToObject<BindingCalledResponse>());
+                    await OnBindingCalled(e.MessageData.ToObject<BindingCalledResponse>()).ConfigureAwait(false);
                     break;
             }
         }
 
         private async Task OnBindingCalled(BindingCalledResponse e)
         {
-            var result = await ExecuteBinding(e);
+            var result = await ExecuteBinding(e).ConfigureAwait(false);
 
             var expression = EvaluationString(
                 @"function deliverResult(name, seq, result) {
@@ -1860,7 +1839,7 @@ namespace PuppeteerSharp
                     window[name]['callbacks'].delete(seq);
                 }", e.Payload.Name, e.Payload.Seq, result);
 
-            await Client.SendAsync("Runtime.evaluate", new
+            Client.Send("Runtime.evaluate", new
             {
                 expression,
                 contextId = e.ExecutionContextId
@@ -1908,7 +1887,7 @@ namespace PuppeteerSharp
             {
                 try
                 {
-                    await Client.SendAsync("Target.detachFromTarget", new { sessionId });
+                    await Client.SendAsync("Target.detachFromTarget", new { sessionId }).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
@@ -2049,7 +2028,7 @@ namespace PuppeteerSharp
               };
             }";
             var expression = EvaluationString(addPageBinding, name);
-            await Client.SendAsync("Runtime.addBinding", new { name });
+            await Client.SendAsync("Runtime.addBinding", new { name }).ConfigureAwait(false);
             await Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new { source = expression }).ConfigureAwait(false);
 
             await Task.WhenAll(Frames.Select(frame => frame.EvaluateExpressionAsync(expression)

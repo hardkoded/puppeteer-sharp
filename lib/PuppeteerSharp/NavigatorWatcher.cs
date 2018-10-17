@@ -23,10 +23,20 @@ namespace PuppeteerSharp
         private readonly IEnumerable<string> _expectedLifecycle;
         private readonly int _timeout;
         private readonly string _initialLoaderId;
-
+        private Request _navigationRequest;
         private bool _hasSameDocumentNavigation;
+        private TaskCompletionSource<bool> _newDocumentNavigationTaskWrapper;
+        private TaskCompletionSource<bool> _sameDocumentNavigationTaskWrapper;
+        private TaskCompletionSource<bool> _terminationTaskWrapper;
+        private Task _timeoutTask;
 
-        public NavigatorWatcher(FrameManager frameManager, Frame mainFrame, int timeout, NavigationOptions options)
+        public NavigatorWatcher(
+            CDPSession client,
+            FrameManager frameManager,
+            Frame mainFrame,
+            NetworkManager networkManager,
+            int timeout,
+            NavigationOptions options)
         {
             var waitUntil = new[] { WaitUntilNavigation.Load };
 
@@ -52,18 +62,22 @@ namespace PuppeteerSharp
             frameManager.LifecycleEvent += CheckLifecycleComplete;
             frameManager.FrameNavigatedWithinDocument += NavigatedWithinDocument;
             frameManager.FrameDetached += CheckLifecycleComplete;
-            SameDocumentNavigationTaskWrapper = new TaskCompletionSource<bool>();
-            NewDocumentNavigationTaskWrapper = new TaskCompletionSource<bool>();
-            TimeoutTask = TaskHelper.CreateTimeoutTask(timeout);
+            networkManager.Request += OnRequest;
+            Connection.FromSession(client).Closed += (sender, e)
+                => Terminate(new TargetClosedException("Navigation failed because browser has disconnected!"));
+
+            _sameDocumentNavigationTaskWrapper = new TaskCompletionSource<bool>();
+            _newDocumentNavigationTaskWrapper = new TaskCompletionSource<bool>();
+            _terminationTaskWrapper = new TaskCompletionSource<bool>();
+            _timeoutTask = TaskHelper.CreateTimeoutTask(timeout);
         }
 
         #region Properties
         public Task<Task> NavigationTask { get; internal set; }
-        public Task<bool> SameDocumentNavigationTask => SameDocumentNavigationTaskWrapper.Task;
-        public TaskCompletionSource<bool> SameDocumentNavigationTaskWrapper { get; }
-        public Task<bool> NewDocumentNavigationTask => NewDocumentNavigationTaskWrapper.Task;
-        public TaskCompletionSource<bool> NewDocumentNavigationTaskWrapper { get; }
-        public Task TimeoutTask { get; }
+        public Task<bool> SameDocumentNavigationTask => _sameDocumentNavigationTaskWrapper.Task;
+        public Task<bool> NewDocumentNavigationTask => _newDocumentNavigationTaskWrapper.Task;
+        public Response NavigationResponse => _navigationRequest?.Response;
+        public Task<Task> TimeoutOrTerminationTask => Task.WhenAny(_timeoutTask, _terminationTaskWrapper.Task);
 
         #endregion
 
@@ -83,12 +97,23 @@ namespace PuppeteerSharp
 
             if (_hasSameDocumentNavigation)
             {
-                SameDocumentNavigationTaskWrapper.TrySetResult(true);
+                _sameDocumentNavigationTaskWrapper.TrySetResult(true);
             }
             if (_frame.LoaderId != _initialLoaderId)
             {
-                NewDocumentNavigationTaskWrapper.TrySetResult(true);
+                _newDocumentNavigationTaskWrapper.TrySetResult(true);
             }
+        }
+
+        private void Terminate(PuppeteerException ex) => _terminationTaskWrapper.TrySetException(ex);
+
+        private void OnRequest(object sender, RequestEventArgs e)
+        {
+            if (e.Request.Frame != _frame || !e.Request.IsNavigationRequest)
+            {
+                return;
+            }
+            _navigationRequest = e.Request;
         }
 
         private void NavigatedWithinDocument(object sender, FrameEventArgs e)

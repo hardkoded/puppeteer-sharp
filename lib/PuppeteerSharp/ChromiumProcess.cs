@@ -545,7 +545,7 @@ namespace PuppeteerSharp
                         try
                         {
                             await p._startCompletionSource.Task.ConfigureAwait(false);
-                            await Started.EnterFromAsync(p, this);
+                            await Started.EnterFromAsync(p, this).ConfigureAwait(false);
                         }
                         catch
                         {

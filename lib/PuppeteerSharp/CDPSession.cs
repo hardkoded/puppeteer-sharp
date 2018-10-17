@@ -12,7 +12,7 @@ namespace PuppeteerSharp
 {
     /// <summary>
     /// The CDPSession instances are used to talk raw Chrome Devtools Protocol:
-    ///  * Protocol methods can be called with <see cref="CDPSession.SendAsync(string, dynamic)"/> method.
+    ///  * Protocol methods can be called with <see cref="CDPSession.SendAsync(string, dynamic, bool)"/> method.
     ///  * Protocol events, using the <see cref="CDPSession.MessageReceived"/> event.
     /// 
     /// Documentation on DevTools Protocol can be found here: <see href="https://chromedevtools.github.io/devtools-protocol/"/>.
@@ -82,6 +82,10 @@ namespace PuppeteerSharp
         /// </summary>
         public event EventHandler<TracingCompleteEventArgs> TracingComplete;
         /// <summary>
+        /// Occurs when the connection is closed.
+        /// </summary>
+        public event EventHandler Closed;
+        /// <summary>
         /// Gets or sets a value indicating whether this <see cref="CDPSession"/> is closed.
         /// </summary>
         /// <value><c>true</c> if is closed; otherwise, <c>false</c>.</value>
@@ -95,6 +99,10 @@ namespace PuppeteerSharp
         #endregion
 
         #region Public Methods
+
+        internal void Send(string method, dynamic args = null)
+            => _ = SendAsync(method, args, false);
+
         /// <summary>
         /// Protocol methods can be called with this method.
         /// </summary>
@@ -113,9 +121,13 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="method">The method name</param>
         /// <param name="args">The method args</param>
+        /// <param name="waitForCallback">
+        /// If <c>true</c> the method will return a task to be completed when the message is confirmed by Chromium.
+        /// If <c>false</c> the task will be considered complete after sending the message to Chromium.
+        /// </param>
         /// <returns>The task.</returns>
-        /// <exception cref="T:PuppeteerSharp.PuppeteerException"></exception>
-        public async Task<JObject> SendAsync(string method, dynamic args = null)
+        /// <exception cref="PuppeteerSharp.PuppeteerException"></exception>
+        public async Task<JObject> SendAsync(string method, dynamic args = null, bool waitForCallback = true)
         {
             if (Connection == null)
             {
@@ -130,31 +142,37 @@ namespace PuppeteerSharp
             });
             _logger.LogTrace("Send ► {Id} Method {Method} Params {@Params}", id, method, (object)args);
 
-            var callback = new MessageTask
+            MessageTask callback = null;
+            if (waitForCallback)
             {
-                TaskWrapper = new TaskCompletionSource<JObject>(),
-                Method = method
-            };
-            _callbacks[id] = callback;
+                callback = new MessageTask
+                {
+                    TaskWrapper = new TaskCompletionSource<JObject>(),
+                    Method = method
+                };
+                _callbacks[id] = callback;
+            }
 
             try
             {
-                await Connection.SendAsync("Target.sendMessageToTarget", new Dictionary<string, object>
-                {
-                    { MessageKeys.SessionId, SessionId },
-                    { MessageKeys.Message, message }
-                }).ConfigureAwait(false);
+                await Connection.SendAsync(
+                    "Target.sendMessageToTarget", new Dictionary<string, object>
+                    {
+                        {"sessionId", SessionId},
+                        {"message", message}
+                    },
+                    waitForCallback).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
-                if (_callbacks.ContainsKey(id))
+                if (waitForCallback && _callbacks.ContainsKey(id))
                 {
                     _callbacks.Remove(id);
                     callback.TaskWrapper.SetException(new MessageException(ex.Message, ex));
                 }
             }
 
-            return await callback.TaskWrapper.Task.ConfigureAwait(false);
+            return waitForCallback ? await callback.TaskWrapper.Task.ConfigureAwait(false) : null;
         }
 
         /// <summary>
@@ -266,7 +284,7 @@ namespace PuppeteerSharp
                 ));
             }
             _callbacks.Clear();
-
+            Closed?.Invoke(this, EventArgs.Empty);
             Connection = null;
         }
 
@@ -281,7 +299,9 @@ namespace PuppeteerSharp
         #region IConnection
         ILoggerFactory IConnection.LoggerFactory => LoggerFactory;
         bool IConnection.IsClosed => IsClosed;
-        Task<JObject> IConnection.SendAsync(string method, dynamic args) => SendAsync(method, args);
+        Task<JObject> IConnection.SendAsync(string method, dynamic args, bool waitForCallback)
+            => SendAsync(method, args, waitForCallback);
+        IConnection IConnection.Connection => Connection;
         #endregion
     }
 }

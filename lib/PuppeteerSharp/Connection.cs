@@ -84,7 +84,7 @@ namespace PuppeteerSharp
 
         #region Public Methods
 
-        internal async Task<JObject> SendAsync(string method, dynamic args = null)
+        internal async Task<JObject> SendAsync(string method, dynamic args = null, bool waitForCallback = true)
         {
             if (IsClosed)
             {
@@ -101,18 +101,23 @@ namespace PuppeteerSharp
 
             _logger.LogTrace("Send ► {Id} Method {Method} Params {@Params}", id, method, (object)args);
 
-            var callback = new MessageTask
+            MessageTask callback = null;
+            if (waitForCallback)
             {
-                TaskWrapper = new TaskCompletionSource<JObject>(),
-                Method = method
-            };
-            _callbacks[id] = callback;
+
+                callback = new MessageTask
+                {
+                    TaskWrapper = new TaskCompletionSource<JObject>(),
+                    Method = method
+                };
+                _callbacks[id] = callback;
+            }
 
             var encoded = Encoding.UTF8.GetBytes(message);
             var buffer = new ArraySegment<byte>(encoded, 0, encoded.Length);
             await _socketQueue.Enqueue(() => WebSocket.SendAsync(buffer, WebSocketMessageType.Text, true, default)).ConfigureAwait(false);
 
-            return await callback.TaskWrapper.Task.ConfigureAwait(false);
+            return waitForCallback ? await callback.TaskWrapper.Task.ConfigureAwait(false) : null;
         }
 
         internal async Task<T> SendAsync<T>(string method, dynamic args = null)
@@ -161,6 +166,15 @@ namespace PuppeteerSharp
             _callbacks.Clear();
         }
 
+        internal static IConnection FromSession(CDPSession session)
+        {
+            var connection = session.Connection;
+            while (connection is CDPSession)
+            {
+                connection = connection.Connection;
+            }
+            return connection;
+        }
         #region Private Methods
 
         /// <summary>
@@ -309,7 +323,10 @@ namespace PuppeteerSharp
 
         internal static async Task<Connection> Create(string url, IConnectionOptions connectionOptions, ILoggerFactory loggerFactory = null)
         {
-            var ws = await (connectionOptions.WebSocketFactory ?? DefaultWebSocketFactory)(new Uri(url), connectionOptions, default);
+            var ws = await (connectionOptions.WebSocketFactory ?? DefaultWebSocketFactory)(
+                new Uri(url),
+                connectionOptions,
+                default).ConfigureAwait(false);
             return new Connection(url, connectionOptions.SlowMo, ws, loggerFactory);
         }
 
@@ -332,7 +349,9 @@ namespace PuppeteerSharp
         #region IConnection
         ILoggerFactory IConnection.LoggerFactory => LoggerFactory;
         bool IConnection.IsClosed => IsClosed;
-        Task<JObject> IConnection.SendAsync(string method, dynamic args) => SendAsync(method, args);
+        Task<JObject> IConnection.SendAsync(string method, dynamic args, bool waitForCallback)
+            => SendAsync(method, args, waitForCallback);
+        IConnection IConnection.Connection => null;
         #endregion
     }
 }
