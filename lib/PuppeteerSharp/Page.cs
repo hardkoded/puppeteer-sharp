@@ -43,6 +43,9 @@ namespace PuppeteerSharp
         private readonly Dictionary<string, Worker> _workers;
         private readonly ILogger _logger;
         private bool _ensureNewDocumentNavigation;
+        private PageGetLayoutMetricsResponse _metrics;
+        private bool _screenshotBurstModeOn;
+        private ScreenshotOptions _screenshotBurstModeOptions;
 
         private static readonly Dictionary<string, decimal> _unitToPixels = new Dictionary<string, decimal> {
             {"px", 1},
@@ -1565,6 +1568,18 @@ namespace PuppeteerSharp
         /// <param name="options">Navigation parameters.</param>
         public Task<Response> GoForwardAsync(NavigationOptions options = null) => GoAsync(1, options);
 
+        /// <summary>
+        /// Resets the background color and Viewport after taking Screenshots using BurstMode.
+        /// </summary>
+        /// <returns>The burst mode off.</returns>
+        public async Task SetBurstModeOff()
+        {
+            _screenshotBurstModeOn = false;
+            if (_screenshotBurstModeOptions != null)
+            {
+                await ResetBackgroundColorAndViewport(_screenshotBurstModeOptions);
+            }
+        }
         #endregion
 
         #region Private Method
@@ -1645,10 +1660,13 @@ namespace PuppeteerSharp
 
         private async Task<string> PerformScreenshot(ScreenshotType type, ScreenshotOptions options)
         {
-            await Client.SendAsync("Target.activateTarget", new
+            if (!_screenshotBurstModeOn)
             {
-                targetId = Target.TargetId
-            }).ConfigureAwait(false);
+                await Client.SendAsync("Target.activateTarget", new
+                {
+                    targetId = Target.TargetId
+                }).ConfigureAwait(false);
+            }
 
             var clip = options.Clip?.Clone();
             if (clip != null)
@@ -1656,61 +1674,72 @@ namespace PuppeteerSharp
                 clip.Scale = 1;
             }
 
-            if (options != null && options.FullPage)
+            if (!_screenshotBurstModeOn)
             {
-                var metrics = await Client.SendAsync("Page.getLayoutMetrics").ConfigureAwait(false);
-                var contentSize = metrics[MessageKeys.ContentSize];
-
-                var width = Convert.ToInt32(Math.Ceiling(contentSize[MessageKeys.Width].Value<decimal>()));
-                var height = Convert.ToInt32(Math.Ceiling(contentSize[MessageKeys.Height].Value<decimal>()));
-
-                // Overwrite clip for full page at all times.
-                clip = new Clip
+                if (options != null && options.FullPage)
                 {
-                    X = 0,
-                    Y = 0,
-                    Width = width,
-                    Height = height,
-                    Scale = 1
-                };
+                    var metrics = _screenshotBurstModeOn
+                        ? _metrics :
+                        await Client.SendAsync<PageGetLayoutMetricsResponse>("Page.getLayoutMetrics").ConfigureAwait(false);
 
-                var isMobile = Viewport?.IsMobile ?? false;
-                var deviceScaleFactor = Viewport?.DeviceScaleFactor ?? 1;
-                var isLandscape = Viewport?.IsLandscape ?? false;
-                var screenOrientation = isLandscape ?
-                    new ScreenOrientation
+                    if (options.BurstMode)
                     {
-                        Angle = 90,
-                        Type = ScreenOrientationType.LandscapePrimary
-                    } :
-                    new ScreenOrientation
+                        _metrics = metrics;
+                    }
+
+                    var contentSize = metrics.ContentSize;
+
+                    var width = Convert.ToInt32(Math.Ceiling(contentSize.Width));
+                    var height = Convert.ToInt32(Math.Ceiling(contentSize.Height));
+
+                    // Overwrite clip for full page at all times.
+                    clip = new Clip
                     {
-                        Angle = 0,
-                        Type = ScreenOrientationType.PortraitPrimary
+                        X = 0,
+                        Y = 0,
+                        Width = width,
+                        Height = height,
+                        Scale = 1
                     };
 
-                await Client.SendAsync("Emulation.setDeviceMetricsOverride", new
-                {
-                    mobile = isMobile,
-                    width,
-                    height,
-                    deviceScaleFactor,
-                    screenOrientation
-                }).ConfigureAwait(false);
-            }
+                    var isMobile = Viewport?.IsMobile ?? false;
+                    var deviceScaleFactor = Viewport?.DeviceScaleFactor ?? 1;
+                    var isLandscape = Viewport?.IsLandscape ?? false;
+                    var screenOrientation = isLandscape ?
+                        new ScreenOrientation
+                        {
+                            Angle = 90,
+                            Type = ScreenOrientationType.LandscapePrimary
+                        } :
+                        new ScreenOrientation
+                        {
+                            Angle = 0,
+                            Type = ScreenOrientationType.PortraitPrimary
+                        };
 
-            if (options != null && options.OmitBackground)
-            {
-                await Client.SendAsync("Emulation.setDefaultBackgroundColorOverride", new
-                {
-                    color = new
+                    await Client.SendAsync("Emulation.setDeviceMetricsOverride", new
                     {
-                        r = 0,
-                        g = 0,
-                        b = 0,
-                        a = 0
-                    }
-                }).ConfigureAwait(false);
+                        mobile = isMobile,
+                        width,
+                        height,
+                        deviceScaleFactor,
+                        screenOrientation
+                    }).ConfigureAwait(false);
+                }
+
+                if (options != null && options.OmitBackground)
+                {
+                    await Client.SendAsync("Emulation.setDefaultBackgroundColorOverride", new
+                    {
+                        color = new
+                        {
+                            r = 0,
+                            g = 0,
+                            b = 0,
+                            a = 0
+                        }
+                    }).ConfigureAwait(false);
+                }
             }
 
             dynamic screenMessage = new ExpandoObject();
@@ -1727,19 +1756,37 @@ namespace PuppeteerSharp
                 screenMessage.clip = clip;
             }
 
-            JObject result = await Client.SendAsync("Page.captureScreenshot", screenMessage).ConfigureAwait(false);
+            var result = await Client.SendAsync<PageCaptureScreenshotResponse>("Page.captureScreenshot", screenMessage).ConfigureAwait(false);
 
-            if (options != null && options.OmitBackground)
+            if (options.BurstMode)
             {
-                await Client.SendAsync("Emulation.setDefaultBackgroundColorOverride").ConfigureAwait(false);
+                _screenshotBurstModeOptions = options;
+                _screenshotBurstModeOn = true;
+            }
+            else
+            {
+                await ResetBackgroundColorAndViewport(options);
+            }
+            return result.Data;
+        }
+
+        private async Task ResetBackgroundColorAndViewport(ScreenshotOptions options)
+        {
+            var tasks = new List<Task>();
+            if (options?.OmitBackground == true)
+            {
+                tasks.Add(Client.SendAsync("Emulation.setDefaultBackgroundColorOverride")));
             }
 
             if (options?.FullPage == true && Viewport != null)
             {
-                await SetViewportAsync(Viewport).ConfigureAwait(false);
+                tasks.Add(SetViewportAsync(Viewport));
             }
 
-            return result.GetValue(MessageKeys.Data).AsString();
+            if (tasks.Count > 0)
+            {
+                await Task.WhenAll(tasks).ConfigureAwait(false);
+            }
         }
 
         private decimal ConvertPrintParameterToInches(object parameter)
