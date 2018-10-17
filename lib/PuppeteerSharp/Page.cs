@@ -1775,7 +1775,7 @@ namespace PuppeteerSharp
             var tasks = new List<Task>();
             if (options?.OmitBackground == true)
             {
-                tasks.Add(Client.SendAsync("Emulation.setDefaultBackgroundColorOverride")));
+                tasks.Add(Client.SendAsync("Emulation.setDefaultBackgroundColorOverride"));
             }
 
             if (options?.FullPage == true && Viewport != null)
