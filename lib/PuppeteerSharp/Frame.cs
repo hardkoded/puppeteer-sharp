@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
@@ -63,7 +64,7 @@ namespace PuppeteerSharp
             SetDefaultContext(null);
 
             WaitTasks = new List<WaitTask>();
-            LifecycleEvents = new List<string>();
+            LifecycleEvents = new List<string>(); 
         }
 
         #region Properties
@@ -97,6 +98,29 @@ namespace PuppeteerSharp
         #endregion
 
         #region Public Methods
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public async Task<Response> GoToAsync(string url, NavigationOptions options)
+        {
+
+            var response = await FrameManager.Navigate(this, url, options);
+            return null;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="timeout"></param>
+        /// <param name="waitUntil"></param>
+        /// <returns></returns>
+        public Task<Response> GoToAsync(string url, int? timeout = null, WaitUntilNavigation[] waitUntil = null)
+            => GoToAsync(url, new NavigationOptions { Timeout = timeout, WaitUntil = waitUntil });
 
         /// <summary>
         /// Executes a script in browser context

@@ -66,8 +66,9 @@ namespace PuppeteerSharp
             Tracing = new Tracing(client);
             Coverage = new Coverage(client);
 
-            _frameManager = new FrameManager(client, frameTree, this);
-            _networkManager = new NetworkManager(client, _frameManager);
+            _networkManager = new NetworkManager(client);
+            _frameManager = new FrameManager(client, frameTree, this, _networkManager);
+            _networkManager.FrameManager = _frameManager;
             _emulationManager = new EmulationManager(client);
             _pageBindings = new Dictionary<string, Delegate>();
             _workers = new Dictionary<string, Worker>();

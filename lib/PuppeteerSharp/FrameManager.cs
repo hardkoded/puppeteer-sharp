@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
@@ -11,15 +13,18 @@ namespace PuppeteerSharp
     {
         private readonly CDPSession _client;
         private Dictionary<int, ExecutionContext> _contextIdToContext;
+        private bool _ensureNewDocumentNavigation;
         private readonly ILogger _logger;
+        private readonly NetworkManager _networkManager;
 
-        internal FrameManager(CDPSession client, FrameTree frameTree, Page page)
+        internal FrameManager(CDPSession client, FrameTree frameTree, Page page, NetworkManager networkManager)
         {
             _client = client;
             Page = page;
             Frames = new Dictionary<string, Frame>();
             _contextIdToContext = new Dictionary<int, ExecutionContext>();
             _logger = _client.Connection.LoggerFactory.CreateLogger<FrameManager>();
+            _networkManager = networkManager;
 
             _client.MessageReceived += _client_MessageReceived;
             HandleFrameTree(frameTree);
@@ -51,6 +56,61 @@ namespace PuppeteerSharp
             return context;
         }
 
+        public async Task<Response> Navigate(Frame frame, string url, NavigationOptions options)
+        {
+            var referrer = string.IsNullOrEmpty(options.Referer)
+               ? _networkManager.ExtraHTTPHeaders?.GetValueOrDefault(MessageKeys.Referer)
+               : options.Referer;
+            var requests = new Dictionary<string, Request>();
+            var timeout = options?.Timeout ?? 30000;
+            var watcher = new NavigatorWatcher(_client, this, frame, _networkManager, timeout, options); 
+
+            var navigateTask = Navigate(_client, url, referrer);
+            await Task.WhenAny(
+                watcher.TimeoutOrTerminationTask,
+                navigateTask).ConfigureAwait(false);
+
+            AggregateException exception = null;
+            if (navigateTask.IsFaulted)
+            {
+                exception = navigateTask.Exception;
+            }
+            else
+            {
+                await Task.WhenAny(
+                    watcher.TimeoutOrTerminationTask,
+                    _ensureNewDocumentNavigation ? watcher.NewDocumentNavigationTask : watcher.SameDocumentNavigationTask
+                ).ConfigureAwait(false);
+
+                if (watcher.TimeoutOrTerminationTask.IsCompleted && watcher.TimeoutOrTerminationTask.Result.IsFaulted)
+                {
+                    exception = watcher.TimeoutOrTerminationTask.Result.Exception;
+                }
+            }
+
+            if (exception != null)
+            {
+                throw new NavigationException(exception.InnerException.Message, exception.InnerException);
+            }
+
+            return watcher.NavigationResponse;
+        }
+
+        private async Task Navigate(CDPSession client, string url, string referrer)
+        {
+            var response = await client.SendAsync<PageNavigateResponse>("Page.navigate", new
+            {
+                url,
+                referrer = referrer ?? string.Empty
+            }).ConfigureAwait(false);
+
+            _ensureNewDocumentNavigation = !string.IsNullOrEmpty(response.LoaderId);
+
+            if (!string.IsNullOrEmpty(response.ErrorText))
+            {
+                throw new NavigationException(response.ErrorText, url);
+            }
+        }
         #endregion
 
         #region Private Methods
