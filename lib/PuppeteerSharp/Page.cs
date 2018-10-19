@@ -1572,13 +1572,15 @@ namespace PuppeteerSharp
         /// Resets the background color and Viewport after taking Screenshots using BurstMode.
         /// </summary>
         /// <returns>The burst mode off.</returns>
-        public async Task SetBurstModeOff()
+        public Task SetBurstModeOff()
         {
             _screenshotBurstModeOn = false;
             if (_screenshotBurstModeOptions != null)
             {
-                await ResetBackgroundColorAndViewport(_screenshotBurstModeOptions).ConfigureAwait(false);
+                ResetBackgroundColorAndViewport(_screenshotBurstModeOptions);
             }
+
+            return Task.CompletedTask;
         }
         #endregion
 
