@@ -43,7 +43,7 @@ namespace PuppeteerSharp
         private readonly Dictionary<string, Worker> _workers;
         private readonly ILogger _logger;
         private bool _ensureNewDocumentNavigation;
-        private PageGetLayoutMetricsResponse _metrics;
+        private PageGetLayoutMetricsResponse _burstModeMetrics;
         private bool _screenshotBurstModeOn;
         private ScreenshotOptions _screenshotBurstModeOptions;
 
@@ -1577,7 +1577,7 @@ namespace PuppeteerSharp
             _screenshotBurstModeOn = false;
             if (_screenshotBurstModeOptions != null)
             {
-                await ResetBackgroundColorAndViewport(_screenshotBurstModeOptions);
+                await ResetBackgroundColorAndViewport(_screenshotBurstModeOptions).ConfigureAwait(false);
             }
         }
         #endregion
@@ -1679,12 +1679,12 @@ namespace PuppeteerSharp
                 if (options != null && options.FullPage)
                 {
                     var metrics = _screenshotBurstModeOn
-                        ? _metrics :
+                        ? _burstModeMetrics :
                         await Client.SendAsync<PageGetLayoutMetricsResponse>("Page.getLayoutMetrics").ConfigureAwait(false);
 
                     if (options.BurstMode)
                     {
-                        _metrics = metrics;
+                        _burstModeMetrics = metrics;
                     }
 
                     var contentSize = metrics.ContentSize;
@@ -1770,23 +1770,13 @@ namespace PuppeteerSharp
             return result.Data;
         }
 
-        private async Task ResetBackgroundColorAndViewport(ScreenshotOptions options)
+        private Task ResetBackgroundColorAndViewport(ScreenshotOptions options)
         {
-            var tasks = new List<Task>();
-            if (options?.OmitBackground == true)
-            {
-                tasks.Add(Client.SendAsync("Emulation.setDefaultBackgroundColorOverride"));
-            }
-
-            if (options?.FullPage == true && Viewport != null)
-            {
-                tasks.Add(SetViewportAsync(Viewport));
-            }
-
-            if (tasks.Count > 0)
-            {
-                await Task.WhenAll(tasks).ConfigureAwait(false);
-            }
+            var omitBackgroundTask = options?.OmitBackground == true ?
+                Client.SendAsync("Emulation.setDefaultBackgroundColorOverride") : Task.CompletedTask;
+            var setViewPortTask = (options?.FullPage == true && Viewport != null) ?
+                SetViewportAsync(Viewport) : Task.CompletedTask;
+            return Task.WhenAll(omitBackgroundTask, setViewPortTask);
         }
 
         private decimal ConvertPrintParameterToInches(object parameter)
