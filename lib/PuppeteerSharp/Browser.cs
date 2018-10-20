@@ -165,6 +165,11 @@ namespace PuppeteerSharp
         public Target[] Targets() => TargetsMap.Values.Where(target => target.IsInitialized).ToArray();
 
         /// <summary>
+        /// A target associated with the browser.
+        /// </summary>
+        public Target Target => Targets().FirstOrDefault(t => t.Type == TargetType.Browser);
+
+        /// <summary>
         /// Creates a new incognito browser context. This won't share cookies/cache with other browser contexts.
         /// </summary>
         /// <returns>Task which resolves to a new <see cref="BrowserContext"/> object</returns>
