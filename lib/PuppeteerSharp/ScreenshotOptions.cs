@@ -49,7 +49,13 @@ namespace PuppeteerSharp
         /// <value>The quality.</value>
         [JsonProperty("quality")]
         public int? Quality { get; set; }
-
+        /// <summary>
+        /// When BurstMode is <c>true</c> the screenshot process will only execute all the screenshot setup actions (background and metrics overrides)
+        /// before the first screenshot call and it will ignore the reset actions after the screenshoot is taken.
+        /// <see cref="Page.SetBurstModeOff"/> needs to be called after the last screenshot is taken.
+        /// </summary>
+        [JsonIgnore]
+        public bool BurstMode { get; set; } = false;
         internal static ScreenshotType? GetScreenshotTypeFromFile(string file)
         {
             var extension = new FileInfo(file).Extension.Replace(".", string.Empty);
