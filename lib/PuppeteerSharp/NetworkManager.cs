@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Helpers;
@@ -28,9 +27,9 @@ namespace PuppeteerSharp
 
         #endregion
 
-        internal NetworkManager(CDPSession client, FrameManager frameManager = null)
+        internal NetworkManager(CDPSession client)
         {
-            FrameManager = frameManager;
+            FrameManager = null;
             _client = client;
             _client.MessageReceived += Client_MessageReceived;
             _logger = _client.Connection.LoggerFactory.CreateLogger<NetworkManager>();
@@ -270,7 +269,7 @@ namespace PuppeteerSharp
                     redirectChain = request.RedirectChainList;
                 }
             }
-            var frame = !string.IsNullOrEmpty(e.FrameId) ? FrameManager.Frames[e.FrameId] : null;
+            var frame = !string.IsNullOrEmpty(e.FrameId) && FrameManager != null ? FrameManager.Frames[e.FrameId] : null;
             request = new Request(
                 _client,
                 frame,

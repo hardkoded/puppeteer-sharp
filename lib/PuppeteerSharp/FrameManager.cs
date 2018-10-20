@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Messaging;
 
@@ -31,6 +30,7 @@ namespace PuppeteerSharp
         }
 
         #region Properties
+
         internal event EventHandler<FrameEventArgs> FrameAttached;
         internal event EventHandler<FrameEventArgs> FrameDetached;
         internal event EventHandler<FrameEventArgs> FrameNavigated;
@@ -40,6 +40,7 @@ namespace PuppeteerSharp
         internal Dictionary<string, Frame> Frames { get; set; }
         internal Frame MainFrame { get; set; }
         internal Page Page { get; }
+        internal int DefaultNavigationTimeout { get; set; } = 30000;
 
         #endregion
 
@@ -56,14 +57,14 @@ namespace PuppeteerSharp
             return context;
         }
 
-        public async Task<Response> Navigate(Frame frame, string url, NavigationOptions options)
+        public async Task<Response> NavigateAsync(Frame frame, string url, NavigationOptions options)
         {
             var referrer = string.IsNullOrEmpty(options.Referer)
                ? _networkManager.ExtraHTTPHeaders?.GetValueOrDefault(MessageKeys.Referer)
                : options.Referer;
             var requests = new Dictionary<string, Request>();
-            var timeout = options?.Timeout ?? 30000;
-            var watcher = new NavigatorWatcher(_client, this, frame, _networkManager, timeout, options); 
+            var timeout = options?.Timeout ?? DefaultNavigationTimeout;
+            var watcher = new NavigatorWatcher(_client, this, frame, _networkManager, timeout, options);
 
             var navigateTask = Navigate(_client, url, referrer);
             await Task.WhenAny(
@@ -111,6 +112,33 @@ namespace PuppeteerSharp
                 throw new NavigationException(response.ErrorText, url);
             }
         }
+
+        public async Task<Response> WaitForNavigationAsync(Frame frame, NavigationOptions options = null)
+        {
+            var timeout = options?.Timeout ?? DefaultNavigationTimeout;
+            var watcher = new NavigatorWatcher(_client, this, frame, _networkManager, timeout, options);
+
+            var raceTask = await Task.WhenAny(
+                watcher.NewDocumentNavigationTask,
+                watcher.SameDocumentNavigationTask,
+                watcher.TimeoutOrTerminationTask
+            ).ConfigureAwait(false);
+
+            var exception = raceTask.Exception;
+            if (exception == null &&
+                watcher.TimeoutOrTerminationTask.IsCompleted &&
+                watcher.TimeoutOrTerminationTask.Result.IsFaulted)
+            {
+                exception = watcher.TimeoutOrTerminationTask.Result.Exception;
+            }
+            if (exception != null)
+            {
+                throw new NavigationException(exception.Message, exception);
+            }
+
+            return watcher.NavigationResponse;
+        }
+
         #endregion
 
         #region Private Methods

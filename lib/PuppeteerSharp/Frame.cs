@@ -64,7 +64,7 @@ namespace PuppeteerSharp
             SetDefaultContext(null);
 
             WaitTasks = new List<WaitTask>();
-            LifecycleEvents = new List<string>(); 
+            LifecycleEvents = new List<string>();
         }
 
         #region Properties
@@ -100,17 +100,13 @@ namespace PuppeteerSharp
         #region Public Methods
 
         /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="url"></param>
-        /// <param name="options"></param>
-        /// <returns></returns>
-        public async Task<Response> GoToAsync(string url, NavigationOptions options)
-        {
-
-            var response = await FrameManager.Navigate(this, url, options);
-            return null;
-        }
+        /// Navigates to an url
+        /// </summary>        
+        /// <param name="url">URL to navigate page to. The url should include scheme, e.g. https://.</param>
+        /// <param name="options">Navigation parameters.</param>
+        /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.</returns>
+        /// <seealso cref="GoToAsync(string, int?, WaitUntilNavigation[])"/>
+        public async Task<Response> GoToAsync(string url, NavigationOptions options) => await FrameManager.NavigateAsync(this, url, options);
 
         /// <summary>
         /// 
