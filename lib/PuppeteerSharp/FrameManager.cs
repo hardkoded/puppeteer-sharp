@@ -66,7 +66,7 @@ namespace PuppeteerSharp
             var timeout = options?.Timeout ?? DefaultNavigationTimeout;
             var watcher = new NavigatorWatcher(_client, this, frame, _networkManager, timeout, options);
 
-            var navigateTask = Navigate(_client, url, referrer);
+            var navigateTask = Navigate(_client, url, referrer, frame.Id);
             await Task.WhenAny(
                 watcher.TimeoutOrTerminationTask,
                 navigateTask).ConfigureAwait(false);
@@ -97,12 +97,13 @@ namespace PuppeteerSharp
             return watcher.NavigationResponse;
         }
 
-        private async Task Navigate(CDPSession client, string url, string referrer)
+        private async Task Navigate(CDPSession client, string url, string referrer, string frameId)
         {
             var response = await client.SendAsync<PageNavigateResponse>("Page.navigate", new
             {
                 url,
-                referrer = referrer ?? string.Empty
+                referrer = referrer ?? string.Empty,
+                frameId
             }).ConfigureAwait(false);
 
             _ensureNewDocumentNavigation = !string.IsNullOrEmpty(response.LoaderId);

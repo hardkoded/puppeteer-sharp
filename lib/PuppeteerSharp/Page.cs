@@ -42,7 +42,6 @@ namespace PuppeteerSharp
         private readonly Dictionary<string, Delegate> _pageBindings;
         private readonly Dictionary<string, Worker> _workers;
         private readonly ILogger _logger;
-        private bool _ensureNewDocumentNavigation;
         private PageGetLayoutMetricsResponse _burstModeMetrics;
         private bool _screenshotBurstModeOn;
         private ScreenshotOptions _screenshotBurstModeOptions;

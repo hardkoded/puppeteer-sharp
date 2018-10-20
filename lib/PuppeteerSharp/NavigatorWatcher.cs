@@ -61,7 +61,7 @@ namespace PuppeteerSharp
 
             frameManager.LifecycleEvent += CheckLifecycleComplete;
             frameManager.FrameNavigatedWithinDocument += NavigatedWithinDocument;
-            frameManager.FrameDetached += CheckLifecycleComplete;
+            frameManager.FrameDetached += OnFrameDetached;
             networkManager.Request += OnRequest;
             Connection.FromSession(client).Closed += (sender, e)
                 => Terminate(new TargetClosedException("Navigation failed because browser has disconnected!"));
@@ -82,6 +82,17 @@ namespace PuppeteerSharp
         #endregion
 
         #region Private methods
+
+        private void OnFrameDetached(object sender, FrameEventArgs e)
+        {
+            var frame = e.Frame;
+            if (_frame == frame)
+            {
+                // TODO terminating callback
+                return;
+            }
+            CheckLifecycleComplete(sender, e);
+        }
 
         private void CheckLifecycleComplete(object sender, FrameEventArgs e)
         {
