@@ -33,8 +33,7 @@ namespace PuppeteerSharp
             _client = client;
             _client.MessageReceived += Client_MessageReceived;
             _logger = _client.Connection.LoggerFactory.CreateLogger<NetworkManager>();
-        }
-
+        } 
 
         #region Public Properties
         internal Dictionary<string, string> ExtraHTTPHeaders => _extraHTTPHeaders?.Clone();
