@@ -47,5 +47,5 @@ var page = browser.NewPageAsync();
 
 Any additional information, configuration or data that might be necessary to reproduce the issue.
 
-<!-- Love parcel? Please consider supporting our collective:
+<!-- Love Puppeteer-Sharp? Please consider supporting our collective:
 👉  https://opencollective.com/puppeteer-sharp/donate -->
