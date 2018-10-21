@@ -115,9 +115,9 @@ namespace PuppeteerSharp
         /// If not <see cref="Transport"/> is set this will be use to determine is the default <see cref="WebSocketTransport"/> will enqueue messages.
         /// </summary>
         /// <remarks>
-        /// It's set to <c>false</c> by default because it's the safest way to send commands to Chromium.
+        /// It's set to <c>true</c> by default because it's the safest way to send commands to Chromium.
         /// Setting this to <c>false</c> proved to work in .NET Core but it tends to fail on .NET Framework.
         /// </remarks>
-        public bool EnqueueTransportMessages { get; set; } = false;
+        public bool EnqueueTransportMessages { get; set; } = true;
     }
 }

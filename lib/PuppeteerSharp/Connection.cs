@@ -270,7 +270,7 @@ namespace PuppeteerSharp
                     new Uri(url),
                     connectionOptions,
                     default).ConfigureAwait(false);
-                transport = new WebSocketTransport(ws, false);
+                transport = new WebSocketTransport(ws, connectionOptions.EnqueueTransportMessages);
             }
 
             return new Connection(url, connectionOptions.SlowMo, transport, loggerFactory);
