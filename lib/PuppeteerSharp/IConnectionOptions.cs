@@ -2,6 +2,7 @@
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
+using PuppeteerSharp.Transport;
 
 namespace PuppeteerSharp
 {
@@ -23,7 +24,18 @@ namespace PuppeteerSharp
 
         /// <summary>
         /// Optional factory for <see cref="WebSocket"/> implementations.
+        /// If a <see cref="Transport"/> is set this property will be ignored.
         /// </summary>
         Func<Uri, IConnectionOptions, CancellationToken, Task<WebSocket>> WebSocketFactory { get; set; }
+
+        /// <summary>
+        /// Optional connection transport.
+        /// </summary>
+        IConnectionTransport Transport { get; set; }
+
+        /// <summary>
+        /// If not <see cref="Transport"/> is set this will be use to determine is the default <see cref="WebSocketTransport"/> will enqueue messages.
+        /// </summary>
+        bool EnqueueTransportMessages { get; set; }
     }
 }

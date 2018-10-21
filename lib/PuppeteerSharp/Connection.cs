@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Messaging;
+using PuppeteerSharp.Transport;
 
 namespace PuppeteerSharp
 {
@@ -20,28 +21,23 @@ namespace PuppeteerSharp
     {
         private readonly ILogger _logger;
 
-        internal Connection(string url, int delay, WebSocket ws, ILoggerFactory loggerFactory = null)
+        internal Connection(string url, int delay, IConnectionTransport transport, ILoggerFactory loggerFactory = null)
         {
             LoggerFactory = loggerFactory ?? new LoggerFactory();
             Url = url;
             Delay = delay;
-            WebSocket = ws;
+            Transport = transport;
 
             _logger = LoggerFactory.CreateLogger<Connection>();
-            _socketQueue = new TaskQueue();
             _callbacks = new Dictionary<int, MessageTask>();
             _sessions = new Dictionary<string, CDPSession>();
-            _websocketReaderCancellationSource = new CancellationTokenSource();
-
-            Task.Factory.StartNew(GetResponseAsync);
+            Transport.MessageReceived += Transport_MessageReceived;
         }
 
         #region Private Members
         private int _lastId;
         private readonly Dictionary<int, MessageTask> _callbacks;
         private readonly Dictionary<string, CDPSession> _sessions;
-        private readonly TaskQueue _socketQueue;
-        private readonly CancellationTokenSource _websocketReaderCancellationSource;
         #endregion
 
         #region Properties
@@ -56,10 +52,10 @@ namespace PuppeteerSharp
         /// <value>The delay.</value>
         public int Delay { get; }
         /// <summary>
-        /// Gets the WebSocket.
+        /// Gets the Connection transport.
         /// </summary>
-        /// <value>The web socket.</value>
-        public WebSocket WebSocket { get; }
+        /// <value>Connection transport.</value>
+        public IConnectionTransport Transport { get; }
         /// <summary>
         /// Occurs when the connection is closed.
         /// </summary>
@@ -113,10 +109,7 @@ namespace PuppeteerSharp
                 _callbacks[id] = callback;
             }
 
-            var encoded = Encoding.UTF8.GetBytes(message);
-            var buffer = new ArraySegment<byte>(encoded, 0, encoded.Length);
-            await _socketQueue.Enqueue(() => WebSocket.SendAsync(buffer, WebSocketMessageType.Text, true, default)).ConfigureAwait(false);
-
+            await Transport.SendAsync(message).ConfigureAwait(false);
             return waitForCallback ? await callback.TaskWrapper.Task.ConfigureAwait(false) : null;
         }
 
@@ -148,7 +141,7 @@ namespace PuppeteerSharp
             }
             IsClosed = true;
 
-            _websocketReaderCancellationSource.Cancel();
+            Transport.StopReading();
             Closed?.Invoke(this, new EventArgs());
 
             foreach (var session in _sessions.Values.ToArray())
@@ -177,73 +170,15 @@ namespace PuppeteerSharp
         }
         #region Private Methods
 
-        /// <summary>
-        /// Starts listening the socket
-        /// </summary>
-        /// <returns>The start.</returns>
-        private async Task<object> GetResponseAsync()
+        private async void Transport_MessageReceived(object sender, MessageReceivedEventArgs e)
         {
-            var buffer = new byte[2048];
-
-            //If it's not in the list we wait for it
-            while (true)
-            {
-                if (IsClosed)
-                {
-                    OnClose();
-                    return null;
-                }
-
-                var endOfMessage = false;
-                var response = new StringBuilder();
-
-                while (!endOfMessage)
-                {
-                    WebSocketReceiveResult result;
-                    try
-                    {
-                        result = await WebSocket.ReceiveAsync(
-                            new ArraySegment<byte>(buffer),
-                            _websocketReaderCancellationSource.Token).ConfigureAwait(false);
-                    }
-                    catch (OperationCanceledException)
-                    {
-                        return null;
-                    }
-                    catch (Exception)
-                    {
-                        OnClose();
-                        return null;
-                    }
-
-                    endOfMessage = result.EndOfMessage;
-
-                    if (result.MessageType == WebSocketMessageType.Text)
-                    {
-                        response.Append(Encoding.UTF8.GetString(buffer, 0, result.Count));
-                    }
-                    else if (result.MessageType == WebSocketMessageType.Close)
-                    {
-                        OnClose();
-                        return null;
-                    }
-                }
-
-                if (response.Length > 0)
-                {
-                    if (Delay > 0)
-                    {
-                        await Task.Delay(Delay).ConfigureAwait(false);
-                    }
-
-                    ProcessResponse(response.ToString());
-                }
-            }
-        }
-
-        private void ProcessResponse(string response)
-        {
+            var response = e.Message;
             JObject obj = null;
+
+            if (response.Length > 0 && Delay > 0)
+            {
+                await Task.Delay(Delay).ConfigureAwait(false);
+            }
 
             try
             {
@@ -323,16 +258,23 @@ namespace PuppeteerSharp
 
         internal static async Task<Connection> Create(string url, IConnectionOptions connectionOptions, ILoggerFactory loggerFactory = null)
         {
-            var ws = await (connectionOptions.WebSocketFactory ?? DefaultWebSocketFactory)(
-                new Uri(url),
-                connectionOptions,
-                default).ConfigureAwait(false);
-            return new Connection(url, connectionOptions.SlowMo, ws, loggerFactory);
+            var transport = connectionOptions.Transport;
+
+            if (transport == null)
+            {
+                var ws = await (connectionOptions.WebSocketFactory ?? DefaultWebSocketFactory)(
+                    new Uri(url),
+                    connectionOptions,
+                    default).ConfigureAwait(false);
+                transport = new WebSocketTransport(ws, false);
+            }
+
+            return new Connection(url, connectionOptions.SlowMo, transport, loggerFactory);
         }
 
         /// <summary>
         /// Releases all resource used by the <see cref="Connection"/> object.
-        /// It will raise the <see cref="Closed"/> event and dispose <see cref="WebSocket"/>.
+        /// It will raise the <see cref="Closed"/> event and dispose <see cref="Transport"/>.
         /// </summary>
         /// <remarks>Call <see cref="Dispose"/> when you are finished using the <see cref="Connection"/>. The
         /// <see cref="Dispose"/> method leaves the <see cref="Connection"/> in an unusable state.
@@ -342,7 +284,7 @@ namespace PuppeteerSharp
         public void Dispose()
         {
             OnClose();
-            WebSocket.Dispose();
+            Transport.Dispose();
         }
         #endregion
 
