@@ -32,6 +32,7 @@ namespace PuppeteerSharp
             _callbacks = new Dictionary<int, MessageTask>();
             _sessions = new Dictionary<string, CDPSession>();
             Transport.MessageReceived += Transport_MessageReceived;
+            Transport.Closed += Transport_Closed;
         }
 
         #region Private Members
@@ -241,6 +242,9 @@ namespace PuppeteerSharp
                 }
             }
         }
+
+        void Transport_Closed(object sender, EventArgs e) => OnClose();
+
         #endregion
 
         #region Static Methods

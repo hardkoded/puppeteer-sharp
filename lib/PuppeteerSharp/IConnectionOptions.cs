@@ -24,7 +24,7 @@ namespace PuppeteerSharp
 
         /// <summary>
         /// Optional factory for <see cref="WebSocket"/> implementations.
-        /// If a <see cref="Transport"/> is set this property will be ignored.
+        /// If <see cref="Transport"/> is set this property will be ignored.
         /// </summary>
         Func<Uri, IConnectionOptions, CancellationToken, Task<WebSocket>> WebSocketFactory { get; set; }
 

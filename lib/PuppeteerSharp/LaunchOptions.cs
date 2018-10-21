@@ -96,7 +96,7 @@ namespace PuppeteerSharp
 
         /// <summary>
         /// Optional factory for <see cref="WebSocket"/> implementations.
-        /// If a <see cref="Transport"/> is set this property will be ignored.
+        /// If <see cref="Transport"/> is set this property will be ignored.
         /// </summary>
         public Func<Uri, IConnectionOptions, CancellationToken, Task<WebSocket>> WebSocketFactory { get; set; }
 
@@ -116,7 +116,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <remarks>
         /// It's set to <c>false</c> by default because it's the safest way to send commands to Chromium.
-        /// Setting this to <c>false</c> proved to work ok in .NET Core but it tends to fail on .NET Framework.
+        /// Setting this to <c>false</c> proved to work in .NET Core but it tends to fail on .NET Framework.
         /// </remarks>
         public bool EnqueueTransportMessages { get; set; } = false;
     }
