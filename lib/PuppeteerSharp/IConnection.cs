@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 
@@ -30,5 +31,13 @@ namespace PuppeteerSharp
         /// If <c>false</c> the task will be considered complete after sending the message to Chromium.
         /// </param>
         Task<JObject> SendAsync(string method, dynamic args = null, bool waitForCallback = true);
+        /// <summary>
+        /// Gets the parent connection
+        /// </summary>
+        IConnection Connection { get; }
+        /// <summary>
+        /// Occurs when the connection is closed.
+        /// </summary>
+        event EventHandler Closed;
     }
 }

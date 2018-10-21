@@ -43,6 +43,9 @@ namespace PuppeteerSharp
         private readonly Dictionary<string, Worker> _workers;
         private readonly ILogger _logger;
         private bool _ensureNewDocumentNavigation;
+        private PageGetLayoutMetricsResponse _burstModeMetrics;
+        private bool _screenshotBurstModeOn;
+        private ScreenshotOptions _screenshotBurstModeOptions;
 
         private static readonly Dictionary<string, decimal> _unitToPixels = new Dictionary<string, decimal> {
             {"px", 1},
@@ -730,12 +733,12 @@ namespace PuppeteerSharp
 
             var mainFrame = _frameManager.MainFrame;
             var timeout = options?.Timeout ?? DefaultNavigationTimeout;
+            var watcher = new NavigatorWatcher(Client, _frameManager, mainFrame, _networkManager, timeout, options);
 
-            var watcher = new NavigatorWatcher(_frameManager, mainFrame, _networkManager, timeout, options);
             var navigateTask = Navigate(Client, url, referrer);
 
             await Task.WhenAny(
-                watcher.TimeoutTask,
+                watcher.TimeoutOrTerminationTask,
                 navigateTask).ConfigureAwait(false);
 
             AggregateException exception = null;
@@ -747,13 +750,13 @@ namespace PuppeteerSharp
             else
             {
                 await Task.WhenAny(
-                    watcher.TimeoutTask,
+                    watcher.TimeoutOrTerminationTask,
                     _ensureNewDocumentNavigation ? watcher.NewDocumentNavigationTask : watcher.SameDocumentNavigationTask
                 ).ConfigureAwait(false);
 
-                if (watcher.TimeoutTask.IsFaulted)
+                if (watcher.TimeoutOrTerminationTask.IsCompleted && watcher.TimeoutOrTerminationTask.Result.IsFaulted)
                 {
-                    exception = watcher.TimeoutTask.Exception;
+                    exception = watcher.TimeoutOrTerminationTask.Result.Exception;
                 }
             }
 
@@ -1414,15 +1417,21 @@ namespace PuppeteerSharp
         {
             var mainFrame = _frameManager.MainFrame;
             var timeout = options?.Timeout ?? DefaultNavigationTimeout;
-            var watcher = new NavigatorWatcher(_frameManager, mainFrame, _networkManager, timeout, options);
+            var watcher = new NavigatorWatcher(Client, _frameManager, mainFrame, _networkManager, timeout, options);
 
             var raceTask = await Task.WhenAny(
                 watcher.NewDocumentNavigationTask,
                 watcher.SameDocumentNavigationTask,
-                watcher.TimeoutTask
+                watcher.TimeoutOrTerminationTask
             ).ConfigureAwait(false);
 
             var exception = raceTask.Exception;
+            if (exception == null &&
+                watcher.TimeoutOrTerminationTask.IsCompleted &&
+                watcher.TimeoutOrTerminationTask.Result.IsFaulted)
+            {
+                exception = watcher.TimeoutOrTerminationTask.Result.Exception;
+            }
             if (exception != null)
             {
                 throw new NavigationException(exception.Message, exception);
@@ -1559,6 +1568,20 @@ namespace PuppeteerSharp
         /// <param name="options">Navigation parameters.</param>
         public Task<Response> GoForwardAsync(NavigationOptions options = null) => GoAsync(1, options);
 
+        /// <summary>
+        /// Resets the background color and Viewport after taking Screenshots using BurstMode.
+        /// </summary>
+        /// <returns>The burst mode off.</returns>
+        public Task SetBurstModeOff()
+        {
+            _screenshotBurstModeOn = false;
+            if (_screenshotBurstModeOptions != null)
+            {
+                ResetBackgroundColorAndViewport(_screenshotBurstModeOptions);
+            }
+
+            return Task.CompletedTask;
+        }
         #endregion
 
         #region Private Method
@@ -1639,10 +1662,13 @@ namespace PuppeteerSharp
 
         private async Task<string> PerformScreenshot(ScreenshotType type, ScreenshotOptions options)
         {
-            await Client.SendAsync("Target.activateTarget", new
+            if (!_screenshotBurstModeOn)
             {
-                targetId = Target.TargetId
-            }).ConfigureAwait(false);
+                await Client.SendAsync("Target.activateTarget", new
+                {
+                    targetId = Target.TargetId
+                }).ConfigureAwait(false);
+            }
 
             var clip = options.Clip?.Clone();
             if (clip != null)
@@ -1650,62 +1676,72 @@ namespace PuppeteerSharp
                 clip.Scale = 1;
             }
 
-            if (options != null && options.FullPage)
+            if (!_screenshotBurstModeOn)
             {
-                var metrics = await Client.SendAsync("Page.getLayoutMetrics").ConfigureAwait(false);
-                var contentSize = metrics[MessageKeys.ContentSize];
-
-                var width = Convert.ToInt32(Math.Ceiling(contentSize[MessageKeys.Width].Value<decimal>()));
-                var height = Convert.ToInt32(Math.Ceiling(contentSize[MessageKeys.Height].Value<decimal>()));
-
-                // Overwrite clip for full page at all times.
-                clip = new Clip
+                if (options != null && options.FullPage)
                 {
-                    X = 0,
-                    Y = 0,
-                    Width = width,
-                    Height = height,
-                    Scale = 1
-                };
+                    var metrics = _screenshotBurstModeOn
+                        ? _burstModeMetrics :
+                        await Client.SendAsync<PageGetLayoutMetricsResponse>("Page.getLayoutMetrics").ConfigureAwait(false);
 
-                var isMobile = Viewport?.IsMobile ?? false;
-                var deviceScaleFactor = Viewport?.DeviceScaleFactor ?? 1;
-                var isLandscape = Viewport?.IsLandscape ?? false;
-                var screenOrientation = isLandscape ?
-                    new ScreenOrientation
+                    if (options.BurstMode)
                     {
-                        Angle = 90,
-                        Type = ScreenOrientationType.LandscapePrimary
-                    } :
-                    new ScreenOrientation
+                        _burstModeMetrics = metrics;
+                    }
+
+                    var contentSize = metrics.ContentSize;
+
+                    var width = Convert.ToInt32(Math.Ceiling(contentSize.Width));
+                    var height = Convert.ToInt32(Math.Ceiling(contentSize.Height));
+
+                    // Overwrite clip for full page at all times.
+                    clip = new Clip
                     {
-                        Angle = 0,
-                        Type = ScreenOrientationType.PortraitPrimary
+                        X = 0,
+                        Y = 0,
+                        Width = width,
+                        Height = height,
+                        Scale = 1
                     };
 
-                await Client.SendAsync("Emulation.setDeviceMetricsOverride", new
-                {
-                    mobile = isMobile,
-                    width,
-                    height,
-                    deviceScaleFactor,
-                    screenOrientation
-                }).ConfigureAwait(false);
-            }
+                    var isMobile = Viewport?.IsMobile ?? false;
+                    var deviceScaleFactor = Viewport?.DeviceScaleFactor ?? 1;
+                    var isLandscape = Viewport?.IsLandscape ?? false;
+                    var screenOrientation = isLandscape ?
+                        new ScreenOrientation
+                        {
+                            Angle = 90,
+                            Type = ScreenOrientationType.LandscapePrimary
+                        } :
+                        new ScreenOrientation
+                        {
+                            Angle = 0,
+                            Type = ScreenOrientationType.PortraitPrimary
+                        };
 
-            var shouldSetDefaultBackground = options?.OmitBackground == true && type == ScreenshotType.Png;
-            if (shouldSetDefaultBackground)
-            {
-                await Client.SendAsync("Emulation.setDefaultBackgroundColorOverride", new
-                {
-                    color = new
+                    await Client.SendAsync("Emulation.setDeviceMetricsOverride", new
                     {
-                        r = 0,
-                        g = 0,
-                        b = 0,
-                        a = 0
-                    }
-                }).ConfigureAwait(false);
+                        mobile = isMobile,
+                        width,
+                        height,
+                        deviceScaleFactor,
+                        screenOrientation
+                    }).ConfigureAwait(false);
+                }
+
+                if (options?.OmitBackground == true && type == ScreenshotType.Png)
+                {
+                    await Client.SendAsync("Emulation.setDefaultBackgroundColorOverride", new
+                    {
+                        color = new
+                        {
+                            r = 0,
+                            g = 0,
+                            b = 0,
+                            a = 0
+                        }
+                    }).ConfigureAwait(false);
+                }
             }
 
             dynamic screenMessage = new ExpandoObject();
@@ -1722,19 +1758,27 @@ namespace PuppeteerSharp
                 screenMessage.clip = clip;
             }
 
-            JObject result = await Client.SendAsync("Page.captureScreenshot", screenMessage).ConfigureAwait(false);
+            var result = await Client.SendAsync<PageCaptureScreenshotResponse>("Page.captureScreenshot", screenMessage).ConfigureAwait(false);
 
-            if (shouldSetDefaultBackground)
+            if (options.BurstMode)
             {
-                await Client.SendAsync("Emulation.setDefaultBackgroundColorOverride").ConfigureAwait(false);
+                _screenshotBurstModeOptions = options;
+                _screenshotBurstModeOn = true;
             }
-
-            if (options?.FullPage == true && Viewport != null)
+            else
             {
-                await SetViewportAsync(Viewport).ConfigureAwait(false);
+                await ResetBackgroundColorAndViewport(options);
             }
+            return result.Data;
+        }
 
-            return result.GetValue(MessageKeys.Data).AsString();
+        private Task ResetBackgroundColorAndViewport(ScreenshotOptions options)
+        {
+            var omitBackgroundTask = options?.OmitBackground == true && options.Type == ScreenshotType.Png ?
+                Client.SendAsync("Emulation.setDefaultBackgroundColorOverride") : Task.CompletedTask;
+            var setViewPortTask = (options?.FullPage == true && Viewport != null) ?
+                SetViewportAsync(Viewport) : Task.CompletedTask;
+            return Task.WhenAll(omitBackgroundTask, setViewPortTask);
         }
 
         private decimal ConvertPrintParameterToInches(object parameter)

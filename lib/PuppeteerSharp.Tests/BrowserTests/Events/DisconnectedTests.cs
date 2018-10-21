@@ -47,5 +47,50 @@ namespace PuppeteerSharp.Tests.BrowserTests.Events
             Assert.Equal(1, disconnectedRemote1);
             Assert.Equal(1, disconnectedRemote2);
         }
+
+        [Fact]
+        public async Task ShouldRejectNavigationWhenBrowserCloses()
+        {
+            Server.SetRoute("/one-style.css", context => Task.Delay(10000));
+
+            using (var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions()))
+            {
+                var remote = await Puppeteer.ConnectAsync(new ConnectOptions
+                {
+                    BrowserWSEndpoint = browser.WebSocketEndpoint
+                });
+                var page = await remote.NewPageAsync();
+                var navigationTask = page.GoToAsync(TestConstants.ServerUrl + "/one-style.html", new NavigationOptions
+                {
+                    Timeout = 60000
+                });
+                await Server.WaitForRequest("/one-style.css");
+                remote.Disconnect();
+                var exception = await Assert.ThrowsAsync<NavigationException>(() => navigationTask);
+                Assert.Equal("Navigation failed because browser has disconnected!", exception.Message);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldRejectWaitForSelectorWhenBrowserCloses()
+        {
+            Server.SetRoute("/empty.html", context => Task.Delay(10000));
+
+            using (var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions()))
+            {
+                var remote = await Puppeteer.ConnectAsync(new ConnectOptions
+                {
+                    BrowserWSEndpoint = browser.WebSocketEndpoint
+                });
+                var page = await remote.NewPageAsync();
+                var watchdog = page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Timeout = 60000 });
+                remote.Disconnect();
+                var exception = await Assert.ThrowsAsync<EvaluationFailedException>(() => watchdog);
+                //Using the type instead of the message because the exception could come
+                //Whether from the Connection rejecting a message from the CDPSession 
+                //or from the CDPSession trying to send a message to a closed connection
+                Assert.IsType<TargetClosedException>(exception.InnerException);
+            }
+        }
     }
 }
