@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>1.8.0</PackageVersion>
+    <PackageVersion>1.9.0</PackageVersion>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
@@ -11,32 +11,62 @@
     <Title>PuppeteerSharp</Title>
     <Description>Headless Chrome .NET API</Description>
     <PackageId>PuppeteerSharp</PackageId>
-    <PackageReleaseNotes><![CDATA[# New Features
+    <PackageReleaseNotes># New Features
 
- * Roll Chromium to r588429.
+ * Introducing Burst mode.
+
+var screenShotOptions = new ScreenshotOptions
+{
+    FullPage = true,
+    BurstMode = true
+};
+await page.GoToAsync("https://www.google.com");
+for(var x = 0; x < 100; x++)
+{
+    await page.ScreenshotBase64Async(screenShotOptions);
+}
+await page.SetBurstModeOffAsync();
+
 
 # New APIs
 
- * Task<ElementHandle>EvaluateFunctionAsync and Task<JSHandle>EvaluateFunctionAsync.
- * BrowserContext.OverridePermissionsAsync.
- * BrowserContext. ClearPermissionOverridesAsync.
- * Page. SetGeolocationAsync.
- * NavigationOptions.Referer.
- * Response.RemoteAddress.
- * Response.StatusText
+ * ScreenshotOptions.BurstMode and Page.SetBurstModeOff.
+ * Browser.Target.
+ * ConnectOptions/LaunchOptions.Transport and ConnectionOptions/LaunchOptions.EnqueueTransportMessages.
+ * Frame.GoToAsync
+
+# Breaking Changes
+
+## Evaluate changes
+
+`EvaluateFunctionAsync` and `EvaluateExpressionAsync` won't try to infer the output type when used without generics. It will return a ** JToken** instead.
+
+A piece of code like this:
+
+int x = page.EvaluateExpressionAsync("1");
+
+
+Will need to be replaced by one of these two options:
+
+int x = page.EvaluateExpressionAsync<int>("1");
+int x = page.EvaluateExpressionAsync("1").ToObject<int>();
 
 # Changelog
-
- * Fix null-type bugs.
- * Improve PdfOptions documentation.
- * Create Request class right away from payload.
- * Drop object factory from execution context.
- * Page.goto should properly handle historyAPI in beforeunload.
- * New ResourceType.Ping.
- * Launch with Environment Variables.
-]]>
+ 
+ * Bump the version of chromium to 594312.
+ * Add failing test for page.select.
+ * Fixed windows fetching.
+ * Fix description of SecurityDetails class.
+ * Add zero width element test.
+ * Add missing configure awaits.
+ * Fix full page screenshot when defaultViewport is null.
+ * Unify response tracking in page.goto and waitForNavigation.
+ * Don't wait for Runtime.Evaluate.
+ * Browser closing/disconnecting should abort navigations.
+ * Expect Network.responseReceived event is never dispatched.
+ * Set JPG background to white when omitBackground option is used.
     </PackageReleaseNotes>
-    <ReleaseVersion>1.8.0</ReleaseVersion>
+    <ReleaseVersion>1.9.0</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>
