@@ -15,12 +15,23 @@ namespace PuppeteerSharp.Tests.FrameTests
         [Fact]
         public async Task ShouldNavigateSubFrames()
         {
-            //var response = await Page.GoToAsync("data:text/html,hello");
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
             Assert.Contains("/frames/one-frame.html", Page.Frames[0].Url);
             Assert.Contains("/frames/frame.html", Page.Frames[1].Url);
             var response = await Page.Frames[1].GoToAsync(TestConstants.EmptyPage);
             Assert.Equal(HttpStatusCode.OK, response.Status);
+        }
+
+        [Fact]
+        public async Task ShouldRejectWhenFrameDetaches()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
+            Server.SetRoute("/empty.html", context => Task.Delay(10000));
+            var navigationTask = Page.Frames[1].GoToAsync(TestConstants.EmptyPage);
+            await Server.WaitForRequest("/empty.html");
+            await Page.QuerySelectorAsync("iframe").EvaluateFunctionAsync("frame => frame.remove()");
+            var exception = await Assert.ThrowsAsync<PuppeteerException>(async () => await navigationTask);
+            Assert.Equal("Navigating frame was detached", exception.Message);
         }
     }
 }

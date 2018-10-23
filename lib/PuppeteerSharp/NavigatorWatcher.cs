@@ -88,7 +88,7 @@ namespace PuppeteerSharp
             var frame = e.Frame;
             if (_frame == frame)
             {
-                // TODO terminating callback
+                Terminate(new PuppeteerException("Navigating frame was detached"));
                 return;
             }
             CheckLifecycleComplete(sender, e);
