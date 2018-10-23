@@ -155,7 +155,7 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
 
         internal async Task Rerun()
         {
-            var runCount = ++_runCount;
+            var runCount = Interlocked.Increment(ref _runCount);
             JSHandle success = null;
             Exception exception = null;
 
