@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
@@ -29,8 +30,8 @@ namespace PuppeteerSharp
 
             _logger = LoggerFactory.CreateLogger<Connection>();
             _socketQueue = new TaskQueue();
-            _callbacks = new Dictionary<int, MessageTask>();
-            _sessions = new Dictionary<string, CDPSession>();
+            _callbacks = new ConcurrentDictionary<int, MessageTask>( );
+            _sessions = new ConcurrentDictionary<string, CDPSession>();
             _websocketReaderCancellationSource = new CancellationTokenSource();
 
             Task.Factory.StartNew(GetResponseAsync);
@@ -38,8 +39,8 @@ namespace PuppeteerSharp
 
         #region Private Members
         private int _lastId;
-        private readonly Dictionary<int, MessageTask> _callbacks;
-        private readonly Dictionary<string, CDPSession> _sessions;
+        private readonly ConcurrentDictionary<int, MessageTask> _callbacks;
+        private readonly ConcurrentDictionary<string, CDPSession> _sessions;
         private readonly TaskQueue _socketQueue;
         private readonly CancellationTokenSource _websocketReaderCancellationSource;
         #endregion
@@ -91,7 +92,7 @@ namespace PuppeteerSharp
                 throw new TargetClosedException($"Protocol error({method}): Target closed.");
             }
 
-            var id = ++_lastId;
+            var id = Interlocked.Increment(ref _lastId);
             var message = JsonConvert.SerializeObject(new Dictionary<string, object>
             {
                 { MessageKeys.Id, id },
@@ -133,7 +134,7 @@ namespace PuppeteerSharp
                 targetId = targetInfo.TargetId
             }).ConfigureAwait(false))[MessageKeys.SessionId].AsString();
             var session = new CDPSession(this, targetInfo.Type, sessionId);
-            _sessions.Add(sessionId, session);
+            _sessions.TryAdd(sessionId, session);
             return session;
         }
 
@@ -263,7 +264,7 @@ namespace PuppeteerSharp
             {
                 //If we get the object we are waiting for we return if
                 //if not we add this to the list, sooner or later some one will come for it 
-                if (_callbacks.TryGetValue(id.Value, out var callback) && _callbacks.Remove(id.Value))
+                if (_callbacks.TryRemove(id.Value, out var callback))
                 {
                     if (obj[MessageKeys.Error] != null)
                     {
@@ -291,7 +292,7 @@ namespace PuppeteerSharp
                 else if (method == "Target.detachedFromTarget")
                 {
                     var sessionId = param[MessageKeys.SessionId].AsString();
-                    if (_sessions.TryGetValue(sessionId, out var session) && _sessions.Remove(sessionId) && !session.IsClosed)
+                    if (_sessions.TryRemove(sessionId, out var session) && !session.IsClosed)
                     {
                         session.OnClosed();
                     }
