@@ -65,6 +65,7 @@ int x = page.EvaluateExpressionAsync("1").ToObject<int>();
  * Browser closing/disconnecting should abort navigations.
  * Expect Network.responseReceived event is never dispatched.
  * Set JPG background to white when omitBackground option is used.
+ * Concurrency improvements.
     ]]></PackageReleaseNotes>
     <ReleaseVersion>1.9.0</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
