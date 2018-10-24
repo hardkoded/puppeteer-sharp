@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
-using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
@@ -109,14 +108,39 @@ namespace PuppeteerSharp
         public async Task<Response> GoToAsync(string url, NavigationOptions options) => await FrameManager.NavigateAsync(this, url, options);
 
         /// <summary>
-        /// 
+        /// Navigates to an url
         /// </summary>
-        /// <param name="url"></param>
-        /// <param name="timeout"></param>
-        /// <param name="waitUntil"></param>
-        /// <returns></returns>
+        /// <param name="url">URL to navigate page to. The url should include scheme, e.g. https://.</param>
+        /// <param name="timeout">maximum navigation time in milliseconds. Defaults to 30 seconds. Pass 0
+        /// to disable timeout. The default value can be changed by using the <see cref="Page.DefaultNavigationTimeout"/>
+        /// property.</param>
+        /// <param name="waitUntil">When to consider navigation succeeded, defaults to <see cref="WaitUntilNavigation.Load"/>. Given an array of <see cref="WaitUntilNavigation"/>, navigation is considered to be successful after all events have been fired</param>
+        /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect</returns>
         public Task<Response> GoToAsync(string url, int? timeout = null, WaitUntilNavigation[] waitUntil = null)
             => GoToAsync(url, new NavigationOptions { Timeout = timeout, WaitUntil = waitUntil });
+
+        /// <summary>
+        /// This resolves when the frame navigates to a new URL or reloads.
+        /// It is useful for when you run code which will indirectly cause the frame to navigate.
+        /// </summary>
+        /// <param name="options">navigation options</param>
+        /// <returns>Task which resolves to the main resource response. 
+        /// In case of multiple redirects, the navigation will resolve with the response of the last redirect.
+        /// In case of navigation to a different anchor or navigation due to History API usage, the navigation will resolve with `null`.
+        /// </returns>
+        /// <remarks>
+        /// Usage of the <c>History API</c> <see href="https://developer.mozilla.org/en-US/docs/Web/API/History_API"/> to change the URL is considered a navigation
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// var navigationTask =frame.page.WaitForNavigationAsync();
+        /// await frame.ClickAsync("a.my-link");
+        /// await navigationTask;
+        /// ]]>
+        /// </code>
+        /// </example>
+        public async Task<Response> WaitForNavigationAsync(NavigationOptions options = null) => await FrameManager.WaitForNavigationAsync(this, options);
 
         /// <summary>
         /// Executes a script in browser context
