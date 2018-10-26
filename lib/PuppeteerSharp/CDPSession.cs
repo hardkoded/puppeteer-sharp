@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -45,16 +47,16 @@ namespace PuppeteerSharp
             TargetType = targetType;
             SessionId = sessionId;
 
-            _callbacks = new Dictionary<int, MessageTask>();
+            _callbacks = new ConcurrentDictionary<int, MessageTask>();
             _logger = Connection.LoggerFactory.CreateLogger<CDPSession>();
-            _sessions = new Dictionary<string, CDPSession>();
+            _sessions = new ConcurrentDictionary<string, CDPSession>();
         }
 
         #region Private Members
         private int _lastId;
-        private readonly Dictionary<int, MessageTask> _callbacks;
+        private readonly ConcurrentDictionary<int, MessageTask> _callbacks;
         private readonly ILogger _logger;
-        private readonly Dictionary<string, CDPSession> _sessions;
+        private readonly ConcurrentDictionary<string, CDPSession> _sessions;
         #endregion
 
         #region Properties
@@ -133,7 +135,7 @@ namespace PuppeteerSharp
             {
                 throw new PuppeteerException($"Protocol error ({method}): Session closed. Most likely the {TargetType} has been closed.");
             }
-            var id = ++_lastId;
+            var id = Interlocked.Increment(ref _lastId);
             var message = JsonConvert.SerializeObject(new Dictionary<string, object>
             {
                 { MessageKeys.Id, id },
@@ -165,9 +167,8 @@ namespace PuppeteerSharp
             }
             catch (Exception ex)
             {
-                if (waitForCallback && _callbacks.ContainsKey(id))
+                if (waitForCallback && _callbacks.TryRemove(id, out _))
                 {
-                    _callbacks.Remove(id);
                     callback.TaskWrapper.SetException(new MessageException(ex.Message, ex));
                 }
             }
@@ -213,7 +214,7 @@ namespace PuppeteerSharp
 
             var id = obj[MessageKeys.Id]?.Value<int>();
 
-            if (id.HasValue && _callbacks.TryGetValue(id.Value, out var callback) && _callbacks.Remove(id.Value))
+            if (id.HasValue && _callbacks.TryRemove(id.Value, out var callback))
             {
                 if (obj[MessageKeys.Error] != null)
                 {
@@ -249,7 +250,7 @@ namespace PuppeteerSharp
                 {
                     var sessionId = param[MessageKeys.SessionId].AsString();
 
-                    if (_sessions.TryGetValue(sessionId, out var session) && _sessions.Remove(sessionId))
+                    if (_sessions.TryRemove(sessionId, out var session))
                     {
                         session.OnClosed();
                     }

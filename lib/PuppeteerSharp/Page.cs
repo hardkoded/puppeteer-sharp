@@ -1729,7 +1729,7 @@ namespace PuppeteerSharp
                     }).ConfigureAwait(false);
                 }
 
-                if (options != null && options.OmitBackground)
+                if (options?.OmitBackground == true && type == ScreenshotType.Png)
                 {
                     await Client.SendAsync("Emulation.setDefaultBackgroundColorOverride", new
                     {
@@ -1774,7 +1774,7 @@ namespace PuppeteerSharp
 
         private Task ResetBackgroundColorAndViewport(ScreenshotOptions options)
         {
-            var omitBackgroundTask = options?.OmitBackground == true ?
+            var omitBackgroundTask = options?.OmitBackground == true && options.Type == ScreenshotType.Png ?
                 Client.SendAsync("Emulation.setDefaultBackgroundColorOverride") : Task.CompletedTask;
             var setViewPortTask = (options?.FullPage == true && Viewport != null) ?
                 SetViewportAsync(Viewport) : Task.CompletedTask;
