@@ -25,8 +25,9 @@ namespace PuppeteerSharp.Tests.FrameTests
             );
             var response = await waitForNavigationResult;
             Assert.Equal(HttpStatusCode.OK, response.Status);
-            Assert.Contains("grid.html", response.Url);
+            Assert.Contains("grid.html", response.Url); 
             Assert.Same(frame, response.Frame);
+            Assert.Contains("/frames/one-frame.html", Page.Url);
         }
 
         [Fact]
