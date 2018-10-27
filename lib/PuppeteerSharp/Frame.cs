@@ -105,7 +105,7 @@ namespace PuppeteerSharp
         /// <param name="options">Navigation parameters.</param>
         /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.</returns>
         /// <seealso cref="GoToAsync(string, int?, WaitUntilNavigation[])"/>
-        public async Task<Response> GoToAsync(string url, NavigationOptions options) => await FrameManager.NavigateAsync(this, url, options);
+        public Task<Response> GoToAsync(string url, NavigationOptions options) => FrameManager.NavigateFrameAsync(this, url, options);
 
         /// <summary>
         /// Navigates to an url
@@ -140,7 +140,7 @@ namespace PuppeteerSharp
         /// ]]>
         /// </code>
         /// </example>
-        public async Task<Response> WaitForNavigationAsync(NavigationOptions options = null) => await FrameManager.WaitForNavigationAsync(this, options);
+        public Task<Response> WaitForNavigationAsync(NavigationOptions options = null) => FrameManager.WaitForFrameNavigationAsync(this, options);
 
         /// <summary>
         /// Executes a script in browser context

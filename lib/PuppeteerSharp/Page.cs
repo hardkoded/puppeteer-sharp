@@ -213,7 +213,7 @@ namespace PuppeteerSharp
         /// </summary>
         public int DefaultNavigationTimeout
         {
-            get => _frameManager.DefaultNavigationTimeout; 
+            get => _frameManager.DefaultNavigationTimeout;
             set => _frameManager.DefaultNavigationTimeout = value;
         }
 
@@ -729,11 +729,7 @@ namespace PuppeteerSharp
         /// <param name="options">Navigation parameters.</param>
         /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.</returns>
         /// <seealso cref="GoToAsync(string, int?, WaitUntilNavigation[])"/>
-        public async Task<Response> GoToAsync(string url, NavigationOptions options)
-        { 
-            var mainFrame = _frameManager.MainFrame;
-            return await mainFrame.GoToAsync(url, options);
-        }
+        public Task<Response> GoToAsync(string url, NavigationOptions options) => _frameManager.MainFrame.GoToAsync(url, options);
 
         /// <summary>
         /// Navigates to an url
@@ -1380,11 +1376,7 @@ namespace PuppeteerSharp
         /// ]]>
         /// </code>
         /// </example>
-        public async Task<Response> WaitForNavigationAsync(NavigationOptions options = null)
-        {
-            var mainFrame = _frameManager.MainFrame;
-            return await _frameManager.WaitForNavigationAsync(mainFrame, options); 
-        }
+        public Task<Response> WaitForNavigationAsync(NavigationOptions options = null) => _frameManager.WaitForFrameNavigationAsync(_frameManager.MainFrame, options);
 
         /// <summary>
         /// Waits for a request.
