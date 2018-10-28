@@ -42,7 +42,6 @@ namespace PuppeteerSharp
         private readonly Dictionary<string, Delegate> _pageBindings;
         private readonly Dictionary<string, Worker> _workers;
         private readonly ILogger _logger;
-        private bool _ensureNewDocumentNavigation;
         private PageGetLayoutMetricsResponse _burstModeMetrics;
         private bool _screenshotBurstModeOn;
         private ScreenshotOptions _screenshotBurstModeOptions;
@@ -69,8 +68,9 @@ namespace PuppeteerSharp
             Tracing = new Tracing(client);
             Coverage = new Coverage(client);
 
-            _frameManager = new FrameManager(client, frameTree, this);
-            _networkManager = new NetworkManager(client, _frameManager);
+            _networkManager = new NetworkManager(client);
+            _frameManager = new FrameManager(client, frameTree, this, _networkManager);
+            _networkManager.FrameManager = _frameManager;
             _emulationManager = new EmulationManager(client);
             _pageBindings = new Dictionary<string, Delegate>();
             _workers = new Dictionary<string, Worker>();
@@ -211,7 +211,11 @@ namespace PuppeteerSharp
         /// - <see cref="ReloadAsync(NavigationOptions)"/>
         /// - <see cref="WaitForNavigationAsync(NavigationOptions)"/>
         /// </summary>
-        public int DefaultNavigationTimeout { get; set; } = 30000;
+        public int DefaultNavigationTimeout
+        {
+            get => _frameManager.DefaultNavigationTimeout;
+            set => _frameManager.DefaultNavigationTimeout = value;
+        }
 
         /// <summary>
         /// This setting will change the default maximum navigation time of 30 seconds for the following methods:
@@ -725,48 +729,7 @@ namespace PuppeteerSharp
         /// <param name="options">Navigation parameters.</param>
         /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.</returns>
         /// <seealso cref="GoToAsync(string, int?, WaitUntilNavigation[])"/>
-        public async Task<Response> GoToAsync(string url, NavigationOptions options)
-        {
-            var referrer = string.IsNullOrEmpty(options.Referer)
-                ? _networkManager.ExtraHTTPHeaders?.GetValueOrDefault(MessageKeys.Referer)
-                : options.Referer;
-
-            var mainFrame = _frameManager.MainFrame;
-            var timeout = options?.Timeout ?? DefaultNavigationTimeout;
-            var watcher = new NavigatorWatcher(Client, _frameManager, mainFrame, _networkManager, timeout, options);
-
-            var navigateTask = Navigate(Client, url, referrer);
-
-            await Task.WhenAny(
-                watcher.TimeoutOrTerminationTask,
-                navigateTask).ConfigureAwait(false);
-
-            AggregateException exception = null;
-
-            if (navigateTask.IsFaulted)
-            {
-                exception = navigateTask.Exception;
-            }
-            else
-            {
-                await Task.WhenAny(
-                    watcher.TimeoutOrTerminationTask,
-                    _ensureNewDocumentNavigation ? watcher.NewDocumentNavigationTask : watcher.SameDocumentNavigationTask
-                ).ConfigureAwait(false);
-
-                if (watcher.TimeoutOrTerminationTask.IsCompleted && watcher.TimeoutOrTerminationTask.Result.IsFaulted)
-                {
-                    exception = watcher.TimeoutOrTerminationTask.Result.Exception;
-                }
-            }
-
-            if (exception != null)
-            {
-                throw new NavigationException(exception.InnerException.Message, exception.InnerException);
-            }
-
-            return watcher.NavigationResponse;
-        }
+        public Task<Response> GoToAsync(string url, NavigationOptions options) => _frameManager.MainFrame.GoToAsync(url, options);
 
         /// <summary>
         /// Navigates to an url
@@ -1413,32 +1376,7 @@ namespace PuppeteerSharp
         /// ]]>
         /// </code>
         /// </example>
-        public async Task<Response> WaitForNavigationAsync(NavigationOptions options = null)
-        {
-            var mainFrame = _frameManager.MainFrame;
-            var timeout = options?.Timeout ?? DefaultNavigationTimeout;
-            var watcher = new NavigatorWatcher(Client, _frameManager, mainFrame, _networkManager, timeout, options);
-
-            var raceTask = await Task.WhenAny(
-                watcher.NewDocumentNavigationTask,
-                watcher.SameDocumentNavigationTask,
-                watcher.TimeoutOrTerminationTask
-            ).ConfigureAwait(false);
-
-            var exception = raceTask.Exception;
-            if (exception == null &&
-                watcher.TimeoutOrTerminationTask.IsCompleted &&
-                watcher.TimeoutOrTerminationTask.Result.IsFaulted)
-            {
-                exception = watcher.TimeoutOrTerminationTask.Result.Exception;
-            }
-            if (exception != null)
-            {
-                throw new NavigationException(exception.Message, exception);
-            }
-
-            return watcher.NavigationResponse;
-        }
+        public Task<Response> WaitForNavigationAsync(NavigationOptions options = null) => _frameManager.WaitForFrameNavigationAsync(_frameManager.MainFrame, options);
 
         /// <summary>
         /// Waits for a request.
@@ -2078,22 +2016,6 @@ namespace PuppeteerSharp
                         _logger.LogError(task.Exception.ToString());
                     }
                 }))).ConfigureAwait(false);
-        }
-
-        private async Task Navigate(CDPSession client, string url, string referrer)
-        {
-            var response = await client.SendAsync<PageNavigateResponse>("Page.navigate", new
-            {
-                url,
-                referrer = referrer ?? string.Empty
-            }).ConfigureAwait(false);
-
-            _ensureNewDocumentNavigation = !string.IsNullOrEmpty(response.LoaderId);
-
-            if (!string.IsNullOrEmpty(response.ErrorText))
-            {
-                throw new NavigationException(response.ErrorText, url);
-            }
         }
 
         private static string EvaluationString(string fun, params object[] args)
