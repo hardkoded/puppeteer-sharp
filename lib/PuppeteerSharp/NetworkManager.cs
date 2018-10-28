@@ -33,7 +33,7 @@ namespace PuppeteerSharp
             _client = client;
             _client.MessageReceived += Client_MessageReceived;
             _logger = _client.Connection.LoggerFactory.CreateLogger<NetworkManager>();
-        } 
+        }
 
         #region Public Properties
         internal Dictionary<string, string> ExtraHTTPHeaders => _extraHTTPHeaders?.Clone();
@@ -268,7 +268,9 @@ namespace PuppeteerSharp
                     redirectChain = request.RedirectChainList;
                 }
             }
-            var frame = !string.IsNullOrEmpty(e.FrameId) && FrameManager != null ? FrameManager.Frames[e.FrameId] : null;
+            Frame frame = null;
+            FrameManager?.Frames.TryGetValue(e.FrameId, out frame);
+
             request = new Request(
                 _client,
                 frame,
