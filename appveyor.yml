@@ -35,7 +35,7 @@ build:
 
 test_script:
 - ps: cd .\lib\PuppeteerSharp.Tests
-- ps: dotnet test -f $env::framework -s test.runsettings
+- ps: dotnet test -f $env:framework -s test.runsettings
 - sh: cd lib/PuppeteerSharp.Tests
 - sh: dotnet test -f $framework -s test.runsettings
 
