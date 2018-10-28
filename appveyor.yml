@@ -1,7 +1,4 @@
 version: 1.0.{build}
-image: 
-- Ubuntu
-- Visual Studio 2017
 configuration: Release
 environment:
   APPVEYOR_YML_DISABLE_PS_LINUX: true
