@@ -100,7 +100,7 @@ namespace PuppeteerSharp
         internal TaskCompletionSource<bool> BodyLoadedTaskWrapper { get; }
 
         /// <summary>
-        /// A <see cref="Frame"/> that initiated this request. Or null if navigating to error pages./>
+        /// A <see cref="Frame"/> that initiated this request. Or null if navigating to error pages.
         /// </summary>
         public Frame Frame => Request.Frame;
 
