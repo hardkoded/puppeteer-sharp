@@ -23,7 +23,10 @@ before_build:
     dotnet restore .\lib\PuppeteerSharp.sln
     New-SelfSignedCertificate -Subject "localhost" -FriendlyName "Puppeteer" -CertStoreLocation "cert:\CurrentUser\My"
     Get-ChildItem -Path cert:\CurrentUSer\my | where { $_.friendlyname -eq "Puppeteer" } | Export-Certificate -FilePath C:\projects\puppeteer-sharp\lib\PuppeteerSharp.TestServer\testCert.cer
-
+- sh: >-
+    dotnet restore ./lib/PuppeteerSharp.sln
+    openssl genrsa -des3 -passout pass:12345 -out lib/PuppeteerSharp.TestServer/testCert.key 1024 -noout
+    openssl req -new -x509 -key lib/PuppeteerSharp.TestServer/testCert.key -out lib/PuppeteerSharp.TestServer/testCert.cer -passin pass:12345 -subj "/C=GB/ST=London/L=London/O=Global Security/OU=IT Department/CN=example.com"
 build:
   project: .\lib\PuppeteerSharp.sln
   publish_nuget: true
@@ -31,7 +34,7 @@ build:
   verbosity: minimal
 
 test_script:
-- cmd: >-
+- ps: >-
     cd .\lib\PuppeteerSharp.Tests
     dotnet test -f %framework% -s test.runsettings
 - sh: >-
