@@ -4,11 +4,18 @@ image:
 - Visual Studio 2017
 configuration: Release
 environment:
+  APPVEYOR_YML_DISABLE_PS_LINUX: true
   git_access_token:
     secure: FxcQ9C8a/NgcQB5dFdZts6ZWEDT4zMhA4qPQAYwWc7huMmhmTIl1sbFEIaAWQMTL
   matrix:
-    - framework: net471
-    - framework: netcoreapp2.0
+    - image: Ubuntu
+      framework: netcoreapp2.0
+
+    - image: Visual Studio 2017
+      framework: netcoreapp2.0
+
+    - image: Visual Studio 2017
+      framework: net471
 install:
 - ps: >-
     if($env:APPVEYOR_REPO_TAG -eq 'True' -And $env:framework -eq 'netcoreapp2.0') {
@@ -17,9 +24,7 @@ install:
 before_build:
 - ps: >-
     dotnet restore .\lib\PuppeteerSharp.sln
-
     New-SelfSignedCertificate -Subject "localhost" -FriendlyName "Puppeteer" -CertStoreLocation "cert:\CurrentUser\My"
-
     Get-ChildItem -Path cert:\CurrentUSer\my | where { $_.friendlyname -eq "Puppeteer" } | Export-Certificate -FilePath C:\projects\puppeteer-sharp\lib\PuppeteerSharp.TestServer\testCert.cer
 
 build:
@@ -27,15 +32,18 @@ build:
   publish_nuget: true
   include_nuget_references: true
   verbosity: minimal
+
 test_script:
 - cmd: >-
     cd .\lib\PuppeteerSharp.Tests
-
     dotnet test -f %framework% -s test.runsettings
+- sh: >-
+    cd lib/PuppeteerSharp.Tests
+    dotnet test -f %framework% -s test.runsettings
+
 on_success:
 - ps: >-
     cd  c:\projects\puppeteer-sharp
-
     c:\projects\puppeteer-sharp\appveyor\GenerateDocs.ps1
 cache:
   - $HOME/.nuget/packages
