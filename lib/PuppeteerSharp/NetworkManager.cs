@@ -268,7 +268,7 @@ namespace PuppeteerSharp
                     redirectChain = request.RedirectChainList;
                 }
             }
-            var frame = !string.IsNullOrEmpty(e.FrameId) && FrameManager != null ? FrameManager.Frames[e.FrameId] : null;
+            _frameManager.Frames.TryGetValue(e.FrameId, out var frame);
             request = new Request(
                 _client,
                 frame,
