@@ -5,9 +5,9 @@ using Xunit.Abstractions;
 namespace PuppeteerSharp.Tests.FrameTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
-    public class ContextTests : PuppeteerPageBaseTest
+    public class ExecutionContextTests : PuppeteerPageBaseTest
     {
-        public ContextTests(ITestOutputHelper output) : base(output)
+        public ExecutionContextTests(ITestOutputHelper output) : base(output)
         {
         }
 
