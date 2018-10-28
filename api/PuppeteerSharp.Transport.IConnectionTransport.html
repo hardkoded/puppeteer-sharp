@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class BoxModel
+    <title>Interface IConnectionTransport
    </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class BoxModel
+    <meta name="title" content="Interface IConnectionTransport
    ">
     <meta name="generator" content="docfx 2.40.0.0">
     
@@ -68,42 +68,37 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="PuppeteerSharp.BoxModel">
+            <article class="content wrap" id="_content" data-uid="PuppeteerSharp.Transport.IConnectionTransport">
   
   
-  <h1 id="PuppeteerSharp_BoxModel" data-uid="PuppeteerSharp.BoxModel" class="text-break">Class BoxModel
+  <h1 id="PuppeteerSharp_Transport_IConnectionTransport" data-uid="PuppeteerSharp.Transport.IConnectionTransport" class="text-break">Interface IConnectionTransport
   </h1>
-  <div class="markdown level0 summary"><p>Represents boxes of the element.</p>
+  <div class="markdown level0 summary"><p>Connection transport abstraction.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
-  <div class="inheritance">
-    <h5>Inheritance</h5>
-    <div class="level0"><span class="xref">System.Object</span></div>
-    <div class="level1"><span class="xref">BoxModel</span></div>
-  </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="PuppeteerSharp.html">PuppeteerSharp</a></h6>
+  <h6><strong>Namespace</strong>: <a class="xref" href="PuppeteerSharp.Transport.html">PuppeteerSharp.Transport</a></h6>
   <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
-  <h5 id="PuppeteerSharp_BoxModel_syntax">Syntax</h5>
+  <h5 id="PuppeteerSharp_Transport_IConnectionTransport_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class BoxModel : object</code></pre>
+    <pre><code class="lang-csharp hljs">public interface IConnectionTransport : IDisposable</code></pre>
   </div>
   <h3 id="properties">Properties
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Border&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BoxModel.cs/%23L25">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20IsClosed&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/IConnectionTransport.cs/%23L15">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BoxModel.cs/#L25">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/IConnectionTransport.cs/#L15">View Source</a>
   </span>
-  <a id="PuppeteerSharp_BoxModel_Border_" data-uid="PuppeteerSharp.BoxModel.Border*"></a>
-  <h4 id="PuppeteerSharp_BoxModel_Border" data-uid="PuppeteerSharp.BoxModel.Border">Border</h4>
-  <div class="markdown level1 summary"><p>Gets the Border box</p>
+  <a id="PuppeteerSharp_Transport_IConnectionTransport_IsClosed_" data-uid="PuppeteerSharp.Transport.IConnectionTransport.IsClosed*"></a>
+  <h4 id="PuppeteerSharp_Transport_IConnectionTransport_IsClosed" data-uid="PuppeteerSharp.Transport.IConnectionTransport.IsClosed">IsClosed</h4>
+  <div class="markdown level1 summary"><p>Gets a value indicating whether this <a class="xref" href="PuppeteerSharp.Transport.IConnectionTransport.html">IConnectionTransport</a> is closed.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public BoxModelPoint[] Border { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">bool IsClosed { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -115,28 +110,127 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="PuppeteerSharp.BoxModelPoint.html">BoxModelPoint</a>[]</td>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20SendAsync(String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/IConnectionTransport.cs/%23L25">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/IConnectionTransport.cs/#L25">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Transport_IConnectionTransport_SendAsync_" data-uid="PuppeteerSharp.Transport.IConnectionTransport.SendAsync*"></a>
+  <h4 id="PuppeteerSharp_Transport_IConnectionTransport_SendAsync_System_String_" data-uid="PuppeteerSharp.Transport.IConnectionTransport.SendAsync(System.String)">SendAsync(String)</h4>
+  <div class="markdown level1 summary"><p>Sends a message using the transport.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Task SendAsync(string message)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">message</span></td>
+        <td><p>Message to send.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span></td>
+        <td><p>The task.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20StopReading()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/IConnectionTransport.cs/%23L19">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/IConnectionTransport.cs/#L19">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Transport_IConnectionTransport_StopReading_" data-uid="PuppeteerSharp.Transport.IConnectionTransport.StopReading*"></a>
+  <h4 id="PuppeteerSharp_Transport_IConnectionTransport_StopReading" data-uid="PuppeteerSharp.Transport.IConnectionTransport.StopReading">StopReading()</h4>
+  <div class="markdown level1 summary"><p>Stops reading incoming data.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">void StopReading()</code></pre>
+  </div>
+  <h3 id="events">Events
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Closed&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/IConnectionTransport.cs/%23L29">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/IConnectionTransport.cs/#L29">View Source</a>
+  </span>
+  <h4 id="PuppeteerSharp_Transport_IConnectionTransport_Closed" data-uid="PuppeteerSharp.Transport.IConnectionTransport.Closed">Closed</h4>
+  <div class="markdown level1 summary"><p>Occurs when the transport is closed.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">event EventHandler Closed</code></pre>
+  </div>
+  <h5 class="eventType">Event Type</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">EventHandler</span></td>
         <td></td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Content&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BoxModel.cs/%23L15">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20MessageReceived&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/IConnectionTransport.cs/%23L33">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BoxModel.cs/#L15">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/IConnectionTransport.cs/#L33">View Source</a>
   </span>
-  <a id="PuppeteerSharp_BoxModel_Content_" data-uid="PuppeteerSharp.BoxModel.Content*"></a>
-  <h4 id="PuppeteerSharp_BoxModel_Content" data-uid="PuppeteerSharp.BoxModel.Content">Content</h4>
-  <div class="markdown level1 summary"><p>Gets the Content box</p>
+  <h4 id="PuppeteerSharp_Transport_IConnectionTransport_MessageReceived" data-uid="PuppeteerSharp.Transport.IConnectionTransport.MessageReceived">MessageReceived</h4>
+  <div class="markdown level1 summary"><p>Occurs when a message is received.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public BoxModelPoint[] Content { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">event EventHandler&lt;MessageReceivedEventArgs&gt; MessageReceived</code></pre>
   </div>
-  <h5 class="propertyValue">Property Value</h5>
+  <h5 class="eventType">Event Type</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
@@ -146,131 +240,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="PuppeteerSharp.BoxModelPoint.html">BoxModelPoint</a>[]</td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Height&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BoxModel.cs/%23L40">Request doc improvement</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BoxModel.cs/#L40">View Source</a>
-  </span>
-  <a id="PuppeteerSharp_BoxModel_Height_" data-uid="PuppeteerSharp.BoxModel.Height*"></a>
-  <h4 id="PuppeteerSharp_BoxModel_Height" data-uid="PuppeteerSharp.BoxModel.Height">Height</h4>
-  <div class="markdown level1 summary"><p>Gets the element's height</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int Height { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">System.Int32</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Margin&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BoxModel.cs/%23L30">Request doc improvement</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BoxModel.cs/#L30">View Source</a>
-  </span>
-  <a id="PuppeteerSharp_BoxModel_Margin_" data-uid="PuppeteerSharp.BoxModel.Margin*"></a>
-  <h4 id="PuppeteerSharp_BoxModel_Margin" data-uid="PuppeteerSharp.BoxModel.Margin">Margin</h4>
-  <div class="markdown level1 summary"><p>Gets the Margin box</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public BoxModelPoint[] Margin { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="PuppeteerSharp.BoxModelPoint.html">BoxModelPoint</a>[]</td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Padding&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BoxModel.cs/%23L20">Request doc improvement</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BoxModel.cs/#L20">View Source</a>
-  </span>
-  <a id="PuppeteerSharp_BoxModel_Padding_" data-uid="PuppeteerSharp.BoxModel.Padding*"></a>
-  <h4 id="PuppeteerSharp_BoxModel_Padding" data-uid="PuppeteerSharp.BoxModel.Padding">Padding</h4>
-  <div class="markdown level1 summary"><p>Gets the Padding box</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public BoxModelPoint[] Padding { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="PuppeteerSharp.BoxModelPoint.html">BoxModelPoint</a>[]</td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Width&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BoxModel.cs/%23L35">Request doc improvement</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BoxModel.cs/#L35">View Source</a>
-  </span>
-  <a id="PuppeteerSharp_BoxModel_Width_" data-uid="PuppeteerSharp.BoxModel.Width*"></a>
-  <h4 id="PuppeteerSharp_BoxModel_Width" data-uid="PuppeteerSharp.BoxModel.Width">Width</h4>
-  <div class="markdown level1 summary"><p>Gets the element's width</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int Width { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">System.Int32</span></td>
+        <td><span class="xref">EventHandler</span>&lt;<a class="xref" href="PuppeteerSharp.Transport.MessageReceivedEventArgs.html">MessageReceivedEventArgs</a>&gt;</td>
         <td></td>
       </tr>
     </tbody>
@@ -283,10 +253,10 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20BoxModel&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BoxModel.cs/%23L6" class="contribution-link">Request doc improvement</a>
+                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20IConnectionTransport&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/IConnectionTransport.cs/%23L10" class="contribution-link">Request doc improvement</a>
                   </li>
                   <li>
-                    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BoxModel.cs/#L6" class="contribution-link">View Source</a>
+                    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/IConnectionTransport.cs/#L10" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

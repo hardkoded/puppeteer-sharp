@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Namespace PuppeteerSharp
    ">
-    <meta name="generator" content="docfx 2.39.2.0">
+    <meta name="generator" content="docfx 2.40.0.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -103,7 +103,7 @@ BrowserFetcher operates on revision strings that specify a precise version of Ch
       <h4><a class="xref" href="PuppeteerSharp.CDPSession.html">CDPSession</a></h4>
       <section><p>The CDPSession instances are used to talk raw Chrome Devtools Protocol:</p>
 <ul>
-<li>Protocol methods can be called with <a class="xref" href="PuppeteerSharp.CDPSession.html#PuppeteerSharp_CDPSession_SendAsync_System_String_System_Boolean_System_Object_">SendAsync(String, Boolean, Object)</a> method.</li>
+<li>Protocol methods can be called with <a class="xref" href="PuppeteerSharp.CDPSession.html#PuppeteerSharp_CDPSession_SendAsync_System_String_System_Object_System_Boolean_">SendAsync(String, Object, Boolean)</a> method.</li>
 <li>Protocol events, using the <a class="xref" href="PuppeteerSharp.CDPSession.html#PuppeteerSharp_CDPSession_MessageReceived">MessageReceived</a> event.</li>
 </ul>
 <p>Documentation on DevTools Protocol can be found here: <a href="https://chromedevtools.github.io/devtools-protocol/">https://chromedevtools.github.io/devtools-protocol/</a>.</p>
@@ -116,7 +116,7 @@ client.MessageReceived += (sender, e) =>
          Console.WriteLine(&quot;Animation created!&quot;);
      }
 };
-dynamic response = await client.SendAsync(&quot;Animation.getPlaybackRate&quot;);
+JObject response = await client.SendAsync(&quot;Animation.getPlaybackRate&quot;);
 Console.WriteLine(&quot;playback rate is &quot; + response.playbackRate);
 await client.SendAsync(&quot;Animation.setPlaybackRate&quot;, new
 {
@@ -201,7 +201,7 @@ At every point of time, page exposes its current frame tree via the <a class="xr
       <section><p><a class="xref" href="PuppeteerSharp.CDPSession.html#PuppeteerSharp_CDPSession_MessageReceived">MessageReceived</a> arguments.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.MessageException.html">MessageException</a></h4>
-      <section><p>Exception thrown by <a class="xref" href="PuppeteerSharp.CDPSession.html#PuppeteerSharp_CDPSession_SendAsync_System_String_System_Object_">SendAsync(String, Object)</a></p>
+      <section><p>Exception thrown by <a class="xref" href="PuppeteerSharp.CDPSession.html#PuppeteerSharp_CDPSession_SendAsync__1_System_String_System_Object_">SendAsync&lt;T&gt;(String, Object)</a></p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.MetricEventArgs.html">MetricEventArgs</a></h4>
       <section><p><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_Metrics">Metrics</a> arguments.</p>
@@ -260,7 +260,7 @@ At every point of time, page exposes its current frame tree via the <a class="xr
       <section><p>Options to be used in <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_ScreenshotAsync_System_String_PuppeteerSharp_ScreenshotOptions_">ScreenshotAsync(String, ScreenshotOptions)</a>, <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_ScreenshotStreamAsync_PuppeteerSharp_ScreenshotOptions_">ScreenshotStreamAsync(ScreenshotOptions)</a> and <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_ScreenshotDataAsync_PuppeteerSharp_ScreenshotOptions_">ScreenshotDataAsync(ScreenshotOptions)</a></p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.SecurityDetails.html">SecurityDetails</a></h4>
-      <section><p>Security details.</p>
+      <section><p>Represents the security details when response was received over the secure connection.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.SelectorException.html">SelectorException</a></h4>
       <section><p>Exception thrown when an element selector returns null.</p>

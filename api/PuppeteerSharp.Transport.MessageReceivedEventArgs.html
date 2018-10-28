@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class WorkerEventArgs
+    <title>Class MessageReceivedEventArgs
    </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class WorkerEventArgs
+    <meta name="title" content="Class MessageReceivedEventArgs
    ">
     <meta name="generator" content="docfx 2.40.0.0">
     
@@ -68,42 +68,43 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="PuppeteerSharp.WorkerEventArgs">
+            <article class="content wrap" id="_content" data-uid="PuppeteerSharp.Transport.MessageReceivedEventArgs">
   
   
-  <h1 id="PuppeteerSharp_WorkerEventArgs" data-uid="PuppeteerSharp.WorkerEventArgs" class="text-break">Class WorkerEventArgs
+  <h1 id="PuppeteerSharp_Transport_MessageReceivedEventArgs" data-uid="PuppeteerSharp.Transport.MessageReceivedEventArgs" class="text-break">Class MessageReceivedEventArgs
   </h1>
-  <div class="markdown level0 summary"><p>Workder created event arguments.</p>
+  <div class="markdown level0 summary"><p>Message received event arguments.
+<a class="xref" href="PuppeteerSharp.Transport.IConnectionTransport.html#PuppeteerSharp_Transport_IConnectionTransport_MessageReceived">MessageReceived</a></p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><span class="xref">System.Object</span></div>
-    <div class="level1"><span class="xref">WorkerEventArgs</span></div>
+    <div class="level1"><span class="xref">MessageReceivedEventArgs</span></div>
   </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="PuppeteerSharp.html">PuppeteerSharp</a></h6>
+  <h6><strong>Namespace</strong>: <a class="xref" href="PuppeteerSharp.Transport.html">PuppeteerSharp.Transport</a></h6>
   <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
-  <h5 id="PuppeteerSharp_WorkerEventArgs_syntax">Syntax</h5>
+  <h5 id="PuppeteerSharp_Transport_MessageReceivedEventArgs_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class WorkerEventArgs : EventArgs</code></pre>
+    <pre><code class="lang-csharp hljs">public class MessageReceivedEventArgs : EventArgs</code></pre>
   </div>
   <h3 id="constructors">Constructors
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WorkerEventArgs(Worker)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WorkerEventArgs.cs/%23L19">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20MessageReceivedEventArgs(String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/MessageReceivedEventArgs.cs/%23L15">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WorkerEventArgs.cs/#L19">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/MessageReceivedEventArgs.cs/#L15">View Source</a>
   </span>
-  <a id="PuppeteerSharp_WorkerEventArgs__ctor_" data-uid="PuppeteerSharp.WorkerEventArgs.#ctor*"></a>
-  <h4 id="PuppeteerSharp_WorkerEventArgs__ctor_PuppeteerSharp_Worker_" data-uid="PuppeteerSharp.WorkerEventArgs.#ctor(PuppeteerSharp.Worker)">WorkerEventArgs(Worker)</h4>
-  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="PuppeteerSharp.WorkerEventArgs.html">WorkerEventArgs</a> class.</p>
+  <a id="PuppeteerSharp_Transport_MessageReceivedEventArgs__ctor_" data-uid="PuppeteerSharp.Transport.MessageReceivedEventArgs.#ctor*"></a>
+  <h4 id="PuppeteerSharp_Transport_MessageReceivedEventArgs__ctor_System_String_" data-uid="PuppeteerSharp.Transport.MessageReceivedEventArgs.#ctor(System.String)">MessageReceivedEventArgs(String)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="PuppeteerSharp.Transport.MessageReceivedEventArgs.html">MessageReceivedEventArgs</a> class.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public WorkerEventArgs(Worker worker)</code></pre>
+    <pre><code class="lang-csharp hljs">public MessageReceivedEventArgs(string message)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -116,9 +117,9 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="PuppeteerSharp.Worker.html">Worker</a></td>
-        <td><span class="parametername">worker</span></td>
-        <td><p>Worker.</p>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">message</span></td>
+        <td><p>Message.</p>
 </td>
       </tr>
     </tbody>
@@ -127,19 +128,19 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Worker&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WorkerEventArgs.cs/%23L14">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Message&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/MessageReceivedEventArgs.cs/%23L19">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WorkerEventArgs.cs/#L14">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/MessageReceivedEventArgs.cs/#L19">View Source</a>
   </span>
-  <a id="PuppeteerSharp_WorkerEventArgs_Worker_" data-uid="PuppeteerSharp.WorkerEventArgs.Worker*"></a>
-  <h4 id="PuppeteerSharp_WorkerEventArgs_Worker" data-uid="PuppeteerSharp.WorkerEventArgs.Worker">Worker</h4>
-  <div class="markdown level1 summary"><p>Worker</p>
+  <a id="PuppeteerSharp_Transport_MessageReceivedEventArgs_Message_" data-uid="PuppeteerSharp.Transport.MessageReceivedEventArgs.Message*"></a>
+  <h4 id="PuppeteerSharp_Transport_MessageReceivedEventArgs_Message" data-uid="PuppeteerSharp.Transport.MessageReceivedEventArgs.Message">Message</h4>
+  <div class="markdown level1 summary"><p>Transport message.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Worker Worker { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">public string Message { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -151,9 +152,8 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="PuppeteerSharp.Worker.html">Worker</a></td>
-        <td><p>The worker.</p>
-</td>
+        <td><span class="xref">System.String</span></td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -165,10 +165,10 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WorkerEventArgs&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WorkerEventArgs.cs/%23L8" class="contribution-link">Request doc improvement</a>
+                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20MessageReceivedEventArgs&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/MessageReceivedEventArgs.cs/%23L9" class="contribution-link">Request doc improvement</a>
                   </li>
                   <li>
-                    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WorkerEventArgs.cs/#L8" class="contribution-link">View Source</a>
+                    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/MessageReceivedEventArgs.cs/#L9" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>
