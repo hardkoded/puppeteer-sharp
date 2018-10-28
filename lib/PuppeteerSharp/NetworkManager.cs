@@ -268,22 +268,28 @@ namespace PuppeteerSharp
                     redirectChain = request.RedirectChainList;
                 }
             }
-            Frame frame = null;
-            FrameManager?.Frames.TryGetValue(e.FrameId, out frame);
-
-            request = new Request(
-                _client,
-                frame,
-                interceptionId,
-                _userRequestInterceptionEnabled,
-                e,
-                redirectChain);
-
-            _requestIdToRequest.Add(e.RequestId, request);
-            Request(this, new RequestEventArgs
+            if (!_requestIdToRequest.TryGetValue(e.RequestId, out var currentRequest) ||
+              currentRequest.Frame == null)
             {
-                Request = request
-            });
+                Frame frame = null;
+                FrameManager?.Frames.TryGetValue(e.FrameId, out frame);
+
+                request = new Request(
+                    _client,
+                    frame,
+                    interceptionId,
+                    _userRequestInterceptionEnabled,
+                    e,
+                    redirectChain);
+
+
+                _requestIdToRequest[e.RequestId] = request;
+
+                Request(this, new RequestEventArgs
+                {
+                    Request = request
+                });
+            }
         }
 
         private void OnRequestServedFromCache(RequestServedFromCacheResponse response)
