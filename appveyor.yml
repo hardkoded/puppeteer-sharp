@@ -8,13 +8,13 @@ environment:
   git_access_token:
     secure: FxcQ9C8a/NgcQB5dFdZts6ZWEDT4zMhA4qPQAYwWc7huMmhmTIl1sbFEIaAWQMTL
   matrix:
-    - image: Ubuntu
+    - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
       framework: netcoreapp2.0
 
-    - image: Visual Studio 2017
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
       framework: netcoreapp2.0
 
-    - image: Visual Studio 2017
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
       framework: net471
 install:
 - ps: >-
