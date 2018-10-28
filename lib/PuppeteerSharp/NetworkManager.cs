@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Helpers;
@@ -18,7 +17,6 @@ namespace PuppeteerSharp
             new Dictionary<string, RequestWillBeSentPayload>();
         private readonly MultiMap<string, string> _requestHashToRequestIds = new MultiMap<string, string>();
         private readonly MultiMap<string, string> _requestHashToInterceptionIds = new MultiMap<string, string>();
-        private readonly FrameManager _frameManager;
         private readonly ILogger _logger;
         private Dictionary<string, string> _extraHTTPHeaders;
         private bool _offine;
@@ -29,9 +27,9 @@ namespace PuppeteerSharp
 
         #endregion
 
-        internal NetworkManager(CDPSession client, FrameManager frameManager)
+        internal NetworkManager(CDPSession client)
         {
-            _frameManager = frameManager;
+            FrameManager = null;
             _client = client;
             _client.MessageReceived += Client_MessageReceived;
             _logger = _client.Connection.LoggerFactory.CreateLogger<NetworkManager>();
@@ -43,6 +41,7 @@ namespace PuppeteerSharp
         internal event EventHandler<RequestEventArgs> Request;
         internal event EventHandler<RequestEventArgs> RequestFinished;
         internal event EventHandler<RequestEventArgs> RequestFailed;
+        internal FrameManager FrameManager { get; set; }
         #endregion
 
         #region Public Methods
@@ -269,7 +268,9 @@ namespace PuppeteerSharp
                     redirectChain = request.RedirectChainList;
                 }
             }
-            var frame = !string.IsNullOrEmpty(e.FrameId) ? _frameManager.Frames[e.FrameId] : null;
+            Frame frame = null;
+            FrameManager?.Frames.TryGetValue(e.FrameId, out frame);
+
             request = new Request(
                 _client,
                 frame,
