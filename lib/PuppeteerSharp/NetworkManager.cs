@@ -282,7 +282,6 @@ namespace PuppeteerSharp
                     e,
                     redirectChain);
 
-
                 _requestIdToRequest[e.RequestId] = request;
 
                 Request(this, new RequestEventArgs
