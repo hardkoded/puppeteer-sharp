@@ -19,35 +19,25 @@ install:
         choco install docfx
     }
 before_build:
-- ps: >-
-    dotnet restore .\lib\PuppeteerSharp.sln
-
-    New-SelfSignedCertificate -Subject "localhost" -FriendlyName "Puppeteer" -CertStoreLocation "cert:\CurrentUser\My"
-
+- ps: dotnet restore .\lib\PuppeteerSharp.sln
+- ps: New-SelfSignedCertificate -Subject "localhost" -FriendlyName "Puppeteer" -CertStoreLocation "cert:\CurrentUser\My"
+- ps: >- 
     Get-ChildItem -Path cert:\CurrentUSer\my | where { $_.friendlyname -eq "Puppeteer" } | Export-Certificate -FilePath C:\projects\puppeteer-sharp\lib\PuppeteerSharp.TestServer\testCert.cer
-- sh: >-
-    dotnet restore ./lib/PuppeteerSharp.sln
-
-    openssl genrsa -des3 -passout pass:12345 -out lib/PuppeteerSharp.TestServer/testCert.key 1024 -noout
-
-    openssl req -new -x509 -key lib/PuppeteerSharp.TestServer/testCert.key -out lib/PuppeteerSharp.TestServer/testCert.cer -passin pass:12345 -subj "/C=GB/ST=London/L=London/O=Global Security/OU=IT Department/CN=example.com"
+- sh: dotnet restore ./lib/PuppeteerSharp.sln
+- sh: openssl genrsa -des3 -passout pass:12345 -out lib/PuppeteerSharp.TestServer/testCert.key 1024 -noout
+- sh: openssl req -new -x509 -key lib/PuppeteerSharp.TestServer/testCert.key -out lib/PuppeteerSharp.TestServer/testCert.cer -passin pass:12345 -subj "/C=GB/ST=London/L=London/O=Global Security/OU=IT Department/CN=example.com"
 
 build:
-  project: .\\lib\\PuppeteerSharp.sln
+  project: .\lib\PuppeteerSharp.sln
   publish_nuget: true
   include_nuget_references: true
   verbosity: minimal
 
 test_script:
-- ps: >-
-    cd .\lib\PuppeteerSharp.Tests
-
-    dotnet test -f %framework% -s test.runsettings
-
-- sh: >-
-    cd lib/PuppeteerSharp.Tests
-
-    dotnet test -f %framework% -s test.runsettings
+- ps: cd .\lib\PuppeteerSharp.Tests
+- ps: dotnet test -f %framework% -s test.runsettings
+- sh: cd lib/PuppeteerSharp.Tests
+- sh: dotnet test -f %framework% -s test.runsettings
 
 on_success:
 - ps: >-
