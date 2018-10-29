@@ -65,7 +65,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 var launcher = new Launcher(TestConstants.LoggerFactory);
                 var options = TestConstants.DefaultBrowserOptions();
                 options.Args = options.Args.Concat(new[] { $"--user-data-dir=\"{userDataDir}\"" }).ToArray();
-                options.Headless = false;
+                options.Headless = true;
 
                 using (var browser = await launcher.LaunchAsync(options))
                 {
@@ -90,7 +90,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         {
             // https://google.com is isolated by default in Chromium embedder.
             var headfulOptions = TestConstants.DefaultBrowserOptions();
-            headfulOptions.Headless = false;
+            headfulOptions.Headless = true;
             using (var browser = await Puppeteer.LaunchAsync(headfulOptions))
             using (var page = await browser.NewPageAsync())
             {
