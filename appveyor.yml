@@ -1,49 +1,37 @@
 version: 1.0.{build}
+branches:
+  only:
+  - master
+image: Visual Studio 2017
 configuration: Release
 environment:
-  APPVEYOR_YML_DISABLE_PS_LINUX: true
   git_access_token:
     secure: FxcQ9C8a/NgcQB5dFdZts6ZWEDT4zMhA4qPQAYwWc7huMmhmTIl1sbFEIaAWQMTL
   matrix:
-    - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
-      framework: netcoreapp2.0
-
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      framework: netcoreapp2.0
-
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      framework: net471
+    - framework: net471
+    - framework: netcoreapp2.0
 install:
 - ps: >-
     if($env:APPVEYOR_REPO_TAG -eq 'True' -And $env:framework -eq 'netcoreapp2.0') {
         choco install docfx
     }
 before_build:
-- ps: dotnet restore .\lib\PuppeteerSharp.sln
-- ps: New-SelfSignedCertificate -Subject "localhost" -FriendlyName "Puppeteer" -CertStoreLocation "cert:\CurrentUser\My"
-- ps: >- 
+- ps: >-
+    dotnet restore .\lib\PuppeteerSharp.sln
+    New-SelfSignedCertificate -Subject "localhost" -FriendlyName "Puppeteer" -CertStoreLocation "cert:\CurrentUser\My"
     Get-ChildItem -Path cert:\CurrentUSer\my | where { $_.friendlyname -eq "Puppeteer" } | Export-Certificate -FilePath C:\projects\puppeteer-sharp\lib\PuppeteerSharp.TestServer\testCert.cer
-- sh: dotnet restore ./lib/PuppeteerSharp.sln
-- sh: openssl genrsa -des3 -passout pass:12345 -out lib/PuppeteerSharp.TestServer/testCert.key 1024 -noout
-- sh: openssl req -new -x509 -key lib/PuppeteerSharp.TestServer/testCert.key -out lib/PuppeteerSharp.TestServer/testCert.cer -passin pass:12345 -subj "/C=GB/ST=London/L=London/O=Global Security/OU=IT Department/CN=example.com"
-
 build:
   project: .\lib\PuppeteerSharp.sln
   publish_nuget: true
   include_nuget_references: true
   verbosity: minimal
-
 test_script:
-- ps: cd .\lib\PuppeteerSharp.Tests
-- ps: dotnet test -f $env:framework -s test.runsettings
-- sh: cd lib/PuppeteerSharp.Tests
-- sh: dotnet test -f $framework -s test.runsettings
-
+- cmd: >-
+    cd .\lib\PuppeteerSharp.Tests
+    dotnet test -f %framework% -s test.runsettings
 on_success:
 - ps: >-
-    cd c:\projects\puppeteer-sharp
-
+    cd  c:\projects\puppeteer-sharp
     c:\projects\puppeteer-sharp\appveyor\GenerateDocs.ps1
-
 cache:
   - $HOME/.nuget/packages
