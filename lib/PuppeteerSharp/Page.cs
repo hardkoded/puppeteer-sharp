@@ -235,7 +235,7 @@ namespace PuppeteerSharp
         /// Gets all frames attached to the page.
         /// </summary>
         /// <value>An array of all frames attached to the page.</value>
-        public Frame[] Frames => _frameManager.Frames.Values.ToArray();
+        public Frame[] Frames => _frameManager.GetFrames();
 
         /// <summary>
         /// Gets all workers in the page.

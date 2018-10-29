@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace PuppeteerSharp.Helpers
 {
     internal class MultiMap<TKey, TValue>
     {
-        private readonly Dictionary<TKey, HashSet<TValue>> _map = new Dictionary<TKey, HashSet<TValue>>();
+        private readonly ConcurrentDictionary<TKey, HashSet<TValue>> _map = new ConcurrentDictionary<TKey, HashSet<TValue>>();
 
         internal void Add(TKey key, TValue value)
         {
@@ -16,7 +17,7 @@ namespace PuppeteerSharp.Helpers
             else
             {
                 set = new HashSet<TValue> { value };
-                _map.Add(key, set);
+                _map.TryAdd(key, set);
             }
         }
 
@@ -30,6 +31,6 @@ namespace PuppeteerSharp.Helpers
             => _map.TryGetValue(key, out var set) && set.Remove(value);
 
         internal TValue FirstValue(TKey key)
-            => _map.TryGetValue(key, out var set) ? set.FirstOrDefault() : default(TValue);
+            => _map.TryGetValue(key, out var set) ? set.FirstOrDefault() : default;
     }
 }

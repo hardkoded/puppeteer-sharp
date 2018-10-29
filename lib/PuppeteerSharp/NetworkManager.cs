@@ -103,7 +103,7 @@ namespace PuppeteerSharp
             switch (e.MessageID)
             {
                 case "Network.requestWillBeSent":
-                    OnRequestWillBeSent(e.MessageData.ToObject<RequestWillBeSentPayload>());
+                    await OnRequestWillBeSentAsync(e.MessageData.ToObject<RequestWillBeSentPayload>());
                     break;
                 case "Network.requestIntercepted":
                     await OnRequestInterceptedAsync(e.MessageData.ToObject<RequestInterceptedResponse>()).ConfigureAwait(false);
@@ -243,7 +243,7 @@ namespace PuppeteerSharp
 
                 if (requestWillBeSentEvent != null)
                 {
-                    OnRequest(requestWillBeSentEvent, e.InterceptionId);
+                    await OnRequestAsync(requestWillBeSentEvent, e.InterceptionId);
                     _requestHashToRequestIds.Delete(requestHash, requestId);
                     _requestIdToRequestWillBeSentEvent.Remove(requestId);
                 }
@@ -254,7 +254,7 @@ namespace PuppeteerSharp
             }
         }
 
-        private void OnRequest(RequestWillBeSentPayload e, string interceptionId)
+        private async Task OnRequestAsync(RequestWillBeSentPayload e, string interceptionId)
         {
             Request request;
             var redirectChain = new List<Request>();
@@ -271,8 +271,7 @@ namespace PuppeteerSharp
             if (!_requestIdToRequest.TryGetValue(e.RequestId, out var currentRequest) ||
               currentRequest.Frame == null)
             {
-                Frame frame = null;
-                FrameManager?.Frames.TryGetValue(e.FrameId, out frame);
+                var frame = await FrameManager?.GetFrameAsync(e.FrameId);
 
                 request = new Request(
                     _client,
@@ -332,7 +331,7 @@ namespace PuppeteerSharp
             });
         }
 
-        private void OnRequestWillBeSent(RequestWillBeSentPayload e)
+        private async Task OnRequestWillBeSentAsync(RequestWillBeSentPayload e)
         {
             if (_protocolRequestInterceptionEnabled)
             {
@@ -340,7 +339,7 @@ namespace PuppeteerSharp
                 var interceptionId = _requestHashToInterceptionIds.FirstValue(requestHash);
                 if (interceptionId != null)
                 {
-                    OnRequest(e, interceptionId);
+                    await OnRequestAsync(e, interceptionId);
                     _requestHashToInterceptionIds.Delete(requestHash, interceptionId);
                 }
                 else
@@ -350,7 +349,7 @@ namespace PuppeteerSharp
                 }
                 return;
             }
-            OnRequest(e, null);
+            await OnRequestAsync(e, null);
         }
 
         private async Task UpdateProtocolRequestInterceptionAsync()
