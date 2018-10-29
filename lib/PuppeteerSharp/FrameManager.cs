@@ -393,7 +393,6 @@ namespace PuppeteerSharp
             }
 
             return await tcs.Task;
-
         }
 
         #endregion
