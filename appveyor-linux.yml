@@ -24,6 +24,7 @@ build_script:
 test_script:
 - sh: >-
     cd lib/PuppeteerSharp.Tests
+
     dotnet test -f $framework -s test.runsettings
 
 cache:
