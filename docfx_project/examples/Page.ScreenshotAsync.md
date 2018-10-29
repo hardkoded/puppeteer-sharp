@@ -1,4 +1,5 @@
 # How to take screenshots
+_Contributors: [Darío Kondratiuk](https://www.hardkoded.com)_
 
 ## Problem
 
