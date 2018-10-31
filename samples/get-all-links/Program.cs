@@ -1,12 +1,28 @@
 ﻿using System;
+using System.Threading.Tasks;
+using PuppeteerSharp;
 
-namespace get_all_links
+namespace Example.GetAllLinks
 {
     class Program
     {
-        static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            var options = new LaunchOptions { Headless = true };
+            Console.WriteLine("Downloading chromium");
+            await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
+            Console.WriteLine("Navigating to google.com");
+
+            using (var browser = await Puppeteer.LaunchAsync(options))
+            {
+                using (var page = await browser.NewPageAsync())
+                {
+                    await page.GoToAsync("http://www.google.com");
+                    var jsSelectAllAnchors = @"Array.from(document.querySelectorAll('a')).map(a => { a.href, a.innerHTML });";
+                    var result = await page.EvaluateExpressionHandleAsync(jsSelectAllAnchors);
+                    return;
+                }
+            }
         }
     }
 }
