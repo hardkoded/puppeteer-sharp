@@ -3,7 +3,7 @@ if($env:APPVEYOR_REPO_TAG -eq 'True' -And $env:framework -eq 'netcoreapp2.0') {
     Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:git_access_token):x-oauth-basic@github.com`n"
 
     git config --global user.email "dariokondratiuk@gmail.com"
-    git config --global user.name "Darío Kondratiuk"
+    git config --global user.name "Dario Kondratiuk"
     git remote add pages https://github.com/kblok/puppeteer-sharp.git
     git fetch pages
     git checkout master
