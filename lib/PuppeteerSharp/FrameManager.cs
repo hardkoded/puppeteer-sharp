@@ -67,25 +67,21 @@ namespace PuppeteerSharp
             var watcher = new NavigatorWatcher(_client, this, frame, _networkManager, timeout, options);
 
             var navigateTask = NavigateAsync(_client, url, referrer, frame.Id);
-            await Task.WhenAny(
-                watcher.TimeoutOrTerminationTask,
-                navigateTask).ConfigureAwait(false);
+            await Task.Run(() => navigateTask, watcher.TimedCancellationToken).ConfigureAwait(false);
 
-            AggregateException exception = null;
+            Exception exception = null;
             if (navigateTask.IsFaulted)
             {
                 exception = navigateTask.Exception;
             }
             else
             {
-                await Task.WhenAny(
-                    watcher.TimeoutOrTerminationTask,
-                    _ensureNewDocumentNavigation ? watcher.NewDocumentNavigationTask : watcher.SameDocumentNavigationTask
-                ).ConfigureAwait(false);
 
-                if (watcher.TimeoutOrTerminationTask.IsCompleted && watcher.TimeoutOrTerminationTask.Result.IsFaulted)
+                await Task.Run(() => _ensureNewDocumentNavigation ? watcher.NewDocumentNavigationTask : watcher.SameDocumentNavigationTask, watcher.TimedCancellationToken).ConfigureAwait(false);
+
+                if (watcher.TimedCancellationToken.IsCancellationRequested)
                 {
-                    exception = watcher.TimeoutOrTerminationTask.Result.Exception;
+                    exception = new TaskCanceledException("Timed cancellation token timed out.");
                 }
             }
 
@@ -119,18 +115,12 @@ namespace PuppeteerSharp
             var timeout = options?.Timeout ?? DefaultNavigationTimeout;
             var watcher = new NavigatorWatcher(_client, this, frame, _networkManager, timeout, options);
 
-            var raceTask = await Task.WhenAny(
-                watcher.NewDocumentNavigationTask,
-                watcher.SameDocumentNavigationTask,
-                watcher.TimeoutOrTerminationTask
-            ).ConfigureAwait(false);
+            var raceTask = await Task.Run(() => Task.WhenAny(watcher.NewDocumentNavigationTask, watcher.SameDocumentNavigationTask), watcher.TimedCancellationToken).ConfigureAwait(false);
 
-            var exception = raceTask.Exception;
-            if (exception == null &&
-                watcher.TimeoutOrTerminationTask.IsCompleted &&
-                watcher.TimeoutOrTerminationTask.Result.IsFaulted)
+            Exception exception = raceTask.Exception;
+            if (exception == null && watcher.TimedCancellationToken.IsCancellationRequested)
             {
-                exception = watcher.TimeoutOrTerminationTask.Result.Exception;
+                exception = new TaskCanceledException("Timed cancellation token timed out.");
             }
             if (exception != null)
             {

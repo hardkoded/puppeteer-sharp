@@ -1425,11 +1425,7 @@ namespace PuppeteerSharp
 
             _networkManager.Request += requestEventListener;
 
-            await Task.WhenAny(new[]
-            {
-                TaskHelper.CreateTimeoutTask(timeout),
-                requestTcs.Task
-            }).ConfigureAwait(false);
+            await Task.Run(() => requestTcs.Task, CancellationTokenSourceHelper.GetCancellationToken(timeout)).ConfigureAwait(false);
 
             return await requestTcs.Task.ConfigureAwait(false);
         }

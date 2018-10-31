@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.Diagnostics.Contracts;
 using PuppeteerSharp.Helpers;
+using System.Threading;
 
 namespace PuppeteerSharp
 {
@@ -77,7 +78,7 @@ namespace PuppeteerSharp
         public Task<bool> SameDocumentNavigationTask => _sameDocumentNavigationTaskWrapper.Task;
         public Task<bool> NewDocumentNavigationTask => _newDocumentNavigationTaskWrapper.Task;
         public Response NavigationResponse => _navigationRequest?.Response;
-        public Task<Task> TimeoutOrTerminationTask => Task.WhenAny(_timeoutTask, _terminationTaskWrapper.Task);
+        public CancellationToken TimedCancellationToken => CancellationTokenSourceHelper.GetCancellationToken(_timeout);
 
         #endregion
 
