@@ -41,6 +41,8 @@ test_script:
 - sh: >-
     sudo chown -R pptruser:pptruser .
 
+    sudo chown -R pptruser:pptruser /tmp/NuGetScratch
+
     cd lib/PuppeteerSharp.Tests
 
     sudo gosu pptruser dotnet test -f $framework -s test.runsettings
