@@ -9,7 +9,8 @@ environment:
 
 install:
 - sh: sudo apt-get install libnss3
-- sh: "export DISPLAY=:99.0"
+- sh: sudo apt-get install xvfb
+- sh: export DISPLAY=:99.0
 - sh: /etc/init.d/xvfb start
 before_build:
 - sh: >-
