@@ -23,9 +23,9 @@ before_build:
 
     sudo groupadd -r pptruser
     
-    useradd -r -g pptruser -G audio,video pptruser 
+    sudo useradd -r -g pptruser -G audio,video pptruser 
 
-    chown -R pptruser:pptruser .
+    sudo chown -R pptruser:pptruser .
 
     su pptruser
 
