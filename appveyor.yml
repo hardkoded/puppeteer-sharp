@@ -18,11 +18,8 @@ install:
 before_build:
 - ps: >-
     dotnet restore .\lib\PuppeteerSharp.sln
-
     New-SelfSignedCertificate -Subject "localhost" -FriendlyName "Puppeteer" -CertStoreLocation "cert:\CurrentUser\My"
-
     Get-ChildItem -Path cert:\CurrentUSer\my | where { $_.friendlyname -eq "Puppeteer" } | Export-Certificate -FilePath C:\projects\puppeteer-sharp\lib\PuppeteerSharp.TestServer\testCert.cer
-
 build:
   project: .\lib\PuppeteerSharp.sln
   publish_nuget: true
@@ -31,12 +28,10 @@ build:
 test_script:
 - cmd: >-
     cd .\lib\PuppeteerSharp.Tests
-
     dotnet test -f %framework% -s test.runsettings
 on_success:
 - ps: >-
     cd  c:\projects\puppeteer-sharp
-
     c:\projects\puppeteer-sharp\appveyor\GenerateDocs.ps1
 cache:
   - $HOME/.nuget/packages

@@ -44,7 +44,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.GoToAsync(TestConstants.EmptyPage);
             await Page.AddScriptTagAsync(new AddTagOptions
             {
-                Path = Path.Combine(Directory.GetCurrentDirectory(), Path.Combine("assets", "es6", "es6pathimport.js")),
+                Path = Path.Combine(Directory.GetCurrentDirectory(), Path.Combine("Assets", "es6", "es6pathimport.js")),
                 Type = "module"
             });
             await Page.WaitForFunctionAsync("() => window.__es6injected");
@@ -79,7 +79,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.GoToAsync(TestConstants.EmptyPage);
             var scriptHandle = await Page.AddScriptTagAsync(new AddTagOptions
             {
-                Path = Path.Combine(Directory.GetCurrentDirectory(), Path.Combine("assets", "injectedfile.js"))
+                Path = Path.Combine(Directory.GetCurrentDirectory(), Path.Combine("Assets", "injectedfile.js"))
             });
             Assert.NotNull(scriptHandle as ElementHandle);
             Assert.Equal(42, await Page.EvaluateExpressionAsync<int>("__injected"));
@@ -91,10 +91,10 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.GoToAsync(TestConstants.EmptyPage);
             await Page.AddScriptTagAsync(new AddTagOptions
             {
-                Path = Path.Combine(Directory.GetCurrentDirectory(), Path.Combine("assets", "injectedfile.js"))
+                Path = Path.Combine(Directory.GetCurrentDirectory(), Path.Combine("Assets", "injectedfile.js"))
             });
             var result = await Page.EvaluateExpressionAsync<string>("__injectedError.stack");
-            Assert.Contains(Path.Combine("assets", "injectedfile.js"), result);
+            Assert.Contains(Path.Combine("Assets", "injectedfile.js"), result);
         }
 
         [Fact]

@@ -31,10 +31,10 @@ namespace PuppeteerSharp.Tests.FrameTests
 
             Page.FrameAttached += (sender, e) => attachedFrames.Add(e.Frame);
 
-            await FrameUtils.AttachFrameAsync(Page, "frame1", "./assets/frame.html");
+            await FrameUtils.AttachFrameAsync(Page, "frame1", "./Assets/frame.html");
 
             Assert.Single(attachedFrames);
-            Assert.Contains("/assets/frame.html", attachedFrames[0].Url);
+            Assert.Contains("/Assets/frame.html", attachedFrames[0].Url);
 
             // validate framenavigated events
             var navigatedFrames = new List<Frame>();

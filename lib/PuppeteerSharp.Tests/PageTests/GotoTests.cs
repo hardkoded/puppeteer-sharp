@@ -318,7 +318,7 @@ namespace PuppeteerSharp.Tests.PageTests
         [Fact]
         public async Task ResponseOkShouldBeTrueForFile()
         {
-            var fileToNavigate = Path.Combine(Directory.GetCurrentDirectory(), Path.Combine("assets", "file-to-upload.txt"));
+            var fileToNavigate = Path.Combine(Directory.GetCurrentDirectory(), Path.Combine("Assets", "file-to-upload.txt"));
             var url = new Uri(fileToNavigate).AbsoluteUri;
 
             var response = await Page.GoToAsync(url);
