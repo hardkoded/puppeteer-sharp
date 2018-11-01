@@ -8,7 +8,7 @@ environment:
     - framework: netcoreapp2.0
 
 install:
-- sh: sudo apt-get libnss3
+- sh: sudo apt-get install libnss3
 - sh: "export DISPLAY=:99.0"
 - sh: /etc/init.d/xvfb start
 before_build:
