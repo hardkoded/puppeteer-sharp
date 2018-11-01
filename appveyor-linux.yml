@@ -23,7 +23,7 @@ before_build:
 
     sudo groupadd -r pptruser
     
-    sudo useradd -r -g pptruser -G audio,video pptruser 
+    sudo useradd -r -g pptruser -G audio,video pptruser -m
 
 build_script:
 - sh: >-
