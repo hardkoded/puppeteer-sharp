@@ -43,7 +43,7 @@ test_script:
 
     cd lib/PuppeteerSharp.Tests
 
-    gosu pptruser dotnet test -f $framework -s test.runsettings
+    sudo gosu pptruser dotnet test -f $framework -s test.runsettings
 
 cache:
   - $HOME/.nuget/packages
