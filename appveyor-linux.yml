@@ -25,10 +25,6 @@ before_build:
     
     sudo useradd -r -g pptruser -G audio,video pptruser 
 
-    sudo chown -R pptruser:pptruser .
-
-    gosu pptruser
-
 build_script:
 - sh: >-
     dotnet build ./lib/PuppeteerSharp.Tests.CloseMe/PuppeteerSharp.Tests.CloseMe.csproj
@@ -43,9 +39,11 @@ build_script:
 
 test_script:
 - sh: >-
+    sudo chown -R pptruser:pptruser .
+
     cd lib/PuppeteerSharp.Tests
 
-    dotnet test -f $framework -s test.runsettings
+    gosu pptruser dotnet test -f $framework -s test.runsettings
 
 cache:
   - $HOME/.nuget/packages
