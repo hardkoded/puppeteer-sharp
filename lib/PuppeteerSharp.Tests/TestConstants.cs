@@ -47,6 +47,7 @@ namespace PuppeteerSharp.Tests
             Args = new[]
             {
                 "--no-sandbox",
+                "--user-data-dir",
                 $"--disable-extensions-except={ExtensionPath}",
                 $"--load-extension={ExtensionPath}"
             }
