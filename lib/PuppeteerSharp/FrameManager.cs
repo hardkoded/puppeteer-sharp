@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace PuppeteerSharp
         private bool _ensureNewDocumentNavigation;
         private readonly ILogger _logger;
         private readonly NetworkManager _networkManager;
-        private readonly Dictionary<string, Frame> _frames;
+        private readonly ConcurrentDictionary<string, Frame> _frames;
         private readonly MultiMap<string, TaskCompletionSource<Frame>> _pendingFrameRequests;
         private const int WaitForRequestDelay = 1000;
 
@@ -24,7 +25,7 @@ namespace PuppeteerSharp
         {
             _client = client;
             Page = page;
-            _frames = new Dictionary<string, Frame>();
+            _frames = new ConcurrentDictionary<string, Frame>();
             _contextIdToContext = new Dictionary<int, ExecutionContext>();
             _logger = _client.Connection.LoggerFactory.CreateLogger<FrameManager>();
             _networkManager = networkManager;
@@ -212,11 +213,12 @@ namespace PuppeteerSharp
 
         private void OnExecutionContextsCleared()
         {
-            foreach (var context in _contextIdToContext.Values)
+            while (_contextIdToContext.Count > 0)
             {
-                RemoveContext(context);
+                var contextItem = _contextIdToContext.ElementAt(0);
+                RemoveContext(contextItem.Value);
+                _contextIdToContext.Remove(contextItem.Key);
             }
-            _contextIdToContext.Clear();
         }
 
         private void OnExecutionContextDestroyed(int executionContextId)
@@ -280,7 +282,7 @@ namespace PuppeteerSharp
                     // Update frame id to retain frame identity on cross-process navigation.
                     if (frame.Id != null)
                     {
-                        _frames.Remove(frame.Id);
+                        _frames.TryRemove(frame.Id, out _);
                     }
                     frame.Id = framePayload.Id;
                 }
@@ -337,7 +339,7 @@ namespace PuppeteerSharp
                 RemoveFramesRecursively(frame.ChildFrames[0]);
             }
             frame.Detach();
-            _frames.Remove(frame.Id);
+            _frames.TryRemove(frame.Id, out _);
             FrameDetached?.Invoke(this, new FrameEventArgs(frame));
         }
 

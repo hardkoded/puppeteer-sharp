@@ -6,7 +6,7 @@ namespace PuppeteerSharp.Helpers
 {
     internal class MultiMap<TKey, TValue>
     {
-        private readonly ConcurrentDictionary<TKey, HashSet<TValue>> _map = new ConcurrentDictionary<TKey, HashSet<TValue>>();
+        private readonly ConcurrentDictionary<TKey, List<TValue>> _map = new ConcurrentDictionary<TKey, List<TValue>>();
 
         internal void Add(TKey key, TValue value)
         {
@@ -16,13 +16,13 @@ namespace PuppeteerSharp.Helpers
             }
             else
             {
-                set = new HashSet<TValue> { value };
+                set = new List<TValue> { value };
                 _map.TryAdd(key, set);
             }
         }
 
-        internal HashSet<TValue> Get(TKey key)
-            => _map.TryGetValue(key, out var set) ? set : new HashSet<TValue>();
+        internal List<TValue> Get(TKey key)
+            => _map.TryGetValue(key, out var set) ? set : new List<TValue>();
 
         internal bool Has(TKey key, TValue value)
             => _map.TryGetValue(key, out var set) && set.Contains(value);

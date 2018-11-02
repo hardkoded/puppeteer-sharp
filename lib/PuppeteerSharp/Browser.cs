@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -58,7 +59,7 @@ namespace PuppeteerSharp
             Connection = connection;
             IgnoreHTTPSErrors = ignoreHTTPSErrors;
             DefaultViewport = defaultViewport;
-            TargetsMap = new Dictionary<string, Target>();
+            TargetsMap = new ConcurrentDictionary<string, Target>();
             ScreenshotTaskQueue = new TaskQueue();
             DefaultContext = new BrowserContext(Connection, this, null);
             _contexts = contextIds.ToDictionary(keySelector: contextId => contextId,
@@ -73,7 +74,7 @@ namespace PuppeteerSharp
 
         #region Private members
 
-        internal readonly Dictionary<string, Target> TargetsMap;
+        internal readonly ConcurrentDictionary<string, Target> TargetsMap;
 
         private readonly Dictionary<string, BrowserContext> _contexts;
         private readonly ILogger<Browser> _logger;
@@ -364,7 +365,7 @@ namespace PuppeteerSharp
             }
 
             var target = TargetsMap[e.TargetId];
-            TargetsMap.Remove(e.TargetId);
+            TargetsMap.TryRemove(e.TargetId, out _);
 
             target.CloseTaskWrapper.TrySetResult(true);
 
