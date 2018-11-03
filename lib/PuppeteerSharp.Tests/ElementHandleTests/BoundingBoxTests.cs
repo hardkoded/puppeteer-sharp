@@ -34,8 +34,8 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
                 Width = 500,
                 Height = 500
             });
-            await Page.GoToAsync(TestConstants.ServerUrl + "/frames/nested-frames.html");
-            var childFrame = Page.FirstChildFrame();
+            await Page.GoToAsync(TestConstants.ServerUrl + "/frames/nested-frames.html", WaitUntilNavigation.Networkidle0);
+            var childFrame = Page.Frames.First(f => f.Url.Contains("two-frames.html"));
             var nestedFrame = childFrame.ChildFrames.Last();
             var elementHandle = await nestedFrame.QuerySelectorAsync("div");
             var box = await elementHandle.BoundingBoxAsync();
