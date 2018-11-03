@@ -19,7 +19,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
             Assert.Equal(2, Page.Frames.Count());
 
-            var frame1 = Page.Frames.ElementAt(0);
+            var frame1 = Page.MainFrame;
             var frame2 = Page.FirstChildFrame();
 
             await frame1.EvaluateExpressionAsync("window.FOO = 'foo'");
