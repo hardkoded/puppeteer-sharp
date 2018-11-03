@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -27,7 +28,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
               `;");
 
             // Step 2: Add div and position it absolutely inside frame.
-            var frame = Page.Frames[1];
+            var frame = Page.FirstChildFrame();
             var divHandle = (await frame.EvaluateFunctionHandleAsync(@"() => {
               const div = document.createElement('div');
               document.body.appendChild(div);
