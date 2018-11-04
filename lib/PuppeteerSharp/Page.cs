@@ -36,7 +36,7 @@ namespace PuppeteerSharp
     {
         private readonly bool _ignoreHTTPSErrors;
         private readonly NetworkManager _networkManager;
-        private readonly FrameManager _frameManager;
+        private FrameManager _frameManager;
         private readonly TaskQueue _screenshotTaskQueue;
         private readonly EmulationManager _emulationManager;
         private readonly Dictionary<string, Delegate> _pageBindings;
@@ -56,7 +56,6 @@ namespace PuppeteerSharp
         private Page(
             CDPSession client,
             Target target,
-            FrameTree frameTree,
             bool ignoreHTTPSErrors,
             TaskQueue screenshotTaskQueue)
         {
@@ -69,7 +68,6 @@ namespace PuppeteerSharp
             Coverage = new Coverage(client);
 
             _networkManager = new NetworkManager(client);
-            _frameManager = new FrameManager(client, frameTree, this, _networkManager);
             _networkManager.FrameManager = _frameManager;
             _emulationManager = new EmulationManager(client);
             _pageBindings = new Dictionary<string, Delegate>();
@@ -1533,7 +1531,8 @@ namespace PuppeteerSharp
         {
             await client.SendAsync("Page.enable", null).ConfigureAwait(false);
             var result = await client.SendAsync("Page.getFrameTree").ConfigureAwait(false);
-            var page = new Page(client, target, new FrameTree(result[MessageKeys.FrameTree]), ignoreHTTPSErrors, screenshotTaskQueue);
+            var page = new Page(client, target, ignoreHTTPSErrors, screenshotTaskQueue);
+            await page.InitializeFrameManagerAsync(new FrameTree(result[MessageKeys.FrameTree])).ConfigureAwait(false);
 
             await Task.WhenAll(
                 client.SendAsync("Target.setAutoAttach", new { autoAttach = true, waitForDebuggerOnStart = false }),
@@ -1560,6 +1559,9 @@ namespace PuppeteerSharp
 
             return page;
         }
+
+        private async Task InitializeFrameManagerAsync(FrameTree frameTree)
+            => _frameManager = await FrameManager.CreateFrameManagerAsync(Client, this, _networkManager, frameTree).ConfigureAwait(false);
 
         private async Task<Response> GoAsync(int delta, NavigationOptions options)
         {

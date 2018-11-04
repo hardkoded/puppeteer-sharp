@@ -21,7 +21,8 @@ namespace PuppeteerSharp
         private readonly MultiMap<string, TaskCompletionSource<Frame>> _pendingFrameRequests;
         private const int WaitForRequestDelay = 1000;
 
-        internal FrameManager(CDPSession client, FrameTree frameTree, Page page, NetworkManager networkManager)
+
+        private FrameManager(CDPSession client, Page page, NetworkManager networkManager)
         {
             _client = client;
             Page = page;
@@ -32,7 +33,6 @@ namespace PuppeteerSharp
             _pendingFrameRequests = new MultiMap<string, TaskCompletionSource<Frame>>();
 
             _client.MessageReceived += _client_MessageReceived;
-            HandleFrameTree(frameTree);
         }
 
         #region Properties
@@ -50,6 +50,13 @@ namespace PuppeteerSharp
         #endregion
 
         #region Public Methods
+        internal static async Task<FrameManager> CreateFrameManagerAsync(CDPSession client, Page page, NetworkManager networkManager, FrameTree frameTree)
+        {
+            var frameManager = new FrameManager(client, page, networkManager);
+            await frameManager.HandleFrameTreeAsync(frameTree).ConfigureAwait(false);
+            return frameManager;
+        }
+
 
         internal ExecutionContext ExecutionContextById(int contextId)
         {
@@ -160,7 +167,7 @@ namespace PuppeteerSharp
                     break;
 
                 case "Page.frameNavigated":
-                    OnFrameNavigated(e.MessageData.SelectToken(MessageKeys.Frame).ToObject<FramePayload>());
+                    await OnFrameNavigatedAsync(e.MessageData.SelectToken(MessageKeys.Frame).ToObject<FramePayload>()).ConfigureAwait(false);
                     break;
 
                 case "Page.navigatedWithinDocument":
@@ -258,10 +265,10 @@ namespace PuppeteerSharp
             }
         }
 
-        private void OnFrameNavigated(FramePayload framePayload)
+        private async Task OnFrameNavigatedAsync(FramePayload framePayload)
         {
             var isMainFrame = string.IsNullOrEmpty(framePayload.ParentId);
-            var frame = isMainFrame ? MainFrame : _frames[framePayload.Id];
+            var frame = isMainFrame ? MainFrame : await GetFrameAsync(framePayload.Id);
 
             Contract.Assert(isMainFrame || frame != null, "We either navigate top level or have old version of the navigated frame");
 
@@ -354,20 +361,20 @@ namespace PuppeteerSharp
             }
         }
 
-        private void HandleFrameTree(FrameTree frameTree)
+        private async Task HandleFrameTreeAsync(FrameTree frameTree)
         {
             if (!string.IsNullOrEmpty(frameTree.Frame.ParentId))
             {
                 OnFrameAttached(frameTree.Frame.Id, frameTree.Frame.ParentId);
             }
 
-            OnFrameNavigated(frameTree.Frame);
+            await OnFrameNavigatedAsync(frameTree.Frame);
 
             if (frameTree.Childs != null)
             {
                 foreach (var child in frameTree.Childs)
                 {
-                    HandleFrameTree(child);
+                    await HandleFrameTreeAsync(child);
                 }
             }
         }
