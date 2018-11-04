@@ -26,6 +26,12 @@
       },
       {
         "files": [
+          "examples/**.yml",
+          "examples/**.md"
+        ]
+      },
+      {
+        "files": [
           "toc.yml",
           "*.md"
         ]
