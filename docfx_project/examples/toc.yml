@@ -1,5 +1,6 @@
 - name: Basic Examples
   items:
-    - name: How to take screenshots and save it as a file
-      href: Page.ScreenshotAsync.md
-      
+      - name: How to take screenshots and save it as a file
+        href: Page.ScreenshotAsync.md
+      - name: How to extract all the link from a page
+        href: Page.EvaluateExpressionAsync.GetAllLinks.md

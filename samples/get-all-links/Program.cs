@@ -13,11 +13,11 @@ namespace Example.GetAllLinks
             await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
             Console.WriteLine("Navigating to google.com");
 
-            using (var browser = await Puppeteer.LaunchAsync(options)) 
+            using (var browser = await Puppeteer.LaunchAsync(options))
             using (var page = await browser.NewPageAsync())
             {
                 await page.GoToAsync("http://www.google.com");
-                var jsSelectAllAnchors = @"Array.from(document.querySelectorAll('a')).map(a =>  a.href);";
+                var jsSelectAllAnchors = @"Array.from(document.querySelectorAll('a')).map(a => a.href);";
                 var urls = await page.EvaluateExpressionAsync<string[]>(jsSelectAllAnchors);
                 foreach (string url in urls)
                 {
