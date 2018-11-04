@@ -308,10 +308,10 @@ namespace PuppeteerSharp
             FrameNavigated?.Invoke(this, new FrameEventArgs(frame));
         }
 
-        private void AddFrame(string framId, Frame frame)
+        private void AddFrame(string frameId, Frame frame)
         {
-            _frames[framId] = frame;
-            foreach (var tcs in _pendingFrameRequests.Get(framId))
+            _frames[frameId] = frame;
+            foreach (var tcs in _pendingFrameRequests.Get(frameId))
             {
                 tcs.TrySetResult(frame);
             }

@@ -35,7 +35,7 @@ namespace PuppeteerSharp
     public class Page : IDisposable
     {
         private readonly bool _ignoreHTTPSErrors;
-        private readonly NetworkManager _networkManager;
+        private NetworkManager _networkManager;
         private FrameManager _frameManager;
         private readonly TaskQueue _screenshotTaskQueue;
         private readonly EmulationManager _emulationManager;
@@ -67,8 +67,6 @@ namespace PuppeteerSharp
             Tracing = new Tracing(client);
             Coverage = new Coverage(client);
 
-            _networkManager = new NetworkManager(client);
-            _networkManager.FrameManager = _frameManager;
             _emulationManager = new EmulationManager(client);
             _pageBindings = new Dictionary<string, Delegate>();
             _workers = new Dictionary<string, Worker>();
@@ -77,16 +75,6 @@ namespace PuppeteerSharp
             _ignoreHTTPSErrors = ignoreHTTPSErrors;
 
             _screenshotTaskQueue = screenshotTaskQueue;
-
-            _frameManager.FrameAttached += (sender, e) => FrameAttached?.Invoke(this, e);
-            _frameManager.FrameDetached += (sender, e) => FrameDetached?.Invoke(this, e);
-            _frameManager.FrameNavigated += (sender, e) => FrameNavigated?.Invoke(this, e);
-
-            _networkManager.Request += (sender, e) => Request?.Invoke(this, e);
-            _networkManager.RequestFailed += (sender, e) => RequestFailed?.Invoke(this, e);
-            _networkManager.Response += (sender, e) => Response?.Invoke(this, e);
-            _networkManager.RequestFinished += (sender, e) => RequestFinished?.Invoke(this, e);
-
             target.CloseTask.ContinueWith((arg) =>
             {
                 Close?.Invoke(this, EventArgs.Empty);
@@ -1532,7 +1520,7 @@ namespace PuppeteerSharp
             await client.SendAsync("Page.enable", null).ConfigureAwait(false);
             var result = await client.SendAsync("Page.getFrameTree").ConfigureAwait(false);
             var page = new Page(client, target, ignoreHTTPSErrors, screenshotTaskQueue);
-            await page.InitializeFrameManagerAsync(new FrameTree(result[MessageKeys.FrameTree])).ConfigureAwait(false);
+            await page.InitializeAsync(new FrameTree(result[MessageKeys.FrameTree])).ConfigureAwait(false);
 
             await Task.WhenAll(
                 client.SendAsync("Target.setAutoAttach", new { autoAttach = true, waitForDebuggerOnStart = false }),
@@ -1560,9 +1548,21 @@ namespace PuppeteerSharp
             return page;
         }
 
-        private async Task InitializeFrameManagerAsync(FrameTree frameTree)
-            => _frameManager = await FrameManager.CreateFrameManagerAsync(Client, this, _networkManager, frameTree).ConfigureAwait(false);
+        private async Task InitializeAsync(FrameTree frameTree)
+        {
+            _networkManager = new NetworkManager(Client);
+            _frameManager = await FrameManager.CreateFrameManagerAsync(Client, this, _networkManager, frameTree).ConfigureAwait(false);
+            _networkManager.FrameManager = _frameManager;
 
+            _frameManager.FrameAttached += (sender, e) => FrameAttached?.Invoke(this, e);
+            _frameManager.FrameDetached += (sender, e) => FrameDetached?.Invoke(this, e);
+            _frameManager.FrameNavigated += (sender, e) => FrameNavigated?.Invoke(this, e);
+
+            _networkManager.Request += (sender, e) => Request?.Invoke(this, e);
+            _networkManager.RequestFailed += (sender, e) => RequestFailed?.Invoke(this, e);
+            _networkManager.Response += (sender, e) => Response?.Invoke(this, e);
+            _networkManager.RequestFinished += (sender, e) => RequestFinished?.Invoke(this, e);
+        }
         private async Task<Response> GoAsync(int delta, NavigationOptions options)
         {
             var history = await Client.SendAsync<PageGetNavigationHistoryResponse>("Page.getNavigationHistory").ConfigureAwait(false);
