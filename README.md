@@ -136,6 +136,7 @@ using (var browser = await PuppeteerSharp.Puppeteer.ConnectAsync(options))
 ```
 
 # Monthly reports
+ * [November 2018](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-nov-2018)
  * [October 2018](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-oct-2018)
  * [September 2018](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-sep-2018)
  * [July 2018](https://www.hardkoded.com/blog/puppeteer-sharp-monthly-jul-2018)
@@ -145,7 +146,3 @@ using (var browser = await PuppeteerSharp.Puppeteer.ConnectAsync(options))
  * [March 2018](http://www.hardkoded.com/blogs/puppeteer-sharp-monthly-march-2018)
  * [February 2018](http://www.hardkoded.com/blogs/puppeteer-sharp-monthly-february-2018)
 
-# Progress
-
-* Tests on Google's Puppeteer: 493.
-* Tests on Puppeteer Sharp: 482.
