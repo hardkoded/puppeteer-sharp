@@ -13,6 +13,7 @@ using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Input;
 using PuppeteerSharp.Media;
 using PuppeteerSharp.Messaging;
+using PuppeteerSharp.Messaging.DomStorage;
 using PuppeteerSharp.Mobile;
 using PuppeteerSharp.PageCoverage;
 
@@ -89,6 +90,43 @@ namespace PuppeteerSharp
             _networkManager.Response += (sender, e) => Response?.Invoke(this, e);
             _networkManager.RequestFinished += (sender, e) => RequestFinished?.Invoke(this, e);
             _networkManager.WebSocketFrameReceived += (sender, e) => WebSocketFrameReceived?.Invoke(this, e);
+
+            LocalStorage = new Dictionary<string, List<DomStorageItem>>();
+            SessionStorage = new Dictionary<string, List<DomStorageItem>>();
+
+            _networkManager.DomStorageItemAdded += delegate (object sender, DomStorageItemAddedEvent e)
+            {
+                var storage = e.StorageId.IsLocalStorage ? LocalStorage : SessionStorage;
+                if (!storage.ContainsKey(e.StorageId.SecurityOrigin))
+                {
+	                storage[e.StorageId.SecurityOrigin] = new List<DomStorageItem>();
+                }
+                var list = storage[e.StorageId.SecurityOrigin];
+                list.Add(new DomStorageItem(e.Key, e.NewValue));
+            };
+
+            _networkManager.DomStorageItemRemoved += delegate (object sender, DomStorageItemRemovedEvent e)
+            {
+	            var storage = e.StorageId.IsLocalStorage ? LocalStorage : SessionStorage;
+                var list = storage[e.StorageId.SecurityOrigin];
+                var index = list.FindIndex(x => x.Key == e.Key);
+                list.RemoveAt(index);
+            };
+
+            _networkManager.DomStorageItemUpdated += delegate (object sender, DomStorageItemUpdatedEvent e)
+            {
+	            var storage = e.StorageId.IsLocalStorage ? LocalStorage : SessionStorage;
+	            var list = storage[e.StorageId.SecurityOrigin];
+                var item = list.First(x => x.Key == e.Key);
+                item.Value = e.NewValue;
+            };
+
+            _networkManager.DomStorageItemsCleared += delegate (object sender, DomStorageItemsClearedEvent e)
+            {
+	            var storage = e.StorageId.IsLocalStorage ? LocalStorage : SessionStorage;
+	            var list = storage[e.StorageId.SecurityOrigin];
+                list.Clear();
+            };
 
             target.CloseTask.ContinueWith((arg) =>
             {
@@ -317,6 +355,16 @@ namespace PuppeteerSharp
         /// Get an indication that the page has been closed.
         /// </summary>
         public bool IsClosed { get; private set; }
+
+        /// <summary>
+        /// DomStorage dictionary
+        /// </summary>
+        public Dictionary<string, List<DomStorageItem>> LocalStorage { get; private set; }
+
+        /// <summary>
+        /// DomStorage dictionary
+        /// </summary>
+        public Dictionary<string, List<DomStorageItem>> SessionStorage { get; private set; }
 
         internal bool JavascriptEnabled { get; set; } = true;
         #endregion
@@ -1531,7 +1579,7 @@ namespace PuppeteerSharp
         /// Brings page to front (activates tab).
         /// </summary>
         /// <returns></returns>
-        public async Task<JObject> BringToFrontAsync ()
+        public async Task<JObject> BringToFrontAsync()
         {
             return await Client.SendAsync("Page.bringToFront");
         }
@@ -1554,6 +1602,7 @@ namespace PuppeteerSharp
                 client.SendAsync("Target.setAutoAttach", new { autoAttach = true, waitForDebuggerOnStart = false }),
                 client.SendAsync("Page.setLifecycleEventsEnabled", new { enabled = true }),
                 client.SendAsync("Network.enable", null),
+                client.SendAsync("DOMStorage.enable", null),
                 client.SendAsync("Runtime.enable", null),
                 client.SendAsync("Security.enable", null),
                 client.SendAsync("Performance.enable", null),

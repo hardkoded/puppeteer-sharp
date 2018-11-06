@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Messaging;
+using PuppeteerSharp.Messaging.DomStorage;
 
 namespace PuppeteerSharp
 {
@@ -42,6 +43,10 @@ namespace PuppeteerSharp
         internal event EventHandler<RequestEventArgs> RequestFinished;
         internal event EventHandler<RequestEventArgs> RequestFailed;
         internal event EventHandler<WebSocketFrameReceivedResponse> WebSocketFrameReceived;
+        internal event EventHandler<DomStorageItemsClearedEvent> DomStorageItemsCleared;
+        internal event EventHandler<DomStorageItemAddedEvent> DomStorageItemAdded;
+        internal event EventHandler<DomStorageItemRemovedEvent> DomStorageItemRemoved;
+        internal event EventHandler<DomStorageItemUpdatedEvent> DomStorageItemUpdated;
         internal FrameManager FrameManager { get; set; }
         #endregion
 
@@ -123,6 +128,18 @@ namespace PuppeteerSharp
                     break;
                 case "Network.webSocketFrameReceived":
                     OnWebSocketFrameReceived(e.MessageData.ToObject<WebSocketFrameReceivedResponse>());
+                    break;
+                case "DOMStorage.domStorageItemsCleared":
+                    OnDomStorageItemsCleared(e.MessageData.ToObject<DomStorageItemsClearedEvent>());
+                    break;
+                case "DOMStorage.domStorageItemRemoved":
+                    OnDomStorageItemRemoved(e.MessageData.ToObject<DomStorageItemRemovedEvent>());
+                    break;
+                case "DOMStorage.domStorageItemAdded":
+                    OnDomStorageItemAdded(e.MessageData.ToObject<DomStorageItemAddedEvent>());
+                    break;
+                case "DOMStorage.domStorageItemUpdated":
+                    OnDomStorageItemUpdated(e.MessageData.ToObject<DomStorageItemUpdatedEvent>());
                     break;
             }
         }
@@ -378,11 +395,32 @@ namespace PuppeteerSharp
             ).ConfigureAwait(false);
         }
 
-	    protected virtual void OnWebSocketFrameReceived(WebSocketFrameReceivedResponse e)
-	    {
+        protected virtual void OnWebSocketFrameReceived(WebSocketFrameReceivedResponse e)
+        {
             WebSocketFrameReceived?.Invoke(this, e);
-	    }
+        }
+
+        protected virtual void OnDomStorageItemsCleared(DomStorageItemsClearedEvent e)
+        {
+            DomStorageItemsCleared?.Invoke(this, e);
+        }
+
+        protected virtual void OnDomStorageItemAdded(DomStorageItemAddedEvent e)
+        {
+            DomStorageItemAdded?.Invoke(this, e);
+        }
+
+        protected virtual void OnDomStorageItemRemoved(DomStorageItemRemovedEvent e)
+        {
+            DomStorageItemRemoved?.Invoke(this, e);
+        }
+
+        protected virtual void OnDomStorageItemUpdated(DomStorageItemUpdatedEvent e)
+        {
+            DomStorageItemUpdated?.Invoke(this, e);
+        }
         #endregion
+
 
     }
 }

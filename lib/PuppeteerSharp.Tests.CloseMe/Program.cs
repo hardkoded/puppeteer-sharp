@@ -9,13 +9,23 @@ namespace PuppeteerSharp.Tests.CloseMe
         {
             var options = new LaunchOptions
             {
-                Headless = true,
+                Headless = false,
                 DumpIO = false,
-                ExecutablePath = args[0]
+                Timeout = 0,
+                ExecutablePath = @"D:\Git\better\Console\bin\Debug\.local-chromium\Win64-594312\chrome-win\chrome.exe"
             };
+
+            //var fetcher = Puppeteer.CreateBrowserFetcher(new BrowserFetcherOptions());
+            //   await fetcher.DownloadAsync(BrowserFetcher.DefaultRevision);
 
             using (var browser = await Puppeteer.LaunchAsync(options))
             {
+                var page = await browser.NewPageAsync();
+                page.DefaultWaitForTimeout = 0;
+                page.DefaultNavigationTimeout = 0;
+                await page.GoToAsync("https://www.anbodianjing.com");
+                await Task.Delay(5000);
+                //var applicationCache = await page.MainFrame.GetApplicationCache();
                 Console.WriteLine(browser.WebSocketEndpoint);
                 Console.ReadLine();
             }
