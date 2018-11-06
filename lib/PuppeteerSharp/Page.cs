@@ -88,6 +88,7 @@ namespace PuppeteerSharp
             _networkManager.RequestFailed += (sender, e) => RequestFailed?.Invoke(this, e);
             _networkManager.Response += (sender, e) => Response?.Invoke(this, e);
             _networkManager.RequestFinished += (sender, e) => RequestFinished?.Invoke(this, e);
+            _networkManager.WebSocketFrameReceived += (sender, e) => WebSocketFrameReceived?.Invoke(this, e);
 
             target.CloseTask.ContinueWith((arg) =>
             {
@@ -197,6 +198,11 @@ namespace PuppeteerSharp
         /// Emitted when a dedicated WebWorker (<see href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API"/>) is terminated.
         /// </summary>
         public event EventHandler<WorkerEventArgs> WorkerDestroyed;
+
+        /// <summary>
+        /// Fired when WebSocket frame is received.
+        /// </summary>
+	    public event EventHandler<WebSocketFrameReceivedResponse> WebSocketFrameReceived;
 
         /// <summary>
         /// Raised when the page closes.
@@ -1519,6 +1525,15 @@ namespace PuppeteerSharp
             }
 
             return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Brings page to front (activates tab).
+        /// </summary>
+        /// <returns></returns>
+        public async Task<JObject> BringToFrontAsync ()
+        {
+            return await Client.SendAsync("Page.bringToFront");
         }
         #endregion
 

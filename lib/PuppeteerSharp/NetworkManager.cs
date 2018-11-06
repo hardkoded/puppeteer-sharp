@@ -41,6 +41,7 @@ namespace PuppeteerSharp
         internal event EventHandler<RequestEventArgs> Request;
         internal event EventHandler<RequestEventArgs> RequestFinished;
         internal event EventHandler<RequestEventArgs> RequestFailed;
+        internal event EventHandler<WebSocketFrameReceivedResponse> WebSocketFrameReceived;
         internal FrameManager FrameManager { get; set; }
         #endregion
 
@@ -119,6 +120,9 @@ namespace PuppeteerSharp
                     break;
                 case "Network.loadingFailed":
                     OnLoadingFailed(e.MessageData.ToObject<LoadingFailedResponse>());
+                    break;
+                case "Network.webSocketFrameReceived":
+                    OnWebSocketFrameReceived(e.MessageData.ToObject<WebSocketFrameReceivedResponse>());
                     break;
             }
         }
@@ -373,6 +377,12 @@ namespace PuppeteerSharp
                 })
             ).ConfigureAwait(false);
         }
+
+	    protected virtual void OnWebSocketFrameReceived(WebSocketFrameReceivedResponse e)
+	    {
+            WebSocketFrameReceived?.Invoke(this, e);
+	    }
         #endregion
+
     }
 }
