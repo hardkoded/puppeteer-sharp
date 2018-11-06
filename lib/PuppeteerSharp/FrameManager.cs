@@ -21,7 +21,6 @@ namespace PuppeteerSharp
         private readonly MultiMap<string, TaskCompletionSource<Frame>> _pendingFrameRequests;
         private const int WaitForRequestDelay = 1000;
 
-
         private FrameManager(CDPSession client, Page page, NetworkManager networkManager)
         {
             _client = client;
@@ -56,7 +55,6 @@ namespace PuppeteerSharp
             await frameManager.HandleFrameTreeAsync(frameTree).ConfigureAwait(false);
             return frameManager;
         }
-
 
         internal ExecutionContext ExecutionContextById(int contextId)
         {
