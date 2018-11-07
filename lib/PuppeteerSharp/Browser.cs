@@ -74,7 +74,7 @@ namespace PuppeteerSharp
 
         #region Private members
 
-        internal readonly ConcurrentDictionary<string, Target> TargetsMap;
+        internal readonly IDictionary<string, Target> TargetsMap;
 
         private readonly Dictionary<string, BrowserContext> _contexts;
         private readonly ILogger<Browser> _logger;
@@ -365,7 +365,7 @@ namespace PuppeteerSharp
             }
 
             var target = TargetsMap[e.TargetId];
-            TargetsMap.TryRemove(e.TargetId, out _);
+            TargetsMap.Remove(e.TargetId);
 
             target.CloseTaskWrapper.TrySetResult(true);
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -12,9 +13,9 @@ namespace PuppeteerSharp
         #region Private members
 
         private readonly CDPSession _client;
-        private readonly Dictionary<string, Request> _requestIdToRequest = new Dictionary<string, Request>();
-        private readonly Dictionary<string, RequestWillBeSentPayload> _requestIdToRequestWillBeSentEvent =
-            new Dictionary<string, RequestWillBeSentPayload>();
+        private readonly IDictionary<string, Request> _requestIdToRequest = new ConcurrentDictionary<string, Request>();
+        private readonly IDictionary<string, RequestWillBeSentPayload> _requestIdToRequestWillBeSentEvent =
+            new ConcurrentDictionary<string, RequestWillBeSentPayload>();
         private readonly MultiMap<string, string> _requestHashToRequestIds = new MultiMap<string, string>();
         private readonly MultiMap<string, string> _requestHashToInterceptionIds = new MultiMap<string, string>();
         private readonly ILogger _logger;
