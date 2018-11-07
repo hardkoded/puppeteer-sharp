@@ -4,5 +4,5 @@
       href: Page.ScreenshotAsync.md
     - name: How to extract all the link from a page
       href: Page.EvaluateExpressionAsync.GetAllLinks.md
-    - name: How to map complex javascript objects to C#
+    - name: How to map complex javascript objects to .NET object
       href: Page.EvaluateFunctionAsync.ComplexJSObjects.md
