@@ -10,31 +10,35 @@ namespace complex_js_objects
         [DebuggerDisplay("Content: {Content} Url: {Url}")]
         public class Data
         {
-            public string Content { get; set; }
+            public string Title { get; set; }
             public string Url { get; set; }
-        }
+            public override string ToString() => $"Title: {Title} \nURL: {Url}";
+        } 
 
         static async Task Main(string[] args)
         {
             var options = new LaunchOptions { Headless = true };
+
             Console.WriteLine("Downloading chromium");
+
             await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
+
             Console.WriteLine("Navigating to Hacker News");
+
             using (var browser = await Puppeteer.LaunchAsync(options))
             using (var page = await browser.NewPageAsync())
             {
                 await page.GoToAsync("https://news.ycombinator.com/");
                 Console.WriteLine("Get all urls from page");
-                var jsCode = @"
+                var jsCode = @"() => {
 const selectors = Array.from(document.querySelectorAll('a[class=""storylink""]')); 
-selectors.map( t=> {return {content: t.innerHTML, url: t.href}});
-";
-                var handles = await page.EvaluateExpressionHandleAsync(jsCode);
-                var results = await handles.JsonValueAsync<Data[]>();
-                //foreach (string url in urls)
-                //{
-                //    Console.WriteLine($"Url: {url}");
-                //}
+return selectors.map( t=> {return { title: t.innerHTML, url: t.href}});
+}";
+                var results = await page.EvaluateFunctionAsync<Data[]>(jsCode);
+                foreach (var result in results)
+                {
+                    Console.WriteLine(result.ToString());
+                }
                 Console.WriteLine("Press any key to continue...");
                 Console.ReadLine();
             }
