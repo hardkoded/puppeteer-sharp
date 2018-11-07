@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using PuppeteerSharp;
 
-namespace complex_js_objects
+namespace Example.ComplexJSObjects
 {
     class Program
     {
