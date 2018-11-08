@@ -124,9 +124,9 @@ namespace PuppeteerSharp.Tests.FrameTests
                 return new Promise(x => frame.onload = x);
             }", TestConstants.EmptyPage);
 
-            Assert.Single(Page.Frames.Where(f => f.Name == string.Empty));
-            Assert.Single(Page.Frames.Where(f => f.Name == "theFrameId"));
-            Assert.Single(Page.Frames.Where(f => f.Name == "theFrameName"));
+            Assert.Single(Page.Frames, frame => frame.Name == string.Empty);
+            Assert.Single(Page.Frames, frame => frame.Name == "theFrameId");
+            Assert.Single(Page.Frames, frame => frame.Name == "theFrameName");
         }
 
         [Fact]
@@ -135,7 +135,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
             await FrameUtils.AttachFrameAsync(Page, "frame2", TestConstants.EmptyPage);
 
-            Assert.Single(Page.Frames.Where(f => f.ParentFrame == null));
+            Assert.Single(Page.Frames, frame => frame.ParentFrame == null);
             Assert.Equal(2, Page.Frames.Count(f => f.ParentFrame == Page.MainFrame));
         }
     }
