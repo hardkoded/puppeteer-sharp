@@ -110,15 +110,24 @@ namespace PuppeteerSharp
 	            var storage = e.StorageId.IsLocalStorage ? LocalStorage : SessionStorage;
                 var list = storage[e.StorageId.SecurityOrigin];
                 var index = list.FindIndex(x => x.Key == e.Key);
-                list.RemoveAt(index);
+                if (index >= 0)
+                {
+	                list.RemoveAt(index);
+                }
             };
 
             _networkManager.DomStorageItemUpdated += delegate (object sender, DomStorageItemUpdatedEvent e)
             {
 	            var storage = e.StorageId.IsLocalStorage ? LocalStorage : SessionStorage;
 	            var list = storage[e.StorageId.SecurityOrigin];
-                var item = list.First(x => x.Key == e.Key);
-                item.Value = e.NewValue;
+                var item = list.FirstOrDefault(x => x.Key == e.Key);
+                if (item == null)
+                {
+                    list.Add(new DomStorageItem(e.Key, e.NewValue));
+                } else
+                {
+	                item.Value = e.NewValue;
+                }
             };
 
             _networkManager.DomStorageItemsCleared += delegate (object sender, DomStorageItemsClearedEvent e)
