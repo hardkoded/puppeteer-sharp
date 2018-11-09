@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Xunit;
@@ -136,7 +137,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldThrowIfElementHandlesAreFromOtherFrames()
         {
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
-            var bodyHandle = await Page.Frames[1].QuerySelectorAsync("body");
+            var bodyHandle = await Page.FirstChildFrame().QuerySelectorAsync("body");
             var exception = await Assert.ThrowsAsync<EvaluationFailedException>(()
                 => Page.EvaluateFunctionAsync<string>("body => body.innerHTML", bodyHandle));
             Assert.Contains("JSHandles can be evaluated only in the context they were created", exception.Message);

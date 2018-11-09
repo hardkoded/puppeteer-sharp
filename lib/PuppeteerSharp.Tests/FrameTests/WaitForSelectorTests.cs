@@ -53,7 +53,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
-            var otherFrame = Page.Frames.ElementAt(1);
+            var otherFrame = Page.FirstChildFrame();
             var watchdog = Page.WaitForSelectorAsync("div");
             await otherFrame.EvaluateFunctionAsync(AddElement, "div");
             await Page.EvaluateFunctionAsync(AddElement, "div");
@@ -66,7 +66,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         {
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
             await FrameUtils.AttachFrameAsync(Page, "frame2", TestConstants.EmptyPage);
-            var frame1 = Page.Frames.ElementAt(1);
+            var frame1 = Page.FirstChildFrame();
             var frame2 = Page.Frames.ElementAt(2);
             var waitForSelectorPromise = frame2.WaitForSelectorAsync("div");
             await frame1.EvaluateFunctionAsync(AddElement, "div");
@@ -90,7 +90,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         public async Task ShouldThrowWhenFrameIsDetached()
         {
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
-            var frame = Page.Frames.ElementAt(1);
+            var frame = Page.FirstChildFrame();
             var waitTask = frame.WaitForSelectorAsync(".box").ContinueWith(task => task?.Exception?.InnerException);
             await FrameUtils.DetachFrameAsync(Page, "frame1");
             var waitException = await waitTask;

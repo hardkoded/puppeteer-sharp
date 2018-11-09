@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -12,9 +13,9 @@ namespace PuppeteerSharp
         #region Private members
 
         private readonly CDPSession _client;
-        private readonly Dictionary<string, Request> _requestIdToRequest = new Dictionary<string, Request>();
-        private readonly Dictionary<string, RequestWillBeSentPayload> _requestIdToRequestWillBeSentEvent =
-            new Dictionary<string, RequestWillBeSentPayload>();
+        private readonly IDictionary<string, Request> _requestIdToRequest = new ConcurrentDictionary<string, Request>();
+        private readonly IDictionary<string, RequestWillBeSentPayload> _requestIdToRequestWillBeSentEvent =
+            new ConcurrentDictionary<string, RequestWillBeSentPayload>();
         private readonly MultiMap<string, string> _requestHashToRequestIds = new MultiMap<string, string>();
         private readonly MultiMap<string, string> _requestHashToInterceptionIds = new MultiMap<string, string>();
         private readonly ILogger _logger;
@@ -103,7 +104,7 @@ namespace PuppeteerSharp
             switch (e.MessageID)
             {
                 case "Network.requestWillBeSent":
-                    OnRequestWillBeSent(e.MessageData.ToObject<RequestWillBeSentPayload>());
+                    await OnRequestWillBeSentAsync(e.MessageData.ToObject<RequestWillBeSentPayload>());
                     break;
                 case "Network.requestIntercepted":
                     await OnRequestInterceptedAsync(e.MessageData.ToObject<RequestInterceptedResponse>()).ConfigureAwait(false);
@@ -243,7 +244,7 @@ namespace PuppeteerSharp
 
                 if (requestWillBeSentEvent != null)
                 {
-                    OnRequest(requestWillBeSentEvent, e.InterceptionId);
+                    await OnRequestAsync(requestWillBeSentEvent, e.InterceptionId);
                     _requestHashToRequestIds.Delete(requestHash, requestId);
                     _requestIdToRequestWillBeSentEvent.Remove(requestId);
                 }
@@ -254,7 +255,7 @@ namespace PuppeteerSharp
             }
         }
 
-        private void OnRequest(RequestWillBeSentPayload e, string interceptionId)
+        private async Task OnRequestAsync(RequestWillBeSentPayload e, string interceptionId)
         {
             Request request;
             var redirectChain = new List<Request>();
@@ -268,22 +269,26 @@ namespace PuppeteerSharp
                     redirectChain = request.RedirectChainList;
                 }
             }
-            Frame frame = null;
-            FrameManager?.Frames.TryGetValue(e.FrameId, out frame);
-
-            request = new Request(
-                _client,
-                frame,
-                interceptionId,
-                _userRequestInterceptionEnabled,
-                e,
-                redirectChain);
-
-            _requestIdToRequest.Add(e.RequestId, request);
-            Request(this, new RequestEventArgs
+            if (!_requestIdToRequest.TryGetValue(e.RequestId, out var currentRequest) ||
+              currentRequest.Frame == null)
             {
-                Request = request
-            });
+                var frame = await FrameManager?.GetFrameAsync(e.FrameId);
+
+                request = new Request(
+                    _client,
+                    frame,
+                    interceptionId,
+                    _userRequestInterceptionEnabled,
+                    e,
+                    redirectChain);
+
+                _requestIdToRequest[e.RequestId] = request;
+
+                Request(this, new RequestEventArgs
+                {
+                    Request = request
+                });
+            }
         }
 
         private void OnRequestServedFromCache(RequestServedFromCacheResponse response)
@@ -327,7 +332,7 @@ namespace PuppeteerSharp
             });
         }
 
-        private void OnRequestWillBeSent(RequestWillBeSentPayload e)
+        private async Task OnRequestWillBeSentAsync(RequestWillBeSentPayload e)
         {
             if (_protocolRequestInterceptionEnabled)
             {
@@ -335,7 +340,7 @@ namespace PuppeteerSharp
                 var interceptionId = _requestHashToInterceptionIds.FirstValue(requestHash);
                 if (interceptionId != null)
                 {
-                    OnRequest(e, interceptionId);
+                    await OnRequestAsync(e, interceptionId);
                     _requestHashToInterceptionIds.Delete(requestHash, interceptionId);
                 }
                 else
@@ -345,7 +350,7 @@ namespace PuppeteerSharp
                 }
                 return;
             }
-            OnRequest(e, null);
+            await OnRequestAsync(e, null);
         }
 
         private async Task UpdateProtocolRequestInterceptionAsync()

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -18,11 +19,12 @@ namespace PuppeteerSharp.Tests.FrameTests
         public async Task ShouldNavigateSubFrames()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
-            Assert.Contains("/frames/one-frame.html", Page.Frames[0].Url);
-            Assert.Contains("/frames/frame.html", Page.Frames[1].Url);
-            var response = await Page.Frames[1].GoToAsync(TestConstants.EmptyPage);
+            Assert.Single(Page.Frames.Where(f => f.Url.Contains("/frames/one-frame.html")));
+            Assert.Single(Page.Frames.Where(f => f.Url.Contains("/frames/frame.html")));
+            var childFrame = Page.FirstChildFrame();
+            var response = await childFrame.GoToAsync(TestConstants.EmptyPage);
             Assert.Equal(HttpStatusCode.OK, response.Status);
-            Assert.Same(response.Frame, Page.Frames[1]);
+            Assert.Same(response.Frame, childFrame);
         }
 
         [Fact]
@@ -31,7 +33,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
             Server.SetRoute("/empty.html", context => Task.Delay(10000));
             var waitForRequestTask = Server.WaitForRequest("/empty.html");
-            var navigationTask = Page.Frames[1].GoToAsync(TestConstants.EmptyPage);
+            var navigationTask = Page.FirstChildFrame().GoToAsync(TestConstants.EmptyPage);
             await waitForRequestTask;
             await Page.QuerySelectorAsync("iframe").EvaluateFunctionAsync("frame => frame.remove()");
             var exception = await Assert.ThrowsAsync<NavigationException>(async () => await navigationTask);

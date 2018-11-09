@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -33,8 +34,9 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
                 Width = 500,
                 Height = 500
             });
-            await Page.GoToAsync(TestConstants.ServerUrl + "/frames/nested-frames.html");
-            var nestedFrame = Page.Frames[1].ChildFrames[1];
+            await Page.GoToAsync(TestConstants.ServerUrl + "/frames/nested-frames.html", WaitUntilNavigation.Networkidle0);
+            var childFrame = Page.Frames.First(f => f.Url.Contains("two-frames.html"));
+            var nestedFrame = childFrame.ChildFrames.Last();
             var elementHandle = await nestedFrame.QuerySelectorAsync("div");
             var box = await elementHandle.BoundingBoxAsync();
             Assert.Equal(new BoundingBox(28, 260, 264, 18), box);
