@@ -29,7 +29,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
             Assert.Equal(TestConstants.EmptyPage, requests[0].Frame.Url);
 
             Assert.Equal(TestConstants.EmptyPage, requests[1].Url);
-            Assert.Equal(Page.Frames.ElementAt(1), requests[1].Frame);
+            Assert.Equal(Page.FirstChildFrame(), requests[1].Frame);
             Assert.Equal(TestConstants.EmptyPage, requests[1].Frame.Url);
         }
     }

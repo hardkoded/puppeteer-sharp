@@ -35,11 +35,15 @@ namespace PuppeteerSharp
         /// </summary>
         [EnumMember(Value = "background_page")]
         BackgroundPage,
-
         /// <summary>
         /// Target type worker.
         /// </summary>
         [EnumMember(Value = "worker")]
         Worker,
+        /// <summary>
+        /// Target type javascript.
+        /// </summary>
+        [EnumMember(Value = "javascript")]
+        Javascript
     }
 }
