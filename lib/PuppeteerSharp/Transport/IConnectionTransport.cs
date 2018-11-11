@@ -26,7 +26,7 @@ namespace PuppeteerSharp.Transport
         /// <summary>
         /// Occurs when the transport is closed.
         /// </summary>
-        event EventHandler Closed;
+        event EventHandler<TransportClosedEventArgs> Closed;
         /// <summary>
         /// Occurs when a message is received.
         /// </summary>

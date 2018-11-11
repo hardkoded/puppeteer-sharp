@@ -24,7 +24,7 @@ namespace PuppeteerSharp.Transport
         /// <summary>
         /// Occurs when the transport is closed.
         /// </summary>
-        public event EventHandler Closed;
+        public event EventHandler<TransportClosedEventArgs> Closed;
         /// <summary>
         /// Occurs when a message is received.
         /// </summary>
@@ -77,7 +77,7 @@ namespace PuppeteerSharp.Transport
             {
                 if (IsClosed)
                 {
-                    OnClose();
+                    OnClose("WebSocket is closed");
                     return null;
                 }
 
@@ -97,9 +97,9 @@ namespace PuppeteerSharp.Transport
                     {
                         return null;
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
-                        OnClose();
+                        OnClose(ex.Message);
                         return null;
                     }
 
@@ -111,7 +111,7 @@ namespace PuppeteerSharp.Transport
                     }
                     else if (result.MessageType == WebSocketMessageType.Close)
                     {
-                        OnClose();
+                        OnClose("WebSocket closed");
                         return null;
                     }
                 }
@@ -120,9 +120,9 @@ namespace PuppeteerSharp.Transport
             }
         }
 
-        private void OnClose()
+        private void OnClose(string closeReason)
         {
-            Closed?.Invoke(this, EventArgs.Empty);
+            Closed?.Invoke(this, new TransportClosedEventArgs(closeReason));
             IsClosed = true;
         }
 

@@ -330,19 +330,28 @@ namespace PuppeteerSharp
 
         private async void Connect_MessageReceived(object sender, MessageEventArgs e)
         {
-            switch (e.MessageID)
+            try
             {
-                case "Target.targetCreated":
-                    await CreateTargetAsync(e.MessageData.ToObject<TargetCreatedResponse>()).ConfigureAwait(false);
-                    return;
+                switch (e.MessageID)
+                {
+                    case "Target.targetCreated":
+                        await CreateTargetAsync(e.MessageData.ToObject<TargetCreatedResponse>()).ConfigureAwait(false);
+                        return;
 
-                case "Target.targetDestroyed":
-                    await DestroyTargetAsync(e.MessageData.ToObject<TargetDestroyedResponse>()).ConfigureAwait(false);
-                    return;
+                    case "Target.targetDestroyed":
+                        await DestroyTargetAsync(e.MessageData.ToObject<TargetDestroyedResponse>()).ConfigureAwait(false);
+                        return;
 
-                case "Target.targetInfoChanged":
-                    ChangeTargetInfo(e.MessageData.ToObject<TargetCreatedResponse>());
-                    return;
+                    case "Target.targetInfoChanged":
+                        ChangeTargetInfo(e.MessageData.ToObject<TargetCreatedResponse>());
+                        return;
+                }
+            }
+            catch (Exception ex)
+            {
+                var message = $"Browser failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
+                _logger.LogError(ex, message);
+                Connection.Close(message);
             }
         }
 
