@@ -23,6 +23,7 @@ namespace PuppeteerSharp
         internal static readonly string[] DefaultArgs = {
             "--disable-background-networking",
             "--disable-background-timer-throttling",
+            "--disable-backgrounding-occluded-windows",
             "--disable-breakpad",
             "--disable-client-side-phishing-detection",
             "--disable-default-apps",
@@ -30,8 +31,10 @@ namespace PuppeteerSharp
             "--disable-extensions",
             "--disable-features=site-per-process",
             "--disable-hang-monitor",
+            "--disable-ipc-flooding-protection",
             "--disable-popup-blocking",
             "--disable-prompt-on-repost",
+            "--disable-renderer-backgrounding",
             "--disable-sync",
             "--disable-translate",
             "--metrics-recording-only",
