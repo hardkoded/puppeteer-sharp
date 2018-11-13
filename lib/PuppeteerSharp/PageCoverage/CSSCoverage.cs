@@ -57,16 +57,15 @@ namespace PuppeteerSharp.PageCoverage
             }
             _enabled = false;
 
-            var ruleTrackingResponseTask = _client.SendAsync<CSSStopRuleUsageTrackingResponse>("CSS.stopRuleUsageTracking");
+            var trackingResponse = await _client.SendAsync<CSSStopRuleUsageTrackingResponse>("CSS.stopRuleUsageTracking").ConfigureAwait(false);
             await Task.WhenAll(
-                ruleTrackingResponseTask,
                 _client.SendAsync("CSS.disable"),
                 _client.SendAsync("DOM.disable")
             ).ConfigureAwait(false);
             _client.MessageReceived -= client_MessageReceived;
 
             var styleSheetIdToCoverage = new Dictionary<string, List<CoverageResponseRange>>();
-            foreach (var entry in ruleTrackingResponseTask.Result.RuleUsage)
+            foreach (var entry in trackingResponse.RuleUsage)
             {
                 styleSheetIdToCoverage.TryGetValue(entry.StyleSheetId, out var ranges);
                 if (ranges == null)
