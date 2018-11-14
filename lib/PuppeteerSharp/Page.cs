@@ -71,7 +71,7 @@ namespace PuppeteerSharp
             _pageBindings = new Dictionary<string, Delegate>();
             _workers = new Dictionary<string, Worker>();
             _logger = Client.Connection.LoggerFactory.CreateLogger<Page>();
-
+            Accessibility = new Accessibility(client);
             _ignoreHTTPSErrors = ignoreHTTPSErrors;
 
             _screenshotTaskQueue = screenshotTaskQueue;
@@ -297,6 +297,12 @@ namespace PuppeteerSharp
         /// Get an indication that the page has been closed.
         /// </summary>
         public bool IsClosed { get; private set; }
+
+        /// <summary>
+        /// Gets the accessibility.
+        /// </summary>
+        public Accessibility Accessibility { get; }
+
 
         internal bool JavascriptEnabled { get; set; } = true;
         #endregion
