@@ -20,6 +20,16 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Fact]
+        public async Task ShouldBeCallableFromInsideEvaluateOnNewDocument()
+        {
+            var called = false;
+            await Page.ExposeFunctionAsync("woof", () => called = true);
+            await Page.EvaluateOnNewDocumentAsync("() => woof()");
+            await Page.ReloadAsync();
+            Assert.True(called);
+        }
+
+        [Fact]
         public async Task ShouldSurviveNavigation()
         {
             await Page.ExposeFunctionAsync("compute", (int a, int b) => a * b);

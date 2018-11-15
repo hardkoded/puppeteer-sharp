@@ -24,7 +24,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The post data.</value>
         [JsonProperty("postData")]
-        public object PostData { get; set; }
+        public string PostData { get; set; }
         /// <summary>
         /// Gets or sets the HTTP headers.
         /// </summary>

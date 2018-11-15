@@ -130,5 +130,22 @@ namespace PuppeteerSharp.Tests.CSSCoverageTests
             var coverage = await Page.Coverage.StopCSSCoverageAsync();
             Assert.Empty(coverage);
         }
+
+        [Fact]
+        public async Task ShouldWorkWithArRecentlyLoadedStylesheet()
+        {
+            await Page.Coverage.StartCSSCoverageAsync();
+            await Page.EvaluateFunctionAsync(@"async url => {
+                document.body.textContent = 'hello, world';
+
+                const link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = url;
+                document.head.appendChild(link);
+                await new Promise(x => link.onload = x);
+            }", TestConstants.ServerUrl + "/csscoverage/stylesheet1.css");
+            var coverage = await Page.Coverage.StopCSSCoverageAsync();
+            Assert.Single(coverage);
+        }
     }
 }

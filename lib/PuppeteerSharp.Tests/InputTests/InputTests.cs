@@ -396,6 +396,14 @@ namespace PuppeteerSharp.Tests.InputTests
         }
 
         [Fact]
+        public async Task ShouldClickARotatedButton()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/rotatedButton.html");
+            await Page.ClickAsync("button");
+            Assert.Equal("Clicked", await Page.EvaluateExpressionAsync<string>("result"));
+        }
+
+        [Fact]
         public async Task ShouldSelectTheTextWithMouse()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
