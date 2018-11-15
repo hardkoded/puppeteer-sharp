@@ -14,6 +14,7 @@ using PuppeteerSharp.Input;
 using PuppeteerSharp.Media;
 using PuppeteerSharp.Messaging;
 using PuppeteerSharp.Mobile;
+using PuppeteerSharp.PageAccessibility;
 using PuppeteerSharp.PageCoverage;
 
 namespace PuppeteerSharp

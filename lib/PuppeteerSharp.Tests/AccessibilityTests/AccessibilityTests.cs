@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using PuppeteerSharp.PageAccessibility;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace PuppeteerSharp.Tests.CSSCoverageTests
+namespace PuppeteerSharp.Tests.AccesibilityTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class AccesibilityTests : PuppeteerPageBaseTest
