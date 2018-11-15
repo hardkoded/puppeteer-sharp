@@ -258,6 +258,62 @@ namespace PuppeteerSharp
         /// <returns>Task</returns>
         public Task CloseAsync() => _closeTask ?? (_closeTask = CloseCoreAsync());
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public int DefaultWaitForTimeout { get; set; } = 30000;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public async Task<Target> WaitForTargetAsync(Func<Target, bool> predicate, WaitForOptions options = null)
+        {
+            var timeout = options?.Timeout ?? DefaultWaitForTimeout;
+            var existingTarget = Targets().FirstOrDefault(predicate);
+            if (existingTarget != null)
+            {
+                return existingTarget;
+            }
+            var targetCompletionSource = new TaskCompletionSource<Target>();
+
+            void TargetCreatedHandler(object sender, TargetChangedArgs e)
+            {
+                if (predicate(e.Target))
+                {
+                    targetCompletionSource.TrySetResult(e.Target);
+                }
+            }
+
+            void TargetChangedHandler(object sender, TargetChangedArgs e)
+            {
+                if (predicate(e.Target))
+                {
+                    targetCompletionSource.TrySetResult(e.Target);
+                }
+            }
+
+            try
+            {
+                TargetCreated += TargetCreatedHandler;
+                TargetChanged += TargetChangedHandler;
+                await Task.WhenAny(new[]
+                {
+                    TaskHelper.CreateTimeoutTask(timeout),
+                    targetCompletionSource.Task
+                }).ConfigureAwait(false);
+
+                return await targetCompletionSource.Task.ConfigureAwait(false);
+            }
+            finally
+            {
+                TargetCreated -= TargetCreatedHandler;
+                TargetChanged -= TargetChangedHandler;
+            }
+        }
+
         private async Task CloseCoreAsync()
         {
             try
