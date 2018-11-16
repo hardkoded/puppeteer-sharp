@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Collections.Generic;
 using PuppeteerSharp.Messaging;
+using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.PageAccessibility
 {
@@ -23,23 +25,23 @@ namespace PuppeteerSharp.PageAccessibility
             Payload = payload;
             Children = new List<AXNode>();
 
-            _name = payload.Name ?? string.Empty;
+            _name = payload.Name != null ? payload.Name.Value.ToObject<string>() : string.Empty;
             _role = payload.Role ?? "Unknown";
 
             foreach (var property in payload.Properties)
             {
                 if (property.Name == "editable")
                 {
-                    _richlyEditable = property.Value.Value == "richtext";
+                    _richlyEditable = property.Value.Value.ToObject<string>() == "richtext";
                     _editable = true;
                 }
                 if (property.Name == "focusable")
                 {
-                    _focusable = property.Value.Value == "true";
+                    _focusable = property.Value.Value.ToObject<bool>();
                 }
                 if (property.Name == "expanded")
                 {
-                    _expanded = property.Value.Value == "true";
+                    _expanded = property.Value.Value.ToObject<bool>();
                 }
             }
         }
@@ -201,7 +203,72 @@ namespace PuppeteerSharp.PageAccessibility
 
         internal SerializedAXNode Serialize()
         {
-            throw new NotImplementedException();
+            var properties = new Dictionary<string, JToken>();
+            foreach (var property in Payload.Properties)
+            {
+                properties[property.Name.ToLower()] = property.Value.Value;
+            }
+
+            if (Payload.Name != null)
+            {
+                properties["name"] = Payload.Name.Value;
+            }
+            if (Payload.Value != null)
+            {
+                properties["value"] = Payload.Value.Value;
+            }
+            if (Payload.Description != null)
+            {
+                properties["description"] = Payload.Description.Value;
+            }
+
+            var node = new SerializedAXNode
+            {
+                Role = _role,
+                Name = properties.GetValueOrDefault("name")?.ToObject<string>(),
+                Value = properties.GetValueOrDefault("value")?.ToObject<string>(),
+                Description = properties.GetValueOrDefault("description")?.ToObject<string>(),
+                KeyShortcuts = properties.GetValueOrDefault("keyshortcuts")?.ToObject<string>(),
+                RoleDescription = properties.GetValueOrDefault("roledescription")?.ToObject<string>(),
+                ValueText = properties.GetValueOrDefault("valuetext")?.ToObject<string>(),
+                Disabled = properties.GetValueOrDefault("disabled")?.ToObject<bool>() ?? false,
+                Expanded = properties.GetValueOrDefault("expanded")?.ToObject<bool>() ?? false,
+                // WebArea"s treat focus differently than other nodes. They report whether their frame  has focus,
+                // not whether focus is specifically on the root node.
+                Focused = properties.GetValueOrDefault("focused")?.ToObject<bool>() == true && _role != "WebArea",
+                Modal = properties.GetValueOrDefault("modal")?.ToObject<bool>() ?? false,
+                Multiline = properties.GetValueOrDefault("multiline")?.ToObject<bool>() ?? false,
+                Multiselectable = properties.GetValueOrDefault("multiselectable")?.ToObject<bool>() ?? false,
+                Readonly = properties.GetValueOrDefault("readonly")?.ToObject<bool>() ?? false,
+                Required = properties.GetValueOrDefault("required")?.ToObject<bool>() ?? false,
+                Selected = properties.GetValueOrDefault("selected")?.ToObject<bool>() ?? false,
+                Checked = GetCheckedState(properties.GetValueOrDefault("checked")?.ToObject<string>()),
+                Pressed = GetCheckedState(properties.GetValueOrDefault("pressed")?.ToObject<string>()),
+                Level = properties.GetValueOrDefault("level")?.ToObject<int>() ?? 0,
+                ValueMax = properties.GetValueOrDefault("valuemax")?.ToObject<int>() ?? 0,
+                ValueMin = properties.GetValueOrDefault("valuemin")?.ToObject<int>() ?? 0,
+                AutoComplete = GetIfNotFalse(properties.GetValueOrDefault("autocomplete")?.ToObject<string>()),
+                HasPopup = GetIfNotFalse(properties.GetValueOrDefault("haspopup")?.ToObject<string>()),
+                Invalid = GetIfNotFalse(properties.GetValueOrDefault("invalid")?.ToObject<string>()),
+                Orientation = GetIfNotFalse(properties.GetValueOrDefault("orientation")?.ToObject<string>())
+            };
+
+            return node;
+        }
+
+        private string GetIfNotFalse(string value) => value != null && value != "false" ? value : null;
+
+        private CheckedState GetCheckedState(string value)
+        {
+            switch (value)
+            {
+                case "mixed":
+                    return CheckedState.Mixed;
+                case "true":
+                    return CheckedState.True;
+                default:
+                    return CheckedState.False;
+            }
         }
     }
 }
