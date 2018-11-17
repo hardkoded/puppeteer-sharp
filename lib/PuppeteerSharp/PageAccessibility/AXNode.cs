@@ -11,12 +11,12 @@ namespace PuppeteerSharp.PageAccessibility
     {
         internal AccessibilityGetFullAXTreeResponse.AXTreeNode Payload { get; }
         public List<AXNode> Children { get; }
+        public bool Focusable { get; set; };
 
         private readonly string _name;
         private string _role;
         private bool _richlyEditable;
         private bool _editable;
-        private bool _focusable;
         private bool _expanded;
         private bool? _cachedHasFocusableChild;
 
@@ -28,22 +28,11 @@ namespace PuppeteerSharp.PageAccessibility
             _name = payload.Name != null ? payload.Name.Value.ToObject<string>() : string.Empty;
             _role = payload.Role != null ? payload.Role.Value.ToObject<string>() : "Unknown";
 
-            foreach (var property in payload.Properties)
-            {
-                if (property.Name == "editable")
-                {
-                    _richlyEditable = property.Value.Value.ToObject<string>() == "richtext";
-                    _editable = true;
-                }
-                if (property.Name == "focusable")
-                {
-                    _focusable = property.Value.Value.ToObject<bool>();
-                }
-                if (property.Name == "expanded")
-                {
-                    _expanded = property.Value.Value.ToObject<bool>();
-                }
-            }
+            _richlyEditable = payload.Properties.FirstOrDefault(p => p.Name == "editable")?.Value.Value.ToObject<string>() == "richtext";
+            _editable |= _richlyEditable;
+            _expanded = payload.Properties.FirstOrDefault(p => p.Name == "focusable")?.Value.Value.ToObject<bool>() == true;
+            Focusable = payload.Properties.FirstOrDefault(p => p.Name == "expanded")?.Value.Value.ToObject<bool>() == true;
+
         }
 
         internal static AXNode CreateTree(IEnumerable<AccessibilityGetFullAXTreeResponse.AXTreeNode> payloads)
@@ -85,15 +74,7 @@ namespace PuppeteerSharp.PageAccessibility
         {
             if (!_cachedHasFocusableChild.HasValue)
             {
-                _cachedHasFocusableChild = false;
-                foreach (var child in Children)
-                {
-                    if (child._focusable || child.HasFocusableChild())
-                    {
-                        _cachedHasFocusableChild = true;
-                        break;
-                    }
-                }
+                _cachedHasFocusableChild = Children.Any(c => c.Focusable || c.HasFocusableChild());
             }
             return _cachedHasFocusableChild.Value;
         }
@@ -136,7 +117,7 @@ namespace PuppeteerSharp.PageAccessibility
             {
                 return false;
             }
-            if (_focusable && !string.IsNullOrEmpty(_name))
+            if (Focusable && !string.IsNullOrEmpty(_name))
             {
                 return true;
             }
@@ -184,7 +165,7 @@ namespace PuppeteerSharp.PageAccessibility
                 return false;
             }
 
-            if (_focusable || _richlyEditable)
+            if (Focusable || _richlyEditable)
             {
                 return true;
             }

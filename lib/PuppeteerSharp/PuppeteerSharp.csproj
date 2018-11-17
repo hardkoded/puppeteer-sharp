@@ -93,6 +93,5 @@ int x = page.EvaluateExpressionAsync("1").ToObject<int>();
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Transport\" />
-    <Folder Include="PageAccessibility\" />
   </ItemGroup>
 </Project>
