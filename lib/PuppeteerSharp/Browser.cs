@@ -277,17 +277,10 @@ namespace PuppeteerSharp
             {
                 return existingTarget;
             }
+
             var targetCompletionSource = new TaskCompletionSource<Target>();
 
-            void TargetCreatedHandler(object sender, TargetChangedArgs e)
-            {
-                if (predicate(e.Target))
-                {
-                    targetCompletionSource.TrySetResult(e.Target);
-                }
-            }
-
-            void TargetChangedHandler(object sender, TargetChangedArgs e)
+            void TargetHandler(object sender, TargetChangedArgs e)
             {
                 if (predicate(e.Target))
                 {
@@ -297,20 +290,25 @@ namespace PuppeteerSharp
 
             try
             {
-                TargetCreated += TargetCreatedHandler;
-                TargetChanged += TargetChangedHandler;
-                await Task.WhenAny(new[]
+                TargetCreated += TargetHandler;
+                TargetChanged += TargetHandler;
+
+                var task = await Task.WhenAny(new[]
                 {
                     TaskHelper.CreateTimeoutTask(timeout),
                     targetCompletionSource.Task
                 }).ConfigureAwait(false);
 
-                return await targetCompletionSource.Task.ConfigureAwait(false);
+                // if this was the timeout task, this will throw a timeout exception
+                // othewise this is the targetCompletionSource task which has already
+                // completed
+                await task;
+                return await targetCompletionSource.Task;
             }
             finally
             {
-                TargetCreated -= TargetCreatedHandler;
-                TargetChanged -= TargetChangedHandler;
+                TargetCreated -= TargetHandler;
+                TargetChanged -= TargetHandler;
             }
         }
 
