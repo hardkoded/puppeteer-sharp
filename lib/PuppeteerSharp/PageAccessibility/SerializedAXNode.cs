@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace PuppeteerSharp.PageAccessibility
 {
@@ -74,11 +75,11 @@ namespace PuppeteerSharp.PageAccessibility
         /// <summary>
         /// Whether the checkbox is checked, or "mixed".
         /// </summary>
-        public bool Checked { get; set; }
+        public CheckedState Checked { get; set; }
         /// <summary>
         /// Whether the toggle button is checked, or "mixed".
         /// </summary>
-        public bool Pressed { get; set; }
+        public CheckedState Pressed { get; set; }
         /// <summary>
         /// The level of a heading.
         /// </summary>
@@ -116,16 +117,16 @@ namespace PuppeteerSharp.PageAccessibility
         public bool Equals(SerializedAXNode other)
             => ReferenceEquals(this, other) ||
                 (
-                    Role.Equals(other.Role, StringComparison.OrdinalIgnoreCase) &&
-                    Name.Equals(other.Name, StringComparison.OrdinalIgnoreCase) &&
-                    Value.Equals(other.Value, StringComparison.OrdinalIgnoreCase) &&
-                    Description.Equals(other.Description, StringComparison.OrdinalIgnoreCase) &&
-                    KeyShortcuts.Equals(other.KeyShortcuts, StringComparison.OrdinalIgnoreCase) &&
-                    RoleDescription.Equals(other.RoleDescription, StringComparison.OrdinalIgnoreCase) &&
-                    ValueText.Equals(other.ValueText, StringComparison.OrdinalIgnoreCase) &&
-                    AutoComplete.Equals(other.HasPopup, StringComparison.OrdinalIgnoreCase) &&
-                    HasPopup.Equals(other.HasPopup, StringComparison.OrdinalIgnoreCase) &&
-                    Orientation.Equals(other.Orientation, StringComparison.OrdinalIgnoreCase) &&
+                    Role == other.Role &&
+                    Name == other.Name &&
+                    Value == other.Value &&
+                    Description == other.Description &&
+                    KeyShortcuts == other.KeyShortcuts &&
+                    RoleDescription == other.RoleDescription &&
+                    ValueText == other.ValueText &&
+                    AutoComplete == other.AutoComplete &&
+                    HasPopup == other.HasPopup &&
+                    Orientation == other.Orientation &&
                     Disabled == other.Disabled &&
                     Expanded == other.Expanded &&
                     Focused == other.Focused &&
@@ -140,7 +141,7 @@ namespace PuppeteerSharp.PageAccessibility
                     Level == other.Level &&
                     ValueMin == other.ValueMin &&
                     ValueMax == other.ValueMax &&
-                    Children.Equals(other.Children)
+                    (Children == other.Children || Children.SequenceEqual(other.Children))
                 );
 
         /// <inheritdoc/>

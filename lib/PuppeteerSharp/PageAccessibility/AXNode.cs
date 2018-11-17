@@ -9,7 +9,7 @@ namespace PuppeteerSharp.PageAccessibility
 {
     internal class AXNode
     {
-        internal AccessibilityGetFullAXTreeResponse Payload { get; }
+        internal AccessibilityGetFullAXTreeResponse.AXTreeNode Payload { get; }
         public List<AXNode> Children { get; }
 
         private readonly string _name;
@@ -20,13 +20,13 @@ namespace PuppeteerSharp.PageAccessibility
         private bool _expanded;
         private bool? _cachedHasFocusableChild;
 
-        public AXNode(AccessibilityGetFullAXTreeResponse payload)
+        public AXNode(AccessibilityGetFullAXTreeResponse.AXTreeNode payload)
         {
             Payload = payload;
             Children = new List<AXNode>();
 
             _name = payload.Name != null ? payload.Name.Value.ToObject<string>() : string.Empty;
-            _role = payload.Role ?? "Unknown";
+            _role = payload.Role != null ? payload.Role.Value.ToObject<string>() : "Unknown";
 
             foreach (var property in payload.Properties)
             {
@@ -46,7 +46,7 @@ namespace PuppeteerSharp.PageAccessibility
             }
         }
 
-        internal static AXNode CreateTree(AccessibilityGetFullAXTreeResponse[] payloads)
+        internal static AXNode CreateTree(IEnumerable<AccessibilityGetFullAXTreeResponse.AXTreeNode> payloads)
         {
             var nodeById = new Dictionary<string, AXNode>();
             foreach (var payload in payloads)

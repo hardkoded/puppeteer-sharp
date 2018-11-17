@@ -33,8 +33,7 @@ namespace PuppeteerSharp.PageAccessibility
         /// <param name="options">Options.</param>
         public async Task<SerializedAXNode> SnapshotAsync(AccessibilitySnapshotOptions options = null)
         {
-
-            var nodes = await _client.SendAsync<AccessibilityGetFullAXTreeResponse[]>("Accessibility.getFullAXTree");
+            var nodes = (await _client.SendAsync<AccessibilityGetFullAXTreeResponse>("Accessibility.getFullAXTree")).Nodes;
             var root = AXNode.CreateTree(nodes);
             if (options?.InterestingOnly == false)
             {

@@ -70,13 +70,13 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                         },
                         new SerializedAXNode{
                             Role = "textbox",
-                            Name = "",
-                            Value= "value only"
+                            Name = "Input with whitespace",
+                            Value= "  "
                         },
                         new SerializedAXNode{
                             Role = "textbox",
-                            Name = "Input with whitespace",
-                            Value= "  "
+                            Name = "",
+                            Value= "value only"
                         },
                         new SerializedAXNode{
                             Role = "textbox",
@@ -140,7 +140,10 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                         }
                     }
                 },
-                FindFocusedNode(await Page.Accessibility.SnapshotAsync()));
+                FindFocusedNode(await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions
+                {
+                    InterestingOnly = false
+                })));
         }
 
         [Fact]
@@ -161,13 +164,13 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                         new SerializedAXNode
                         {
                             Role = "tab",
-                            Name = "tab1",
+                            Name = "Tab1",
                             Selected = true
                         },
                         new SerializedAXNode
                         {
                             Role = "tab",
-                            Name = "tab2"
+                            Name = "Tab2"
                         }
                     }
                 },
@@ -293,7 +296,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                 {
                     Role = "checkbox",
                     Name = "my favorite checkbox",
-                    Checked = true
+                    Checked = CheckedState.True
                 },
                 (await Page.Accessibility.SnapshotAsync()).Children[0]);
         }
@@ -311,7 +314,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                 {
                     Role = "checkbox",
                     Name = "this is the inner content yo",
-                    Checked = true
+                    Checked = CheckedState.True
                 },
                 (await Page.Accessibility.SnapshotAsync()).Children[0]);
         }
