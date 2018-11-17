@@ -38,7 +38,6 @@ namespace PuppeteerSharp.Messaging
 
         public class AXTreePropertyValue
         {
-
             [JsonProperty("type")]
             public string Type { get; set; }
             [JsonProperty("value")]

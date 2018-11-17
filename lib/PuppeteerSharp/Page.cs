@@ -304,7 +304,6 @@ namespace PuppeteerSharp
         /// </summary>
         public Accessibility Accessibility { get; }
 
-
         internal bool JavascriptEnabled { get; set; } = true;
         #endregion
 
