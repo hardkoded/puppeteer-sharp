@@ -149,6 +149,12 @@ namespace PuppeteerSharp
         internal Connection Connection { get; }
         internal ViewPortOptions DefaultViewport { get; }
 
+        /// <summary>
+        /// Dafault wait time in milliseconds. Defaults to 30 seconds.
+        /// </summary>
+        public int DefaultWaitForTimeout { get; set; } = 30000;
+
+
         #endregion
 
         #region Public Methods
@@ -257,11 +263,6 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>Task</returns>
         public Task CloseAsync() => _closeTask ?? (_closeTask = CloseCoreAsync());
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public int DefaultWaitForTimeout { get; set; } = 30000;
 
         /// <summary>
         /// 
