@@ -69,7 +69,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="predicate">A function to be run for every target</param>
         /// <param name="options">options</param>
-        /// <returns></returns>
+        /// <returns>Resolves to the first target found that matches the predicate function.</returns>
         public Task<Target> WaitForTargetAsync(Func<Target, bool> predicate, WaitForOptions options = null) 
             => Browser.WaitForTargetAsync((target) => target.BrowserContext == this && predicate(target), options);
 

@@ -152,8 +152,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Dafault wait time in milliseconds. Defaults to 30 seconds.
         /// </summary>
-        public int DefaultWaitForTimeout { get; set; } = 30000;
-
+        public int DefaultWaitForTimeout { get; set; } = 30000; 
 
         #endregion
 
@@ -265,11 +264,19 @@ namespace PuppeteerSharp
         public Task CloseAsync() => _closeTask ?? (_closeTask = CloseCoreAsync());
 
         /// <summary>
-        /// 
+        /// This searches for a target in this specific browser context.
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// await page.EvaluateAsync("() => window.open('https://www.example.com/')");
+        /// var newWindowTarget = await browserContext.WaitForTargetAsync((target) => target.Url == "https://www.example.com/");
+        /// ]]>
+        /// </code>
+        /// </example>
         /// </summary>
-        /// <param name="predicate"></param>
-        /// <param name="options"></param>
-        /// <returns></returns>
+        /// <param name="predicate">A function to be run for every target</param>
+        /// <param name="options">options</param>
+        /// <returns>Resolves to the first target found that matches the predicate function.</returns>
         public async Task<Target> WaitForTargetAsync(Func<Target, bool> predicate, WaitForOptions options = null)
         {
             var timeout = options?.Timeout ?? DefaultWaitForTimeout;
