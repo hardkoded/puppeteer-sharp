@@ -30,8 +30,9 @@ namespace PuppeteerSharp.PageAccessibility
 
             _richlyEditable = payload.Properties.FirstOrDefault(p => p.Name == "editable")?.Value.Value.ToObject<string>() == "richtext";
             _editable |= _richlyEditable;
-            _expanded = payload.Properties.FirstOrDefault(p => p.Name == "focusable")?.Value.Value.ToObject<bool>() == true;
-            Focusable = payload.Properties.FirstOrDefault(p => p.Name == "expanded")?.Value.Value.ToObject<bool>() == true;
+            _expanded = payload.Properties.FirstOrDefault(p => p.Name == "expanded")?.Value.Value.ToObject<bool>() == true;
+            Focusable = payload.Properties.FirstOrDefault(p => p.Name == "focusable")?.Value.Value.ToObject<bool>() == true;
+
         }
 
         internal static AXNode CreateTree(IEnumerable<AccessibilityGetFullAXTreeResponse.AXTreeNode> payloads)
