@@ -11,13 +11,13 @@ namespace PuppeteerSharp.PageAccessibility
     {
         internal AccessibilityGetFullAXTreeResponse.AXTreeNode Payload { get; }
         public List<AXNode> Children { get; }
-        public bool Focusable { get; set; };
+        public bool Focusable { get; set; }
 
         private readonly string _name;
         private string _role;
-        private bool _richlyEditable;
-        private bool _editable;
-        private bool _expanded;
+        private readonly bool _richlyEditable;
+        private readonly bool _editable;
+        private readonly bool _expanded;
         private bool? _cachedHasFocusableChild;
 
         public AXNode(AccessibilityGetFullAXTreeResponse.AXTreeNode payload)
@@ -32,7 +32,6 @@ namespace PuppeteerSharp.PageAccessibility
             _editable |= _richlyEditable;
             _expanded = payload.Properties.FirstOrDefault(p => p.Name == "focusable")?.Value.Value.ToObject<bool>() == true;
             Focusable = payload.Properties.FirstOrDefault(p => p.Name == "expanded")?.Value.Value.ToObject<bool>() == true;
-
         }
 
         internal static AXNode CreateTree(IEnumerable<AccessibilityGetFullAXTreeResponse.AXTreeNode> payloads)
@@ -53,17 +52,7 @@ namespace PuppeteerSharp.PageAccessibility
         }
 
         private bool IsPlainTextField()
-        {
-            if (_richlyEditable)
-            {
-                return false;
-            }
-            if (_editable)
-            {
-                return true;
-            }
-            return _role == "textbox" || _role == "ComboBox" || _role == "searchbox";
-        }
+            => !_richlyEditable && (_editable || _role == "textbox" || _role == "ComboBox" || _role == "searchbox");
 
         private bool IsTextOnlyObject()
             => _role == "LineBreak" ||
