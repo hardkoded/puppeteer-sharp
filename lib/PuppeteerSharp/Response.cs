@@ -15,7 +15,7 @@ namespace PuppeteerSharp
     {
         private readonly CDPSession _client;
         private readonly bool _fromDiskCache;
-        private string _buffer;
+        private byte[] _buffer;
 
         internal Response(
             CDPSession client,
@@ -112,7 +112,7 @@ namespace PuppeteerSharp
         /// Returns a Task which resolves to a buffer with response body
         /// </summary>
         /// <returns>A Task which resolves to a buffer with response body</returns>
-        public async ValueTask<string> BufferAsync()
+        public async ValueTask<byte[]> BufferAsync()
         {
             if (_buffer == null)
             {
@@ -126,8 +126,8 @@ namespace PuppeteerSharp
                     }).ConfigureAwait(false);
 
                     _buffer = response.Base64Encoded
-                        ? Encoding.UTF8.GetString(Convert.FromBase64String(response.Body))
-                        : response.Body;
+                        ? Convert.FromBase64String(response.Body)
+                        : Encoding.UTF8.GetBytes(response.Body);
                 }
                 catch (Exception ex)
                 {
@@ -142,7 +142,7 @@ namespace PuppeteerSharp
         /// Returns a Task which resolves to a text representation of response body
         /// </summary>
         /// <returns>A Task which resolves to a text representation of response body</returns>
-        public ValueTask<string> TextAsync() => BufferAsync();
+        public async ValueTask<string> TextAsync() => Encoding.UTF8.GetString(await BufferAsync().ConfigureAwait(false));
 
         /// <summary>
         /// Returns a Task which resolves to a <see cref="JObject"/> representation of response body
