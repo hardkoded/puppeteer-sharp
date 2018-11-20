@@ -149,6 +149,11 @@ namespace PuppeteerSharp
         internal Connection Connection { get; }
         internal ViewPortOptions DefaultViewport { get; }
 
+        /// <summary>
+        /// Dafault wait time in milliseconds. Defaults to 30 seconds.
+        /// </summary>
+        public int DefaultWaitForTimeout { get; set; } = 30000; 
+
         #endregion
 
         #region Public Methods
@@ -257,6 +262,63 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>Task</returns>
         public Task CloseAsync() => _closeTask ?? (_closeTask = CloseCoreAsync());
+
+        /// <summary>
+        /// This searches for a target in this specific browser context.
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// await page.EvaluateAsync("() => window.open('https://www.example.com/')");
+        /// var newWindowTarget = await browserContext.WaitForTargetAsync((target) => target.Url == "https://www.example.com/");
+        /// ]]>
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <param name="predicate">A function to be run for every target</param>
+        /// <param name="options">options</param>
+        /// <returns>Resolves to the first target found that matches the predicate function.</returns>
+        public async Task<Target> WaitForTargetAsync(Func<Target, bool> predicate, WaitForOptions options = null)
+        {
+            var timeout = options?.Timeout ?? DefaultWaitForTimeout;
+            var existingTarget = Targets().FirstOrDefault(predicate);
+            if (existingTarget != null)
+            {
+                return existingTarget;
+            }
+
+            var targetCompletionSource = new TaskCompletionSource<Target>();
+
+            void TargetHandler(object sender, TargetChangedArgs e)
+            {
+                if (predicate(e.Target))
+                {
+                    targetCompletionSource.TrySetResult(e.Target);
+                }
+            }
+
+            try
+            {
+                TargetCreated += TargetHandler;
+                TargetChanged += TargetHandler;
+
+                var task = await Task.WhenAny(new[]
+                {
+                    TaskHelper.CreateTimeoutTask(timeout),
+                    targetCompletionSource.Task
+                }).ConfigureAwait(false);
+
+                // if this was the timeout task, this will throw a timeout exception
+                // othewise this is the targetCompletionSource task which has already
+                // completed
+                await task;
+                return await targetCompletionSource.Task;
+            }
+            finally
+            {
+                TargetCreated -= TargetHandler;
+                TargetChanged -= TargetHandler;
+            }
+        }
 
         private async Task CloseCoreAsync()
         {
