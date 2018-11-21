@@ -101,26 +101,35 @@ namespace PuppeteerSharp
 
         private async void Client_MessageReceived(object sender, MessageEventArgs e)
         {
-            switch (e.MessageID)
+            try
             {
-                case "Network.requestWillBeSent":
-                    await OnRequestWillBeSentAsync(e.MessageData.ToObject<RequestWillBeSentPayload>());
-                    break;
-                case "Network.requestIntercepted":
-                    await OnRequestInterceptedAsync(e.MessageData.ToObject<RequestInterceptedResponse>()).ConfigureAwait(false);
-                    break;
-                case "Network.requestServedFromCache":
-                    OnRequestServedFromCache(e.MessageData.ToObject<RequestServedFromCacheResponse>());
-                    break;
-                case "Network.responseReceived":
-                    OnResponseReceived(e.MessageData.ToObject<ResponseReceivedResponse>());
-                    break;
-                case "Network.loadingFinished":
-                    OnLoadingFinished(e.MessageData.ToObject<LoadingFinishedResponse>());
-                    break;
-                case "Network.loadingFailed":
-                    OnLoadingFailed(e.MessageData.ToObject<LoadingFailedResponse>());
-                    break;
+                switch (e.MessageID)
+                {
+                    case "Network.requestWillBeSent":
+                        await OnRequestWillBeSentAsync(e.MessageData.ToObject<RequestWillBeSentPayload>());
+                        break;
+                    case "Network.requestIntercepted":
+                        await OnRequestInterceptedAsync(e.MessageData.ToObject<RequestInterceptedResponse>()).ConfigureAwait(false);
+                        break;
+                    case "Network.requestServedFromCache":
+                        OnRequestServedFromCache(e.MessageData.ToObject<RequestServedFromCacheResponse>());
+                        break;
+                    case "Network.responseReceived":
+                        OnResponseReceived(e.MessageData.ToObject<ResponseReceivedResponse>());
+                        break;
+                    case "Network.loadingFinished":
+                        OnLoadingFinished(e.MessageData.ToObject<LoadingFinishedResponse>());
+                        break;
+                    case "Network.loadingFailed":
+                        OnLoadingFailed(e.MessageData.ToObject<LoadingFailedResponse>());
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                var message = $"NetworkManager failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
+                _logger.LogError(ex, message);
+                _client.Close(message);
             }
         }
 

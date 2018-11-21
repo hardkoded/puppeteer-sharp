@@ -1767,44 +1767,53 @@ namespace PuppeteerSharp
 
         private async void Client_MessageReceived(object sender, MessageEventArgs e)
         {
-            switch (e.MessageID)
+            try
             {
-                case "Page.domContentEventFired":
-                    DOMContentLoaded?.Invoke(this, EventArgs.Empty);
-                    break;
-                case "Page.loadEventFired":
-                    Load?.Invoke(this, EventArgs.Empty);
-                    break;
-                case "Runtime.consoleAPICalled":
-                    await OnConsoleAPI(e.MessageData.ToObject<PageConsoleResponse>()).ConfigureAwait(false);
-                    break;
-                case "Page.javascriptDialogOpening":
-                    OnDialog(e.MessageData.ToObject<PageJavascriptDialogOpeningResponse>());
-                    break;
-                case "Runtime.exceptionThrown":
-                    HandleException(e.MessageData.SelectToken(MessageKeys.ExceptionDetails).ToObject<EvaluateExceptionDetails>());
-                    break;
-                case "Security.certificateError":
-                    await OnCertificateError(e.MessageData.ToObject<CertificateErrorResponse>()).ConfigureAwait(false);
-                    break;
-                case "Inspector.targetCrashed":
-                    OnTargetCrashed();
-                    break;
-                case "Performance.metrics":
-                    EmitMetrics(e.MessageData.ToObject<PerformanceMetricsResponse>());
-                    break;
-                case "Target.attachedToTarget":
-                    await OnAttachedToTarget(e).ConfigureAwait(false);
-                    break;
-                case "Target.detachedFromTarget":
-                    OnDetachedFromTarget(e);
-                    break;
-                case "Log.entryAdded":
-                    OnLogEntryAdded(e.MessageData.ToObject<LogEntryAddedResponse>());
-                    break;
-                case "Runtime.bindingCalled":
-                    await OnBindingCalled(e.MessageData.ToObject<BindingCalledResponse>()).ConfigureAwait(false);
-                    break;
+                switch (e.MessageID)
+                {
+                    case "Page.domContentEventFired":
+                        DOMContentLoaded?.Invoke(this, EventArgs.Empty);
+                        break;
+                    case "Page.loadEventFired":
+                        Load?.Invoke(this, EventArgs.Empty);
+                        break;
+                    case "Runtime.consoleAPICalled":
+                        await OnConsoleAPI(e.MessageData.ToObject<PageConsoleResponse>()).ConfigureAwait(false);
+                        break;
+                    case "Page.javascriptDialogOpening":
+                        OnDialog(e.MessageData.ToObject<PageJavascriptDialogOpeningResponse>());
+                        break;
+                    case "Runtime.exceptionThrown":
+                        HandleException(e.MessageData.SelectToken(MessageKeys.ExceptionDetails).ToObject<EvaluateExceptionDetails>());
+                        break;
+                    case "Security.certificateError":
+                        await OnCertificateError(e.MessageData.ToObject<CertificateErrorResponse>()).ConfigureAwait(false);
+                        break;
+                    case "Inspector.targetCrashed":
+                        OnTargetCrashed();
+                        break;
+                    case "Performance.metrics":
+                        EmitMetrics(e.MessageData.ToObject<PerformanceMetricsResponse>());
+                        break;
+                    case "Target.attachedToTarget":
+                        await OnAttachedToTarget(e).ConfigureAwait(false);
+                        break;
+                    case "Target.detachedFromTarget":
+                        OnDetachedFromTarget(e);
+                        break;
+                    case "Log.entryAdded":
+                        OnLogEntryAdded(e.MessageData.ToObject<LogEntryAddedResponse>());
+                        break;
+                    case "Runtime.bindingCalled":
+                        await OnBindingCalled(e.MessageData.ToObject<BindingCalledResponse>()).ConfigureAwait(false);
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                var message = $"Page failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
+                _logger.LogError(ex, message);
+                Client.Close(message);
             }
         }
 

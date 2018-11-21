@@ -31,7 +31,7 @@ namespace PuppeteerSharp
             _networkManager = networkManager;
             _pendingFrameRequests = new MultiMap<string, TaskCompletionSource<Frame>>();
 
-            _client.MessageReceived += _client_MessageReceived;
+            _client.MessageReceived += Client_MessageReceived;
         }
 
         #region Properties
@@ -154,47 +154,56 @@ namespace PuppeteerSharp
 
         #region Private Methods
 
-        private async void _client_MessageReceived(object sender, MessageEventArgs e)
+        private async void Client_MessageReceived(object sender, MessageEventArgs e)
         {
-            switch (e.MessageID)
+            try
             {
-                case "Page.frameAttached":
-                    OnFrameAttached(
-                        e.MessageData.SelectToken(MessageKeys.FrameId).ToObject<string>(),
-                        e.MessageData.SelectToken("parentFrameId").ToObject<string>());
-                    break;
+                switch (e.MessageID)
+                {
+                    case "Page.frameAttached":
+                        OnFrameAttached(
+                            e.MessageData.SelectToken(MessageKeys.FrameId).ToObject<string>(),
+                            e.MessageData.SelectToken("parentFrameId").ToObject<string>());
+                        break;
 
-                case "Page.frameNavigated":
-                    await OnFrameNavigatedAsync(e.MessageData.SelectToken(MessageKeys.Frame).ToObject<FramePayload>()).ConfigureAwait(false);
-                    break;
+                    case "Page.frameNavigated":
+                        await OnFrameNavigatedAsync(e.MessageData.SelectToken(MessageKeys.Frame).ToObject<FramePayload>()).ConfigureAwait(false);
+                        break;
 
-                case "Page.navigatedWithinDocument":
-                    OnFrameNavigatedWithinDocument(e.MessageData.ToObject<NavigatedWithinDocumentResponse>());
-                    break;
+                    case "Page.navigatedWithinDocument":
+                        OnFrameNavigatedWithinDocument(e.MessageData.ToObject<NavigatedWithinDocumentResponse>());
+                        break;
 
-                case "Page.frameDetached":
-                    OnFrameDetached(e.MessageData.ToObject<BasicFrameResponse>());
-                    break;
+                    case "Page.frameDetached":
+                        OnFrameDetached(e.MessageData.ToObject<BasicFrameResponse>());
+                        break;
 
-                case "Page.frameStoppedLoading":
-                    OnFrameStoppedLoading(e.MessageData.ToObject<BasicFrameResponse>());
-                    break;
+                    case "Page.frameStoppedLoading":
+                        OnFrameStoppedLoading(e.MessageData.ToObject<BasicFrameResponse>());
+                        break;
 
-                case "Runtime.executionContextCreated":
-                    await OnExecutionContextCreatedAsync(e.MessageData.SelectToken(MessageKeys.Context).ToObject<ContextPayload>());
-                    break;
+                    case "Runtime.executionContextCreated":
+                        await OnExecutionContextCreatedAsync(e.MessageData.SelectToken(MessageKeys.Context).ToObject<ContextPayload>());
+                        break;
 
-                case "Runtime.executionContextDestroyed":
-                    OnExecutionContextDestroyed(e.MessageData.SelectToken(MessageKeys.ExecutionContextId).ToObject<int>());
-                    break;
-                case "Runtime.executionContextsCleared":
-                    OnExecutionContextsCleared();
-                    break;
-                case "Page.lifecycleEvent":
-                    OnLifeCycleEvent(e.MessageData.ToObject<LifecycleEventResponse>());
-                    break;
-                default:
-                    break;
+                    case "Runtime.executionContextDestroyed":
+                        OnExecutionContextDestroyed(e.MessageData.SelectToken(MessageKeys.ExecutionContextId).ToObject<int>());
+                        break;
+                    case "Runtime.executionContextsCleared":
+                        OnExecutionContextsCleared();
+                        break;
+                    case "Page.lifecycleEvent":
+                        OnLifeCycleEvent(e.MessageData.ToObject<LifecycleEventResponse>());
+                        break;
+                    default:
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                var message = $"Connection failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
+                _logger.LogError(ex, message);
+                _client.Close(message);
             }
         }
 

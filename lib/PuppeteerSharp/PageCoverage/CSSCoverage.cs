@@ -40,7 +40,7 @@ namespace PuppeteerSharp.PageCoverage
             _stylesheetURLs.Clear();
             _stylesheetSources.Clear();
 
-            _client.MessageReceived += client_MessageReceived;
+            _client.MessageReceived += Client_MessageReceived;
 
             return Task.WhenAll(
                 _client.SendAsync("DOM.enable"),
@@ -62,7 +62,7 @@ namespace PuppeteerSharp.PageCoverage
                 _client.SendAsync("CSS.disable"),
                 _client.SendAsync("DOM.disable")
             ).ConfigureAwait(false);
-            _client.MessageReceived -= client_MessageReceived;
+            _client.MessageReceived -= Client_MessageReceived;
 
             var styleSheetIdToCoverage = new Dictionary<string, List<CoverageResponseRange>>();
             foreach (var entry in trackingResponse.RuleUsage)
@@ -98,16 +98,25 @@ namespace PuppeteerSharp.PageCoverage
             return coverage.ToArray();
         }
 
-        private async void client_MessageReceived(object sender, MessageEventArgs e)
+        private async void Client_MessageReceived(object sender, MessageEventArgs e)
         {
-            switch (e.MessageID)
+            try
             {
-                case "CSS.styleSheetAdded":
-                    await OnStyleSheetAdded(e.MessageData.ToObject<CSSStyleSheetAddedResponse>()).ConfigureAwait(false);
-                    break;
-                case "Runtime.executionContextsCleared":
-                    OnExecutionContextsCleared();
-                    break;
+                switch (e.MessageID)
+                {
+                    case "CSS.styleSheetAdded":
+                        await OnStyleSheetAdded(e.MessageData.ToObject<CSSStyleSheetAddedResponse>()).ConfigureAwait(false);
+                        break;
+                    case "Runtime.executionContextsCleared":
+                        OnExecutionContextsCleared();
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                var message = $"CSSCoverage failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
+                _logger.LogError(ex, message);
+                _client.Close(message);
             }
         }
 
