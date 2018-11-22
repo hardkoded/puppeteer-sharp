@@ -13,19 +13,16 @@ namespace PuppeteerSharp
         /// Latitude between -90 and 90.
         /// </summary>
         /// <value>The latitude.</value>
-        [JsonProperty("latitude")]
         public int Latitude { get; set; }
         /// <summary>
         /// Longitude between -180 and 180.
         /// </summary>
         /// <value>The longitude.</value>
-        [JsonProperty("longitude")]
         public int Longitude { get; set; }
         /// <summary>
         /// Optional non-negative accuracy value.
         /// </summary>
         /// <value>The accuracy.</value>
-        [JsonProperty("accuracy")]
         public int Accuracy { get; set; }
 
         /// <summary>

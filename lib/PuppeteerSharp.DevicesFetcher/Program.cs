@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 
 namespace PuppeteerSharp.DevicesFetcher
 {
@@ -38,7 +39,10 @@ namespace PuppeteerSharp.DevicesFetcher
             RootObject json = null;
             try
             {
-                json = JsonConvert.DeserializeObject<RootObject>(text);
+                json = JsonConvert.DeserializeObject<RootObject>(text, new JsonSerializerSettings
+                {
+                    ContractResolver = new CamelCasePropertyNamesContractResolver()
+                });
             }
             catch (Exception ex)
             {

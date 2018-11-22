@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Messaging;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
 {
@@ -29,7 +30,7 @@ namespace PuppeteerSharp
         private readonly CDPSession _client;
         private ExecutionContext _executionContext;
         private readonly Func<ConsoleType, JSHandle[], Task> _consoleAPICalled;
-        private readonly Action<EvaluateExceptionDetails> _exceptionThrown;
+        private readonly Action<EvaluateExceptionResponseDetails> _exceptionThrown;
         private readonly TaskCompletionSource<ExecutionContext> _executionContextCallback;
         private Func<ExecutionContext, JToken, JSHandle> _jsHandleFactory;
 
@@ -37,7 +38,7 @@ namespace PuppeteerSharp
             CDPSession client,
             string url,
             Func<ConsoleType, JSHandle[], Task> consoleAPICalled,
-            Action<EvaluateExceptionDetails> exceptionThrown)
+            Action<EvaluateExceptionResponseDetails> exceptionThrown)
         {
             _logger = client.Connection.LoggerFactory.CreateLogger<Worker>();
             _client = client;
@@ -122,11 +123,11 @@ namespace PuppeteerSharp
         }
 
         private void OnExceptionThrown(MessageEventArgs e)
-            => _exceptionThrown(e.MessageData.SelectToken(MessageKeys.ExceptionDetails).ToObject<EvaluateExceptionDetails>());
+            => _exceptionThrown(e.MessageData.SelectToken(MessageKeys.ExceptionDetails).ToObject<EvaluateExceptionResponseDetails>(true));
 
         private async Task OnConsoleAPICalled(MessageEventArgs e)
         {
-            var consoleData = e.MessageData.ToObject<PageConsoleResponse>();
+            var consoleData = e.MessageData.ToObject<PageConsoleResponse>(true);
             await _consoleAPICalled(
                 consoleData.Type,
                 consoleData.Args.Select<dynamic, JSHandle>(i => _jsHandleFactory(_executionContext, i)).ToArray())
@@ -140,7 +141,7 @@ namespace PuppeteerSharp
                 _jsHandleFactory = (ctx, remoteObject) => new JSHandle(ctx, _client, remoteObject);
                 _executionContext = new ExecutionContext(
                     _client,
-                    e.MessageData.SelectToken(MessageKeys.Context).ToObject<ContextPayload>(),
+                    e.MessageData.SelectToken(MessageKeys.Context).ToObject<ContextPayload>(true),
                     null);
                 _executionContextCallback.TrySetResult(_executionContext);
             }

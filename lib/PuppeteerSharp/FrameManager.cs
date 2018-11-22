@@ -167,23 +167,23 @@ namespace PuppeteerSharp
                         break;
 
                     case "Page.frameNavigated":
-                        await OnFrameNavigatedAsync(e.MessageData.SelectToken(MessageKeys.Frame).ToObject<FramePayload>()).ConfigureAwait(false);
+                        await OnFrameNavigatedAsync(e.MessageData.SelectToken(MessageKeys.Frame).ToObject<FramePayload>(true)).ConfigureAwait(false);
                         break;
 
                     case "Page.navigatedWithinDocument":
-                        OnFrameNavigatedWithinDocument(e.MessageData.ToObject<NavigatedWithinDocumentResponse>());
+                        OnFrameNavigatedWithinDocument(e.MessageData.ToObject<NavigatedWithinDocumentResponse>(true));
                         break;
 
                     case "Page.frameDetached":
-                        OnFrameDetached(e.MessageData.ToObject<BasicFrameResponse>());
+                        OnFrameDetached(e.MessageData.ToObject<BasicFrameResponse>(true));
                         break;
 
                     case "Page.frameStoppedLoading":
-                        OnFrameStoppedLoading(e.MessageData.ToObject<BasicFrameResponse>());
+                        OnFrameStoppedLoading(e.MessageData.ToObject<BasicFrameResponse>(true));
                         break;
 
                     case "Runtime.executionContextCreated":
-                        await OnExecutionContextCreatedAsync(e.MessageData.SelectToken(MessageKeys.Context).ToObject<ContextPayload>());
+                        await OnExecutionContextCreatedAsync(e.MessageData.SelectToken(MessageKeys.Context).ToObject<ContextPayload>(true));
                         break;
 
                     case "Runtime.executionContextDestroyed":
@@ -193,7 +193,7 @@ namespace PuppeteerSharp
                         OnExecutionContextsCleared();
                         break;
                     case "Page.lifecycleEvent":
-                        OnLifeCycleEvent(e.MessageData.ToObject<LifecycleEventResponse>());
+                        OnLifeCycleEvent(e.MessageData.ToObject<LifecycleEventResponse>(true));
                         break;
                     default:
                         break;

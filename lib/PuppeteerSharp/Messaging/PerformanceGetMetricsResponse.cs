@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using Newtonsoft.Json;
+﻿using System.Collections.Generic;
 
 namespace PuppeteerSharp.Messaging
 {
     internal class PerformanceGetMetricsResponse
     {
-        [JsonProperty("metrics")]
-        internal List<Metric> Metrics { get; set; }
+        public List<Metric> Metrics { get; set; }
     }
 }

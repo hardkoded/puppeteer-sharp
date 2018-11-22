@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Messaging;
 using PuppeteerSharp.Transport;
@@ -102,6 +103,9 @@ namespace PuppeteerSharp
                 { MessageKeys.Id, id },
                 { MessageKeys.Method, method },
                 { MessageKeys.Params, args }
+            }, new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
             });
 
             _logger.LogTrace("Send ► {Id} Method {Method} Params {@Params}", id, method, (object)args);
@@ -125,7 +129,7 @@ namespace PuppeteerSharp
         internal async Task<T> SendAsync<T>(string method, dynamic args = null)
         {
             JToken response = await SendAsync(method, args).ConfigureAwait(false);
-            return response.ToObject<T>();
+            return response.ToObject<T>(true);
         }
 
         internal async Task<CDPSession> CreateSessionAsync(TargetInfo targetInfo)
@@ -195,7 +199,10 @@ namespace PuppeteerSharp
 
                 try
                 {
-                    obj = JObject.Parse(response);
+                    obj = JsonConvert.DeserializeObject<JObject>(response, new JsonSerializerSettings
+                    {
+                        ContractResolver = new CamelCasePropertyNamesContractResolver()
+                    });
                 }
                 catch (JsonException exc)
                 {
