@@ -8,7 +8,8 @@ namespace PuppeteerSharp.Helpers
     {
         public static JsonSerializerSettings DefaultJsonSerializerSettings = new JsonSerializerSettings
         {
-            ContractResolver = new CamelCasePropertyNamesContractResolver()
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            NullValueHandling = NullValueHandling.Ignore
         };
     }
 }
