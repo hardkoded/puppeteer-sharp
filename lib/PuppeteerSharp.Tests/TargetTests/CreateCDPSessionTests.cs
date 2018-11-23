@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
-using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Tests.TargetTests
 {

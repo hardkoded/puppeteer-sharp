@@ -18,10 +18,7 @@ namespace PuppeteerSharp.Messaging
             set
             {
                 _payloadJson = value;
-                var json = JsonConvert.DeserializeObject(_payloadJson, new JsonSerializerSettings
-                {
-                    ContractResolver = new CamelCasePropertyNamesContractResolver()
-                }) as JObject;
+                var json = JsonConvert.DeserializeObject(_payloadJson, JsonHelper.DefaultJsonSerializerSettings) as JObject;
                 BindingPayload = json.ToObject<BindingCalledResponsePayload>(true);
                 BindingPayload.JsonObject = json;
             }

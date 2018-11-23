@@ -76,10 +76,7 @@ namespace PuppeteerSharp
                         hash.Headers[item.Key] = item.Value;
                     }
                 }
-                return JsonConvert.SerializeObject(hash, new JsonSerializerSettings
-                {
-                    ContractResolver = new CamelCasePropertyNamesContractResolver()
-                });
+                return JsonConvert.SerializeObject(hash, JsonHelper.DefaultJsonSerializerSettings);
             }
         }
     }

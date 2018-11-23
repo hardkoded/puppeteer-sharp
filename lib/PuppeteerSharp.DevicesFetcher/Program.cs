@@ -39,10 +39,7 @@ namespace PuppeteerSharp.DevicesFetcher
             RootObject json = null;
             try
             {
-                json = JsonConvert.DeserializeObject<RootObject>(text, new JsonSerializerSettings
-                {
-                    ContractResolver = new CamelCasePropertyNamesContractResolver()
-                });
+                json = JsonConvert.DeserializeObject<RootObject>(text);
             }
             catch (Exception ex)
             {

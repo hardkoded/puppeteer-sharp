@@ -3,7 +3,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using PuppeteerSharp.PageCoverage;
 using Xunit;
 using Xunit.Abstractions;

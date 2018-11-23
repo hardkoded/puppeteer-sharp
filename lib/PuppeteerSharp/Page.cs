@@ -2044,10 +2044,7 @@ namespace PuppeteerSharp
             {
                 return arg == null
                     ? "undefined"
-                    : JsonConvert.SerializeObject(arg, new JsonSerializerSettings
-                    {
-                        ContractResolver = new CamelCasePropertyNamesContractResolver()
-                    });
+                    : JsonConvert.SerializeObject(arg, JsonHelper.DefaultJsonSerializerSettings);
             }
         }
         #endregion
