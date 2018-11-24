@@ -34,7 +34,7 @@ Support us with a monthly donation and help us continue our activities. [Become 
 
 Some of the best ways to contribute are to try things out file bugs and fix issues.
 
-If you have an issue or a question, 
+If you have an issue or a question:
 
 * Ask a question on [Stack Overflow](https://stackoverflow.com/search?q=puppeteer-sharp)
 * File a [new issue](https://github.com/kblok/puppeteer-sharp/issues/new)
