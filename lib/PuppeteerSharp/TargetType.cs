@@ -44,6 +44,16 @@ namespace PuppeteerSharp
         /// Target type javascript.
         /// </summary>
         [EnumMember(Value = "javascript")]
-        Javascript
+        Javascript,
+        /// <summary>
+        /// Target type network
+        /// </summary>
+        [EnumMember(Value = "network")]
+        Network,
+        /// <summary>
+        /// Target type network
+        /// </summary>
+        [EnumMember(Value = "deprecation")]
+        Deprecation
     }
 }

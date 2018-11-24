@@ -106,22 +106,22 @@ namespace PuppeteerSharp
                 switch (e.MessageID)
                 {
                     case "Network.requestWillBeSent":
-                        await OnRequestWillBeSentAsync(e.MessageData.ToObject<RequestWillBeSentPayload>());
+                        await OnRequestWillBeSentAsync(e.MessageData.ToObject<RequestWillBeSentPayload>(true));
                         break;
                     case "Network.requestIntercepted":
-                        await OnRequestInterceptedAsync(e.MessageData.ToObject<RequestInterceptedResponse>()).ConfigureAwait(false);
+                        await OnRequestInterceptedAsync(e.MessageData.ToObject<RequestInterceptedResponse>(true)).ConfigureAwait(false);
                         break;
                     case "Network.requestServedFromCache":
-                        OnRequestServedFromCache(e.MessageData.ToObject<RequestServedFromCacheResponse>());
+                        OnRequestServedFromCache(e.MessageData.ToObject<RequestServedFromCacheResponse>(true));
                         break;
                     case "Network.responseReceived":
-                        OnResponseReceived(e.MessageData.ToObject<ResponseReceivedResponse>());
+                        OnResponseReceived(e.MessageData.ToObject<ResponseReceivedResponse>(true));
                         break;
                     case "Network.loadingFinished":
-                        OnLoadingFinished(e.MessageData.ToObject<LoadingFinishedResponse>());
+                        OnLoadingFinished(e.MessageData.ToObject<LoadingFinishedResponse>(true));
                         break;
                     case "Network.loadingFailed":
-                        OnLoadingFailed(e.MessageData.ToObject<LoadingFailedResponse>());
+                        OnLoadingFailed(e.MessageData.ToObject<LoadingFailedResponse>(true));
                         break;
                 }
             }

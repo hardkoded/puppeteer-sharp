@@ -42,7 +42,7 @@ namespace PuppeteerSharp.Helpers
             switch (objectType)
             {
                 case "object":
-                    return value.ToObject<T>();
+                    return value.ToObject<T>(true);
                 case "undefined":
                     return null;
                 case "number":

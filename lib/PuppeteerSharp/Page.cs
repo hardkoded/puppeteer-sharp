@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Input;
 using PuppeteerSharp.Media;
@@ -507,7 +508,7 @@ namespace PuppeteerSharp
                 { MessageKeys.Urls, urls.Length > 0 ? urls : new string[] { Url } }
             }).ConfigureAwait(false);
 
-            return response[MessageKeys.Cookies].ToObject<CookieParam[]>();
+            return response[MessageKeys.Cookies].ToObject<CookieParam[]>(true);
         }
 
         /// <summary>
@@ -1784,22 +1785,22 @@ namespace PuppeteerSharp
                         Load?.Invoke(this, EventArgs.Empty);
                         break;
                     case "Runtime.consoleAPICalled":
-                        await OnConsoleAPI(e.MessageData.ToObject<PageConsoleResponse>()).ConfigureAwait(false);
+                        await OnConsoleAPI(e.MessageData.ToObject<PageConsoleResponse>(true)).ConfigureAwait(false);
                         break;
                     case "Page.javascriptDialogOpening":
-                        OnDialog(e.MessageData.ToObject<PageJavascriptDialogOpeningResponse>());
+                        OnDialog(e.MessageData.ToObject<PageJavascriptDialogOpeningResponse>(true));
                         break;
                     case "Runtime.exceptionThrown":
-                        HandleException(e.MessageData.SelectToken(MessageKeys.ExceptionDetails).ToObject<EvaluateExceptionDetails>());
+                        HandleException(e.MessageData.SelectToken(MessageKeys.ExceptionDetails).ToObject<EvaluateExceptionResponseDetails>(true));
                         break;
                     case "Security.certificateError":
-                        await OnCertificateError(e.MessageData.ToObject<CertificateErrorResponse>()).ConfigureAwait(false);
+                        await OnCertificateError(e.MessageData.ToObject<CertificateErrorResponse>(true)).ConfigureAwait(false);
                         break;
                     case "Inspector.targetCrashed":
                         OnTargetCrashed();
                         break;
                     case "Performance.metrics":
-                        EmitMetrics(e.MessageData.ToObject<PerformanceMetricsResponse>());
+                        EmitMetrics(e.MessageData.ToObject<PerformanceMetricsResponse>(true));
                         break;
                     case "Target.attachedToTarget":
                         await OnAttachedToTarget(e).ConfigureAwait(false);
@@ -1808,10 +1809,10 @@ namespace PuppeteerSharp
                         OnDetachedFromTarget(e);
                         break;
                     case "Log.entryAdded":
-                        OnLogEntryAdded(e.MessageData.ToObject<LogEntryAddedResponse>());
+                        OnLogEntryAdded(e.MessageData.ToObject<LogEntryAddedResponse>(true));
                         break;
                     case "Runtime.bindingCalled":
-                        await OnBindingCalled(e.MessageData.ToObject<BindingCalledResponse>()).ConfigureAwait(false);
+                        await OnBindingCalled(e.MessageData.ToObject<BindingCalledResponse>(true)).ConfigureAwait(false);
                         break;
                 }
             }
@@ -1831,7 +1832,7 @@ namespace PuppeteerSharp
                 @"function deliverResult(name, seq, result) {
                     window[name]['callbacks'].get(seq)(result);
                     window[name]['callbacks'].delete(seq);
-                }", e.Payload.Name, e.Payload.Seq, result);
+                }", e.BindingPayload.Name, e.BindingPayload.Seq, result);
 
             Client.Send("Runtime.evaluate", new
             {
@@ -1843,10 +1844,10 @@ namespace PuppeteerSharp
         private async Task<object> ExecuteBinding(BindingCalledResponse e)
         {
             object result;
-            var binding = _pageBindings[e.Payload.Name];
+            var binding = _pageBindings[e.BindingPayload.Name];
             var methodParams = binding.Method.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
 
-            var args = e.Payload.JsonObject.GetValue(MessageKeys.Args).Select((token, i) => token.ToObject(methodParams[i])).ToArray();
+            var args = e.BindingPayload.JsonObject.GetValue(MessageKeys.Args).Select((token, i) => token.ToObject(methodParams[i])).ToArray();
 
             result = binding.DynamicInvoke(args);
             if (result is Task taskResult)
@@ -1875,7 +1876,7 @@ namespace PuppeteerSharp
 
         private async Task OnAttachedToTarget(MessageEventArgs e)
         {
-            var targetInfo = e.MessageData.SelectToken(MessageKeys.TargetInfo).ToObject<TargetInfo>();
+            var targetInfo = e.MessageData.SelectToken(MessageKeys.TargetInfo).ToObject<TargetInfo>(true);
             var sessionId = e.MessageData.SelectToken(MessageKeys.SessionId).ToObject<string>();
             if (targetInfo.Type != TargetType.Worker)
             {
@@ -1942,10 +1943,10 @@ namespace PuppeteerSharp
             }
         }
 
-        private void HandleException(EvaluateExceptionDetails exceptionDetails)
+        private void HandleException(EvaluateExceptionResponseDetails exceptionDetails)
             => PageError?.Invoke(this, new PageErrorEventArgs(GetExceptionMessage(exceptionDetails)));
 
-        private string GetExceptionMessage(EvaluateExceptionDetails exceptionDetails)
+        private string GetExceptionMessage(EvaluateExceptionResponseDetails exceptionDetails)
         {
             if (exceptionDetails.Exception != null)
             {
@@ -2041,7 +2042,9 @@ namespace PuppeteerSharp
 
             string SerializeArgument(object arg)
             {
-                return arg == null ? "undefined" : JsonConvert.SerializeObject(arg);
+                return arg == null
+                    ? "undefined"
+                    : JsonConvert.SerializeObject(arg, JsonHelper.DefaultJsonSerializerSettings);
             }
         }
         #endregion

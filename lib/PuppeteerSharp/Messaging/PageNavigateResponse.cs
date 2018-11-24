@@ -1,14 +1,8 @@
-﻿using System;
-using Newtonsoft.Json;
-
-namespace PuppeteerSharp.Messaging
+﻿namespace PuppeteerSharp.Messaging
 {
     internal class PageNavigateResponse
     {
-        [JsonProperty("errorText")]
-        internal string ErrorText { get; set; }
-
-        [JsonProperty("loaderId")]
-        internal string LoaderId { get; set; }
+        public string ErrorText { get; set; }
+        public string LoaderId { get; set; }
     }
 }

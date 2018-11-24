@@ -105,7 +105,7 @@ namespace PuppeteerSharp.PageCoverage
                 switch (e.MessageID)
                 {
                     case "CSS.styleSheetAdded":
-                        await OnStyleSheetAdded(e.MessageData.ToObject<CSSStyleSheetAddedResponse>()).ConfigureAwait(false);
+                        await OnStyleSheetAdded(e.MessageData.ToObject<CSSStyleSheetAddedResponse>(true)).ConfigureAwait(false);
                         break;
                     case "Runtime.executionContextsCleared":
                         OnExecutionContextsCleared();

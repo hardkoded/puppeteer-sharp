@@ -134,7 +134,7 @@ namespace PuppeteerSharp
                     Width = (int)Math.Max(viewport.Width, Math.Ceiling(boundingBox.Width)),
                     Height = (int)Math.Max(viewport.Height, Math.Ceiling(boundingBox.Height))
                 });
-                await Page.SetViewportAsync(newRawViewport.ToObject<ViewPortOptions>()).ConfigureAwait(false);
+                await Page.SetViewportAsync(newRawViewport.ToObject<ViewPortOptions>(true)).ConfigureAwait(false);
                 needsViewportReset = true;
             }
             await ExecutionContext.EvaluateFunctionAsync(@"function(element) {
