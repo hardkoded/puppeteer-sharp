@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>1.9.0</PackageVersion>
+    <PackageVersion>1.10.0</PackageVersion>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
@@ -11,64 +11,34 @@
     <Title>PuppeteerSharp</Title>
     <Description>Headless Chrome .NET API</Description>
     <PackageId>PuppeteerSharp</PackageId>
-    <PackageReleaseNotes><![CDATA[# New Features
+    <PackageReleaseNotes><![CDATA[
+# New Features
 
- * Introducing Burst mode.
-
-var screenShotOptions = new ScreenshotOptions
-{
-    FullPage = true,
-    BurstMode = true
-};
-await page.GoToAsync("https://www.google.com");
-for(var x = 0; x < 100; x++)
-{
-    await page.ScreenshotBase64Async(screenShotOptions);
-}
-await page.SetBurstModeOffAsync();
-
+ * Snapshot the accessibility tree.
 
 # New APIs
 
- * ScreenshotOptions.BurstMode and Page.SetBurstModeOff.
- * Browser.Target.
- * ConnectOptions/LaunchOptions.Transport and ConnectionOptions/LaunchOptions.EnqueueTransportMessages.
- * Frame.GoToAsync
+ * Browser.WaitForTargetAsync.
+ * CDPSession.CloseReason, Connection.CloseReason.
+ * Camel Case the world. `JToken.ToObject<T>(bool camelCase)`.
 
 # Breaking Changes
 
-## Evaluate changes
-
-`EvaluateFunctionAsync` and `EvaluateExpressionAsync` won't try to infer the output type when used without generics. It will return a ** JToken** instead.
-
-A piece of code like this:
-
-int x = page.EvaluateExpressionAsync("1");
-
-
-Will need to be replaced by one of these two options:
-
-int x = page.EvaluateExpressionAsync<int>("1");
-int x = page.EvaluateExpressionAsync("1").ToObject<int>();
+ * `Page.Frames` now is based on a `ConcurrentDictionary`. With this change, the Frame order is no longer guaranteed.
+ * Payload.PostData is now a string (as it was supposed to be).
+ * Improve internal exception handling. Now puppeteer-sharp will close the CDPSession or the Connection if puppeteer fails to process a message.
+ * BufferAsync should work with binaries.
 
 # Changelog
  
- * Bump the version of chromium to 594312.
- * Add failing test for page.select.
- * Fixed windows fetching.
- * Fix description of SecurityDetails class.
- * Add zero width element test.
- * Add missing configure awaits.
- * Fix full page screenshot when defaultViewport is null.
- * Unify response tracking in page.goto and waitForNavigation.
- * Don't wait for Runtime.Evaluate.
- * Browser closing/disconnecting should abort navigations.
- * Expect Network.responseReceived event is never dispatched.
- * Set JPG background to white when omitBackground option is used.
- * Concurrency improvements.
- * Check if frame exists before creating a Request.
-    ]]></PackageReleaseNotes>
-    <ReleaseVersion>1.9.0</ReleaseVersion>
+ * Roll chromium to r599821.
+ * Don't prematurely disable the CSS domain.
+ * Add missing location property to some key descriptors.
+ * Add missing test.
+ * Add flags to improve reliability.
+ * Handle negative area results in computeQuadArea.
+ ]]></PackageReleaseNotes>
+    <ReleaseVersion>1.10.0</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>
@@ -90,8 +60,5 @@ int x = page.EvaluateExpressionAsync("1").ToObject<int>();
     <PackageReference Include="System.Net.Http" Version="4.3.3" />
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.0.2" />
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.1" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Transport\" />
   </ItemGroup>
 </Project>
