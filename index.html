@@ -8,7 +8,7 @@
     <title>Puppeteer Sharp </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Puppeteer Sharp ">
-    <meta name="generator" content="docfx 2.40.0.0">
+    <meta name="generator" content="docfx 2.40.3.0">
     
     <link rel="shortcut icon" href="favicon.ico">
     <link rel="stylesheet" href="styles/docfx.vendor.css">
@@ -68,87 +68,9 @@
 <li>As Puppeteer-Sharp is a NetStandard 2.0 library, The minimum platform versions are .NET Framework 4.6.1 and .NET Core 2.0. <a href="https://docs.microsoft.com/en-us/dotnet/standard/net-standard">Read more</a>.</li>
 <li>The minimum Windows versions supporting the WebSocket library are Windows 8 and Windows Server 2012. <a href="https://docs.microsoft.com/en-us/dotnet/api/system.net.websockets?redirectedfrom=MSDN&amp;view=netframework-4.7.2">Read more</a>.</li>
 </ul>
-<h1 id="usage">Usage</h1>
-<h2 id="take-screenshots">Take screenshots</h2>
-<pre><code class="lang-cs">await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
-var browser = await Puppeteer.LaunchAsync(new LaunchOptions
-{
-    Headless = true
-});
-var page = await browser.NewPageAsync();
-await page.GoToAsync(&quot;http://www.google.com&quot;);
-await page.ScreenshotAsync(outputFile);
-</code></pre>
-<p>You can also change the view port before generating the screenshot</p>
-<pre><code class="lang-cs">await page.SetViewport(new ViewPortOptions
-{
-    Width = 500,
-    Height = 500
-});
-</code></pre>
-<h2 id="generate-pdf-files">Generate PDF files</h2>
-<pre><code class="lang-cs">await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
-var browser = await Puppeteer.LaunchAsync(new LaunchOptions
-{
-    Headless = true
-});
-var page = await browser.NewPageAsync();
-await page.GoToAsync(&quot;http://www.google.com&quot;);
-await page.PdfAsync(outputFile);
-</code></pre>
-<h2 id="inject-html">Inject HTML</h2>
-<pre><code class="lang-cs">using(var page = await browser.NewPageAsync())
-{
-    await page.SetContentAsync(&quot;&lt;div&gt;My Receipt&lt;/div&gt;&quot;);
-    var result = await page.GetContentAsync();
-    await page.PdfAsync(outputFile);
-    SaveHtmlToDB(result);
-}
-</code></pre>
-<h2 id="evaluate-javascript">Evaluate Javascript</h2>
-<pre><code class="lang-cs">using (var page = await browser.NewPageAsync())
-{
-    var seven = await page.EvaluateFunctionAsync&lt;int&gt;(&quot;()=&gt; 4 + 3&quot;);
-    var someObject = await page.EvaluateFunctionAsync&lt;dynamic&gt;(&quot;(value) =&gt; ({a: value})&quot;, 5);
-    Console.WriteLine(someObject.a);
-}
-</code></pre>
-<h2 id="wait-for-selector">Wait For Selector</h2>
-<pre><code class="lang-cs">using (var page = await browser.NewPageAsync())
-{
-    await page.GoToAsync(&quot;http://www.spapage.com&quot;);
-    await page.WaitForSelectorAsync(&quot;div.main-content&quot;)
-    await page.PdfAsync(outputFile));
-}
-</code></pre>
-<h2 id="wait-for-function">Wait For Function</h2>
-<pre><code class="lang-cs">using (var page = await Browser.NewPageAsync())
-{
-    await page.GoToAsync(&quot;http://www.spapage.com&quot;);
-    var watchDog = page.WaitForFunctionAsync(&quot; () =&gt; window.innerWidth &lt; 100&quot;);
-    await page.SetViewportAsync(new ViewPortOptions { Width = 50, Height = 50 });
-    await watchDog;
-}
-</code></pre>
-<h2 id="connect-to-a-remote-browser">Connect to a remote browser</h2>
-<pre><code class="lang-cs">var options = new ConnectOptions()
-{
-    BrowserWSEndpoint = $&quot;wss://www.externalbrowser.io?token={apikey}&quot;
-};
-
-var url = &quot;https://www.google.com/&quot;;
-
-using (var browser = await PuppeteerSharp.Puppeteer.ConnectAsync(options))
-{
-    using (var page = await browser.NewPageAsync())
-    {
-        await page.GoToAsync(url);
-        await page.PdfAsync(&quot;wot.pdf&quot;);
-    }
-}
-</code></pre>
 <h1 id="monthly-reports">Monthly reports</h1>
 <ul>
+<li><a href="http://www.hardkoded.com/blog/puppeteer-sharp-monthly-nov-2018">November 2018</a></li>
 <li><a href="http://www.hardkoded.com/blog/puppeteer-sharp-monthly-oct-2018">October 2018</a></li>
 <li><a href="http://www.hardkoded.com/blog/puppeteer-sharp-monthly-sep-2018">September 2018</a></li>
 <li><a href="https://www.hardkoded.com/blog/puppeteer-sharp-monthly-jul-2018">July 2018</a></li>
@@ -157,11 +79,6 @@ using (var browser = await PuppeteerSharp.Puppeteer.ConnectAsync(options))
 <li><a href="http://www.hardkoded.com/blogs/puppeteer-sharp-monthly-april-2018">April 2018</a></li>
 <li><a href="http://www.hardkoded.com/blogs/puppeteer-sharp-monthly-march-2018">March 2018</a></li>
 <li><a href="http://www.hardkoded.com/blogs/puppeteer-sharp-monthly-february-2018">February 2018</a></li>
-</ul>
-<h1 id="progress">Progress</h1>
-<ul>
-<li>Tests on Google's Puppeteer: 493.</li>
-<li>Tests on Puppeteer Sharp: 482.</li>
 </ul>
 <h1 id="useful-links">Useful links</h1>
 <ul>

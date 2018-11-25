@@ -370,6 +370,19 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Browser.DefaultContext
   nameWithType: Browser.DefaultContext
+- uid: PuppeteerSharp.Browser.DefaultWaitForTimeout
+  name: DefaultWaitForTimeout
+  href: api/PuppeteerSharp.Browser.html#PuppeteerSharp_Browser_DefaultWaitForTimeout
+  commentId: P:PuppeteerSharp.Browser.DefaultWaitForTimeout
+  fullName: PuppeteerSharp.Browser.DefaultWaitForTimeout
+  nameWithType: Browser.DefaultWaitForTimeout
+- uid: PuppeteerSharp.Browser.DefaultWaitForTimeout*
+  name: DefaultWaitForTimeout
+  href: api/PuppeteerSharp.Browser.html#PuppeteerSharp_Browser_DefaultWaitForTimeout_
+  commentId: Overload:PuppeteerSharp.Browser.DefaultWaitForTimeout
+  isSpec: "True"
+  fullName: PuppeteerSharp.Browser.DefaultWaitForTimeout
+  nameWithType: Browser.DefaultWaitForTimeout
 - uid: PuppeteerSharp.Browser.Disconnect
   name: Disconnect()
   href: api/PuppeteerSharp.Browser.html#PuppeteerSharp_Browser_Disconnect
@@ -537,6 +550,22 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Browser.Targets
   nameWithType: Browser.Targets
+- uid: PuppeteerSharp.Browser.WaitForTargetAsync(Func{PuppeteerSharp.Target,System.Boolean},PuppeteerSharp.WaitForOptions)
+  name: WaitForTargetAsync(Func<Target, Boolean>, WaitForOptions)
+  href: api/PuppeteerSharp.Browser.html#PuppeteerSharp_Browser_WaitForTargetAsync_Func_PuppeteerSharp_Target_System_Boolean__PuppeteerSharp_WaitForOptions_
+  commentId: M:PuppeteerSharp.Browser.WaitForTargetAsync(Func{PuppeteerSharp.Target,System.Boolean},PuppeteerSharp.WaitForOptions)
+  name.vb: WaitForTargetAsync(Func(Of Target, Boolean), WaitForOptions)
+  fullName: PuppeteerSharp.Browser.WaitForTargetAsync(Func<PuppeteerSharp.Target, System.Boolean>, PuppeteerSharp.WaitForOptions)
+  fullName.vb: PuppeteerSharp.Browser.WaitForTargetAsync(Func(Of PuppeteerSharp.Target, System.Boolean), PuppeteerSharp.WaitForOptions)
+  nameWithType: Browser.WaitForTargetAsync(Func<Target, Boolean>, WaitForOptions)
+  nameWithType.vb: Browser.WaitForTargetAsync(Func(Of Target, Boolean), WaitForOptions)
+- uid: PuppeteerSharp.Browser.WaitForTargetAsync*
+  name: WaitForTargetAsync
+  href: api/PuppeteerSharp.Browser.html#PuppeteerSharp_Browser_WaitForTargetAsync_
+  commentId: Overload:PuppeteerSharp.Browser.WaitForTargetAsync
+  isSpec: "True"
+  fullName: PuppeteerSharp.Browser.WaitForTargetAsync
+  nameWithType: Browser.WaitForTargetAsync
 - uid: PuppeteerSharp.Browser.WebSocketEndpoint
   name: WebSocketEndpoint
   href: api/PuppeteerSharp.Browser.html#PuppeteerSharp_Browser_WebSocketEndpoint
@@ -681,6 +710,22 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.BrowserContext.Targets
   nameWithType: BrowserContext.Targets
+- uid: PuppeteerSharp.BrowserContext.WaitForTargetAsync(Func{PuppeteerSharp.Target,System.Boolean},PuppeteerSharp.WaitForOptions)
+  name: WaitForTargetAsync(Func<Target, Boolean>, WaitForOptions)
+  href: api/PuppeteerSharp.BrowserContext.html#PuppeteerSharp_BrowserContext_WaitForTargetAsync_Func_PuppeteerSharp_Target_System_Boolean__PuppeteerSharp_WaitForOptions_
+  commentId: M:PuppeteerSharp.BrowserContext.WaitForTargetAsync(Func{PuppeteerSharp.Target,System.Boolean},PuppeteerSharp.WaitForOptions)
+  name.vb: WaitForTargetAsync(Func(Of Target, Boolean), WaitForOptions)
+  fullName: PuppeteerSharp.BrowserContext.WaitForTargetAsync(Func<PuppeteerSharp.Target, System.Boolean>, PuppeteerSharp.WaitForOptions)
+  fullName.vb: PuppeteerSharp.BrowserContext.WaitForTargetAsync(Func(Of PuppeteerSharp.Target, System.Boolean), PuppeteerSharp.WaitForOptions)
+  nameWithType: BrowserContext.WaitForTargetAsync(Func<Target, Boolean>, WaitForOptions)
+  nameWithType.vb: BrowserContext.WaitForTargetAsync(Func(Of Target, Boolean), WaitForOptions)
+- uid: PuppeteerSharp.BrowserContext.WaitForTargetAsync*
+  name: WaitForTargetAsync
+  href: api/PuppeteerSharp.BrowserContext.html#PuppeteerSharp_BrowserContext_WaitForTargetAsync_
+  commentId: Overload:PuppeteerSharp.BrowserContext.WaitForTargetAsync
+  isSpec: "True"
+  fullName: PuppeteerSharp.BrowserContext.WaitForTargetAsync
+  nameWithType: BrowserContext.WaitForTargetAsync
 - uid: PuppeteerSharp.BrowserFetcher
   name: BrowserFetcher
   href: api/PuppeteerSharp.BrowserFetcher.html
@@ -898,6 +943,19 @@ references:
   commentId: E:PuppeteerSharp.CDPSession.Closed
   fullName: PuppeteerSharp.CDPSession.Closed
   nameWithType: CDPSession.Closed
+- uid: PuppeteerSharp.CDPSession.CloseReason
+  name: CloseReason
+  href: api/PuppeteerSharp.CDPSession.html#PuppeteerSharp_CDPSession_CloseReason
+  commentId: P:PuppeteerSharp.CDPSession.CloseReason
+  fullName: PuppeteerSharp.CDPSession.CloseReason
+  nameWithType: CDPSession.CloseReason
+- uid: PuppeteerSharp.CDPSession.CloseReason*
+  name: CloseReason
+  href: api/PuppeteerSharp.CDPSession.html#PuppeteerSharp_CDPSession_CloseReason_
+  commentId: Overload:PuppeteerSharp.CDPSession.CloseReason
+  isSpec: "True"
+  fullName: PuppeteerSharp.CDPSession.CloseReason
+  nameWithType: CDPSession.CloseReason
 - uid: PuppeteerSharp.CDPSession.DetachAsync
   name: DetachAsync()
   href: api/PuppeteerSharp.CDPSession.html#PuppeteerSharp_CDPSession_DetachAsync
@@ -1208,6 +1266,19 @@ references:
   commentId: E:PuppeteerSharp.Connection.Closed
   fullName: PuppeteerSharp.Connection.Closed
   nameWithType: Connection.Closed
+- uid: PuppeteerSharp.Connection.CloseReason
+  name: CloseReason
+  href: api/PuppeteerSharp.Connection.html#PuppeteerSharp_Connection_CloseReason
+  commentId: P:PuppeteerSharp.Connection.CloseReason
+  fullName: PuppeteerSharp.Connection.CloseReason
+  nameWithType: Connection.CloseReason
+- uid: PuppeteerSharp.Connection.CloseReason*
+  name: CloseReason
+  href: api/PuppeteerSharp.Connection.html#PuppeteerSharp_Connection_CloseReason_
+  commentId: Overload:PuppeteerSharp.Connection.CloseReason
+  isSpec: "True"
+  fullName: PuppeteerSharp.Connection.CloseReason
+  nameWithType: Connection.CloseReason
 - uid: PuppeteerSharp.Connection.DefaultWebSocketFactory
   name: DefaultWebSocketFactory
   href: api/PuppeteerSharp.Connection.html#PuppeteerSharp_Connection_DefaultWebSocketFactory
@@ -5538,6 +5609,19 @@ references:
   commentId: T:PuppeteerSharp.Page
   fullName: PuppeteerSharp.Page
   nameWithType: Page
+- uid: PuppeteerSharp.Page.Accessibility
+  name: Accessibility
+  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_Accessibility
+  commentId: P:PuppeteerSharp.Page.Accessibility
+  fullName: PuppeteerSharp.Page.Accessibility
+  nameWithType: Page.Accessibility
+- uid: PuppeteerSharp.Page.Accessibility*
+  name: Accessibility
+  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_Accessibility_
+  commentId: Overload:PuppeteerSharp.Page.Accessibility
+  isSpec: "True"
+  fullName: PuppeteerSharp.Page.Accessibility
+  nameWithType: Page.Accessibility
 - uid: PuppeteerSharp.Page.AddScriptTagAsync(PuppeteerSharp.AddTagOptions)
   name: AddScriptTagAsync(AddTagOptions)
   href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_AddScriptTagAsync_PuppeteerSharp_AddTagOptions_
@@ -6816,6 +6900,463 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Page.XPathAsync
   nameWithType: Page.XPathAsync
+- uid: PuppeteerSharp.PageAccessibility
+  name: PuppeteerSharp.PageAccessibility
+  href: api/PuppeteerSharp.PageAccessibility.html
+  commentId: N:PuppeteerSharp.PageAccessibility
+  fullName: PuppeteerSharp.PageAccessibility
+  nameWithType: PuppeteerSharp.PageAccessibility
+- uid: PuppeteerSharp.PageAccessibility.Accessibility
+  name: Accessibility
+  href: api/PuppeteerSharp.PageAccessibility.Accessibility.html
+  commentId: T:PuppeteerSharp.PageAccessibility.Accessibility
+  fullName: PuppeteerSharp.PageAccessibility.Accessibility
+  nameWithType: Accessibility
+- uid: PuppeteerSharp.PageAccessibility.Accessibility.#ctor(PuppeteerSharp.CDPSession)
+  name: Accessibility(CDPSession)
+  href: api/PuppeteerSharp.PageAccessibility.Accessibility.html#PuppeteerSharp_PageAccessibility_Accessibility__ctor_PuppeteerSharp_CDPSession_
+  commentId: M:PuppeteerSharp.PageAccessibility.Accessibility.#ctor(PuppeteerSharp.CDPSession)
+  fullName: PuppeteerSharp.PageAccessibility.Accessibility.Accessibility(PuppeteerSharp.CDPSession)
+  nameWithType: Accessibility.Accessibility(CDPSession)
+- uid: PuppeteerSharp.PageAccessibility.Accessibility.#ctor*
+  name: Accessibility
+  href: api/PuppeteerSharp.PageAccessibility.Accessibility.html#PuppeteerSharp_PageAccessibility_Accessibility__ctor_
+  commentId: Overload:PuppeteerSharp.PageAccessibility.Accessibility.#ctor
+  isSpec: "True"
+  fullName: PuppeteerSharp.PageAccessibility.Accessibility.Accessibility
+  nameWithType: Accessibility.Accessibility
+- uid: PuppeteerSharp.PageAccessibility.Accessibility.SnapshotAsync(PuppeteerSharp.PageAccessibility.AccessibilitySnapshotOptions)
+  name: SnapshotAsync(AccessibilitySnapshotOptions)
+  href: api/PuppeteerSharp.PageAccessibility.Accessibility.html#PuppeteerSharp_PageAccessibility_Accessibility_SnapshotAsync_PuppeteerSharp_PageAccessibility_AccessibilitySnapshotOptions_
+  commentId: M:PuppeteerSharp.PageAccessibility.Accessibility.SnapshotAsync(PuppeteerSharp.PageAccessibility.AccessibilitySnapshotOptions)
+  fullName: PuppeteerSharp.PageAccessibility.Accessibility.SnapshotAsync(PuppeteerSharp.PageAccessibility.AccessibilitySnapshotOptions)
+  nameWithType: Accessibility.SnapshotAsync(AccessibilitySnapshotOptions)
+- uid: PuppeteerSharp.PageAccessibility.Accessibility.SnapshotAsync*
+  name: SnapshotAsync
+  href: api/PuppeteerSharp.PageAccessibility.Accessibility.html#PuppeteerSharp_PageAccessibility_Accessibility_SnapshotAsync_
+  commentId: Overload:PuppeteerSharp.PageAccessibility.Accessibility.SnapshotAsync
+  isSpec: "True"
+  fullName: PuppeteerSharp.PageAccessibility.Accessibility.SnapshotAsync
+  nameWithType: Accessibility.SnapshotAsync
+- uid: PuppeteerSharp.PageAccessibility.AccessibilitySnapshotOptions
+  name: AccessibilitySnapshotOptions
+  href: api/PuppeteerSharp.PageAccessibility.AccessibilitySnapshotOptions.html
+  commentId: T:PuppeteerSharp.PageAccessibility.AccessibilitySnapshotOptions
+  fullName: PuppeteerSharp.PageAccessibility.AccessibilitySnapshotOptions
+  nameWithType: AccessibilitySnapshotOptions
+- uid: PuppeteerSharp.PageAccessibility.AccessibilitySnapshotOptions.InterestingOnly
+  name: InterestingOnly
+  href: api/PuppeteerSharp.PageAccessibility.AccessibilitySnapshotOptions.html#PuppeteerSharp_PageAccessibility_AccessibilitySnapshotOptions_InterestingOnly
+  commentId: P:PuppeteerSharp.PageAccessibility.AccessibilitySnapshotOptions.InterestingOnly
+  fullName: PuppeteerSharp.PageAccessibility.AccessibilitySnapshotOptions.InterestingOnly
+  nameWithType: AccessibilitySnapshotOptions.InterestingOnly
+- uid: PuppeteerSharp.PageAccessibility.AccessibilitySnapshotOptions.InterestingOnly*
+  name: InterestingOnly
+  href: api/PuppeteerSharp.PageAccessibility.AccessibilitySnapshotOptions.html#PuppeteerSharp_PageAccessibility_AccessibilitySnapshotOptions_InterestingOnly_
+  commentId: Overload:PuppeteerSharp.PageAccessibility.AccessibilitySnapshotOptions.InterestingOnly
+  isSpec: "True"
+  fullName: PuppeteerSharp.PageAccessibility.AccessibilitySnapshotOptions.InterestingOnly
+  nameWithType: AccessibilitySnapshotOptions.InterestingOnly
+- uid: PuppeteerSharp.PageAccessibility.CheckedState
+  name: CheckedState
+  href: api/PuppeteerSharp.PageAccessibility.CheckedState.html
+  commentId: T:PuppeteerSharp.PageAccessibility.CheckedState
+  fullName: PuppeteerSharp.PageAccessibility.CheckedState
+  nameWithType: CheckedState
+- uid: PuppeteerSharp.PageAccessibility.CheckedState.False
+  name: "False"
+  href: api/PuppeteerSharp.PageAccessibility.CheckedState.html#PuppeteerSharp_PageAccessibility_CheckedState_False
+  commentId: F:PuppeteerSharp.PageAccessibility.CheckedState.False
+  fullName: PuppeteerSharp.PageAccessibility.CheckedState.False
+  nameWithType: CheckedState.False
+- uid: PuppeteerSharp.PageAccessibility.CheckedState.Mixed
+  name: Mixed
+  href: api/PuppeteerSharp.PageAccessibility.CheckedState.html#PuppeteerSharp_PageAccessibility_CheckedState_Mixed
+  commentId: F:PuppeteerSharp.PageAccessibility.CheckedState.Mixed
+  fullName: PuppeteerSharp.PageAccessibility.CheckedState.Mixed
+  nameWithType: CheckedState.Mixed
+- uid: PuppeteerSharp.PageAccessibility.CheckedState.True
+  name: "True"
+  href: api/PuppeteerSharp.PageAccessibility.CheckedState.html#PuppeteerSharp_PageAccessibility_CheckedState_True
+  commentId: F:PuppeteerSharp.PageAccessibility.CheckedState.True
+  fullName: PuppeteerSharp.PageAccessibility.CheckedState.True
+  nameWithType: CheckedState.True
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode
+  name: SerializedAXNode
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html
+  commentId: T:PuppeteerSharp.PageAccessibility.SerializedAXNode
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode
+  nameWithType: SerializedAXNode
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.AutoComplete
+  name: AutoComplete
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_AutoComplete
+  commentId: P:PuppeteerSharp.PageAccessibility.SerializedAXNode.AutoComplete
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.AutoComplete
+  nameWithType: SerializedAXNode.AutoComplete
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.AutoComplete*
+  name: AutoComplete
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_AutoComplete_
+  commentId: Overload:PuppeteerSharp.PageAccessibility.SerializedAXNode.AutoComplete
+  isSpec: "True"
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.AutoComplete
+  nameWithType: SerializedAXNode.AutoComplete
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Checked
+  name: Checked
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Checked
+  commentId: P:PuppeteerSharp.PageAccessibility.SerializedAXNode.Checked
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Checked
+  nameWithType: SerializedAXNode.Checked
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Checked*
+  name: Checked
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Checked_
+  commentId: Overload:PuppeteerSharp.PageAccessibility.SerializedAXNode.Checked
+  isSpec: "True"
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Checked
+  nameWithType: SerializedAXNode.Checked
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Children
+  name: Children
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Children
+  commentId: P:PuppeteerSharp.PageAccessibility.SerializedAXNode.Children
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Children
+  nameWithType: SerializedAXNode.Children
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Children*
+  name: Children
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Children_
+  commentId: Overload:PuppeteerSharp.PageAccessibility.SerializedAXNode.Children
+  isSpec: "True"
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Children
+  nameWithType: SerializedAXNode.Children
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Description
+  name: Description
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Description
+  commentId: P:PuppeteerSharp.PageAccessibility.SerializedAXNode.Description
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Description
+  nameWithType: SerializedAXNode.Description
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Description*
+  name: Description
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Description_
+  commentId: Overload:PuppeteerSharp.PageAccessibility.SerializedAXNode.Description
+  isSpec: "True"
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Description
+  nameWithType: SerializedAXNode.Description
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Disabled
+  name: Disabled
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Disabled
+  commentId: P:PuppeteerSharp.PageAccessibility.SerializedAXNode.Disabled
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Disabled
+  nameWithType: SerializedAXNode.Disabled
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Disabled*
+  name: Disabled
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Disabled_
+  commentId: Overload:PuppeteerSharp.PageAccessibility.SerializedAXNode.Disabled
+  isSpec: "True"
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Disabled
+  nameWithType: SerializedAXNode.Disabled
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Equals(PuppeteerSharp.PageAccessibility.SerializedAXNode)
+  name: Equals(SerializedAXNode)
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Equals_PuppeteerSharp_PageAccessibility_SerializedAXNode_
+  commentId: M:PuppeteerSharp.PageAccessibility.SerializedAXNode.Equals(PuppeteerSharp.PageAccessibility.SerializedAXNode)
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Equals(PuppeteerSharp.PageAccessibility.SerializedAXNode)
+  nameWithType: SerializedAXNode.Equals(SerializedAXNode)
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Equals(System.Object)
+  name: Equals(Object)
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Equals_System_Object_
+  commentId: M:PuppeteerSharp.PageAccessibility.SerializedAXNode.Equals(System.Object)
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Equals(System.Object)
+  nameWithType: SerializedAXNode.Equals(Object)
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Equals*
+  name: Equals
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Equals_
+  commentId: Overload:PuppeteerSharp.PageAccessibility.SerializedAXNode.Equals
+  isSpec: "True"
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Equals
+  nameWithType: SerializedAXNode.Equals
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Expanded
+  name: Expanded
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Expanded
+  commentId: P:PuppeteerSharp.PageAccessibility.SerializedAXNode.Expanded
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Expanded
+  nameWithType: SerializedAXNode.Expanded
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Expanded*
+  name: Expanded
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Expanded_
+  commentId: Overload:PuppeteerSharp.PageAccessibility.SerializedAXNode.Expanded
+  isSpec: "True"
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Expanded
+  nameWithType: SerializedAXNode.Expanded
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Focused
+  name: Focused
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Focused
+  commentId: P:PuppeteerSharp.PageAccessibility.SerializedAXNode.Focused
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Focused
+  nameWithType: SerializedAXNode.Focused
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Focused*
+  name: Focused
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Focused_
+  commentId: Overload:PuppeteerSharp.PageAccessibility.SerializedAXNode.Focused
+  isSpec: "True"
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Focused
+  nameWithType: SerializedAXNode.Focused
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.GetHashCode
+  name: GetHashCode()
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_GetHashCode
+  commentId: M:PuppeteerSharp.PageAccessibility.SerializedAXNode.GetHashCode
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.GetHashCode()
+  nameWithType: SerializedAXNode.GetHashCode()
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.GetHashCode*
+  name: GetHashCode
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_GetHashCode_
+  commentId: Overload:PuppeteerSharp.PageAccessibility.SerializedAXNode.GetHashCode
+  isSpec: "True"
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.GetHashCode
+  nameWithType: SerializedAXNode.GetHashCode
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.HasPopup
+  name: HasPopup
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_HasPopup
+  commentId: P:PuppeteerSharp.PageAccessibility.SerializedAXNode.HasPopup
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.HasPopup
+  nameWithType: SerializedAXNode.HasPopup
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.HasPopup*
+  name: HasPopup
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_HasPopup_
+  commentId: Overload:PuppeteerSharp.PageAccessibility.SerializedAXNode.HasPopup
+  isSpec: "True"
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.HasPopup
+  nameWithType: SerializedAXNode.HasPopup
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Invalid
+  name: Invalid
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Invalid
+  commentId: P:PuppeteerSharp.PageAccessibility.SerializedAXNode.Invalid
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Invalid
+  nameWithType: SerializedAXNode.Invalid
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Invalid*
+  name: Invalid
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Invalid_
+  commentId: Overload:PuppeteerSharp.PageAccessibility.SerializedAXNode.Invalid
+  isSpec: "True"
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Invalid
+  nameWithType: SerializedAXNode.Invalid
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.KeyShortcuts
+  name: KeyShortcuts
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_KeyShortcuts
+  commentId: P:PuppeteerSharp.PageAccessibility.SerializedAXNode.KeyShortcuts
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.KeyShortcuts
+  nameWithType: SerializedAXNode.KeyShortcuts
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.KeyShortcuts*
+  name: KeyShortcuts
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_KeyShortcuts_
+  commentId: Overload:PuppeteerSharp.PageAccessibility.SerializedAXNode.KeyShortcuts
+  isSpec: "True"
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.KeyShortcuts
+  nameWithType: SerializedAXNode.KeyShortcuts
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Level
+  name: Level
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Level
+  commentId: P:PuppeteerSharp.PageAccessibility.SerializedAXNode.Level
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Level
+  nameWithType: SerializedAXNode.Level
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Level*
+  name: Level
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Level_
+  commentId: Overload:PuppeteerSharp.PageAccessibility.SerializedAXNode.Level
+  isSpec: "True"
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Level
+  nameWithType: SerializedAXNode.Level
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Modal
+  name: Modal
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Modal
+  commentId: P:PuppeteerSharp.PageAccessibility.SerializedAXNode.Modal
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Modal
+  nameWithType: SerializedAXNode.Modal
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Modal*
+  name: Modal
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Modal_
+  commentId: Overload:PuppeteerSharp.PageAccessibility.SerializedAXNode.Modal
+  isSpec: "True"
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Modal
+  nameWithType: SerializedAXNode.Modal
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Multiline
+  name: Multiline
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Multiline
+  commentId: P:PuppeteerSharp.PageAccessibility.SerializedAXNode.Multiline
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Multiline
+  nameWithType: SerializedAXNode.Multiline
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Multiline*
+  name: Multiline
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Multiline_
+  commentId: Overload:PuppeteerSharp.PageAccessibility.SerializedAXNode.Multiline
+  isSpec: "True"
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Multiline
+  nameWithType: SerializedAXNode.Multiline
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Multiselectable
+  name: Multiselectable
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Multiselectable
+  commentId: P:PuppeteerSharp.PageAccessibility.SerializedAXNode.Multiselectable
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Multiselectable
+  nameWithType: SerializedAXNode.Multiselectable
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Multiselectable*
+  name: Multiselectable
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Multiselectable_
+  commentId: Overload:PuppeteerSharp.PageAccessibility.SerializedAXNode.Multiselectable
+  isSpec: "True"
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Multiselectable
+  nameWithType: SerializedAXNode.Multiselectable
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Name
+  name: Name
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Name
+  commentId: P:PuppeteerSharp.PageAccessibility.SerializedAXNode.Name
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Name
+  nameWithType: SerializedAXNode.Name
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Name*
+  name: Name
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Name_
+  commentId: Overload:PuppeteerSharp.PageAccessibility.SerializedAXNode.Name
+  isSpec: "True"
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Name
+  nameWithType: SerializedAXNode.Name
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Orientation
+  name: Orientation
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Orientation
+  commentId: P:PuppeteerSharp.PageAccessibility.SerializedAXNode.Orientation
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Orientation
+  nameWithType: SerializedAXNode.Orientation
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Orientation*
+  name: Orientation
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Orientation_
+  commentId: Overload:PuppeteerSharp.PageAccessibility.SerializedAXNode.Orientation
+  isSpec: "True"
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Orientation
+  nameWithType: SerializedAXNode.Orientation
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Pressed
+  name: Pressed
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Pressed
+  commentId: P:PuppeteerSharp.PageAccessibility.SerializedAXNode.Pressed
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Pressed
+  nameWithType: SerializedAXNode.Pressed
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Pressed*
+  name: Pressed
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Pressed_
+  commentId: Overload:PuppeteerSharp.PageAccessibility.SerializedAXNode.Pressed
+  isSpec: "True"
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Pressed
+  nameWithType: SerializedAXNode.Pressed
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Readonly
+  name: Readonly
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Readonly
+  commentId: P:PuppeteerSharp.PageAccessibility.SerializedAXNode.Readonly
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Readonly
+  nameWithType: SerializedAXNode.Readonly
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Readonly*
+  name: Readonly
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Readonly_
+  commentId: Overload:PuppeteerSharp.PageAccessibility.SerializedAXNode.Readonly
+  isSpec: "True"
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Readonly
+  nameWithType: SerializedAXNode.Readonly
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Required
+  name: Required
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Required
+  commentId: P:PuppeteerSharp.PageAccessibility.SerializedAXNode.Required
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Required
+  nameWithType: SerializedAXNode.Required
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Required*
+  name: Required
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Required_
+  commentId: Overload:PuppeteerSharp.PageAccessibility.SerializedAXNode.Required
+  isSpec: "True"
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Required
+  nameWithType: SerializedAXNode.Required
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Role
+  name: Role
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Role
+  commentId: P:PuppeteerSharp.PageAccessibility.SerializedAXNode.Role
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Role
+  nameWithType: SerializedAXNode.Role
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Role*
+  name: Role
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Role_
+  commentId: Overload:PuppeteerSharp.PageAccessibility.SerializedAXNode.Role
+  isSpec: "True"
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Role
+  nameWithType: SerializedAXNode.Role
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.RoleDescription
+  name: RoleDescription
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_RoleDescription
+  commentId: P:PuppeteerSharp.PageAccessibility.SerializedAXNode.RoleDescription
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.RoleDescription
+  nameWithType: SerializedAXNode.RoleDescription
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.RoleDescription*
+  name: RoleDescription
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_RoleDescription_
+  commentId: Overload:PuppeteerSharp.PageAccessibility.SerializedAXNode.RoleDescription
+  isSpec: "True"
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.RoleDescription
+  nameWithType: SerializedAXNode.RoleDescription
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Selected
+  name: Selected
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Selected
+  commentId: P:PuppeteerSharp.PageAccessibility.SerializedAXNode.Selected
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Selected
+  nameWithType: SerializedAXNode.Selected
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Selected*
+  name: Selected
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Selected_
+  commentId: Overload:PuppeteerSharp.PageAccessibility.SerializedAXNode.Selected
+  isSpec: "True"
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Selected
+  nameWithType: SerializedAXNode.Selected
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Value
+  name: Value
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Value
+  commentId: P:PuppeteerSharp.PageAccessibility.SerializedAXNode.Value
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Value
+  nameWithType: SerializedAXNode.Value
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.Value*
+  name: Value
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_Value_
+  commentId: Overload:PuppeteerSharp.PageAccessibility.SerializedAXNode.Value
+  isSpec: "True"
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.Value
+  nameWithType: SerializedAXNode.Value
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.ValueMax
+  name: ValueMax
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_ValueMax
+  commentId: P:PuppeteerSharp.PageAccessibility.SerializedAXNode.ValueMax
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.ValueMax
+  nameWithType: SerializedAXNode.ValueMax
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.ValueMax*
+  name: ValueMax
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_ValueMax_
+  commentId: Overload:PuppeteerSharp.PageAccessibility.SerializedAXNode.ValueMax
+  isSpec: "True"
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.ValueMax
+  nameWithType: SerializedAXNode.ValueMax
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.ValueMin
+  name: ValueMin
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_ValueMin
+  commentId: P:PuppeteerSharp.PageAccessibility.SerializedAXNode.ValueMin
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.ValueMin
+  nameWithType: SerializedAXNode.ValueMin
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.ValueMin*
+  name: ValueMin
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_ValueMin_
+  commentId: Overload:PuppeteerSharp.PageAccessibility.SerializedAXNode.ValueMin
+  isSpec: "True"
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.ValueMin
+  nameWithType: SerializedAXNode.ValueMin
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.ValueText
+  name: ValueText
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_ValueText
+  commentId: P:PuppeteerSharp.PageAccessibility.SerializedAXNode.ValueText
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.ValueText
+  nameWithType: SerializedAXNode.ValueText
+- uid: PuppeteerSharp.PageAccessibility.SerializedAXNode.ValueText*
+  name: ValueText
+  href: api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html#PuppeteerSharp_PageAccessibility_SerializedAXNode_ValueText_
+  commentId: Overload:PuppeteerSharp.PageAccessibility.SerializedAXNode.ValueText
+  isSpec: "True"
+  fullName: PuppeteerSharp.PageAccessibility.SerializedAXNode.ValueText
+  nameWithType: SerializedAXNode.ValueText
 - uid: PuppeteerSharp.PageCloseOptions
   name: PageCloseOptions
   href: api/PuppeteerSharp.PageCloseOptions.html
@@ -8637,12 +9178,12 @@ references:
   commentId: T:PuppeteerSharp.TargetClosedException
   fullName: PuppeteerSharp.TargetClosedException
   nameWithType: TargetClosedException
-- uid: PuppeteerSharp.TargetClosedException.#ctor(System.String)
-  name: TargetClosedException(String)
-  href: api/PuppeteerSharp.TargetClosedException.html#PuppeteerSharp_TargetClosedException__ctor_System_String_
-  commentId: M:PuppeteerSharp.TargetClosedException.#ctor(System.String)
-  fullName: PuppeteerSharp.TargetClosedException.TargetClosedException(System.String)
-  nameWithType: TargetClosedException.TargetClosedException(String)
+- uid: PuppeteerSharp.TargetClosedException.#ctor(System.String,System.String)
+  name: TargetClosedException(String, String)
+  href: api/PuppeteerSharp.TargetClosedException.html#PuppeteerSharp_TargetClosedException__ctor_System_String_System_String_
+  commentId: M:PuppeteerSharp.TargetClosedException.#ctor(System.String,System.String)
+  fullName: PuppeteerSharp.TargetClosedException.TargetClosedException(System.String, System.String)
+  nameWithType: TargetClosedException.TargetClosedException(String, String)
 - uid: PuppeteerSharp.TargetClosedException.#ctor*
   name: TargetClosedException
   href: api/PuppeteerSharp.TargetClosedException.html#PuppeteerSharp_TargetClosedException__ctor_
@@ -8650,6 +9191,19 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.TargetClosedException.TargetClosedException
   nameWithType: TargetClosedException.TargetClosedException
+- uid: PuppeteerSharp.TargetClosedException.CloseReason
+  name: CloseReason
+  href: api/PuppeteerSharp.TargetClosedException.html#PuppeteerSharp_TargetClosedException_CloseReason
+  commentId: P:PuppeteerSharp.TargetClosedException.CloseReason
+  fullName: PuppeteerSharp.TargetClosedException.CloseReason
+  nameWithType: TargetClosedException.CloseReason
+- uid: PuppeteerSharp.TargetClosedException.CloseReason*
+  name: CloseReason
+  href: api/PuppeteerSharp.TargetClosedException.html#PuppeteerSharp_TargetClosedException_CloseReason_
+  commentId: Overload:PuppeteerSharp.TargetClosedException.CloseReason
+  isSpec: "True"
+  fullName: PuppeteerSharp.TargetClosedException.CloseReason
+  nameWithType: TargetClosedException.CloseReason
 - uid: PuppeteerSharp.TargetInfo
   name: TargetInfo
   href: api/PuppeteerSharp.TargetInfo.html
@@ -8739,6 +9293,24 @@ references:
   commentId: F:PuppeteerSharp.TargetType.Browser
   fullName: PuppeteerSharp.TargetType.Browser
   nameWithType: TargetType.Browser
+- uid: PuppeteerSharp.TargetType.Deprecation
+  name: Deprecation
+  href: api/PuppeteerSharp.TargetType.html#PuppeteerSharp_TargetType_Deprecation
+  commentId: F:PuppeteerSharp.TargetType.Deprecation
+  fullName: PuppeteerSharp.TargetType.Deprecation
+  nameWithType: TargetType.Deprecation
+- uid: PuppeteerSharp.TargetType.Javascript
+  name: Javascript
+  href: api/PuppeteerSharp.TargetType.html#PuppeteerSharp_TargetType_Javascript
+  commentId: F:PuppeteerSharp.TargetType.Javascript
+  fullName: PuppeteerSharp.TargetType.Javascript
+  nameWithType: TargetType.Javascript
+- uid: PuppeteerSharp.TargetType.Network
+  name: Network
+  href: api/PuppeteerSharp.TargetType.html#PuppeteerSharp_TargetType_Network
+  commentId: F:PuppeteerSharp.TargetType.Network
+  fullName: PuppeteerSharp.TargetType.Network
+  nameWithType: TargetType.Network
 - uid: PuppeteerSharp.TargetType.Other
   name: Other
   href: api/PuppeteerSharp.TargetType.html#PuppeteerSharp_TargetType_Other
@@ -8954,6 +9526,38 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Transport.MessageReceivedEventArgs.Message
   nameWithType: MessageReceivedEventArgs.Message
+- uid: PuppeteerSharp.Transport.TransportClosedEventArgs
+  name: TransportClosedEventArgs
+  href: api/PuppeteerSharp.Transport.TransportClosedEventArgs.html
+  commentId: T:PuppeteerSharp.Transport.TransportClosedEventArgs
+  fullName: PuppeteerSharp.Transport.TransportClosedEventArgs
+  nameWithType: TransportClosedEventArgs
+- uid: PuppeteerSharp.Transport.TransportClosedEventArgs.#ctor(System.String)
+  name: TransportClosedEventArgs(String)
+  href: api/PuppeteerSharp.Transport.TransportClosedEventArgs.html#PuppeteerSharp_Transport_TransportClosedEventArgs__ctor_System_String_
+  commentId: M:PuppeteerSharp.Transport.TransportClosedEventArgs.#ctor(System.String)
+  fullName: PuppeteerSharp.Transport.TransportClosedEventArgs.TransportClosedEventArgs(System.String)
+  nameWithType: TransportClosedEventArgs.TransportClosedEventArgs(String)
+- uid: PuppeteerSharp.Transport.TransportClosedEventArgs.#ctor*
+  name: TransportClosedEventArgs
+  href: api/PuppeteerSharp.Transport.TransportClosedEventArgs.html#PuppeteerSharp_Transport_TransportClosedEventArgs__ctor_
+  commentId: Overload:PuppeteerSharp.Transport.TransportClosedEventArgs.#ctor
+  isSpec: "True"
+  fullName: PuppeteerSharp.Transport.TransportClosedEventArgs.TransportClosedEventArgs
+  nameWithType: TransportClosedEventArgs.TransportClosedEventArgs
+- uid: PuppeteerSharp.Transport.TransportClosedEventArgs.CloseReason
+  name: CloseReason
+  href: api/PuppeteerSharp.Transport.TransportClosedEventArgs.html#PuppeteerSharp_Transport_TransportClosedEventArgs_CloseReason
+  commentId: P:PuppeteerSharp.Transport.TransportClosedEventArgs.CloseReason
+  fullName: PuppeteerSharp.Transport.TransportClosedEventArgs.CloseReason
+  nameWithType: TransportClosedEventArgs.CloseReason
+- uid: PuppeteerSharp.Transport.TransportClosedEventArgs.CloseReason*
+  name: CloseReason
+  href: api/PuppeteerSharp.Transport.TransportClosedEventArgs.html#PuppeteerSharp_Transport_TransportClosedEventArgs_CloseReason_
+  commentId: Overload:PuppeteerSharp.Transport.TransportClosedEventArgs.CloseReason
+  isSpec: "True"
+  fullName: PuppeteerSharp.Transport.TransportClosedEventArgs.CloseReason
+  nameWithType: TransportClosedEventArgs.CloseReason
 - uid: PuppeteerSharp.Transport.WebSocketTransport
   name: WebSocketTransport
   href: api/PuppeteerSharp.Transport.WebSocketTransport.html

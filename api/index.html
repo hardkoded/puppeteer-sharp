@@ -8,7 +8,7 @@
     <title>Puppeteer Sharp </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Puppeteer Sharp ">
-    <meta name="generator" content="docfx 2.40.0.0">
+    <meta name="generator" content="docfx 2.40.3.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -110,7 +110,7 @@ await page.PdfAsync(outputFile);
 <h2 id="evaluate-javascript">Evaluate Javascript</h2>
 <pre><code class="lang-cs">using (var page = await Browser.NewPageAsync())
 {
-    var seven = await page.EvaluateFunctionAsync&lt;int&gt;(“4 + 3”);
+    var seven = await page.EvaluateFunctionAsync&lt;int&gt;(&quot;4 + 3&quot;);
     var someObject = await page.EvaluateFunctionAsync&lt;dynamic&gt;(&quot;(value) =&gt; ({a: value})&quot;, 5);
     Console.WriteLine(someObject.a);
 }

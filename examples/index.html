@@ -1,0 +1,210 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Puppeteer Sharp - Examples </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Puppeteer Sharp - Examples ">
+    <meta name="generator" content="docfx 2.40.3.0">
+    
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="puppeteer-sharp---examples">Puppeteer Sharp - Examples</h1>
+
+<p>Puppeteer Sharp is a .NET port of the official <a href="https://github.com/GoogleChrome/puppeteer">Node.JS Puppeteer API</a>.</p>
+<h1 id="basic-usage">Basic Usage</h1>
+<h2 id="take-screenshots">Take screenshots</h2>
+<pre><code class="lang-cs">await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
+var browser = await Puppeteer.LaunchAsync(new LaunchOptions
+{
+    Headless = true
+});
+var page = await browser.NewPageAsync();
+await page.GoToAsync(&quot;http://www.google.com&quot;);
+await page.ScreenshotAsync(outputFile);
+</code></pre>
+<p>You can also change the view port before generating the screenshot</p>
+<pre><code class="lang-cs">await page.SetViewport(new ViewPortOptions
+{
+    Width = 500,
+    Height = 500
+});
+</code></pre>
+<h2 id="generate-pdf-files">Generate PDF files</h2>
+<pre><code class="lang-cs">await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
+var browser = await Puppeteer.LaunchAsync(new LaunchOptions
+{
+    Headless = true
+});
+var page = await browser.NewPageAsync();
+await page.GoToAsync(&quot;http://www.google.com&quot;);
+await page.PdfAsync(outputFile);
+</code></pre>
+<h2 id="inject-html">Inject HTML</h2>
+<pre><code class="lang-cs">using(var page = await browser.NewPageAsync())
+{
+    await page.SetContentAsync(&quot;&lt;div&gt;My Receipt&lt;/div&gt;&quot;);
+    var result = await page.GetContentAsync();
+    await page.PdfAsync(outputFile);
+    SaveHtmlToDB(result);
+}
+</code></pre>
+<h2 id="evaluate-javascript">Evaluate Javascript</h2>
+<pre><code class="lang-cs">using (var page = await browser.NewPageAsync())
+{
+    var seven = await page.EvaluateFunctionAsync&lt;int&gt;(&quot;()=&gt; 4 + 3&quot;);
+    var someObject = await page.EvaluateFunctionAsync&lt;dynamic&gt;(&quot;(value) =&gt; ({a: value})&quot;, 5);
+    Console.WriteLine(someObject.a);
+}
+</code></pre>
+<h2 id="wait-for-selector">Wait For Selector</h2>
+<pre><code class="lang-cs">using (var page = await browser.NewPageAsync())
+{
+    await page.GoToAsync(&quot;http://www.spapage.com&quot;);
+    await page.WaitForSelectorAsync(&quot;div.main-content&quot;)
+    await page.PdfAsync(outputFile));
+}
+</code></pre>
+<h2 id="wait-for-function">Wait For Function</h2>
+<pre><code class="lang-cs">using (var page = await Browser.NewPageAsync())
+{
+    await page.GoToAsync(&quot;http://www.spapage.com&quot;);
+    var watchDog = page.WaitForFunctionAsync(&quot; () =&gt; window.innerWidth &lt; 100&quot;);
+    await page.SetViewportAsync(new ViewPortOptions { Width = 50, Height = 50 });
+    await watchDog;
+}
+</code></pre>
+<h2 id="connect-to-a-remote-browser">Connect to a remote browser</h2>
+<pre><code class="lang-cs">var options = new ConnectOptions()
+{
+    BrowserWSEndpoint = $&quot;wss://www.externalbrowser.io?token={apikey}&quot;
+};
+
+var url = &quot;https://www.google.com/&quot;;
+
+using (var browser = await PuppeteerSharp.Puppeteer.ConnectAsync(options))
+{
+    using (var page = await browser.NewPageAsync())
+    {
+        await page.GoToAsync(url);
+        await page.PdfAsync(&quot;wot.pdf&quot;);
+    }
+}
+</code></pre>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20docfx_project/examples/index.md&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved" class="contribution-link">Request doc improvement</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <div class="row">
+              <div class="col-md-4">
+                
+                <span>Generated by <strong>DocFX</strong></span>
+              </div>
+              <div class="col-md-4">
+                <p class="text-center">
+                  <a href="https://www.hardkoded.com">www.hardkoded.com</a>
+                </p>
+              </div>
+              <div class="col-md-4">
+                <span class="pull-right">
+                  <a href="#top">Back to top</a>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-586295-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'UA-586295-9');
+    </script>
+  </body>
+</html>
