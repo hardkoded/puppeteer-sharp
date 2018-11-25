@@ -112,7 +112,7 @@ namespace PuppeteerSharp
         /// Returns a Task which resolves to a buffer with response body
         /// </summary>
         /// <returns>A Task which resolves to a buffer with response body</returns>
-        public async ValueTask<string> BufferAsync()
+        public async ValueTask<string> BufferAsync(bool rawRequest = false)
         {
             if (_buffer == null)
             {
@@ -124,6 +124,11 @@ namespace PuppeteerSharp
                     {
                         { MessageKeys.RequestId, Request.RequestId}
                     }).ConfigureAwait(false);
+
+                    if (rawRequest)
+                    {
+                        return response.Body;
+                    }
 
                     _buffer = response.Base64Encoded
                         ? Encoding.UTF8.GetString(Convert.FromBase64String(response.Body))
