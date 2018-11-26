@@ -79,54 +79,6 @@ namespace PuppeteerSharp
 
             _screenshotTaskQueue = screenshotTaskQueue;
 
-            _networkManager.WebSocketFrameReceived += (sender, e) => WebSocketFrameReceived?.Invoke(this, e);
-
-            LocalStorage = new Dictionary<string, List<DomStorageItem>>();
-            SessionStorage = new Dictionary<string, List<DomStorageItem>>();
-
-            _networkManager.DomStorageItemAdded += delegate (object sender, DomStorageItemAddedEvent e)
-            {
-                var storage = e.StorageId.IsLocalStorage ? LocalStorage : SessionStorage;
-                if (!storage.ContainsKey(e.StorageId.SecurityOrigin))
-                {
-	                storage[e.StorageId.SecurityOrigin] = new List<DomStorageItem>();
-                }
-                var list = storage[e.StorageId.SecurityOrigin];
-                list.Add(new DomStorageItem(e.Key, e.NewValue));
-            };
-
-            _networkManager.DomStorageItemRemoved += delegate (object sender, DomStorageItemRemovedEvent e)
-            {
-	            var storage = e.StorageId.IsLocalStorage ? LocalStorage : SessionStorage;
-                var list = storage[e.StorageId.SecurityOrigin];
-                var index = list.FindIndex(x => x.Key == e.Key);
-                if (index >= 0)
-                {
-	                list.RemoveAt(index);
-                }
-            };
-
-            _networkManager.DomStorageItemUpdated += delegate (object sender, DomStorageItemUpdatedEvent e)
-            {
-	            var storage = e.StorageId.IsLocalStorage ? LocalStorage : SessionStorage;
-	            var list = storage[e.StorageId.SecurityOrigin];
-                var item = list.FirstOrDefault(x => x.Key == e.Key);
-                if (item == null)
-                {
-                    list.Add(new DomStorageItem(e.Key, e.NewValue));
-                } else
-                {
-	                item.Value = e.NewValue;
-                }
-            };
-
-            _networkManager.DomStorageItemsCleared += delegate (object sender, DomStorageItemsClearedEvent e)
-            {
-	            var storage = e.StorageId.IsLocalStorage ? LocalStorage : SessionStorage;
-	            var list = storage[e.StorageId.SecurityOrigin];
-                list.Clear();
-            };
-
             target.CloseTask.ContinueWith((arg) =>
             {
                 Close?.Invoke(this, EventArgs.Empty);
