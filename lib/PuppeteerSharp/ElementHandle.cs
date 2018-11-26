@@ -134,7 +134,7 @@ namespace PuppeteerSharp
                     Width = (int)Math.Max(viewport.Width, Math.Ceiling(boundingBox.Width)),
                     Height = (int)Math.Max(viewport.Height, Math.Ceiling(boundingBox.Height))
                 });
-                await Page.SetViewportAsync(newRawViewport.ToObject<ViewPortOptions>()).ConfigureAwait(false);
+                await Page.SetViewportAsync(newRawViewport.ToObject<ViewPortOptions>(true)).ConfigureAwait(false);
                 needsViewportReset = true;
             }
             await ExecutionContext.EvaluateFunctionAsync(@"function(element) {
@@ -389,7 +389,7 @@ namespace PuppeteerSharp
                 { MessageKeys.ObjectId, RemoteObject[MessageKeys.ObjectId] }
             }).ConfigureAwait(false);
 
-            return string.IsNullOrEmpty(nodeInfo.Node.FrameId) ? null : _frameManager.Frames[nodeInfo.Node.FrameId];
+            return string.IsNullOrEmpty(nodeInfo.Node.FrameId) ? null : await _frameManager.GetFrameAsync(nodeInfo.Node.FrameId);
         }
 
         /// <summary>
@@ -518,7 +518,7 @@ namespace PuppeteerSharp
                 var p2 = quad[(i + 1) % quad.Length];
                 area += ((p1.X * p2.Y) - (p2.X * p1.Y)) / 2;
             }
-            return area;
+            return Math.Abs(area);
         }
     }
 }

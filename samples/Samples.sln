@@ -5,6 +5,10 @@ VisualStudioVersion = 15.0.28010.2046
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "get-all-links", "get-all-links\get-all-links.csproj", "{8A25F29D-EC44-4AA9-86D6-C86A476B85CC}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "complex-js-objects", "complex-js-objects\complex-js-objects.csproj", "{47A6DEE8-5581-472A-91E2-9FC8A2924D70}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "searching", "searching\searching.csproj", "{DEB4FB4A-3353-46AE-965D-F9D9D2092157}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{8A25F29D-EC44-4AA9-86D6-C86A476B85CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A25F29D-EC44-4AA9-86D6-C86A476B85CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A25F29D-EC44-4AA9-86D6-C86A476B85CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47A6DEE8-5581-472A-91E2-9FC8A2924D70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47A6DEE8-5581-472A-91E2-9FC8A2924D70}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47A6DEE8-5581-472A-91E2-9FC8A2924D70}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47A6DEE8-5581-472A-91E2-9FC8A2924D70}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DEB4FB4A-3353-46AE-965D-F9D9D2092157}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEB4FB4A-3353-46AE-965D-F9D9D2092157}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEB4FB4A-3353-46AE-965D-F9D9D2092157}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEB4FB4A-3353-46AE-965D-F9D9D2092157}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

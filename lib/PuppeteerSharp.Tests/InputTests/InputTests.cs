@@ -396,6 +396,14 @@ namespace PuppeteerSharp.Tests.InputTests
         }
 
         [Fact]
+        public async Task ShouldClickARotatedButton()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/rotatedButton.html");
+            await Page.ClickAsync("button");
+            Assert.Equal("Clicked", await Page.EvaluateExpressionAsync<string>("result"));
+        }
+
+        [Fact]
         public async Task ShouldSelectTheTextWithMouse()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -547,7 +555,7 @@ namespace PuppeteerSharp.Tests.InputTests
             await Page.GoToAsync(TestConstants.EmptyPage);
             await Page.SetContentAsync("<div style=\"width:100px;height:100px\">spacer</div>");
             await FrameUtils.AttachFrameAsync(Page, "button-test", TestConstants.ServerUrl + "/input/button.html");
-            var frame = Page.Frames[1];
+            var frame = Page.FirstChildFrame();
             var button = await frame.QuerySelectorAsync("button");
             await button.ClickAsync();
             Assert.Equal("Clicked", await frame.EvaluateExpressionAsync<string>("window.result"));
@@ -560,7 +568,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.Equal(5, await Page.EvaluateExpressionAsync<int>("window.devicePixelRatio"));
             await Page.SetContentAsync("<div style=\"width:100px;height:100px\">spacer</div>");
             await FrameUtils.AttachFrameAsync(Page, "button-test", TestConstants.ServerUrl + "/input/button.html");
-            var frame = Page.Frames[1];
+            var frame = Page.FirstChildFrame();
             var button = await frame.QuerySelectorAsync("button");
             await button.ClickAsync();
             Assert.Equal("Clicked", await frame.EvaluateExpressionAsync<string>("window.result"));
@@ -623,7 +631,7 @@ namespace PuppeteerSharp.Tests.InputTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             await FrameUtils.AttachFrameAsync(Page, "emoji-test", TestConstants.ServerUrl + "/input/textarea.html");
-            var frame = Page.Frames[1];
+            var frame = Page.FirstChildFrame();
             var textarea = await frame.QuerySelectorAsync("textarea");
             await textarea.TypeAsync("👹 Tokyo street Japan \uD83C\uDDEF\uD83C\uDDF5");
             Assert.Equal(

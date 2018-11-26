@@ -2,15 +2,15 @@
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2035
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PuppeteerSharp", "PuppeteerSharp\PuppeteerSharp.csproj", "{19B9B1ED-AF6C-4DAF-8B73-401570111F88}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PuppeteerSharp", "PuppeteerSharp\PuppeteerSharp.csproj", "{19B9B1ED-AF6C-4DAF-8B73-401570111F88}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PuppeteerSharp.Tests", "PuppeteerSharp.Tests\PuppeteerSharp.Tests.csproj", "{1682289E-5ED3-405F-8ABC-01A3ED58CBC6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PuppeteerSharp.Tests", "PuppeteerSharp.Tests\PuppeteerSharp.Tests.csproj", "{1682289E-5ED3-405F-8ABC-01A3ED58CBC6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PuppeteerSharp.TestServer", "PuppeteerSharp.TestServer\PuppeteerSharp.TestServer.csproj", "{0CC393AB-10C2-4CDB-8353-78924D3DD5D3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PuppeteerSharp.TestServer", "PuppeteerSharp.TestServer\PuppeteerSharp.TestServer.csproj", "{0CC393AB-10C2-4CDB-8353-78924D3DD5D3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PuppeteerSharp.Tests.DumpIO", "PuppeteerSharp.Tests.DumpIO\PuppeteerSharp.Tests.DumpIO.csproj", "{B1892212-CEE3-4DC3-ADB8-04A2D9A081A0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PuppeteerSharp.Tests.DumpIO", "PuppeteerSharp.Tests.DumpIO\PuppeteerSharp.Tests.DumpIO.csproj", "{B1892212-CEE3-4DC3-ADB8-04A2D9A081A0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PuppeteerSharp.Tests.CloseMe", "PuppeteerSharp.Tests.CloseMe\PuppeteerSharp.Tests.CloseMe.csproj", "{B1B0358F-88A2-4038-9974-7850D906C76B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PuppeteerSharp.Tests.CloseMe", "PuppeteerSharp.Tests.CloseMe\PuppeteerSharp.Tests.CloseMe.csproj", "{B1B0358F-88A2-4038-9974-7850D906C76B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PuppeteerSharp.DevicesFetcher", "PuppeteerSharp.DevicesFetcher\PuppeteerSharp.DevicesFetcher.csproj", "{A500694A-3649-4474-BC71-C835FA19B865}"
 EndProject

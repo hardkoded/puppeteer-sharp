@@ -4,3 +4,8 @@
       href: Page.ScreenshotAsync.md
     - name: How to extract all the link from a page
       href: Page.EvaluateExpressionAsync.GetAllLinks.md
+    - name: How to map complex javascript objects to .NET objects
+      href: Page.EvaluateFunctionAsync.ComplexJSObjects.md
+    - name: How to wait for a selector
+      href: Page.WaitForSelectorAsync.Searching.md
+

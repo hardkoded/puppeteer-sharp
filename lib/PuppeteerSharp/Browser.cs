@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -58,7 +59,7 @@ namespace PuppeteerSharp
             Connection = connection;
             IgnoreHTTPSErrors = ignoreHTTPSErrors;
             DefaultViewport = defaultViewport;
-            TargetsMap = new Dictionary<string, Target>();
+            TargetsMap = new ConcurrentDictionary<string, Target>();
             ScreenshotTaskQueue = new TaskQueue();
             DefaultContext = new BrowserContext(Connection, this, null);
             _contexts = contextIds.ToDictionary(keySelector: contextId => contextId,
@@ -73,7 +74,7 @@ namespace PuppeteerSharp
 
         #region Private members
 
-        internal readonly Dictionary<string, Target> TargetsMap;
+        internal readonly IDictionary<string, Target> TargetsMap;
 
         private readonly Dictionary<string, BrowserContext> _contexts;
         private readonly ILogger<Browser> _logger;
@@ -147,6 +148,11 @@ namespace PuppeteerSharp
         internal TaskQueue ScreenshotTaskQueue { get; set; }
         internal Connection Connection { get; }
         internal ViewPortOptions DefaultViewport { get; }
+
+        /// <summary>
+        /// Dafault wait time in milliseconds. Defaults to 30 seconds.
+        /// </summary>
+        public int DefaultWaitForTimeout { get; set; } = 30000;
 
         #endregion
 
@@ -257,6 +263,63 @@ namespace PuppeteerSharp
         /// <returns>Task</returns>
         public Task CloseAsync() => _closeTask ?? (_closeTask = CloseCoreAsync());
 
+        /// <summary>
+        /// This searches for a target in this specific browser context.
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// await page.EvaluateAsync("() => window.open('https://www.example.com/')");
+        /// var newWindowTarget = await browserContext.WaitForTargetAsync((target) => target.Url == "https://www.example.com/");
+        /// ]]>
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <param name="predicate">A function to be run for every target</param>
+        /// <param name="options">options</param>
+        /// <returns>Resolves to the first target found that matches the predicate function.</returns>
+        public async Task<Target> WaitForTargetAsync(Func<Target, bool> predicate, WaitForOptions options = null)
+        {
+            var timeout = options?.Timeout ?? DefaultWaitForTimeout;
+            var existingTarget = Targets().FirstOrDefault(predicate);
+            if (existingTarget != null)
+            {
+                return existingTarget;
+            }
+
+            var targetCompletionSource = new TaskCompletionSource<Target>();
+
+            void TargetHandler(object sender, TargetChangedArgs e)
+            {
+                if (predicate(e.Target))
+                {
+                    targetCompletionSource.TrySetResult(e.Target);
+                }
+            }
+
+            try
+            {
+                TargetCreated += TargetHandler;
+                TargetChanged += TargetHandler;
+
+                var task = await Task.WhenAny(new[]
+                {
+                    TaskHelper.CreateTimeoutTask(timeout),
+                    targetCompletionSource.Task
+                }).ConfigureAwait(false);
+
+                // if this was the timeout task, this will throw a timeout exception
+                // othewise this is the targetCompletionSource task which has already
+                // completed
+                await task;
+                return await targetCompletionSource.Task;
+            }
+            finally
+            {
+                TargetCreated -= TargetHandler;
+                TargetChanged -= TargetHandler;
+            }
+        }
+
         private async Task CloseCoreAsync()
         {
             try
@@ -329,19 +392,28 @@ namespace PuppeteerSharp
 
         private async void Connect_MessageReceived(object sender, MessageEventArgs e)
         {
-            switch (e.MessageID)
+            try
             {
-                case "Target.targetCreated":
-                    await CreateTargetAsync(e.MessageData.ToObject<TargetCreatedResponse>()).ConfigureAwait(false);
-                    return;
+                switch (e.MessageID)
+                {
+                    case "Target.targetCreated":
+                        await CreateTargetAsync(e.MessageData.ToObject<TargetCreatedResponse>(true)).ConfigureAwait(false);
+                        return;
 
-                case "Target.targetDestroyed":
-                    await DestroyTargetAsync(e.MessageData.ToObject<TargetDestroyedResponse>()).ConfigureAwait(false);
-                    return;
+                    case "Target.targetDestroyed":
+                        await DestroyTargetAsync(e.MessageData.ToObject<TargetDestroyedResponse>(true)).ConfigureAwait(false);
+                        return;
 
-                case "Target.targetInfoChanged":
-                    ChangeTargetInfo(e.MessageData.ToObject<TargetCreatedResponse>());
-                    return;
+                    case "Target.targetInfoChanged":
+                        ChangeTargetInfo(e.MessageData.ToObject<TargetCreatedResponse>(true));
+                        return;
+                }
+            }
+            catch (Exception ex)
+            {
+                var message = $"Browser failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
+                _logger.LogError(ex, message);
+                Connection.Close(message);
             }
         }
 

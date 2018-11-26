@@ -57,7 +57,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             }
         }
 
-        [Fact(Skip = "Skipped in Puppeteer")]
+        [Fact]
         public async Task HeadlessShouldBeAbleToReadCookiesWrittenByHeadful()
         {
             using (var userDataDir = new TempDirectory())

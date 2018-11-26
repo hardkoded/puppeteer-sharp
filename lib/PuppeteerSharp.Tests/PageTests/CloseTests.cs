@@ -13,13 +13,12 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldRejectAllPromisesWhenPageIsClosed()
         {
             var neverResolves = Page.EvaluateFunctionAsync("() => new Promise(r => {})");
-
-            // Put into a var to avoid warning
-            var t = Page.CloseAsync();
+            _ = Page.CloseAsync();
 
             var exception = await Assert.ThrowsAsync<EvaluationFailedException>(async () => await neverResolves);
             Assert.IsType<TargetClosedException>(exception.InnerException);
             Assert.Contains("Protocol error", exception.Message);
+            Assert.Equal("Target.detachedFromTarget", ((TargetClosedException)exception.InnerException).CloseReason);
         }
 
         [Fact]

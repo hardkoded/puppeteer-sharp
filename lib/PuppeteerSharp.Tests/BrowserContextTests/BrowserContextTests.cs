@@ -149,5 +149,27 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             remoteBrowser.Disconnect();
             await context.CloseAsync();
         }
+
+        [Fact]
+        public async Task ShouldWaitForTarget()
+        {
+            var context = await Browser.CreateIncognitoBrowserContextAsync();
+            var targetPromise = context.WaitForTargetAsync((target) => target.Url == TestConstants.EmptyPage);
+            var page = await context.NewPageAsync();
+            await page.GoToAsync(TestConstants.EmptyPage);
+            var promiseTarget = await targetPromise;
+            var targetPage = await promiseTarget.PageAsync();
+            Assert.Equal(targetPage, page);
+            await context.CloseAsync();
+        }
+
+        [Fact]
+        public async Task ShouldTimeoutWaitingForNonExistantTarget()
+        {
+            var context = await Browser.CreateIncognitoBrowserContextAsync();
+            var exception = await Assert.ThrowsAsync<TimeoutException>(()
+                => context.WaitForTargetAsync((target) => target.Url == TestConstants.EmptyPage, new WaitForOptions { Timeout = 1 }));
+            await context.CloseAsync(); 
+        }
     }
 }

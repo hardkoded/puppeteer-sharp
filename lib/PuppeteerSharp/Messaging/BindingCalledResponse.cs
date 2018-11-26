@@ -1,6 +1,7 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Messaging
 {
@@ -8,29 +9,25 @@ namespace PuppeteerSharp.Messaging
     {
         private string _payloadJson;
 
-        [JsonProperty("executionContextId")]
         public int ExecutionContextId { get; set; }
-        public BindingPayload Payload { get; set; }
-        [JsonProperty("payload")]
-        public string PayloadJson
+        public BindingCalledResponsePayload BindingPayload { get; set; }
+
+        public string Payload
         {
             get => _payloadJson;
             set
             {
                 _payloadJson = value;
-                var json = JsonConvert.DeserializeObject(_payloadJson) as JObject;
-                Payload = json.ToObject<BindingPayload>();
-                Payload.JsonObject = json;
+                var json = JsonConvert.DeserializeObject(_payloadJson, JsonHelper.DefaultJsonSerializerSettings) as JObject;
+                BindingPayload = json.ToObject<BindingCalledResponsePayload>(true);
+                BindingPayload.JsonObject = json;
             }
         }
 
-        public class BindingPayload
+        public class BindingCalledResponsePayload
         {
-            [JsonProperty("name")]
             public string Name { get; set; }
-            [JsonProperty("args")]
             public object[] Args { get; set; }
-            [JsonProperty("seq")]
             public int Seq { get; set; }
 
             public JObject JsonObject { get; set; }
