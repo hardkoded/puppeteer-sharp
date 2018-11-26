@@ -856,8 +856,7 @@ namespace PuppeteerSharp
                 preferCSSPageSize = options.PreferCSSPageSize
             }).ConfigureAwait(false);
 
-            var buffer = Convert.FromBase64String(result.GetValue(MessageKeys.Data).AsString());
-            return buffer;
+            return Convert.FromBase64String(result.GetValue(MessageKeys.Data).AsString());
         }
 
         /// <summary>
@@ -1508,7 +1507,7 @@ namespace PuppeteerSharp
             _screenshotBurstModeOn = false;
             if (_screenshotBurstModeOptions != null)
             {
-                ResetBackgroundColorAndViewport(_screenshotBurstModeOptions);
+                ResetBackgroundColorAndViewportAsync(_screenshotBurstModeOptions);
             }
 
             return Task.CompletedTask;
@@ -1714,12 +1713,12 @@ namespace PuppeteerSharp
             }
             else
             {
-                await ResetBackgroundColorAndViewport(options);
+                await ResetBackgroundColorAndViewportAsync(options).ConfigureAwait(false);
             }
             return result.Data;
         }
 
-        private Task ResetBackgroundColorAndViewport(ScreenshotOptions options)
+        private Task ResetBackgroundColorAndViewportAsync(ScreenshotOptions options)
         {
             var omitBackgroundTask = options?.OmitBackground == true && options.Type == ScreenshotType.Png ?
                 Client.SendAsync("Emulation.setDefaultBackgroundColorOverride") : Task.CompletedTask;
