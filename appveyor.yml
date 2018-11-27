@@ -17,7 +17,8 @@ install:
     }
 before_build:
 - ps: >-
-    dotnet restore .\lib\PuppeteerSharp.sln
+    cd .\lib
+    nuget restore
 
     New-SelfSignedCertificate -Subject "localhost" -FriendlyName "Puppeteer" -CertStoreLocation "cert:\CurrentUser\My"
 
@@ -27,7 +28,10 @@ build:
   project: .\lib\PuppeteerSharp.sln
   publish_nuget: true
   include_nuget_references: true
-  verbosity: minimal
+  verbosity: 
+after_build:
+- cmd: >-
+    nuget pack .\lib\PuppeteerSharp.AspNetFramework\PuppeteerSharp.AspNetFramework\csproj -OutputDirectory <temp_path>
 test_script:
 - cmd: >-
     cd .\lib\PuppeteerSharp.Tests
