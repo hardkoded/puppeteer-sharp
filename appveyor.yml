@@ -18,7 +18,7 @@ install:
 before_build:
 - ps: >-
     cd .\lib
-    nuget restore
+    nuget restore PuppeteerSharp.sln
 
     New-SelfSignedCertificate -Subject "localhost" -FriendlyName "Puppeteer" -CertStoreLocation "cert:\CurrentUser\My"
 
