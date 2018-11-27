@@ -16,7 +16,6 @@ namespace PuppeteerSharp.AspNetFramework
         /// </summary>
         public AspNetWebSocketTransport() : base(false)
         {
-
         }
 
         public override async Task InitializeAsync(string url, IConnectionOptions connectionOptions, ILoggerFactory loggerFactory = null)

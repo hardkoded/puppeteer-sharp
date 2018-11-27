@@ -29,7 +29,6 @@ namespace PupppeterSharpAspNetFrameworkSample.Services
             }).ConfigureAwait(false))
             using(var page = await browser.NewPageAsync().ConfigureAwait(false))
             {
-
                 var response = await page.GoToAsync(url).ConfigureAwait(false);
                 return await response.TextAsync().ConfigureAwait(false);
             }
