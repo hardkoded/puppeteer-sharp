@@ -29,7 +29,7 @@ build:
   project: .\lib\PuppeteerSharp.sln
   publish_nuget: true
   include_nuget_references: true
-  verbosity: 
+  verbosity: minimal
 after_build:
 - cmd: >-
     nuget pack .\lib\PuppeteerSharp.AspNetFramework\PuppeteerSharp.AspNetFramework\PuppeteerSharp.AspNetFrameworkcsproj -OutputDirectory <temp_path>
