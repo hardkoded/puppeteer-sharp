@@ -16,7 +16,6 @@ namespace PupppeterSharpAspNetFrameworkSample
         {
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
-            HostingEnvironment
         }
     }
 }

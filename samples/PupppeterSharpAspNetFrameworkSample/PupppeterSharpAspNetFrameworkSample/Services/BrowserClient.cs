@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
+﻿using System.Threading.Tasks;
 using System.Web.Hosting;
 using PuppeteerSharp;
+using PuppeteerSharp.AspNetFramework;
 
 namespace PupppeterSharpAspNetFrameworkSample.Services
 {
-    public class HeadlessBrowser
+    public class BrowserClient
     {
         private static readonly string HostPath = HostingEnvironment.MapPath("~/App_Data/");
         
@@ -25,6 +20,7 @@ namespace PupppeterSharpAspNetFrameworkSample.Services
             using (var browser = await Puppeteer.LaunchAsync(new LaunchOptions()
             {
                 Headless = true,
+                Transport = new AspNetWebSocketTransport(),
                 ExecutablePath = browserFetcher.GetExecutablePath(BrowserFetcher.DefaultRevision)
             }).ConfigureAwait(false))
             using(var page = await browser.NewPageAsync().ConfigureAwait(false))
