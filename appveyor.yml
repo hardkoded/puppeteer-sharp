@@ -35,7 +35,7 @@ after_build:
     nuget pack C:\projects\puppeteer-sharp\lib\PuppeteerSharp.AspNetFramework\PuppeteerSharp.AspNetFramework.csproj -Prop Configuration=Release
 test_script:
 - cmd: >-
-    cd .\lib\PuppeteerSharp.Tests
+    cd C:\projects\puppeteer-sharp\lib\PuppeteerSharp.Tests
 
     dotnet test -f %framework% -s test.runsettings
 on_success:

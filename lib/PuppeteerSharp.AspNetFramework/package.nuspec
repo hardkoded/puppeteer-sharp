@@ -23,7 +23,4 @@
 			</group>
 		</dependencies>
 	</metadata>
-	<files>
-		<file src="bin\$configuration$\PuppeteerSharp.AspNetFramework.dll" target="lib" />
-	</files>
 </package>
