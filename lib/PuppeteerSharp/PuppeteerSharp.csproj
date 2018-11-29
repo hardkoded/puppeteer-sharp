@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>1.10.0</PackageVersion>
+    <PackageVersion>1.10.1</PackageVersion>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
@@ -28,6 +28,7 @@
  * Payload.PostData is now a string (as it was supposed to be).
  * Improve internal exception handling. Now puppeteer-sharp will close the CDPSession or the Connection if puppeteer fails to process a message.
  * BufferAsync should work with binaries.
+ * IConnectionTransport now needs to implement `Task InitializeAsync(string url, IConnectionOptions connectionOptions, ILoggerFactory loggerFactory = null);`.
 
 # Changelog
  
@@ -38,7 +39,7 @@
  * Add flags to improve reliability.
  * Handle negative area results in computeQuadArea.
  ]]></PackageReleaseNotes>
-    <ReleaseVersion>1.10.0</ReleaseVersion>
+    <ReleaseVersion>1.10.1</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>
