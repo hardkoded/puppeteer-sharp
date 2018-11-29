@@ -32,7 +32,7 @@ build:
   verbosity: minimal
 after_build:
 - cmd: >-
-    nuget pack .\lib\PuppeteerSharp.AspNetFramework\ -Prop Configuration=Release
+    nuget pack .\lib\PuppeteerSharp.AspNetFramework\PuppeteerSharp.AspNetFramework.csproj -Prop Configuration=Release
 test_script:
 - cmd: >-
     cd .\lib\PuppeteerSharp.Tests
