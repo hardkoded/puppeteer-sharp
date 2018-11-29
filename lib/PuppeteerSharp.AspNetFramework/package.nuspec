@@ -4,7 +4,7 @@
 		<!--*-->
 		<id>PuppeteerSharp.AspNetFramework</id>
 		<!--*-->
-		<version>1.0.</version>
+		<version>1.0.0</version>
 		<title>PuppeteerSharp.AspNetFramework</title>
 		<!--*-->
 		<authors>Dario Kondratiuk</authors>
