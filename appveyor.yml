@@ -34,7 +34,7 @@ after_build:
 - cmd: >-
     nuget pack C:\projects\puppeteer-sharp\lib\PuppeteerSharp.AspNetFramework\PuppeteerSharp.AspNetFramework.csproj -Prop Configuration=Release
 artifacts:
-- path: C:\projects\puppeteer-sharp\lib\PuppeteerSharp.AspNetFramework.*.nupkg
+- path: .\lib\PuppeteerSharp.AspNetFramework.*.nupkg
   name: PuppeteerSharp.AspNetFramework Package
 test_script:
 - cmd: >-
