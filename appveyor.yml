@@ -33,7 +33,7 @@ build:
 after_build:
 - cmd: >-
     nuget pack C:\projects\puppeteer-sharp\lib\PuppeteerSharp\PuppeteerSharp.csproj -Prop Configuration=Release
-    
+
     nuget pack C:\projects\puppeteer-sharp\lib\PuppeteerSharp.AspNetFramework\PuppeteerSharp.AspNetFramework.csproj -Prop Configuration=Release
 artifacts:
 - path: .\lib\PuppeteerSharp.1*.nupkg
