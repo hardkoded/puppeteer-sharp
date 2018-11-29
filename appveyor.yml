@@ -32,7 +32,7 @@ build:
   verbosity: 
 after_build:
 - cmd: >-
-    nuget pack .\lib\PuppeteerSharp.AspNetFramework\PuppeteerSharp.AspNetFramework\csproj -OutputDirectory <temp_path>
+    nuget pack .\lib\PuppeteerSharp.AspNetFramework\PuppeteerSharp.AspNetFramework\PuppeteerSharp.AspNetFrameworkcsproj -OutputDirectory <temp_path>
 test_script:
 - cmd: >-
     cd .\lib\PuppeteerSharp.Tests
