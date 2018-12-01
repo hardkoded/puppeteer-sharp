@@ -37,7 +37,7 @@ namespace PuppeteerSharp
 
             if (IsInitialized)
             {
-                InitilizedTaskWrapper.SetResult(true);
+                InitilizedTaskWrapper.TrySetResult(true);
             }
         }
 
@@ -112,7 +112,7 @@ namespace PuppeteerSharp
             if (!IsInitialized && (_targetInfo.Type != TargetType.Page || _targetInfo.Url != string.Empty))
             {
                 IsInitialized = true;
-                InitilizedTaskWrapper.SetResult(true);
+                InitilizedTaskWrapper.TrySetResult(true);
                 return;
             }
 

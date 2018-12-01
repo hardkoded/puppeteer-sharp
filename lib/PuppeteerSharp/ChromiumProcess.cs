@@ -513,7 +513,7 @@ namespace PuppeteerSharp
                             var match = Regex.Match(e.Data, "^DevTools listening on (ws:\\/\\/.*)");
                             if (match.Success)
                             {
-                                p._startCompletionSource.SetResult(match.Groups[1].Value);
+                                p._startCompletionSource.TrySetResult(match.Groups[1].Value);
                             }
                         }
                     }
@@ -602,9 +602,7 @@ namespace PuppeteerSharp
             private class ExitingState : State
             {
                 public Task EnterFromAsync(ChromiumProcess p, State fromState, TimeSpan timeout)
-                {
-                    return !TryEnter(p, fromState) ? p._currentState.ExitAsync(p, timeout) : ExitAsync(p, timeout);
-                }
+                    => !TryEnter(p, fromState) ? p._currentState.ExitAsync(p, timeout) : ExitAsync(p, timeout);
 
                 public override async Task ExitAsync(ChromiumProcess p, TimeSpan timeout)
                 {
@@ -623,13 +621,13 @@ namespace PuppeteerSharp
 
             private class KillingState : State
             {
-                public Task EnterFromAsync(ChromiumProcess p, State fromState)
+                public async Task EnterFromAsync(ChromiumProcess p, State fromState)
                 {
                     if (!TryEnter(p, fromState))
                     {
                         // Delegate KillAsync to current state, because it has already changed since
                         // transition to this state was initiated.
-                        return p._currentState.KillAsync(p);
+                        await p._currentState.KillAsync(p).ConfigureAwait(false);
                     }
 
                     try
@@ -642,9 +640,10 @@ namespace PuppeteerSharp
                     catch (InvalidOperationException)
                     {
                         // Ignore
+                        return;
                     }
 
-                    return WaitForExitAsync(p);
+                    await WaitForExitAsync(p).ConfigureAwait(false);
                 }
 
                 public override Task ExitAsync(ChromiumProcess p, TimeSpan timeout) => WaitForExitAsync(p);

@@ -23,10 +23,7 @@ namespace PuppeteerSharp
         /// Initializes a new instance of the <see cref="Launcher"/> class.
         /// </summary>
         /// <param name="loggerFactory">Logger factory.</param>
-        public Launcher(ILoggerFactory loggerFactory = null)
-        {
-            _loggerFactory = loggerFactory ?? new LoggerFactory();
-        }
+        public Launcher(ILoggerFactory loggerFactory = null) => _loggerFactory = loggerFactory ?? new LoggerFactory();
 
         #region Properties
         /// <summary>
@@ -184,7 +181,7 @@ namespace PuppeteerSharp
             {
                 if (e.Target.Type == TargetType.Page)
                 {
-                    initialPageCompletion.SetResult(true);
+                    initialPageCompletion.TrySetResult(true);
                     browser.TargetCreated -= InitialPageCallback;
                 }
             }
