@@ -17,9 +17,7 @@ install:
     }
 before_build:
 - ps: >-
-    cd .\lib
-
-    nuget restore
+    dotnet restore .\lib\PuppeteerSharp.sln
 
     New-SelfSignedCertificate -Subject "localhost" -FriendlyName "Puppeteer" -CertStoreLocation "cert:\CurrentUser\My"
 
@@ -27,22 +25,12 @@ before_build:
 
 build:
   project: .\lib\PuppeteerSharp.sln
-  publish_nuget: false
+  publish_nuget: true
   include_nuget_references: true
   verbosity: minimal
-after_build:
-- cmd: >-
-    nuget pack C:\projects\puppeteer-sharp\lib\PuppeteerSharp\PuppeteerSharp.csproj -Prop Configuration=Release
-
-    nuget pack C:\projects\puppeteer-sharp\lib\PuppeteerSharp.AspNetFramework\PuppeteerSharp.AspNetFramework.csproj -Prop Configuration=Release
-artifacts:
-- path: .\lib\PuppeteerSharp.1*.nupkg
-  name: PuppeteerSharp Package
-- path: .\lib\PuppeteerSharp.AspNetFramework.*.nupkg
-  name: PuppeteerSharp.AspNetFramework Package
 test_script:
 - cmd: >-
-    cd C:\projects\puppeteer-sharp\lib\PuppeteerSharp.Tests
+    cd .\lib\PuppeteerSharp.Tests
 
     dotnet test -f %framework% -s test.runsettings
 on_success:
