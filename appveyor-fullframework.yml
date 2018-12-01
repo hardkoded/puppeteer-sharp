@@ -15,9 +15,7 @@ only_commits:
     - appveyor-fullframework.yml
 before_build:
 - ps: >-
-    cd .\lib
-
-    nuget restore
+    dotnet restore .\lib\PuppeteerSharp.sln
 
     New-SelfSignedCertificate -Subject "localhost" -FriendlyName "Puppeteer" -CertStoreLocation "cert:\CurrentUser\My"
 
