@@ -30,6 +30,19 @@ Support us with a monthly donation and help us continue our activities. [Become 
  * As Puppeteer-Sharp is a NetStandard 2.0 library, The minimum platform versions are .NET Framework 4.6.1 and .NET Core 2.0. [Read more](https://docs.microsoft.com/en-us/dotnet/standard/net-standard).
  * The minimum Windows versions supporting the WebSocket library are Windows 8 and Windows Server 2012. [Read more](https://docs.microsoft.com/en-us/dotnet/api/system.net.websockets?redirectedfrom=MSDN&view=netframework-4.7.2).
 
+ # How to Contribute and Provide Feedback
+
+Some of the best ways to contribute are to try things out file bugs and fix issues.
+
+If you have an issue or a question:
+
+* Ask a question on [Stack Overflow](https://stackoverflow.com/search?q=puppeteer-sharp).
+* File a [new issue](https://github.com/kblok/puppeteer-sharp/issues/new).
+
+## Contributing Guide
+
+See [this document](https://github.com/kblok/puppeteer-sharp/blob/master/CONTRIBUTING.md) for information on how to contribute.
+
 # Usage
 
 ## Take screenshots
@@ -87,7 +100,7 @@ using(var page = await browser.NewPageAsync())
 ```cs
 using (var page = await browser.NewPageAsync())
 {
-    var seven = await page.EvaluateFunctionAsync<int>(“4 + 3”);
+    var seven = await page.EvaluateFunctionAsync<int>("4 + 3");
     var someObject = await page.EvaluateFunctionAsync<dynamic>("(value) => ({a: value})", 5);
     Console.WriteLine(someObject.a);
 }

@@ -36,7 +36,6 @@ namespace PuppeteerSharp.Tests
         {
             SlowMo = Convert.ToInt32(Environment.GetEnvironmentVariable("SLOW_MO")),
             Headless = Convert.ToBoolean(Environment.GetEnvironmentVariable("HEADLESS") ?? "true"),
-            Args = new[] { "--no-sandbox" },
             Timeout = 0,
             LogProcess = true,
 #if NETCOREAPP
@@ -51,7 +50,6 @@ namespace PuppeteerSharp.Tests
             Headless = false,
             Args = new[]
             {
-                "--no-sandbox",
                 $"--disable-extensions-except={ExtensionPath}",
                 $"--load-extension={ExtensionPath}"
             }

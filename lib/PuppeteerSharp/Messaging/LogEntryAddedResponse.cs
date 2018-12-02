@@ -1,24 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using Newtonsoft.Json;
-
-namespace PuppeteerSharp.Messaging
+﻿namespace PuppeteerSharp.Messaging
 {
     internal class LogEntryAddedResponse
     {
-        [JsonProperty("entry")]
-        internal LogEntry Entry { get; set; }
+        public LogEntry Entry { get; set; }
 
         internal class LogEntry
         {
-            [JsonProperty("source")]
             public TargetType Source { get; set; }
-            [JsonProperty("args")]
-            internal dynamic[] Args { get; set; }
-            [JsonProperty("level")]
-            internal ConsoleType Level { get; set; }
-            [JsonProperty("text")]
-            internal string Text { get; set; }
+            public dynamic[] Args { get; set; }
+            public ConsoleType Level { get; set; }
+            public string Text { get; set; }
         }
     }
 }

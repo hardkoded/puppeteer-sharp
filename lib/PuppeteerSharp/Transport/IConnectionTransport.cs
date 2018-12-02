@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace PuppeteerSharp.Transport
 {
@@ -9,6 +10,14 @@ namespace PuppeteerSharp.Transport
     /// </summary>
     public interface IConnectionTransport : IDisposable
     {
+        /// <summary>
+        /// Initialize the Transport
+        /// </summary>
+        /// <param name="url">Chromium URL</param>
+        /// <param name="connectionOptions">Connection options</param>
+        /// <param name="loggerFactory">Logger factory</param>
+        Task InitializeAsync(string url, IConnectionOptions connectionOptions, ILoggerFactory loggerFactory = null);
+
         /// <summary>
         /// Gets a value indicating whether this <see cref="PuppeteerSharp.Transport.IConnectionTransport"/> is closed.
         /// </summary>

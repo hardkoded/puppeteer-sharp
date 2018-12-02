@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -35,7 +34,6 @@ namespace PuppeteerSharp
             Transport.Closed += Transport_Closed;
             _callbacks = new ConcurrentDictionary<int, MessageTask>();
             _sessions = new ConcurrentDictionary<string, CDPSession>();
-
         }
 
         #region Private Members
@@ -102,14 +100,13 @@ namespace PuppeteerSharp
                 { MessageKeys.Id, id },
                 { MessageKeys.Method, method },
                 { MessageKeys.Params, args }
-            });
+            }, JsonHelper.DefaultJsonSerializerSettings);
 
             _logger.LogTrace("Send ► {Id} Method {Method} Params {@Params}", id, method, (object)args);
 
             MessageTask callback = null;
             if (waitForCallback)
             {
-
                 callback = new MessageTask
                 {
                     TaskWrapper = new TaskCompletionSource<JObject>(),
@@ -125,7 +122,7 @@ namespace PuppeteerSharp
         internal async Task<T> SendAsync<T>(string method, dynamic args = null)
         {
             JToken response = await SendAsync(method, args).ConfigureAwait(false);
-            return response.ToObject<T>();
+            return response.ToObject<T>(true);
         }
 
         internal async Task<CDPSession> CreateSessionAsync(TargetInfo targetInfo)
@@ -195,7 +192,7 @@ namespace PuppeteerSharp
 
                 try
                 {
-                    obj = JObject.Parse(response);
+                    obj = JsonConvert.DeserializeObject<JObject>(response, JsonHelper.DefaultJsonSerializerSettings);
                 }
                 catch (JsonException exc)
                 {
@@ -281,16 +278,10 @@ namespace PuppeteerSharp
 
         internal static async Task<Connection> Create(string url, IConnectionOptions connectionOptions, ILoggerFactory loggerFactory = null)
         {
-            var transport = connectionOptions.Transport;
+            var transport = connectionOptions.Transport ?? new WebSocketTransport();
+            connectionOptions.WebSocketFactory = connectionOptions.WebSocketFactory ?? DefaultWebSocketFactory;
 
-            if (transport == null)
-            {
-                var ws = await (connectionOptions.WebSocketFactory ?? DefaultWebSocketFactory)(
-                    new Uri(url),
-                    connectionOptions,
-                    default).ConfigureAwait(false);
-                transport = new WebSocketTransport(ws, connectionOptions.EnqueueTransportMessages);
-            }
+            await transport.InitializeAsync(url, connectionOptions).ConfigureAwait(false);
 
             return new Connection(url, connectionOptions.SlowMo, transport, loggerFactory);
         }

@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Messaging;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
 {
@@ -204,12 +205,10 @@ namespace PuppeteerSharp
         {
             var response = await _client.SendAsync(method, args).ConfigureAwait(false);
 
-            var exceptionDetails = response[MessageKeys.ExceptionDetails];
-
-            if (exceptionDetails != null)
+            if (response[MessageKeys.ExceptionDetails] is JToken exceptionDetails)
             {
                 throw new EvaluationFailedException("Evaluation failed: " +
-                    GetExceptionMessage(exceptionDetails.ToObject<EvaluateExceptionDetails>()));
+                    GetExceptionMessage(exceptionDetails.ToObject<EvaluateExceptionResponseDetails>(true)));
             }
 
             return CreateJSHandle(response.result);
@@ -243,7 +242,7 @@ namespace PuppeteerSharp
             return new { value = arg };
         }
 
-        private static string GetExceptionMessage(EvaluateExceptionDetails exceptionDetails)
+        private static string GetExceptionMessage(EvaluateExceptionResponseDetails exceptionDetails)
         {
             if (exceptionDetails.Exception != null)
             {

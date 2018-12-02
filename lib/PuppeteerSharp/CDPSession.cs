@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Messaging;
 
@@ -118,7 +119,7 @@ namespace PuppeteerSharp
         {
             JObject content = await SendAsync(method, args).ConfigureAwait(false);
 
-            return content.ToObject<T>();
+            return content.ToObject<T>(true);
         }
 
         /// <summary>
@@ -147,7 +148,8 @@ namespace PuppeteerSharp
                 { MessageKeys.Id, id },
                 { MessageKeys.Method, method },
                 { MessageKeys.Params, args }
-            });
+            }, JsonHelper.DefaultJsonSerializerSettings);
+
             _logger.LogTrace("Send ► {Id} Method {Method} Params {@Params}", id, method, (object)args);
 
             MessageTask callback = null;

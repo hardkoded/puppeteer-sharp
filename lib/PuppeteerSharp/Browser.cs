@@ -152,7 +152,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Dafault wait time in milliseconds. Defaults to 30 seconds.
         /// </summary>
-        public int DefaultWaitForTimeout { get; set; } = 30000; 
+        public int DefaultWaitForTimeout { get; set; } = 30000;
 
         #endregion
 
@@ -397,15 +397,15 @@ namespace PuppeteerSharp
                 switch (e.MessageID)
                 {
                     case "Target.targetCreated":
-                        await CreateTargetAsync(e.MessageData.ToObject<TargetCreatedResponse>()).ConfigureAwait(false);
+                        await CreateTargetAsync(e.MessageData.ToObject<TargetCreatedResponse>(true)).ConfigureAwait(false);
                         return;
 
                     case "Target.targetDestroyed":
-                        await DestroyTargetAsync(e.MessageData.ToObject<TargetDestroyedResponse>()).ConfigureAwait(false);
+                        await DestroyTargetAsync(e.MessageData.ToObject<TargetDestroyedResponse>(true)).ConfigureAwait(false);
                         return;
 
                     case "Target.targetInfoChanged":
-                        ChangeTargetInfo(e.MessageData.ToObject<TargetCreatedResponse>());
+                        ChangeTargetInfo(e.MessageData.ToObject<TargetCreatedResponse>(true));
                         return;
                 }
             }

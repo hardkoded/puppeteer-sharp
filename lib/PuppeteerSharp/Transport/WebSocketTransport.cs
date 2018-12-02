@@ -3,6 +3,7 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Transport
@@ -12,9 +13,11 @@ namespace PuppeteerSharp.Transport
     /// </summary>
     public class WebSocketTransport : IConnectionTransport
     {
-        private readonly WebSocket _client;
-        private readonly bool _queueRequests;
+        private WebSocket _client;
+        private bool _queueRequests;
         private readonly TaskQueue _socketQueue;
+        private readonly bool _startReading;
+
         private CancellationTokenSource _readerCancellationSource { get; }
 
         /// <summary>
@@ -33,17 +36,37 @@ namespace PuppeteerSharp.Transport
         /// <summary>
         /// Initializes a new instance of the <see cref="PuppeteerSharp.Transport.WebSocketTransport"/> class.
         /// </summary>
-        /// <param name="wsClient">WebSocket client.</param>
-        /// <param name="queueRequests">If set to <c>true</c> to queue requests.</param>
-        public WebSocketTransport(WebSocket wsClient, bool queueRequests = true)
+        /// <param name="startReading">If set to <c>true</c> the Transport will start reading as soon as it's initialized.</param>
+        public WebSocketTransport(bool startReading = true)
         {
-            _client = wsClient;
-            _queueRequests = queueRequests;
+            _startReading = startReading;
             _socketQueue = new TaskQueue();
             _readerCancellationSource = new CancellationTokenSource();
 
-            Task.Factory.StartNew(GetResponseAsync);
         }
+
+        /// <summary>
+        /// Initialize the Transport
+        /// </summary>
+        /// <param name="url">Chromium URL</param>
+        /// <param name="connectionOptions">Connection options</param>
+        /// <param name="loggerFactory">Logger factory</param>
+        public virtual async Task InitializeAsync(string url, IConnectionOptions connectionOptions, ILoggerFactory loggerFactory = null)
+        {
+            _client = await connectionOptions.WebSocketFactory(
+                new Uri(url),
+                connectionOptions,
+                default).ConfigureAwait(false);
+
+            _queueRequests = connectionOptions.EnqueueTransportMessages;
+            
+            if (_startReading)
+            {
+                StartReading();
+            }
+        }
+
+        private void StartReading() => Task.Factory.StartNew(GetResponseAsync);
 
         /// <summary>
         /// Sends a message using the transport.
@@ -68,7 +91,7 @@ namespace PuppeteerSharp.Transport
         /// Starts listening the socket
         /// </summary>
         /// <returns>The start.</returns>
-        private async Task<object> GetResponseAsync()
+        protected async Task<object> GetResponseAsync()
         {
             var buffer = new byte[2048];
 

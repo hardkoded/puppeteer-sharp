@@ -92,7 +92,7 @@ namespace PuppeteerSharp
                 {
                     var tracingData = await ReadStream(e.Stream, _path).ConfigureAwait(false);
                     _client.TracingComplete -= EventHandler;
-                    taskWrapper.SetResult(tracingData);
+                    taskWrapper.TrySetResult(tracingData);
                 }
                 catch (Exception ex)
                 {
