@@ -713,8 +713,8 @@ namespace PuppeteerSharp
         /// <param name="html">HTML markup to assign to the page.</param>
         /// <param name="options">The navigations options</param>
         /// <returns>Task.</returns>
-        /// <seealso cref="Frame.SetContentAsync(string, SetContentOptions)"/>
-        public Task SetContentAsync(string html, SetContentOptions options = null) => _frameManager.MainFrame.SetContentAsync(html);
+        /// <seealso cref="Frame.SetContentAsync(string, NavigationOptions)"/>
+        public Task SetContentAsync(string html, NavigationOptions options = null) => _frameManager.MainFrame.SetContentAsync(html);
 
         /// <summary>
         /// Navigates to an url

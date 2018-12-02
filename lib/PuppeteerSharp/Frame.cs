@@ -552,8 +552,8 @@ namespace PuppeteerSharp
         /// <param name="html">HTML markup to assign to the page.</param>
         /// <param name="options">The options</param>
         /// <returns>Task.</returns>
-        /// <seealso cref="Page.SetContentAsync(string, SetContentOptions)"/>
-        public async Task SetContentAsync(string html, SetContentOptions options = null)
+        /// <seealso cref="Page.SetContentAsync(string, NavigationOptions)"/>
+        public async Task SetContentAsync(string html, NavigationOptions options = null)
         {
             var waitUntil = options?.WaitUntil ?? new[] { WaitUntilNavigation.Load };
             var timeout = options?.Timeout ?? 30_000;
