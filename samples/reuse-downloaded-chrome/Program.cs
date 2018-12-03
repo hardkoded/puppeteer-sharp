@@ -10,7 +10,7 @@ namespace Example.ReuseDownloadedChrome
     {
         public static async Task Main(string[] args)
         {
-            Console.WriteLine("This example downloads the correct version of Chromium to a custom location");
+            Console.WriteLine("This example downloads the default version of Chromium to a custom location");
 
             var currentDirectory = Directory.GetCurrentDirectory();
             var downloadPath = Path.Combine(currentDirectory, "..", "..", "CustomChromium");
@@ -22,11 +22,11 @@ namespace Example.ReuseDownloadedChrome
                 Directory.CreateDirectory(downloadPath);
             }
 
+            Console.WriteLine("Downloading Chromium");
+
             var browserFetcherOptions = new BrowserFetcherOptions { Path = downloadPath };
             var browserFetcher = new BrowserFetcher(browserFetcherOptions);
             await browserFetcher.DownloadAsync(BrowserFetcher.DefaultRevision);
-
-            Console.WriteLine("Create full path to chromium executable");
 
             var executablePath = CreateExecutablePath(downloadPath);
 
@@ -35,7 +35,7 @@ namespace Example.ReuseDownloadedChrome
                 Console.WriteLine("Custom Chromium location is empty. Unable to start Chromium. Exiting.\n Press any key to continue");
                 Console.ReadLine();
                 return;
-            } 
+            }
 
             Console.WriteLine($"Attemping to start Chromium using executable path: {executablePath}");
 
