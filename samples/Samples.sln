@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "complex-js-objects", "compl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "searching", "searching\searching.csproj", "{DEB4FB4A-3353-46AE-965D-F9D9D2092157}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "reuse-downloaded-chrome", "reuse-downloaded-chrome\reuse-downloaded-chrome.csproj", "{2AF98B18-7E59-419F-A447-0A58A7CC0038}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{DEB4FB4A-3353-46AE-965D-F9D9D2092157}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DEB4FB4A-3353-46AE-965D-F9D9D2092157}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DEB4FB4A-3353-46AE-965D-F9D9D2092157}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2AF98B18-7E59-419F-A447-0A58A7CC0038}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AF98B18-7E59-419F-A447-0A58A7CC0038}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AF98B18-7E59-419F-A447-0A58A7CC0038}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AF98B18-7E59-419F-A447-0A58A7CC0038}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
