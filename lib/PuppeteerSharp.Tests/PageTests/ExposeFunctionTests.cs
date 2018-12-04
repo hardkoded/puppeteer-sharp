@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -17,6 +19,24 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.ExposeFunctionAsync("compute", (int a, int b) => a * b);
             var result = await Page.EvaluateExpressionAsync<int>("compute(9, 4)");
             Assert.Equal(36, result);
+        }
+
+        [Fact]
+        public async Task ShouldThrowExceptionInPageContext()
+        {
+            await Page.ExposeFunctionAsync("woof", () => throw new Exception("WOOF WOOF"));
+            var result = await Page.EvaluateFunctionAsync<JToken>(@" async () =>{
+                try
+                {
+                    await woof();
+                }
+                catch (e)
+                {
+                    return { message: e.message, stack: e.stack};
+                }
+            }");
+            Assert.Equal("WOOF WOOF", result.SelectToken("message").ToObject<string>());
+            Assert.Contains("ExposeFunctionTests", result.SelectToken("stack").ToObject<string>());
         }
 
         [Fact]
