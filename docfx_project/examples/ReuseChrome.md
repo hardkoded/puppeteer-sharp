@@ -17,7 +17,7 @@ var browserFetcher = new BrowserFetcher(browserFetcherOptions);
 await browserFetcher.DownloadAsync(BrowserFetcher.DefaultRevision);
 ```
 
-Use `Puppeteer.launchAsync()` with `LaunchOptions` with the `LaunchOptions.ExecutablePath` property set to the
+Use `Puppeteer.LaunchAsync()` with `LaunchOptions` with the `LaunchOptions.ExecutablePath` property set to the
 fully qualified path to the Chrome executable.
 
 ```
