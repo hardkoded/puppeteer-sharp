@@ -1,4 +1,4 @@
-# How to download Chrome to a custom location and reuse Chrome from a custom location
+# How to download and reuse Chrome from a custom location
 
 _Contributors: [Bilal Durrani](https://bilaldurrani.io/)_
 
