@@ -28,7 +28,7 @@ namespace Example.ReuseDownloadedChrome
             var browserFetcher = new BrowserFetcher(browserFetcherOptions);
             await browserFetcher.DownloadAsync(BrowserFetcher.DefaultRevision);
 
-            var executablePath = CreateExecutablePath(downloadPath);
+            var executablePath = browserFetcher.GetExecutablePath(BrowserFetcher.DefaultRevision);
 
             if (string.IsNullOrEmpty(executablePath))
             {
@@ -55,24 +55,6 @@ namespace Example.ReuseDownloadedChrome
                 Console.ReadLine();
             }
             return;
-        }
-
-        public static string CreateExecutablePath(string basePath)
-        {
-            var firstVersionDirectory = Directory.GetDirectories(basePath).FirstOrDefault();
-
-            if (string.IsNullOrEmpty(firstVersionDirectory))
-            {
-                return string.Empty;
-            }
-
-            var firstPlatformDirectory = Directory.GetDirectories(firstVersionDirectory).FirstOrDefault();
-            if (string.IsNullOrEmpty(firstPlatformDirectory))
-            {
-                return string.Empty;
-            }
-
-            return Path.Combine(firstPlatformDirectory, "chrome.exe");
-        }
+        } 
     }
 }
