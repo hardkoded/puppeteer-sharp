@@ -1,5 +1,5 @@
 version: 1.0.{build}
-image: Ubuntu
+image: ubuntu1804
 configuration: Release
 environment:
   git_access_token:
