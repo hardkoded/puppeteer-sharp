@@ -2,6 +2,6 @@
 <RunSettings>  
   <!-- Configurations that affect the Test Framework -->  
   <RunConfiguration>
-    <TestSessionTimeout>480000</TestSessionTimeout>
+    <TestSessionTimeout>960000</TestSessionTimeout>
   </RunConfiguration>
 </RunSettings>
