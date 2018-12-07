@@ -13,9 +13,7 @@ before_build:
 
     dotnet restore lib/PuppeteerSharp.sln
 
-    openssl genrsa -des3 -passout pass:12345 -out lib/PuppeteerSharp.TestServer/testCert.key 1024 -noout
-
-    openssl req -new -x509 -key lib/PuppeteerSharp.TestServer/testCert.key -out lib/PuppeteerSharp.TestServer/testCert.cer -passin pass:12345 -subj "/CN=localhost" -outform DER
+    dotnet dev-certs https -ep lib/PuppeteerSharp.TestServer/testCert.cer
 
     sudo openssl x509 -inform der -in lib/PuppeteerSharp.TestServer/testCert.cer -out /usr/local/share/ca-certificates/testCert.crt -outform pem
 
