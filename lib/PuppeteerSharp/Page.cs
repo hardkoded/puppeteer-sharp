@@ -1853,7 +1853,7 @@ namespace PuppeteerSharp
                     }", e.BindingPayload.Name, e.BindingPayload.Seq, ex.Message, ex.StackTrace);
             }
 
-            Client.Send("Runtime.evaluate", new
+            await Client.SendAsync("Runtime.evaluate", new
             {
                 expression,
                 contextId = e.ExecutionContextId
