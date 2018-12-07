@@ -5,6 +5,7 @@ namespace PuppeteerSharp
 {
     using System.Threading;
     using System.Threading.Tasks;
+    using PuppeteerSharp.Transport;
 
     /// <summary>
     /// Options for connecting to an existing browser.
@@ -39,6 +40,7 @@ namespace PuppeteerSharp
 
         /// <summary>
         /// Optional factory for <see cref="WebSocket"/> implementations.
+        /// If <see cref="Transport"/> is set this property will be ignored.
         /// </summary>
         public Func<Uri, IConnectionOptions, CancellationToken, Task<WebSocket>> WebSocketFactory { get; set; }
 
@@ -47,5 +49,18 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The default Viewport.</value>
         public ViewPortOptions DefaultViewport { get; set; } = ViewPortOptions.Default;
+
+        /// <summary>
+        /// Optional connection transport.
+        /// </summary>
+        public IConnectionTransport Transport { get; set; }
+        /// <summary>
+        /// If not <see cref="Transport"/> is set this will be use to determine is the default <see cref="WebSocketTransport"/> will enqueue messages.
+        /// </summary>
+        /// <remarks>
+        /// It's set to <c>true</c> by default because it's the safest way to send commands to Chromium.
+        /// Setting this to <c>false</c> proved to work in .NET Core but it tends to fail on .NET Framework.
+        /// </remarks>
+        public bool EnqueueTransportMessages { get; set; } = true;
     }
 }

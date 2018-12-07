@@ -42,7 +42,9 @@ namespace PuppeteerSharp
         private readonly Dictionary<string, Delegate> _pageBindings;
         private readonly Dictionary<string, Worker> _workers;
         private readonly ILogger _logger;
-        private bool _ensureNewDocumentNavigation;
+        private PageGetLayoutMetricsResponse _burstModeMetrics;
+        private bool _screenshotBurstModeOn;
+        private ScreenshotOptions _screenshotBurstModeOptions;
 
         private static readonly Dictionary<string, decimal> _unitToPixels = new Dictionary<string, decimal> {
             {"px", 1},
@@ -66,8 +68,9 @@ namespace PuppeteerSharp
             Tracing = new Tracing(client);
             Coverage = new Coverage(client);
 
-            _frameManager = new FrameManager(client, frameTree, this);
-            _networkManager = new NetworkManager(client, _frameManager);
+            _networkManager = new NetworkManager(client);
+            _frameManager = new FrameManager(client, frameTree, this, _networkManager);
+            _networkManager.FrameManager = _frameManager;
             _emulationManager = new EmulationManager(client);
             _pageBindings = new Dictionary<string, Delegate>();
             _workers = new Dictionary<string, Worker>();
@@ -208,7 +211,11 @@ namespace PuppeteerSharp
         /// - <see cref="ReloadAsync(NavigationOptions)"/>
         /// - <see cref="WaitForNavigationAsync(NavigationOptions)"/>
         /// </summary>
-        public int DefaultNavigationTimeout { get; set; } = 30000;
+        public int DefaultNavigationTimeout
+        {
+            get => _frameManager.DefaultNavigationTimeout;
+            set => _frameManager.DefaultNavigationTimeout = value;
+        }
 
         /// <summary>
         /// This setting will change the default maximum navigation time of 30 seconds for the following methods:
@@ -722,64 +729,7 @@ namespace PuppeteerSharp
         /// <param name="options">Navigation parameters.</param>
         /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.</returns>
         /// <seealso cref="GoToAsync(string, int?, WaitUntilNavigation[])"/>
-        public async Task<Response> GoToAsync(string url, NavigationOptions options)
-        {
-            var referrer = string.IsNullOrEmpty(options.Referer)
-                ? _networkManager.ExtraHTTPHeaders?.GetValueOrDefault(MessageKeys.Referer)
-                : options.Referer;
-
-            var requests = new Dictionary<string, Request>();
-
-            void createRequestEventListener(object sender, RequestEventArgs e)
-            {
-                if (!requests.ContainsKey(e.Request.Url))
-                {
-                    requests.Add(e.Request.Url, e.Request);
-                }
-            }
-
-            _networkManager.Request += createRequestEventListener;
-
-            var mainFrame = _frameManager.MainFrame;
-            var timeout = options?.Timeout ?? DefaultNavigationTimeout;
-
-            var watcher = new NavigatorWatcher(_frameManager, mainFrame, timeout, options);
-            var navigateTask = Navigate(Client, url, referrer);
-
-            await Task.WhenAny(
-                watcher.TimeoutTask,
-                navigateTask).ConfigureAwait(false);
-
-            AggregateException exception = null;
-
-            if (navigateTask.IsFaulted)
-            {
-                exception = navigateTask.Exception;
-            }
-            else
-            {
-                await Task.WhenAny(
-                    watcher.TimeoutTask,
-                    _ensureNewDocumentNavigation ? watcher.NewDocumentNavigationTask : watcher.SameDocumentNavigationTask
-                ).ConfigureAwait(false);
-
-                if (watcher.TimeoutTask.IsFaulted)
-                {
-                    exception = watcher.TimeoutTask.Exception;
-                }
-            }
-
-            _networkManager.Request -= createRequestEventListener;
-
-            if (exception != null)
-            {
-                throw new NavigationException(exception.InnerException.Message, exception.InnerException);
-            }
-
-            requests.TryGetValue(MainFrame.NavigationURL, out var request);
-
-            return request?.Response;
-        }
+        public Task<Response> GoToAsync(string url, NavigationOptions options) => _frameManager.MainFrame.GoToAsync(url, options);
 
         /// <summary>
         /// Navigates to an url
@@ -895,7 +845,7 @@ namespace PuppeteerSharp
             var marginBottom = ConvertPrintParameterToInches(options.MarginOptions.Bottom);
             var marginRight = ConvertPrintParameterToInches(options.MarginOptions.Right);
 
-            JObject result = await Client.SendAsync("Page.printToPDF", new
+            var result = await Client.SendAsync("Page.printToPDF", new
             {
                 landscape = options.Landscape,
                 displayHeaderFooter = options.DisplayHeaderFooter,
@@ -1426,33 +1376,7 @@ namespace PuppeteerSharp
         /// ]]>
         /// </code>
         /// </example>
-        public async Task<Response> WaitForNavigationAsync(NavigationOptions options = null)
-        {
-            var mainFrame = _frameManager.MainFrame;
-            var timeout = options?.Timeout ?? DefaultNavigationTimeout;
-            var watcher = new NavigatorWatcher(_frameManager, mainFrame, timeout, options);
-            var responses = new Dictionary<string, Response>();
-
-            void createResponseEventListener(object sender, ResponseCreatedEventArgs e) => responses[e.Response.Url] = e.Response;
-
-            _networkManager.Response += createResponseEventListener;
-
-            var raceTask = await Task.WhenAny(
-                watcher.NewDocumentNavigationTask,
-                watcher.SameDocumentNavigationTask,
-                watcher.TimeoutTask
-            ).ConfigureAwait(false);
-
-            _networkManager.Response -= createResponseEventListener;
-
-            var exception = raceTask.Exception;
-            if (exception != null)
-            {
-                throw new NavigationException(exception.Message, exception);
-            }
-
-            return responses.GetValueOrDefault(_frameManager.MainFrame.Url);
-        }
+        public Task<Response> WaitForNavigationAsync(NavigationOptions options = null) => _frameManager.WaitForFrameNavigationAsync(_frameManager.MainFrame, options);
 
         /// <summary>
         /// Waits for a request.
@@ -1507,7 +1431,7 @@ namespace PuppeteerSharp
                 requestTcs.Task
             }).ConfigureAwait(false);
 
-            return await requestTcs.Task;
+            return await requestTcs.Task.ConfigureAwait(false);
         }
 
         /// <summary>
@@ -1563,7 +1487,7 @@ namespace PuppeteerSharp
                 responseTcs.Task
             }).ConfigureAwait(false);
 
-            return await responseTcs.Task;
+            return await responseTcs.Task.ConfigureAwait(false);
         }
 
         /// <summary>
@@ -1582,6 +1506,20 @@ namespace PuppeteerSharp
         /// <param name="options">Navigation parameters.</param>
         public Task<Response> GoForwardAsync(NavigationOptions options = null) => GoAsync(1, options);
 
+        /// <summary>
+        /// Resets the background color and Viewport after taking Screenshots using BurstMode.
+        /// </summary>
+        /// <returns>The burst mode off.</returns>
+        public Task SetBurstModeOff()
+        {
+            _screenshotBurstModeOn = false;
+            if (_screenshotBurstModeOptions != null)
+            {
+                ResetBackgroundColorAndViewport(_screenshotBurstModeOptions);
+            }
+
+            return Task.CompletedTask;
+        }
         #endregion
 
         #region Private Method
@@ -1662,10 +1600,13 @@ namespace PuppeteerSharp
 
         private async Task<string> PerformScreenshot(ScreenshotType type, ScreenshotOptions options)
         {
-            await Client.SendAsync("Target.activateTarget", new
+            if (!_screenshotBurstModeOn)
             {
-                targetId = Target.TargetId
-            }).ConfigureAwait(false);
+                await Client.SendAsync("Target.activateTarget", new
+                {
+                    targetId = Target.TargetId
+                }).ConfigureAwait(false);
+            }
 
             var clip = options.Clip?.Clone();
             if (clip != null)
@@ -1673,65 +1614,72 @@ namespace PuppeteerSharp
                 clip.Scale = 1;
             }
 
-            if (options != null && options.FullPage)
+            if (!_screenshotBurstModeOn)
             {
-                if (Viewport == null)
+                if (options != null && options.FullPage)
                 {
-                    throw new PuppeteerException("FullPage screenshots do not work without first setting viewport.");
-                }
-                var metrics = await Client.SendAsync("Page.getLayoutMetrics").ConfigureAwait(false);
-                var contentSize = metrics[MessageKeys.ContentSize];
+                    var metrics = _screenshotBurstModeOn
+                        ? _burstModeMetrics :
+                        await Client.SendAsync<PageGetLayoutMetricsResponse>("Page.getLayoutMetrics").ConfigureAwait(false);
 
-                var width = Convert.ToInt32(Math.Ceiling(contentSize[MessageKeys.Width].Value<decimal>()));
-                var height = Convert.ToInt32(Math.Ceiling(contentSize[MessageKeys.Height].Value<decimal>()));
-
-                // Overwrite clip for full page at all times.
-                clip = new Clip
-                {
-                    X = 0,
-                    Y = 0,
-                    Width = width,
-                    Height = height,
-                    Scale = 1
-                };
-
-                var mobile = Viewport.IsMobile;
-                var deviceScaleFactor = Viewport.DeviceScaleFactor;
-                var landscape = Viewport.IsLandscape;
-                var screenOrientation = landscape ?
-                    new ScreenOrientation
+                    if (options.BurstMode)
                     {
-                        Angle = 90,
-                        Type = ScreenOrientationType.LandscapePrimary
-                    } :
-                    new ScreenOrientation
+                        _burstModeMetrics = metrics;
+                    }
+
+                    var contentSize = metrics.ContentSize;
+
+                    var width = Convert.ToInt32(Math.Ceiling(contentSize.Width));
+                    var height = Convert.ToInt32(Math.Ceiling(contentSize.Height));
+
+                    // Overwrite clip for full page at all times.
+                    clip = new Clip
                     {
-                        Angle = 0,
-                        Type = ScreenOrientationType.PortraitPrimary
+                        X = 0,
+                        Y = 0,
+                        Width = width,
+                        Height = height,
+                        Scale = 1
                     };
 
-                await Client.SendAsync("Emulation.setDeviceMetricsOverride", new
-                {
-                    mobile,
-                    width,
-                    height,
-                    deviceScaleFactor,
-                    screenOrientation
-                }).ConfigureAwait(false);
-            }
+                    var isMobile = Viewport?.IsMobile ?? false;
+                    var deviceScaleFactor = Viewport?.DeviceScaleFactor ?? 1;
+                    var isLandscape = Viewport?.IsLandscape ?? false;
+                    var screenOrientation = isLandscape ?
+                        new ScreenOrientation
+                        {
+                            Angle = 90,
+                            Type = ScreenOrientationType.LandscapePrimary
+                        } :
+                        new ScreenOrientation
+                        {
+                            Angle = 0,
+                            Type = ScreenOrientationType.PortraitPrimary
+                        };
 
-            if (options != null && options.OmitBackground)
-            {
-                await Client.SendAsync("Emulation.setDefaultBackgroundColorOverride", new
-                {
-                    color = new
+                    await Client.SendAsync("Emulation.setDeviceMetricsOverride", new
                     {
-                        r = 0,
-                        g = 0,
-                        b = 0,
-                        a = 0
-                    }
-                }).ConfigureAwait(false);
+                        mobile = isMobile,
+                        width,
+                        height,
+                        deviceScaleFactor,
+                        screenOrientation
+                    }).ConfigureAwait(false);
+                }
+
+                if (options?.OmitBackground == true && type == ScreenshotType.Png)
+                {
+                    await Client.SendAsync("Emulation.setDefaultBackgroundColorOverride", new
+                    {
+                        color = new
+                        {
+                            r = 0,
+                            g = 0,
+                            b = 0,
+                            a = 0
+                        }
+                    }).ConfigureAwait(false);
+                }
             }
 
             dynamic screenMessage = new ExpandoObject();
@@ -1748,19 +1696,27 @@ namespace PuppeteerSharp
                 screenMessage.clip = clip;
             }
 
-            JObject result = await Client.SendAsync("Page.captureScreenshot", screenMessage).ConfigureAwait(false);
+            var result = await Client.SendAsync<PageCaptureScreenshotResponse>("Page.captureScreenshot", screenMessage).ConfigureAwait(false);
 
-            if (options != null && options.OmitBackground)
+            if (options.BurstMode)
             {
-                await Client.SendAsync("Emulation.setDefaultBackgroundColorOverride").ConfigureAwait(false);
+                _screenshotBurstModeOptions = options;
+                _screenshotBurstModeOn = true;
             }
-
-            if (options != null && options.FullPage)
+            else
             {
-                await SetViewportAsync(Viewport).ConfigureAwait(false);
+                await ResetBackgroundColorAndViewport(options);
             }
+            return result.Data;
+        }
 
-            return result.GetValue(MessageKeys.Data).AsString();
+        private Task ResetBackgroundColorAndViewport(ScreenshotOptions options)
+        {
+            var omitBackgroundTask = options?.OmitBackground == true && options.Type == ScreenshotType.Png ?
+                Client.SendAsync("Emulation.setDefaultBackgroundColorOverride") : Task.CompletedTask;
+            var setViewPortTask = (options?.FullPage == true && Viewport != null) ?
+                SetViewportAsync(Viewport) : Task.CompletedTask;
+            return Task.WhenAll(omitBackgroundTask, setViewPortTask);
         }
 
         private decimal ConvertPrintParameterToInches(object parameter)
@@ -1836,7 +1792,7 @@ namespace PuppeteerSharp
                     EmitMetrics(e.MessageData.ToObject<PerformanceMetricsResponse>());
                     break;
                 case "Target.attachedToTarget":
-                    await OnAttachedToTarget(e);
+                    await OnAttachedToTarget(e).ConfigureAwait(false);
                     break;
                 case "Target.detachedFromTarget":
                     OnDetachedFromTarget(e);
@@ -1845,14 +1801,14 @@ namespace PuppeteerSharp
                     OnLogEntryAdded(e.MessageData.ToObject<LogEntryAddedResponse>());
                     break;
                 case "Runtime.bindingCalled":
-                    await OnBindingCalled(e.MessageData.ToObject<BindingCalledResponse>());
+                    await OnBindingCalled(e.MessageData.ToObject<BindingCalledResponse>()).ConfigureAwait(false);
                     break;
             }
         }
 
         private async Task OnBindingCalled(BindingCalledResponse e)
         {
-            var result = await ExecuteBinding(e);
+            var result = await ExecuteBinding(e).ConfigureAwait(false);
 
             var expression = EvaluationString(
                 @"function deliverResult(name, seq, result) {
@@ -1860,7 +1816,7 @@ namespace PuppeteerSharp
                     window[name]['callbacks'].delete(seq);
                 }", e.Payload.Name, e.Payload.Seq, result);
 
-            await Client.SendAsync("Runtime.evaluate", new
+            Client.Send("Runtime.evaluate", new
             {
                 expression,
                 contextId = e.ExecutionContextId
@@ -1908,7 +1864,7 @@ namespace PuppeteerSharp
             {
                 try
                 {
-                    await Client.SendAsync("Target.detachFromTarget", new { sessionId });
+                    await Client.SendAsync("Target.detachFromTarget", new { sessionId }).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
@@ -2049,7 +2005,7 @@ namespace PuppeteerSharp
               };
             }";
             var expression = EvaluationString(addPageBinding, name);
-            await Client.SendAsync("Runtime.addBinding", new { name });
+            await Client.SendAsync("Runtime.addBinding", new { name }).ConfigureAwait(false);
             await Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new { source = expression }).ConfigureAwait(false);
 
             await Task.WhenAll(Frames.Select(frame => frame.EvaluateExpressionAsync(expression)
@@ -2060,22 +2016,6 @@ namespace PuppeteerSharp
                         _logger.LogError(task.Exception.ToString());
                     }
                 }))).ConfigureAwait(false);
-        }
-
-        private async Task Navigate(CDPSession client, string url, string referrer)
-        {
-            var response = await client.SendAsync<PageNavigateResponse>("Page.navigate", new
-            {
-                url,
-                referrer = referrer ?? string.Empty
-            }).ConfigureAwait(false);
-
-            _ensureNewDocumentNavigation = !string.IsNullOrEmpty(response.LoaderId);
-
-            if (!string.IsNullOrEmpty(response.ErrorText))
-            {
-                throw new NavigationException(response.ErrorText, url);
-            }
         }
 
         private static string EvaluationString(string fun, params object[] args)

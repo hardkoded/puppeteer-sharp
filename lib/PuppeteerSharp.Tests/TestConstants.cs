@@ -38,7 +38,12 @@ namespace PuppeteerSharp.Tests
             Headless = Convert.ToBoolean(Environment.GetEnvironmentVariable("HEADLESS") ?? "true"),
             Args = new[] { "--no-sandbox" },
             Timeout = 0,
-            LogProcess = true
+            LogProcess = true,
+#if NETCOREAPP
+            EnqueueTransportMessages = false
+#else
+            EnqueueTransportMessages = true
+#endif
         };
 
         public static LaunchOptions BrowserWithExtensionOptions() => new LaunchOptions

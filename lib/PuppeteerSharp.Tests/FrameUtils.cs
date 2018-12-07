@@ -1,20 +1,21 @@
-﻿using System;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp.Tests
 {
     public static class FrameUtils
     {
-        public static async Task AttachFrameAsync(Page page, string frameId, string url)
+        public static async Task<Frame> AttachFrameAsync(Page page, string frameId, string url)
         {
-            await page.EvaluateFunctionAsync(@"(frameId, url) => {
+            var handle = await page.EvaluateFunctionHandleAsync(@" async (frameId, url) => {
               const frame = document.createElement('iframe');
               frame.src = url;
               frame.id = frameId;
               document.body.appendChild(frame);
-              return new Promise(x => frame.onload = x);
-            }", frameId, url);
+              await new Promise(x => frame.onload = x);
+              return frame
+            }", frameId, url) as ElementHandle;
+            return await handle.ContentFrameAsync();
         }
 
         public static async Task DetachFrameAsync(Page page, string frameId)
