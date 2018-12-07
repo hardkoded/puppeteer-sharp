@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
@@ -66,6 +67,24 @@ namespace PuppeteerSharp.Tests.PageTests
             };
             var result = await Page.EvaluateFunctionAsync("a => a", obj);
             Assert.Equal("bar!", result.foo.ToString());
+        }
+
+        [Fact]
+        public async Task ShouldWorkWithDifferentSerializerSettings()
+        {
+            var result = await Page.EvaluateFunctionAsync<ComplexObjectTestClass>("() => { return { foo: 'bar' }}");
+            Assert.Equal("bar", result.Foo);
+
+            result = (await Page.EvaluateFunctionAsync<JToken>("() => { return { Foo: 'bar' }}"))
+                .ToObject<ComplexObjectTestClass>(new JsonSerializerSettings());
+            Assert.Equal("bar", result.Foo);
+
+            result = await Page.EvaluateExpressionAsync<ComplexObjectTestClass>("var obj = { foo: 'bar' }; obj;");
+            Assert.Equal("bar", result.Foo);
+
+            result = (await Page.EvaluateExpressionAsync<JToken>("var obj = { Foo: 'bar' }; obj;"))
+                .ToObject<ComplexObjectTestClass>(new JsonSerializerSettings());
+            Assert.Equal("bar", result.Foo);
         }
 
         [Theory]
@@ -136,7 +155,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldThrowIfElementHandlesAreFromOtherFrames()
         {
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
-            var bodyHandle = await Page.Frames[1].QuerySelectorAsync("body");
+            var bodyHandle = await Page.FirstChildFrame().QuerySelectorAsync("body");
             var exception = await Assert.ThrowsAsync<EvaluationFailedException>(()
                 => Page.EvaluateFunctionAsync<string>("body => body.innerHTML", bodyHandle));
             Assert.Contains("JSHandles can be evaluated only in the context they were created", exception.Message);
@@ -263,6 +282,11 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(11111111, await Page.EvaluateExpressionAsync("11111111"));
             Assert.Equal(11111111111111, await Page.EvaluateExpressionAsync("11111111111111"));
             Assert.Equal(1.1, await Page.EvaluateExpressionAsync("1.1"));
+        }
+
+        public class ComplexObjectTestClass
+        {
+            public string Foo { get; set; }
         }
     }
 }

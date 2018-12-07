@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -27,8 +28,8 @@ namespace PuppeteerSharp.Tests.FrameTests
         {
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
             await FrameUtils.AttachFrameAsync(Page, "frame2", TestConstants.EmptyPage);
-            var frame1 = Page.Frames[1];
-            var frame2 = Page.Frames[2];
+            var frame1 = Page.Frames.First(f => f.Name == "frame1");
+            var frame2 = Page.Frames.First(f => f.Name == "frame2");
             var waitForXPathPromise = frame2.WaitForXPathAsync("//div");
             await frame1.EvaluateFunctionAsync(addElement, "div");
             await frame2.EvaluateFunctionAsync(addElement, "div");
@@ -52,7 +53,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         public async Task ShouldThrowWhenFrameIsDetached()
         {
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
-            var frame = Page.Frames[1];
+            var frame = Page.FirstChildFrame();
             var waitPromise = frame.WaitForXPathAsync("//*[@class=\"box\"]");
             await FrameUtils.DetachFrameAsync(Page, "frame1");
             var exception = await Assert.ThrowsAnyAsync<Exception>(() => waitPromise);

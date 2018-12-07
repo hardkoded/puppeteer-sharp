@@ -181,7 +181,7 @@ namespace PuppeteerSharp.Tests.TargetTests
               Server.WaitForRequest("/one-style.css")
             );
             // Connect to the opened page.
-            var target = Browser.Targets().First(t => t.Url.Contains("one-style.html"));
+            var target = await Context.WaitForTargetAsync(t => t.Url.Contains("one-style.html"));
             var newPage = await target.PageAsync();
             // Issue a redirect.
             serverResponse.Redirect("/injectedstyle.css");

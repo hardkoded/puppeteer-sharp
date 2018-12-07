@@ -1,0 +1,26 @@
+﻿<?xml version="1.0"?>
+<package>
+	<metadata>
+		<!--*-->
+		<id>PuppeteerSharp.AspNetFramework</id>
+		<!--*-->
+		<version>1.0.0</version>
+		<title>PuppeteerSharp.AspNetFramework</title>
+		<!--*-->
+		<authors>Dario Kondratiuk</authors>
+		<owners>Dario Kondratiuk</owners>
+		<projectUrl>https://github.com/kblok/puppeteer-sharp</projectUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>Puppeteer-Sharp Helpers for ASP.NET Full Framework</description>
+		<releaseNotes>
+		</releaseNotes>
+		<copyright>2018</copyright>
+		<tags>
+		</tags>
+		<dependencies>
+			<group targetFramework="net472">
+				<dependency id="PuppeteerSharp" version="1.10.0" />
+			</group>
+		</dependencies>
+	</metadata>
+</package>

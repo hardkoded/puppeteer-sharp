@@ -5,6 +5,7 @@ using System.Dynamic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -14,6 +15,7 @@ using PuppeteerSharp.Input;
 using PuppeteerSharp.Media;
 using PuppeteerSharp.Messaging;
 using PuppeteerSharp.Mobile;
+using PuppeteerSharp.PageAccessibility;
 using PuppeteerSharp.PageCoverage;
 
 namespace PuppeteerSharp
@@ -35,8 +37,8 @@ namespace PuppeteerSharp
     public class Page : IDisposable
     {
         private readonly bool _ignoreHTTPSErrors;
-        private readonly NetworkManager _networkManager;
-        private readonly FrameManager _frameManager;
+        private NetworkManager _networkManager;
+        private FrameManager _frameManager;
         private readonly TaskQueue _screenshotTaskQueue;
         private readonly EmulationManager _emulationManager;
         private readonly Dictionary<string, Delegate> _pageBindings;
@@ -56,7 +58,6 @@ namespace PuppeteerSharp
         private Page(
             CDPSession client,
             Target target,
-            FrameTree frameTree,
             bool ignoreHTTPSErrors,
             TaskQueue screenshotTaskQueue)
         {
@@ -68,27 +69,14 @@ namespace PuppeteerSharp
             Tracing = new Tracing(client);
             Coverage = new Coverage(client);
 
-            _networkManager = new NetworkManager(client);
-            _frameManager = new FrameManager(client, frameTree, this, _networkManager);
-            _networkManager.FrameManager = _frameManager;
             _emulationManager = new EmulationManager(client);
             _pageBindings = new Dictionary<string, Delegate>();
             _workers = new Dictionary<string, Worker>();
             _logger = Client.Connection.LoggerFactory.CreateLogger<Page>();
-
+            Accessibility = new Accessibility(client);
             _ignoreHTTPSErrors = ignoreHTTPSErrors;
 
             _screenshotTaskQueue = screenshotTaskQueue;
-
-            _frameManager.FrameAttached += (sender, e) => FrameAttached?.Invoke(this, e);
-            _frameManager.FrameDetached += (sender, e) => FrameDetached?.Invoke(this, e);
-            _frameManager.FrameNavigated += (sender, e) => FrameNavigated?.Invoke(this, e);
-
-            _networkManager.Request += (sender, e) => Request?.Invoke(this, e);
-            _networkManager.RequestFailed += (sender, e) => RequestFailed?.Invoke(this, e);
-            _networkManager.Response += (sender, e) => Response?.Invoke(this, e);
-            _networkManager.RequestFinished += (sender, e) => RequestFinished?.Invoke(this, e);
-
             target.CloseTask.ContinueWith((arg) =>
             {
                 Close?.Invoke(this, EventArgs.Empty);
@@ -235,7 +223,7 @@ namespace PuppeteerSharp
         /// Gets all frames attached to the page.
         /// </summary>
         /// <value>An array of all frames attached to the page.</value>
-        public Frame[] Frames => _frameManager.Frames.Values.ToArray();
+        public Frame[] Frames => _frameManager.GetFrames();
 
         /// <summary>
         /// Gets all workers in the page.
@@ -311,6 +299,11 @@ namespace PuppeteerSharp
         /// Get an indication that the page has been closed.
         /// </summary>
         public bool IsClosed { get; private set; }
+
+        /// <summary>
+        /// Gets the accessibility.
+        /// </summary>
+        public Accessibility Accessibility { get; }
 
         internal bool JavascriptEnabled { get; set; } = true;
         #endregion
@@ -515,7 +508,7 @@ namespace PuppeteerSharp
                 { MessageKeys.Urls, urls.Length > 0 ? urls : new string[] { Url } }
             }).ConfigureAwait(false);
 
-            return response[MessageKeys.Cookies].ToObject<CookieParam[]>();
+            return response[MessageKeys.Cookies].ToObject<CookieParam[]>(true);
         }
 
         /// <summary>
@@ -863,8 +856,7 @@ namespace PuppeteerSharp
                 preferCSSPageSize = options.PreferCSSPageSize
             }).ConfigureAwait(false);
 
-            var buffer = Convert.FromBase64String(result.GetValue(MessageKeys.Data).AsString());
-            return buffer;
+            return Convert.FromBase64String(result.GetValue(MessageKeys.Data).AsString());
         }
 
         /// <summary>
@@ -1510,12 +1502,12 @@ namespace PuppeteerSharp
         /// Resets the background color and Viewport after taking Screenshots using BurstMode.
         /// </summary>
         /// <returns>The burst mode off.</returns>
-        public Task SetBurstModeOff()
+        public Task SetBurstModeOffAsync()
         {
             _screenshotBurstModeOn = false;
             if (_screenshotBurstModeOptions != null)
             {
-                ResetBackgroundColorAndViewport(_screenshotBurstModeOptions);
+                ResetBackgroundColorAndViewportAsync(_screenshotBurstModeOptions);
             }
 
             return Task.CompletedTask;
@@ -1533,7 +1525,8 @@ namespace PuppeteerSharp
         {
             await client.SendAsync("Page.enable", null).ConfigureAwait(false);
             var result = await client.SendAsync("Page.getFrameTree").ConfigureAwait(false);
-            var page = new Page(client, target, new FrameTree(result[MessageKeys.FrameTree]), ignoreHTTPSErrors, screenshotTaskQueue);
+            var page = new Page(client, target, ignoreHTTPSErrors, screenshotTaskQueue);
+            await page.InitializeAsync(new FrameTree(result[MessageKeys.FrameTree])).ConfigureAwait(false);
 
             await Task.WhenAll(
                 client.SendAsync("Target.setAutoAttach", new { autoAttach = true, waitForDebuggerOnStart = false }),
@@ -1561,6 +1554,21 @@ namespace PuppeteerSharp
             return page;
         }
 
+        private async Task InitializeAsync(FrameTree frameTree)
+        {
+            _networkManager = new NetworkManager(Client);
+            _frameManager = await FrameManager.CreateFrameManagerAsync(Client, this, _networkManager, frameTree).ConfigureAwait(false);
+            _networkManager.FrameManager = _frameManager;
+
+            _frameManager.FrameAttached += (sender, e) => FrameAttached?.Invoke(this, e);
+            _frameManager.FrameDetached += (sender, e) => FrameDetached?.Invoke(this, e);
+            _frameManager.FrameNavigated += (sender, e) => FrameNavigated?.Invoke(this, e);
+
+            _networkManager.Request += (sender, e) => Request?.Invoke(this, e);
+            _networkManager.RequestFailed += (sender, e) => RequestFailed?.Invoke(this, e);
+            _networkManager.Response += (sender, e) => Response?.Invoke(this, e);
+            _networkManager.RequestFinished += (sender, e) => RequestFinished?.Invoke(this, e);
+        }
         private async Task<Response> GoAsync(int delta, NavigationOptions options)
         {
             var history = await Client.SendAsync<PageGetNavigationHistoryResponse>("Page.getNavigationHistory").ConfigureAwait(false);
@@ -1705,12 +1713,12 @@ namespace PuppeteerSharp
             }
             else
             {
-                await ResetBackgroundColorAndViewport(options);
+                await ResetBackgroundColorAndViewportAsync(options).ConfigureAwait(false);
             }
             return result.Data;
         }
 
-        private Task ResetBackgroundColorAndViewport(ScreenshotOptions options)
+        private Task ResetBackgroundColorAndViewportAsync(ScreenshotOptions options)
         {
             var omitBackgroundTask = options?.OmitBackground == true && options.Type == ScreenshotType.Png ?
                 Client.SendAsync("Emulation.setDefaultBackgroundColorOverride") : Task.CompletedTask;
@@ -1765,56 +1773,85 @@ namespace PuppeteerSharp
 
         private async void Client_MessageReceived(object sender, MessageEventArgs e)
         {
-            switch (e.MessageID)
+            try
             {
-                case "Page.domContentEventFired":
-                    DOMContentLoaded?.Invoke(this, EventArgs.Empty);
-                    break;
-                case "Page.loadEventFired":
-                    Load?.Invoke(this, EventArgs.Empty);
-                    break;
-                case "Runtime.consoleAPICalled":
-                    await OnConsoleAPI(e.MessageData.ToObject<PageConsoleResponse>()).ConfigureAwait(false);
-                    break;
-                case "Page.javascriptDialogOpening":
-                    OnDialog(e.MessageData.ToObject<PageJavascriptDialogOpeningResponse>());
-                    break;
-                case "Runtime.exceptionThrown":
-                    HandleException(e.MessageData.SelectToken(MessageKeys.ExceptionDetails).ToObject<EvaluateExceptionDetails>());
-                    break;
-                case "Security.certificateError":
-                    await OnCertificateError(e.MessageData.ToObject<CertificateErrorResponse>()).ConfigureAwait(false);
-                    break;
-                case "Inspector.targetCrashed":
-                    OnTargetCrashed();
-                    break;
-                case "Performance.metrics":
-                    EmitMetrics(e.MessageData.ToObject<PerformanceMetricsResponse>());
-                    break;
-                case "Target.attachedToTarget":
-                    await OnAttachedToTarget(e).ConfigureAwait(false);
-                    break;
-                case "Target.detachedFromTarget":
-                    OnDetachedFromTarget(e);
-                    break;
-                case "Log.entryAdded":
-                    OnLogEntryAdded(e.MessageData.ToObject<LogEntryAddedResponse>());
-                    break;
-                case "Runtime.bindingCalled":
-                    await OnBindingCalled(e.MessageData.ToObject<BindingCalledResponse>()).ConfigureAwait(false);
-                    break;
+                switch (e.MessageID)
+                {
+                    case "Page.domContentEventFired":
+                        DOMContentLoaded?.Invoke(this, EventArgs.Empty);
+                        break;
+                    case "Page.loadEventFired":
+                        Load?.Invoke(this, EventArgs.Empty);
+                        break;
+                    case "Runtime.consoleAPICalled":
+                        await OnConsoleAPI(e.MessageData.ToObject<PageConsoleResponse>(true)).ConfigureAwait(false);
+                        break;
+                    case "Page.javascriptDialogOpening":
+                        OnDialog(e.MessageData.ToObject<PageJavascriptDialogOpeningResponse>(true));
+                        break;
+                    case "Runtime.exceptionThrown":
+                        HandleException(e.MessageData.SelectToken(MessageKeys.ExceptionDetails).ToObject<EvaluateExceptionResponseDetails>(true));
+                        break;
+                    case "Security.certificateError":
+                        await OnCertificateError(e.MessageData.ToObject<CertificateErrorResponse>(true)).ConfigureAwait(false);
+                        break;
+                    case "Inspector.targetCrashed":
+                        OnTargetCrashed();
+                        break;
+                    case "Performance.metrics":
+                        EmitMetrics(e.MessageData.ToObject<PerformanceMetricsResponse>(true));
+                        break;
+                    case "Target.attachedToTarget":
+                        await OnAttachedToTarget(e).ConfigureAwait(false);
+                        break;
+                    case "Target.detachedFromTarget":
+                        OnDetachedFromTarget(e);
+                        break;
+                    case "Log.entryAdded":
+                        OnLogEntryAdded(e.MessageData.ToObject<LogEntryAddedResponse>(true));
+                        break;
+                    case "Runtime.bindingCalled":
+                        await OnBindingCalled(e.MessageData.ToObject<BindingCalledResponse>(true)).ConfigureAwait(false);
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                var message = $"Page failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
+                _logger.LogError(ex, message);
+                Client.Close(message);
             }
         }
 
         private async Task OnBindingCalled(BindingCalledResponse e)
         {
-            var result = await ExecuteBinding(e).ConfigureAwait(false);
+            string expression = null;
 
-            var expression = EvaluationString(
-                @"function deliverResult(name, seq, result) {
-                    window[name]['callbacks'].get(seq)(result);
-                    window[name]['callbacks'].delete(seq);
-                }", e.Payload.Name, e.Payload.Seq, result);
+            try
+            {
+                var result = await ExecuteBinding(e).ConfigureAwait(false);
+
+                expression = EvaluationString(
+                    @"function deliverResult(name, seq, result) {
+                        window[name]['callbacks'].get(seq).resolve(result);
+                        window[name]['callbacks'].delete(seq);
+                    }", e.BindingPayload.Name, e.BindingPayload.Seq, result);
+            }
+            catch (Exception ex)
+            {
+                if (ex is TargetInvocationException)
+                {
+                    ex = ex.InnerException;
+                }
+
+                expression = EvaluationString(
+                    @"function deliverError(name, seq, message, stack) {
+                        const error = new Error(message);
+                        error.stack = stack;
+                        window[name]['callbacks'].get(seq).reject(error);
+                        window[name]['callbacks'].delete(seq);
+                    }", e.BindingPayload.Name, e.BindingPayload.Seq, ex.Message, ex.StackTrace);
+            }
 
             Client.Send("Runtime.evaluate", new
             {
@@ -1826,10 +1863,10 @@ namespace PuppeteerSharp
         private async Task<object> ExecuteBinding(BindingCalledResponse e)
         {
             object result;
-            var binding = _pageBindings[e.Payload.Name];
+            var binding = _pageBindings[e.BindingPayload.Name];
             var methodParams = binding.Method.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
 
-            var args = e.Payload.JsonObject.GetValue(MessageKeys.Args).Select((token, i) => token.ToObject(methodParams[i])).ToArray();
+            var args = e.BindingPayload.JsonObject.GetValue(MessageKeys.Args).Select((token, i) => token.ToObject(methodParams[i])).ToArray();
 
             result = binding.DynamicInvoke(args);
             if (result is Task taskResult)
@@ -1858,7 +1895,7 @@ namespace PuppeteerSharp
 
         private async Task OnAttachedToTarget(MessageEventArgs e)
         {
-            var targetInfo = e.MessageData.SelectToken(MessageKeys.TargetInfo).ToObject<TargetInfo>();
+            var targetInfo = e.MessageData.SelectToken(MessageKeys.TargetInfo).ToObject<TargetInfo>(true);
             var sessionId = e.MessageData.SelectToken(MessageKeys.SessionId).ToObject<string>();
             if (targetInfo.Type != TargetType.Worker)
             {
@@ -1925,10 +1962,10 @@ namespace PuppeteerSharp
             }
         }
 
-        private void HandleException(EvaluateExceptionDetails exceptionDetails)
+        private void HandleException(EvaluateExceptionResponseDetails exceptionDetails)
             => PageError?.Invoke(this, new PageErrorEventArgs(GetExceptionMessage(exceptionDetails)));
 
-        private string GetExceptionMessage(EvaluateExceptionDetails exceptionDetails)
+        private string GetExceptionMessage(EvaluateExceptionResponseDetails exceptionDetails)
         {
             if (exceptionDetails.Exception != null)
             {
@@ -1999,7 +2036,7 @@ namespace PuppeteerSharp
                 }
                 const seq = (me['lastSeq'] || 0) + 1;
                 me['lastSeq'] = seq;
-                const promise = new Promise(fulfill => callbacks.set(seq, fulfill));
+                const promise = new Promise((resolve, reject) => callbacks.set(seq, {resolve, reject}));
                 binding(JSON.stringify({name: bindingName, seq, args}));
                 return promise;
               };
@@ -2024,7 +2061,9 @@ namespace PuppeteerSharp
 
             string SerializeArgument(object arg)
             {
-                return arg == null ? "undefined" : JsonConvert.SerializeObject(arg);
+                return arg == null
+                    ? "undefined"
+                    : JsonConvert.SerializeObject(arg, JsonHelper.DefaultJsonSerializerSettings);
             }
         }
         #endregion

@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -17,6 +19,34 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.ExposeFunctionAsync("compute", (int a, int b) => a * b);
             var result = await Page.EvaluateExpressionAsync<int>("compute(9, 4)");
             Assert.Equal(36, result);
+        }
+
+        [Fact]
+        public async Task ShouldThrowExceptionInPageContext()
+        {
+            await Page.ExposeFunctionAsync("woof", () => throw new Exception("WOOF WOOF"));
+            var result = await Page.EvaluateFunctionAsync<JToken>(@" async () =>{
+                try
+                {
+                    await woof();
+                }
+                catch (e)
+                {
+                    return { message: e.message, stack: e.stack};
+                }
+            }");
+            Assert.Equal("WOOF WOOF", result.SelectToken("message").ToObject<string>());
+            Assert.Contains("ExposeFunctionTests", result.SelectToken("stack").ToObject<string>());
+        }
+
+        [Fact]
+        public async Task ShouldBeCallableFromInsideEvaluateOnNewDocument()
+        {
+            var called = false;
+            await Page.ExposeFunctionAsync("woof", () => called = true);
+            await Page.EvaluateOnNewDocumentAsync("() => woof()");
+            await Page.ReloadAsync();
+            Assert.True(called);
         }
 
         [Fact]
@@ -41,7 +71,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.ExposeFunctionAsync("compute", (int a, int b) => Task.FromResult(a * b));
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/nested-frames.html");
-            var frame = Page.Frames[1];
+            var frame = Page.FirstChildFrame();
             var result = await frame.EvaluateExpressionAsync<int>("compute(3, 5)");
             Assert.Equal(15, result);
         }
@@ -52,7 +82,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/nested-frames.html");
             await Page.ExposeFunctionAsync("compute", (int a, int b) => Task.FromResult(a * b));
 
-            var frame = Page.Frames[1];
+            var frame = Page.FirstChildFrame();
             var result = await frame.EvaluateExpressionAsync<int>("compute(3, 5)");
             Assert.Equal(15, result);
         }

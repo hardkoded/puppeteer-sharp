@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -18,7 +19,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
             var elementHandle = await Page.QuerySelectorAsync("#frame1");
             var frame = await elementHandle.ContentFrameAsync();
-            Assert.Equal(Page.Frames[1], frame);
+            Assert.Equal(Page.FirstChildFrame(), frame);
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Web;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
@@ -17,25 +18,22 @@ namespace PuppeteerSharp
         /// Gets or sets the HTTP method.
         /// </summary>
         /// <value>HTTP method.</value>
-        [JsonProperty("method"), JsonConverter(typeof(HttpMethodConverter))]
+        [JsonConverter(typeof(HttpMethodConverter))]
         public HttpMethod Method { get; set; }
         /// <summary>
         /// Gets or sets the post data.
         /// </summary>
         /// <value>The post data.</value>
-        [JsonProperty("postData")]
-        public object PostData { get; set; }
+        public string PostData { get; set; }
         /// <summary>
         /// Gets or sets the HTTP headers.
         /// </summary>
         /// <value>HTTP headers.</value>
-        [JsonProperty("headers")]
         public Dictionary<string, string> Headers { get; set; } = new Dictionary<string, string>();
         /// <summary>
         /// Gets or sets the URL.
         /// </summary>
         /// <value>The URL.</value>
-        [JsonProperty("url")]
         public string Url { get; set; }
 
         internal string Hash
@@ -78,8 +76,7 @@ namespace PuppeteerSharp
                         hash.Headers[item.Key] = item.Value;
                     }
                 }
-
-                return JsonConvert.SerializeObject(hash);
+                return JsonConvert.SerializeObject(hash, JsonHelper.DefaultJsonSerializerSettings);
             }
         }
     }

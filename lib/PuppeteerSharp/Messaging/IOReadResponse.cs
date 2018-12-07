@@ -1,13 +1,8 @@
-﻿using System;
-using Newtonsoft.Json;
-
-namespace PuppeteerSharp.Messaging
+﻿namespace PuppeteerSharp.Messaging
 {
     internal class IOReadResponse
     {
-        [JsonProperty("eof")]
-        internal bool Eof { get; set; }
-        [JsonProperty("data")]
-        internal string Data { get; set; }
+        public bool Eof { get; set; }
+        public string Data { get; set; }
     }
 }

@@ -640,13 +640,15 @@ namespace PuppeteerSharp.Input
             {
                 KeyCode = 91,
                 Key = "Meta",
-                Code = "MetaLeft"
+                Code = "MetaLeft",
+                Location = 1
             },
             ["MetaRight"] = new KeyDefinition
             {
                 KeyCode = 92,
                 Key = "Meta",
-                Code = "MetaRight"
+                Code = "MetaRight",
+                Location = 2
             },
             ["ContextMenu"] = new KeyDefinition
             {
@@ -993,19 +995,22 @@ namespace PuppeteerSharp.Input
             {
                 KeyCode = 16,
                 Key = "Shift",
-                Code = "ShiftLeft"
+                Code = "ShiftLeft",
+                Location = 1
             },
             ["Control"] = new KeyDefinition
             {
                 KeyCode = 17,
                 Key = "Control",
-                Code = "ControlLeft"
+                Code = "ControlLeft",
+                Location = 1
             },
             ["Alt"] = new KeyDefinition
             {
                 KeyCode = 18,
                 Key = "Alt",
-                Code = "AltLeft"
+                Code = "AltLeft",
+                Location = 1
             },
             ["Accept"] = new KeyDefinition
             {
@@ -1201,7 +1206,8 @@ namespace PuppeteerSharp.Input
             {
                 KeyCode = 91,
                 Key = "Meta",
-                Code = "MetaLeft"
+                Code = "MetaLeft",
+                Location = 1
             },
             ["*"] = new KeyDefinition
             {

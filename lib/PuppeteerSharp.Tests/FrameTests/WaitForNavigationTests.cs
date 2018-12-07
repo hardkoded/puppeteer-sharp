@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -16,7 +17,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
-            var frame = Page.Frames[1];
+            var frame = Page.FirstChildFrame();
             var waitForNavigationResult = frame.WaitForNavigationAsync();
 
             await Task.WhenAll(
@@ -25,7 +26,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             );
             var response = await waitForNavigationResult;
             Assert.Equal(HttpStatusCode.OK, response.Status);
-            Assert.Contains("grid.html", response.Url); 
+            Assert.Contains("grid.html", response.Url);
             Assert.Same(frame, response.Frame);
             Assert.Contains("/frames/one-frame.html", Page.Url);
         }
@@ -34,7 +35,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         public async Task ShouldRejectWhenFrameDetaches()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
-            var frame = Page.Frames[1];
+            var frame = Page.FirstChildFrame();
             Server.SetRoute("/empty.html", context => Task.Delay(10000));
             var waitForNavigationResult = frame.WaitForNavigationAsync();
             await Task.WhenAll(
@@ -43,6 +44,6 @@ namespace PuppeteerSharp.Tests.FrameTests
 
             await Page.QuerySelectorAsync("iframe").EvaluateFunctionAsync("frame => frame.remove()");
             var response = await waitForNavigationResult;
-        } 
+        }
     }
 }

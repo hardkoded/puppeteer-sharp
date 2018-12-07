@@ -220,6 +220,34 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Fact]
+        public async Task ShouldAmendPostData()
+        {
+            await Page.SetRequestInterceptionAsync(true);
+            Page.Request += async (sender, e) =>
+            {
+                await e.Request.ContinueAsync(new Payload
+                {
+                    Method = HttpMethod.Post,
+                    PostData = "FooBar"
+                });
+            };
+            var requestTask = Server.WaitForRequest("/sleep.zzz", async request =>
+            {
+                using (var reader = new StreamReader(request.Body, Encoding.UTF8))
+                {
+                    return await reader.ReadToEndAsync();
+                }
+            });
+
+            await Task.WhenAll(
+                requestTask,
+                Page.GoToAsync(TestConstants.ServerUrl + "/sleep.zzz")
+            );
+
+            Assert.Equal("FooBar", await requestTask.Result);
+        }
+
+        [Fact]
         public async Task ShouldFailNavigationWhenAbortingMainResource()
         {
             await Page.SetRequestInterceptionAsync(true);

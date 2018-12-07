@@ -21,6 +21,10 @@ namespace PuppeteerSharp
         /// <value><c>true</c> if is closed; otherwise, <c>false</c>.</value>
         bool IsClosed { get; }
         /// <summary>
+        /// Connection close reason.
+        /// </summary>
+        string CloseReason { get; }
+        /// <summary>
         /// Sends a message to chromium.
         /// </summary>
         /// <returns>The async.</returns>
@@ -39,5 +43,10 @@ namespace PuppeteerSharp
         /// Occurs when the connection is closed.
         /// </summary>
         event EventHandler Closed;
+        /// <summary>
+        /// Close the connection.
+        /// </summary>
+        /// <param name="closeReason">Close reason.</param>
+        void Close(string closeReason);
     }
 }

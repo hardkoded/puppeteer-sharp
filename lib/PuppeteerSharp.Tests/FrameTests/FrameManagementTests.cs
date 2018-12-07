@@ -18,7 +18,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/nested-frames.html");
             Assert.Equal(
-                TestUtils.CompressText(TestConstants.NestedFramesDumpResult), 
+                TestUtils.CompressText(TestConstants.NestedFramesDumpResult),
                 TestUtils.CompressText(FrameUtils.DumpFrames(Page.MainFrame)));
         }
 
@@ -124,9 +124,9 @@ namespace PuppeteerSharp.Tests.FrameTests
                 return new Promise(x => frame.onload = x);
             }", TestConstants.EmptyPage);
 
-            Assert.Equal(string.Empty, Page.Frames.ElementAt(0).Name);
-            Assert.Equal("theFrameId", Page.Frames.ElementAt(1).Name);
-            Assert.Equal("theFrameName", Page.Frames.ElementAt(2).Name);
+            Assert.Single(Page.Frames, frame => frame.Name == string.Empty);
+            Assert.Single(Page.Frames, frame => frame.Name == "theFrameId");
+            Assert.Single(Page.Frames, frame => frame.Name == "theFrameName");
         }
 
         [Fact]
@@ -135,9 +135,8 @@ namespace PuppeteerSharp.Tests.FrameTests
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
             await FrameUtils.AttachFrameAsync(Page, "frame2", TestConstants.EmptyPage);
 
-            Assert.Null(Page.Frames.ElementAt(0).ParentFrame);
-            Assert.Equal(Page.MainFrame, Page.Frames.ElementAt(1).ParentFrame);
-            Assert.Equal(Page.MainFrame, Page.Frames.ElementAt(2).ParentFrame);
+            Assert.Single(Page.Frames, frame => frame.ParentFrame == null);
+            Assert.Equal(2, Page.Frames.Count(f => f.ParentFrame == Page.MainFrame));
         }
     }
 }
