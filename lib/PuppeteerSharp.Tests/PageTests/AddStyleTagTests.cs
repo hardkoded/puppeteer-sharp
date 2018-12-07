@@ -44,7 +44,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldWorkWithAPath()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var styleHandle = await Page.AddStyleTagAsync(new AddTagOptions { Path = "assets/injectedstyle.css" });
+            var styleHandle = await Page.AddStyleTagAsync(new AddTagOptions { Path = "Assets/injectedstyle.css" });
             Assert.NotNull(styleHandle as ElementHandle);
             Assert.Equal("rgb(255, 0, 0)", await Page.EvaluateExpressionAsync<string>(
                 "window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')"));
