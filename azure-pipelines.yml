@@ -23,7 +23,5 @@ steps:
 - script: dotnet build ./lib/PuppeteerSharp.TestServer/PuppeteerSharp.TestServer.csproj
 - script: dotnet build ./lib/PuppeteerSharp.Tests/PuppeteerSharp.Tests.csproj
 - script: Xvfb :1 -screen 5 1024x768x8 &
-- script: export DISPLAY=:1.5
-- script: cd lib/PuppeteerSharp.Tests
-- script: dotnet test -f netcoreapp2.0 -s test.runsettings
+- script: export DISPLAY=:1.5 && cd lib/PuppeteerSharp.Tests && dotnet test -f netcoreapp2.0 -s test.runsettings
   displayName: 'dotnet build $(buildConfiguration)'
