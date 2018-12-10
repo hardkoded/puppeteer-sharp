@@ -17,6 +17,7 @@ namespace PuppeteerSharp
                 [WaitUntilNavigation.Networkidle0] = "networkIdle",
                 [WaitUntilNavigation.Networkidle2] = "networkAlmostIdle"
             };
+        private static readonly WaitUntilNavigation[] _defaultWaitUntil = new[] { WaitUntilNavigation.Load };
 
         private readonly IConnection _connection;
         private readonly NetworkManager _networkManager;
@@ -39,7 +40,7 @@ namespace PuppeteerSharp
             int timeout,
             NavigationOptions options)
         {
-            var waitUntil = new[] { WaitUntilNavigation.Load };
+            var waitUntil = _defaultWaitUntil;
 
             if (options?.WaitUntil != null)
             {
