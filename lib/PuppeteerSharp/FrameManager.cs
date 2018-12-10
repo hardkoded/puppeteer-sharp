@@ -74,37 +74,38 @@ namespace PuppeteerSharp
                : options.Referer;
             var requests = new Dictionary<string, Request>();
             var timeout = options?.Timeout ?? DefaultNavigationTimeout;
-            var watcher = new NavigatorWatcher(_client, this, frame, _networkManager, timeout, options);
-
-            var navigateTask = NavigateAsync(_client, url, referrer, frame.Id);
-            await Task.WhenAny(
-                watcher.TimeoutOrTerminationTask,
-                navigateTask).ConfigureAwait(false);
-
-            AggregateException exception = null;
-            if (navigateTask.IsFaulted)
+            using (var watcher = new NavigatorWatcher(_client, this, frame, _networkManager, timeout, options))
             {
-                exception = navigateTask.Exception;
-            }
-            else
-            {
+                var navigateTask = NavigateAsync(_client, url, referrer, frame.Id);
                 await Task.WhenAny(
                     watcher.TimeoutOrTerminationTask,
-                    _ensureNewDocumentNavigation ? watcher.NewDocumentNavigationTask : watcher.SameDocumentNavigationTask
-                ).ConfigureAwait(false);
+                    navigateTask).ConfigureAwait(false);
 
-                if (watcher.TimeoutOrTerminationTask.IsCompleted && watcher.TimeoutOrTerminationTask.Result.IsFaulted)
+                AggregateException exception = null;
+                if (navigateTask.IsFaulted)
                 {
-                    exception = watcher.TimeoutOrTerminationTask.Result.Exception;
+                    exception = navigateTask.Exception;
                 }
-            }
+                else
+                {
+                    await Task.WhenAny(
+                        watcher.TimeoutOrTerminationTask,
+                        _ensureNewDocumentNavigation ? watcher.NewDocumentNavigationTask : watcher.SameDocumentNavigationTask
+                    ).ConfigureAwait(false);
 
-            if (exception != null)
-            {
-                throw new NavigationException(exception.InnerException.Message, exception.InnerException);
-            }
+                    if (watcher.TimeoutOrTerminationTask.IsCompleted && watcher.TimeoutOrTerminationTask.Result.IsFaulted)
+                    {
+                        exception = watcher.TimeoutOrTerminationTask.Result.Exception;
+                    }
+                }
 
-            return watcher.NavigationResponse;
+                if (exception != null)
+                {
+                    throw new NavigationException(exception.InnerException.Message, exception.InnerException);
+                }
+
+                return watcher.NavigationResponse;
+            }
         }
 
         private async Task NavigateAsync(CDPSession client, string url, string referrer, string frameId)
@@ -127,27 +128,28 @@ namespace PuppeteerSharp
         public async Task<Response> WaitForFrameNavigationAsync(Frame frame, NavigationOptions options = null)
         {
             var timeout = options?.Timeout ?? DefaultNavigationTimeout;
-            var watcher = new NavigatorWatcher(_client, this, frame, _networkManager, timeout, options);
-
-            var raceTask = await Task.WhenAny(
-                watcher.NewDocumentNavigationTask,
-                watcher.SameDocumentNavigationTask,
-                watcher.TimeoutOrTerminationTask
-            ).ConfigureAwait(false);
-
-            var exception = raceTask.Exception;
-            if (exception == null &&
-                watcher.TimeoutOrTerminationTask.IsCompleted &&
-                watcher.TimeoutOrTerminationTask.Result.IsFaulted)
+            using (var watcher = new NavigatorWatcher(_client, this, frame, _networkManager, timeout, options))
             {
-                exception = watcher.TimeoutOrTerminationTask.Result.Exception;
-            }
-            if (exception != null)
-            {
-                throw new NavigationException(exception.Message, exception);
-            }
+                var raceTask = await Task.WhenAny(
+                    watcher.NewDocumentNavigationTask,
+                    watcher.SameDocumentNavigationTask,
+                    watcher.TimeoutOrTerminationTask
+                ).ConfigureAwait(false);
 
-            return watcher.NavigationResponse;
+                var exception = raceTask.Exception;
+                if (exception == null &&
+                    watcher.TimeoutOrTerminationTask.IsCompleted &&
+                    watcher.TimeoutOrTerminationTask.Result.IsFaulted)
+                {
+                    exception = watcher.TimeoutOrTerminationTask.Result.Exception;
+                }
+                if (exception != null)
+                {
+                    throw new NavigationException(exception.Message, exception);
+                }
+
+                return watcher.NavigationResponse;
+            }
         }
 
         #endregion
