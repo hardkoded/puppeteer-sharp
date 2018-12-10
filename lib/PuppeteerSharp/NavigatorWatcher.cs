@@ -1,9 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Diagnostics.Contracts;
 using PuppeteerSharp.Helpers;
-using System;
 
 namespace PuppeteerSharp
 {
@@ -18,12 +18,11 @@ namespace PuppeteerSharp
                 [WaitUntilNavigation.Networkidle2] = "networkAlmostIdle"
             };
 
+        private readonly IConnection _connection;
         private readonly NetworkManager _networkManager;
         private readonly FrameManager _frameManager;
         private readonly Frame _frame;
-        private readonly NavigationOptions _options;
         private readonly IEnumerable<string> _expectedLifecycle;
-        private readonly int _timeout;
         private readonly string _initialLoaderId;
         private Request _navigationRequest;
         private bool _hasSameDocumentNavigation;
@@ -57,18 +56,15 @@ namespace PuppeteerSharp
             _frameManager = frameManager;
             _networkManager = networkManager;
             _frame = mainFrame;
-            _options = options;
             _initialLoaderId = mainFrame.LoaderId;
-            _timeout = timeout;
             _hasSameDocumentNavigation = false;
 
             frameManager.LifecycleEvent += CheckLifecycleComplete;
             frameManager.FrameNavigatedWithinDocument += NavigatedWithinDocument;
             frameManager.FrameDetached += OnFrameDetached;
             networkManager.Request += OnRequest;
-            var connection = Connection.FromSession(client);
-            connection.Closed += (sender, e)
-                => Terminate(new TargetClosedException("Navigation failed because browser has disconnected!", connection.CloseReason));
+            _connection = Connection.FromSession(client);
+            _connection.Closed += OnConnectionClosed;
 
             _sameDocumentNavigationTaskWrapper = new TaskCompletionSource<bool>();
             _newDocumentNavigationTaskWrapper = new TaskCompletionSource<bool>();
@@ -86,6 +82,9 @@ namespace PuppeteerSharp
         #endregion
 
         #region Private methods
+
+        private void OnConnectionClosed(object sender, EventArgs e) 
+            => Terminate(new TargetClosedException("Navigation failed because browser has disconnected!", _connection.CloseReason));
 
         private void OnFrameDetached(object sender, FrameEventArgs e)
         {
@@ -170,6 +169,7 @@ namespace PuppeteerSharp
             _frameManager.FrameNavigatedWithinDocument -= NavigatedWithinDocument;
             _frameManager.FrameDetached -= OnFrameDetached;
             _networkManager.Request -= OnRequest;
+            _connection.Closed -= OnConnectionClosed;
         }
 
         #endregion
