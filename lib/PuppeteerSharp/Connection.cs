@@ -61,7 +61,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Occurs when the connection is closed.
         /// </summary>
-        public event EventHandler Closed;
+        public event EventHandler Disconnected;
         /// <summary>
         /// Occurs when a message from chromium is received.
         /// </summary>
@@ -149,7 +149,7 @@ namespace PuppeteerSharp
             CloseReason = closeReason;
 
             Transport.StopReading();
-            Closed?.Invoke(this, new EventArgs());
+            Disconnected?.Invoke(this, new EventArgs());
 
             foreach (var session in _sessions.Values.ToArray())
             {
@@ -288,7 +288,7 @@ namespace PuppeteerSharp
 
         /// <summary>
         /// Releases all resource used by the <see cref="Connection"/> object.
-        /// It will raise the <see cref="Closed"/> event and dispose <see cref="Transport"/>.
+        /// It will raise the <see cref="Disconnected"/> event and dispose <see cref="Transport"/>.
         /// </summary>
         /// <remarks>Call <see cref="Dispose"/> when you are finished using the <see cref="Connection"/>. The
         /// <see cref="Dispose"/> method leaves the <see cref="Connection"/> in an unusable state.

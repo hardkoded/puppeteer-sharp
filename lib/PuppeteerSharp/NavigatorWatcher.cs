@@ -19,7 +19,7 @@ namespace PuppeteerSharp
             };
         private static readonly WaitUntilNavigation[] _defaultWaitUntil = new[] { WaitUntilNavigation.Load };
 
-        private readonly IConnection _connection;
+        private readonly CDPSession _client;
         private readonly NetworkManager _networkManager;
         private readonly FrameManager _frameManager;
         private readonly Frame _frame;
@@ -30,7 +30,7 @@ namespace PuppeteerSharp
         private TaskCompletionSource<bool> _newDocumentNavigationTaskWrapper;
         private TaskCompletionSource<bool> _sameDocumentNavigationTaskWrapper;
         private TaskCompletionSource<bool> _terminationTaskWrapper;
-        private Task _timeoutTask;
+        private readonly Task _timeoutTask;
 
         public NavigatorWatcher(
             CDPSession client,
@@ -64,8 +64,8 @@ namespace PuppeteerSharp
             frameManager.FrameNavigatedWithinDocument += NavigatedWithinDocument;
             frameManager.FrameDetached += OnFrameDetached;
             networkManager.Request += OnRequest;
-            _connection = Connection.FromSession(client);
-            _connection.Closed += OnConnectionClosed;
+            _client = client;
+            _client.Disconnected += OnClientDisconnected;
 
             _sameDocumentNavigationTaskWrapper = new TaskCompletionSource<bool>();
             _newDocumentNavigationTaskWrapper = new TaskCompletionSource<bool>();
@@ -84,8 +84,8 @@ namespace PuppeteerSharp
 
         #region Private methods
 
-        private void OnConnectionClosed(object sender, EventArgs e) 
-            => Terminate(new TargetClosedException("Navigation failed because browser has disconnected!", _connection.CloseReason));
+        private void OnClientDisconnected(object sender, EventArgs e) 
+            => Terminate(new TargetClosedException("Navigation failed because browser has disconnected!", _client.CloseReason));
 
         private void OnFrameDetached(object sender, FrameEventArgs e)
         {
@@ -170,7 +170,7 @@ namespace PuppeteerSharp
             _frameManager.FrameNavigatedWithinDocument -= NavigatedWithinDocument;
             _frameManager.FrameDetached -= OnFrameDetached;
             _networkManager.Request -= OnRequest;
-            _connection.Closed -= OnConnectionClosed;
+            _client.Disconnected -= OnClientDisconnected;
         }
 
         #endregion
