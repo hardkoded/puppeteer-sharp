@@ -8,6 +8,7 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
+  frameWork: 'netcoreapp2.0'
 
 steps:
 - script: sudo apt-get update
@@ -16,11 +17,11 @@ steps:
 - script: dotnet dev-certs https -ep lib/PuppeteerSharp.TestServer/testCert.cer
 - script: sudo openssl x509 -inform der -in lib/PuppeteerSharp.TestServer/testCert.cer -out /usr/local/share/ca-certificates/testCert.crt -outform pem
 - script: sudo update-ca-certificates
-- script: dotnet build ./lib/PuppeteerSharp.Tests.CloseMe/PuppeteerSharp.Tests.CloseMe.csproj
-- script: dotnet build ./lib/PuppeteerSharp.DevicesFetcher/PuppeteerSharp.DevicesFetcher.csproj
-- script: dotnet build ./lib/PuppeteerSharp.Tests.DumpIO/PuppeteerSharp.Tests.DumpIO.csproj
-- script: dotnet build ./lib/PuppeteerSharp.TestServer/PuppeteerSharp.TestServer.csproj
-- script: dotnet build ./lib/PuppeteerSharp.Tests/PuppeteerSharp.Tests.csproj
+- script: dotnet build -f $(framework) ./lib/PuppeteerSharp.Tests.CloseMe/PuppeteerSharp.Tests.CloseMe.csproj
+- script: dotnet build -f $(framework) ./lib/PuppeteerSharp.DevicesFetcher/PuppeteerSharp.DevicesFetcher.csproj
+- script: dotnet build -f $(framework) ./lib/PuppeteerSharp.Tests.DumpIO/PuppeteerSharp.Tests.DumpIO.csproj
+- script: dotnet build -f $(framework) ./lib/PuppeteerSharp.TestServer/PuppeteerSharp.TestServer.csproj
+- script: dotnet build -f $(framework) ./lib/PuppeteerSharp.Tests/PuppeteerSharp.Tests.csproj
 - script: Xvfb :1 -screen 5 1024x768x8 &
-- script: cd lib/PuppeteerSharp.Tests && DISPLAY=:1.5 dotnet test -f netcoreapp2.0 -s test.runsettings
+- script: cd lib/PuppeteerSharp.Tests && DISPLAY=:1.5 dotnet test -f $(framework) -s test.runsettings
   displayName: 'dotnet build $(buildConfiguration)'

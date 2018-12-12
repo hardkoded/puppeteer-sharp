@@ -21,15 +21,15 @@ before_build:
 
 build_script:
 - sh: >-
-    dotnet build ./lib/PuppeteerSharp.Tests.CloseMe/PuppeteerSharp.Tests.CloseMe.csproj
+    dotnet build -f $framework ./lib/PuppeteerSharp.Tests.CloseMe/PuppeteerSharp.Tests.CloseMe.csproj
 
-    dotnet build ./lib/PuppeteerSharp.DevicesFetcher/PuppeteerSharp.DevicesFetcher.csproj
+    dotnet build -f $framework ./lib/PuppeteerSharp.DevicesFetcher/PuppeteerSharp.DevicesFetcher.csproj
 
-    dotnet build ./lib/PuppeteerSharp.Tests.DumpIO/PuppeteerSharp.Tests.DumpIO.csproj
+    dotnet build -f $framework ./lib/PuppeteerSharp.Tests.DumpIO/PuppeteerSharp.Tests.DumpIO.csproj
 
-    dotnet build lib/PuppeteerSharp.TestServer/PuppeteerSharp.TestServer.csproj
+    dotnet build -f $framework ./lib/PuppeteerSharp.TestServer/PuppeteerSharp.TestServer.csproj
 
-    dotnet build ./lib/PuppeteerSharp.Tests/PuppeteerSharp.Tests.csproj
+    dotnet build -f $framework ./lib/PuppeteerSharp.Tests/PuppeteerSharp.Tests.csproj
 
 test_script:
 - sh: >-
