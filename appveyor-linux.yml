@@ -27,7 +27,7 @@ build_script:
 
     dotnet build -f $framework ./lib/PuppeteerSharp.Tests.DumpIO/PuppeteerSharp.Tests.DumpIO.csproj
 
-    dotnet build -f $framework ./lib/PuppeteerSharp.TestServer/PuppeteerSharp.TestServer.csproj
+    dotnet build -f netstandard2.0 ./lib/PuppeteerSharp.TestServer/PuppeteerSharp.TestServer.csproj
 
     dotnet build -f $framework ./lib/PuppeteerSharp.Tests/PuppeteerSharp.Tests.csproj
 
