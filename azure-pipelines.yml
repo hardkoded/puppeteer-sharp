@@ -20,7 +20,7 @@ steps:
 - script: dotnet build -f $(framework) ./lib/PuppeteerSharp.Tests.CloseMe/PuppeteerSharp.Tests.CloseMe.csproj
 - script: dotnet build -f $(framework) ./lib/PuppeteerSharp.DevicesFetcher/PuppeteerSharp.DevicesFetcher.csproj
 - script: dotnet build -f $(framework) ./lib/PuppeteerSharp.Tests.DumpIO/PuppeteerSharp.Tests.DumpIO.csproj
-- script: dotnet build -f $(framework) ./lib/PuppeteerSharp.TestServer/PuppeteerSharp.TestServer.csproj
+- script: dotnet build -f netstandard2.0 ./lib/PuppeteerSharp.TestServer/PuppeteerSharp.TestServer.csproj
 - script: dotnet build -f $(framework) ./lib/PuppeteerSharp.Tests/PuppeteerSharp.Tests.csproj
 - script: Xvfb :1 -screen 5 1024x768x8 &
 - script: cd lib/PuppeteerSharp.Tests && DISPLAY=:1.5 dotnet test -f $(framework) -s test.runsettings
