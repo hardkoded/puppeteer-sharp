@@ -90,7 +90,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         {
             // https://google.com is isolated by default in Chromium embedder.
             var headfulOptions = TestConstants.DefaultBrowserOptions();
-            headfulOptions.Headless = true;
+            headfulOptions.Headless = false;
             using (var browser = await Puppeteer.LaunchAsync(headfulOptions))
             using (var page = await browser.NewPageAsync())
             {
