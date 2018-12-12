@@ -16,8 +16,6 @@ namespace PuppeteerSharp.Helpers
         /// <exception cref="TimeoutException"></exception>
         public static async Task CreateTimeoutTask(int timeout)
         {
-            var wrapper = new TaskCompletionSource<bool>();
-
             if (timeout == 0)
             {
                 await Task.Delay(-1).ConfigureAwait(false);
