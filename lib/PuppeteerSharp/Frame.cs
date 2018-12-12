@@ -556,7 +556,7 @@ namespace PuppeteerSharp
         public async Task SetContentAsync(string html, NavigationOptions options = null)
         {
             var waitUntil = options?.WaitUntil ?? new[] { WaitUntilNavigation.Load };
-            var timeout = options?.Timeout ?? 30_000;
+            var timeout = options?.Timeout ?? Puppeteer.DefaultTimeout;
 
             // We rely upon the fact that document.open() will reset frame lifecycle with "init"
             // lifecycle event. @see https://crrev.com/608658
@@ -568,14 +568,11 @@ namespace PuppeteerSharp
 
             var watcher = new LifecycleWatcher(FrameManager, this, timeout, options);
 
-            await Task.WhenAny(
+            var watcherTask = await Task.WhenAny(
                 watcher.TimeoutOrTerminationTask,
                 watcher.LifecycleTask).ConfigureAwait(false);
-            if (watcher.TimeoutOrTerminationTask.IsCompleted && watcher.TimeoutOrTerminationTask.Result.IsFaulted)
-            {
-                var exception = watcher.TimeoutOrTerminationTask.Result.Exception;
-                throw new NavigationException(exception.InnerException.Message, exception.InnerException);
-            }
+
+            await watcherTask;
         }
 
         /// <summary>

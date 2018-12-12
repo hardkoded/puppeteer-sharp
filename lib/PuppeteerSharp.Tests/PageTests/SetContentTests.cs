@@ -52,9 +52,10 @@ namespace PuppeteerSharp.Tests.PageTests
             var imgResponse = new TaskCompletionSource<bool>();
             Server.SetRoute(imgPath, context => imgResponse.Task);
             var loaded = false;
+            var waitTask = Server.WaitForRequest(imgPath);
             var contentTask = Page.SetContentAsync($"<img src=\"${TestConstants.ServerUrl + imgPath}\"></img>")
                 .ContinueWith(_ => loaded = true);
-            await Server.WaitForRequest(imgPath);
+            await waitTask;
             Assert.False(loaded);
             imgResponse.SetResult(true);
             await contentTask;
