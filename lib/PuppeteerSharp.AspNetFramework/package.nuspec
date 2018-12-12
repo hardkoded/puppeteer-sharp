@@ -19,7 +19,7 @@
 		</tags>
 		<dependencies>
 			<group targetFramework="net472">
-				<dependency id="PuppeteerSharp" version="1.10.0" />
+				<dependency id="PuppeteerSharp" version="1.11.0" />
 			</group>
 		</dependencies>
 	</metadata>
