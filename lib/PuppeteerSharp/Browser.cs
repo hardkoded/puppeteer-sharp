@@ -176,6 +176,21 @@ namespace PuppeteerSharp
         public Target Target => Targets().FirstOrDefault(t => t.Type == TargetType.Browser);
 
         /// <summary>
+        /// Creates a new Window
+        /// </summary>
+        /// <returns></returns>
+        public async Task<Page> NewWindowAsync()
+        {
+            var browser = Targets().First(x => x.Url == "about:blank");
+            var page = await browser.PageAsync();
+            var guid = Guid.NewGuid();
+            var url = $"about:blank?{guid}";
+            await page.EvaluateExpressionAsync($"window.open('{url}', '_blank', 'location=yes,resizable=yes,scrollbars=yes,status=yes');");
+            var target = DefaultContext.Targets().First(x => x.Url == url);
+            return await target.PageAsync();
+        }
+
+        /// <summary>
         /// Creates a new incognito browser context. This won't share cookies/cache with other browser contexts.
         /// </summary>
         /// <returns>Task which resolves to a new <see cref="BrowserContext"/> object</returns>
