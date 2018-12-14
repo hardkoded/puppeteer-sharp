@@ -42,7 +42,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Maximum time in milliseconds to wait for the browser instance to start. Defaults to 30000 (30 seconds). Pass 0 to disable timeout.
         /// </summary>
-        public int Timeout { get; set; } = 30_000;
+        public int Timeout { get; set; } = Puppeteer.DefaultTimeout;
 
         /// <summary>
         ///  Whether to pipe browser process stdout and stderr into process.stdout and process.stderr. Defaults to false.
