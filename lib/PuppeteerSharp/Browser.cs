@@ -152,7 +152,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Dafault wait time in milliseconds. Defaults to 30 seconds.
         /// </summary>
-        public int DefaultWaitForTimeout { get; set; } = 30000;
+        public int DefaultWaitForTimeout { get; set; } = Puppeteer.DefaultTimeout;
 
         #endregion
 

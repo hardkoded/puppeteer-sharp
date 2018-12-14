@@ -44,5 +44,21 @@ namespace PuppeteerSharp.Tests.PageTests
 
             Assert.Equal($"{doctype}{ExpectedOutput}", result);
         }
+
+        [Fact]
+        public async Task ShouldAwaitResourceToLoad()
+        {
+            var imgPath = "/img.png";
+            var imgResponse = new TaskCompletionSource<bool>();
+            Server.SetRoute(imgPath, context => imgResponse.Task);
+            var loaded = false;
+            var waitTask = Server.WaitForRequest(imgPath);
+            var contentTask = Page.SetContentAsync($"<img src=\"{TestConstants.ServerUrl + imgPath}\"></img>")
+                .ContinueWith(_ => loaded = true);
+            await waitTask;
+            Assert.False(loaded);
+            imgResponse.SetResult(true);
+            await contentTask;
+        }
     }
 }

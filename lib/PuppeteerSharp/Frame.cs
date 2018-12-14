@@ -550,14 +550,30 @@ namespace PuppeteerSharp
         /// Sets the HTML markup to the page
         /// </summary>
         /// <param name="html">HTML markup to assign to the page.</param>
+        /// <param name="options">The options</param>
         /// <returns>Task.</returns>
-        /// <seealso cref="Page.SetContentAsync(string)"/>
-        public Task SetContentAsync(string html)
-            => EvaluateFunctionAsync(@"html => {
+        /// <seealso cref="Page.SetContentAsync(string, NavigationOptions)"/>
+        public async Task SetContentAsync(string html, NavigationOptions options = null)
+        {
+            var waitUntil = options?.WaitUntil ?? new[] { WaitUntilNavigation.Load };
+            var timeout = options?.Timeout ?? Puppeteer.DefaultTimeout;
+
+            // We rely upon the fact that document.open() will reset frame lifecycle with "init"
+            // lifecycle event. @see https://crrev.com/608658
+            await EvaluateFunctionAsync(@"html => {
                 document.open();
                 document.write(html);
                 document.close();
             }", html);
+
+            var watcher = new LifecycleWatcher(FrameManager, this, timeout, options);
+
+            var watcherTask = await Task.WhenAny(
+                watcher.TimeoutOrTerminationTask,
+                watcher.LifecycleTask).ConfigureAwait(false);
+
+            await watcherTask;
+        }
 
         /// <summary>
         /// Returns page's title
