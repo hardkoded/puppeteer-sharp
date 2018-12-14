@@ -87,7 +87,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Occurs when the connection is closed.
         /// </summary>
-        public event EventHandler Closed;
+        public event EventHandler Disconnected;
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="CDPSession"/> is closed.
         /// </summary>
@@ -295,7 +295,7 @@ namespace PuppeteerSharp
                 ));
             }
             _callbacks.Clear();
-            Closed?.Invoke(this, EventArgs.Empty);
+            Disconnected?.Invoke(this, EventArgs.Empty);
             Connection = null;
         }
 

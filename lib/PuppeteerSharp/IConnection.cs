@@ -40,9 +40,9 @@ namespace PuppeteerSharp
         /// </summary>
         IConnection Connection { get; }
         /// <summary>
-        /// Occurs when the connection is closed.
+        /// Occurs when the connection is Disconnected.
         /// </summary>
-        event EventHandler Closed;
+        event EventHandler Disconnected;
         /// <summary>
         /// Close the connection.
         /// </summary>
