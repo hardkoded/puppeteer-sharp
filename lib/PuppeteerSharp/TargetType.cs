@@ -54,6 +54,16 @@ namespace PuppeteerSharp
         /// Target type network
         /// </summary>
         [EnumMember(Value = "deprecation")]
-        Deprecation
+        Deprecation,
+        /// <summary>
+        /// Target type security
+        /// </summary>
+        [EnumMember(Value = "security")]
+        Security,
+        /// <summary>
+        /// Target type recommendation
+        /// </summary>
+        [EnumMember(Value = "recommendation")]
+        Recommendation
     }
 }
