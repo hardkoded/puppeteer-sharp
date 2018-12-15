@@ -15,6 +15,7 @@
 # New Features
 
  * Support waitUntil option for `Page.SetContentAsync`.
+ * Linux support.
 
 # Breaking Changes
 
@@ -29,6 +30,7 @@
  * Dispatch errors into a page.
  * Fixed event handler leak.
  * Removed a couple of common allocations.
+ * New target types.
  ]]></PackageReleaseNotes>
     <ReleaseVersion>1.11.0</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
