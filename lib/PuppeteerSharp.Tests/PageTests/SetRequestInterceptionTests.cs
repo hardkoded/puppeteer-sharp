@@ -524,7 +524,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 await e.Request.ContinueAsync();
             };
 
-            var uri = new Uri(Path.Combine(Directory.GetCurrentDirectory(), "assets", "one-style.html")).AbsoluteUri;
+            var uri = new Uri(Path.Combine(Directory.GetCurrentDirectory(), "Assets", "one-style.html")).AbsoluteUri;
             await Page.GoToAsync(uri);
             Assert.Equal(2, urls.Count);
             Assert.Contains("one-style.html", urls);
