@@ -27,6 +27,7 @@ build:
   publish_nuget: false
   include_nuget_references: true
   verbosity: minimal
+test: off
 after_build:
 - cmd: >-
     nuget pack C:\projects\puppeteer-sharp\lib\PuppeteerSharp.AspNetFramework\PuppeteerSharp.AspNetFramework.csproj -Prop Configuration=Release
