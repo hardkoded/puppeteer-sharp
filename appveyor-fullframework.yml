@@ -4,6 +4,7 @@ branches:
   - master
 image: Visual Studio 2017
 configuration: Release
+clone_folder: C:\projects\puppeteer-sharp
 environment:
   git_access_token:
     secure: FxcQ9C8a/NgcQB5dFdZts6ZWEDT4zMhA4qPQAYwWc7huMmhmTIl1sbFEIaAWQMTL
@@ -15,27 +16,23 @@ only_commits:
     - appveyor-fullframework.yml
 before_build:
 - ps: >-
-    dotnet restore .\lib\PuppeteerSharp.sln
+    nuget.exe restore .\lib\PuppeteerSharp.AspNetFramework.sln
 
     New-SelfSignedCertificate -Subject "localhost" -FriendlyName "Puppeteer" -CertStoreLocation "cert:\CurrentUser\My"
 
     Get-ChildItem -Path cert:\CurrentUSer\my | where { $_.friendlyname -eq "Puppeteer" } | Export-Certificate -FilePath C:\projects\puppeteer-sharp\lib\PuppeteerSharp.TestServer\testCert.cer
 
 build:
-  project: .\lib\PuppeteerSharp.sln
+  project: .\lib\PuppeteerSharp.AspNetFramework.sln
   publish_nuget: false
   include_nuget_references: true
   verbosity: minimal
+test: off
 after_build:
 - cmd: >-
     nuget pack C:\projects\puppeteer-sharp\lib\PuppeteerSharp.AspNetFramework\PuppeteerSharp.AspNetFramework.csproj -Prop Configuration=Release
 artifacts:
-- path: .\lib\PuppeteerSharp.AspNetFramework.*.nupkg
+- path: PuppeteerSharp.AspNetFramework.*.nupkg
   name: PuppeteerSharp.AspNetFramework Package
-test_script:
-- cmd: >-
-    cd C:\projects\puppeteer-sharp\lib\PuppeteerSharp.Tests
-
-    dotnet test -f %framework% -s test.runsettings
 cache:
   - $HOME/.nuget/packages
