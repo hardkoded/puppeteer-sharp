@@ -11,10 +11,10 @@ using PuppeteerSharp.Messaging;
 namespace PuppeteerSharp
 {
     internal class FrameManager
-    {        
+    {
         private Dictionary<int, ExecutionContext> _contextIdToContext;
         private bool _ensureNewDocumentNavigation;
-        private readonly ILogger _logger;        
+        private readonly ILogger _logger;
         private readonly ConcurrentDictionary<string, Frame> _frames;
         private readonly MultiMap<string, TaskCompletionSource<Frame>> _pendingFrameRequests;
         private const int WaitForRequestDelay = 1000;
@@ -136,17 +136,7 @@ namespace PuppeteerSharp
                     watcher.TimeoutOrTerminationTask
                 ).ConfigureAwait(false);
 
-                var exception = raceTask.Exception;
-                if (exception == null &&
-                    watcher.TimeoutOrTerminationTask.IsCompleted &&
-                    watcher.TimeoutOrTerminationTask.Result.IsFaulted)
-                {
-                    exception = watcher.TimeoutOrTerminationTask.Result.Exception;
-                }
-                if (exception != null)
-                {
-                    throw new NavigationException(exception.Message, exception);
-                }
+                await raceTask;
 
                 return watcher.NavigationResponse;
             }

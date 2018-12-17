@@ -16,6 +16,7 @@
         /// </summary>
         /// <param name="message">Message.</param>
         /// <param name="closeReason">Close reason.</param>
-        public TargetClosedException(string message, string closeReason) : base(message) => CloseReason = closeReason;
+        public TargetClosedException(string message, string closeReason) : base($"{message} ({closeReason})")
+            => CloseReason = closeReason;
     }
 }
