@@ -937,12 +937,6 @@ references:
   commentId: T:PuppeteerSharp.CDPSession
   fullName: PuppeteerSharp.CDPSession
   nameWithType: CDPSession
-- uid: PuppeteerSharp.CDPSession.Closed
-  name: Closed
-  href: api/PuppeteerSharp.CDPSession.html#PuppeteerSharp_CDPSession_Closed
-  commentId: E:PuppeteerSharp.CDPSession.Closed
-  fullName: PuppeteerSharp.CDPSession.Closed
-  nameWithType: CDPSession.Closed
 - uid: PuppeteerSharp.CDPSession.CloseReason
   name: CloseReason
   href: api/PuppeteerSharp.CDPSession.html#PuppeteerSharp_CDPSession_CloseReason
@@ -969,6 +963,12 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.CDPSession.DetachAsync
   nameWithType: CDPSession.DetachAsync
+- uid: PuppeteerSharp.CDPSession.Disconnected
+  name: Disconnected
+  href: api/PuppeteerSharp.CDPSession.html#PuppeteerSharp_CDPSession_Disconnected
+  commentId: E:PuppeteerSharp.CDPSession.Disconnected
+  fullName: PuppeteerSharp.CDPSession.Disconnected
+  nameWithType: CDPSession.Disconnected
 - uid: PuppeteerSharp.CDPSession.IsClosed
   name: IsClosed
   href: api/PuppeteerSharp.CDPSession.html#PuppeteerSharp_CDPSession_IsClosed
@@ -1260,12 +1260,6 @@ references:
   commentId: T:PuppeteerSharp.Connection
   fullName: PuppeteerSharp.Connection
   nameWithType: Connection
-- uid: PuppeteerSharp.Connection.Closed
-  name: Closed
-  href: api/PuppeteerSharp.Connection.html#PuppeteerSharp_Connection_Closed
-  commentId: E:PuppeteerSharp.Connection.Closed
-  fullName: PuppeteerSharp.Connection.Closed
-  nameWithType: Connection.Closed
 - uid: PuppeteerSharp.Connection.CloseReason
   name: CloseReason
   href: api/PuppeteerSharp.Connection.html#PuppeteerSharp_Connection_CloseReason
@@ -1298,6 +1292,12 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Connection.Delay
   nameWithType: Connection.Delay
+- uid: PuppeteerSharp.Connection.Disconnected
+  name: Disconnected
+  href: api/PuppeteerSharp.Connection.html#PuppeteerSharp_Connection_Disconnected
+  commentId: E:PuppeteerSharp.Connection.Disconnected
+  fullName: PuppeteerSharp.Connection.Disconnected
+  nameWithType: Connection.Disconnected
 - uid: PuppeteerSharp.Connection.Dispose
   name: Dispose()
   href: api/PuppeteerSharp.Connection.html#PuppeteerSharp_Connection_Dispose
@@ -2777,12 +2777,12 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Frame.SelectAsync
   nameWithType: Frame.SelectAsync
-- uid: PuppeteerSharp.Frame.SetContentAsync(System.String)
-  name: SetContentAsync(String)
-  href: api/PuppeteerSharp.Frame.html#PuppeteerSharp_Frame_SetContentAsync_System_String_
-  commentId: M:PuppeteerSharp.Frame.SetContentAsync(System.String)
-  fullName: PuppeteerSharp.Frame.SetContentAsync(System.String)
-  nameWithType: Frame.SetContentAsync(String)
+- uid: PuppeteerSharp.Frame.SetContentAsync(System.String,PuppeteerSharp.NavigationOptions)
+  name: SetContentAsync(String, NavigationOptions)
+  href: api/PuppeteerSharp.Frame.html#PuppeteerSharp_Frame_SetContentAsync_System_String_PuppeteerSharp_NavigationOptions_
+  commentId: M:PuppeteerSharp.Frame.SetContentAsync(System.String,PuppeteerSharp.NavigationOptions)
+  fullName: PuppeteerSharp.Frame.SetContentAsync(System.String, PuppeteerSharp.NavigationOptions)
+  nameWithType: Frame.SetContentAsync(String, NavigationOptions)
 - uid: PuppeteerSharp.Frame.SetContentAsync*
   name: SetContentAsync
   href: api/PuppeteerSharp.Frame.html#PuppeteerSharp_Frame_SetContentAsync_
@@ -6508,12 +6508,12 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Page.SetCacheEnabledAsync
   nameWithType: Page.SetCacheEnabledAsync
-- uid: PuppeteerSharp.Page.SetContentAsync(System.String)
-  name: SetContentAsync(String)
-  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_SetContentAsync_System_String_
-  commentId: M:PuppeteerSharp.Page.SetContentAsync(System.String)
-  fullName: PuppeteerSharp.Page.SetContentAsync(System.String)
-  nameWithType: Page.SetContentAsync(String)
+- uid: PuppeteerSharp.Page.SetContentAsync(System.String,PuppeteerSharp.NavigationOptions)
+  name: SetContentAsync(String, NavigationOptions)
+  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_SetContentAsync_System_String_PuppeteerSharp_NavigationOptions_
+  commentId: M:PuppeteerSharp.Page.SetContentAsync(System.String,PuppeteerSharp.NavigationOptions)
+  fullName: PuppeteerSharp.Page.SetContentAsync(System.String, PuppeteerSharp.NavigationOptions)
+  nameWithType: Page.SetContentAsync(String, NavigationOptions)
 - uid: PuppeteerSharp.Page.SetContentAsync*
   name: SetContentAsync
   href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_SetContentAsync_
@@ -9323,6 +9323,18 @@ references:
   commentId: F:PuppeteerSharp.TargetType.Page
   fullName: PuppeteerSharp.TargetType.Page
   nameWithType: TargetType.Page
+- uid: PuppeteerSharp.TargetType.Recommendation
+  name: Recommendation
+  href: api/PuppeteerSharp.TargetType.html#PuppeteerSharp_TargetType_Recommendation
+  commentId: F:PuppeteerSharp.TargetType.Recommendation
+  fullName: PuppeteerSharp.TargetType.Recommendation
+  nameWithType: TargetType.Recommendation
+- uid: PuppeteerSharp.TargetType.Security
+  name: Security
+  href: api/PuppeteerSharp.TargetType.html#PuppeteerSharp_TargetType_Security
+  commentId: F:PuppeteerSharp.TargetType.Security
+  fullName: PuppeteerSharp.TargetType.Security
+  nameWithType: TargetType.Security
 - uid: PuppeteerSharp.TargetType.ServiceWorker
   name: ServiceWorker
   href: api/PuppeteerSharp.TargetType.html#PuppeteerSharp_TargetType_ServiceWorker
@@ -9449,6 +9461,19 @@ references:
   commentId: E:PuppeteerSharp.Transport.IConnectionTransport.Closed
   fullName: PuppeteerSharp.Transport.IConnectionTransport.Closed
   nameWithType: IConnectionTransport.Closed
+- uid: PuppeteerSharp.Transport.IConnectionTransport.InitializeAsync(System.String,PuppeteerSharp.IConnectionOptions,ILoggerFactory)
+  name: InitializeAsync(String, IConnectionOptions, ILoggerFactory)
+  href: api/PuppeteerSharp.Transport.IConnectionTransport.html#PuppeteerSharp_Transport_IConnectionTransport_InitializeAsync_System_String_PuppeteerSharp_IConnectionOptions_ILoggerFactory_
+  commentId: M:PuppeteerSharp.Transport.IConnectionTransport.InitializeAsync(System.String,PuppeteerSharp.IConnectionOptions,ILoggerFactory)
+  fullName: PuppeteerSharp.Transport.IConnectionTransport.InitializeAsync(System.String, PuppeteerSharp.IConnectionOptions, ILoggerFactory)
+  nameWithType: IConnectionTransport.InitializeAsync(String, IConnectionOptions, ILoggerFactory)
+- uid: PuppeteerSharp.Transport.IConnectionTransport.InitializeAsync*
+  name: InitializeAsync
+  href: api/PuppeteerSharp.Transport.IConnectionTransport.html#PuppeteerSharp_Transport_IConnectionTransport_InitializeAsync_
+  commentId: Overload:PuppeteerSharp.Transport.IConnectionTransport.InitializeAsync
+  isSpec: "True"
+  fullName: PuppeteerSharp.Transport.IConnectionTransport.InitializeAsync
+  nameWithType: IConnectionTransport.InitializeAsync
 - uid: PuppeteerSharp.Transport.IConnectionTransport.IsClosed
   name: IsClosed
   href: api/PuppeteerSharp.Transport.IConnectionTransport.html#PuppeteerSharp_Transport_IConnectionTransport_IsClosed
@@ -9564,12 +9589,12 @@ references:
   commentId: T:PuppeteerSharp.Transport.WebSocketTransport
   fullName: PuppeteerSharp.Transport.WebSocketTransport
   nameWithType: WebSocketTransport
-- uid: PuppeteerSharp.Transport.WebSocketTransport.#ctor(WebSocket,System.Boolean)
-  name: WebSocketTransport(WebSocket, Boolean)
-  href: api/PuppeteerSharp.Transport.WebSocketTransport.html#PuppeteerSharp_Transport_WebSocketTransport__ctor_WebSocket_System_Boolean_
-  commentId: M:PuppeteerSharp.Transport.WebSocketTransport.#ctor(WebSocket,System.Boolean)
-  fullName: PuppeteerSharp.Transport.WebSocketTransport.WebSocketTransport(WebSocket, System.Boolean)
-  nameWithType: WebSocketTransport.WebSocketTransport(WebSocket, Boolean)
+- uid: PuppeteerSharp.Transport.WebSocketTransport.#ctor(System.Boolean)
+  name: WebSocketTransport(Boolean)
+  href: api/PuppeteerSharp.Transport.WebSocketTransport.html#PuppeteerSharp_Transport_WebSocketTransport__ctor_System_Boolean_
+  commentId: M:PuppeteerSharp.Transport.WebSocketTransport.#ctor(System.Boolean)
+  fullName: PuppeteerSharp.Transport.WebSocketTransport.WebSocketTransport(System.Boolean)
+  nameWithType: WebSocketTransport.WebSocketTransport(Boolean)
 - uid: PuppeteerSharp.Transport.WebSocketTransport.#ctor*
   name: WebSocketTransport
   href: api/PuppeteerSharp.Transport.WebSocketTransport.html#PuppeteerSharp_Transport_WebSocketTransport__ctor_
@@ -9596,6 +9621,32 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Transport.WebSocketTransport.Dispose
   nameWithType: WebSocketTransport.Dispose
+- uid: PuppeteerSharp.Transport.WebSocketTransport.GetResponseAsync
+  name: GetResponseAsync()
+  href: api/PuppeteerSharp.Transport.WebSocketTransport.html#PuppeteerSharp_Transport_WebSocketTransport_GetResponseAsync
+  commentId: M:PuppeteerSharp.Transport.WebSocketTransport.GetResponseAsync
+  fullName: PuppeteerSharp.Transport.WebSocketTransport.GetResponseAsync()
+  nameWithType: WebSocketTransport.GetResponseAsync()
+- uid: PuppeteerSharp.Transport.WebSocketTransport.GetResponseAsync*
+  name: GetResponseAsync
+  href: api/PuppeteerSharp.Transport.WebSocketTransport.html#PuppeteerSharp_Transport_WebSocketTransport_GetResponseAsync_
+  commentId: Overload:PuppeteerSharp.Transport.WebSocketTransport.GetResponseAsync
+  isSpec: "True"
+  fullName: PuppeteerSharp.Transport.WebSocketTransport.GetResponseAsync
+  nameWithType: WebSocketTransport.GetResponseAsync
+- uid: PuppeteerSharp.Transport.WebSocketTransport.InitializeAsync(System.String,PuppeteerSharp.IConnectionOptions,ILoggerFactory)
+  name: InitializeAsync(String, IConnectionOptions, ILoggerFactory)
+  href: api/PuppeteerSharp.Transport.WebSocketTransport.html#PuppeteerSharp_Transport_WebSocketTransport_InitializeAsync_System_String_PuppeteerSharp_IConnectionOptions_ILoggerFactory_
+  commentId: M:PuppeteerSharp.Transport.WebSocketTransport.InitializeAsync(System.String,PuppeteerSharp.IConnectionOptions,ILoggerFactory)
+  fullName: PuppeteerSharp.Transport.WebSocketTransport.InitializeAsync(System.String, PuppeteerSharp.IConnectionOptions, ILoggerFactory)
+  nameWithType: WebSocketTransport.InitializeAsync(String, IConnectionOptions, ILoggerFactory)
+- uid: PuppeteerSharp.Transport.WebSocketTransport.InitializeAsync*
+  name: InitializeAsync
+  href: api/PuppeteerSharp.Transport.WebSocketTransport.html#PuppeteerSharp_Transport_WebSocketTransport_InitializeAsync_
+  commentId: Overload:PuppeteerSharp.Transport.WebSocketTransport.InitializeAsync
+  isSpec: "True"
+  fullName: PuppeteerSharp.Transport.WebSocketTransport.InitializeAsync
+  nameWithType: WebSocketTransport.InitializeAsync
 - uid: PuppeteerSharp.Transport.WebSocketTransport.IsClosed
   name: IsClosed
   href: api/PuppeteerSharp.Transport.WebSocketTransport.html#PuppeteerSharp_Transport_WebSocketTransport_IsClosed

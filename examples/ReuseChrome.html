@@ -5,11 +5,9 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Enum TargetType
-   </title>
+    <title>How to download and reuse Chrome from a custom location </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Enum TargetType
-   ">
+    <meta name="title" content="How to download and reuse Chrome from a custom location ">
     <meta name="generator" content="docfx 2.40.4.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
@@ -68,87 +66,29 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="PuppeteerSharp.TargetType">
-  
-  
-  <h1 id="PuppeteerSharp_TargetType" data-uid="PuppeteerSharp.TargetType" class="text-break">Enum TargetType
-  </h1>
-  <div class="markdown level0 summary"><p>Target type.</p>
-</div>
-  <div class="markdown level0 conceptual"></div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="PuppeteerSharp.html">PuppeteerSharp</a></h6>
-  <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
-  <h5 id="PuppeteerSharp_TargetType_syntax">Syntax</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public enum TargetType : int</code></pre>
-  </div>
-  <h3 id="fields">Fields
-  </h3>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    <thead>
-    <tbody>
-      <tr>
-        <td id="PuppeteerSharp_TargetType_BackgroundPage">BackgroundPage</td>
-        <td><p>Target type background page.</p>
-</td>
-      </tr>
-      <tr>
-        <td id="PuppeteerSharp_TargetType_Browser">Browser</td>
-        <td><p>Target type browser.</p>
-</td>
-      </tr>
-      <tr>
-        <td id="PuppeteerSharp_TargetType_Deprecation">Deprecation</td>
-        <td><p>Target type network</p>
-</td>
-      </tr>
-      <tr>
-        <td id="PuppeteerSharp_TargetType_Javascript">Javascript</td>
-        <td><p>Target type javascript.</p>
-</td>
-      </tr>
-      <tr>
-        <td id="PuppeteerSharp_TargetType_Network">Network</td>
-        <td><p>Target type network</p>
-</td>
-      </tr>
-      <tr>
-        <td id="PuppeteerSharp_TargetType_Other">Other</td>
-        <td><p>The other.</p>
-</td>
-      </tr>
-      <tr>
-        <td id="PuppeteerSharp_TargetType_Page">Page</td>
-        <td><p>Target type page.</p>
-</td>
-      </tr>
-      <tr>
-        <td id="PuppeteerSharp_TargetType_Recommendation">Recommendation</td>
-        <td><p>Target type recommendation</p>
-</td>
-      </tr>
-      <tr>
-        <td id="PuppeteerSharp_TargetType_Security">Security</td>
-        <td><p>Target type security</p>
-</td>
-      </tr>
-      <tr>
-        <td id="PuppeteerSharp_TargetType_ServiceWorker">ServiceWorker</td>
-        <td><p>Target type service worker.</p>
-</td>
-      </tr>
-      <tr>
-        <td id="PuppeteerSharp_TargetType_Worker">Worker</td>
-        <td><p>Target type worker.</p>
-</td>
-      </tr>
-    </tbody>
-  </thead></thead></table>
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="how-to-download-and-reuse-chrome-from-a-custom-location">How to download and reuse Chrome from a custom location</h1>
+
+<p><em>Contributors: <a href="https://bilaldurrani.io/">Bilal Durrani</a></em></p>
+<h2 id="problem">Problem</h2>
+<p>You want to download Chrome in a custom folder and you want to reuse Chrome
+from a location where it was previously downloaded instead of from the default location.</p>
+<h2 id="solution">Solution</h2>
+<p>Use <code>BrowserFetcherOptions</code> to specify the full path for where to download Chrome.</p>
+<pre><code>var browserFetcherOptions = new BrowserFetcherOptions { Path = downloadPath };
+var browserFetcher = new BrowserFetcher(browserFetcherOptions);
+await browserFetcher.DownloadAsync(BrowserFetcher.DefaultRevision);
+</code></pre>
+<p>Use <code>Puppeteer.LaunchAsync()</code> with <code>LaunchOptions</code> with the <code>LaunchOptions.ExecutablePath</code> property set to the
+fully qualified path to the Chrome executable.</p>
+<pre><code>var options = new LaunchOptions { Headless = true, ExecutablePath = executablePath };
+
+using (var browser = await Puppeteer.LaunchAsync(options))
+using (var page = await browser.NewPageAsync())
+{
+    // use page
+}
+</code></pre>
 </article>
           </div>
           
@@ -157,10 +97,7 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20TargetType&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/TargetType.cs/%23L11" class="contribution-link">Request doc improvement</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/TargetType.cs/#L11" class="contribution-link">View Source</a>
+                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20docfx_project/examples/ReuseChrome.md&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved" class="contribution-link">Request doc improvement</a>
                   </li>
                 </ul>
               </div>
