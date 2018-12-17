@@ -4,6 +4,7 @@ branches:
   - master
 image: Visual Studio 2017
 configuration: Release
+clone_folder: C:\projects\puppeteer-sharp
 environment:
   git_access_token:
     secure: FxcQ9C8a/NgcQB5dFdZts6ZWEDT4zMhA4qPQAYwWc7huMmhmTIl1sbFEIaAWQMTL
