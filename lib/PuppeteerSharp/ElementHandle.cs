@@ -465,7 +465,7 @@ namespace PuppeteerSharp
               // force-scroll if page's javascript is disabled.
               if (!pageJavascriptEnabled) {
                 element.scrollIntoView({block: 'center', inline: 'center', behavior: 'instant'});
-                return false;
+                return null;
               }
               const visibleRatio = await new Promise(resolve => {
                 const observer = new IntersectionObserver(entries => {
@@ -476,7 +476,7 @@ namespace PuppeteerSharp
               });
               if (visibleRatio !== 1.0)
                 element.scrollIntoView({block: 'center', inline: 'center', behavior: 'instant'});
-              return false;
+              return null;
             }", this, Page.JavascriptEnabled).ConfigureAwait(false);
 
             if (errorMessage != null)
