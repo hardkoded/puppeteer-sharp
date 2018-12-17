@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Net;
 using System.IO.Compression;
+using PuppeteerSharp.Helpers.Linux;
 
 namespace PuppeteerSharp
 {
@@ -33,10 +34,17 @@ namespace PuppeteerSharp
             {Platform.Win64, "{0}/chromium-browser-snapshots/Win_x64/{1}/{2}.zip"}
         };
 
+        internal static readonly FilePermissions BrowserPermissionsInLinux =
+            FilePermissions.S_IRWXU |
+            FilePermissions.S_IRGRP |
+            FilePermissions.S_IXGRP |
+            FilePermissions.S_IROTH |
+            FilePermissions.S_IXOTH;
+
         /// <summary>
         /// Default chromiumg revision.
         /// </summary>
-        public const int DefaultRevision = 599821;
+        public const int DefaultRevision = 609904;
 
         /// <summary>
         /// Gets the downloads folder.
@@ -195,7 +203,13 @@ namespace PuppeteerSharp
 
             new FileInfo(zipPath).Delete();
 
-            return RevisionInfo(revision);
+            var revisionInfo = RevisionInfo(revision);
+
+            if (revisionInfo != null && (GetCurrentPlatform() == Platform.Linux || GetCurrentPlatform() == Platform.MacOS))
+            {
+                LinuxSysCall.SetPermissions(revisionInfo.ExecutablePath, BrowserPermissionsInLinux);
+            }
+            return revisionInfo;
         }
 
         /// <summary>

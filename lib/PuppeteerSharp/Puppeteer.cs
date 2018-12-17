@@ -17,6 +17,8 @@ namespace PuppeteerSharp
     /// </example>
     public static class Puppeteer
     {
+        internal const int DefaultTimeout = 30_000;
+
         /// <summary>
         /// The default flags that Chromium will be launched with.
         /// </summary>

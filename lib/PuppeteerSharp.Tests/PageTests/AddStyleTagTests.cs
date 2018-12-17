@@ -44,7 +44,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldWorkWithAPath()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var styleHandle = await Page.AddStyleTagAsync(new AddTagOptions { Path = "assets/injectedstyle.css" });
+            var styleHandle = await Page.AddStyleTagAsync(new AddTagOptions { Path = "Assets/injectedstyle.css" });
             Assert.NotNull(styleHandle as ElementHandle);
             Assert.Equal("rgb(255, 0, 0)", await Page.EvaluateExpressionAsync<string>(
                 "window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')"));
@@ -56,11 +56,11 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.GoToAsync(TestConstants.EmptyPage);
             await Page.AddStyleTagAsync(new AddTagOptions
             {
-                Path = Path.Combine(Directory.GetCurrentDirectory(), Path.Combine("assets", "injectedstyle.css"))
+                Path = Path.Combine(Directory.GetCurrentDirectory(), Path.Combine("Assets", "injectedstyle.css"))
             });
             var styleHandle = await Page.QuerySelectorAsync("style");
             var styleContent = await Page.EvaluateFunctionAsync<string>("style => style.innerHTML", styleHandle);
-            Assert.Contains(Path.Combine("assets", "injectedstyle.css"), styleContent);
+            Assert.Contains(Path.Combine("Assets", "injectedstyle.css"), styleContent);
         }
 
         [Fact]

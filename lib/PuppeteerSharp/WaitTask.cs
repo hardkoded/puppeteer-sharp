@@ -208,7 +208,7 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
             }
             else
             {
-                _taskCompletion.SetResult(success);
+                _taskCompletion.TrySetResult(success);
             }
             Cleanup();
         }

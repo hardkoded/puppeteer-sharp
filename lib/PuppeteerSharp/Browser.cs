@@ -65,7 +65,7 @@ namespace PuppeteerSharp
             _contexts = contextIds.ToDictionary(keySelector: contextId => contextId,
                 elementSelector: contextId => new BrowserContext(Connection, this, contextId));
 
-            Connection.Closed += (object sender, EventArgs e) => Disconnected?.Invoke(this, new EventArgs());
+            Connection.Disconnected += (object sender, EventArgs e) => Disconnected?.Invoke(this, new EventArgs());
             Connection.MessageReceived += Connect_MessageReceived;
 
             _chromiumProcess = chromiumProcess;
@@ -152,7 +152,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Dafault wait time in milliseconds. Defaults to 30 seconds.
         /// </summary>
-        public int DefaultWaitForTimeout { get; set; } = 30000;
+        public int DefaultWaitForTimeout { get; set; } = Puppeteer.DefaultTimeout;
 
         #endregion
 

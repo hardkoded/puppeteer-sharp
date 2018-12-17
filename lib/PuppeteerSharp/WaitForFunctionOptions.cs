@@ -11,7 +11,7 @@
         /// <summary>
         /// Maximum time to wait for in milliseconds. Defaults to 30000 (30 seconds). Pass 0 to disable timeout.
         /// </summary>
-        public int Timeout { get; set; } = 30_000;
+        public int Timeout { get; set; } = Puppeteer.DefaultTimeout;
 
         /// <summary>
         /// An interval at which the <c>pageFunction</c> is executed. defaults to <see cref="WaitForFunctionPollingOption.Raf"/>

@@ -369,8 +369,7 @@ namespace PuppeteerSharp
         public async Task<ElementHandle> QuerySelectorAsync(string selector)
         {
             var document = await GetDocument().ConfigureAwait(false);
-            var value = await document.QuerySelectorAsync(selector).ConfigureAwait(false);
-            return value;
+            return await document.QuerySelectorAsync(selector).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -382,8 +381,7 @@ namespace PuppeteerSharp
         public async Task<ElementHandle[]> QuerySelectorAllAsync(string selector)
         {
             var document = await GetDocument().ConfigureAwait(false);
-            var value = await document.QuerySelectorAllAsync(selector).ConfigureAwait(false);
-            return value;
+            return await document.QuerySelectorAllAsync(selector).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -395,8 +393,7 @@ namespace PuppeteerSharp
         public async Task<ElementHandle[]> XPathAsync(string expression)
         {
             var document = await GetDocument().ConfigureAwait(false);
-            var value = await document.XPathAsync(expression).ConfigureAwait(false);
-            return value;
+            return await document.XPathAsync(expression).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -553,14 +550,30 @@ namespace PuppeteerSharp
         /// Sets the HTML markup to the page
         /// </summary>
         /// <param name="html">HTML markup to assign to the page.</param>
+        /// <param name="options">The options</param>
         /// <returns>Task.</returns>
-        /// <seealso cref="Page.SetContentAsync(string)"/>
-        public Task SetContentAsync(string html)
-            => EvaluateFunctionAsync(@"html => {
+        /// <seealso cref="Page.SetContentAsync(string, NavigationOptions)"/>
+        public async Task SetContentAsync(string html, NavigationOptions options = null)
+        {
+            var waitUntil = options?.WaitUntil ?? new[] { WaitUntilNavigation.Load };
+            var timeout = options?.Timeout ?? Puppeteer.DefaultTimeout;
+
+            // We rely upon the fact that document.open() will reset frame lifecycle with "init"
+            // lifecycle event. @see https://crrev.com/608658
+            await EvaluateFunctionAsync(@"html => {
                 document.open();
                 document.write(html);
                 document.close();
             }", html);
+
+            var watcher = new LifecycleWatcher(FrameManager, this, timeout, options);
+
+            var watcherTask = await Task.WhenAny(
+                watcher.TimeoutOrTerminationTask,
+                watcher.LifecycleTask).ConfigureAwait(false);
+
+            await watcherTask;
+        }
 
         /// <summary>
         /// Returns page's title
@@ -680,7 +693,7 @@ namespace PuppeteerSharp
                 _documentCompletionSource = new TaskCompletionSource<ElementHandle>();
                 var context = await GetExecutionContextAsync().ConfigureAwait(false);
                 var document = await context.EvaluateExpressionHandleAsync("document").ConfigureAwait(false);
-                _documentCompletionSource.SetResult(document as ElementHandle);
+                _documentCompletionSource.TrySetResult(document as ElementHandle);
             }
             return await _documentCompletionSource.Task.ConfigureAwait(false);
         }

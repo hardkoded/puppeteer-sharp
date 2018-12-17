@@ -8,4 +8,6 @@
       href: Page.EvaluateFunctionAsync.ComplexJSObjects.md
     - name: How to wait for a selector
       href: Page.WaitForSelectorAsync.Searching.md
+    - name: Download and Reuse Chrome from a custom location
+      href: ReuseChrome.md
 

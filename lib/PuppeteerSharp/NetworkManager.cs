@@ -140,7 +140,7 @@ namespace PuppeteerSharp
             if (_requestIdToRequest.TryGetValue(e.RequestId, out var request))
             {
                 request.Failure = e.ErrorText;
-                request.Response?.BodyLoadedTaskWrapper.SetResult(true);
+                request.Response?.BodyLoadedTaskWrapper.TrySetResult(true);
                 _requestIdToRequest.Remove(request.RequestId);
 
                 if (request.InterceptionId != null)
@@ -161,7 +161,7 @@ namespace PuppeteerSharp
             // @see https://crbug.com/750469
             if (_requestIdToRequest.TryGetValue(e.RequestId, out var request))
             {
-                request.Response?.BodyLoadedTaskWrapper.SetResult(true);
+                request.Response?.BodyLoadedTaskWrapper.TrySetResult(true);
                 _requestIdToRequest.Remove(request.RequestId);
 
                 if (request.InterceptionId != null)
