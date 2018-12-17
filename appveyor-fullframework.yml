@@ -33,10 +33,5 @@ after_build:
 artifacts:
 - path: .\lib\PuppeteerSharp.AspNetFramework.*.nupkg
   name: PuppeteerSharp.AspNetFramework Package
-test_script:
-- cmd: >-
-    cd C:\projects\puppeteer-sharp\lib\PuppeteerSharp.Tests
-
-    dotnet test -f %framework% -s test.runsettings
 cache:
   - $HOME/.nuget/packages
