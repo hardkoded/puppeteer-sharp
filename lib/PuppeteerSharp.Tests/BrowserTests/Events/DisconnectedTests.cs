@@ -67,7 +67,7 @@ namespace PuppeteerSharp.Tests.BrowserTests.Events
                 await Server.WaitForRequest("/one-style.css");
                 remote.Disconnect();
                 var exception = await Assert.ThrowsAsync<NavigationException>(() => navigationTask);
-                Assert.Equal("Navigation failed because browser has disconnected!", exception.Message);
+                Assert.Contains("Navigation failed because browser has disconnected!", exception.Message);
             }
         }
 

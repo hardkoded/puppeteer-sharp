@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>1.11.0</PackageVersion>
+    <PackageVersion>1.11.1</PackageVersion>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
@@ -31,8 +31,10 @@
  * Fixed event handler leak.
  * Removed a couple of common allocations.
  * New target types.
+ * LifeCycleWatcher fixes
+ * ScrollIntoViewIfNeededAsync improvements
  ]]></PackageReleaseNotes>
-    <ReleaseVersion>1.11.0</ReleaseVersion>
+    <ReleaseVersion>1.11.1</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>

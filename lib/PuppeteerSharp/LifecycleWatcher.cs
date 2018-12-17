@@ -61,17 +61,17 @@ namespace PuppeteerSharp
             _timeout = timeout;
             _hasSameDocumentNavigation = false;
 
-            frameManager.LifecycleEvent += CheckLifecycleComplete;
-            frameManager.FrameNavigatedWithinDocument += NavigatedWithinDocument;
-            frameManager.FrameDetached += OnFrameDetached;
-            frameManager.NetworkManager.Request += OnRequest;
-            frameManager.Client.Disconnected += OnClientDisconnected;
-
             _sameDocumentNavigationTaskWrapper = new TaskCompletionSource<bool>();
             _newDocumentNavigationTaskWrapper = new TaskCompletionSource<bool>();
             _lifecycleTaskWrapper = new TaskCompletionSource<bool>();
             _terminationTaskWrapper = new TaskCompletionSource<bool>();
             _timeoutTask = TaskHelper.CreateTimeoutTask(timeout);
+
+            frameManager.LifecycleEvent += CheckLifecycleComplete;
+            frameManager.FrameNavigatedWithinDocument += NavigatedWithinDocument;
+            frameManager.FrameDetached += OnFrameDetached;
+            frameManager.NetworkManager.Request += OnRequest;
+            frameManager.Client.Disconnected += OnClientDisconnected;
         }
 
         #region Properties
