@@ -23,7 +23,7 @@ before_build:
     Get-ChildItem -Path cert:\CurrentUSer\my | where { $_.friendlyname -eq "Puppeteer" } | Export-Certificate -FilePath C:\projects\puppeteer-sharp\lib\PuppeteerSharp.TestServer\testCert.cer
 
 build:
-  project: .\lib\PuppeteerSharp.sln
+  project: .\lib\PuppeteerSharp.AspNetFramework.sln
   publish_nuget: false
   include_nuget_references: true
   verbosity: minimal
