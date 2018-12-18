@@ -80,7 +80,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 {
                     var page2 = await browser2.NewPageAsync();
                     await page2.GoToAsync(TestConstants.EmptyPage);
-                    Assert.Equal("foo=true", await page2.EvaluateExpressionAsync("document.cookie"));
+                    Assert.Equal("foo=true", await page2.EvaluateExpressionAsync<string>("document.cookie"));
                 }
             }
         }
