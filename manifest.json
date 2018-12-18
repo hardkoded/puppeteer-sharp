@@ -13,7 +13,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.AddTagOptions.html",
-          "hash": "exIw94k9fAcQwrcNoVaKFg=="
+          "hash": "kZlqz1qmWMN9QBGUQc0Epg=="
         }
       },
       "is_incremental": false,
@@ -25,7 +25,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.BoundingBox.html",
-          "hash": "wwlD/XMFlA3E0oYWkTyBcA=="
+          "hash": "HDeJ7zhVWziaNY4Qt+PJ1Q=="
         }
       },
       "is_incremental": false,
@@ -37,7 +37,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.BoxModel.html",
-          "hash": "hzQpAMuh4Y5htIGEvAIgWQ=="
+          "hash": "asvqIbX4uAvB825R+Z+ViA=="
         }
       },
       "is_incremental": false,
@@ -49,7 +49,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.BoxModelPoint.html",
-          "hash": "udaxUP+Of55y8eKY6sSf7g=="
+          "hash": "zL1ufCrsG2ZVmmZ57zpDJA=="
         }
       },
       "is_incremental": false,
@@ -61,7 +61,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Browser.html",
-          "hash": "+1DmCtd6/BTwPYvsk7CK4Q=="
+          "hash": "15GfuA7+uc3wU0fjZiU6xg=="
         }
       },
       "is_incremental": false,
@@ -73,7 +73,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.BrowserContext.html",
-          "hash": "3sVu/p+/3kXi7tlQHuu8Uw=="
+          "hash": "qwoQ9ArDocYbhPRSk+jicw=="
         }
       },
       "is_incremental": false,
@@ -85,7 +85,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.BrowserFetcher.html",
-          "hash": "bynvvnoR/p0Anun7vR06zQ=="
+          "hash": "Ji8QNbgjZUtZGbA/JBvB6w=="
         }
       },
       "is_incremental": false,
@@ -97,7 +97,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.BrowserFetcherOptions.html",
-          "hash": "8sql2nQvCm5YmZC0pFIldg=="
+          "hash": "w7+nsqFCB+oM3wK/K/91cQ=="
         }
       },
       "is_incremental": false,
@@ -109,7 +109,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.CDPSession.html",
-          "hash": "ajkTiVS8iFeVrWekjK67cw=="
+          "hash": "LX/eGdavYksCbduSjobSkw=="
         }
       },
       "is_incremental": false,
@@ -121,7 +121,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.ChromiumProcess.html",
-          "hash": "Gnvr6w67JrVlCTHoLkkwYA=="
+          "hash": "vC/bqkzId1g0yqVPFKqiDA=="
         }
       },
       "is_incremental": false,
@@ -133,7 +133,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.ChromiumProcessException.html",
-          "hash": "V5S+dRKC5Qjj36GOH7h72Q=="
+          "hash": "TaSZw9CNajFLN9v5LxyacA=="
         }
       },
       "is_incremental": false,
@@ -145,7 +145,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.ConnectOptions.html",
-          "hash": "dUsPORtttbbw2HPDQ5NqMQ=="
+          "hash": "jJu7Il6BYt4TIU93uTlSuA=="
         }
       },
       "is_incremental": false,
@@ -157,7 +157,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Connection.html",
-          "hash": "63ovFDwJTMIeQSnKq9DCBw=="
+          "hash": "qiJVS92cYCCgvAbhB6Bi5w=="
         }
       },
       "is_incremental": false,
@@ -169,7 +169,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.ConsoleEventArgs.html",
-          "hash": "LudsTythImqCegB6WpMdiQ=="
+          "hash": "1KlRkzKVy2gdYQxhiOgM4Q=="
         }
       },
       "is_incremental": false,
@@ -181,7 +181,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.ConsoleMessage.html",
-          "hash": "EemnkQawtGsKgUO8048Svw=="
+          "hash": "qDNQd3Ow+6aZ37opbLZF5Q=="
         }
       },
       "is_incremental": false,
@@ -193,7 +193,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.ConsoleType.html",
-          "hash": "J4Vc4Kz093HqrHgKAI6gWg=="
+          "hash": "MT4JVhT9UMPj6S5yqPmxig=="
         }
       },
       "is_incremental": false,
@@ -205,7 +205,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.CookieParam.html",
-          "hash": "1i+SMVCbtnS2f269aPUzzQ=="
+          "hash": "qxvLXyABkuTyj9s3/e3Csw=="
         }
       },
       "is_incremental": false,
@@ -217,7 +217,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Credentials.html",
-          "hash": "vs/gaValsw1YDirRZIQEWg=="
+          "hash": "bLASsqQs9DXBbG2dJyw4Vg=="
         }
       },
       "is_incremental": false,
@@ -229,7 +229,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Dialog.html",
-          "hash": "P8E6bt8fp337Lwr5W8xYwA=="
+          "hash": "V4K+FV6bnUQyaLmzMiy29w=="
         }
       },
       "is_incremental": false,
@@ -241,7 +241,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.DialogEventArgs.html",
-          "hash": "Cvotu1y/pXC4of8ovnsFSw=="
+          "hash": "kZW+rMvZXCB1AWI/y206Tw=="
         }
       },
       "is_incremental": false,
@@ -253,7 +253,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.DialogType.html",
-          "hash": "oAinrNR302lxidH2dKEqow=="
+          "hash": "2e16TvShKQxuwLYeDKe+UA=="
         }
       },
       "is_incremental": false,
@@ -265,7 +265,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.ElementHandle.html",
-          "hash": "ctxjDVSTxa5PDHlEpmAehA=="
+          "hash": "jQF/2x+73d4Ro8Ntwrsjpg=="
         }
       },
       "is_incremental": false,
@@ -277,7 +277,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.ErrorEventArgs.html",
-          "hash": "6mYTMPyv2CQp/fexcy+ryg=="
+          "hash": "HbXC3BT4XLHu6VqAEC/iHQ=="
         }
       },
       "is_incremental": false,
@@ -289,7 +289,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.EvaluationFailedException.html",
-          "hash": "m/nOCavfZPutntQ2PunqHg=="
+          "hash": "44UpqirnbI8K9ebWhh/LsQ=="
         }
       },
       "is_incremental": false,
@@ -301,7 +301,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.ExecutionContext.html",
-          "hash": "/0sDDV7ClUbc8ZEzkAoMpg=="
+          "hash": "ix/pIShktldy7ifC4qtWHA=="
         }
       },
       "is_incremental": false,
@@ -313,7 +313,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Extensions.html",
-          "hash": "u7JmFkWrNNoAm/R2DESRqg=="
+          "hash": "FaKafCu+yEu2saf0oiRiDg=="
         }
       },
       "is_incremental": false,
@@ -325,7 +325,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Frame.html",
-          "hash": "EOJ8lEPVUQWxlV10vaditA=="
+          "hash": "EIae8RQ+/OFhabmWjQ79mA=="
         }
       },
       "is_incremental": false,
@@ -337,7 +337,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.FrameEventArgs.html",
-          "hash": "yQ70jXZVdq18y5N86blQ2g=="
+          "hash": "CiLUccr6FDlmgwxGDc5iVg=="
         }
       },
       "is_incremental": false,
@@ -349,7 +349,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.GeolocationOption.html",
-          "hash": "H0dzJ5g9IEyiK1+7qXvUCA=="
+          "hash": "0aT4qctcK78MtGgqZhKh+g=="
         }
       },
       "is_incremental": false,
@@ -361,7 +361,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Helpers.TaskHelper.html",
-          "hash": "z1Y7bEM8l5ZQPS3CAonDMA=="
+          "hash": "mJvDQlHvNaLBdDkE8ESEYg=="
         }
       },
       "is_incremental": false,
@@ -373,7 +373,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Helpers.html",
-          "hash": "F5NRMibco3kEhlEjqU9N8w=="
+          "hash": "tLFfneQPDc30B3pNX3qtgQ=="
         }
       },
       "is_incremental": false,
@@ -385,7 +385,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.IBrowserOptions.html",
-          "hash": "+WhxBwaeaLlrAZUtSKhKnw=="
+          "hash": "PcEHaSCfCjBgejW5HmyzZQ=="
         }
       },
       "is_incremental": false,
@@ -397,7 +397,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.IConnectionOptions.html",
-          "hash": "YmlVZbIx09lYHYLrIetEOg=="
+          "hash": "ruml8d7oA7XbJ7jPHUy1OA=="
         }
       },
       "is_incremental": false,
@@ -409,7 +409,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Input.ClickOptions.html",
-          "hash": "gZ53yYHPMGcft9BTytTSAA=="
+          "hash": "sjyv9HYyJSUTCaRgI+AVBQ=="
         }
       },
       "is_incremental": false,
@@ -421,7 +421,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Input.DownOptions.html",
-          "hash": "jFd5075r0NIzlJxGB3w7iQ=="
+          "hash": "L/HbX8xeH/iVps7MuKCyPw=="
         }
       },
       "is_incremental": false,
@@ -433,7 +433,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Input.Key.html",
-          "hash": "Z6PMSMwmuXGiIfuPfjBcHw=="
+          "hash": "96PwqhKooWdaxBxh/2+wwA=="
         }
       },
       "is_incremental": false,
@@ -445,7 +445,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Input.Keyboard.html",
-          "hash": "HSGKvwl1KedScq2KMcL8lg=="
+          "hash": "22dVKiAvpeT+prV6Y+BaoA=="
         }
       },
       "is_incremental": false,
@@ -457,7 +457,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Input.Mouse.html",
-          "hash": "qeusorEfm063+06MwKMQXQ=="
+          "hash": "VRcoaLiGPypi5qKVxXuKfA=="
         }
       },
       "is_incremental": false,
@@ -469,7 +469,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Input.MouseButton.html",
-          "hash": "XxHQhyd0Mitoh5Rk4nGT3w=="
+          "hash": "PUaX/yvZAQMX6HqrSqq2IQ=="
         }
       },
       "is_incremental": false,
@@ -481,7 +481,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Input.MoveOptions.html",
-          "hash": "1f79uNIcE951lrbNlBhCiQ=="
+          "hash": "kwrqfQG1SNn/KjKQN3FABA=="
         }
       },
       "is_incremental": false,
@@ -493,7 +493,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Input.PressOptions.html",
-          "hash": "km5NG+b1OW0QdqFkFtPDDA=="
+          "hash": "Z41JuXLrBoYm10J2PDfRdA=="
         }
       },
       "is_incremental": false,
@@ -505,7 +505,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Input.Touchscreen.html",
-          "hash": "885R+IUeIXB81BspMyVI6Q=="
+          "hash": "A6W0FlIy9lGQZfNqR+2lfw=="
         }
       },
       "is_incremental": false,
@@ -517,7 +517,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Input.TypeOptions.html",
-          "hash": "8VGIbLOlScx9wmQo4fhnhQ=="
+          "hash": "q9FjeGefMLm3C3hW20SGlA=="
         }
       },
       "is_incremental": false,
@@ -529,7 +529,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Input.html",
-          "hash": "Zh/NXVU9YnmkYKHMAtD/dA=="
+          "hash": "1ignJV4KYyGysd9wiR5J5w=="
         }
       },
       "is_incremental": false,
@@ -541,7 +541,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.JSHandle.html",
-          "hash": "ixBhWt4mEYdBFdhQh9zJSA=="
+          "hash": "dcJPXxb0HIfqLohKmb68bQ=="
         }
       },
       "is_incremental": false,
@@ -553,7 +553,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.LaunchOptions.html",
-          "hash": "5N5GMB6KHbAeVLXyAhDq2A=="
+          "hash": "/AQyF3bXgV/r6YKbIm2U4Q=="
         }
       },
       "is_incremental": false,
@@ -565,7 +565,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Launcher.html",
-          "hash": "pzn5FNfWf+s0BMnCgSjlwg=="
+          "hash": "JCYkPx1dJl19M88ObPE7ow=="
         }
       },
       "is_incremental": false,
@@ -577,7 +577,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Media.Clip.html",
-          "hash": "yTyutVMEuBKrzWwMgTSzcw=="
+          "hash": "t1hhClCJ7rd7COExGQWNFQ=="
         }
       },
       "is_incremental": false,
@@ -589,7 +589,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Media.MarginOptions.html",
-          "hash": "FT9CpfzJvKxIDcJCdYVdCg=="
+          "hash": "YBXhVC6li6+4J6rW34RHrQ=="
         }
       },
       "is_incremental": false,
@@ -601,7 +601,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Media.MediaType.html",
-          "hash": "1KITC9DzN7OBvXnlUZTBjA=="
+          "hash": "cK7OQfE35Vkn/7HxrJ7CTQ=="
         }
       },
       "is_incremental": false,
@@ -613,7 +613,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Media.PaperFormat.html",
-          "hash": "Zb+zE4BhGZAWPrDPiFjGNA=="
+          "hash": "t9dZrzPk5q4sUYQQJHOfGw=="
         }
       },
       "is_incremental": false,
@@ -625,7 +625,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Media.html",
-          "hash": "WuGx+cKiihW3HirtOFElZA=="
+          "hash": "EotCtrCy6k8S/OnASGORnQ=="
         }
       },
       "is_incremental": false,
@@ -637,7 +637,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.MessageEventArgs.html",
-          "hash": "CDsL4H24LSQC7jrCcA0xVA=="
+          "hash": "rMdwpNOQW3JMmhuuTAcLkA=="
         }
       },
       "is_incremental": false,
@@ -649,7 +649,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.MessageException.html",
-          "hash": "68qFySb4Dh9/7/t4njiNuA=="
+          "hash": "HqGWc8RaPsw41ATc+BBs2A=="
         }
       },
       "is_incremental": false,
@@ -661,7 +661,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.MetricEventArgs.html",
-          "hash": "vf5h0yUv7+ZKQYF1UYZjfw=="
+          "hash": "7VQsLtEJLkeUwB0x25Kmjg=="
         }
       },
       "is_incremental": false,
@@ -673,7 +673,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Mobile.DeviceDescriptor.html",
-          "hash": "eIvpqd6DGktDkXHYnTEiWw=="
+          "hash": "1N9l7Ty1iyxEefmkWgmLLg=="
         }
       },
       "is_incremental": false,
@@ -685,7 +685,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Mobile.DeviceDescriptorName.html",
-          "hash": "iD1e/H5/VIII7G9D3LIvtw=="
+          "hash": "wU3LYJ5evGCcQSUAmvi1ag=="
         }
       },
       "is_incremental": false,
@@ -697,7 +697,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Mobile.DeviceDescriptors.html",
-          "hash": "tC61OVvRsiw2vrs1Bv/5wg=="
+          "hash": "QCbp8OjEvFJPghHfVB6STQ=="
         }
       },
       "is_incremental": false,
@@ -709,7 +709,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Mobile.html",
-          "hash": "Uzdh/BFZvsHX9adBwzIxvA=="
+          "hash": "gGlMQj3hWKyaMgrAahsd1A=="
         }
       },
       "is_incremental": false,
@@ -721,7 +721,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.NavigationException.html",
-          "hash": "bvzEp1F1aQ2Mgtwz8GS6LQ=="
+          "hash": "WkN0RfWIL9ZuOa2kNrAEtQ=="
         }
       },
       "is_incremental": false,
@@ -733,7 +733,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.NavigationOptions.html",
-          "hash": "/QGRMGnJFwx/YCSRtuuuzg=="
+          "hash": "J6AgN9odrpLWCSuApsUnHA=="
         }
       },
       "is_incremental": false,
@@ -745,7 +745,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.OverridePermission.html",
-          "hash": "j67nLPuNEul46Pq1dFvQbg=="
+          "hash": "SGdm08xKHMpPAXGJLAFwuw=="
         }
       },
       "is_incremental": false,
@@ -757,7 +757,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Page.html",
-          "hash": "iicLepTvDDsWS0nZyGJO3w=="
+          "hash": "xUVYFMbc2urpC07d6yMDTA=="
         }
       },
       "is_incremental": false,
@@ -769,7 +769,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.PageAccessibility.Accessibility.html",
-          "hash": "zyIrm6q5mj2paRbUBM0taQ=="
+          "hash": "lsNJPo7YAlj+fyjHq8G7qw=="
         }
       },
       "is_incremental": false,
@@ -781,7 +781,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.PageAccessibility.AccessibilitySnapshotOptions.html",
-          "hash": "t2oUkB1V3hFWJ3fJiUOtVQ=="
+          "hash": "JP0S/qJSNy6SF7v+lN6JOg=="
         }
       },
       "is_incremental": false,
@@ -793,7 +793,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.PageAccessibility.CheckedState.html",
-          "hash": "yBaCqz21L0Tw7+TA4HsQcg=="
+          "hash": "3QaV/V2OToK+2w1P+9WZhw=="
         }
       },
       "is_incremental": false,
@@ -805,7 +805,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.PageAccessibility.SerializedAXNode.html",
-          "hash": "ieUUihiQnSTz9qVpH2M2Sg=="
+          "hash": "IIV9l4ZbOhOt2PwocDBPkw=="
         }
       },
       "is_incremental": false,
@@ -817,7 +817,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.PageAccessibility.html",
-          "hash": "Pe/+gAKF0doGeV8EveQFVA=="
+          "hash": "AYjcYwrDnJ8W85ZwVVb+ag=="
         }
       },
       "is_incremental": false,
@@ -829,7 +829,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.PageCloseOptions.html",
-          "hash": "H4qW+isK2NZzWBJt6e+01g=="
+          "hash": "y6gtHi6J4YzpKVMllbKoKw=="
         }
       },
       "is_incremental": false,
@@ -841,7 +841,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.PageCoverage.Coverage.html",
-          "hash": "+S/GQcPPaZ84v/QVlG9rTw=="
+          "hash": "rVxr94UipPkhJ7Fg13szRA=="
         }
       },
       "is_incremental": false,
@@ -853,7 +853,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.PageCoverage.CoverageEntry.html",
-          "hash": "DHfT2CNF6cGPoN9w6zM1wQ=="
+          "hash": "QIZlRJrSDF5yZEt6RWvB/Q=="
         }
       },
       "is_incremental": false,
@@ -865,7 +865,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.PageCoverage.CoverageEntryRange.html",
-          "hash": "aX2Mjagy+VglThtLY+ipZg=="
+          "hash": "T2e4wkGPaNdDTxbdqpW6eQ=="
         }
       },
       "is_incremental": false,
@@ -877,7 +877,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.PageCoverage.CoverageStartOptions.html",
-          "hash": "FRxV3fc74kXSt2jv6sPgoA=="
+          "hash": "ZnfnYsVFKP8xWL45igMuqg=="
         }
       },
       "is_incremental": false,
@@ -889,7 +889,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.PageCoverage.html",
-          "hash": "zE55TriI6EqdF7ygfwsK/w=="
+          "hash": "JULsKqcY1n62jT/KOIHzyA=="
         }
       },
       "is_incremental": false,
@@ -901,7 +901,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.PageErrorEventArgs.html",
-          "hash": "/5W9AVlqYGXgNoqDxft4GA=="
+          "hash": "GRUDbawEMgESR0vQNWit4A=="
         }
       },
       "is_incremental": false,
@@ -913,7 +913,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Payload.html",
-          "hash": "uEO2IP79hmygE92mfOFDeg=="
+          "hash": "q6gg3092xd85pFbjrW2+8A=="
         }
       },
       "is_incremental": false,
@@ -925,7 +925,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.PdfOptions.html",
-          "hash": "Sy8UxqpkH5cNj45sLx2fKg=="
+          "hash": "3oZUHWLJy4hgw8L55dOxDw=="
         }
       },
       "is_incremental": false,
@@ -937,7 +937,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Platform.html",
-          "hash": "VXhurTIGOEAn9vzktbaTOg=="
+          "hash": "K+tBVJ3RPoKPg+JUuk1jBg=="
         }
       },
       "is_incremental": false,
@@ -949,7 +949,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Puppeteer.html",
-          "hash": "iHcE3XU6cdRtlb7+o/F4Qw=="
+          "hash": "TLMq/+ECs6cc0eGrJodOMw=="
         }
       },
       "is_incremental": false,
@@ -961,7 +961,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.PuppeteerException.html",
-          "hash": "eiapvBlut25gofoT6z1LHQ=="
+          "hash": "Nr+UXpjBv2zrBIVok704vQ=="
         }
       },
       "is_incremental": false,
@@ -973,7 +973,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.RemoteAddress.html",
-          "hash": "T4QgtpAAipt/nzErgojqtA=="
+          "hash": "0YyCNI15srEKnh5C6piNog=="
         }
       },
       "is_incremental": false,
@@ -985,7 +985,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Request.html",
-          "hash": "G+OOghhwjiVQK3A0+iPZKw=="
+          "hash": "ify1oDbaKla6qbnxxhelFw=="
         }
       },
       "is_incremental": false,
@@ -997,7 +997,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.RequestAbortErrorCode.html",
-          "hash": "2UkwLXP7SsUyR7U2XXIMQA=="
+          "hash": "+xLte/elyt7owWa2SAUmWQ=="
         }
       },
       "is_incremental": false,
@@ -1009,7 +1009,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.RequestEventArgs.html",
-          "hash": "7YIsneM6UWmYUCaQsLoqRA=="
+          "hash": "lmzz8GARBKOuq7Pheztgmg=="
         }
       },
       "is_incremental": false,
@@ -1021,7 +1021,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.ResourceType.html",
-          "hash": "seUMeFBo6wCLkbT0yhq6YQ=="
+          "hash": "/ORyx4qxCQAhCInoQew53g=="
         }
       },
       "is_incremental": false,
@@ -1033,7 +1033,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Response.html",
-          "hash": "bNfo9QerbXRPOjMbOtw2gg=="
+          "hash": "8TOIMeuxFYOCt+QfuUXdfg=="
         }
       },
       "is_incremental": false,
@@ -1045,7 +1045,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.ResponseCreatedEventArgs.html",
-          "hash": "CBGIWWUk0yt5x+YwfXXY2g=="
+          "hash": "cHlXaeQSxmMCX85yFhtaJw=="
         }
       },
       "is_incremental": false,
@@ -1057,7 +1057,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.ResponseData.html",
-          "hash": "t6xPWxknhFyct/Y3UhT84g=="
+          "hash": "RJK4dt6jIZl7DV2VHidlVw=="
         }
       },
       "is_incremental": false,
@@ -1069,7 +1069,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.RevisionInfo.html",
-          "hash": "IBXVp/UgAmFaIwWFj8eUJg=="
+          "hash": "5mtD6fv8fy15Y7U/MqAUvg=="
         }
       },
       "is_incremental": false,
@@ -1081,7 +1081,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.ScreenshotOptions.html",
-          "hash": "pf4TiSfFBpCLuzfIxzzrKA=="
+          "hash": "6YLThCs9gmX8L2iH/Ab6/g=="
         }
       },
       "is_incremental": false,
@@ -1093,7 +1093,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.ScreenshotType.html",
-          "hash": "qiOIR5WJ21kzWQKuDowOAQ=="
+          "hash": "kEm2lOJfkOC14sKu7fa06g=="
         }
       },
       "is_incremental": false,
@@ -1105,7 +1105,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.SecurityDetails.html",
-          "hash": "bosfGbQgyFyhQbcPhATrew=="
+          "hash": "5sfKPiDYrRP5vY57S9vS3Q=="
         }
       },
       "is_incremental": false,
@@ -1117,7 +1117,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.SelectorException.html",
-          "hash": "88vO09vq/NkUQpfCGB6Beg=="
+          "hash": "JVBgdZi1PiNbhrYJkxRVVg=="
         }
       },
       "is_incremental": false,
@@ -1129,7 +1129,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Target.html",
-          "hash": "JHgFJQHBCaE1DUuXXMN3kw=="
+          "hash": "YyHRbq7yk0ahu3+L/X+82w=="
         }
       },
       "is_incremental": false,
@@ -1141,7 +1141,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.TargetChangedArgs.html",
-          "hash": "VDv/LUcYRpSI4xKZoV5HOA=="
+          "hash": "mn0IvTxVSP0LLOO9aCodrQ=="
         }
       },
       "is_incremental": false,
@@ -1153,7 +1153,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.TargetClosedException.html",
-          "hash": "nRd44HV0U72mrlAaqZABAg=="
+          "hash": "0L0Bqbjw9FSX3mgraRVoJQ=="
         }
       },
       "is_incremental": false,
@@ -1165,7 +1165,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.TargetInfo.html",
-          "hash": "w6jmj1fgWCtjYZBMQiengg=="
+          "hash": "7v6S4lCfc7nJGmXxSuJqfQ=="
         }
       },
       "is_incremental": false,
@@ -1177,7 +1177,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.TargetType.html",
-          "hash": "TxFDG4LMQ2z9jh0FM6VVGw=="
+          "hash": "TU+RMqEgGglrWjvgFpkOMg=="
         }
       },
       "is_incremental": false,
@@ -1189,7 +1189,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Tracing.html",
-          "hash": "9hQyGfpQfTqDXSI7HPYpiw=="
+          "hash": "DESNw1c5zJYYN8MnAF4x+g=="
         }
       },
       "is_incremental": false,
@@ -1201,7 +1201,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.TracingCompleteEventArgs.html",
-          "hash": "zc8MtEAB8Id16YChBgbW2g=="
+          "hash": "o19S2oiwCSEQ1Nc7pZ+9qA=="
         }
       },
       "is_incremental": false,
@@ -1213,7 +1213,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.TracingOptions.html",
-          "hash": "2Ndrs0hQvwe/yMU9oq/IFw=="
+          "hash": "+yAB4qrrGgQteIHXM+Cc4g=="
         }
       },
       "is_incremental": false,
@@ -1225,7 +1225,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Transport.IConnectionTransport.html",
-          "hash": "maRhEgn6c9zsAC8yRr/6oA=="
+          "hash": "5eTEJ6YhsKm6TCYus99eBw=="
         }
       },
       "is_incremental": false,
@@ -1237,7 +1237,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Transport.MessageReceivedEventArgs.html",
-          "hash": "DJC4fgq7gEDQNOVQYnQsig=="
+          "hash": "9ZbpeZO+krc3vXVkU5vtfw=="
         }
       },
       "is_incremental": false,
@@ -1249,7 +1249,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Transport.TransportClosedEventArgs.html",
-          "hash": "56JvnJwZKnBAFnp0AH5dzQ=="
+          "hash": "0nCUTN9blmM1C4r5lTdLfg=="
         }
       },
       "is_incremental": false,
@@ -1261,7 +1261,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Transport.WebSocketTransport.html",
-          "hash": "qTYFISFxAfFaa3EeFFPJdg=="
+          "hash": "nZ7gjcX64bg2LDtO4OtVvg=="
         }
       },
       "is_incremental": false,
@@ -1273,7 +1273,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Transport.html",
-          "hash": "uHAHcfu5sbQ3CTHuRVmBZw=="
+          "hash": "SVLPTlxTpbVZhEU41SYI7Q=="
         }
       },
       "is_incremental": false,
@@ -1285,7 +1285,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.ViewPortOptions.html",
-          "hash": "EKCqSJvui+B3U/ZwIx6R/Q=="
+          "hash": "lDRGLMiXqVPTe8yu+XDW7g=="
         }
       },
       "is_incremental": false,
@@ -1297,7 +1297,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.WaitForFunctionOptions.html",
-          "hash": "tDLMvmTnBSrZQmA47v19Lw=="
+          "hash": "NU0xVqR1rdeyqO1A4na3+A=="
         }
       },
       "is_incremental": false,
@@ -1309,7 +1309,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.WaitForFunctionPollingOption.html",
-          "hash": "nW3qIZAhBx2Yr/qWVs/tKw=="
+          "hash": "7OfpAA7+Izem8iMTMXB6hA=="
         }
       },
       "is_incremental": false,
@@ -1321,7 +1321,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.WaitForOptions.html",
-          "hash": "94bDm8dKmyC7iOvM9FS3jA=="
+          "hash": "g1/28dOa2OetTI7J0Cl5MA=="
         }
       },
       "is_incremental": false,
@@ -1333,7 +1333,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.WaitForSelectorOptions.html",
-          "hash": "5+6abasyRJKrwYmWURCWRQ=="
+          "hash": "sJ1AimY56J4m14Idh48IGQ=="
         }
       },
       "is_incremental": false,
@@ -1345,7 +1345,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.WaitTaskTimeoutException.html",
-          "hash": "QMEthQ0xHFCweoj3GLJT9Q=="
+          "hash": "MLIe2WrWzGkFSyRtn+E99Q=="
         }
       },
       "is_incremental": false,
@@ -1357,7 +1357,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.WaitUntilNavigation.html",
-          "hash": "XXuW8ae+e/QlzvTeNfrE5Q=="
+          "hash": "OpmTPlrhklB5hF0XQ32VJw=="
         }
       },
       "is_incremental": false,
@@ -1369,7 +1369,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.Worker.html",
-          "hash": "UtrUTkuShH9SrzdJeeIDwA=="
+          "hash": "CB8cTLbG2hK/yxmtRLq8iw=="
         }
       },
       "is_incremental": false,
@@ -1381,7 +1381,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.WorkerEventArgs.html",
-          "hash": "9gXxwBdm2/oWXbNaBZT5gg=="
+          "hash": "2aJH3GTAObdQBkoyMUetHQ=="
         }
       },
       "is_incremental": false,
@@ -1393,7 +1393,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PuppeteerSharp.html",
-          "hash": "88OuuPEQVCKMgsMiS6TPzQ=="
+          "hash": "bG9zV7uzzqrv4TKbmuCmvw=="
         }
       },
       "is_incremental": false,
@@ -1405,7 +1405,7 @@
       "output": {
         ".html": {
           "relative_path": "api/index.html",
-          "hash": "FXsg9R5d71Kx/ntKcq5bwQ=="
+          "hash": "CFhZcaeyTARjC5ZM8ct6Vg=="
         }
       },
       "is_incremental": false,
@@ -1429,7 +1429,7 @@
       "output": {
         ".html": {
           "relative_path": "examples/Page.EvaluateExpressionAsync.GetAllLinks.html",
-          "hash": "xaXB9DVYMxWPJd2Q9ceL4g=="
+          "hash": "zZxngDjx027qBBqXGAPljg=="
         }
       },
       "is_incremental": false,
@@ -1441,7 +1441,7 @@
       "output": {
         ".html": {
           "relative_path": "examples/Page.EvaluateFunctionAsync.ComplexJSObjects.html",
-          "hash": "cepb0TEa07+nlGnhRndzQA=="
+          "hash": "BHDe+uily+/AgFQwkWUgvQ=="
         }
       },
       "is_incremental": false,
@@ -1453,7 +1453,7 @@
       "output": {
         ".html": {
           "relative_path": "examples/Page.ScreenshotAsync.html",
-          "hash": "EthU6m8VwNXXwuv6RBF31Q=="
+          "hash": "qHYHaQ1t6zUi+UR3aupfBQ=="
         }
       },
       "is_incremental": false,
@@ -1465,7 +1465,7 @@
       "output": {
         ".html": {
           "relative_path": "examples/Page.WaitForSelectorAsync.Searching.html",
-          "hash": "6R7vx4hFYMGBB5XBv0y32A=="
+          "hash": "1yvxOVZLjHodccqjYmfcbQ=="
         }
       },
       "is_incremental": false,
@@ -1477,7 +1477,7 @@
       "output": {
         ".html": {
           "relative_path": "examples/ReuseChrome.html",
-          "hash": "MUzAAI1Wc1KPRXx1MuVhHg=="
+          "hash": "lY5PQcT7yHfnF0VOdCWY0Q=="
         }
       },
       "is_incremental": false,
@@ -1489,7 +1489,7 @@
       "output": {
         ".html": {
           "relative_path": "examples/index.html",
-          "hash": "W5l1AHZQugMNZxLT8vDywA=="
+          "hash": "CpkQp7kdqaSAs9ihWbD1oQ=="
         }
       },
       "is_incremental": false,
@@ -1513,7 +1513,7 @@
       "output": {
         ".html": {
           "relative_path": "index.html",
-          "hash": "CIBgSVkhHrUFJiU7qnLWJQ=="
+          "hash": "Cy/k6sNGlXwYPCGjRNiWGA=="
         }
       },
       "is_incremental": false,
@@ -1545,11 +1545,11 @@
           "details": "Processor TocDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
           "incrementalPhase": "build"
         },
-        "ConceptualDocumentProcessor": {
+        "ManagedReferenceDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build"
         },
-        "ManagedReferenceDocumentProcessor": {
+        "ConceptualDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build"
         }
