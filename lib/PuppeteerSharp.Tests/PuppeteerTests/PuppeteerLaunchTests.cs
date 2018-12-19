@@ -265,7 +265,6 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
 
             await chromiumProcess.StartAsync().ConfigureAwait(false);
 
-
             var browser = await Puppeteer.ConnectAsync(new ConnectOptions
             {
                 BrowserWSEndpoint = chromiumProcess.EndPoint
