@@ -66,10 +66,10 @@ namespace PuppeteerSharp
                 contextId => contextId,
                 contextId => new BrowserContext(Connection, this, contextId));
 
-            Connection.Disconnected += (object sender, EventArgs e) => Disconnected?.Invoke(this, new EventArgs());
+            Connection.Disconnected += Connection_Disconnected;
             Connection.MessageReceived += Connect_MessageReceived;
 
-            _chromiumProcess = chromiumProcess;
+            ChromiumProcess = chromiumProcess;
             _logger = Connection.LoggerFactory.CreateLogger<Browser>();
         }
 
@@ -79,7 +79,6 @@ namespace PuppeteerSharp
 
         private readonly Dictionary<string, BrowserContext> _contexts;
         private readonly ILogger<Browser> _logger;
-        private readonly ChromiumProcess _chromiumProcess;
         private Task _closeTask;
 
         #endregion
@@ -128,7 +127,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets the spawned browser process. Returns <c>null</c> if the browser instance was created with <see cref="Puppeteer.ConnectAsync(ConnectOptions, ILoggerFactory)"/> method.
         /// </summary>
-        public Process Process => _chromiumProcess?.Process;
+        public Process Process => ChromiumProcess?.Process;
 
         /// <summary>
         /// Gets or Sets whether to ignore HTTPS errors during navigation
@@ -142,11 +141,11 @@ namespace PuppeteerSharp
         {
             get
             {
-                if (_chromiumProcess == null)
+                if (ChromiumProcess == null)
                 {
                     return Connection.IsClosed;
                 }
-                return _closeTask != null && _closeTask.IsCompleted && _closeTask.Exception != null;
+                return _closeTask != null && _closeTask.IsCompleted;
             }
         }
 
@@ -159,6 +158,7 @@ namespace PuppeteerSharp
         internal TaskQueue ScreenshotTaskQueue { get; set; }
         internal Connection Connection { get; }
         internal ViewPortOptions DefaultViewport { get; }
+        internal ChromiumProcess ChromiumProcess { get; set; }
 
         /// <summary>
         /// Dafault wait time in milliseconds. Defaults to 30 seconds.
@@ -339,14 +339,16 @@ namespace PuppeteerSharp
                 {
                     // Initiate graceful browser close operation but don't await it just yet,
                     // because we want to ensure chromium process shutdown first.
-                    var browserCloseTask = Connection.SendAsync("Browser.close", null);
+                    var browserCloseTask = Connection.IsClosed
+                        ? Task.CompletedTask
+                        : Connection.SendAsync("Browser.close", null);
 
-                    if (_chromiumProcess != null)
+                    if (ChromiumProcess != null)
                     {
                         // Notify chromium process that exit is expected, but should be enforced if it
                         // doesn't occur withing the close timeout.
                         var closeTimeout = TimeSpan.FromMilliseconds(CloseTimeout);
-                        await _chromiumProcess.EnsureExitAsync(closeTimeout).ConfigureAwait(false);
+                        await ChromiumProcess.EnsureExitAsync(closeTimeout).ConfigureAwait(false);
                     }
 
                     // Now we can safely await the browser close operation without risking keeping chromium
@@ -362,9 +364,9 @@ namespace PuppeteerSharp
             {
                 _logger.LogError(ex, ex.Message);
 
-                if (_chromiumProcess != null)
+                if (ChromiumProcess != null)
                 {
-                    await _chromiumProcess.KillAsync().ConfigureAwait(false);
+                    await ChromiumProcess.KillAsync().ConfigureAwait(false);
                 }
             }
 
@@ -399,6 +401,21 @@ namespace PuppeteerSharp
         {
             await Connection.SendAsync("Target.disposeBrowserContext", new { browserContextId = contextId }).ConfigureAwait(false);
             _contexts.Remove(contextId);
+        }
+
+        private async void Connection_Disconnected(object sender, EventArgs e)
+        {
+            try
+            {
+                await CloseAsync();
+                Disconnected?.Invoke(this, new EventArgs());
+            }
+            catch (Exception ex)
+            {
+                var message = $"Browser failed to process Connection Close. {ex.Message}. {ex.StackTrace}";
+                _logger.LogError(ex, message);
+                Connection.Close(message);
+            }
         }
 
         private async void Connect_MessageReceived(object sender, MessageEventArgs e)

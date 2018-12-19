@@ -255,8 +255,9 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         }
 
         [Fact]
-        public async Task ShouldCloseTheBrowserWhenTheProcessCloses()
+        public async Task ShouldCloseTheBrowserWhenTheConnectedProcessCloses()
         {
+            var browserClosedTaskWrapper = new TaskCompletionSource<bool>();
             var chromiumProcess = new ChromiumProcess(
                 new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath,
                 new LaunchOptions { Headless = true },
@@ -264,8 +265,6 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
 
             await chromiumProcess.StartAsync().ConfigureAwait(false);
 
-            var webSocketTaskWrapper = new TaskCompletionSource<string>();
-            var browserClosedTaskWrapper = new TaskCompletionSource<bool>();
 
             var browser = await Puppeteer.ConnectAsync(new ConnectOptions
             {
@@ -278,6 +277,23 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             };
 
             KillProcess(chromiumProcess.Process.Id);
+
+            await browserClosedTaskWrapper.Task;
+            Assert.True(browser.IsClosed);
+        }
+
+        [Fact]
+        public async Task ShouldCloseTheBrowserWhenTheLaunchedProcessCloses()
+        {
+            var browserClosedTaskWrapper = new TaskCompletionSource<bool>();
+            var browser = await Puppeteer.LaunchAsync(new LaunchOptions { Headless = true }, TestConstants.LoggerFactory);
+
+            browser.Disconnected += (sender, e) =>
+            {
+                browserClosedTaskWrapper.SetResult(true);
+            };
+
+            KillProcess(browser.ChromiumProcess.Process.Id);
 
             await browserClosedTaskWrapper.Task;
             Assert.True(browser.IsClosed);
