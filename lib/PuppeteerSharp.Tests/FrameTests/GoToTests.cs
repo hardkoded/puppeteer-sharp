@@ -77,8 +77,9 @@ namespace PuppeteerSharp.Tests.FrameTests
             {
                 serverResponses[i].TrySetResult(serverResponseTexts[i]);
                 var response = await navigations[i];
+                var responseText = await response.TextAsync();
                 Assert.Same(frameTasks[i].Result, response.Frame);
-                Assert.Equal(serverResponseTexts[i], await response.TextAsync());
+                Assert.Equal(serverResponseTexts[i], responseText);
             }
         }
     }
