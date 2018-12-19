@@ -62,8 +62,9 @@ namespace PuppeteerSharp
             TargetsMap = new ConcurrentDictionary<string, Target>();
             ScreenshotTaskQueue = new TaskQueue();
             DefaultContext = new BrowserContext(Connection, this, null);
-            _contexts = contextIds.ToDictionary(keySelector: contextId => contextId,
-                elementSelector: contextId => new BrowserContext(Connection, this, contextId));
+            _contexts = contextIds.ToDictionary(
+                contextId => contextId,
+                contextId => new BrowserContext(Connection, this, contextId));
 
             Connection.Disconnected += (object sender, EventArgs e) => Disconnected?.Invoke(this, new EventArgs());
             Connection.MessageReceived += Connect_MessageReceived;
@@ -137,7 +138,17 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets a value indicating if the browser is closed
         /// </summary>
-        public bool IsClosed => _closeTask != null && _closeTask.IsCompleted && _closeTask.Exception != null;
+        public bool IsClosed
+        {
+            get
+            {
+                if (_chromiumProcess == null)
+                {
+                    return Connection.IsClosed;
+                }
+                return _closeTask != null && _closeTask.IsCompleted && _closeTask.Exception != null;
+            }
+        }
 
         /// <summary>
         /// Returns the default browser context. The default browser context can not be closed.

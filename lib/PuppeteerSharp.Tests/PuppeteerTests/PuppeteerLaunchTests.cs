@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
 using Xunit;
@@ -256,24 +257,19 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         [Fact]
         public async Task ShouldCloseTheBrowserWhenTheProcessCloses()
         {
-            var process = GetTestAppProcess(
-                "PuppeteerSharp.Tests.CloseMe",
-                $"\"{new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath}\"");
+            var chromiumProcess = new ChromiumProcess(
+                new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath,
+                new LaunchOptions { Headless = true },
+                TestConstants.LoggerFactory);
+
+            await chromiumProcess.StartAsync().ConfigureAwait(false);
 
             var webSocketTaskWrapper = new TaskCompletionSource<string>();
             var browserClosedTaskWrapper = new TaskCompletionSource<bool>();
 
-            process.StartInfo.UseShellExecute = false;
-            process.StartInfo.RedirectStandardOutput = true;
-
-            process.OutputDataReceived += (sender, e) => webSocketTaskWrapper.TrySetResult(e.Data);
-
-            process.Start();
-            process.BeginOutputReadLine();
-
             var browser = await Puppeteer.ConnectAsync(new ConnectOptions
             {
-                BrowserWSEndpoint = await webSocketTaskWrapper.Task
+                BrowserWSEndpoint = chromiumProcess.EndPoint
             });
 
             browser.Disconnected += (sender, e) =>
@@ -281,10 +277,10 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 browserClosedTaskWrapper.SetResult(true);
             };
 
-            KillProcess(process.Id);
+            KillProcess(chromiumProcess.Process.Id);
 
             await browserClosedTaskWrapper.Task;
-            Assert.True(process.HasExited);
+            Assert.True(browser.IsClosed);
         }
 
         [Fact]
