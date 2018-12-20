@@ -67,13 +67,12 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 options.Args = options.Args.Concat(new[] { $"--user-data-dir=\"{userDataDir}\"" }).ToArray();
                 options.Headless = false;
 
-                using (var browser = await launcher.LaunchAsync(options))
-                {
-                    var page = await browser.NewPageAsync();
-                    await page.GoToAsync(TestConstants.EmptyPage);
-                    await page.EvaluateExpressionAsync(
-                        "document.cookie = 'foo=true; expires=Fri, 31 Dec 9999 23:59:59 GMT'");
-                }
+                var browser = await launcher.LaunchAsync(options);
+                var page = await browser.NewPageAsync();
+                await page.GoToAsync(TestConstants.EmptyPage);
+                await page.EvaluateExpressionAsync(
+                    "document.cookie = 'foo=true; expires=Fri, 31 Dec 9999 23:59:59 GMT'");
+                await browser.CloseAsync();
 
                 options.Headless = true;
                 using (var browser2 = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
