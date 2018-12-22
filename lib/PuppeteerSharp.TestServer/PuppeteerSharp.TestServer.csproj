@@ -2,8 +2,8 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <OutputType>Library</OutputType>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
-
   <ItemGroup>
     <None Remove="testCert.cer" />
   </ItemGroup>
