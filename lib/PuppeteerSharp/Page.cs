@@ -1418,13 +1418,7 @@ namespace PuppeteerSharp
 
             _networkManager.Request += requestEventListener;
 
-            await Task.WhenAny(new[]
-            {
-                TaskHelper.CreateTimeoutTask(timeout),
-                requestTcs.Task
-            }).ConfigureAwait(false);
-
-            return await requestTcs.Task.ConfigureAwait(false);
+            return await requestTcs.Task.WithTimeout(timeout).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -1474,13 +1468,7 @@ namespace PuppeteerSharp
 
             _networkManager.Response += responseEventListener;
 
-            await Task.WhenAny(new[]
-            {
-                TaskHelper.CreateTimeoutTask(timeout),
-                responseTcs.Task
-            }).ConfigureAwait(false);
-
-            return await responseTcs.Task.ConfigureAwait(false);
+            return await responseTcs.Task.WithTimeout(timeout).ConfigureAwait(false);
         }
 
         /// <summary>
