@@ -143,7 +143,7 @@ namespace PuppeteerSharp
         /// Returns a Task which resolves to a text representation of response body
         /// </summary>
         /// <returns>A Task which resolves to a text representation of response body</returns>
-        public async ValueTask<string> TextAsync() => Encoding.UTF8.GetString(await BufferAsync().ConfigureAwait(false));
+        public async Task<string> TextAsync() => Encoding.UTF8.GetString(await BufferAsync().ConfigureAwait(false));
 
         /// <summary>
         /// Returns a Task which resolves to a <see cref="JObject"/> representation of response body
