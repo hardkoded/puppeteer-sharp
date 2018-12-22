@@ -76,32 +76,25 @@ namespace PuppeteerSharp
             var timeout = options?.Timeout ?? DefaultNavigationTimeout;
             using (var watcher = new LifecycleWatcher(this, frame, timeout, options))
             {
-                var navigateTask = NavigateAsync(Client, url, referrer, frame.Id);
-                await Task.WhenAny(
-                    watcher.TimeoutOrTerminationTask,
-                    navigateTask).ConfigureAwait(false);
+                try
+                {
+                    var navigateTask = NavigateAsync(Client, url, referrer, frame.Id);
+                    var task = await Task.WhenAny(
+                        watcher.TimeoutOrTerminationTask,
+                        navigateTask).ConfigureAwait(false);
 
-                AggregateException exception = null;
-                if (navigateTask.IsFaulted)
-                {
-                    exception = navigateTask.Exception;
-                }
-                else
-                {
-                    await Task.WhenAny(
+                    await task;
+
+                    task = await Task.WhenAny(
                         watcher.TimeoutOrTerminationTask,
                         _ensureNewDocumentNavigation ? watcher.NewDocumentNavigationTask : watcher.SameDocumentNavigationTask
                     ).ConfigureAwait(false);
 
-                    if (watcher.TimeoutOrTerminationTask.IsCompleted && watcher.TimeoutOrTerminationTask.Result.IsFaulted)
-                    {
-                        exception = watcher.TimeoutOrTerminationTask.Result.Exception;
-                    }
+                    await task;
                 }
-
-                if (exception != null)
+                catch (Exception ex)
                 {
-                    throw new NavigationException(exception.InnerException.Message, exception.InnerException);
+                    throw new NavigationException(ex.Message, ex);
                 }
 
                 return watcher.NavigationResponse;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp.Helpers
@@ -8,23 +9,33 @@ namespace PuppeteerSharp.Helpers
     /// </summary>
     public static class TaskHelper
     {
+        //Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
         /// <summary>
-        /// Creates a timeout task. It will throw a <see cref="TimeoutException"/> after <paramref name="timeout"/> milliseconds
+        /// Cancels the <paramref name="task"/> after <paramref name="milliseconds"/> milliseconds
         /// </summary>
-        /// <param name="timeout">Timeout in milliseconds</param>
-        /// <returns>The timeout task.</returns>
-        /// <exception cref="TimeoutException"></exception>
-        public static async Task CreateTimeoutTask(int timeout)
+        /// <returns>The task result.</returns>
+        /// <param name="task">Task to wait for.</param>
+        /// <param name="milliseconds">Milliseconds timeout.</param>
+        /// <typeparam name="T">Task return type.</typeparam>
+        public static async Task<T> WithTimeout<T>(this Task<T> task, int milliseconds)
         {
-            if (timeout == 0)
+            var tcs = new TaskCompletionSource<bool>();
+            var cancellationToken = new CancellationTokenSource();
+
+            if (milliseconds > 0)
             {
-                await Task.Delay(-1).ConfigureAwait(false);
+                cancellationToken.CancelAfter(milliseconds);
             }
-            else
+
+            using (cancellationToken.Token.Register(s => ((TaskCompletionSource<bool>)s).TrySetResult(true), tcs))
             {
-                await Task.Delay(timeout).ConfigureAwait(false);
-                throw new TimeoutException($"Timeout Exceeded: {timeout}ms exceeded");
+                if (task != await Task.WhenAny(task, tcs.Task))
+                {
+                    throw new TimeoutException($"Timeout Exceeded: {milliseconds}ms exceeded");
+                }
             }
+
+            return await task;
         }
     }
 }

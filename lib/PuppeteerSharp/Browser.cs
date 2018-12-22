@@ -312,17 +312,7 @@ namespace PuppeteerSharp
                 TargetCreated += TargetHandler;
                 TargetChanged += TargetHandler;
 
-                var task = await Task.WhenAny(new[]
-                {
-                    TaskHelper.CreateTimeoutTask(timeout),
-                    targetCompletionSource.Task
-                }).ConfigureAwait(false);
-
-                // if this was the timeout task, this will throw a timeout exception
-                // othewise this is the targetCompletionSource task which has already
-                // completed
-                await task;
-                return await targetCompletionSource.Task;
+                return await targetCompletionSource.Task.WithTimeout(timeout).ConfigureAwait(false);
             }
             finally
             {
