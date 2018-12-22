@@ -116,7 +116,7 @@ namespace PuppeteerSharp
             }
 
             await Transport.SendAsync(message).ConfigureAwait(false);
-            return waitForCallback ? await callback.TaskWrapper.Task.ConfigureAwait(false) : null;
+            return waitForCallback ? await callback.TaskWrapper.Task.WithConnectionCheck(this).ConfigureAwait(false) : null;
         }
 
         internal async Task<T> SendAsync<T>(string method, dynamic args = null)
