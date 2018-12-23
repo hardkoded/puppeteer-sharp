@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Tests.WorkerTests
 {
@@ -14,17 +15,22 @@ namespace PuppeteerSharp.Tests.WorkerTests
         [Fact]
         public async Task PageWorkers()
         {
-            var pageCreatedCompletion = new TaskCompletionSource<bool>();
-            Page.WorkerCreated += (sender, e) => pageCreatedCompletion.TrySetResult(true);
+            var workerCreatedTcs = new TaskCompletionSource<bool>();
+            var workerDestroyedTcs = new TaskCompletionSource<bool>();
+
+            Page.WorkerCreated += (sender, e) => workerCreatedTcs.TrySetResult(true);
+            Page.WorkerDestroyed += (sender, e) => workerDestroyedTcs.TrySetResult(true);
+
             await Task.WhenAll(
-                    pageCreatedCompletion.Task,
-                    Page.GoToAsync(TestConstants.ServerUrl + "/worker/worker.html"));
+                workerCreatedTcs.Task,
+                Page.GoToAsync(TestConstants.ServerUrl + "/worker/worker.html"));
             var worker = Page.Workers[0];
             Assert.Contains("worker.js", worker.Url);
 
             Assert.Equal("worker function result", await worker.EvaluateExpressionAsync<string>("self.workerFunction()"));
 
             await Page.GoToAsync(TestConstants.EmptyPage);
+            await workerDestroyedTcs.Task.WithTimeout(1000);
             Assert.Empty(Page.Workers);
         }
 
