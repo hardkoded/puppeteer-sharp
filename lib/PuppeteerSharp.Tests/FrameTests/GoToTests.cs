@@ -71,7 +71,7 @@ namespace PuppeteerSharp.Tests.FrameTests
 
             for (var i = 0; i < 3; ++i)
             {
-                var waitRequestTask = Server.WaitForRequest($"/one-style.html");
+                var waitRequestTask = Server.WaitForRequest("/one-style.html");
                 matchingData[i].NavigationTask = matchingData[i].FrameTask.Result.GoToAsync($"{TestConstants.ServerUrl}/one-style.html?index={i}");
                 await waitRequestTask;
             }
