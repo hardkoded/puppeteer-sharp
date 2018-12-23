@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
@@ -34,6 +35,8 @@ namespace PuppeteerSharp.Tests.PageTests
             {
                 return responseCompleted.Task;
             });
+
+            var waitForRequestTask = Server.WaitForRequest("/one-style.css");
             var navigationTask = Page.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
             var domContentLoadedTask = Page.WaitForNavigationAsync(new NavigationOptions
             {
@@ -50,12 +53,12 @@ namespace PuppeteerSharp.Tests.PageTests
                 }
             }).ContinueWith(_ => bothFired = true);
 
-            await Server.WaitForRequest("/one-style.css");
-            await domContentLoadedTask;
+            await waitForRequestTask.WithTimeout();
+            await domContentLoadedTask.WithTimeout();
             Assert.False(bothFired);
             responseCompleted.SetResult(true);
-            await bothFiredTask;
-            await navigationTask;
+            await bothFiredTask.WithTimeout();
+            await navigationTask.WithTimeout();
         }
 
         [Fact]
