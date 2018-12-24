@@ -30,7 +30,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.Equal("worker function result", await worker.EvaluateExpressionAsync<string>("self.workerFunction()"));
 
             await Page.GoToAsync(TestConstants.EmptyPage);
-            await workerDestroyedTcs.Task.WithTimeout(1000);
+            await workerDestroyedTcs.Task.WithTimeout();
             Assert.Empty(Page.Workers);
         }
 
