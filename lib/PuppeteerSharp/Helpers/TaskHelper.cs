@@ -71,16 +71,19 @@ namespace PuppeteerSharp.Helpers
             var tcs = new TaskCompletionSource<bool>();
 
             void Connection_Disconnected(object sender, EventArgs e) => tcs.SetResult(true);
-
             connection.Disconnected += Connection_Disconnected;
 
-            if (task != await Task.WhenAny(task, tcs.Task))
+            try
             {
-                throw new TargetClosedException("Navigation failed because browser has disconnected!", connection.CloseReason);
+                if (task != await Task.WhenAny(task, tcs.Task))
+                {
+                    throw new TargetClosedException("Navigation failed because browser has disconnected!", connection.CloseReason);
+                }
             }
-
-            connection.Disconnected -= Connection_Disconnected;
-
+            finally
+            {
+                connection.Disconnected -= Connection_Disconnected;
+            }
             return await task;
         }
     }
