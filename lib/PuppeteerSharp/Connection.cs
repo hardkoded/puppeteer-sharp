@@ -87,7 +87,7 @@ namespace PuppeteerSharp
 
         #region Public Methods
 
-        internal async Task<JObject> SendAsync(string method, dynamic args = null, bool waitForCallback = true)
+        internal async Task<JObject> SendAsync(string method, object args = null, bool waitForCallback = true)
         {
             if (IsClosed)
             {
@@ -119,9 +119,9 @@ namespace PuppeteerSharp
             return waitForCallback ? await callback.TaskWrapper.Task.WithConnectionCheck(this).ConfigureAwait(false) : null;
         }
 
-        internal async Task<T> SendAsync<T>(string method, dynamic args = null)
+        internal async Task<T> SendAsync<T>(string method, object args = null)
         {
-            JToken response = await SendAsync(method, args).ConfigureAwait(false);
+            var response = await SendAsync(method, args).ConfigureAwait(false);
             return response.ToObject<T>(true);
         }
 
@@ -305,7 +305,7 @@ namespace PuppeteerSharp
         #region IConnection
         ILoggerFactory IConnection.LoggerFactory => LoggerFactory;
         bool IConnection.IsClosed => IsClosed;
-        Task<JObject> IConnection.SendAsync(string method, dynamic args, bool waitForCallback)
+        Task<JObject> IConnection.SendAsync(string method, object args, bool waitForCallback)
             => SendAsync(method, args, waitForCallback);
         IConnection IConnection.Connection => null;
         void IConnection.Close(string closeReason) => Close(closeReason);
