@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Messaging;
 using PuppeteerSharp.Helpers;
+using static PuppeteerSharp.Messaging.RuntimeQueryObjectsResponse;
 
 namespace PuppeteerSharp
 {
@@ -116,12 +117,12 @@ namespace PuppeteerSharp
                 throw new PuppeteerException("Prototype JSHandle must not be referencing primitive value");
             }
 
-            var response = await _client.SendAsync("Runtime.queryObjects", new Dictionary<string, object>
+            var response = await _client.SendAsync<RuntimeQueryObjectsResponse>("Runtime.queryObjects", new Dictionary<string, object>
             {
                 {"prototypeObjectId", objectId.ToString()}
             }).ConfigureAwait(false);
 
-            return CreateJSHandle(response[MessageKeys.Objects]);
+            return CreateJSHandle(response.Objects);
         }
 
         internal async Task<JSHandle> EvaluateExpressionHandleAsync(string script)
@@ -173,8 +174,8 @@ namespace PuppeteerSharp
             }
         }
 
-        internal JSHandle CreateJSHandle(dynamic remoteObject)
-            => (remoteObject.subtype == "node" && Frame != null)
+        internal JSHandle CreateJSHandle(JToken remoteObject)
+            => (remoteObject.SelectToken(MessageKeys.Subtype).AsString() == "node" && Frame != null)
                 ? new ElementHandle(this, _client, remoteObject, Frame.FrameManager.Page, Frame.FrameManager)
                 : new JSHandle(this, _client, remoteObject);
 

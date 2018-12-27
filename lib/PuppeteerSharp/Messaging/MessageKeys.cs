@@ -21,7 +21,6 @@
         public const string PromptText = "promptText";
         public const string Enumerable = "enumerable";
         public const string Data = "data";
-        public const string Objects = "objects";
         public const string Name = "name";
         public const string Value = "value";
         public const string Text = "text";
