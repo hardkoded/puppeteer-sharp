@@ -8,7 +8,7 @@ environment:
   git_access_token:
     secure: FxcQ9C8a/NgcQB5dFdZts6ZWEDT4zMhA4qPQAYwWc7huMmhmTIl1sbFEIaAWQMTL
   matrix:
-    - framework: netcoreapp2.0
+    - framework: netcoreapp2.2
 
 before_build:
 - sh: >-
