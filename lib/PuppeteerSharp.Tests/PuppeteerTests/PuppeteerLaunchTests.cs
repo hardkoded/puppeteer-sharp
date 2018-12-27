@@ -449,7 +449,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 dir,
                 "bin",
                 build,
-                "netcoreapp2.0");
+                "netcoreapp2.2");
 #else
             return Path.Combine(
                 TestUtils.FindParentDirectory("lib"),

@@ -9,7 +9,7 @@ environment:
     secure: FxcQ9C8a/NgcQB5dFdZts6ZWEDT4zMhA4qPQAYwWc7huMmhmTIl1sbFEIaAWQMTL
   matrix:
     - framework: net471
-    - framework: netcoreapp2.0
+    - framework: netcoreapp2.2
 install:
 - ps: >-
     if($env:APPVEYOR_REPO_TAG -eq 'True' -And $env:framework -eq 'netcoreapp2.0') {
