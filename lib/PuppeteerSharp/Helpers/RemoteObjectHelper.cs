@@ -56,7 +56,7 @@ namespace PuppeteerSharp.Helpers
             }
         }
 
-        internal static async Task ReleaseObject(CDPSession client, JToken remoteObject, ILogger logger)
+        internal static async Task ReleaseObjectAsync(CDPSession client, JToken remoteObject, ILogger logger)
         {
             var objectId = remoteObject[MessageKeys.ObjectId]?.AsString();
 

@@ -202,17 +202,17 @@ namespace PuppeteerSharp
             return result is JToken token && token.Type == JTokenType.Null ? default : result;
         }
 
-        private async Task<JSHandle> EvaluateHandleAsync(string method, dynamic args)
+        private async Task<JSHandle> EvaluateHandleAsync(string method, object args)
         {
-            var response = await _client.SendAsync(method, args).ConfigureAwait(false);
+            var response = await _client.SendAsync<EvaluateHandleResponse>(method, args).ConfigureAwait(false);
 
-            if (response[MessageKeys.ExceptionDetails] is JToken exceptionDetails)
+            if (response.ExceptionDetails != null)
             {
                 throw new EvaluationFailedException("Evaluation failed: " +
-                    GetExceptionMessage(exceptionDetails.ToObject<EvaluateExceptionResponseDetails>(true)));
+                    GetExceptionMessage(response.ExceptionDetails.ToObject<EvaluateExceptionResponseDetails>(true)));
             }
 
-            return CreateJSHandle(response.result);
+            return CreateJSHandle(response.Result);
         }
 
         private object FormatArgument(object arg)

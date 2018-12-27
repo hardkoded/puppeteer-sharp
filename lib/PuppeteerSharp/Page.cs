@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Dynamic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -1679,18 +1678,19 @@ namespace PuppeteerSharp
                 }
             }
 
-            dynamic screenMessage = new ExpandoObject();
-
-            screenMessage.format = type.ToString().ToLower();
+            var screenMessage = new PageCaptureScreenshotRequest
+            {
+                Format = type.ToString().ToLower()
+            };
 
             if (options.Quality.HasValue)
             {
-                screenMessage.quality = options.Quality.Value;
+                screenMessage.Quality = options.Quality.Value;
             }
 
             if (clip != null)
             {
-                screenMessage.clip = clip;
+                screenMessage.Clip = clip;
             }
 
             var result = await Client.SendAsync<PageCaptureScreenshotResponse>("Page.captureScreenshot", screenMessage).ConfigureAwait(false);
@@ -1797,7 +1797,7 @@ namespace PuppeteerSharp
                         OnDetachedFromTarget(e);
                         break;
                     case "Log.entryAdded":
-                        OnLogEntryAdded(e.MessageData.ToObject<LogEntryAddedResponse>(true));
+                        await OnLogEntryAddedAsync(e.MessageData.ToObject<LogEntryAddedResponse>(true)).ConfigureAwait(false);
                         break;
                     case "Runtime.bindingCalled":
                         await OnBindingCalled(e.MessageData.ToObject<BindingCalledResponse>(true)).ConfigureAwait(false);
@@ -1851,6 +1851,7 @@ namespace PuppeteerSharp
 
         private async Task<object> ExecuteBinding(BindingCalledResponse e)
         {
+            const string taskResultPropertyName = "Result";
             object result;
             var binding = _pageBindings[e.BindingPayload.Name];
             var methodParams = binding.Method.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
@@ -1865,7 +1866,7 @@ namespace PuppeteerSharp
                 if (taskResult.GetType().IsGenericType)
                 {
                     // the task is already awaited and therefore the call to property Result will not deadlock
-                    result = ((dynamic)taskResult).Result;
+                    result = taskResult.GetType().GetProperty(taskResultPropertyName).GetValue(taskResult);
                 }
             }
 
@@ -1904,13 +1905,13 @@ namespace PuppeteerSharp
             WorkerCreated?.Invoke(this, new WorkerEventArgs(worker));
         }
 
-        private void OnLogEntryAdded(LogEntryAddedResponse e)
+        private async Task OnLogEntryAddedAsync(LogEntryAddedResponse e)
         {
             if (e.Entry.Args != null)
             {
                 foreach (var arg in e.Entry?.Args)
                 {
-                    RemoteObjectHelper.ReleaseObject(Client, arg, _logger);
+                    await RemoteObjectHelper.ReleaseObjectAsync(Client, arg, _logger);
                 }
             }
             if (e.Entry.Source != TargetType.Worker)
@@ -1982,7 +1983,7 @@ namespace PuppeteerSharp
         private Task OnConsoleAPI(PageConsoleResponse message)
         {
             var ctx = _frameManager.ExecutionContextById(message.ExecutionContextId);
-            var values = message.Args.Select<dynamic, JSHandle>(i => ctx.CreateJSHandle(i)).ToArray();
+            var values = message.Args.Select<JToken, JSHandle>(i => ctx.CreateJSHandle(i)).ToArray();
             return AddConsoleMessage(message.Type, values);
         }
 
@@ -1992,7 +1993,7 @@ namespace PuppeteerSharp
             {
                 foreach (var arg in values)
                 {
-                    await RemoteObjectHelper.ReleaseObject(Client, arg.RemoteObject, _logger).ConfigureAwait(false);
+                    await RemoteObjectHelper.ReleaseObjectAsync(Client, arg.RemoteObject, _logger).ConfigureAwait(false);
                 }
 
                 return;

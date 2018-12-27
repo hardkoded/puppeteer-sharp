@@ -130,7 +130,7 @@ namespace PuppeteerSharp
             var consoleData = e.MessageData.ToObject<PageConsoleResponse>(true);
             await _consoleAPICalled(
                 consoleData.Type,
-                consoleData.Args.Select<dynamic, JSHandle>(i => _jsHandleFactory(_executionContext, i)).ToArray())
+                consoleData.Args.Select<JToken, JSHandle>(i => _jsHandleFactory(_executionContext, i)).ToArray())
                     .ConfigureAwait(false);
         }
 

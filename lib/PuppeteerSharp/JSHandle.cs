@@ -147,7 +147,7 @@ namespace PuppeteerSharp
             }
 
             Disposed = true;
-            await RemoteObjectHelper.ReleaseObject(Client, RemoteObject, Logger).ConfigureAwait(false);
+            await RemoteObjectHelper.ReleaseObjectAsync(Client, RemoteObject, Logger).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
