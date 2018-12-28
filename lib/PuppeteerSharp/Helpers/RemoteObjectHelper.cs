@@ -41,15 +41,15 @@ namespace PuppeteerSharp.Helpers
 
             switch (objectType)
             {
-                case "object":
+                case RemoteObjectType.Object:
                     return value.ToObject<T>(true);
-                case "undefined":
+                case RemoteObjectType.Undefined:
                     return null;
-                case "number":
+                case RemoteObjectType.Number:
                     return value.Value<T>();
-                case "boolean":
+                case RemoteObjectType.Boolean:
                     return value.Value<bool>();
-                case "bigint":
+                case RemoteObjectType.Bigint:
                     return value.Value<double>();
                 default: // string, symbol, function
                     return value.ToObject<T>();

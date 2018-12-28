@@ -10,12 +10,11 @@ namespace PuppeteerSharp.Messaging
         /// <summary>
         /// Gets or sets the type.
         /// </summary>
-        public object Type { get; set; }
-
+        public RemoteObjectType Type { get; set; }
         /// <summary>
         /// Gets or sets the subtype.
         /// </summary>
-        public string Subtype { get; set; }
+        public RemoteObjectSubtype Subtype { get; set; }
         /// <summary>
         /// Gets or sets the object identifier.
         /// </summary>
@@ -28,6 +27,5 @@ namespace PuppeteerSharp.Messaging
         /// Gets or sets the value.
         /// </summary>
         public JToken Value { get; set; }
-
     }
 }

@@ -155,8 +155,10 @@ namespace PuppeteerSharp
         {
             if (RemoteObject.ObjectId != null)
             {
-                var type = RemoteObject.Subtype ?? RemoteObject.Type;
-                return "JSHandle@" + type;
+                var type = RemoteObject.Subtype != RemoteObjectSubtype.Other
+                    ? RemoteObject.Subtype.ToString()
+                    : RemoteObject.Type.ToString();
+                return "JSHandle@" + type.ToLower();
             }
 
             return "JSHandle:" + RemoteObjectHelper.ValueFromRemoteObject<object>(RemoteObject)?.ToString();

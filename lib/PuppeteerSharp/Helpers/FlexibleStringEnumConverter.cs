@@ -6,12 +6,9 @@ namespace PuppeteerSharp.Helpers
 {
     internal class FlexibleStringEnumConverter : StringEnumConverter
     {
-        private Enum _fallbackValue;
+        private readonly Enum _fallbackValue;
 
-        public FlexibleStringEnumConverter(Enum fallbackValue)
-        {
-            _fallbackValue = fallbackValue;
-        }
+        public FlexibleStringEnumConverter(Enum fallbackValue) => _fallbackValue = fallbackValue;
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {

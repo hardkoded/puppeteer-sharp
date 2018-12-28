@@ -175,7 +175,7 @@ namespace PuppeteerSharp
         }
 
         internal JSHandle CreateJSHandle(RemoteObject remoteObject)
-            => remoteObject.Subtype == "node" && Frame != null
+            => remoteObject.Subtype == RemoteObjectSubtype.Node && Frame != null
                 ? new ElementHandle(this, _client, remoteObject, Frame.FrameManager.Page, Frame.FrameManager)
                 : new JSHandle(this, _client, remoteObject);
 
