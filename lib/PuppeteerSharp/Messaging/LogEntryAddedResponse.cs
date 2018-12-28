@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Messaging
         internal class LogEntry
         {
             public TargetType Source { get; set; }
-            public JToken[] Args { get; set; }
+            public RemoteObject[] Args { get; set; }
             public ConsoleType Level { get; set; }
             public string Text { get; set; }
         }

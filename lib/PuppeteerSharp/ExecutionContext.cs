@@ -112,14 +112,14 @@ namespace PuppeteerSharp
                 throw new PuppeteerException("Prototype JSHandle is disposed!");
             }
 
-            if (!((JObject)prototypeHandle.RemoteObject).TryGetValue(MessageKeys.ObjectId, out var objectId))
+            if (prototypeHandle.RemoteObject.ObjectId == null)
             {
                 throw new PuppeteerException("Prototype JSHandle must not be referencing primitive value");
             }
 
             var response = await _client.SendAsync<RuntimeQueryObjectsResponse>("Runtime.queryObjects", new Dictionary<string, object>
             {
-                {"prototypeObjectId", objectId.ToString()}
+                {"prototypeObjectId", prototypeHandle.RemoteObject.ObjectId}
             }).ConfigureAwait(false);
 
             return CreateJSHandle(response.Objects);
@@ -174,8 +174,8 @@ namespace PuppeteerSharp
             }
         }
 
-        internal JSHandle CreateJSHandle(JToken remoteObject)
-            => (remoteObject.SelectToken(MessageKeys.Subtype).AsString() == "node" && Frame != null)
+        internal JSHandle CreateJSHandle(RemoteObject remoteObject)
+            => remoteObject.Subtype == "node" && Frame != null
                 ? new ElementHandle(this, _client, remoteObject, Frame.FrameManager.Page, Frame.FrameManager)
                 : new JSHandle(this, _client, remoteObject);
 
@@ -209,7 +209,7 @@ namespace PuppeteerSharp
             if (response.ExceptionDetails != null)
             {
                 throw new EvaluationFailedException("Evaluation failed: " +
-                    GetExceptionMessage(response.ExceptionDetails.ToObject<EvaluateExceptionResponseDetails>(true)));
+                    GetExceptionMessage(response.ExceptionDetails));
             }
 
             return CreateJSHandle(response.Result);

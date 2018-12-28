@@ -1911,7 +1911,7 @@ namespace PuppeteerSharp
             {
                 foreach (var arg in e.Entry?.Args)
                 {
-                    await RemoteObjectHelper.ReleaseObjectAsync(Client, arg, _logger);
+                    await RemoteObjectHelper.ReleaseObjectAsync(Client, arg, _logger).ConfigureAwait(false);
                 }
             }
             if (e.Entry.Source != TargetType.Worker)
@@ -1983,7 +1983,7 @@ namespace PuppeteerSharp
         private Task OnConsoleAPI(PageConsoleResponse message)
         {
             var ctx = _frameManager.ExecutionContextById(message.ExecutionContextId);
-            var values = message.Args.Select<JToken, JSHandle>(i => ctx.CreateJSHandle(i)).ToArray();
+            var values = message.Args.Select<RemoteObject, JSHandle>(i => ctx.CreateJSHandle(i)).ToArray();
             return AddConsoleMessage(message.Type, values);
         }
 
@@ -1999,7 +1999,7 @@ namespace PuppeteerSharp
                 return;
             }
 
-            var tokens = values.Select(i => i.RemoteObject[MessageKeys.ObjectId] != null
+            var tokens = values.Select(i => i.RemoteObject.ObjectId != null
                 ? i.ToString()
                 : RemoteObjectHelper.ValueFromRemoteObject<string>(i.RemoteObject));
 

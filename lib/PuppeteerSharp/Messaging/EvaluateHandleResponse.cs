@@ -4,7 +4,7 @@ namespace PuppeteerSharp.Messaging
 {
     internal class EvaluateHandleResponse
     {
-        public JToken ExceptionDetails { get; set; }
-        public JToken Result { get; set; }
+        public EvaluateExceptionResponseDetails ExceptionDetails { get; set; }
+        public RemoteObject Result { get; set; }
     }
 }

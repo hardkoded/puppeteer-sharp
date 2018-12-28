@@ -24,7 +24,7 @@ namespace PuppeteerSharp
         internal ElementHandle(
             ExecutionContext context,
             CDPSession client,
-            JToken remoteObject,
+            RemoteObject remoteObject,
             Page page,
             FrameManager frameManager) :
             base(context, client, remoteObject)
@@ -198,7 +198,7 @@ namespace PuppeteerSharp
         public Task UploadFileAsync(params string[] filePaths)
         {
             var files = filePaths.Select(Path.GetFullPath).ToArray();
-            var objectId = RemoteObject[MessageKeys.ObjectId].AsString();
+            var objectId = RemoteObject.ObjectId;
             return Client.SendAsync("DOM.setFileInputFiles", new { objectId, files });
         }
 
@@ -386,7 +386,7 @@ namespace PuppeteerSharp
         {
             var nodeInfo = await Client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new Dictionary<string, object>
             {
-                { MessageKeys.ObjectId, RemoteObject[MessageKeys.ObjectId] }
+                { MessageKeys.ObjectId, RemoteObject.ObjectId }
             }).ConfigureAwait(false);
 
             return string.IsNullOrEmpty(nodeInfo.Node.FrameId) ? null : await _frameManager.GetFrameAsync(nodeInfo.Node.FrameId);
@@ -419,7 +419,7 @@ namespace PuppeteerSharp
             {
                 result = await Client.SendAsync<GetContentQuadsResponse>("DOM.getContentQuads", new Dictionary<string, object>
                 {
-                    { MessageKeys.ObjectId, RemoteObject[MessageKeys.ObjectId] }
+                    { MessageKeys.ObjectId, RemoteObject.ObjectId }
                 }).ConfigureAwait(false);
             }
             catch (Exception ex)
@@ -491,7 +491,7 @@ namespace PuppeteerSharp
             {
                 return await Client.SendAsync<BoxModelResponse>("DOM.getBoxModel", new
                 {
-                    objectId = RemoteObject[MessageKeys.ObjectId].AsString()
+                    objectId = RemoteObject.ObjectId
                 }).ConfigureAwait(false);
             }
             catch (PuppeteerException ex)

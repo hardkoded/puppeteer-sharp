@@ -8,9 +8,9 @@ namespace PuppeteerSharp.Helpers
 {
     internal class RemoteObjectHelper
     {
-        internal static object ValueFromRemoteObject<T>(JToken remoteObject)
+        internal static object ValueFromRemoteObject<T>(RemoteObject remoteObject)
         {
-            var unserializableValue = remoteObject[MessageKeys.UnserializableValue]?.AsString();
+            var unserializableValue = remoteObject.UnserializableValue;
 
             if (unserializableValue != null)
             {
@@ -29,7 +29,7 @@ namespace PuppeteerSharp.Helpers
                 }
             }
 
-            var value = remoteObject[MessageKeys.Value];
+            var value = remoteObject.Value;
 
             if (value == null)
             {
@@ -37,7 +37,7 @@ namespace PuppeteerSharp.Helpers
             }
 
             // https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-RemoteObject
-            var objectType = remoteObject[MessageKeys.Type].AsString();
+            var objectType = remoteObject.Type;
 
             switch (objectType)
             {
@@ -56,18 +56,16 @@ namespace PuppeteerSharp.Helpers
             }
         }
 
-        internal static async Task ReleaseObjectAsync(CDPSession client, JToken remoteObject, ILogger logger)
+        internal static async Task ReleaseObjectAsync(CDPSession client, RemoteObject remoteObject, ILogger logger)
         {
-            var objectId = remoteObject[MessageKeys.ObjectId]?.AsString();
-
-            if (objectId == null)
+            if (remoteObject.ObjectId == null)
             {
                 return;
             }
 
             try
             {
-                await client.SendAsync("Runtime.releaseObject", new { objectId }).ConfigureAwait(false);
+                await client.SendAsync("Runtime.releaseObject", new { remoteObject.ObjectId }).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
