@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Messaging;
 using PuppeteerSharp.Helpers;
+using static PuppeteerSharp.Messaging.RuntimeQueryObjectsResponse;
 
 namespace PuppeteerSharp
 {
@@ -111,17 +112,17 @@ namespace PuppeteerSharp
                 throw new PuppeteerException("Prototype JSHandle is disposed!");
             }
 
-            if (!((JObject)prototypeHandle.RemoteObject).TryGetValue(MessageKeys.ObjectId, out var objectId))
+            if (prototypeHandle.RemoteObject.ObjectId == null)
             {
                 throw new PuppeteerException("Prototype JSHandle must not be referencing primitive value");
             }
 
-            var response = await _client.SendAsync("Runtime.queryObjects", new Dictionary<string, object>
+            var response = await _client.SendAsync<RuntimeQueryObjectsResponse>("Runtime.queryObjects", new Dictionary<string, object>
             {
-                {"prototypeObjectId", objectId.ToString()}
+                {"prototypeObjectId", prototypeHandle.RemoteObject.ObjectId}
             }).ConfigureAwait(false);
 
-            return CreateJSHandle(response[MessageKeys.Objects]);
+            return CreateJSHandle(response.Objects);
         }
 
         internal async Task<JSHandle> EvaluateExpressionHandleAsync(string script)
@@ -173,8 +174,8 @@ namespace PuppeteerSharp
             }
         }
 
-        internal JSHandle CreateJSHandle(dynamic remoteObject)
-            => (remoteObject.subtype == "node" && Frame != null)
+        internal JSHandle CreateJSHandle(RemoteObject remoteObject)
+            => remoteObject.Subtype == RemoteObjectSubtype.Node && Frame != null
                 ? new ElementHandle(this, _client, remoteObject, Frame.FrameManager.Page, Frame.FrameManager)
                 : new JSHandle(this, _client, remoteObject);
 
@@ -201,17 +202,17 @@ namespace PuppeteerSharp
             return result is JToken token && token.Type == JTokenType.Null ? default : result;
         }
 
-        private async Task<JSHandle> EvaluateHandleAsync(string method, dynamic args)
+        private async Task<JSHandle> EvaluateHandleAsync(string method, object args)
         {
-            var response = await _client.SendAsync(method, args).ConfigureAwait(false);
+            var response = await _client.SendAsync<EvaluateHandleResponse>(method, args).ConfigureAwait(false);
 
-            if (response[MessageKeys.ExceptionDetails] is JToken exceptionDetails)
+            if (response.ExceptionDetails != null)
             {
                 throw new EvaluationFailedException("Evaluation failed: " +
-                    GetExceptionMessage(exceptionDetails.ToObject<EvaluateExceptionResponseDetails>(true)));
+                    GetExceptionMessage(response.ExceptionDetails));
             }
 
-            return CreateJSHandle(response.result);
+            return CreateJSHandle(response.Result);
         }
 
         private object FormatArgument(object arg)

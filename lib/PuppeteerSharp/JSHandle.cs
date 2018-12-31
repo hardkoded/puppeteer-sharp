@@ -12,7 +12,7 @@ namespace PuppeteerSharp
     /// </summary>
     public class JSHandle
     {
-        internal JSHandle(ExecutionContext context, CDPSession client, JToken remoteObject)
+        internal JSHandle(ExecutionContext context, CDPSession client, RemoteObject remoteObject)
         {
             ExecutionContext = context;
             Client = client;
@@ -34,7 +34,7 @@ namespace PuppeteerSharp
         /// Gets or sets the remote object.
         /// </summary>
         /// <value>The remote object.</value>
-        public JToken RemoteObject { get; }
+        public RemoteObject RemoteObject { get; }
         /// <summary>
         /// Gets the client.
         /// </summary>
@@ -79,22 +79,22 @@ namespace PuppeteerSharp
         /// </example>
         public async Task<Dictionary<string, JSHandle>> GetPropertiesAsync()
         {
-            var response = await Client.SendAsync("Runtime.getProperties", new
+            var response = await Client.SendAsync<RuntimeGetPropertiesResponse>("Runtime.getProperties", new
             {
-                objectId = RemoteObject[MessageKeys.ObjectId].AsString(),
+                objectId = RemoteObject.ObjectId,
                 ownProperties = true
             }).ConfigureAwait(false);
 
             var result = new Dictionary<string, JSHandle>();
 
-            foreach (var property in response[MessageKeys.Result])
+            foreach (var property in response.Result)
             {
-                if (property[MessageKeys.Enumerable] == null)
+                if (property.Enumerable == null)
                 {
                     continue;
                 }
 
-                result.Add(property[MessageKeys.Name].AsString(), ExecutionContext.CreateJSHandle(property[MessageKeys.Value]));
+                result.Add(property.Name, ExecutionContext.CreateJSHandle(property.Value));
             }
             return result;
         }
@@ -118,18 +118,18 @@ namespace PuppeteerSharp
         /// </remarks>
         public async Task<T> JsonValueAsync<T>()
         {
-            var objectId = RemoteObject[MessageKeys.ObjectId];
+            var objectId = RemoteObject.ObjectId;
 
             if (objectId != null)
             {
-                var response = await Client.SendAsync("Runtime.callFunctionOn", new Dictionary<string, object>
+                var response = await Client.SendAsync<RuntimeCallFunctionOnResponse>("Runtime.callFunctionOn", new Dictionary<string, object>
                 {
                     ["functionDeclaration"] = "function() { return this; }",
                     [MessageKeys.ObjectId] = objectId,
                     ["returnByValue"] = true,
                     ["awaitPromise"] = true
                 }).ConfigureAwait(false);
-                return (T)RemoteObjectHelper.ValueFromRemoteObject<T>(response[MessageKeys.Result]);
+                return (T)RemoteObjectHelper.ValueFromRemoteObject<T>(response.Result);
             }
 
             return (T)RemoteObjectHelper.ValueFromRemoteObject<T>(RemoteObject);
@@ -147,16 +147,18 @@ namespace PuppeteerSharp
             }
 
             Disposed = true;
-            await RemoteObjectHelper.ReleaseObject(Client, RemoteObject, Logger).ConfigureAwait(false);
+            await RemoteObjectHelper.ReleaseObjectAsync(Client, RemoteObject, Logger).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
         public override string ToString()
         {
-            if ((RemoteObject)[MessageKeys.ObjectId] != null)
+            if (RemoteObject.ObjectId != null)
             {
-                var type = RemoteObject[MessageKeys.Subtype] ?? RemoteObject[MessageKeys.Type];
-                return "JSHandle@" + type;
+                var type = RemoteObject.Subtype != RemoteObjectSubtype.Other
+                    ? RemoteObject.Subtype.ToString()
+                    : RemoteObject.Type.ToString();
+                return "JSHandle@" + type.ToLower();
             }
 
             return "JSHandle:" + RemoteObjectHelper.ValueFromRemoteObject<object>(RemoteObject)?.ToString();
@@ -174,21 +176,19 @@ namespace PuppeteerSharp
                 throw new PuppeteerException("JSHandle is disposed!");
             }
 
-            var unserializableValue = RemoteObject[MessageKeys.UnserializableValue];
+            var unserializableValue = RemoteObject.UnserializableValue;
 
             if (unserializableValue != null)
             {
                 return unserializableValue;
             }
 
-            if (RemoteObject[MessageKeys.ObjectId] == null)
+            if (RemoteObject.ObjectId == null)
             {
-                var value = RemoteObject[MessageKeys.Value];
-
-                return new { value };
+                return new { RemoteObject.Value };
             }
 
-            var objectId = RemoteObject[MessageKeys.ObjectId];
+            var objectId = RemoteObject.ObjectId;
 
             return new { objectId };
         }

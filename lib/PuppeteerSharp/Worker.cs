@@ -32,7 +32,7 @@ namespace PuppeteerSharp
         private readonly Func<ConsoleType, JSHandle[], Task> _consoleAPICalled;
         private readonly Action<EvaluateExceptionResponseDetails> _exceptionThrown;
         private readonly TaskCompletionSource<ExecutionContext> _executionContextCallback;
-        private Func<ExecutionContext, JToken, JSHandle> _jsHandleFactory;
+        private Func<ExecutionContext, RemoteObject, JSHandle> _jsHandleFactory;
 
         internal Worker(
             CDPSession client,
@@ -130,7 +130,7 @@ namespace PuppeteerSharp
             var consoleData = e.MessageData.ToObject<PageConsoleResponse>(true);
             await _consoleAPICalled(
                 consoleData.Type,
-                consoleData.Args.Select<dynamic, JSHandle>(i => _jsHandleFactory(_executionContext, i)).ToArray())
+                consoleData.Args.Select<RemoteObject, JSHandle>(i => _jsHandleFactory(_executionContext, i)).ToArray())
                     .ConfigureAwait(false);
         }
 

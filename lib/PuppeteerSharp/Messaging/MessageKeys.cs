@@ -21,16 +21,12 @@
         public const string PromptText = "promptText";
         public const string Enumerable = "enumerable";
         public const string Data = "data";
-        public const string Objects = "objects";
         public const string Name = "name";
         public const string Value = "value";
         public const string Text = "text";
         public const string TargetId = "targetId";
         public const string ScriptSource = "scriptSource";
-        public const string ObjectId = "objectId";
-        public const string Subtype = "subtype";
         public const string Type = "type";
-        public const string UnserializableValue = "unserializableValue";
         public const string Product = "product";
         public const string UserAgent = "userAgent";
         public const string Frame = "frame";
@@ -74,5 +70,6 @@
         public const string ErrorReason = "errorReason";
         public const string X = "x";
         public const string Y = "y";
+        public const string ObjectId = "objectId";
     }
 }

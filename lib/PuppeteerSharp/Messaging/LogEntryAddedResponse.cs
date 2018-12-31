@@ -1,4 +1,6 @@
-﻿namespace PuppeteerSharp.Messaging
+﻿using Newtonsoft.Json.Linq;
+
+namespace PuppeteerSharp.Messaging
 {
     internal class LogEntryAddedResponse
     {
@@ -7,7 +9,7 @@
         internal class LogEntry
         {
             public TargetType Source { get; set; }
-            public dynamic[] Args { get; set; }
+            public RemoteObject[] Args { get; set; }
             public ConsoleType Level { get; set; }
             public string Text { get; set; }
         }

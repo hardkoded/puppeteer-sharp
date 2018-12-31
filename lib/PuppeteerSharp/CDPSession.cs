@@ -15,7 +15,7 @@ namespace PuppeteerSharp
 {
     /// <summary>
     /// The CDPSession instances are used to talk raw Chrome Devtools Protocol:
-    ///  * Protocol methods can be called with <see cref="CDPSession.SendAsync(string, dynamic, bool)"/> method.
+    ///  * Protocol methods can be called with <see cref="CDPSession.SendAsync(string, object, bool)"/> method.
     ///  * Protocol events, using the <see cref="CDPSession.MessageReceived"/> event.
     /// 
     /// Documentation on DevTools Protocol can be found here: <see href="https://chromedevtools.github.io/devtools-protocol/"/>.
@@ -106,7 +106,7 @@ namespace PuppeteerSharp
 
         #region Public Methods
 
-        internal void Send(string method, dynamic args = null)
+        internal void Send(string method, object args = null)
             => _ = SendAsync(method, args, false);
 
         /// <summary>
@@ -115,9 +115,9 @@ namespace PuppeteerSharp
         /// <param name="method">The method name</param>
         /// <param name="args">The method args</param>
         /// <returns>The task.</returns>
-        public async Task<T> SendAsync<T>(string method, dynamic args = null)
+        public async Task<T> SendAsync<T>(string method, object args = null)
         {
-            JObject content = await SendAsync(method, args).ConfigureAwait(false);
+            var content = await SendAsync(method, args).ConfigureAwait(false);
 
             return content.ToObject<T>(true);
         }
@@ -133,7 +133,7 @@ namespace PuppeteerSharp
         /// </param>
         /// <returns>The task.</returns>
         /// <exception cref="PuppeteerSharp.PuppeteerException"></exception>
-        public async Task<JObject> SendAsync(string method, dynamic args = null, bool waitForCallback = true)
+        public async Task<JObject> SendAsync(string method, object args = null, bool waitForCallback = true)
         {
             if (Connection == null)
             {
@@ -150,7 +150,7 @@ namespace PuppeteerSharp
                 { MessageKeys.Params, args }
             }, JsonHelper.DefaultJsonSerializerSettings);
 
-            _logger.LogTrace("Send ► {Id} Method {Method} Params {@Params}", id, method, (object)args);
+            _logger.LogTrace("Send ► {Id} Method {Method} Params {@Params}", id, method, args);
 
             MessageTask callback = null;
             if (waitForCallback)
@@ -310,7 +310,7 @@ namespace PuppeteerSharp
         #region IConnection
         ILoggerFactory IConnection.LoggerFactory => LoggerFactory;
         bool IConnection.IsClosed => IsClosed;
-        Task<JObject> IConnection.SendAsync(string method, dynamic args, bool waitForCallback)
+        Task<JObject> IConnection.SendAsync(string method, object args, bool waitForCallback)
             => SendAsync(method, args, waitForCallback);
         IConnection IConnection.Connection => Connection;
         void IConnection.Close(string closeReason) => Close(closeReason);
