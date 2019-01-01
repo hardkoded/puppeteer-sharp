@@ -67,6 +67,11 @@ namespace PuppeteerSharp
         public event DownloadProgressChangedEventHandler DownloadProgressChanged;
 
         /// <summary>
+        /// Gets or sets the proxy used to download chromium.
+        /// </summary>
+        public WebProxy Proxy { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="BrowserFetcher"/> class.
         /// </summary>
         public BrowserFetcher()
@@ -181,7 +186,10 @@ namespace PuppeteerSharp
                 downloadFolder.Create();
             }
 
-            var webClient = new WebClient();
+            var webClient = new WebClient()
+            {
+                Proxy = Proxy
+            };
 
             if (DownloadProgressChanged != null)
             {

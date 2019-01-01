@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Net;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using PuppeteerSharp.Helpers.Linux;
@@ -71,6 +72,28 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             {
                 Directory.Delete(_downloadsFolder, true);
             }
+        }
+
+        [Fact]
+        public async Task ShouldUseWebProxy()
+        {
+            var tcs = new TaskCompletionSource<bool>();
+
+            var browserFetcher = new BrowserFetcher()
+            {
+                Proxy = new WebProxy(TestConstants.ServerUrl)
+            };
+
+            Server.SetRoute(string.Empty, context =>
+            {
+                if (new Uri(context.Request.Host.ToString()).Scheme == new Uri(browserFetcher.DownloadHost).DnsSafeHost)
+                {
+                    tcs.TrySetResult(true);
+                }
+                return Task.CompletedTask;
+            });
+            var _ = browserFetcher.DownloadAsync(-1);
+            await tcs.Task;
         }
     }
 }
