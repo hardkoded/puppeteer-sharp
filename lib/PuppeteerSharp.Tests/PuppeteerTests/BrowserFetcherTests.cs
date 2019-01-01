@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using PuppeteerSharp.Helpers.Linux;
 using Xunit;
 using Xunit.Abstractions;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Tests.PuppeteerTests
 {
@@ -93,7 +94,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 return Task.CompletedTask;
             });
             var _ = browserFetcher.DownloadAsync(-1);
-            await tcs.Task;
+            await tcs.Task.WithTimeout();
         }
     }
 }
