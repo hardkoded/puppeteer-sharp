@@ -91,6 +91,10 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 {
                     tcs.TrySetResult(true);
                 }
+                else
+                {
+                    throw new Exception($"{context.Request.Host.ToString()} {new Uri(browserFetcher.DownloadHost).DnsSafeHost}");
+                }
                 return Task.CompletedTask;
             });
             var _ = browserFetcher.DownloadAsync(-1);
