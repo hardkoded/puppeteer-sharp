@@ -87,7 +87,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
 
             Server.SetRoute(string.Empty, context =>
             {
-                if (new Uri(context.Request.Host.ToString()).Scheme == new Uri(browserFetcher.DownloadHost).DnsSafeHost)
+                if (context.Request.Host.ToString().Contains(new Uri(browserFetcher.DownloadHost).DnsSafeHost))
                 {
                     tcs.TrySetResult(true);
                 }
