@@ -6,6 +6,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
@@ -204,7 +205,7 @@ namespace PuppeteerSharp.Tests.PageTests
                     responses.Add(taskCompletion);
                     fetches[context.Request.Path].SetResult(true);
                     var actionResponse = await taskCompletion.Task;
-                    await actionResponse(context.Response);
+                    await actionResponse(context.Response).WithTimeout();
                 });
             }
 
@@ -215,6 +216,14 @@ namespace PuppeteerSharp.Tests.PageTests
             );
             var secondFetchResourceRequested = Server.WaitForRequest("/fetch-request-d.js");
 
+            var pageLoaded = new TaskCompletionSource<bool>();
+            void WaitPageLoad(object sender, EventArgs e)
+            {
+                pageLoaded.SetResult(true);
+                Page.Load -= WaitPageLoad;
+            }
+            Page.Load += WaitPageLoad;
+
             var navigationFinished = false;
             var navigationTask = Page.GoToAsync(TestConstants.ServerUrl + "/networkidle.html",
                 new NavigationOptions { WaitUntil = new[] { WaitUntilNavigation.Networkidle0 } })
@@ -224,25 +233,18 @@ namespace PuppeteerSharp.Tests.PageTests
                     return res.Result;
                 });
 
-            var pageLoaded = new TaskCompletionSource<bool>();
-            void WaitPageLoad(object sender, EventArgs e)
-            {
-                pageLoaded.SetResult(true);
-                Page.Load -= WaitPageLoad;
-            }
-            Page.Load += WaitPageLoad;
-            await pageLoaded.Task;
+            await pageLoaded.Task.WithTimeout();
 
             Assert.False(navigationFinished);
 
-            await initialFetchResourcesRequested;
+            await initialFetchResourcesRequested.WithTimeout();
 
             Assert.False(navigationFinished);
 
             await Task.WhenAll(
                 fetches["/fetch-request-a.js"].Task,
                 fetches["/fetch-request-b.js"].Task,
-                fetches["/fetch-request-c.js"].Task);
+                fetches["/fetch-request-c.js"].Task).WithTimeout();
 
             foreach (var actionResponse in responses)
             {
@@ -255,11 +257,11 @@ namespace PuppeteerSharp.Tests.PageTests
 
             responses.Clear();
 
-            await secondFetchResourceRequested;
+            await secondFetchResourceRequested.WithTimeout();
 
             Assert.False(navigationFinished);
 
-            await fetches["/fetch-request-d.js"].Task;
+            await fetches["/fetch-request-d.js"].Task.WithTimeout();
 
             foreach (var actionResponse in responses)
             {
