@@ -78,27 +78,23 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         [Fact]
         public async Task ShouldUseWebProxy()
         {
-            var tcs = new TaskCompletionSource<string>();
+            var tcs = new TaskCompletionSource<bool>();
 
             var browserFetcher = new BrowserFetcher()
             {
-                Proxy = new WebProxy(TestConstants.ServerUrl)
+                Proxy = new WebProxy(TestConstants.HttpsPrefix)
             };
 
-            Server.SetRoute(string.Empty, context =>
+            HttpsServer.SetRoute(string.Empty, context =>
             {
                 if (context.Request.Host.ToString().Contains(new Uri(browserFetcher.DownloadHost).DnsSafeHost))
                 {
-                    tcs.TrySetResult("ok");
-                }
-                else
-                {
-                    tcs.TrySetResult($"{context.Request.Host.ToString()} {new Uri(browserFetcher.DownloadHost).DnsSafeHost}");
+                    tcs.TrySetResult(true);
                 }
                 return Task.CompletedTask;
             });
             var _ = browserFetcher.DownloadAsync(-1);
-            Assert.Equal("ok", await tcs.Task.WithTimeout(1000));
+            await tcs.Task.WithTimeout();
         }
     }
 }
