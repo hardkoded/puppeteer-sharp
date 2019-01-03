@@ -13,6 +13,7 @@ namespace PuppeteerSharp
     public class LaunchOptions : IBrowserOptions, IConnectionOptions
     {
         private string[] _ignoredDefaultArgs;
+        private bool _devtools;
 
         /// <summary>
         /// Whether to ignore HTTPS errors during navigation. Defaults to false.
@@ -62,7 +63,18 @@ namespace PuppeteerSharp
         /// <summary>
         /// Whether to auto-open DevTools panel for each tab. If this option is true, the headless option will be set false.
         /// </summary>
-        public bool Devtools { get; set; }
+        public bool Devtools
+        {
+            get => _devtools;
+            set
+            {
+                _devtools = value;
+                if (value)
+                {
+                    Headless = false;
+                }
+            }
+        }
 
         /// <summary>
         /// Keep alive value.
