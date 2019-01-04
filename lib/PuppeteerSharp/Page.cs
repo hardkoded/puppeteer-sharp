@@ -46,6 +46,7 @@ namespace PuppeteerSharp
         private PageGetLayoutMetricsResponse _burstModeMetrics;
         private bool _screenshotBurstModeOn;
         private ScreenshotOptions _screenshotBurstModeOptions;
+        private TaskCompletionSource<bool> _closeCompletedTcs = new TaskCompletionSource<bool>();
 
         private static readonly Dictionary<string, decimal> _unitToPixels = new Dictionary<string, decimal> {
             {"px", 1},
@@ -80,6 +81,7 @@ namespace PuppeteerSharp
             {
                 Close?.Invoke(this, EventArgs.Empty);
                 IsClosed = true;
+                _closeCompletedTcs.TrySetResult(true);
             });
 
             Client.MessageReceived += Client_MessageReceived;
@@ -1057,7 +1059,7 @@ namespace PuppeteerSharp
             }
 
             _logger.LogWarning("Protocol error: Connection closed. Most likely the page has been closed.");
-            return Target.CloseTask;
+            return _closeCompletedTcs.Task;
         }
 
         /// <summary>
