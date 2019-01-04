@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
@@ -64,14 +65,21 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.SetRequestInterceptionAsync(true);
             var requests = new List<Request>();
+            var requestsReadyTcs = new TaskCompletionSource<bool>();
 
             Page.Request += async (sender, e) =>
             {
                 await e.Request.ContinueAsync();
                 requests.Add(e.Request);
+
+                if (requests.Count > 1)
+                {
+                    requestsReadyTcs.TrySetResult(true);
+                }
             };
 
             await Page.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
+            await requestsReadyTcs.Task.WithTimeout();
             Assert.Contains("/one-style.css", requests[1].Url);
             Assert.Contains("/one-style.html", requests[1].Headers["Referer"]);
         }
