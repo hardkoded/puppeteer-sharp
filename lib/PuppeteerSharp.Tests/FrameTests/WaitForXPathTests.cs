@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Tests.FrameTests
 {
@@ -70,7 +71,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             await Page.WaitForXPathAsync("//div"); // do a round trip
             Assert.False(divHidden);
             await Page.EvaluateExpressionAsync("document.querySelector('div').style.setProperty('display', 'none')");
-            Assert.True(await waitForXPath);
+            Assert.True(await waitForXPath.WithTimeout());
             Assert.True(divHidden);
         }
 

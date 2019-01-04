@@ -45,7 +45,7 @@ namespace PuppeteerSharp.Helpers
         /// <param name="task">Task to wait for.</param>
         /// <param name="milliseconds">Milliseconds timeout.</param>
         /// <typeparam name="T">Task return type.</typeparam>
-        public static async Task<T> WithTimeout<T>(this Task<T> task, int milliseconds)
+        public static async Task<T> WithTimeout<T>(this Task<T> task, int milliseconds = 1_000)
         {
             var tcs = new TaskCompletionSource<bool>();
             var cancellationToken = new CancellationTokenSource();
