@@ -181,7 +181,7 @@ namespace PuppeteerSharp
                 }
             }
 
-            return waitForCallback ? await callback.TaskWrapper.Task.WithConnectionCheck(this).ConfigureAwait(false) : null;
+            return waitForCallback ? await callback.TaskWrapper.Task.ConfigureAwait(false) : null;
         }
 
         /// <summary>
