@@ -59,14 +59,14 @@ namespace PuppeteerSharp.Transport
                 default).ConfigureAwait(false);
 
             _queueRequests = connectionOptions.EnqueueTransportMessages;
-            
+
             if (_startReading)
             {
                 StartReading();
             }
         }
 
-        private void StartReading() => Task.Factory.StartNew(GetResponseAsync);
+        private void StartReading() => Task.Factory.StartNew(GetResponseAsync, TaskCreationOptions.LongRunning);
 
         /// <summary>
         /// Sends a message using the transport.
