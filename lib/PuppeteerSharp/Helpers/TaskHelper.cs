@@ -18,7 +18,7 @@ namespace PuppeteerSharp.Helpers
         /// <param name="milliseconds">Milliseconds timeout.</param>
         public static async Task WithTimeout(this Task task, int milliseconds = 1_000)
         {
-            var tcs = new TaskCompletionSource<bool>();
+            var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             var cancellationToken = new CancellationTokenSource();
 
             if (milliseconds > 0)
@@ -47,7 +47,7 @@ namespace PuppeteerSharp.Helpers
         /// <typeparam name="T">Task return type.</typeparam>
         public static async Task<T> WithTimeout<T>(this Task<T> task, int milliseconds = 1_000)
         {
-            var tcs = new TaskCompletionSource<bool>();
+            var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             var cancellationToken = new CancellationTokenSource();
 
             if (milliseconds > 0)
@@ -68,7 +68,7 @@ namespace PuppeteerSharp.Helpers
 
         internal static async Task<T> WithConnectionCheck<T>(this Task<T> task, IConnection connection)
         {
-            var tcs = new TaskCompletionSource<bool>();
+            var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             void Connection_Disconnected(object sender, EventArgs e) => tcs.SetResult(true);
             connection.Disconnected += Connection_Disconnected;

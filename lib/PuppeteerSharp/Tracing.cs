@@ -84,7 +84,7 @@ namespace PuppeteerSharp
         /// <returns>Stop task</returns>
         public async Task<string> StopAsync()
         {
-            var taskWrapper = new TaskCompletionSource<string>();
+            var taskWrapper = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             async void EventHandler(object sender, TracingCompleteEventArgs e)
             {

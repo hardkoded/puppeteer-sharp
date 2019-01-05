@@ -31,8 +31,8 @@ namespace PuppeteerSharp
             BrowserContext = browserContext;
             _pageTask = null;
 
-            InitilizedTaskWrapper = new TaskCompletionSource<bool>();
-            CloseTaskWrapper = new TaskCompletionSource<bool>();
+            InitilizedTaskWrapper = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            CloseTaskWrapper = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             IsInitialized = _targetInfo.Type != TargetType.Page || _targetInfo.Url != string.Empty;
 
             if (IsInitialized)

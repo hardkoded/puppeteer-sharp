@@ -690,7 +690,7 @@ namespace PuppeteerSharp
         {
             if (_documentCompletionSource == null)
             {
-                _documentCompletionSource = new TaskCompletionSource<ElementHandle>();
+                _documentCompletionSource = new TaskCompletionSource<ElementHandle>(TaskCreationOptions.RunContinuationsAsynchronously);
                 var context = await GetExecutionContextAsync().ConfigureAwait(false);
                 var document = await context.EvaluateExpressionHandleAsync("document").ConfigureAwait(false);
                 _documentCompletionSource.TrySetResult(document as ElementHandle);

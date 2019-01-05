@@ -46,7 +46,7 @@ namespace PuppeteerSharp
                 Port = responseMessage.RemotePort
             };
 
-            BodyLoadedTaskWrapper = new TaskCompletionSource<bool>();
+            BodyLoadedTaskWrapper = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         }
 
         #region Properties
