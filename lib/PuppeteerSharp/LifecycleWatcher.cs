@@ -38,7 +38,6 @@ namespace PuppeteerSharp
             WaitUntilNavigation[] waitUntil,
             int timeout)
         {
-
             _expectedLifecycle = (waitUntil ?? DefaultWaitUntil).Select(w =>
             {
                 var protocolEvent = _puppeteerToProtocolLifecycle.GetValueOrDefault(w);
