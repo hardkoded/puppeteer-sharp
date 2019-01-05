@@ -18,7 +18,7 @@ namespace PuppeteerSharp
                 [WaitUntilNavigation.Networkidle2] = "networkAlmostIdle"
             };
 
-        internal static readonly WaitUntilNavigation[] DefaultWaitUntil = { WaitUntilNavigation.Load };
+        private static readonly WaitUntilNavigation[] _defaultWaitUntil = { WaitUntilNavigation.Load };
 
         private readonly FrameManager _frameManager;
         private readonly Frame _frame;
@@ -38,7 +38,7 @@ namespace PuppeteerSharp
             WaitUntilNavigation[] waitUntil,
             int timeout)
         {
-            _expectedLifecycle = (waitUntil ?? DefaultWaitUntil).Select(w =>
+            _expectedLifecycle = (waitUntil ?? _defaultWaitUntil).Select(w =>
             {
                 var protocolEvent = _puppeteerToProtocolLifecycle.GetValueOrDefault(w);
                 Contract.Assert(protocolEvent != null, $"Unknown value for options.waitUntil: {w}");
