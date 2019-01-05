@@ -51,7 +51,6 @@ namespace PuppeteerSharp.Helpers
             var tcs = new TaskCompletionSource<bool>();
             using (var cancellationToken = new CancellationTokenSource())
             {
-
                 if (milliseconds > 0)
                 {
                     cancellationToken.CancelAfter(milliseconds);
