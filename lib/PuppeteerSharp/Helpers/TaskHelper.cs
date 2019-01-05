@@ -19,22 +19,23 @@ namespace PuppeteerSharp.Helpers
         public static async Task WithTimeout(this Task task, int milliseconds = 1_000)
         {
             var tcs = new TaskCompletionSource<bool>();
-            var cancellationToken = new CancellationTokenSource();
-
-            if (milliseconds > 0)
+            using (var cancellationToken = new CancellationTokenSource())
             {
-                cancellationToken.CancelAfter(milliseconds);
-            }
-
-            using (cancellationToken.Token.Register(s => ((TaskCompletionSource<bool>)s).TrySetResult(true), tcs))
-            {
-                if (task != await Task.WhenAny(task, tcs.Task))
+                if (milliseconds > 0)
                 {
-                    throw new TimeoutException($"Timeout Exceeded: {milliseconds}ms exceeded");
+                    cancellationToken.CancelAfter(milliseconds);
                 }
-            }
 
-            await task;
+                using (cancellationToken.Token.Register(s => ((TaskCompletionSource<bool>)s).TrySetResult(true), tcs))
+                {
+                    if (task != await Task.WhenAny(task, tcs.Task))
+                    {
+                        throw new TimeoutException($"Timeout Exceeded: {milliseconds}ms exceeded");
+                    }
+                }
+
+                await task;
+            }
         }
 
         //Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
@@ -48,22 +49,24 @@ namespace PuppeteerSharp.Helpers
         public static async Task<T> WithTimeout<T>(this Task<T> task, int milliseconds = 1_000)
         {
             var tcs = new TaskCompletionSource<bool>();
-            var cancellationToken = new CancellationTokenSource();
-
-            if (milliseconds > 0)
+            using (var cancellationToken = new CancellationTokenSource())
             {
-                cancellationToken.CancelAfter(milliseconds);
-            }
 
-            using (cancellationToken.Token.Register(s => ((TaskCompletionSource<bool>)s).TrySetResult(true), tcs))
-            {
-                if (task != await Task.WhenAny(task, tcs.Task))
+                if (milliseconds > 0)
                 {
-                    throw new TimeoutException($"Timeout Exceeded: {milliseconds}ms exceeded");
+                    cancellationToken.CancelAfter(milliseconds);
                 }
-            }
 
-            return await task;
+                using (cancellationToken.Token.Register(s => ((TaskCompletionSource<bool>)s).TrySetResult(true), tcs))
+                {
+                    if (task != await Task.WhenAny(task, tcs.Task))
+                    {
+                        throw new TimeoutException($"Timeout Exceeded: {milliseconds}ms exceeded");
+                    }
+                }
+
+                return await task;
+            }
         }
 
         internal static async Task<T> WithConnectionCheck<T>(this Task<T> task, IConnection connection)
