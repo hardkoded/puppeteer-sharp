@@ -74,7 +74,8 @@ namespace PuppeteerSharp
                : options.Referer;
             var requests = new Dictionary<string, Request>();
             var timeout = options?.Timeout ?? DefaultNavigationTimeout;
-            using (var watcher = new LifecycleWatcher(this, frame, timeout, options))
+
+            using (var watcher = new LifecycleWatcher(this, frame, options?.WaitUntil, timeout))
             {
                 try
                 {
@@ -121,7 +122,7 @@ namespace PuppeteerSharp
         public async Task<Response> WaitForFrameNavigationAsync(Frame frame, NavigationOptions options = null)
         {
             var timeout = options?.Timeout ?? DefaultNavigationTimeout;
-            using (var watcher = new LifecycleWatcher(this, frame, timeout, options))
+            using (var watcher = new LifecycleWatcher(this, frame, options?.WaitUntil, timeout))
             {
                 var raceTask = await Task.WhenAny(
                     watcher.NewDocumentNavigationTask,
@@ -382,18 +383,7 @@ namespace PuppeteerSharp
                 return frame;
             }
 
-            var delayTask = Task.Delay(WaitForRequestDelay);
-            var task = Task.WhenAny(
-                delayTask,
-                tcs.Task
-            );
-
-            if (task == delayTask)
-            {
-                throw new PuppeteerException($"Frame '{frameId}' not found");
-            }
-
-            return await tcs.Task;
+            return await tcs.Task.WithTimeout(WaitForRequestDelay, new PuppeteerException($"Frame '{frameId}' not found"));
         }
 
         #endregion

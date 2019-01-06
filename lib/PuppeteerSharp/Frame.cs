@@ -566,13 +566,13 @@ namespace PuppeteerSharp
                 document.close();
             }", html);
 
-            var watcher = new LifecycleWatcher(FrameManager, this, timeout, options);
+            var watcher = new LifecycleWatcher(FrameManager, this, waitUntil, timeout);
 
             var watcherTask = await Task.WhenAny(
                 watcher.TimeoutOrTerminationTask,
                 watcher.LifecycleTask).ConfigureAwait(false);
 
-            await watcherTask;
+            await watcherTask.ConfigureAwait(false);
         }
 
         /// <summary>

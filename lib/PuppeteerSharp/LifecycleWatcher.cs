@@ -22,7 +22,6 @@ namespace PuppeteerSharp
 
         private readonly FrameManager _frameManager;
         private readonly Frame _frame;
-        private readonly NavigationOptions _options;
         private readonly IEnumerable<string> _expectedLifecycle;
         private readonly int _timeout;
         private readonly string _initialLoaderId;
@@ -36,17 +35,10 @@ namespace PuppeteerSharp
         public LifecycleWatcher(
             FrameManager frameManager,
             Frame frame,
-            int timeout,
-            NavigationOptions options)
+            WaitUntilNavigation[] waitUntil,
+            int timeout)
         {
-            var waitUntil = _defaultWaitUntil;
-
-            if (options?.WaitUntil != null)
-            {
-                waitUntil = options.WaitUntil;
-            }
-
-            _expectedLifecycle = waitUntil.Select(w =>
+            _expectedLifecycle = (waitUntil ?? _defaultWaitUntil).Select(w =>
             {
                 var protocolEvent = _puppeteerToProtocolLifecycle.GetValueOrDefault(w);
                 Contract.Assert(protocolEvent != null, $"Unknown value for options.waitUntil: {w}");
@@ -55,7 +47,6 @@ namespace PuppeteerSharp
 
             _frameManager = frameManager;
             _frame = frame;
-            _options = options;
             _initialLoaderId = frame.LoaderId;
             _timeout = timeout;
             _hasSameDocumentNavigation = false;

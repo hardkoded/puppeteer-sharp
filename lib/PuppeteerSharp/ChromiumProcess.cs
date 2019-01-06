@@ -188,8 +188,12 @@ namespace PuppeteerSharp
         {
             if (timeout.HasValue)
             {
-                var completedTask = await Task.WhenAny(_exitCompletionSource.Task, Task.Delay(timeout.Value)).ConfigureAwait(false);
-                return completedTask == _exitCompletionSource.Task;
+                var taskCompleted = true;
+                await _exitCompletionSource.Task.WithTimeout(() =>
+                {
+                    taskCompleted = false;
+                }, timeout.Value.Milliseconds).ConfigureAwait(false);
+                return taskCompleted;
             }
 
             await _exitCompletionSource.Task.ConfigureAwait(false);
@@ -606,14 +610,12 @@ namespace PuppeteerSharp
 
                 public override async Task ExitAsync(ChromiumProcess p, TimeSpan timeout)
                 {
-                    var timeoutTask = Task.Delay(timeout);
                     var waitForExitTask = WaitForExitAsync(p);
-                    var completedTask = await Task.WhenAny(waitForExitTask, timeoutTask).ConfigureAwait(false);
-                    if (completedTask == timeoutTask)
+                    await waitForExitTask.WithTimeout(async () =>
                     {
                         await Killing.EnterFromAsync(p, this).ConfigureAwait(false);
                         await waitForExitTask.ConfigureAwait(false);
-                    }
+                    }, timeout.Minutes).ConfigureAwait(false);
                 }
 
                 public override Task KillAsync(ChromiumProcess p) => Killing.EnterFromAsync(p, this);
