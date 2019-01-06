@@ -383,18 +383,7 @@ namespace PuppeteerSharp
                 return frame;
             }
 
-            var delayTask = Task.Delay(WaitForRequestDelay);
-            var task = Task.WhenAny(
-                delayTask,
-                tcs.Task
-            );
-
-            if (task == delayTask)
-            {
-                throw new PuppeteerException($"Frame '{frameId}' not found");
-            }
-
-            return await tcs.Task;
+            return await tcs.Task.WithTimeout(WaitForRequestDelay, new PuppeteerException($"Frame '{frameId}' not found"));
         }
 
         #endregion
