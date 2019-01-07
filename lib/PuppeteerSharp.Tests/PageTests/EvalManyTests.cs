@@ -27,5 +27,27 @@ namespace PuppeteerSharp.Tests.PageTests
             var divsCount = await divs.EvaluateFunctionAsync<int>("divs => divs.length");
             Assert.Equal(3, divsCount);
         }
+
+        [Fact]
+        public async Task ShouldNotDisposeArrayIfTheDisposeHandleFlagIsSetToFalse()
+        {
+            await Page.SetContentAsync("<div>hello</div><div>beautiful</div><div>world!</div>");
+            var divs = await Page.QuerySelectorAllHandleAsync("div");
+            var divsCount = await divs.EvaluateFunctionAsync<int>("divs => divs.length", disposeHandle: false);
+            var text = await divs.EvaluateFunctionAsync<string>("divs => divs.map(x => x.textContent).join(' ')", disposeHandle: false);
+            await divs.DisposeAsync();
+            Assert.Equal(3, divsCount);
+            Assert.Equal("hello beautiful world!", text);
+        }
+
+        [Fact]
+        public async Task ShouldDisposeArrayIfTheDisposeHandleFlagIsSetToTrue()
+        {
+            await Page.SetContentAsync("<div>hello</div><div>beautiful</div><div>world!</div>");
+            var divs = await Page.QuerySelectorAllHandleAsync("div");
+            await divs.EvaluateFunctionAsync<int>("divs => divs.length", disposeHandle: true);
+            await Assert.ThrowsAsync<MessageException>(()
+                => divs.EvaluateFunctionAsync<string>("divs => divs.map(x => x.textContent).join(' ')"));
+        }
     }
 }
