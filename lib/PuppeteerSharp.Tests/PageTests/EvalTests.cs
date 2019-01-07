@@ -52,5 +52,28 @@ namespace PuppeteerSharp.Tests.PageTests
                 => Page.QuerySelectorAsync("section").EvaluateFunctionAsync<string>("e => e.id"));
             Assert.Contains("failed to find element matching selector", exception.Message);
         }
+
+        [Fact]
+        public async Task ShouldNotDisposeElementIfTheDisposeHandleFlagIsSetToFalse()
+        {
+            await Page.SetContentAsync("<section id='testAttribute'>43543</section>");
+            var section = await Page.QuerySelectorAsync("section");
+            var idAttribute = await section.EvaluateFunctionAsync<string>("e => e.id", disposeHandle: false);
+            var text = await section.EvaluateFunctionAsync<string>("e => e.textContent", disposeHandle: false);
+            await section.DisposeAsync();
+            Assert.Equal("testAttribute", idAttribute);
+            Assert.Equal("43543", text);
+        }
+
+        [Fact]
+        public async Task ShouldDisposeElementIfTheDisposeHandleFlagIsSetToTrue()
+        {
+            await Page.SetContentAsync("<section id='testAttribute'>43543</section>");
+            var section = await Page.QuerySelectorAsync("section");
+            await section.EvaluateFunctionAsync<string>("e => e.id", disposeHandle: true);
+            var exception = await Assert.ThrowsAsync<EvaluationFailedException>(()
+                => section.EvaluateFunctionAsync<string>("e => e.textContent"));
+            Assert.Equal("JSHandle is disposed!", exception.Message);
+        }
     }
 }
