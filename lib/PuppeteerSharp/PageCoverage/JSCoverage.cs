@@ -103,7 +103,7 @@ namespace PuppeteerSharp.PageCoverage
                 switch (e.MessageID)
                 {
                     case "Debugger.scriptParsed":
-                        await OnScriptParsed(e.MessageData.ToObject<DebuggerScriptParsedResponse>(true)).ConfigureAwait(false);
+                        await OnScriptParsedAsync(e.MessageData.ToObject<DebuggerScriptParsedResponse>(true)).ConfigureAwait(false);
                         break;
                     case "Runtime.executionContextsCleared":
                         OnExecutionContextsCleared();
@@ -118,7 +118,7 @@ namespace PuppeteerSharp.PageCoverage
             }
         }
 
-        private async Task OnScriptParsed(DebuggerScriptParsedResponse scriptParseResponse)
+        private async Task OnScriptParsedAsync(DebuggerScriptParsedResponse scriptParseResponse)
         {
             if (scriptParseResponse.Url == ExecutionContext.EvaluationScriptUrl ||
                 (string.IsNullOrEmpty(scriptParseResponse.Url) && !_reportAnonymousScripts))
