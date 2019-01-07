@@ -157,7 +157,7 @@ namespace PuppeteerSharp
             {
                 callback = new MessageTask
                 {
-                    TaskWrapper = new TaskCompletionSource<JObject>(TaskCreationOptions.RunContinuationsAsynchronously),
+                    TaskWrapper = new TaskCompletionSource<JObject>(),
                     Method = method
                 };
                 _callbacks[id] = callback;

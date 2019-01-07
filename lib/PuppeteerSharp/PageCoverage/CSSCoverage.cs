@@ -105,7 +105,7 @@ namespace PuppeteerSharp.PageCoverage
                 switch (e.MessageID)
                 {
                     case "CSS.styleSheetAdded":
-                        await OnStyleSheetAdded(e.MessageData.ToObject<CSSStyleSheetAddedResponse>(true)).ConfigureAwait(false);
+                        await OnStyleSheetAddedAsync(e.MessageData.ToObject<CSSStyleSheetAddedResponse>(true)).ConfigureAwait(false);
                         break;
                     case "Runtime.executionContextsCleared":
                         OnExecutionContextsCleared();
@@ -120,7 +120,7 @@ namespace PuppeteerSharp.PageCoverage
             }
         }
 
-        private async Task OnStyleSheetAdded(CSSStyleSheetAddedResponse styleSheetAddedResponse)
+        private async Task OnStyleSheetAddedAsync(CSSStyleSheetAddedResponse styleSheetAddedResponse)
         {
             if (string.IsNullOrEmpty(styleSheetAddedResponse.Header.SourceURL))
             {
