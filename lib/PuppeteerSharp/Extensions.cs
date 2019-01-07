@@ -68,7 +68,7 @@ namespace PuppeteerSharp
         /// <typeparam name="T">The type of the response</typeparam>
         /// <param name="elementHandle">An <see cref="ElementHandle"/> that will be used as the first argument in <paramref name="pageFunction"/></param>
         /// <param name="pageFunction">Function to be evaluated in browser context</param>
-        /// <param name="disposeHandle">If set to <c>false</c> the <paramref name="elementHandle"/> will not be disposed. Only opt out of disposure if the <paramref name="pageFunction"/> is a pure function with no side effects on the <paramref name="elementHandle"/>.</param>
+        /// <param name="disposeHandle">If set to <c>false</c> the <paramref name="elementHandle"/> will not be disposed. Only opt out of disposal if the <paramref name="pageFunction"/> is a pure function with no side effects on the <paramref name="elementHandle"/>.</param>
         /// <param name="args">Arguments to pass to <c>pageFunction</c></param>
         /// <returns>Task which resolves to the return value of <c>pageFunction</c></returns>
         /// <exception cref="SelectorException">If <paramref name="elementHandle"/> is <c>null</c></exception>
@@ -139,7 +139,7 @@ namespace PuppeteerSharp
         /// <typeparam name="T"></typeparam>
         /// <param name="arrayHandle">An <see cref="JSHandle"/> that represents an array of <see cref="ElementHandle"/> that will be used as the first argument in <paramref name="pageFunction"/></param>
         /// <param name="pageFunction">Function to be evaluated in browser context</param>
-        /// <param name="disposeHandle">If set to <c>false</c> the <paramref name="arrayHandle"/> will not be disposed. Only opt out of disposure if the <paramref name="pageFunction"/> is a pure function with no side effects on the <paramref name="arrayHandle"/>.</param>
+        /// <param name="disposeHandle">If set to <c>false</c> the <paramref name="arrayHandle"/> will not be disposed. Only opt out of disposal if the <paramref name="pageFunction"/> is a pure function with no side effects on the <paramref name="arrayHandle"/>.</param>
         /// <param name="args">Arguments to pass to <c>pageFunction</c></param>
         /// <returns>Task which resolves to the return value of <c>pageFunction</c></returns>
         public static async Task<T> EvaluateFunctionAsync<T>(this JSHandle arrayHandle, string pageFunction, bool disposeHandle, params object[] args)
