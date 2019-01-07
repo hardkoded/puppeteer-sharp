@@ -38,7 +38,6 @@ namespace PuppeteerSharp.Helpers
             Func<Task> timeoutAction,
             int milliseconds = 1_000)
         {
-
             if (await TimeoutTask(task, milliseconds))
             {
                 await timeoutAction();
@@ -93,7 +92,7 @@ namespace PuppeteerSharp.Helpers
 
         private static async Task<bool> TimeoutTask(Task task, int milliseconds)
         {
-            var tcs = new TaskCompletionSource<bool>();
+            var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             var cancellationToken = new CancellationTokenSource();
 
             if (milliseconds > 0)
@@ -108,28 +107,6 @@ namespace PuppeteerSharp.Helpers
                 }
             }
             return false;
-        }
-
-
-        internal static async Task<T> WithConnectionCheck<T>(this Task<T> task, IConnection connection)
-        {
-            var tcs = new TaskCompletionSource<bool>();
-
-            void Connection_Disconnected(object sender, EventArgs e) => tcs.SetResult(true);
-            connection.Disconnected += Connection_Disconnected;
-
-            try
-            {
-                if (task != await Task.WhenAny(task, tcs.Task))
-                {
-                    throw new TargetClosedException("Navigation failed because browser has disconnected!", connection.CloseReason);
-                }
-            }
-            finally
-            {
-                connection.Disconnected -= Connection_Disconnected;
-            }
-            return await task;
         }
     }
 }

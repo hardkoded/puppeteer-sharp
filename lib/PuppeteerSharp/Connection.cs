@@ -109,14 +109,14 @@ namespace PuppeteerSharp
             {
                 callback = new MessageTask
                 {
-                    TaskWrapper = new TaskCompletionSource<JObject>(),
+                    TaskWrapper = new TaskCompletionSource<JObject>(TaskCreationOptions.RunContinuationsAsynchronously),
                     Method = method
                 };
                 _callbacks[id] = callback;
             }
 
             await Transport.SendAsync(message).ConfigureAwait(false);
-            return waitForCallback ? await callback.TaskWrapper.Task.WithConnectionCheck(this).ConfigureAwait(false) : null;
+            return waitForCallback ? await callback.TaskWrapper.Task.ConfigureAwait(false) : null;
         }
 
         internal async Task<T> SendAsync<T>(string method, object args = null)

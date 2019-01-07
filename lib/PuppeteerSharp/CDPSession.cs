@@ -157,7 +157,7 @@ namespace PuppeteerSharp
             {
                 callback = new MessageTask
                 {
-                    TaskWrapper = new TaskCompletionSource<JObject>(),
+                    TaskWrapper = new TaskCompletionSource<JObject>(TaskCreationOptions.RunContinuationsAsynchronously),
                     Method = method
                 };
                 _callbacks[id] = callback;
@@ -181,7 +181,7 @@ namespace PuppeteerSharp
                 }
             }
 
-            return waitForCallback ? await callback.TaskWrapper.Task.WithConnectionCheck(this).ConfigureAwait(false) : null;
+            return waitForCallback ? await callback.TaskWrapper.Task.ConfigureAwait(false) : null;
         }
 
         /// <summary>

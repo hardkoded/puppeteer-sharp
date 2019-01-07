@@ -176,7 +176,7 @@ namespace PuppeteerSharp
             {
                 return Task.CompletedTask;
             }
-            var initialPageCompletion = new TaskCompletionSource<bool>();
+            var initialPageCompletion = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             void InitialPageCallback(object sender, TargetChangedArgs e)
             {
                 if (e.Target.Type == TargetType.Page)

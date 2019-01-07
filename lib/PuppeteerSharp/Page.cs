@@ -46,7 +46,7 @@ namespace PuppeteerSharp
         private PageGetLayoutMetricsResponse _burstModeMetrics;
         private bool _screenshotBurstModeOn;
         private ScreenshotOptions _screenshotBurstModeOptions;
-        private TaskCompletionSource<bool> _closeCompletedTcs = new TaskCompletionSource<bool>();
+        private TaskCompletionSource<bool> _closeCompletedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
         private static readonly Dictionary<string, decimal> _unitToPixels = new Dictionary<string, decimal> {
             {"px", 1},
@@ -1406,7 +1406,7 @@ namespace PuppeteerSharp
         public async Task<Request> WaitForRequestAsync(Func<Request, bool> predicate, WaitForOptions options = null)
         {
             var timeout = options?.Timeout ?? DefaultWaitForTimeout;
-            var requestTcs = new TaskCompletionSource<Request>();
+            var requestTcs = new TaskCompletionSource<Request>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             void requestEventListener(object sender, RequestEventArgs e)
             {
@@ -1456,7 +1456,7 @@ namespace PuppeteerSharp
         public async Task<Response> WaitForResponseAsync(Func<Response, bool> predicate, WaitForOptions options = null)
         {
             var timeout = options?.Timeout ?? DefaultWaitForTimeout;
-            var responseTcs = new TaskCompletionSource<Response>();
+            var responseTcs = new TaskCompletionSource<Response>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             void responseEventListener(object sender, ResponseCreatedEventArgs e)
             {

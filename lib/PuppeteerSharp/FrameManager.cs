@@ -374,7 +374,7 @@ namespace PuppeteerSharp
 
         internal async Task<Frame> GetFrameAsync(string frameId)
         {
-            var tcs = new TaskCompletionSource<Frame>();
+            var tcs = new TaskCompletionSource<Frame>(TaskCreationOptions.RunContinuationsAsynchronously);
             _pendingFrameRequests.Add(frameId, tcs);
 
             if (_frames.TryGetValue(frameId, out var frame))

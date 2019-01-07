@@ -297,7 +297,7 @@ namespace PuppeteerSharp
                 return existingTarget;
             }
 
-            var targetCompletionSource = new TaskCompletionSource<Target>();
+            var targetCompletionSource = new TaskCompletionSource<Target>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             void TargetHandler(object sender, TargetChangedArgs e)
             {
