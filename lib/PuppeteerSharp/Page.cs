@@ -1781,7 +1781,7 @@ namespace PuppeteerSharp
                         OnDialog(e.MessageData.ToObject<PageJavascriptDialogOpeningResponse>(true));
                         break;
                     case "Runtime.exceptionThrown":
-                        HandleException(e.MessageData.SelectToken(MessageKeys.ExceptionDetails).ToObject<EvaluateExceptionResponseDetails>(true));
+                        HandleException(e.MessageData.ToObject<RuntimeExceptionThrownResponse>(true).ExceptionDetails);
                         break;
                     case "Security.certificateError":
                         await OnCertificateError(e.MessageData.ToObject<CertificateErrorResponse>(true)).ConfigureAwait(false);
@@ -1793,10 +1793,10 @@ namespace PuppeteerSharp
                         EmitMetrics(e.MessageData.ToObject<PerformanceMetricsResponse>(true));
                         break;
                     case "Target.attachedToTarget":
-                        await OnAttachedToTarget(e).ConfigureAwait(false);
+                        await OnAttachedToTarget(e.MessageData.ToObject<TargetAttachedToTargetResponse>(true)).ConfigureAwait(false);
                         break;
                     case "Target.detachedFromTarget":
-                        OnDetachedFromTarget(e);
+                        OnDetachedFromTarget(e.MessageData.ToObject<TargetDetachedFromTargetResponse>(true));
                         break;
                     case "Log.entryAdded":
                         await OnLogEntryAddedAsync(e.MessageData.ToObject<LogEntryAddedResponse>(true)).ConfigureAwait(false);
@@ -1875,9 +1875,9 @@ namespace PuppeteerSharp
             return result;
         }
 
-        private void OnDetachedFromTarget(MessageEventArgs e)
+        private void OnDetachedFromTarget(TargetDetachedFromTargetResponse e)
         {
-            var sessionId = e.MessageData.SelectToken(MessageKeys.SessionId).AsString();
+            var sessionId = e.SessionId;
             if (_workers.TryGetValue(sessionId, out var worker))
             {
                 WorkerDestroyed?.Invoke(this, new WorkerEventArgs(worker));
@@ -1885,10 +1885,10 @@ namespace PuppeteerSharp
             }
         }
 
-        private async Task OnAttachedToTarget(MessageEventArgs e)
+        private async Task OnAttachedToTarget(TargetAttachedToTargetResponse e)
         {
-            var targetInfo = e.MessageData.SelectToken(MessageKeys.TargetInfo).ToObject<TargetInfo>(true);
-            var sessionId = e.MessageData.SelectToken(MessageKeys.SessionId).ToObject<string>();
+            var targetInfo = e.TargetInfo;
+            var sessionId = e.SessionId;
             if (targetInfo.Type != TargetType.Worker)
             {
                 try
@@ -1985,7 +1985,7 @@ namespace PuppeteerSharp
         private Task OnConsoleAPI(PageConsoleResponse message)
         {
             var ctx = _frameManager.ExecutionContextById(message.ExecutionContextId);
-            var values = message.Args.Select<RemoteObject, JSHandle>(i => ctx.CreateJSHandle(i)).ToArray();
+            var values = message.Args.Select(ctx.CreateJSHandle).ToArray();
             return AddConsoleMessage(message.Type, values);
         }
 
