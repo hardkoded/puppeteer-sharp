@@ -51,19 +51,19 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The downloads folder.</value>
         public string DownloadsFolder { get; }
-        
+
         /// <summary>
         /// A download host to be used. Defaults to https://storage.googleapis.com.
         /// </summary>
         /// <value>The download host.</value>
         public string DownloadHost { get; }
-        
+
         /// <summary>
         /// Gets the platform.
         /// </summary>
         /// <value>The platform.</value>
         public Platform Platform { get; }
-        
+
         /// <summary>
         /// Occurs when download progress in <see cref="DownloadAsync(int)"/> changes.
         /// </summary>
@@ -208,7 +208,7 @@ namespace PuppeteerSharp
 
             var revisionInfo = RevisionInfo(revision);
 
-            if (revisionInfo != null && (GetCurrentPlatform() == Platform.Linux || GetCurrentPlatform() == Platform.MacOS))
+            if (revisionInfo != null && GetCurrentPlatform() == Platform.Linux)
             {
                 LinuxSysCall.SetPermissions(revisionInfo.ExecutablePath, BrowserPermissionsInLinux);
             }

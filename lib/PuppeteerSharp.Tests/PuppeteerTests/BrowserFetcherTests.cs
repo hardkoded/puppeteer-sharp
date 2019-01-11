@@ -42,7 +42,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 Assert.True(revisionInfo.Local);
                 Assert.Equal("LINUX BINARY\n", File.ReadAllText(revisionInfo.ExecutablePath));
 
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) || RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                 {
                     Assert.Equal(
                         BrowserFetcher.BrowserPermissionsInLinux,
