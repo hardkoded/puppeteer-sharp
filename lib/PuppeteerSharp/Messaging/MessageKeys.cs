@@ -3,7 +3,7 @@
     /// <summary>
     /// Keys used in messages
     /// </summary>
-    internal class MessageKeys
+    internal static class MessageKeys
     {
         public const string Id = "id";
         public const string Error = "error";
@@ -13,16 +13,12 @@
         public const string Params = "params";
         public const string Message = "message";
         public const string SessionId = "sessionId";
-        public const string ExceptionDetails = "exceptionDetails";
-        public const string Context = "context";
         public const string Referer = "referer";
         public const string Accept = "accept";
         public const string Cookies = "cookies";
         public const string PromptText = "promptText";
-        public const string Enumerable = "enumerable";
         public const string Data = "data";
         public const string Name = "name";
-        public const string Value = "value";
         public const string Text = "text";
         public const string TargetId = "targetId";
         public const string ScriptSource = "scriptSource";
@@ -35,10 +31,6 @@
         public const string Urls = "urls";
         public const string ChildFrames = "childFrames";
         public const string FrameTree = "frameTree";
-        public const string ContentSize = "contentSize";
-        public const string Width = "width";
-        public const string Height = "height";
-        public const string FrameId = "frameId";
         public const string ExecutionContextId = "executionContextId";
         public const string Args = "args";
         public const string EventId = "eventId";
@@ -46,7 +38,6 @@
         public const string RequestId = "requestId";
         public const string InterceptionId = "interceptionId";
         public const string Headers = "headers";
-        public const string TargetInfo = "targetInfo";
         public const string PostData = "postData";
         public const string Modifiers = "modifiers";
         public const string WindowsVirtualKeyCode = "windowsVirtualKeyCode";

@@ -104,13 +104,13 @@ namespace PuppeteerSharp
                 switch (e.MessageID)
                 {
                     case "Runtime.executionContextCreated":
-                        OnExecutionContextCreated(e);
+                        OnExecutionContextCreated(e.MessageData.ToObject<RuntimeExecutionContextCreatedResponse>(true));
                         break;
                     case "Runtime.consoleAPICalled":
                         await OnConsoleAPICalled(e).ConfigureAwait(false);
                         break;
                     case "Runtime.exceptionThrown":
-                        OnExceptionThrown(e);
+                        OnExceptionThrown(e.MessageData.ToObject<RuntimeExceptionThrownResponse>(true));
                         break;
                 }
             }
@@ -122,26 +122,25 @@ namespace PuppeteerSharp
             }
         }
 
-        private void OnExceptionThrown(MessageEventArgs e)
-            => _exceptionThrown(e.MessageData.SelectToken(MessageKeys.ExceptionDetails).ToObject<EvaluateExceptionResponseDetails>(true));
+        private void OnExceptionThrown(RuntimeExceptionThrownResponse e) => _exceptionThrown(e.ExceptionDetails);
 
         private async Task OnConsoleAPICalled(MessageEventArgs e)
         {
             var consoleData = e.MessageData.ToObject<PageConsoleResponse>(true);
             await _consoleAPICalled(
                 consoleData.Type,
-                consoleData.Args.Select<RemoteObject, JSHandle>(i => _jsHandleFactory(_executionContext, i)).ToArray())
+                consoleData.Args.Select(i => _jsHandleFactory(_executionContext, i)).ToArray())
                     .ConfigureAwait(false);
         }
 
-        private void OnExecutionContextCreated(MessageEventArgs e)
+        private void OnExecutionContextCreated(RuntimeExecutionContextCreatedResponse e)
         {
             if (_jsHandleFactory == null)
             {
                 _jsHandleFactory = (ctx, remoteObject) => new JSHandle(ctx, _client, remoteObject);
                 _executionContext = new ExecutionContext(
                     _client,
-                    e.MessageData.SelectToken(MessageKeys.Context).ToObject<ContextPayload>(true),
+                    e.Context,
                     null);
                 _executionContextCallback.TrySetResult(_executionContext);
             }
