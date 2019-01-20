@@ -46,13 +46,13 @@ namespace PuppeteerSharp.Input
 
             for (var i = 1; i <= steps; i++)
             {
-                await _client.SendAsync("Input.dispatchMouseEvent", new Dictionary<string, object>
+                await _client.SendAsync("Input.dispatchMouseEvent", new InputDispatchMouseEventRequest
                 {
-                    { MessageKeys.Type, "mouseMoved" },
-                    { MessageKeys.Button, _button },
-                    { MessageKeys.X, fromX + ((_x - fromX) * ((decimal)i / steps)) },
-                    { MessageKeys.Y, fromY + ((_y - fromY) * ((decimal)i / steps)) },
-                    { MessageKeys.Modifiers, _keyboard.Modifiers}
+                    Type = MouseEventType.MouseMoved,
+                    Button = _button,
+                    X = fromX + ((_x - fromX) * ((decimal)i / steps)),
+                    Y = fromY + ((_y - fromY) * ((decimal)i / steps)),
+                    Modifiers = _keyboard.Modifiers
                 }).ConfigureAwait(false);
             }
         }
@@ -89,14 +89,14 @@ namespace PuppeteerSharp.Input
 
             _button = options.Button;
 
-            return _client.SendAsync("Input.dispatchMouseEvent", new Dictionary<string, object>()
+            return _client.SendAsync("Input.dispatchMouseEvent", new InputDispatchMouseEventRequest
             {
-                { MessageKeys.Type, "mousePressed" },
-                { MessageKeys.Button, _button },
-                { MessageKeys.X, _x },
-                { MessageKeys.Y, _y },
-                { MessageKeys.Modifiers, _keyboard.Modifiers },
-                { MessageKeys.ClickCount, options.ClickCount }
+                Type = MouseEventType.MousePressed,
+                Button = _button,
+                X = _x,
+                Y = _y,
+                Modifiers = _keyboard.Modifiers,
+                ClickCount = options.ClickCount
             });
         }
 
@@ -111,14 +111,14 @@ namespace PuppeteerSharp.Input
 
             _button = MouseButton.None;
 
-            return _client.SendAsync("Input.dispatchMouseEvent", new Dictionary<string, object>()
+            return _client.SendAsync("Input.dispatchMouseEvent", new InputDispatchMouseEventRequest
             {
-                { MessageKeys.Type, "mouseReleased" },
-                { MessageKeys.Button, options.Button },
-                { MessageKeys.X, _x },
-                { MessageKeys.Y, _y },
-                { MessageKeys.Modifiers, _keyboard.Modifiers },
-                { MessageKeys.ClickCount, options.ClickCount }
+                Type = MouseEventType.MouseReleased,
+                Button = options.Button,
+                X = _x,
+                Y = _y,
+                Modifiers = _keyboard.Modifiers,
+                ClickCount = options.ClickCount
             });
         }
     }

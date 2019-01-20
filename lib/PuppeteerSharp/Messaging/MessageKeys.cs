@@ -47,8 +47,6 @@
         public const string AutoRepeat = "autoRepeat";
         public const string Location = "location";
         public const string IsKeypad = "isKeypad";
-        public const string Button = "button";
-        public const string ClickCount = "clickCount";
         public const string Offline = "offline";
         public const string Latency = "latency";
         public const string DownloadThroughput = "downloadThroughput";
@@ -59,8 +57,6 @@
         public const string Action = "action";
         public const string RawResponse = "rawResponse";
         public const string ErrorReason = "errorReason";
-        public const string X = "x";
-        public const string Y = "y";
         public const string ObjectId = "objectId";
     }
 }
