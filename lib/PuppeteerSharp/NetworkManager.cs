@@ -377,13 +377,13 @@ namespace PuppeteerSharp
                 Array.Empty<object>();
 
             await Task.WhenAll(
-                _client.SendAsync("Network.setCacheDisabled", new Dictionary<string, object>
+                _client.SendAsync("Network.setCacheDisabled", new NetworkSetCacheDisabledRequest
                 {
-                    { MessageKeys.CachingDisabled, enabled}
+                    CachingDisabled = enabled
                 }),
-                _client.SendAsync("Network.setRequestInterception", new Dictionary<string, object>
+                _client.SendAsync("Network.setRequestInterception", new NetworkSetRequestInterceptionRequest
                 {
-                    { MessageKeys.Patterns, patterns}
+                    Patterns = patterns
                 })
             ).ConfigureAwait(false);
         }
