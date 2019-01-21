@@ -60,24 +60,20 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves when the dialog has been accepted.</returns>
         /// <param name="promptText">A text to enter in prompt. Does not cause any effects if the dialog's type is not prompt.</param>
         public Task Accept(string promptText = "")
-        {
-            return _client.SendAsync("Page.handleJavaScriptDialog", new Dictionary<string, object>
+            => _client.SendAsync("Page.handleJavaScriptDialog", new PageHandleJavaScriptDialogRequest
             {
-                { MessageKeys.Accept, true },
-                { MessageKeys.PromptText, promptText }
+                Accept = true,
+                PromptText = promptText
             });
-        }
 
         /// <summary>
         /// Dismiss the dialog.
         /// </summary>
         /// <returns>Task which resolves when the dialog has been dismissed.</returns>
         public Task Dismiss()
-        {
-            return _client.SendAsync("Page.handleJavaScriptDialog", new Dictionary<string, object>
+            => _client.SendAsync("Page.handleJavaScriptDialog", new PageHandleJavaScriptDialogRequest
             {
-                { MessageKeys.Accept, false }
+                Accept = false
             });
-        }
     }
 }

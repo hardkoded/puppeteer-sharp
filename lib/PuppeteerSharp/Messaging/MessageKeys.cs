@@ -14,9 +14,7 @@
         public const string Message = "message";
         public const string SessionId = "sessionId";
         public const string Referer = "referer";
-        public const string Accept = "accept";
         public const string Cookies = "cookies";
-        public const string PromptText = "promptText";
         public const string Data = "data";
         public const string Name = "name";
         public const string Text = "text";
