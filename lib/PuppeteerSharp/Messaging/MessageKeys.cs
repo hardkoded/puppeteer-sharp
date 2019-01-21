@@ -22,7 +22,6 @@
         public const string Text = "text";
         public const string TargetId = "targetId";
         public const string ScriptSource = "scriptSource";
-        public const string Type = "type";
         public const string Product = "product";
         public const string UserAgent = "userAgent";
         public const string Frame = "frame";
@@ -39,14 +38,6 @@
         public const string InterceptionId = "interceptionId";
         public const string Headers = "headers";
         public const string PostData = "postData";
-        public const string Modifiers = "modifiers";
-        public const string WindowsVirtualKeyCode = "windowsVirtualKeyCode";
-        public const string Code = "code";
-        public const string Key = "key";
-        public const string UnmodifiedText = "unmodifiedText";
-        public const string AutoRepeat = "autoRepeat";
-        public const string Location = "location";
-        public const string IsKeypad = "isKeypad";
         public const string Offline = "offline";
         public const string Latency = "latency";
         public const string DownloadThroughput = "downloadThroughput";
