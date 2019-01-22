@@ -21,7 +21,6 @@
         public const string TargetId = "targetId";
         public const string ScriptSource = "scriptSource";
         public const string Product = "product";
-        public const string UserAgent = "userAgent";
         public const string Frame = "frame";
         public const string ParentId = "parentId";
         public const string Url = "url";
