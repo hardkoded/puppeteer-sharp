@@ -26,7 +26,6 @@
         public const string ExecutionContextId = "executionContextId";
         public const string Args = "args";
         public const string BrowserContextId = "browserContextId";
-        public const string RequestId = "requestId";
         public const string ObjectId = "objectId";
     }
 }
