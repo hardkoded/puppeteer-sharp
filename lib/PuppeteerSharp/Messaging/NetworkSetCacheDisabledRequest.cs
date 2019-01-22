@@ -2,6 +2,6 @@
 {
     internal class NetworkSetCacheDisabledRequest
     {
-        public bool CachingDisabled { get; set; }
+        public bool CacheDisabled { get; set; }
     }
 }

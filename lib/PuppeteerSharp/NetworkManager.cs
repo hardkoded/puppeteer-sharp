@@ -379,7 +379,7 @@ namespace PuppeteerSharp
             await Task.WhenAll(
                 _client.SendAsync("Network.setCacheDisabled", new NetworkSetCacheDisabledRequest
                 {
-                    CachingDisabled = enabled
+                    CacheDisabled = enabled
                 }),
                 _client.SendAsync("Network.setRequestInterception", new NetworkSetRequestInterceptionRequest
                 {
