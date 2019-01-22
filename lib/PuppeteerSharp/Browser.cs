@@ -373,12 +373,16 @@ namespace PuppeteerSharp
 
         internal async Task<Page> CreatePageInContextAsync(string contextId)
         {
-            var args = new Dictionary<string, object> { [MessageKeys.Url] = "about:blank" };
+            var createTargetRequest = new TargetCreateTargetRequest
+            {
+                Url = "about:blank"
+            };
+
             if (contextId != null)
             {
-                args[MessageKeys.BrowserContextId] = contextId;
+                createTargetRequest.BrowserContextId = contextId;
             }
-            var targetId = (await Connection.SendAsync("Target.createTarget", args).ConfigureAwait(false))[MessageKeys.TargetId].ToString();
+            var targetId = (await Connection.SendAsync("Target.createTarget", createTargetRequest).ConfigureAwait(false))[MessageKeys.TargetId].ToString();
             var target = TargetsMap[targetId];
             await target.InitializedTask.ConfigureAwait(false);
             return await target.PageAsync().ConfigureAwait(false);
