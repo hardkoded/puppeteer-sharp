@@ -7,6 +7,7 @@ namespace PuppeteerSharp.Messaging
     {
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string InterceptionId { get; set; }
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public NetworkContinueInterceptedRequestChallengeResponse AuthChallengeResponse { get; set; }
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string RawResponse { get; set; }
