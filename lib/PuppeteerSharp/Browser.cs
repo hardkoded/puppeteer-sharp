@@ -379,7 +379,8 @@ namespace PuppeteerSharp
             {
                 createTargetRequest.BrowserContextId = contextId;
             }
-            var targetId = (await Connection.SendAsync("Target.createTarget", createTargetRequest).ConfigureAwait(false))[MessageKeys.TargetId].ToString();
+            var targetId = (await Connection.SendAsync<TargetCreateTargetResponse>("Target.createTarget", createTargetRequest)
+                .ConfigureAwait(false)).TargetId;
             var target = TargetsMap[targetId];
             await target.InitializedTask.ConfigureAwait(false);
             return await target.PageAsync().ConfigureAwait(false);
