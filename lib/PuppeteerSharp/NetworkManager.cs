@@ -233,11 +233,10 @@ namespace PuppeteerSharp
             {
                 try
                 {
-                    await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object>
+                    await _client.SendAsync("Network.continueInterceptedRequest", new NetworkContinueInterceptedRequestRequest
                     {
-                        { MessageKeys.InterceptionId, e.InterceptionId
-    }
-}).ConfigureAwait(false);
+                        InterceptionId = e.InterceptionId
+                    }).ConfigureAwait(false);
                 }
                 catch (PuppeteerException ex)
                 {
