@@ -19,6 +19,7 @@ namespace PuppeteerSharp.Messaging
         public string Method { get; set; }
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string PostData { get; set; }
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public Dictionary<string, string> Headers { get; set; }
     }
 
