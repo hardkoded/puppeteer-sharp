@@ -257,8 +257,8 @@ namespace PuppeteerSharp
         /// <remarks>
         /// Pages can override browser user agent with <see cref="Page.SetUserAgentAsync(string)"/>
         /// </remarks>
-        public Task<string> GetUserAgentAsync()
-            => Connection.SendAsync<BrowserGetVersionResponse>("Browser.getVersion").ConfigureAwait(false).UserAgent;
+        public async Task<string> GetUserAgentAsync()
+            => (await Connection.SendAsync<BrowserGetVersionResponse>("Browser.getVersion").ConfigureAwait(false)).UserAgent;
 
         /// <summary>
         /// Disconnects Puppeteer from the browser, but leaves the Chromium process running. After calling <see cref="Disconnect"/>, the browser object is considered disposed and cannot be used anymore

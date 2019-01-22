@@ -32,7 +32,6 @@
         public const string EventId = "eventId";
         public const string BrowserContextId = "browserContextId";
         public const string RequestId = "requestId";
-        public const string Action = "action";
         public const string ObjectId = "objectId";
     }
 }

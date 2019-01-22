@@ -1941,10 +1941,10 @@ namespace PuppeteerSharp
             {
                 try
                 {
-                    await Client.SendAsync("Security.handleCertificateError", new Dictionary<string, object>
+                    await Client.SendAsync("Security.handleCertificateError", new SecurityHandleCertificateErrorResponse
                     {
-                        { MessageKeys.EventId, e.EventId },
-                        { MessageKeys.Action, "continue"}
+                        EventId = e.EventId,
+                        Action = "continue"
                     }).ConfigureAwait(false);
                 }
                 catch (PuppeteerException ex)
