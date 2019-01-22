@@ -61,9 +61,9 @@ namespace PuppeteerSharp
             {
                 _extraHTTPHeaders[item.Key.ToLower()] = item.Value;
             }
-            return _client.SendAsync("Network.setExtraHTTPHeaders", new Dictionary<string, object>
+            return _client.SendAsync("Network.setExtraHTTPHeaders", new NetworkSetExtraHTTPHeadersRequest
             {
-                { MessageKeys.Headers, _extraHTTPHeaders }
+                Headers = _extraHTTPHeaders
             });
         }
 
@@ -73,20 +73,20 @@ namespace PuppeteerSharp
             {
                 _offine = value;
 
-                await _client.SendAsync("Network.emulateNetworkConditions", new Dictionary<string, object>
+                await _client.SendAsync("Network.emulateNetworkConditions", new NetworkEmulateNetworkConditionsRequest
                 {
-                    { MessageKeys.Offline, value},
-                    { MessageKeys.Latency, 0},
-                    { MessageKeys.DownloadThroughput, -1},
-                    { MessageKeys.UploadThroughput, -1}
+                    Offline = value,
+                    Latency = 0,
+                    DownloadThroughput = -1,
+                    UploadThroughput = -1
                 }).ConfigureAwait(false);
             }
         }
 
         internal Task SetUserAgentAsync(string userAgent)
-            => _client.SendAsync("Network.setUserAgentOverride", new Dictionary<string, object>
+            => _client.SendAsync("Network.setUserAgentOverride", new NetworkSetUserAgentOverrideRequest
             {
-                { MessageKeys.UserAgent, userAgent }
+                UserAgent = userAgent
             });
 
         internal Task SetRequestInterceptionAsync(bool value)
