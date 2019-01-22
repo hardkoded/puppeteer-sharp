@@ -15,7 +15,6 @@
         public const string SessionId = "sessionId";
         public const string Cookies = "cookies";
         public const string Data = "data";
-        public const string Text = "text";
         public const string Args = "args";
     }
 }

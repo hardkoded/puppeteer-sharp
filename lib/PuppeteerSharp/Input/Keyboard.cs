@@ -87,7 +87,10 @@ namespace PuppeteerSharp.Input
         /// <param name="charText">Character to send into the page</param>
         /// <returns>Task</returns>
         public Task SendCharacterAsync(string charText)
-            => _client.SendAsync("Input.insertText", new Dictionary<string, object> { [MessageKeys.Text] = charText });
+            => _client.SendAsync("Input.insertText", new InputInsertTextRequest
+            {
+                Text = charText
+            });
 
         /// <summary>
         /// Sends a <c>keydown</c>, <c>keypress</c>/<c>input</c>, and <c>keyup</c> event for each character in the text.
