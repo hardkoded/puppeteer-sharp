@@ -504,9 +504,9 @@ namespace PuppeteerSharp
         /// </remarks>
         public async Task<CookieParam[]> GetCookiesAsync(params string[] urls)
         {
-            var response = await Client.SendAsync("Network.getCookies", new Dictionary<string, object>
+            var response = await Client.SendAsync("Network.getCookies", new NetworkGetCookiesRequest
             {
-                { MessageKeys.Urls, urls.Length > 0 ? urls : new string[] { Url } }
+                Urls = urls.Length > 0 ? urls : new string[] { Url }
             }).ConfigureAwait(false);
 
             return response[MessageKeys.Cookies].ToObject<CookieParam[]>(true);

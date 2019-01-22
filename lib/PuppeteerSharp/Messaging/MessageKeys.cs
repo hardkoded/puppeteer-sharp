@@ -22,8 +22,6 @@
         public const string Product = "product";
         public const string Frame = "frame";
         public const string Url = "url";
-        public const string Urls = "urls";
-        public const string ExecutionContextId = "executionContextId";
         public const string Args = "args";
         public const string ObjectId = "objectId";
     }
