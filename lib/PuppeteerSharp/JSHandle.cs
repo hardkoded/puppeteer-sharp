@@ -122,12 +122,12 @@ namespace PuppeteerSharp
 
             if (objectId != null)
             {
-                var response = await Client.SendAsync<RuntimeCallFunctionOnResponse>("Runtime.callFunctionOn", new Dictionary<string, object>
+                var response = await Client.SendAsync<RuntimeCallFunctionOnResponse>("Runtime.callFunctionOn", new RuntimeCallFunctionOnRequest
                 {
-                    ["functionDeclaration"] = "function() { return this; }",
-                    [MessageKeys.ObjectId] = objectId,
-                    ["returnByValue"] = true,
-                    ["awaitPromise"] = true
+                    FunctionDeclaration = "function() { return this; }",
+                    ObjectId = objectId,
+                    ReturnByValue = true,
+                    AwaitPromise = true
                 }).ConfigureAwait(false);
                 return (T)RemoteObjectHelper.ValueFromRemoteObject<T>(response.Result);
             }

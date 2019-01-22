@@ -17,6 +17,5 @@
         public const string Data = "data";
         public const string Text = "text";
         public const string Args = "args";
-        public const string ObjectId = "objectId";
     }
 }

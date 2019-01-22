@@ -11,6 +11,7 @@ namespace PuppeteerSharp.Messaging
         public bool ReturnByValue { get; set; }
         public bool AwaitPromise { get; set; }
         public bool UserGesture { get; set; }
+        public string ObjectId { get; set; }
     }
 
     internal class RuntimeCallFunctionOnRequestArgument

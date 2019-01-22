@@ -384,9 +384,9 @@ namespace PuppeteerSharp
         /// <returns>Resolves to the content frame</returns>
         public async Task<Frame> ContentFrameAsync()
         {
-            var nodeInfo = await Client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new Dictionary<string, object>
+            var nodeInfo = await Client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
             {
-                { MessageKeys.ObjectId, RemoteObject.ObjectId }
+                ObjectId = RemoteObject.ObjectId
             }).ConfigureAwait(false);
 
             return string.IsNullOrEmpty(nodeInfo.Node.FrameId) ? null : await _frameManager.GetFrameAsync(nodeInfo.Node.FrameId);
@@ -417,9 +417,9 @@ namespace PuppeteerSharp
 
             try
             {
-                result = await Client.SendAsync<GetContentQuadsResponse>("DOM.getContentQuads", new Dictionary<string, object>
+                result = await Client.SendAsync<GetContentQuadsResponse>("DOM.getContentQuads", new DomGetContentQuadsRequest
                 {
-                    { MessageKeys.ObjectId, RemoteObject.ObjectId }
+                    ObjectId = RemoteObject.ObjectId
                 }).ConfigureAwait(false);
             }
             catch (Exception ex)
