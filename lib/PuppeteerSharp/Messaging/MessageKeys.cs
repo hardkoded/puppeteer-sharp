@@ -39,8 +39,6 @@
         public const string DownloadThroughput = "downloadThroughput";
         public const string UploadThroughput = "uploadThroughput";
         public const string Action = "action";
-        public const string RawResponse = "rawResponse";
-        public const string ErrorReason = "errorReason";
         public const string ObjectId = "objectId";
     }
 }
