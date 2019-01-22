@@ -19,9 +19,6 @@
         public const string Text = "text";
         public const string TargetId = "targetId";
         public const string ScriptSource = "scriptSource";
-        public const string Product = "product";
-        public const string Frame = "frame";
-        public const string Url = "url";
         public const string Args = "args";
         public const string ObjectId = "objectId";
     }

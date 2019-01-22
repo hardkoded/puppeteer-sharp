@@ -1,7 +1,10 @@
-﻿namespace PuppeteerSharp.Messaging
+﻿using System.Threading.Tasks;
+
+namespace PuppeteerSharp.Messaging
 {
     internal class BrowserGetVersionResponse
     {
-        public string UserAgent { get; internal set; }
+        public string UserAgent { get; set; }
+        public string Product { get; set; }
     }
 }

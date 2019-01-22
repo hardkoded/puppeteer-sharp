@@ -245,10 +245,7 @@ namespace PuppeteerSharp
         /// the format of <see cref="GetVersionAsync"/> might change with future releases of Chromium
         /// </remarks>
         public async Task<string> GetVersionAsync()
-        {
-            var version = await Connection.SendAsync("Browser.getVersion").ConfigureAwait(false);
-            return version[MessageKeys.Product].AsString();
-        }
+            => (await Connection.SendAsync<BrowserGetVersionResponse>("Browser.getVersion").ConfigureAwait(false)).Product;
 
         /// <summary>
         /// Gets the browser's original user agent
