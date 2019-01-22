@@ -166,25 +166,28 @@ namespace PuppeteerSharp
 
             try
             {
-                var requestData = new Dictionary<string, object> { [MessageKeys.InterceptionId] = InterceptionId };
+                var requestData = new NetworkContinueInterceptedRequestRequest
+                {
+                    InterceptionId = InterceptionId
+                };
                 if (overrides?.Url != null)
                 {
-                    requestData[MessageKeys.Url] = overrides.Url;
+                    requestData.Url = overrides.Url;
                 }
 
                 if (overrides?.Method != null)
                 {
-                    requestData[MessageKeys.Method] = overrides.Method.ToString();
+                    requestData.Method = overrides.Method.ToString();
                 }
 
                 if (overrides?.PostData != null)
                 {
-                    requestData[MessageKeys.PostData] = overrides.PostData;
+                    requestData.PostData = overrides.PostData;
                 }
 
                 if (overrides?.Headers?.Count > 0)
                 {
-                    requestData[MessageKeys.Headers] = overrides.Headers;
+                    requestData.Headers = overrides.Headers;
                 }
 
                 await _client.SendAsync("Network.continueInterceptedRequest", requestData).ConfigureAwait(false);
@@ -263,10 +266,10 @@ namespace PuppeteerSharp
 
             try
             {
-                await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object>
+                await _client.SendAsync("Network.continueInterceptedRequest", new NetworkContinueInterceptedRequestRequest
                 {
-                    { MessageKeys.InterceptionId, InterceptionId },
-                    { MessageKeys.RawResponse, Convert.ToBase64String(responseData) }
+                    InterceptionId = InterceptionId,
+                    RawResponse = Convert.ToBase64String(responseData)
                 }).ConfigureAwait(false);
             }
             catch (PuppeteerException ex)
@@ -300,10 +303,10 @@ namespace PuppeteerSharp
 
             try
             {
-                await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object>
+                await _client.SendAsync("Network.continueInterceptedRequest", new NetworkContinueInterceptedRequestRequest
                 {
-                    { MessageKeys.InterceptionId, InterceptionId },
-                    { MessageKeys.ErrorReason, errorReason }
+                    InterceptionId = InterceptionId,
+                    ErrorReason = errorReason
                 }).ConfigureAwait(false);
             }
             catch (PuppeteerException ex)
