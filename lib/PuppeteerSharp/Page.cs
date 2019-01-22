@@ -1514,9 +1514,9 @@ namespace PuppeteerSharp
             TaskQueue screenshotTaskQueue)
         {
             await client.SendAsync("Page.enable", null).ConfigureAwait(false);
-            var result = await client.SendAsync("Page.getFrameTree").ConfigureAwait(false);
+            var result = await client.SendAsync<PageGetFrameTreeResponse>("Page.getFrameTree").ConfigureAwait(false);
             var page = new Page(client, target, ignoreHTTPSErrors, screenshotTaskQueue);
-            await page.InitializeAsync(new FrameTree(result[MessageKeys.FrameTree])).ConfigureAwait(false);
+            await page.InitializeAsync(new FrameTree(result.FrameTree)).ConfigureAwait(false);
 
             await Task.WhenAll(
                 client.SendAsync("Target.setAutoAttach", new { autoAttach = true, waitForDebuggerOnStart = false }),
