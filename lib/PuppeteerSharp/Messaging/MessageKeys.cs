@@ -13,7 +13,6 @@
         public const string Params = "params";
         public const string Message = "message";
         public const string SessionId = "sessionId";
-        public const string Referer = "referer";
         public const string Cookies = "cookies";
         public const string Data = "data";
         public const string Text = "text";
