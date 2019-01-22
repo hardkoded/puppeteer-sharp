@@ -212,15 +212,14 @@ namespace PuppeteerSharp
                 var credentials = _credentials ?? new Credentials();
                 try
                 {
-                    await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object>
+                    await _client.SendAsync("Network.continueInterceptedRequest", new NetworkContinueInterceptedRequestRequest
                     {
-                        { MessageKeys.InterceptionId, e.InterceptionId },
-                        { MessageKeys.AuthChallengeResponse, new
-                            {
-                                response,
-                                username = credentials.Username,
-                                password = credentials.Password
-                            }
+                        InterceptionId = e.InterceptionId,
+                        AuthChallengeResponse = new NetworkContinueInterceptedRequestChallengeResponse
+                        {
+                            Response = response,
+                            Username = credentials.Username,
+                            Password = credentials.Password
                         }
                     }).ConfigureAwait(false);
                 }
@@ -236,8 +235,9 @@ namespace PuppeteerSharp
                 {
                     await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object>
                     {
-                        { MessageKeys.InterceptionId, e.InterceptionId }
-                    }).ConfigureAwait(false);
+                        { MessageKeys.InterceptionId, e.InterceptionId
+    }
+}).ConfigureAwait(false);
                 }
                 catch (PuppeteerException ex)
                 {

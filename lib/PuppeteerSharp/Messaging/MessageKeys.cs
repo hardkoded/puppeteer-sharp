@@ -40,8 +40,6 @@
         public const string Latency = "latency";
         public const string DownloadThroughput = "downloadThroughput";
         public const string UploadThroughput = "uploadThroughput";
-        public const string AuthChallengeResponse = "authChallengeResponse";
-        public const string Patterns = "patterns";
         public const string Action = "action";
         public const string RawResponse = "rawResponse";
         public const string ErrorReason = "errorReason";
