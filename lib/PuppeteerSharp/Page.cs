@@ -503,14 +503,10 @@ namespace PuppeteerSharp
         /// If URLs are specified, only cookies for those URLs are returned.
         /// </remarks>
         public async Task<CookieParam[]> GetCookiesAsync(params string[] urls)
-        {
-            var response = await Client.SendAsync("Network.getCookies", new NetworkGetCookiesRequest
+            => (await Client.SendAsync<NetworkGetCookiesResponse>("Network.getCookies", new NetworkGetCookiesRequest
             {
                 Urls = urls.Length > 0 ? urls : new string[] { Url }
-            }).ConfigureAwait(false);
-
-            return response[MessageKeys.Cookies].ToObject<CookieParam[]>(true);
-        }
+            }).ConfigureAwait(false)).Cookies;
 
         /// <summary>
         /// Clears all of the current cookies and then sets the cookies for the page
@@ -535,9 +531,9 @@ namespace PuppeteerSharp
 
             if (cookies.Length > 0)
             {
-                await Client.SendAsync("Network.setCookies", new Dictionary<string, object>
+                await Client.SendAsync("Network.setCookies", new NetworkSetCookiesRequest
                 {
-                    { MessageKeys.Cookies, cookies }
+                    Cookies = cookies
                 }).ConfigureAwait(false);
             }
         }
