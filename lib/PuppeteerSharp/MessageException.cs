@@ -25,21 +25,20 @@ namespace PuppeteerSharp
         {
         }
 
-        internal MessageException(MessageTask callback, JObject obj) : base(GetCallbackMessage(callback, obj))
+        internal MessageException(MessageTask callback, ConnectionError error) : base(GetCallbackMessage(callback, error))
         {
         }
 
-        internal static string GetCallbackMessage(MessageTask callback, JObject obj)
+        internal static string GetCallbackMessage(MessageTask callback, ConnectionError connectionError)
         {
-            var error = obj.SelectToken(MessageKeys.Error);
-            var message = $"Protocol error ({callback.Method}): {error[MessageKeys.Message]}";
+            var message = $"Protocol error ({callback.Method}): {connectionError.Message}";
 
-            if (error[MessageKeys.Data] != null)
+            if (!string.IsNullOrEmpty(connectionError.Data))
             {
-                message += $" {error[MessageKeys.Data]}";
+                message += $" {connectionError.Data}";
             }
 
-            return !string.IsNullOrEmpty(error[MessageKeys.Message].ToString()) ? RewriteErrorMeesage(message) : string.Empty;
+            return !string.IsNullOrEmpty(connectionError.Message) ? RewriteErrorMeesage(message) : string.Empty;
         }
     }
 }
