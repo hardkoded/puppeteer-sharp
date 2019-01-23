@@ -14,6 +14,5 @@
         public const string Message = "message";
         public const string SessionId = "sessionId";
         public const string Data = "data";
-        public const string Args = "args";
     }
 }
