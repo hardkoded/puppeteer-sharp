@@ -6,7 +6,7 @@ namespace PuppeteerSharp.Messaging
     internal class RuntimeCallFunctionOnRequest
     {
         public string FunctionDeclaration { get; set; }
-        public int ExecutionContextId { get; set; }
+        public int? ExecutionContextId { get; set; }
         public IEnumerable<object> Arguments { get; set; }
         public bool ReturnByValue { get; set; }
         public bool AwaitPromise { get; set; }
