@@ -127,10 +127,10 @@ namespace PuppeteerSharp
 
         internal async Task<CDPSession> CreateSessionAsync(TargetInfo targetInfo)
         {
-            var sessionId = (await SendAsync("Target.attachToTarget", new
+            var sessionId = (await SendAsync<TargetAttachToTargetResponse>("Target.attachToTarget", new TargetAttachToTargetRequest
             {
-                targetId = targetInfo.TargetId
-            }).ConfigureAwait(false))[MessageKeys.SessionId].AsString();
+                TargetId = targetInfo.TargetId
+            }).ConfigureAwait(false)).SessionId;
             var session = new CDPSession(this, targetInfo.Type, sessionId);
             _sessions.TryAdd(sessionId, session);
             return session;
