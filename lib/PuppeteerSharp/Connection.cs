@@ -95,11 +95,11 @@ namespace PuppeteerSharp
             }
 
             var id = Interlocked.Increment(ref _lastId);
-            var message = JsonConvert.SerializeObject(new Dictionary<string, object>
+            var message = JsonConvert.SerializeObject(new ConnectionRequest
             {
-                { MessageKeys.Id, id },
-                { MessageKeys.Method, method },
-                { MessageKeys.Params, args }
+                Id = id,
+                Method = method,
+                Params = args
             }, JsonHelper.DefaultJsonSerializerSettings);
 
             _logger.LogTrace("Send ► {Id} Method {Method} Params {@Params}", id, method, (object)args);
