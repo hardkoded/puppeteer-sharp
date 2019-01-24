@@ -207,7 +207,7 @@ namespace PuppeteerSharp
         /// </example>
         public async Task<BrowserContext> CreateIncognitoBrowserContextAsync()
         {
-            var response = await Connection.SendAsync<CreateBrowserContextResponse>("Target.createBrowserContext", new { }).ConfigureAwait(false);
+            var response = await Connection.SendAsync<CreateBrowserContextResponse>("Target.createBrowserContext", null).ConfigureAwait(false);
             var context = new BrowserContext(Connection, this, response.BrowserContextId);
             _contexts[response.BrowserContextId] = context;
             return context;
