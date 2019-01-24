@@ -836,25 +836,25 @@ namespace PuppeteerSharp
             var marginBottom = ConvertPrintParameterToInches(options.MarginOptions.Bottom);
             var marginRight = ConvertPrintParameterToInches(options.MarginOptions.Right);
 
-            var result = await Client.SendAsync("Page.printToPDF", new
+            var result = await Client.SendAsync<PagePrintToPDFResponse>("Page.printToPDF", new PagePrintToPDFRequest
             {
-                landscape = options.Landscape,
-                displayHeaderFooter = options.DisplayHeaderFooter,
-                headerTemplate = options.HeaderTemplate,
-                footerTemplate = options.FooterTemplate,
-                printBackground = options.PrintBackground,
-                scale = options.Scale,
-                paperWidth,
-                paperHeight,
-                marginTop,
-                marginBottom,
-                marginLeft,
-                marginRight,
-                pageRanges = options.PageRanges,
-                preferCSSPageSize = options.PreferCSSPageSize
+                Landscape = options.Landscape,
+                DisplayHeaderFooter = options.DisplayHeaderFooter,
+                HeaderTemplate = options.HeaderTemplate,
+                FooterTemplate = options.FooterTemplate,
+                PrintBackground = options.PrintBackground,
+                Scale = options.Scale,
+                PaperWidth = paperWidth,
+                PaperHeight = paperHeight,
+                MarginTop = marginTop,
+                MarginBottom = marginBottom,
+                MarginLeft = marginLeft,
+                MarginRight = marginRight,
+                PageRanges = options.PageRanges,
+                PreferCSSPageSize = options.PreferCSSPageSize
             }).ConfigureAwait(false);
 
-            return Convert.FromBase64String(result.GetValue(MessageKeys.Data).AsString());
+            return Convert.FromBase64String(result.Data);
         }
 
         /// <summary>
