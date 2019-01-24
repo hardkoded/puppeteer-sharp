@@ -132,7 +132,10 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>The task.</returns>
         public Task ClearPermissionOverridesAsync()
-            => _connection.SendAsync("Browser.resetPermissions", new { browserContextId = _id });
+            => _connection.SendAsync("Browser.resetPermissions", new BrowserResetPermissionsRequest
+            {
+                BrowserContextId = _id
+            });
 
         internal void OnTargetCreated(Browser browser, TargetChangedArgs args) => TargetCreated?.Invoke(browser, args);
 

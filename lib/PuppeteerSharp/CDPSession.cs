@@ -195,7 +195,10 @@ namespace PuppeteerSharp
             {
                 throw new PuppeteerException($"Session already detached.Most likely the { TargetType } has been closed.");
             }
-            return Connection.SendAsync("Target.detachFromTarget", new { sessionId = SessionId });
+            return Connection.SendAsync("Target.detachFromTarget", new TargetDetachFromTargetRequest
+            {
+                SessionId = SessionId
+            });
         }
 
         internal bool HasPendingCallbacks() => _callbacks.Count != 0;
