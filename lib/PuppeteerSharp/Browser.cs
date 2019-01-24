@@ -506,9 +506,9 @@ namespace PuppeteerSharp
             ChromiumProcess chromiumProcess)
         {
             var browser = new Browser(connection, contextIds, ignoreHTTPSErrors, defaultViewPort, chromiumProcess);
-            await connection.SendAsync("Target.setDiscoverTargets", new
+            await connection.SendAsync("Target.setDiscoverTargets", new TargetSetDiscoverTargetsRequest
             {
-                discover = true
+                Discover = true
             }).ConfigureAwait(false);
 
             return browser;
