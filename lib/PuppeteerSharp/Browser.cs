@@ -388,7 +388,10 @@ namespace PuppeteerSharp
 
         internal async Task DisposeContextAsync(string contextId)
         {
-            await Connection.SendAsync("Target.disposeBrowserContext", new { browserContextId = contextId }).ConfigureAwait(false);
+            await Connection.SendAsync("Target.disposeBrowserContext", new TargetDisposeBrowserContextRequest
+            {
+                BrowserContextId = contextId
+            }).ConfigureAwait(false);
             _contexts.Remove(contextId);
         }
 
