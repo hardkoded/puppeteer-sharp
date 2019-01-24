@@ -236,7 +236,7 @@ namespace PuppeteerSharp
             else
             {
                 var method = obj.Method;
-                var param = obj.Params.ToObject<ConnectionResponseParams>();
+                var param = obj.Params?.ToObject<ConnectionResponseParams>();
 
                 if (method == "Tracing.tracingComplete")
                 {
