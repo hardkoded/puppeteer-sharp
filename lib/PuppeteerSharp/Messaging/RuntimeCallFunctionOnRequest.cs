@@ -13,10 +13,4 @@ namespace PuppeteerSharp.Messaging
         public bool UserGesture { get; set; }
         public string ObjectId { get; set; }
     }
-
-    internal class RuntimeCallFunctionOnRequestArgument
-    {
-        [JsonProperty(NullValueHandling = NullValueHandling.Include)]
-        public object Value { get; set; }
-    }
 }

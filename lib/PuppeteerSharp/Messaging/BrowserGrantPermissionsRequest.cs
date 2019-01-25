@@ -6,6 +6,6 @@ namespace PuppeteerSharp.Messaging
     {
         public string Origin { get; set; }
         public string BrowserContextId { get; set; }
-        public IEnumerable<OverridePermission> Permissions { get; set; }
+        public OverridePermission[] Permissions { get; set; }
     }
 }

@@ -166,10 +166,11 @@ namespace PuppeteerSharp
             try
             {
                 await Connection.SendAsync(
-                    "Target.sendMessageToTarget", new Dictionary<string, object>
+                    "Target.sendMessageToTarget",
+                    new TargetSendMessageToTargetRequest
                     {
-                        {"sessionId", SessionId},
-                        {"message", message}
+                        SessionId = SessionId,
+                        Message = message
                     },
                     waitForCallback).ConfigureAwait(false);
             }

@@ -199,7 +199,11 @@ namespace PuppeteerSharp
         {
             var files = filePaths.Select(Path.GetFullPath).ToArray();
             var objectId = RemoteObject.ObjectId;
-            return Client.SendAsync("DOM.setFileInputFiles", new { objectId, files });
+            return Client.SendAsync("DOM.setFileInputFiles", new DomSetFileInputFilesRequest
+            {
+                ObjectId = objectId,
+                Files = files
+            });
         }
 
         /// <summary>
@@ -489,9 +493,9 @@ namespace PuppeteerSharp
         {
             try
             {
-                return await Client.SendAsync<BoxModelResponse>("DOM.getBoxModel", new
+                return await Client.SendAsync<BoxModelResponse>("DOM.getBoxModel", new DomGetBoxModelRequest
                 {
-                    objectId = RemoteObject.ObjectId
+                    ObjectId = RemoteObject.ObjectId
                 }).ConfigureAwait(false);
             }
             catch (PuppeteerException ex)

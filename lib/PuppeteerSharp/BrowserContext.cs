@@ -124,7 +124,7 @@ namespace PuppeteerSharp
             {
                 Origin = origin,
                 BrowserContextId = _id,
-                Permissions = permissions
+                Permissions = permissions.ToArray()
             });
 
         /// <summary>
