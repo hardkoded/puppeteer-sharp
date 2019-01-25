@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>1.11.1</PackageVersion>
+    <PackageVersion>1.11.2</PackageVersion>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
@@ -12,29 +12,31 @@
     <Description>Headless Chrome .NET API</Description>
     <PackageId>PuppeteerSharp</PackageId>
     <PackageReleaseNotes><![CDATA[
-# New Features
+# ChangeLog
+ * No need to fix file permissions on Mac.
+ * Fix race conditions in SetContentAsync.
+ * Add missing ConfigureAwait in Accessibility.
+ * Set headless option to false when Devtools are enabled.
+ * CloseAsync should wait for the target to be closed.
+ * Change TextAsync output type.
+ * Browser.IsClosed should be true when the connection is closed.
 
- * Support waitUntil option for `Page.SetContentAsync`.
- * Linux support.
+# Internal Changes
 
-# Breaking Changes
-
- * IConnection.Closed, Connection.Closed and CDPSeccion.Closed events were renamed to `Disconnected`.
- * An IConnectionTransport now needs to implement `Task InitializeAsync(string url, IConnectionOptions connectionOptions, ILoggerFactory loggerFactory = null)`.
-
-# Changelog
- 
- * Roll Chromium to r609904.
- * Code cleanup.
- * Remove no-sandbox option in tests.
- * Dispatch errors into a page.
- * Fixed event handler leak.
- * Removed a couple of common allocations.
- * New target types.
- * LifeCycleWatcher fixes
- * ScrollIntoViewIfNeededAsync improvements
+ * Add classes to all Request/Response communications.
+ * Connection messages should be dispatched synchronously.
+ * Add TaskCreationOptions.RunContinuationsAsynchronously to TaskCompletionSources.
+ * Remove Task.Delays.
+ * Dispose CancellationTokens.
+ * Add TaskCreationOptions.LongRunning to the WebSocketTransport loop.
+ * Fix race condition in CloseAsync.
+ * Prevent race conditions in tests.
+ * Fix minor typo in XML docs.
+ * Upgrade .NET Core projects to 2.2.
+ * Upgrade to C# 7.3.
+ * Replace timeouts with CancellationTokens.
  ]]></PackageReleaseNotes>
-    <ReleaseVersion>1.11.1</ReleaseVersion>
+    <ReleaseVersion>1.11.2</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>
