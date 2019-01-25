@@ -51,7 +51,7 @@ namespace PuppeteerSharp.Input
             await _client.SendAsync("Input.dispatchTouchEvent", new InputDispatchTouchEventRequest
             {
                 Type = "touchEnd",
-                TouchPoints = Array.Empty<object>(),
+                TouchPoints = Array.Empty<TouchPoint>(),
                 Modifiers = _keyboard.Modifiers
             }).ConfigureAwait(false);
         }
