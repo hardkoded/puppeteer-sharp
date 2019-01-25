@@ -222,33 +222,7 @@ namespace PuppeteerSharp
                 }
                 else
                 {
-                    var method = obj.Method;
-                    var param = obj.Params.ToObject<ConnectionResponseParams>();
-
-                    if (method == "Target.receivedMessageFromTarget")
-                    {
-                        var sessionId = param.SessionId;
-                        if (_sessions.TryGetValue(sessionId, out var session))
-                        {
-                            session.OnMessage(param.Message);
-                        }
-                    }
-                    else if (method == "Target.detachedFromTarget")
-                    {
-                        var sessionId = param.SessionId;
-                        if (_sessions.TryRemove(sessionId, out var session) && !session.IsClosed)
-                        {
-                            session.Close("Target.detachedFromTarget");
-                        }
-                    }
-                    else
-                    {
-                        MessageReceived?.Invoke(this, new MessageEventArgs
-                        {
-                            MessageID = method,
-                            MessageData = obj.Params
-                        });
-                    }
+                    ProcessIncomingMessage(obj);
                 }
             }
             catch (Exception ex)
@@ -256,6 +230,37 @@ namespace PuppeteerSharp
                 var message = $"Connection failed to process {e.Message}. {ex.Message}. {ex.StackTrace}";
                 _logger.LogError(ex, message);
                 Close(message);
+            }
+        }
+
+        private void ProcessIncomingMessage(ConnectionResponse obj)
+        {
+            var method = obj.Method;
+            var param = obj.Params.ToObject<ConnectionResponseParams>();
+
+            if (method == "Target.receivedMessageFromTarget")
+            {
+                var sessionId = param.SessionId;
+                if (_sessions.TryGetValue(sessionId, out var session))
+                {
+                    session.OnMessage(param.Message);
+                }
+            }
+            else if (method == "Target.detachedFromTarget")
+            {
+                var sessionId = param.SessionId;
+                if (_sessions.TryRemove(sessionId, out var session) && !session.IsClosed)
+                {
+                    session.Close("Target.detachedFromTarget");
+                }
+            }
+            else
+            {
+                MessageReceived?.Invoke(this, new MessageEventArgs
+                {
+                    MessageID = method,
+                    MessageData = obj.Params
+                });
             }
         }
 

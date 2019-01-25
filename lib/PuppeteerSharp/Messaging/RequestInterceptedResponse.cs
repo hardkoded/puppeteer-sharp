@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net;
 
 namespace PuppeteerSharp.Messaging
@@ -18,7 +17,6 @@ namespace PuppeteerSharp.Messaging
 
         internal class AuthChallengeData
         {
-
             public string Source { get; set; }
             public string Origin { get; set; }
             public string Scheme { get; set; }
