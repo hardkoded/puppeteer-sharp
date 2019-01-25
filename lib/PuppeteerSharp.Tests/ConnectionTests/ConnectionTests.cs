@@ -35,6 +35,6 @@ namespace PuppeteerSharp.Tests.ConnectionsTests
             Assert.False(Page.Client.HasPendingCallbacks());
         }
 
-        private Task TheSourceOfTheProblems() => Page.Client.SendAsync("ThisCommand.DoesNotExist");
+        private async Task TheSourceOfTheProblems() => await Page.Client.SendAsync("ThisCommand.DoesNotExist");
     }
 }
