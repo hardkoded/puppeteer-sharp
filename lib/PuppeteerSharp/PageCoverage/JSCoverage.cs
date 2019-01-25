@@ -47,9 +47,13 @@ namespace PuppeteerSharp.PageCoverage
 
             return Task.WhenAll(
                 _client.SendAsync("Profiler.enable"),
-                _client.SendAsync("Profiler.startPreciseCoverage", new { callCount = false, detailed = true }),
+                _client.SendAsync("Profiler.startPreciseCoverage", new ProfilerStartPreciseCoverageRequest
+                {
+                    CallCount = false,
+                    Detailed = true
+                }),
                 _client.SendAsync("Debugger.enable"),
-                _client.SendAsync("Debugger.setSkipAllPauses", new { skip = true })
+                _client.SendAsync("Debugger.setSkipAllPauses", new DebuggerSetSkipAllPausesRequest { Skip = true })
             );
         }
 

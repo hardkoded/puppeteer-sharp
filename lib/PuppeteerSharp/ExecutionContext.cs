@@ -117,9 +117,9 @@ namespace PuppeteerSharp
                 throw new PuppeteerException("Prototype JSHandle must not be referencing primitive value");
             }
 
-            var response = await _client.SendAsync<RuntimeQueryObjectsResponse>("Runtime.queryObjects", new Dictionary<string, object>
+            var response = await _client.SendAsync<RuntimeQueryObjectsResponse>("Runtime.queryObjects", new RuntimeQueryObjectsRequest
             {
-                {"prototypeObjectId", prototypeHandle.RemoteObject.ObjectId}
+                PrototypeObjectId = prototypeHandle.RemoteObject.ObjectId
             }).ConfigureAwait(false);
 
             return CreateJSHandle(response.Objects);

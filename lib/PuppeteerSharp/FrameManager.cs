@@ -105,11 +105,11 @@ namespace PuppeteerSharp
 
         private async Task NavigateAsync(CDPSession client, string url, string referrer, string frameId)
         {
-            var response = await client.SendAsync<PageNavigateResponse>("Page.navigate", new
+            var response = await client.SendAsync<PageNavigateResponse>("Page.navigate", new PageNavigateRequest
             {
-                url,
-                referrer = referrer ?? string.Empty,
-                frameId
+                Url = url,
+                Referrer = referrer ?? string.Empty,
+                FrameId = frameId
             }).ConfigureAwait(false);
 
             _ensureNewDocumentNavigation = !string.IsNullOrEmpty(response.LoaderId);

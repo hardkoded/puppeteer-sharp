@@ -462,7 +462,10 @@ namespace PuppeteerSharp
         public Task EvaluateOnNewDocumentAsync(string pageFunction, params object[] args)
         {
             var source = EvaluationString(pageFunction, args);
-            return Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new { source });
+            return Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new PageAddScriptToEvaluateOnNewDocumentRequest
+            {
+                Source = source
+            });
         }
 
         /// <summary>
@@ -869,7 +872,10 @@ namespace PuppeteerSharp
                 return Task.CompletedTask;
             }
             JavascriptEnabled = enabled;
-            return Client.SendAsync("Emulation.setScriptExecutionDisabled", new { value = !enabled });
+            return Client.SendAsync("Emulation.setScriptExecutionDisabled", new EmulationSetScriptExecutionDisabledRequest
+            {
+                Value = !enabled
+            });
         }
 
         /// <summary>
@@ -881,7 +887,10 @@ namespace PuppeteerSharp
         /// CSP bypassing happens at the moment of CSP initialization rather then evaluation.
         /// Usually this means that <see cref="SetBypassCSPAsync(bool)"/> should be called before navigating to the domain.
         /// </remarks>
-        public Task SetBypassCSPAsync(bool enabled) => Client.SendAsync("Page.setBypassCSP", new { enabled });
+        public Task SetBypassCSPAsync(bool enabled) => Client.SendAsync("Page.setBypassCSP", new PageSetBypassCSPRequest
+        {
+            Enabled = enabled
+        });
 
         /// <summary>
         /// Emulates a media such as screen or print.
@@ -889,7 +898,7 @@ namespace PuppeteerSharp
         /// <returns>Task.</returns>
         /// <param name="media">Media to set.</param>
         public Task EmulateMediaAsync(MediaType media)
-            => Client.SendAsync("Emulation.setEmulatedMedia", new { media });
+            => Client.SendAsync("Emulation.setEmulatedMedia", new EmulationSetEmulatedMediaRequest { Media = media });
 
         /// <summary>
         /// Sets the viewport.
@@ -1047,9 +1056,9 @@ namespace PuppeteerSharp
                 }
                 else
                 {
-                    return Client.Connection.SendAsync("Target.closeTarget", new
+                    return Client.Connection.SendAsync("Target.closeTarget", new TargetCloseTargetRequest
                     {
-                        targetId = Target.TargetId
+                        TargetId = Target.TargetId
                     }).ContinueWith((task) => Target.CloseTask);
                 }
             }
@@ -1064,7 +1073,7 @@ namespace PuppeteerSharp
         /// <param name="enabled">sets the <c>enabled</c> state of the cache</param>
         /// <returns>Task</returns>
         public Task SetCacheEnabledAsync(bool enabled = true)
-            => Client.SendAsync("Network.setCacheDisabled", new { cacheDisabled = !enabled });
+            => Client.SendAsync("Network.setCacheDisabled", new NetworkSetCacheDisabledRequest { CacheDisabled = !enabled });
 
         /// <summary>
         /// Fetches an element with <paramref name="selector"/>, scrolls it into view if needed, and then uses <see cref="Page.Mouse"/> to click in the center of the element.
@@ -1515,8 +1524,15 @@ namespace PuppeteerSharp
             await page.InitializeAsync(new FrameTree(result.FrameTree)).ConfigureAwait(false);
 
             await Task.WhenAll(
-                client.SendAsync("Target.setAutoAttach", new { autoAttach = true, waitForDebuggerOnStart = false }),
-                client.SendAsync("Page.setLifecycleEventsEnabled", new { enabled = true }),
+                client.SendAsync("Target.setAutoAttach", new TargetSetAutoAttachRequest
+                {
+                    AutoAttach = true,
+                    WaitForDebuggerOnStart = false
+                }),
+                client.SendAsync("Page.setLifecycleEventsEnabled", new PageSetLifecycleEventsEnabledRequest
+                {
+                    Enabled = true
+                }),
                 client.SendAsync("Network.enable", null),
                 client.SendAsync("Runtime.enable", null),
                 client.SendAsync("Security.enable", null),
@@ -1526,9 +1542,9 @@ namespace PuppeteerSharp
 
             if (ignoreHTTPSErrors)
             {
-                await client.SendAsync("Security.setOverrideCertificateErrors", new Dictionary<string, object>
+                await client.SendAsync("Security.setOverrideCertificateErrors", new SecuritySetOverrideCertificateErrorsRequest
                 {
-                    {"override", true}
+                    Override = true
                 }).ConfigureAwait(false);
             }
 
@@ -1568,9 +1584,9 @@ namespace PuppeteerSharp
 
             await Task.WhenAll(
                 waitTask,
-                Client.SendAsync("Page.navigateToHistoryEntry", new
+                Client.SendAsync("Page.navigateToHistoryEntry", new PageNavigateToHistoryEntryRequest
                 {
-                    entryId = entry.Id
+                    EntryId = entry.Id
                 })
             ).ConfigureAwait(false);
 
@@ -1596,9 +1612,9 @@ namespace PuppeteerSharp
         {
             if (!_screenshotBurstModeOn)
             {
-                await Client.SendAsync("Target.activateTarget", new
+                await Client.SendAsync("Target.activateTarget", new TargetActivateTargetRequest
                 {
-                    targetId = Target.TargetId
+                    TargetId = Target.TargetId
                 }).ConfigureAwait(false);
             }
 
@@ -1651,26 +1667,26 @@ namespace PuppeteerSharp
                             Type = ScreenOrientationType.PortraitPrimary
                         };
 
-                    await Client.SendAsync("Emulation.setDeviceMetricsOverride", new
+                    await Client.SendAsync("Emulation.setDeviceMetricsOverride", new EmulationSetDeviceMetricsOverrideRequest
                     {
-                        mobile = isMobile,
-                        width,
-                        height,
-                        deviceScaleFactor,
-                        screenOrientation
+                        Mobile = isMobile,
+                        Width = width,
+                        Height = height,
+                        DeviceScaleFactor = deviceScaleFactor,
+                        ScreenOrientation = screenOrientation
                     }).ConfigureAwait(false);
                 }
 
                 if (options?.OmitBackground == true && type == ScreenshotType.Png)
                 {
-                    await Client.SendAsync("Emulation.setDefaultBackgroundColorOverride", new
+                    await Client.SendAsync("Emulation.setDefaultBackgroundColorOverride", new EmulationSetDefaultBackgroundColorOverrideRequest
                     {
-                        color = new
+                        Color = new EmulationSetDefaultBackgroundColorOverrideColor
                         {
-                            r = 0,
-                            g = 0,
-                            b = 0,
-                            a = 0
+                            R = 0,
+                            G = 0,
+                            B = 0,
+                            A = 0
                         }
                     }).ConfigureAwait(false);
                 }
@@ -1889,7 +1905,10 @@ namespace PuppeteerSharp
             {
                 try
                 {
-                    await Client.SendAsync("Target.detachFromTarget", new { sessionId }).ConfigureAwait(false);
+                    await Client.SendAsync("Target.detachFromTarget", new TargetDetachFromTargetRequest
+                    {
+                        SessionId = sessionId
+                    }).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
@@ -2030,8 +2049,11 @@ namespace PuppeteerSharp
               };
             }";
             var expression = EvaluationString(addPageBinding, name);
-            await Client.SendAsync("Runtime.addBinding", new { name }).ConfigureAwait(false);
-            await Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new { source = expression }).ConfigureAwait(false);
+            await Client.SendAsync("Runtime.addBinding", new RuntimeAddBindingRequest { Name = name }).ConfigureAwait(false);
+            await Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new PageAddScriptToEvaluateOnNewDocumentRequest
+            {
+                Source = expression
+            }).ConfigureAwait(false);
 
             await Task.WhenAll(Frames.Select(frame => frame.EvaluateExpressionAsync(expression)
                 .ContinueWith(task =>

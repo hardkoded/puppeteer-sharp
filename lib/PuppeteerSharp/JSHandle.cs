@@ -79,10 +79,10 @@ namespace PuppeteerSharp
         /// </example>
         public async Task<Dictionary<string, JSHandle>> GetPropertiesAsync()
         {
-            var response = await Client.SendAsync<RuntimeGetPropertiesResponse>("Runtime.getProperties", new
+            var response = await Client.SendAsync<RuntimeGetPropertiesResponse>("Runtime.getProperties", new RuntimeGetPropertiesRequest
             {
-                objectId = RemoteObject.ObjectId,
-                ownProperties = true
+                ObjectId = RemoteObject.ObjectId,
+                OwnProperties = true
             }).ConfigureAwait(false);
 
             var result = new Dictionary<string, JSHandle>();
