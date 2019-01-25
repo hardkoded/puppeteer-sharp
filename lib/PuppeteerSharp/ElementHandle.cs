@@ -199,7 +199,11 @@ namespace PuppeteerSharp
         {
             var files = filePaths.Select(Path.GetFullPath).ToArray();
             var objectId = RemoteObject.ObjectId;
-            return Client.SendAsync("DOM.setFileInputFiles", new { objectId, files });
+            return Client.SendAsync("DOM.setFileInputFiles", new DomSetFileInputFilesRequest
+            {
+                ObjectId = objectId,
+                Files = files
+            });
         }
 
         /// <summary>
@@ -384,9 +388,9 @@ namespace PuppeteerSharp
         /// <returns>Resolves to the content frame</returns>
         public async Task<Frame> ContentFrameAsync()
         {
-            var nodeInfo = await Client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new Dictionary<string, object>
+            var nodeInfo = await Client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
             {
-                { MessageKeys.ObjectId, RemoteObject.ObjectId }
+                ObjectId = RemoteObject.ObjectId
             }).ConfigureAwait(false);
 
             return string.IsNullOrEmpty(nodeInfo.Node.FrameId) ? null : await _frameManager.GetFrameAsync(nodeInfo.Node.FrameId);
@@ -417,9 +421,9 @@ namespace PuppeteerSharp
 
             try
             {
-                result = await Client.SendAsync<GetContentQuadsResponse>("DOM.getContentQuads", new Dictionary<string, object>
+                result = await Client.SendAsync<GetContentQuadsResponse>("DOM.getContentQuads", new DomGetContentQuadsRequest
                 {
-                    { MessageKeys.ObjectId, RemoteObject.ObjectId }
+                    ObjectId = RemoteObject.ObjectId
                 }).ConfigureAwait(false);
             }
             catch (Exception ex)
@@ -489,9 +493,9 @@ namespace PuppeteerSharp
         {
             try
             {
-                return await Client.SendAsync<BoxModelResponse>("DOM.getBoxModel", new
+                return await Client.SendAsync<BoxModelResponse>("DOM.getBoxModel", new DomGetBoxModelRequest
                 {
-                    objectId = RemoteObject.ObjectId
+                    ObjectId = RemoteObject.ObjectId
                 }).ConfigureAwait(false);
             }
             catch (PuppeteerException ex)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp.Input
 {
@@ -34,24 +35,24 @@ namespace PuppeteerSharp.Input
             // Touches appear to be lost during the first frame after navigation.
             // This waits a frame before sending the tap.
             // @see https://crbug.com/613219
-            await _client.SendAsync("Runtime.evaluate", new
+            await _client.SendAsync("Runtime.evaluate", new RuntimeEvaluateRequest
             {
-                expression = "new Promise(x => requestAnimationFrame(() => requestAnimationFrame(x)))",
-                awaitPromise = true
+                Expression = "new Promise(x => requestAnimationFrame(() => requestAnimationFrame(x)))",
+                AwaitPromise = true
             }).ConfigureAwait(false);
 
-            var touchPoints = new[] { new { x = Math.Round(x), y = Math.Round(y) } };
-            await _client.SendAsync("Input.dispatchTouchEvent", new
+            var touchPoints = new[] { new TouchPoint { X = Math.Round(x), Y = Math.Round(y) } };
+            await _client.SendAsync("Input.dispatchTouchEvent", new InputDispatchTouchEventRequest
             {
-                type = "touchStart",
-                touchPoints,
-                modifiers = _keyboard.Modifiers
+                Type = "touchStart",
+                TouchPoints = touchPoints,
+                Modifiers = _keyboard.Modifiers
             }).ConfigureAwait(false);
-            await _client.SendAsync("Input.dispatchTouchEvent", new
+            await _client.SendAsync("Input.dispatchTouchEvent", new InputDispatchTouchEventRequest
             {
-                type = "touchEnd",
-                touchPoints = Array.Empty<object>(),
-                modifiers = _keyboard.Modifiers
+                Type = "touchEnd",
+                TouchPoints = Array.Empty<TouchPoint>(),
+                Modifiers = _keyboard.Modifiers
             }).ConfigureAwait(false);
         }
     }

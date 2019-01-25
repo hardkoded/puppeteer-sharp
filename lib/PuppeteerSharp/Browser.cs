@@ -207,7 +207,7 @@ namespace PuppeteerSharp
         /// </example>
         public async Task<BrowserContext> CreateIncognitoBrowserContextAsync()
         {
-            var response = await Connection.SendAsync<CreateBrowserContextResponse>("Target.createBrowserContext", new { }).ConfigureAwait(false);
+            var response = await Connection.SendAsync<CreateBrowserContextResponse>("Target.createBrowserContext", null).ConfigureAwait(false);
             var context = new BrowserContext(Connection, this, response.BrowserContextId);
             _contexts[response.BrowserContextId] = context;
             return context;
@@ -245,10 +245,7 @@ namespace PuppeteerSharp
         /// the format of <see cref="GetVersionAsync"/> might change with future releases of Chromium
         /// </remarks>
         public async Task<string> GetVersionAsync()
-        {
-            var version = await Connection.SendAsync("Browser.getVersion").ConfigureAwait(false);
-            return version[MessageKeys.Product].AsString();
-        }
+            => (await Connection.SendAsync<BrowserGetVersionResponse>("Browser.getVersion").ConfigureAwait(false)).Product;
 
         /// <summary>
         /// Gets the browser's original user agent
@@ -258,10 +255,7 @@ namespace PuppeteerSharp
         /// Pages can override browser user agent with <see cref="Page.SetUserAgentAsync(string)"/>
         /// </remarks>
         public async Task<string> GetUserAgentAsync()
-        {
-            var version = await Connection.SendAsync("Browser.getVersion").ConfigureAwait(false);
-            return version[MessageKeys.UserAgent].AsString();
-        }
+            => (await Connection.SendAsync<BrowserGetVersionResponse>("Browser.getVersion").ConfigureAwait(false)).UserAgent;
 
         /// <summary>
         /// Disconnects Puppeteer from the browser, but leaves the Chromium process running. After calling <see cref="Disconnect"/>, the browser object is considered disposed and cannot be used anymore
@@ -376,12 +370,17 @@ namespace PuppeteerSharp
 
         internal async Task<Page> CreatePageInContextAsync(string contextId)
         {
-            var args = new Dictionary<string, object> { [MessageKeys.Url] = "about:blank" };
+            var createTargetRequest = new TargetCreateTargetRequest
+            {
+                Url = "about:blank"
+            };
+
             if (contextId != null)
             {
-                args[MessageKeys.BrowserContextId] = contextId;
+                createTargetRequest.BrowserContextId = contextId;
             }
-            var targetId = (await Connection.SendAsync("Target.createTarget", args).ConfigureAwait(false))[MessageKeys.TargetId].ToString();
+            var targetId = (await Connection.SendAsync<TargetCreateTargetResponse>("Target.createTarget", createTargetRequest)
+                .ConfigureAwait(false)).TargetId;
             var target = TargetsMap[targetId];
             await target.InitializedTask.ConfigureAwait(false);
             return await target.PageAsync().ConfigureAwait(false);
@@ -389,7 +388,10 @@ namespace PuppeteerSharp
 
         internal async Task DisposeContextAsync(string contextId)
         {
-            await Connection.SendAsync("Target.disposeBrowserContext", new { browserContextId = contextId }).ConfigureAwait(false);
+            await Connection.SendAsync("Target.disposeBrowserContext", new TargetDisposeBrowserContextRequest
+            {
+                BrowserContextId = contextId
+            }).ConfigureAwait(false);
             _contexts.Remove(contextId);
         }
 
@@ -504,9 +506,9 @@ namespace PuppeteerSharp
             ChromiumProcess chromiumProcess)
         {
             var browser = new Browser(connection, contextIds, ignoreHTTPSErrors, defaultViewPort, chromiumProcess);
-            await connection.SendAsync("Target.setDiscoverTargets", new
+            await connection.SendAsync("Target.setDiscoverTargets", new TargetSetDiscoverTargetsRequest
             {
-                discover = true
+                Discover = true
             }).ConfigureAwait(false);
 
             return browser;

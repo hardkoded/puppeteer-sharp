@@ -43,18 +43,18 @@ namespace PuppeteerSharp.Input
 
             var text = options?.Text == null ? description.Text : options.Text;
 
-            return _client.SendAsync("Input.dispatchKeyEvent", new Dictionary<string, object>
+            return _client.SendAsync("Input.dispatchKeyEvent", new InputDispatchKeyEventRequest
             {
-                { MessageKeys.Type, text != null ? "keyDown" : "rawKeyDown" },
-                { MessageKeys.Modifiers, Modifiers },
-                { MessageKeys.WindowsVirtualKeyCode, description.KeyCode },
-                { MessageKeys.Code, description.Code },
-                { MessageKeys.Key, description.Key },
-                { MessageKeys.Text, text },
-                { MessageKeys.UnmodifiedText, text },
-                { MessageKeys.AutoRepeat, autoRepeat },
-                { MessageKeys.Location, description.Location },
-                { MessageKeys.IsKeypad, description.Location == 3 }
+                Type = text != null ? DispatchKeyEventType.KeyDown : DispatchKeyEventType.RawKeyDown,
+                Modifiers = Modifiers,
+                WindowsVirtualKeyCode = description.KeyCode,
+                Code = description.Code,
+                Key = description.Key,
+                Text = text,
+                UnmodifiedText = text,
+                AutoRepeat = autoRepeat,
+                Location = description.Location,
+                IsKeypad = description.Location == 3
             });
         }
 
@@ -70,14 +70,14 @@ namespace PuppeteerSharp.Input
             Modifiers &= ~ModifierBit(key);
             _pressedKeys.Remove(description.Code);
 
-            return _client.SendAsync("Input.dispatchKeyEvent", new Dictionary<string, object>
+            return _client.SendAsync("Input.dispatchKeyEvent", new InputDispatchKeyEventRequest
             {
-                { MessageKeys.Type, "keyUp" },
-                { MessageKeys.Modifiers, Modifiers },
-                { MessageKeys.Key, description.Key },
-                { MessageKeys.WindowsVirtualKeyCode, description.KeyCode },
-                { MessageKeys.Code, description.Code },
-                { MessageKeys.Location, description.Location }
+                Type = DispatchKeyEventType.KeyUp,
+                Modifiers = Modifiers,
+                Key = description.Key,
+                WindowsVirtualKeyCode = description.KeyCode,
+                Code = description.Code,
+                Location = description.Location
             });
         }
 
@@ -87,7 +87,10 @@ namespace PuppeteerSharp.Input
         /// <param name="charText">Character to send into the page</param>
         /// <returns>Task</returns>
         public Task SendCharacterAsync(string charText)
-            => _client.SendAsync("Input.insertText", new Dictionary<string, object> { [MessageKeys.Text] = charText });
+            => _client.SendAsync("Input.insertText", new InputInsertTextRequest
+            {
+                Text = charText
+            });
 
         /// <summary>
         /// Sends a <c>keydown</c>, <c>keypress</c>/<c>input</c>, and <c>keyup</c> event for each character in the text.

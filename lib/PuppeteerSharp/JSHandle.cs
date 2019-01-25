@@ -79,10 +79,10 @@ namespace PuppeteerSharp
         /// </example>
         public async Task<Dictionary<string, JSHandle>> GetPropertiesAsync()
         {
-            var response = await Client.SendAsync<RuntimeGetPropertiesResponse>("Runtime.getProperties", new
+            var response = await Client.SendAsync<RuntimeGetPropertiesResponse>("Runtime.getProperties", new RuntimeGetPropertiesRequest
             {
-                objectId = RemoteObject.ObjectId,
-                ownProperties = true
+                ObjectId = RemoteObject.ObjectId,
+                OwnProperties = true
             }).ConfigureAwait(false);
 
             var result = new Dictionary<string, JSHandle>();
@@ -122,12 +122,12 @@ namespace PuppeteerSharp
 
             if (objectId != null)
             {
-                var response = await Client.SendAsync<RuntimeCallFunctionOnResponse>("Runtime.callFunctionOn", new Dictionary<string, object>
+                var response = await Client.SendAsync<RuntimeCallFunctionOnResponse>("Runtime.callFunctionOn", new RuntimeCallFunctionOnRequest
                 {
-                    ["functionDeclaration"] = "function() { return this; }",
-                    [MessageKeys.ObjectId] = objectId,
-                    ["returnByValue"] = true,
-                    ["awaitPromise"] = true
+                    FunctionDeclaration = "function() { return this; }",
+                    ObjectId = objectId,
+                    ReturnByValue = true,
+                    AwaitPromise = true
                 }).ConfigureAwait(false);
                 return (T)RemoteObjectHelper.ValueFromRemoteObject<T>(response.Result);
             }

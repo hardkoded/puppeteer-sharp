@@ -18,6 +18,7 @@ namespace PuppeteerSharp
         private readonly ConcurrentDictionary<string, Frame> _frames;
         private readonly MultiMap<string, TaskCompletionSource<Frame>> _pendingFrameRequests;
         private const int WaitForRequestDelay = 1000;
+        private const string RefererHeaderName = "referer";
 
         private FrameManager(CDPSession client, Page page, NetworkManager networkManager)
         {
@@ -70,7 +71,7 @@ namespace PuppeteerSharp
         public async Task<Response> NavigateFrameAsync(Frame frame, string url, NavigationOptions options)
         {
             var referrer = string.IsNullOrEmpty(options.Referer)
-               ? NetworkManager.ExtraHTTPHeaders?.GetValueOrDefault(MessageKeys.Referer)
+               ? NetworkManager.ExtraHTTPHeaders?.GetValueOrDefault(RefererHeaderName)
                : options.Referer;
             var requests = new Dictionary<string, Request>();
             var timeout = options?.Timeout ?? DefaultNavigationTimeout;
@@ -104,11 +105,11 @@ namespace PuppeteerSharp
 
         private async Task NavigateAsync(CDPSession client, string url, string referrer, string frameId)
         {
-            var response = await client.SendAsync<PageNavigateResponse>("Page.navigate", new
+            var response = await client.SendAsync<PageNavigateResponse>("Page.navigate", new PageNavigateRequest
             {
-                url,
-                referrer = referrer ?? string.Empty,
-                frameId
+                Url = url,
+                Referrer = referrer ?? string.Empty,
+                FrameId = frameId
             }).ConfigureAwait(false);
 
             _ensureNewDocumentNavigation = !string.IsNullOrEmpty(response.LoaderId);

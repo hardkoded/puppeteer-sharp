@@ -121,9 +121,9 @@ namespace PuppeteerSharp
 
                 try
                 {
-                    var response = await _client.SendAsync<NetworkGetResponseBodyResponse>("Network.getResponseBody", new Dictionary<string, object>
+                    var response = await _client.SendAsync<NetworkGetResponseBodyResponse>("Network.getResponseBody", new NetworkGetResponseBodyRequest
                     {
-                        { MessageKeys.RequestId, Request.RequestId}
+                        RequestId = Request.RequestId
                     }).ConfigureAwait(false);
 
                     _buffer = response.Base64Encoded

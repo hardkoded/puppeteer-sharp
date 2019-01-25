@@ -95,11 +95,11 @@ namespace PuppeteerSharp
             }
 
             var id = Interlocked.Increment(ref _lastId);
-            var message = JsonConvert.SerializeObject(new Dictionary<string, object>
+            var message = JsonConvert.SerializeObject(new ConnectionRequest
             {
-                { MessageKeys.Id, id },
-                { MessageKeys.Method, method },
-                { MessageKeys.Params, args }
+                Id = id,
+                Method = method,
+                Params = args
             }, JsonHelper.DefaultJsonSerializerSettings);
 
             _logger.LogTrace("Send ► {Id} Method {Method} Params {@Params}", id, method, (object)args);
@@ -127,10 +127,10 @@ namespace PuppeteerSharp
 
         internal async Task<CDPSession> CreateSessionAsync(TargetInfo targetInfo)
         {
-            var sessionId = (await SendAsync("Target.attachToTarget", new
+            var sessionId = (await SendAsync<TargetAttachToTargetResponse>("Target.attachToTarget", new TargetAttachToTargetRequest
             {
-                targetId = targetInfo.TargetId
-            }).ConfigureAwait(false))[MessageKeys.SessionId].AsString();
+                TargetId = targetInfo.TargetId
+            }).ConfigureAwait(false)).SessionId;
             var session = new CDPSession(this, targetInfo.Type, sessionId);
             _sessions.TryAdd(sessionId, session);
             return session;
@@ -183,7 +183,7 @@ namespace PuppeteerSharp
             try
             {
                 var response = e.Message;
-                JObject obj = null;
+                ConnectionResponse obj = null;
 
                 if (response.Length > 0 && Delay > 0)
                 {
@@ -192,7 +192,7 @@ namespace PuppeteerSharp
 
                 try
                 {
-                    obj = JsonConvert.DeserializeObject<JObject>(response, JsonHelper.DefaultJsonSerializerSettings);
+                    obj = JsonConvert.DeserializeObject<ConnectionResponse>(response, JsonHelper.DefaultJsonSerializerSettings);
                 }
                 catch (JsonException exc)
                 {
@@ -202,7 +202,7 @@ namespace PuppeteerSharp
 
                 _logger.LogTrace("◀ Receive {Message}", response);
 
-                var id = obj[MessageKeys.Id]?.Value<int>();
+                var id = obj.Id;
 
                 if (id.HasValue)
                 {
@@ -210,45 +210,19 @@ namespace PuppeteerSharp
                     //if not we add this to the list, sooner or later some one will come for it 
                     if (_callbacks.TryRemove(id.Value, out var callback))
                     {
-                        if (obj[MessageKeys.Error] != null)
+                        if (obj.Error != null)
                         {
-                            callback.TaskWrapper.TrySetException(new MessageException(callback, obj));
+                            callback.TaskWrapper.TrySetException(new MessageException(callback, obj.Error));
                         }
                         else
                         {
-                            callback.TaskWrapper.TrySetResult(obj[MessageKeys.Result].Value<JObject>());
+                            callback.TaskWrapper.TrySetResult(obj.Result);
                         }
                     }
                 }
                 else
                 {
-                    var method = obj[MessageKeys.Method].AsString();
-                    var param = obj[MessageKeys.Params];
-
-                    if (method == "Target.receivedMessageFromTarget")
-                    {
-                        var sessionId = param[MessageKeys.SessionId].AsString();
-                        if (_sessions.TryGetValue(sessionId, out var session))
-                        {
-                            session.OnMessage(param[MessageKeys.Message].AsString());
-                        }
-                    }
-                    else if (method == "Target.detachedFromTarget")
-                    {
-                        var sessionId = param[MessageKeys.SessionId].AsString();
-                        if (_sessions.TryRemove(sessionId, out var session) && !session.IsClosed)
-                        {
-                            session.Close("Target.detachedFromTarget");
-                        }
-                    }
-                    else
-                    {
-                        MessageReceived?.Invoke(this, new MessageEventArgs
-                        {
-                            MessageID = method,
-                            MessageData = param
-                        });
-                    }
+                    ProcessIncomingMessage(obj);
                 }
             }
             catch (Exception ex)
@@ -256,6 +230,37 @@ namespace PuppeteerSharp
                 var message = $"Connection failed to process {e.Message}. {ex.Message}. {ex.StackTrace}";
                 _logger.LogError(ex, message);
                 Close(message);
+            }
+        }
+
+        private void ProcessIncomingMessage(ConnectionResponse obj)
+        {
+            var method = obj.Method;
+            var param = obj.Params.ToObject<ConnectionResponseParams>();
+
+            if (method == "Target.receivedMessageFromTarget")
+            {
+                var sessionId = param.SessionId;
+                if (_sessions.TryGetValue(sessionId, out var session))
+                {
+                    session.OnMessage(param.Message);
+                }
+            }
+            else if (method == "Target.detachedFromTarget")
+            {
+                var sessionId = param.SessionId;
+                if (_sessions.TryRemove(sessionId, out var session) && !session.IsClosed)
+                {
+                    session.Close("Target.detachedFromTarget");
+                }
+            }
+            else
+            {
+                MessageReceived?.Invoke(this, new MessageEventArgs
+                {
+                    MessageID = method,
+                    MessageData = obj.Params
+                });
             }
         }
 

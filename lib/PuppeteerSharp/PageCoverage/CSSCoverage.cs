@@ -129,13 +129,13 @@ namespace PuppeteerSharp.PageCoverage
 
             try
             {
-                var response = await _client.SendAsync("CSS.getStyleSheetText", new
+                var response = await _client.SendAsync<CssGetStyleSheetTextResponse>("CSS.getStyleSheetText", new CssGetStyleSheetTextRequest
                 {
-                    styleSheetId = styleSheetAddedResponse.Header.StyleSheetId
+                    StyleSheetId = styleSheetAddedResponse.Header.StyleSheetId
                 }).ConfigureAwait(false);
 
                 _stylesheetURLs.Add(styleSheetAddedResponse.Header.StyleSheetId, styleSheetAddedResponse.Header.SourceURL);
-                _stylesheetSources.Add(styleSheetAddedResponse.Header.StyleSheetId, response[MessageKeys.Text].AsString());
+                _stylesheetSources.Add(styleSheetAddedResponse.Header.StyleSheetId, response.Text);
             }
             catch (Exception ex)
             {

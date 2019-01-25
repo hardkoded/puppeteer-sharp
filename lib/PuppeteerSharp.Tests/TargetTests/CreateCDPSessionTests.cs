@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Messaging;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -21,7 +22,7 @@ namespace PuppeteerSharp.Tests.TargetTests
 
             await Task.WhenAll(
               client.SendAsync("Runtime.enable"),
-              client.SendAsync("Runtime.evaluate", new { expression = "window.foo = 'bar'" })
+              client.SendAsync("Runtime.evaluate", new RuntimeEvaluateRequest { Expression = "window.foo = 'bar'" })
             );
             var foo = await Page.EvaluateExpressionAsync<string>("window.foo");
             Assert.Equal("bar", foo);
@@ -70,12 +71,20 @@ namespace PuppeteerSharp.Tests.TargetTests
         {
             var client = await Page.Target.CreateCDPSessionAsync();
             await client.SendAsync("Runtime.enable");
-            var evalResponse = await client.SendAsync("Runtime.evaluate", new { expression = "1 + 2", returnByValue = true });
+            var evalResponse = await client.SendAsync("Runtime.evaluate", new RuntimeEvaluateRequest
+            {
+                Expression = "1 + 2",
+                ReturnByValue = true
+            });
             Assert.Equal(3, evalResponse["result"]["value"].ToObject<int>());
             await client.DetachAsync();
 
             var exception = await Assert.ThrowsAnyAsync<Exception>(()
-                => client.SendAsync("Runtime.evaluate", new { expression = "3 + 1", returnByValue = true }));
+                => client.SendAsync("Runtime.evaluate", new RuntimeEvaluateRequest
+                {
+                    Expression = "3 + 1",
+                    ReturnByValue = true
+                }));
             Assert.Contains("Session closed.", exception.Message);
         }
     }

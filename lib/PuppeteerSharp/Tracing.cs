@@ -71,10 +71,10 @@ namespace PuppeteerSharp
             _path = options.Path;
             _recording = true;
 
-            return _client.SendAsync("Tracing.start", new
+            return _client.SendAsync("Tracing.start", new TracingStartRequest
             {
-                transferMode = "ReturnAsStream",
-                categories = string.Join(", ", categories)
+                TransferMode = "ReturnAsStream",
+                Categories = string.Join(", ", categories)
             });
         }
 
@@ -118,9 +118,9 @@ namespace PuppeteerSharp
 
             while (!eof)
             {
-                var response = await _client.SendAsync<IOReadResponse>("IO.read", new
+                var response = await _client.SendAsync<IOReadResponse>("IO.read", new IOReadRequest
                 {
-                    handle = stream
+                    Handle = stream
                 }).ConfigureAwait(false);
 
                 eof = response.Eof;
@@ -136,9 +136,9 @@ namespace PuppeteerSharp
                 }
             }
 
-            await _client.SendAsync("IO.close", new
+            await _client.SendAsync("IO.close", new IOCloseRequest
             {
-                handle = stream
+                Handle = stream
             }).ConfigureAwait(false);
 
             return result.ToString();

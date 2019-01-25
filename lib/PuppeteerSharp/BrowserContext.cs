@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
@@ -55,7 +56,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>An array of all active targets inside the browser context</returns>
         public Target[] Targets() => Array.FindAll(Browser.Targets(), target => target.BrowserContext == this);
- 
+
         /// <summary>
         /// This searches for a target in this specific browser context.
         /// <example>
@@ -70,7 +71,7 @@ namespace PuppeteerSharp
         /// <param name="predicate">A function to be run for every target</param>
         /// <param name="options">options</param>
         /// <returns>Resolves to the first target found that matches the predicate function.</returns>
-        public Task<Target> WaitForTargetAsync(Func<Target, bool> predicate, WaitForOptions options = null) 
+        public Task<Target> WaitForTargetAsync(Func<Target, bool> predicate, WaitForOptions options = null)
             => Browser.WaitForTargetAsync((target) => target.BrowserContext == this && predicate(target), options);
 
         /// <summary>
@@ -119,11 +120,11 @@ namespace PuppeteerSharp
         /// </example>
         /// <seealso href="https://developer.mozilla.org/en-US/docs/Glossary/Origin"/>
         public Task OverridePermissionsAsync(string origin, IEnumerable<OverridePermission> permissions)
-            => _connection.SendAsync("Browser.grantPermissions", new
+            => _connection.SendAsync("Browser.grantPermissions", new BrowserGrantPermissionsRequest
             {
-                origin,
-                browserContextId = _id,
-                permissions
+                Origin = origin,
+                BrowserContextId = _id,
+                Permissions = permissions.ToArray()
             });
 
         /// <summary>
@@ -131,7 +132,10 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>The task.</returns>
         public Task ClearPermissionOverridesAsync()
-            => _connection.SendAsync("Browser.resetPermissions", new { browserContextId = _id });
+            => _connection.SendAsync("Browser.resetPermissions", new BrowserResetPermissionsRequest
+            {
+                BrowserContextId = _id
+            });
 
         internal void OnTargetCreated(Browser browser, TargetChangedArgs args) => TargetCreated?.Invoke(browser, args);
 

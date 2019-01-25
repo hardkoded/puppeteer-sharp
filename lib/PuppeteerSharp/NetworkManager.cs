@@ -61,9 +61,9 @@ namespace PuppeteerSharp
             {
                 _extraHTTPHeaders[item.Key.ToLower()] = item.Value;
             }
-            return _client.SendAsync("Network.setExtraHTTPHeaders", new Dictionary<string, object>
+            return _client.SendAsync("Network.setExtraHTTPHeaders", new NetworkSetExtraHTTPHeadersRequest
             {
-                { MessageKeys.Headers, _extraHTTPHeaders }
+                Headers = _extraHTTPHeaders
             });
         }
 
@@ -73,20 +73,20 @@ namespace PuppeteerSharp
             {
                 _offine = value;
 
-                await _client.SendAsync("Network.emulateNetworkConditions", new Dictionary<string, object>
+                await _client.SendAsync("Network.emulateNetworkConditions", new NetworkEmulateNetworkConditionsRequest
                 {
-                    { MessageKeys.Offline, value},
-                    { MessageKeys.Latency, 0},
-                    { MessageKeys.DownloadThroughput, -1},
-                    { MessageKeys.UploadThroughput, -1}
+                    Offline = value,
+                    Latency = 0,
+                    DownloadThroughput = -1,
+                    UploadThroughput = -1
                 }).ConfigureAwait(false);
             }
         }
 
         internal Task SetUserAgentAsync(string userAgent)
-            => _client.SendAsync("Network.setUserAgentOverride", new Dictionary<string, object>
+            => _client.SendAsync("Network.setUserAgentOverride", new NetworkSetUserAgentOverrideRequest
             {
-                { MessageKeys.UserAgent, userAgent }
+                UserAgent = userAgent
             });
 
         internal Task SetRequestInterceptionAsync(bool value)
@@ -212,15 +212,14 @@ namespace PuppeteerSharp
                 var credentials = _credentials ?? new Credentials();
                 try
                 {
-                    await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object>
+                    await _client.SendAsync("Network.continueInterceptedRequest", new NetworkContinueInterceptedRequestRequest
                     {
-                        { MessageKeys.InterceptionId, e.InterceptionId },
-                        { MessageKeys.AuthChallengeResponse, new
-                            {
-                                response,
-                                username = credentials.Username,
-                                password = credentials.Password
-                            }
+                        InterceptionId = e.InterceptionId,
+                        AuthChallengeResponse = new NetworkContinueInterceptedRequestChallengeResponse
+                        {
+                            Response = response,
+                            Username = credentials.Username,
+                            Password = credentials.Password
                         }
                     }).ConfigureAwait(false);
                 }
@@ -234,9 +233,9 @@ namespace PuppeteerSharp
             {
                 try
                 {
-                    await _client.SendAsync("Network.continueInterceptedRequest", new Dictionary<string, object>
+                    await _client.SendAsync("Network.continueInterceptedRequest", new NetworkContinueInterceptedRequestRequest
                     {
-                        { MessageKeys.InterceptionId, e.InterceptionId }
+                        InterceptionId = e.InterceptionId
                     }).ConfigureAwait(false);
                 }
                 catch (PuppeteerException ex)
@@ -377,13 +376,13 @@ namespace PuppeteerSharp
                 Array.Empty<object>();
 
             await Task.WhenAll(
-                _client.SendAsync("Network.setCacheDisabled", new Dictionary<string, object>
+                _client.SendAsync("Network.setCacheDisabled", new NetworkSetCacheDisabledRequest
                 {
-                    { MessageKeys.CachingDisabled, enabled}
+                    CacheDisabled = enabled
                 }),
-                _client.SendAsync("Network.setRequestInterception", new Dictionary<string, object>
+                _client.SendAsync("Network.setRequestInterception", new NetworkSetRequestInterceptionRequest
                 {
-                    { MessageKeys.Patterns, patterns}
+                    Patterns = patterns
                 })
             ).ConfigureAwait(false);
         }

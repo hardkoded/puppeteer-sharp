@@ -117,9 +117,9 @@ namespace PuppeteerSharp
                 throw new PuppeteerException("Prototype JSHandle must not be referencing primitive value");
             }
 
-            var response = await _client.SendAsync<RuntimeQueryObjectsResponse>("Runtime.queryObjects", new Dictionary<string, object>
+            var response = await _client.SendAsync<RuntimeQueryObjectsResponse>("Runtime.queryObjects", new RuntimeQueryObjectsRequest
             {
-                {"prototypeObjectId", prototypeHandle.RemoteObject.ObjectId}
+                PrototypeObjectId = prototypeHandle.RemoteObject.ObjectId
             }).ConfigureAwait(false);
 
             return CreateJSHandle(response.Objects);
@@ -158,14 +158,14 @@ namespace PuppeteerSharp
 
             try
             {
-                return await EvaluateHandleAsync("Runtime.callFunctionOn", new Dictionary<string, object>
+                return await EvaluateHandleAsync("Runtime.callFunctionOn", new RuntimeCallFunctionOnRequest
                 {
-                    ["functionDeclaration"] = $"{script}\n{EvaluationScriptSuffix}\n",
-                    [MessageKeys.ExecutionContextId] = _contextId,
-                    ["arguments"] = args.Select(FormatArgument),
-                    ["returnByValue"] = false,
-                    ["awaitPromise"] = true,
-                    ["userGesture"] = true
+                    FunctionDeclaration = $"{script}\n{EvaluationScriptSuffix}\n",
+                    ExecutionContextId = _contextId,
+                    Arguments = args.Select(FormatArgument),
+                    ReturnByValue = false,
+                    AwaitPromise = true,
+                    UserGesture = true
                 }).ConfigureAwait(false);
             }
             catch (Exception ex)
@@ -240,7 +240,10 @@ namespace PuppeteerSharp
                 case JSHandle objectHandle:
                     return objectHandle.FormatArgument(this);
             }
-            return new { value = arg };
+            return new RuntimeCallFunctionOnRequestArgument
+            {
+                Value = arg
+            };
         }
 
         private static string GetExceptionMessage(EvaluateExceptionResponseDetails exceptionDetails)

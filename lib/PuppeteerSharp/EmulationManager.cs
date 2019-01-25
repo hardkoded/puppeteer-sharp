@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using PuppeteerSharp.Media;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
@@ -35,18 +36,18 @@ namespace PuppeteerSharp
             var hasTouch = viewport.HasTouch;
 
             await Task.WhenAll(new Task[]{
-                _client.SendAsync("Emulation.setDeviceMetricsOverride", new
+                _client.SendAsync("Emulation.setDeviceMetricsOverride", new EmulationSetDeviceMetricsOverrideRequest
                 {
-                    mobile,
-                    width,
-                    height,
-                    deviceScaleFactor,
-                    screenOrientation
+                    Mobile = mobile,
+                    Width = width,
+                    Height = height,
+                    DeviceScaleFactor = deviceScaleFactor,
+                    ScreenOrientation = screenOrientation
                 }),
-                _client.SendAsync("Emulation.setTouchEmulationEnabled", new
+                _client.SendAsync("Emulation.setTouchEmulationEnabled", new EmulationSetTouchEmulationEnabledRequest
                 {
-                    enabled = hasTouch,
-                    configuration = viewport.IsMobile ? "mobile" : "desktop"
+                    Enabled = hasTouch,
+                    Configuration = viewport.IsMobile ? "mobile" : "desktop"
                 })
             }).ConfigureAwait(false);
 
