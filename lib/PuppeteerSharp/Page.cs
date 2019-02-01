@@ -2008,11 +2008,7 @@ namespace PuppeteerSharp
         {
             if (Console?.GetInvocationList().Length == 0)
             {
-                foreach (var arg in values)
-                {
-                    await RemoteObjectHelper.ReleaseObjectAsync(Client, arg.RemoteObject, _logger).ConfigureAwait(false);
-                }
-
+                await Task.WhenAll(values.Select(v => RemoteObjectHelper.ReleaseObjectAsync(Client, v.RemoteObject, _logger))).ConfigureAwait(false);
                 return;
             }
 
