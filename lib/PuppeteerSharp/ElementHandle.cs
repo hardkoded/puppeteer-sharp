@@ -148,6 +148,14 @@ namespace PuppeteerSharp
             {
                 throw new PuppeteerException("Node is either not visible or not an HTMLElement");
             }
+            if (boundingBox.Width == 0)
+            {
+                throw new PuppeteerException("Node has 0 width.");
+            }
+            if (boundingBox.Height == 0)
+            {
+                throw new PuppeteerException("Node has 0 height.");
+            }
             var getLayoutMetricsResponse = await Client.SendAsync<GetLayoutMetricsResponse>("Page.getLayoutMetrics").ConfigureAwait(false);
 
             var clip = boundingBox;
