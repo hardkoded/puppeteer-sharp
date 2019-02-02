@@ -557,21 +557,23 @@ namespace PuppeteerSharp
         {
             var waitUntil = options?.WaitUntil ?? new[] { WaitUntilNavigation.Load };
             var timeout = options?.Timeout ?? Puppeteer.DefaultTimeout;
-            var watcher = new LifecycleWatcher(FrameManager, this, waitUntil, timeout);
+            using (var watcher = new LifecycleWatcher(FrameManager, this, waitUntil, timeout))
+            {
 
-            // We rely upon the fact that document.open() will reset frame lifecycle with "init"
-            // lifecycle event. @see https://crrev.com/608658
-            await EvaluateFunctionAsync(@"html => {
-                document.open();
-                document.write(html);
-                document.close();
-            }", html);
+                // We rely upon the fact that document.open() will reset frame lifecycle with "init"
+                // lifecycle event. @see https://crrev.com/608658
+                await EvaluateFunctionAsync(@"html => {
+                    document.open();
+                    document.write(html);
+                    document.close();
+                }", html);
 
-            var watcherTask = await Task.WhenAny(
-                watcher.TimeoutOrTerminationTask,
-                watcher.LifecycleTask).ConfigureAwait(false);
+                var watcherTask = await Task.WhenAny(
+                    watcher.TimeoutOrTerminationTask,
+                    watcher.LifecycleTask).ConfigureAwait(false);
 
-            await watcherTask.ConfigureAwait(false);
+                await watcherTask.ConfigureAwait(false);
+            }
         }
 
         /// <summary>

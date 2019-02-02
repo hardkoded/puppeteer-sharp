@@ -208,8 +208,7 @@ namespace PuppeteerSharp
 
             if (response.ExceptionDetails != null)
             {
-                throw new EvaluationFailedException("Evaluation failed: " +
-                    GetExceptionMessage(response.ExceptionDetails));
+                throw new EvaluationFailedException("Evaluation failed: " + GetExceptionMessage(response.ExceptionDetails));
             }
 
             return CreateJSHandle(response.Result);

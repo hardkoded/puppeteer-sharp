@@ -17,13 +17,16 @@ namespace PuppeteerSharp.Helpers
         /// <param name="task">Task to wait for.</param>
         /// <param name="milliseconds">Milliseconds timeout.</param>
         /// <param name="exceptionToThrow">Optional exception to be thrown.</param>
+        /// <param name="cancellationToken">Cancellation token</param>
         public static Task WithTimeout(
             this Task task,
             int milliseconds = 1_000,
-            Exception exceptionToThrow = null)
+            Exception exceptionToThrow = null,
+            CancellationToken cancellationToken = default)
             => task.WithTimeout(
                 () => throw exceptionToThrow ?? new TimeoutException($"Timeout Exceeded: {milliseconds}ms exceeded"),
-                milliseconds);
+                milliseconds,
+                cancellationToken);
 
         //Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
         /// <summary>
@@ -33,17 +36,22 @@ namespace PuppeteerSharp.Helpers
         /// <param name="task">Task to wait for.</param>
         /// <param name="timeoutAction">Action to be executed on Timeout.</param>
         /// <param name="milliseconds">Milliseconds timeout.</param>
+        /// <param name="cancellationToken">Cancellation token</param>
         public static async Task WithTimeout(
             this Task task,
             Func<Task> timeoutAction,
-            int milliseconds = 1_000)
+            int milliseconds = 1_000,
+            CancellationToken cancellationToken = default)
         {
-            if (await TimeoutTask(task, milliseconds))
+            if (await TimeoutTask(task, milliseconds) && !cancellationToken.IsCancellationRequested)
             {
                 await timeoutAction();
             }
 
-            await task;
+            if (!cancellationToken.IsCancellationRequested)
+            {
+                await task;
+            }
         }
 
         //Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
@@ -54,18 +62,24 @@ namespace PuppeteerSharp.Helpers
         /// <param name="task">Task to wait for.</param>
         /// <param name="timeoutAction">Action to be executed on Timeout.</param>
         /// <param name="milliseconds">Milliseconds timeout.</param>
+        /// <param name="cancellationToken">Cancellation token</param>
         public static async Task<T> WithTimeout<T>(
             this Task<T> task,
             Action timeoutAction,
-            int milliseconds = 1_000)
+            int milliseconds = 1_000,
+            CancellationToken cancellationToken = default)
         {
-            if (await TimeoutTask(task, milliseconds))
+            if (await TimeoutTask(task, milliseconds) && !cancellationToken.IsCancellationRequested)
             {
                 timeoutAction();
                 return default;
             }
 
-            return await task;
+            if (!cancellationToken.IsCancellationRequested)
+            {
+                return await task;
+            }
+            return default;
         }
 
         //Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
@@ -76,18 +90,25 @@ namespace PuppeteerSharp.Helpers
         /// <param name="task">Task to wait for.</param>
         /// <param name="milliseconds">Milliseconds timeout.</param>
         /// <param name="exceptionToThrow">Optional exception to be thrown.</param>
+        /// <param name="cancellationToken">Cancellation token</param>
         /// <typeparam name="T">Task return type.</typeparam>
         public static async Task<T> WithTimeout<T>(
             this Task<T> task,
             int milliseconds = 1_000,
-            Exception exceptionToThrow = null)
+            Exception exceptionToThrow = null,
+            CancellationToken cancellationToken = default)
         {
-            if (await TimeoutTask(task, milliseconds))
+            if (await TimeoutTask(task, milliseconds) && !cancellationToken.IsCancellationRequested)
             {
                 throw exceptionToThrow ?? new TimeoutException($"Timeout Exceeded: {milliseconds}ms exceeded");
             }
 
-            return await task;
+            if (!cancellationToken.IsCancellationRequested)
+            {
+                return await task;
+            }
+
+            return default;
         }
 
         private static async Task<bool> TimeoutTask(Task task, int milliseconds)
