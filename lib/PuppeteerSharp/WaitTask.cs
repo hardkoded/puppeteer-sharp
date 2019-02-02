@@ -16,7 +16,7 @@ namespace PuppeteerSharp
         private readonly string _title;
         private readonly Task _timeoutTimer;
 
-        private readonly CancellationTokenSource _cts;
+        private CancellationTokenSource _cts;
         private readonly TaskCompletionSource<JSHandle> _taskCompletion;
 
         private int _runCount;
@@ -222,8 +222,9 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
 
         private void Cleanup()
         {
-            _cts.Cancel();
+            _cts?.Cancel();
             _cts?.Dispose();
+            _cts = null;
             _frame.WaitTasks.Remove(this);
         }
     }
