@@ -1010,11 +1010,11 @@ namespace PuppeteerSharp
                     throw new ArgumentException($"Expected options.quality to be between 0 and 100 (inclusive), got {options.Quality}");
                 }
             }
-            if (options?.Clip.Width == 0)
+            if (options?.Clip?.Width == 0)
             {
                 throw new PuppeteerException("Expected options.Clip.Width not to be 0.");
             }
-            if (options?.Clip.Height == 0)
+            if (options?.Clip?.Height == 0)
             {
                 throw new PuppeteerException("Expected options.Clip.Height not to be 0.");
             }
