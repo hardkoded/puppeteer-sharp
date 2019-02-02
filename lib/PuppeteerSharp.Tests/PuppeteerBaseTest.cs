@@ -32,7 +32,11 @@ namespace PuppeteerSharp.Tests
         {
             Server.Reset();
             HttpsServer.Reset();
+
+            TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
         }
+
+        void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e) => throw e.Exception;
 
         protected static Task<JToken> WaitEvent(CDPSession emitter, string eventName)
         {
