@@ -14,6 +14,16 @@ namespace PuppeteerSharp
     /// </summary>
     public class Payload
     {
+        private static readonly ISet<string> IgnoredHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "accept",
+            "referer",
+            "x-devtools-emulate-network-conditions-client-id",
+            "cookie",
+            "origin",
+            "content-type"
+        };
+
         /// <summary>
         /// Gets or sets the HTTP method.
         /// </summary>
@@ -64,12 +74,7 @@ namespace PuppeteerSharp
                 {
                     foreach (var item in Headers.OrderBy(kv => kv.Key))
                     {
-                        bool HeaderEquals(string name) => item.Key.Equals(name, StringComparison.OrdinalIgnoreCase);
-
-                        if (HeaderEquals("accept")
-                            || HeaderEquals("referer")
-                            || HeaderEquals("x-devtools-emulate-network-conditions-client-id")
-                            || HeaderEquals("cookie"))
+                        if (IgnoredHeaders.Contains(item.Key))
                         {
                             continue;
                         }
