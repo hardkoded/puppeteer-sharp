@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -41,7 +41,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(TestConstants.Port, response.RemoteAddress.Port);
         }
 
-        [Fact(Skip = "Ignored on Puppeteer")]
+        [Fact]
         public async Task ShouldWorkWhenPostIsEedirectedWith302()
         {
             Server.SetRedirect("/rredirect", "/empty.html");
