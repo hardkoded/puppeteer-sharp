@@ -138,5 +138,22 @@ namespace PuppeteerSharp.Tests.FrameTests
             Assert.Single(Page.Frames, frame => frame.ParentFrame == null);
             Assert.Equal(2, Page.Frames.Count(f => f.ParentFrame == Page.MainFrame));
         }
+
+        [Fact]
+        public async Task ShouldReportDifferentFrameInstanceWhenFrameReAttaches()
+        {
+            var frame1 = await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
+            await Page.EvaluateFunctionAsync(@"() => {
+                window.frame = document.querySelector('#frame1');
+                window.frame.remove();
+            }");
+            Assert.True(frame1.Detached);
+            var frame2tsc = new TaskCompletionSource<Frame>();
+            Page.FrameAttached += (sender, e) => frame2tsc.TrySetResult(e.Frame);
+            await Page.EvaluateExpressionAsync("document.body.appendChild(window.frame)");
+            var frame2 = await frame2tsc.Task;
+            Assert.False(frame2.Detached);
+            Assert.NotSame(frame1, frame2);
+        }
     }
 }
