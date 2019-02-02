@@ -1618,11 +1618,7 @@ namespace PuppeteerSharp
                 }).ConfigureAwait(false);
             }
 
-            var clip = options.Clip?.Clone();
-            if (clip != null)
-            {
-                clip.Scale = 1;
-            }
+            var clip = options.Clip != null ? ProcessClip(options.Clip) : null;
 
             if (!_screenshotBurstModeOn)
             {
@@ -1719,6 +1715,21 @@ namespace PuppeteerSharp
                 await ResetBackgroundColorAndViewportAsync(options).ConfigureAwait(false);
             }
             return result.Data;
+        }
+
+        private Clip ProcessClip(Clip clip)
+        {
+            var x = Math.Round(clip.X);
+            var y = Math.Round(clip.Y);
+            
+            return new Clip
+            {
+                X = x,
+                Y = y,
+                Width = Math.Round(clip.Width + clip.X - x),
+                Height = Math.Round(clip.Height + clip.Y - y),
+                Scale = 1
+            };
         }
 
         private Task ResetBackgroundColorAndViewportAsync(ScreenshotOptions options)

@@ -150,7 +150,25 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             await Page.SetContentAsync(@"<div style='width: 0; height: 0'></div>");
             var elementHandle = await Page.QuerySelectorAsync("div");
             var screenshot = await elementHandle.ScreenshotDataAsync();
-            Assert.NotNull(screenshot); 
+            Assert.NotNull(screenshot);
+        }
+
+        [Fact]
+        public async Task ShouldWorkForAnElementWithFractionalDimensions()
+        {
+            await Page.SetContentAsync("<div style=\"width:48.52px;height:19.8px;border:1px solid black;\"></div>");
+            var elementHandle = await Page.QuerySelectorAsync("div");
+            var screenshot = await elementHandle.ScreenshotDataAsync();
+            Assert.True(ScreenshotHelper.PixelMatch("screenshot-element-fractional.png", screenshot));
+        }
+
+        [Fact]
+        public async Task ShouldWorkForAnElementWithAnOffset()
+        {
+            await Page.SetContentAsync("<div style=\"position:absolute; top: 10.3px; left: 20.4px;width:50.3px;height:20.2px;border:1px solid black;\"></div>");
+            var elementHandle = await Page.QuerySelectorAsync("div");
+            var screenshot = await elementHandle.ScreenshotDataAsync();
+            Assert.True(ScreenshotHelper.PixelMatch("screenshot-element-fractional-offset.png", screenshot));
         }
     }
 }
