@@ -297,6 +297,11 @@ namespace PuppeteerSharp
         public Browser Browser => Target.Browser;
 
         /// <summary>
+        /// Get the browser context that the page belongs to.
+        /// </summary>
+        public BrowserContext BrowserContext => Target.BrowserContext;
+
+        /// <summary>
         /// Get an indication that the page has been closed.
         /// </summary>
         public bool IsClosed { get; private set; }
