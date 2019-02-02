@@ -8,7 +8,7 @@ namespace PuppeteerSharp.Tests
         public PuppeteerPageBaseTest(ITestOutputHelper output) : base(output)
         {
         }
-        
+
         protected Page Page { get; private set; }
 
         public override async Task InitializeAsync()
@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Tests
             await base.DisposeAsync();
         }
 
-        protected Task WaitForError()
+        protected Task WaitForErrorAsync()
         {
             var wrapper = new TaskCompletionSource<bool>();
 
