@@ -160,5 +160,16 @@ namespace PuppeteerSharp.Tests.JSCoverageTests
                 TestUtils.CompressText(involved),
                 Regex.Replace(TestUtils.CompressText(JsonConvert.SerializeObject(coverage)), @"\d{4}\/", "<PORT>/"));
         }
+
+        [Fact(Skip = "SKipped in puppeteer")]
+        public async Task ShouldNotHangWhenThereIsADebuggerStatement()
+        {
+            await Page.Coverage.StartJSCoverageAsync();
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.EvaluateFunctionAsync(@"() => {
+                debugger;
+            }");
+            await Page.Coverage.StopJSCoverageAsync();
+        }
     }
 }
