@@ -46,7 +46,6 @@ namespace PuppeteerSharp
                 Port = responseMessage.RemotePort
             };
 
-            BodyLoadedTaskWrapper = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         }
 
         #region Properties
@@ -98,7 +97,11 @@ namespace PuppeteerSharp
         /// Remove server address.
         /// </summary>
         public RemoteAddress RemoteAddress { get; }
-        internal TaskCompletionSource<bool> BodyLoadedTaskWrapper { get; }
+        internal Lazy<TaskCompletionSource<bool>> LazyBodyLoadedTaskWrapper => new Lazy<TaskCompletionSource<bool>>(() =>
+        {
+            return new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        });
+        internal TaskCompletionSource<bool> BodyLoadedTaskWrapper => LazyBodyLoadedTaskWrapper.Value;
 
         /// <summary>
         /// A <see cref="Frame"/> that initiated this request. Or null if navigating to error pages.

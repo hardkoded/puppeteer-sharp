@@ -129,5 +129,22 @@ namespace PuppeteerSharp.Helpers
             }
             return false;
         }
+
+        /// <summary>
+        /// Observes and ignores any exception
+        /// </summary>
+        /// <returns>Awaited task.</returns>
+        /// <param name="task">Task.</param>
+        public static async Task<T> WithExceptionIgnore<T>(this Task<T> task)
+        {
+            try
+            {
+                return await task.ConfigureAwait(false);
+            }
+            catch
+            {
+                return default;
+            }
+        }
     }
 }

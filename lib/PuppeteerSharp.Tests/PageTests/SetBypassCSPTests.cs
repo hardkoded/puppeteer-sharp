@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
@@ -19,7 +20,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.AddScriptTagAsync(new AddTagOptions
             {
                 Content = "window.__injected = 42;"
-            }).ContinueWith(_ => Task.CompletedTask);
+            }).WithExceptionIgnore();
             Assert.Null(await Page.EvaluateExpressionAsync("window.__injected"));
 
             // By-pass CSP and try one more time.
@@ -41,7 +42,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.AddScriptTagAsync(new AddTagOptions
             {
                 Content = "window.__injected = 42;"
-            }).ContinueWith(_ => Task.CompletedTask);
+            }).WithExceptionIgnore();
             Assert.Null(await Page.EvaluateExpressionAsync("window.__injected"));
 
             // By-pass CSP and try one more time.
@@ -65,7 +66,7 @@ namespace PuppeteerSharp.Tests.PageTests
             });
             Assert.Equal(42, await Page.EvaluateExpressionAsync<int>("window.__injected"));
 
-            await Page.GoToAsync(TestConstants.CrossProcessUrl+ "/csp.html");
+            await Page.GoToAsync(TestConstants.CrossProcessUrl + "/csp.html");
             await Page.AddScriptTagAsync(new AddTagOptions
             {
                 Content = "window.__injected = 42;"

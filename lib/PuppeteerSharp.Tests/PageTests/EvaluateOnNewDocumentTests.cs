@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
@@ -39,7 +36,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.AddScriptTagAsync(new AddTagOptions
             {
                 Content = "window.e = 10;"
-            }).ContinueWith(_ => Task.CompletedTask);
+            }).WithExceptionIgnore();
             Assert.Null(await Page.EvaluateExpressionAsync("window.e"));
         }
     }
