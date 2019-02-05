@@ -2012,6 +2012,10 @@ namespace PuppeteerSharp
 
         private Task OnConsoleAPI(PageConsoleResponse message)
         {
+            if (message.ExecutionContextId == 0)
+            {
+                return Task.CompletedTask;
+            }
             var ctx = _frameManager.ExecutionContextById(message.ExecutionContextId);
             var values = message.Args.Select(ctx.CreateJSHandle).ToArray();
             return AddConsoleMessage(message.Type, values);
