@@ -1528,7 +1528,6 @@ namespace PuppeteerSharp
         }
         #endregion
 
-
         internal void OnPopup(Page popupPage) => Popup?.Invoke(this, new PopupEventArgs { PopupPage = popupPage });
 
         #region Private Method
