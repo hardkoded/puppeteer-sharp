@@ -12,21 +12,6 @@ namespace PuppeteerSharp.Tests.PageTests.Events
         }
 
         [Fact]
-        public async Task ShouldWorkWithWindowClose()
-        {
-            var newPageTaskSource = new TaskCompletionSource<Page>();
-            Context.TargetCreated += async (sender, e) => newPageTaskSource.TrySetResult(await e.Target.PageAsync());
-
-            await Page.EvaluateExpressionAsync("window['newPage'] = window.open('about:blank');");
-            var newPage = await newPageTaskSource.Task;
-
-            var closeTaskSource = new TaskCompletionSource<bool>();
-            newPage.Close += (sender, e) => closeTaskSource.SetResult(true);
-            await Page.EvaluateExpressionAsync("window['newPage'].close();");
-            await closeTaskSource.Task;
-        }
-
-        [Fact]
         public async Task ShouldWork()
         {
             var popupTaskSource = new TaskCompletionSource<Page>();
