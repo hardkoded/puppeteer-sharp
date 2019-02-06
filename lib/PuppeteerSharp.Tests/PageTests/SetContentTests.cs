@@ -60,5 +60,14 @@ namespace PuppeteerSharp.Tests.PageTests
             imgResponse.SetResult(true);
             await contentTask;
         }
+
+        [Fact]
+        public async Task ShouldWorkFastEnough()
+        {
+            for (var i = 0; i < 20; ++i)
+            {
+                await Page.SetContentAsync("<div>yo</div>");
+            }
+        }
     }
 }
