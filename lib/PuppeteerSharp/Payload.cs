@@ -21,7 +21,8 @@ namespace PuppeteerSharp
             "x-devtools-emulate-network-conditions-client-id",
             "cookie",
             "origin",
-            "content-type"
+            "content-type",
+            "intervention"
         };
 
         /// <summary>
