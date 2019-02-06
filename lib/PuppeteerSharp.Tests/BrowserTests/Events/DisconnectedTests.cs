@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -66,8 +67,10 @@ namespace PuppeteerSharp.Tests.BrowserTests.Events
                 });
                 await Server.WaitForRequest("/one-style.css");
                 remote.Disconnect();
+
                 var exception = await Assert.ThrowsAsync<NavigationException>(() => navigationTask);
                 Assert.Contains("Navigation failed because browser has disconnected!", exception.Message);
+                GC.Collect();
             }
         }
 

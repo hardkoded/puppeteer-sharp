@@ -71,7 +71,7 @@ namespace PuppeteerSharp
         public Task<bool> NewDocumentNavigationTask => _newDocumentNavigationTaskWrapper.Task;
         public Response NavigationResponse => _navigationRequest?.Response;
         public Task TimeoutOrTerminationTask
-            => _terminationTaskWrapper.Task.WithTimeout(_timeout, cancellationToken: _cancellationTokenSource.Token);
+            => _terminationTaskWrapper?.Task.WithTimeout(_timeout, cancellationToken: _cancellationTokenSource.Token);
         public Task LifecycleTask => _lifecycleTaskWrapper.Task;
         public string name = "none";
         #endregion
@@ -157,7 +157,11 @@ namespace PuppeteerSharp
 
         public void Cleanup()
         {
-            name += " cleaned";
+            if (TimeoutOrTerminationTask?.IsFaulted == true)
+            {
+                TimeoutOrTerminationTask.Exception.Flatten().Handle(_ => true);
+            }
+
             _cancellationTokenSource.Cancel();
             _terminationTaskWrapper = null;
         }

@@ -78,7 +78,7 @@ namespace PuppeteerSharp
 
             using (var watcher = new LifecycleWatcher(this, frame, options?.WaitUntil, timeout))
             {
-                watcher.name = "navi";
+                watcher.name = url;
                 try
                 {
                     var navigateTask = NavigateAsync(Client, url, referrer, frame.Id);
@@ -86,15 +86,28 @@ namespace PuppeteerSharp
                         watcher.TimeoutOrTerminationTask,
                         navigateTask).ConfigureAwait(false);
 
-                    await task;
+                    if (watcher.TimeoutOrTerminationTask.IsFaulted)
+                    {
+                        await watcher.TimeoutOrTerminationTask.ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await task.ConfigureAwait(false);
+                    }
 
                     task = await Task.WhenAny(
                         watcher.TimeoutOrTerminationTask,
                         _ensureNewDocumentNavigation ? watcher.NewDocumentNavigationTask : watcher.SameDocumentNavigationTask
                     ).ConfigureAwait(false);
 
-                    watcher.Cleanup();
-                    await task;
+                    if (watcher.TimeoutOrTerminationTask.IsFaulted)
+                    {
+                        await watcher.TimeoutOrTerminationTask.ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await task.ConfigureAwait(false);
+                    }
                 }
                 catch (Exception ex)
                 {
