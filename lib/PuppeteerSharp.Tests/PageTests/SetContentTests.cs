@@ -46,7 +46,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Fact]
-        public async Task ShouldAwaitResourceToLoad()
+        public async Task ShouldAwaitResourcesToLoad()
         {
             var imgPath = "/img.png";
             var imgResponse = new TaskCompletionSource<bool>();
@@ -59,6 +59,15 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.False(loaded);
             imgResponse.SetResult(true);
             await contentTask;
+        }
+
+        [Fact]
+        public async Task ShouldWorkFastEnough()
+        {
+            for (var i = 0; i < 20; ++i)
+            {
+                await Page.SetContentAsync("<div>yo</div>");
+            }
         }
     }
 }

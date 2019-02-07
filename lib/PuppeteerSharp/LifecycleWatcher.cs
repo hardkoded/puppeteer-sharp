@@ -56,11 +56,13 @@ namespace PuppeteerSharp
             _lifecycleTaskWrapper = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             _terminationTaskWrapper = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
-            frameManager.LifecycleEvent += CheckLifecycleComplete;
+            frameManager.LifecycleEvent += FrameManager_LifecycleEvent;
             frameManager.FrameNavigatedWithinDocument += NavigatedWithinDocument;
             frameManager.FrameDetached += OnFrameDetached;
             frameManager.NetworkManager.Request += OnRequest;
             frameManager.Client.Disconnected += OnClientDisconnected;
+
+            CheckLifecycleComplete();
         }
 
         #region Properties
@@ -79,6 +81,8 @@ namespace PuppeteerSharp
         private void OnClientDisconnected(object sender, EventArgs e)
             => Terminate(new TargetClosedException("Navigation failed because browser has disconnected!", _frameManager.Client.CloseReason));
 
+        void FrameManager_LifecycleEvent(object sender, FrameEventArgs e) => CheckLifecycleComplete();
+
         private void OnFrameDetached(object sender, FrameEventArgs e)
         {
             var frame = e.Frame;
@@ -87,10 +91,10 @@ namespace PuppeteerSharp
                 Terminate(new PuppeteerException("Navigating frame was detached"));
                 return;
             }
-            CheckLifecycleComplete(sender, e);
+            CheckLifecycleComplete();
         }
 
-        private void CheckLifecycleComplete(object sender, FrameEventArgs e)
+        private void CheckLifecycleComplete()
         {
             // We expect navigation to commit.
             if (!CheckLifecycle(_frame, _expectedLifecycle))
@@ -131,7 +135,7 @@ namespace PuppeteerSharp
                 return;
             }
             _hasSameDocumentNavigation = true;
-            CheckLifecycleComplete(sender, e);
+            CheckLifecycleComplete();
         }
 
         private bool CheckLifecycle(Frame frame, IEnumerable<string> expectedLifecycle)
@@ -159,7 +163,7 @@ namespace PuppeteerSharp
 
         public void Dispose(bool disposing)
         {
-            _frameManager.LifecycleEvent -= CheckLifecycleComplete;
+            _frameManager.LifecycleEvent -= FrameManager_LifecycleEvent;
             _frameManager.FrameNavigatedWithinDocument -= NavigatedWithinDocument;
             _frameManager.FrameDetached -= OnFrameDetached;
             _frameManager.NetworkManager.Request -= OnRequest;
