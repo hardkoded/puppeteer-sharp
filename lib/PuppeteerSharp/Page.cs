@@ -193,6 +193,11 @@ namespace PuppeteerSharp
         public event EventHandler Close;
 
         /// <summary>
+        /// Raised when the page opens a new tab or window.
+        /// </summary>
+        public event EventHandler<PopupEventArgs> Popup;
+
+        /// <summary>
         /// This setting will change the default maximum navigation time of 30 seconds for the following methods:
         /// - <see cref="GoToAsync(string, NavigationOptions)"/>
         /// - <see cref="GoBackAsync(NavigationOptions)"/>
@@ -312,6 +317,7 @@ namespace PuppeteerSharp
         public Accessibility Accessibility { get; }
 
         internal bool JavascriptEnabled { get; set; } = true;
+        internal bool HasPopupEventListeners => Popup?.GetInvocationList().Any() == true;
         #endregion
 
         #region Public Methods
@@ -1522,6 +1528,8 @@ namespace PuppeteerSharp
         }
         #endregion
 
+        internal void OnPopup(Page popupPage) => Popup?.Invoke(this, new PopupEventArgs { PopupPage = popupPage });
+
         #region Private Method
 
         internal static async Task<Page> CreateAsync(
@@ -1584,6 +1592,7 @@ namespace PuppeteerSharp
             _networkManager.Response += (sender, e) => Response?.Invoke(this, e);
             _networkManager.RequestFinished += (sender, e) => RequestFinished?.Invoke(this, e);
         }
+
         private async Task<Response> GoAsync(int delta, NavigationOptions options)
         {
             var history = await Client.SendAsync<PageGetNavigationHistoryResponse>("Page.getNavigationHistory").ConfigureAwait(false);

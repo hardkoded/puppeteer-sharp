@@ -15,7 +15,6 @@ namespace PuppeteerSharp
         private TargetInfo _targetInfo;
         private readonly string _targetId;
         private readonly Func<TargetInfo, Task<CDPSession>> _sessionFactory;
-        private Task<Page> _pageTask;
         #endregion
 
         internal bool IsInitialized;
@@ -29,9 +28,29 @@ namespace PuppeteerSharp
             _targetId = targetInfo.TargetId;
             _sessionFactory = sessionFactory;
             BrowserContext = browserContext;
-            _pageTask = null;
+            PageTask = null;
 
             InitilizedTaskWrapper = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            InitilizedTaskWrapper.Task.ContinueWith(async initializedTask =>
+            {
+                var success = initializedTask.Result;
+                if (!success)
+                {
+                    return;
+                }
+                if (Opener == null || Opener.PageTask == null || Type != TargetType.Page)
+                {
+                    return;
+                }
+                var openerPage = await Opener.PageTask.ConfigureAwait(false);
+                if (!openerPage.HasPopupEventListeners)
+                {
+                    return;
+                }
+                var popupPage = await PageAsync().ConfigureAwait(false);
+                openerPage.OnPopup(popupPage);
+            });
+
             CloseTaskWrapper = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             IsInitialized = _targetInfo.Type != TargetType.Page || _targetInfo.Url != string.Empty;
 
@@ -82,6 +101,7 @@ namespace PuppeteerSharp
         internal TaskCompletionSource<bool> InitilizedTaskWrapper { get; }
         internal Task CloseTask => CloseTaskWrapper.Task;
         internal TaskCompletionSource<bool> CloseTaskWrapper { get; }
+        internal Task<Page> PageTask { get; set; }
         #endregion
 
         /// <summary>
@@ -90,12 +110,12 @@ namespace PuppeteerSharp
         /// <returns>a task that returns a new <see cref="Page"/></returns>
         public Task<Page> PageAsync()
         {
-            if ((_targetInfo.Type == TargetType.Page || _targetInfo.Type == TargetType.BackgroundPage) && _pageTask == null)
+            if ((_targetInfo.Type == TargetType.Page || _targetInfo.Type == TargetType.BackgroundPage) && PageTask == null)
             {
-                _pageTask = CreatePageAsync();
+                PageTask = CreatePageAsync();
             }
 
-            return _pageTask ?? Task.FromResult<Page>(null);
+            return PageTask ?? Task.FromResult<Page>(null);
         }
 
         private async Task<Page> CreatePageAsync()
