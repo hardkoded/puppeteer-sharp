@@ -46,7 +46,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Fact]
-        public async Task ShouldAwaitResourceToLoad()
+        public async Task ShouldAwaitResourcesToLoad()
         {
             var imgPath = "/img.png";
             var imgResponse = new TaskCompletionSource<bool>();
