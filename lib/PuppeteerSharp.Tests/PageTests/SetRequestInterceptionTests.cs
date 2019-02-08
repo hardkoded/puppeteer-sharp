@@ -439,19 +439,6 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Fact]
-        public async Task ShouldAbortDataServer()
-        {
-            await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (sender, e) =>
-            {
-                await e.Request.AbortAsync();
-            };
-            var exception = await Assert.ThrowsAsync<NavigationException>(
-                          () => Page.GoToAsync("data:text/html,No way!"));
-            Assert.Contains("net::ERR_FAILED", exception.Message);
-        }
-
-        [Fact]
         public async Task ShouldNavigateToURLWithHashAndAndFireRequestsWithoutHash()
         {
             await Page.SetRequestInterceptionAsync(true);

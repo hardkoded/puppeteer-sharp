@@ -22,6 +22,7 @@ namespace PuppeteerSharp
 
         internal static readonly string[] DefaultArgs = {
             "--disable-background-networking",
+            "--enable-features=NetworkService,NetworkServiceInProcess",
             "--disable-background-timer-throttling",
             "--disable-backgrounding-occluded-windows",
             "--disable-breakpad",

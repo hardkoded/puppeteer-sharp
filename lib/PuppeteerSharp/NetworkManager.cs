@@ -342,7 +342,8 @@ namespace PuppeteerSharp
 
         private async Task OnRequestWillBeSentAsync(RequestWillBeSentPayload e)
         {
-            if (_protocolRequestInterceptionEnabled)
+            // Request interception doesn't happen for data URLs with Network Service.
+            if (_protocolRequestInterceptionEnabled && !e.Request.Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase))
             {
                 var requestHash = e.Request.Hash;
                 var interceptionId = _requestHashToInterceptionIds.FirstValue(requestHash);
