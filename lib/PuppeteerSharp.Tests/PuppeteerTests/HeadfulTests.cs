@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Net;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
 using Xunit;
@@ -107,6 +102,20 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 var urls = Array.ConvertAll(page.Frames, frame => frame.Url);
                 Array.Sort(urls);
                 Assert.Equal(new[] { TestConstants.EmptyPage, "https://google.com/" }, urls);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldCloseBrowserWithBeforeunloadPage()
+        {
+            var headfulOptions = TestConstants.DefaultBrowserOptions();
+            headfulOptions.Headless = false;
+            using (var browser = await Puppeteer.LaunchAsync(headfulOptions))
+            using (var page = await browser.NewPageAsync())
+            {
+                await page.GoToAsync(TestConstants.ServerUrl + "/beforeunload.html");
+                // We have to interact with a page so that 'beforeunload' handlers fire.
+                await page.ClickAsync("body");
             }
         }
 
