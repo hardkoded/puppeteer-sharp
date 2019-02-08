@@ -57,6 +57,15 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Fact]
+        public async Task ShouldWorkWithMultilineBody()
+        {
+            var result = await Page.WaitForExpressionAsync(@"
+                (() => true)()
+            ");
+            Assert.True(await result.JsonValueAsync<bool>());
+        }
+
+        [Fact]
         public async Task ShouldWaitForPredicate()
         {
             var watchdog = Page.WaitForFunctionAsync("() => window.innerWidth < 100");
@@ -66,8 +75,6 @@ namespace PuppeteerSharp.Tests.PageTests
 
         [Fact]
         public async Task ShouldWaitForPredicateWithArguments()
-        {
-            await Page.WaitForFunctionAsync("(arg1, arg2) => arg1 !== arg2", new WaitForFunctionOptions(), 1, 2);
-        }
+            => await Page.WaitForFunctionAsync("(arg1, arg2) => arg1 !== arg2", new WaitForFunctionOptions(), 1, 2);
     }
 }
