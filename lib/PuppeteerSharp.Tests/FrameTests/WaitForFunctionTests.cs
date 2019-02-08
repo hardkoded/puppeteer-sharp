@@ -133,7 +133,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         public async Task ShouldSurviveCrossProcessNavigation()
         {
             var fooFound = false;
-            var waitForFunction = Page.WaitForFunctionAsync("window.__FOO === 1")
+            var waitForFunction = Page.WaitForExpressionAsync("window.__FOO === 1")
                 .ContinueWith(_ => fooFound = true);
             await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.False(fooFound);
