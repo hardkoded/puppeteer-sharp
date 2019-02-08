@@ -4,7 +4,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/pwfkjb0c4jfdo7lc/branch/master?svg=true&pendingText=master&failingText=master&passingText=master)][BuildUrl]
 [![Demo build status](https://ci.appveyor.com/api/projects/status/10g64a4aa0083wgf/branch/master?svg=true&pendingText=demo&failingText=demo&passingText=demo)][BuildDemoUrl]
 [![CodeFactor](https://www.codefactor.io/repository/github/kblok/puppeteer-sharp/badge)][CodeFactorUrl]
-[![Backers](https://opencollective.com/puppeteer-sharp/tiers/backer/badge.svg?label=Backer&color=brightgreen)][Backers]
+[![Backers](https://opencollective.com/puppeteer-sharp//backers/badge.svg)][Backers]
 
 [NugetUrl]: https://www.nuget.org/packages/PuppeteerSharp/
 [BuildUrl]: https://ci.appveyor.com/project/kblok/puppeteer-sharp/branch/master
@@ -147,6 +147,7 @@ using (var browser = await PuppeteerSharp.Puppeteer.ConnectAsync(options))
 ```
 
 # Monthly reports
+ * [February 2019](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-feb-2019)
  * [January 2019](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-jan-2019)
  * [December 2018](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-dec-2018)
  * [November 2018](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-nov-2018)
@@ -162,6 +163,8 @@ using (var browser = await PuppeteerSharp.Puppeteer.ConnectAsync(options))
 # Backers
 
 Support us with a monthly donation and help us continue our activities. [Become a backer](https://opencollective.com/puppeteer-sharp).
+
+<a href="https://opencollective.com/puppeteer-sharp/backer/0/website" target="_blank"><img src="https://opencollective.com/puppeteer-sharp/backer/0/avatar.svg"></a>
 
 # Thanks
 

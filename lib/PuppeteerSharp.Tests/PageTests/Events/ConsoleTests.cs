@@ -118,5 +118,26 @@ namespace PuppeteerSharp.Tests.PageTests.Events
             Assert.Contains("No 'Access-Control-Allow-Origin'", message.Text);
             Assert.Equal(ConsoleType.Error, message.Type);
         }
+
+        [Fact]
+        public async Task ShouldNotThrowWhenThereAreConsoleMessagesInDetachedIframes()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.EvaluateFunctionAsync(@"async () =>
+            {
+                // 1. Create a popup that Puppeteer is not connected to.
+                const win = window.open(window.location.href, 'Title', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=780,height=200,top=0,left=0');
+                await new Promise(x => win.onload = x);
+                // 2. In this popup, create an iframe that console.logs a message.
+                win.document.body.innerHTML = `<iframe src='/consolelog.html'></iframe>`;
+                const frame = win.document.querySelector('iframe');
+                await new Promise(x => frame.onload = x);
+                // 3. After that, remove the iframe.
+                frame.remove();
+            }");
+            var popupTarget = Page.BrowserContext.Targets().First(target => target != Page.Target);
+            // 4. Connect to the popup and make sure it doesn't throw.
+            await popupTarget.PageAsync();
+        }
     }
 }

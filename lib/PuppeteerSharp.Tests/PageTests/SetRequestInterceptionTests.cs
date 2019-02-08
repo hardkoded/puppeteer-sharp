@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -38,10 +38,36 @@ namespace PuppeteerSharp.Tests.PageTests
             };
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.True(response.Ok);
+
             Assert.Equal(TestConstants.Port, response.RemoteAddress.Port);
         }
 
-        [Fact(Skip = "Ignored on Puppeteer")]
+        [Fact]
+        public async Task ShouldWorkWithInterventionHeaders()
+        {
+            Server.SetRoute("/intervention", context => context.Response.WriteAsync($@"
+              <script>
+                document.write('<script src=""{TestConstants.CrossProcessHttpPrefix}/intervention.js"">' + '</scr' + 'ipt>');
+              </script>
+            "));
+            Server.SetRedirect("/intervention.js", "/redirect.js");
+
+            string interventionHeader = null;
+            Server.SetRoute("/redirect.js", context =>
+            {
+                interventionHeader = context.Request.Headers["intervention"];
+                return context.Response.WriteAsync("console.log(1);");
+            });
+
+            await Page.SetRequestInterceptionAsync(true);
+            Page.Request += async (sender, e) => await e.Request.ContinueAsync();
+            
+            await Page.GoToAsync(TestConstants.ServerUrl + "/intervention");
+            
+            Assert.Contains("www.chromestatus.com", interventionHeader);
+        }
+
+        [Fact]
         public async Task ShouldWorkWhenPostIsEedirectedWith302()
         {
             Server.SetRedirect("/rredirect", "/empty.html");

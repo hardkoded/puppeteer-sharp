@@ -257,7 +257,14 @@ namespace PuppeteerSharp
         /// Gets the <see cref="ExecutionContext"/> associated with the frame.
         /// </summary>
         /// <returns><see cref="ExecutionContext"/> associated with the frame.</returns>
-        public Task<ExecutionContext> GetExecutionContextAsync() => _contextResolveTaskWrapper.Task;
+        public Task<ExecutionContext> GetExecutionContextAsync()
+        {
+            if (Detached)
+            {
+                throw new PuppeteerException($"Execution Context is not available in detached frame '{Url}' (are you trying to evaluate?)");
+            }
+            return _contextResolveTaskWrapper.Task;
+        }
 
         /// <summary>
         /// Waits for a selector to be added to the DOM
@@ -557,7 +564,6 @@ namespace PuppeteerSharp
         {
             var waitUntil = options?.WaitUntil ?? new[] { WaitUntilNavigation.Load };
             var timeout = options?.Timeout ?? Puppeteer.DefaultTimeout;
-            var watcher = new LifecycleWatcher(FrameManager, this, waitUntil, timeout);
 
             // We rely upon the fact that document.open() will reset frame lifecycle with "init"
             // lifecycle event. @see https://crrev.com/608658
@@ -566,6 +572,8 @@ namespace PuppeteerSharp
                 document.write(html);
                 document.close();
             }", html);
+
+            var watcher = new LifecycleWatcher(FrameManager, this, waitUntil, timeout);
 
             var watcherTask = await Task.WhenAny(
                 watcher.TimeoutOrTerminationTask,

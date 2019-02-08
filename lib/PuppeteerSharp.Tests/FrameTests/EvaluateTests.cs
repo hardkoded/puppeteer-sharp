@@ -39,5 +39,15 @@ namespace PuppeteerSharp.Tests.FrameTests
             await Page.GoToAsync(TestConstants.CrossProcessHttpPrefix + "/empty.html");
             Assert.Contains("127", await mainFrame.EvaluateExpressionAsync<string>("window.location.href"));
         }
+
+        [Fact]
+        public async Task ShouldThrowForDetachedFrames()
+        {
+            var frame1 = await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
+            await FrameUtils.DetachFrameAsync(Page, "frame1");
+            var exception = await Assert.ThrowsAsync<PuppeteerException>(
+                () => frame1.EvaluateExpressionAsync("7 * 8"));
+            Assert.Contains("Execution Context is not available in detached frame", exception.Message);
+        }
     }
 }
