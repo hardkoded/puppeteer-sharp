@@ -1749,7 +1749,7 @@ namespace PuppeteerSharp
                 X = x,
                 Y = y,
                 Width = Math.Round(clip.Width + clip.X - x, MidpointRounding.AwayFromZero),
-                Height = Math.Round(clip.Height + clip.Y - y),
+                Height = Math.Round(clip.Height + clip.Y - y, MidpointRounding.AwayFromZero),
                 Scale = 1
             };
         }
