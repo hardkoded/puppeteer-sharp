@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
-using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
@@ -175,6 +175,18 @@ namespace PuppeteerSharp.Tests.PageTests
             var aHandle = await Page.EvaluateExpressionHandleAsync("5");
             var isFive = await Page.EvaluateFunctionAsync<bool>("e => Object.is(e, 5)", aHandle);
             Assert.True(isFive);
+        }
+
+        [Fact]
+        public async Task ShouldWarnOnNestedObjectHandles()
+        {
+            var aHandle = await Page.EvaluateFunctionHandleAsync("() => document.body");
+            var exception = await Assert.ThrowsAsync<EvaluationFailedException>(()
+                => Page.EvaluateFunctionHandleAsync(
+                    "opts => opts.elem.querySelector('p')",
+                    new { elem = aHandle }));
+
+            Assert.Contains("Are you passing a nested JSHandle?", exception.Message);
         }
 
         [Fact]

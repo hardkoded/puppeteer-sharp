@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace PuppeteerSharp.Helpers
+namespace PuppeteerSharp.Helpers.Json
 {
     internal class FlexibleStringEnumConverter : StringEnumConverter
     {
