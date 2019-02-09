@@ -152,5 +152,23 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             var exception = await Assert.ThrowsAsync<PuppeteerException>(elementHandle.ScreenshotDataAsync);
             Assert.Equal("Node has 0 height.", exception.Message);
         }
+
+        [Fact]
+        public async Task ShouldWorkForAnElementWithFractionalDimensions()
+        {
+            await Page.SetContentAsync("<div style=\"width:48.51px;height:19.8px;border:1px solid black;\"></div>");
+            var elementHandle = await Page.QuerySelectorAsync("div");
+            var screenshot = await elementHandle.ScreenshotDataAsync();
+            Assert.True(ScreenshotHelper.PixelMatch("screenshot-element-fractional.png", screenshot));
+        }
+
+        [Fact]
+        public async Task ShouldWorkForAnElementWithAnOffset()
+        {
+            await Page.SetContentAsync("<div style=\"position:absolute; top: 10.3px; left: 20.4px;width:50.3px;height:20.2px;border:1px solid black;\"></div>");
+            var elementHandle = await Page.QuerySelectorAsync("div");
+            var screenshot = await elementHandle.ScreenshotDataAsync();
+            Assert.True(ScreenshotHelper.PixelMatch("screenshot-element-fractional-offset.png", screenshot));
+        }
     }
 }

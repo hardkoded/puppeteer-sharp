@@ -1,7 +1,4 @@
-﻿using System;
-using Newtonsoft.Json;
-
-namespace PuppeteerSharp.Media
+﻿namespace PuppeteerSharp.Media
 {
     /// <summary>
     /// Clip data.
@@ -35,16 +32,5 @@ namespace PuppeteerSharp.Media
         /// </summary>
         /// <value>The scale.</value>
         public int Scale { get; internal set; }
-
-        internal Clip Clone()
-        {
-            return new Clip
-            {
-                X = X,
-                Y = Y,
-                Width = Width,
-                Height = Height
-            };
-        }
     }
 }
