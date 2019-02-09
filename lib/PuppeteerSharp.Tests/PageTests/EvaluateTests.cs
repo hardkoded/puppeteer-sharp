@@ -180,11 +180,21 @@ namespace PuppeteerSharp.Tests.PageTests
         [Fact]
         public async Task ShouldWarnOnNestedObjectHandles()
         {
-            var aHandle = await Page.EvaluateFunctionHandleAsync("() => document.body");
+            var handle = await Page.EvaluateFunctionHandleAsync("() => document.body");
+            var elementHandle = handle as ElementHandle;
+
             var exception = await Assert.ThrowsAsync<EvaluationFailedException>(()
                 => Page.EvaluateFunctionHandleAsync(
                     "opts => opts.elem.querySelector('p')",
-                    new { elem = aHandle }));
+                    new { elem = handle }));
+
+            Assert.Contains("Are you passing a nested JSHandle?", exception.Message);
+
+            //Check with ElementHandle
+            exception = await Assert.ThrowsAsync<EvaluationFailedException>(()
+                => Page.EvaluateFunctionHandleAsync(
+                    "opts => opts.elem.querySelector('p')",
+                    new { elem = elementHandle }));
 
             Assert.Contains("Are you passing a nested JSHandle?", exception.Message);
         }
