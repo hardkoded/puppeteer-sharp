@@ -13,8 +13,6 @@ namespace PuppeteerSharp
         private readonly Frame _frame;
         
         private bool _detached;
-        private Task<ElementHandle> _documentTask;
-        private Task<ExecutionContext> _contextTask;
 
         private TaskCompletionSource<ExecutionContext> _contextResolveTaskWrapper;
         private TaskCompletionSource<ElementHandle> _documentCompletionSource;
@@ -32,7 +30,7 @@ namespace PuppeteerSharp
             _detached = false;
         }
 
-        private void SetContext(ExecutionContext context)
+        internal void SetContext(ExecutionContext context)
         {
             if (context != null)
             {
@@ -339,9 +337,7 @@ namespace PuppeteerSharp
         
         internal Task<ElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
             => WaitForSelectorOrXPathAsync(xpath, true, options);
-
-        internal Task WaitForTimeoutAsync(int milliseconds) => Task.Delay(milliseconds);
-
+        
         internal Task<JSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args)
             => new WaitTask(this, script, false, "function", options.Polling, options.PollingInterval, options.Timeout, args).Task;
 
@@ -388,7 +384,7 @@ namespace PuppeteerSharp
               }";
             var polling = options.Visible || options.Hidden ? WaitForFunctionPollingOption.Raf : WaitForFunctionPollingOption.Mutation;
             var handle = await new WaitTask(
-                _frame,
+                this,
                 predicate,
                 false,
                 $"{(isXPath ? "XPath" : "selector")} '{selectorOrXPath}'{(options.Hidden ? " to be hidden" : "")}",
