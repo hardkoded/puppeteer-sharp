@@ -212,6 +212,25 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
+        /// Gets or sets the default timeout in milliseconds.
+        /// 
+        /// This setting will change the default maximum time for the following methods and related shortcuts:
+        /// - <see cref="Page.GoBackAsync(NavigationOptions)"/>
+        /// - <see cref="Page.GoForwardAsync(NavigationOptions)"/>
+        /// - <see cref="Page.GoToAsync(string, NavigationOptions)"/>
+        /// - <see cref="Page.ReloadAsync(NavigationOptions)"/>
+        /// - <see cref="Page.SetContentAsync(string, NavigationOptions)"/>
+        /// - <see cref="Page.WaitForFunctionAsync(string, object[])"/>
+        /// - <see cref="Page.WaitForNavigationAsync(NavigationOptions)"/>
+        /// - <see cref="Page.WaitForRequestAsync(string, WaitForOptions)"/>
+        /// - <see cref="Page.WaitForResponseAsync(string, WaitForOptions)"/>
+        /// - <see cref="Page.WaitForXPathAsync(string, WaitForSelectorOptions)"/>
+        /// - <see cref="Page.WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
+        /// - <see cref="Page.WaitForExpressionAsync(string, WaitForFunctionOptions)"/>
+        /// </summary>
+        public int DefaultTimeout { get; set; }
+
+        /// <summary>
         /// This setting will change the default maximum navigation time of 30 seconds for the following methods:
         /// - <see cref="WaitForOptions"/>
         /// </summary>
@@ -1743,7 +1762,7 @@ namespace PuppeteerSharp
         {
             var x = Math.Round(clip.X);
             var y = Math.Round(clip.Y);
-            
+
             return new Clip
             {
                 X = x,
