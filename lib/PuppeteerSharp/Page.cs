@@ -1743,7 +1743,7 @@ namespace PuppeteerSharp
         {
             var x = Math.Round(clip.X);
             var y = Math.Round(clip.Y);
-            
+
             return new Clip
             {
                 X = x,
@@ -1950,7 +1950,7 @@ namespace PuppeteerSharp
                 return;
             }
             var session = Client.CreateSession(TargetType.Worker, sessionId);
-            var worker = new Worker(session, targetInfo.Url, AddConsoleMessage, HandleException);
+            var worker = new Worker(session, targetInfo.Url, AddConsoleMessageAsync, HandleException);
             _workers[sessionId] = worker;
             WorkerCreated?.Invoke(this, new WorkerEventArgs(worker));
         }
@@ -1966,7 +1966,15 @@ namespace PuppeteerSharp
             }
             if (e.Entry.Source != TargetType.Worker)
             {
-                Console?.Invoke(this, new ConsoleEventArgs(new ConsoleMessage(e.Entry.Level, e.Entry.Text)));
+                Console?.Invoke(this, new ConsoleEventArgs(new ConsoleMessage(
+                    e.Entry.Level,
+                    e.Entry.Text,
+                    null,
+                    new ConsoleMessageLocation
+                    {
+                        URL = e.Entry.URL,
+                        LineNumber = e.Entry.LineNumber
+                    })));
             }
         }
 
@@ -2038,10 +2046,11 @@ namespace PuppeteerSharp
             }
             var ctx = _frameManager.ExecutionContextById(message.ExecutionContextId);
             var values = message.Args.Select(ctx.CreateJSHandle).ToArray();
-            return AddConsoleMessage(message.Type, values);
+
+            return AddConsoleMessageAsync(message.Type, values, message.StackTrace);
         }
 
-        private async Task AddConsoleMessage(ConsoleType type, JSHandle[] values)
+        private async Task AddConsoleMessageAsync(ConsoleType type, JSHandle[] values, Messaging.StackTrace stackTrace)
         {
             if (Console?.GetInvocationList().Length == 0)
             {
@@ -2053,7 +2062,16 @@ namespace PuppeteerSharp
                 ? i.ToString()
                 : RemoteObjectHelper.ValueFromRemoteObject<string>(i.RemoteObject));
 
-            var consoleMessage = new ConsoleMessage(type, string.Join(" ", tokens), values);
+            var location = new ConsoleMessageLocation();
+            if (stackTrace?.CallFrames?.Length > 0)
+            {
+                var callFrame = stackTrace.CallFrames[0];
+                location.URL = callFrame.URL;
+                location.LineNumber = callFrame.LineNumber;
+                location.ColumnNumber = callFrame.ColumnNumber;
+            }
+
+            var consoleMessage = new ConsoleMessage(type, string.Join(" ", tokens), values, location);
             Console?.Invoke(this, new ConsoleEventArgs(consoleMessage));
         }
 
