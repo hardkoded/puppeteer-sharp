@@ -35,7 +35,7 @@ namespace PuppeteerSharp
         /// <param name="text">Text.</param>
         /// <param name="args">Arguments.</param>
         /// <param name="location">Message location</param>
-        public ConsoleMessage(ConsoleType type, string text, IList<JSHandle> args = null, ConsoleMessageLocation location = null)
+        public ConsoleMessage(ConsoleType type, string text, IList<JSHandle> args, ConsoleMessageLocation location = null)
         {
             Type = type;
             Text = text;

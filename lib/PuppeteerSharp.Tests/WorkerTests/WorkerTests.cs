@@ -58,6 +58,12 @@ namespace PuppeteerSharp.Tests.WorkerTests
 
             var log = await consoleTcs.Task;
             Assert.Equal("1", log.Text);
+            Assert.Equal(new ConsoleMessageLocation
+            {
+                URL = "data:text/javascript,console.log(1)",
+                LineNumber = 0,
+                ColumnNumber = 8
+            }, log.Location);
         }
 
         [Fact]
