@@ -131,7 +131,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
                 Page.SetContentAsync("<script>fetch('http://wat');</script>"));
 
             var args = await consoleTask.Task;
-            Assert.Contains("ERR_NAME_NOT_RESOLVED", args.Message.Text);
+            Assert.Contains("ERR_NAME", args.Message.Text);
             Assert.Equal(ConsoleType.Error, args.Message.Type);
             Assert.Equal(new ConsoleMessageLocation
             {

@@ -32,13 +32,10 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public override int GetHashCode()
-        {
-            var hashCode = 412870874;
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(URL);
-            hashCode = hashCode * -1521134295 + EqualityComparer<int?>.Default.GetHashCode(LineNumber);
-            hashCode = hashCode * -1521134295 + EqualityComparer<int?>.Default.GetHashCode(ColumnNumber);
-            return hashCode;
-        }
+            => 412870874 +
+                EqualityComparer<string>.Default.GetHashCode(URL) +
+                EqualityComparer<int?>.Default.GetHashCode(LineNumber) +
+                EqualityComparer<int?>.Default.GetHashCode(ColumnNumber);
 
         /// <inheritdoc/>
         public static bool operator ==(ConsoleMessageLocation location1, ConsoleMessageLocation location2)
