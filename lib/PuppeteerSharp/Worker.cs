@@ -2,9 +2,8 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Messaging;
-using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp
 {
