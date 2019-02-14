@@ -28,6 +28,12 @@ namespace PuppeteerSharp
         public string BrowserWSEndpoint { get; set; }
 
         /// <summary>
+        /// A browser url to connect to, in format `http://${host}:${port}`.
+        /// Use interchangeably with `browserWSEndpoint` to let Puppeteer fetch it from <see href="https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target">metadata endpoin</see>.
+        /// </summary>
+        public string BrowserURL { get; set; }
+        
+        /// <summary>
         /// Slows down Puppeteer operations by the specified amount of milliseconds. Useful so that you can see what is going on.
         /// </summary>
         public int SlowMo { get; set; }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
@@ -342,7 +343,8 @@ namespace PuppeteerSharp
 
         private async Task OnRequestWillBeSentAsync(RequestWillBeSentPayload e)
         {
-            if (_protocolRequestInterceptionEnabled)
+            // Request interception doesn't happen for data URLs with Network Service.
+            if (_protocolRequestInterceptionEnabled && !e.Request.Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase))
             {
                 var requestHash = e.Request.Hash;
                 var interceptionId = _requestHashToInterceptionIds.FirstValue(requestHash);

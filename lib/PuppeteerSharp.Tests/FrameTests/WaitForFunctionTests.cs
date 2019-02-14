@@ -128,5 +128,22 @@ namespace PuppeteerSharp.Tests.FrameTests
             await Page.EvaluateExpressionAsync("window.__injected = true");
             await watchdog;
         }
+
+        [Fact]
+        public async Task ShouldSurviveCrossProcessNavigation()
+        {
+            var fooFound = false;
+            var waitForFunction = Page.WaitForExpressionAsync("window.__FOO === 1")
+                .ContinueWith(_ => fooFound = true);
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            Assert.False(fooFound);
+            await Page.ReloadAsync();
+            Assert.False(fooFound);
+            await Page.GoToAsync(TestConstants.CrossProcessUrl + "/grid.html");
+            Assert.False(fooFound);
+            await Page.EvaluateExpressionAsync("window.__FOO = 1");
+            await waitForFunction;
+            Assert.True(fooFound);
+        }
     }
 }

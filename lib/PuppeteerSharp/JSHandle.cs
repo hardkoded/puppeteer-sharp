@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
@@ -10,6 +11,7 @@ namespace PuppeteerSharp
     /// <summary>
     /// JSHandle represents an in-page JavaScript object. JSHandles can be created with the <see cref="Page.EvaluateExpressionHandleAsync(string)"/> and <see cref="Page.EvaluateFunctionHandleAsync(string, object[])"/> methods.
     /// </summary>
+    [JsonConverter(typeof(JSHandleMethodConverter))]
     public class JSHandle
     {
         internal JSHandle(ExecutionContext context, CDPSession client, RemoteObject remoteObject)

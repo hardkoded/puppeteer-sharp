@@ -38,7 +38,33 @@ namespace PuppeteerSharp.Tests.PageTests
             };
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.True(response.Ok);
+
             Assert.Equal(TestConstants.Port, response.RemoteAddress.Port);
+        }
+
+        [Fact]
+        public async Task ShouldWorkWithInterventionHeaders()
+        {
+            Server.SetRoute("/intervention", context => context.Response.WriteAsync($@"
+              <script>
+                document.write('<script src=""{TestConstants.CrossProcessHttpPrefix}/intervention.js"">' + '</scr' + 'ipt>');
+              </script>
+            "));
+            Server.SetRedirect("/intervention.js", "/redirect.js");
+
+            string interventionHeader = null;
+            Server.SetRoute("/redirect.js", context =>
+            {
+                interventionHeader = context.Request.Headers["intervention"];
+                return context.Response.WriteAsync("console.log(1);");
+            });
+
+            await Page.SetRequestInterceptionAsync(true);
+            Page.Request += async (sender, e) => await e.Request.ContinueAsync();
+            
+            await Page.GoToAsync(TestConstants.ServerUrl + "/intervention");
+            
+            Assert.Contains("www.chromestatus.com", interventionHeader);
         }
 
         [Fact]
@@ -410,19 +436,6 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(HttpStatusCode.OK, response.Status);
             Assert.Single(requests);
             Assert.Equal(dataURL, requests[0].Url);
-        }
-
-        [Fact]
-        public async Task ShouldAbortDataServer()
-        {
-            await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (sender, e) =>
-            {
-                await e.Request.AbortAsync();
-            };
-            var exception = await Assert.ThrowsAsync<NavigationException>(
-                          () => Page.GoToAsync("data:text/html,No way!"));
-            Assert.Contains("net::ERR_FAILED", exception.Message);
         }
 
         [Fact]

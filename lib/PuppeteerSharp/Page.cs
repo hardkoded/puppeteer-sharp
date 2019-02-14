@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Input;
 using PuppeteerSharp.Media;
 using PuppeteerSharp.Messaging;
@@ -193,6 +194,11 @@ namespace PuppeteerSharp
         public event EventHandler Close;
 
         /// <summary>
+        /// Raised when the page opens a new tab or window.
+        /// </summary>
+        public event EventHandler<PopupEventArgs> Popup;
+
+        /// <summary>
         /// This setting will change the default maximum navigation time of 30 seconds for the following methods:
         /// - <see cref="GoToAsync(string, NavigationOptions)"/>
         /// - <see cref="GoBackAsync(NavigationOptions)"/>
@@ -312,6 +318,7 @@ namespace PuppeteerSharp
         public Accessibility Accessibility { get; }
 
         internal bool JavascriptEnabled { get; set; } = true;
+        internal bool HasPopupEventListeners => Popup?.GetInvocationList().Any() == true;
         #endregion
 
         #region Public Methods
@@ -1015,6 +1022,14 @@ namespace PuppeteerSharp
                     throw new ArgumentException($"Expected options.quality to be between 0 and 100 (inclusive), got {options.Quality}");
                 }
             }
+            if (options?.Clip?.Width == 0)
+            {
+                throw new PuppeteerException("Expected options.Clip.Width not to be 0.");
+            }
+            if (options?.Clip?.Height == 0)
+            {
+                throw new PuppeteerException("Expected options.Clip.Height not to be 0.");
+            }
 
             if (options.Clip != null && options.FullPage)
             {
@@ -1514,6 +1529,8 @@ namespace PuppeteerSharp
         }
         #endregion
 
+        internal void OnPopup(Page popupPage) => Popup?.Invoke(this, new PopupEventArgs { PopupPage = popupPage });
+
         #region Private Method
 
         internal static async Task<Page> CreateAsync(
@@ -1576,6 +1593,7 @@ namespace PuppeteerSharp
             _networkManager.Response += (sender, e) => Response?.Invoke(this, e);
             _networkManager.RequestFinished += (sender, e) => RequestFinished?.Invoke(this, e);
         }
+
         private async Task<Response> GoAsync(int delta, NavigationOptions options)
         {
             var history = await Client.SendAsync<PageGetNavigationHistoryResponse>("Page.getNavigationHistory").ConfigureAwait(false);
@@ -1623,11 +1641,7 @@ namespace PuppeteerSharp
                 }).ConfigureAwait(false);
             }
 
-            var clip = options.Clip?.Clone();
-            if (clip != null)
-            {
-                clip.Scale = 1;
-            }
+            var clip = options.Clip != null ? ProcessClip(options.Clip) : null;
 
             if (!_screenshotBurstModeOn)
             {
@@ -1724,6 +1738,21 @@ namespace PuppeteerSharp
                 await ResetBackgroundColorAndViewportAsync(options).ConfigureAwait(false);
             }
             return result.Data;
+        }
+
+        private Clip ProcessClip(Clip clip)
+        {
+            var x = Math.Round(clip.X);
+            var y = Math.Round(clip.Y);
+
+            return new Clip
+            {
+                X = x,
+                Y = y,
+                Width = Math.Round(clip.Width + clip.X - x, MidpointRounding.AwayFromZero),
+                Height = Math.Round(clip.Height + clip.Y - y, MidpointRounding.AwayFromZero),
+                Scale = 1
+            };
         }
 
         private Task ResetBackgroundColorAndViewportAsync(ScreenshotOptions options)
@@ -1922,7 +1951,7 @@ namespace PuppeteerSharp
                 return;
             }
             var session = Client.CreateSession(TargetType.Worker, sessionId);
-            var worker = new Worker(session, targetInfo.Url, AddConsoleMessage, HandleException);
+            var worker = new Worker(session, targetInfo.Url, AddConsoleMessageAsync, HandleException);
             _workers[sessionId] = worker;
             WorkerCreated?.Invoke(this, new WorkerEventArgs(worker));
         }
@@ -1938,7 +1967,15 @@ namespace PuppeteerSharp
             }
             if (e.Entry.Source != TargetType.Worker)
             {
-                Console?.Invoke(this, new ConsoleEventArgs(new ConsoleMessage(e.Entry.Level, e.Entry.Text)));
+                Console?.Invoke(this, new ConsoleEventArgs(new ConsoleMessage(
+                    e.Entry.Level,
+                    e.Entry.Text,
+                    null,
+                    new ConsoleMessageLocation
+                    {
+                        URL = e.Entry.URL,
+                        LineNumber = e.Entry.LineNumber
+                    })));
             }
         }
 
@@ -2004,12 +2041,17 @@ namespace PuppeteerSharp
 
         private Task OnConsoleAPI(PageConsoleResponse message)
         {
+            if (message.ExecutionContextId == 0)
+            {
+                return Task.CompletedTask;
+            }
             var ctx = _frameManager.ExecutionContextById(message.ExecutionContextId);
             var values = message.Args.Select(ctx.CreateJSHandle).ToArray();
-            return AddConsoleMessage(message.Type, values);
+
+            return AddConsoleMessageAsync(message.Type, values, message.StackTrace);
         }
 
-        private async Task AddConsoleMessage(ConsoleType type, JSHandle[] values)
+        private async Task AddConsoleMessageAsync(ConsoleType type, JSHandle[] values, Messaging.StackTrace stackTrace)
         {
             if (Console?.GetInvocationList().Length == 0)
             {
@@ -2021,7 +2063,16 @@ namespace PuppeteerSharp
                 ? i.ToString()
                 : RemoteObjectHelper.ValueFromRemoteObject<string>(i.RemoteObject));
 
-            var consoleMessage = new ConsoleMessage(type, string.Join(" ", tokens), values);
+            var location = new ConsoleMessageLocation();
+            if (stackTrace?.CallFrames?.Length > 0)
+            {
+                var callFrame = stackTrace.CallFrames[0];
+                location.URL = callFrame.URL;
+                location.LineNumber = callFrame.LineNumber;
+                location.ColumnNumber = callFrame.ColumnNumber;
+            }
+
+            var consoleMessage = new ConsoleMessage(type, string.Join(" ", tokens), values, location);
             Console?.Invoke(this, new ConsoleEventArgs(consoleMessage));
         }
 

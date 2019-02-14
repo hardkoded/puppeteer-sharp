@@ -153,6 +153,11 @@ namespace PuppeteerSharp
         /// <returns>Task</returns>
         public async Task ContinueAsync(Payload overrides = null)
         {
+            // Request interception is not supported for data: urls.
+            if (Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase))
+            {
+                return;
+            }
             if (!_allowInterception)
             {
                 throw new PuppeteerException("Request Interception is not enabled!");
@@ -288,6 +293,11 @@ namespace PuppeteerSharp
         /// <returns>Task</returns>
         public async Task AbortAsync(RequestAbortErrorCode errorCode = RequestAbortErrorCode.Failed)
         {
+            // Request interception is not supported for data: urls.
+            if (Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase))
+            {
+                return;
+            }
             if (!_allowInterception)
             {
                 throw new PuppeteerException("Request Interception is not enabled!");

@@ -1,11 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Input;
 using PuppeteerSharp.Messaging;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -147,6 +146,14 @@ namespace PuppeteerSharp
             if (boundingBox == null)
             {
                 throw new PuppeteerException("Node is either not visible or not an HTMLElement");
+            }
+            if (boundingBox.Width == 0)
+            {
+                throw new PuppeteerException("Node has 0 width.");
+            }
+            if (boundingBox.Height == 0)
+            {
+                throw new PuppeteerException("Node has 0 height.");
             }
             var getLayoutMetricsResponse = await Client.SendAsync<GetLayoutMetricsResponse>("Page.getLayoutMetrics").ConfigureAwait(false);
 

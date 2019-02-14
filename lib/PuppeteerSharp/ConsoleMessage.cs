@@ -24,16 +24,23 @@ namespace PuppeteerSharp
         public IList<JSHandle> Args { get; }
 
         /// <summary>
+        /// Gets the location.
+        /// </summary>
+        public ConsoleMessageLocation Location { get; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ConsoleMessage"/> class.
         /// </summary>
         /// <param name="type">Type.</param>
         /// <param name="text">Text.</param>
         /// <param name="args">Arguments.</param>
-        public ConsoleMessage(ConsoleType type, string text, IList<JSHandle> args = null)
+        /// <param name="location">Message location</param>
+        public ConsoleMessage(ConsoleType type, string text, IList<JSHandle> args, ConsoleMessageLocation location = null)
         {
             Type = type;
             Text = text;
             Args = args;
+            Location = location;
         }
     }
 }
