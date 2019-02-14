@@ -1549,7 +1549,8 @@ namespace PuppeteerSharp
                 client.SendAsync("Target.setAutoAttach", new TargetSetAutoAttachRequest
                 {
                     AutoAttach = true,
-                    WaitForDebuggerOnStart = false
+                    WaitForDebuggerOnStart = false,
+                    Flatten = true
                 }),
                 client.SendAsync("Page.setLifecycleEventsEnabled", new PageSetLifecycleEventsEnabledRequest
                 {
@@ -1744,7 +1745,7 @@ namespace PuppeteerSharp
         {
             var x = Math.Round(clip.X);
             var y = Math.Round(clip.Y);
-            
+
             return new Clip
             {
                 X = x,
@@ -1839,7 +1840,7 @@ namespace PuppeteerSharp
                         EmitMetrics(e.MessageData.ToObject<PerformanceMetricsResponse>(true));
                         break;
                     case "Target.attachedToTarget":
-                        await OnAttachedToTarget(e.MessageData.ToObject<TargetAttachedToTargetResponse>(true)).ConfigureAwait(false);
+                        await OnAttachedToTargetAsync(e.MessageData.ToObject<TargetAttachedToTargetResponse>(true)).ConfigureAwait(false);
                         break;
                     case "Target.detachedFromTarget":
                         OnDetachedFromTarget(e.MessageData.ToObject<TargetDetachedFromTargetResponse>(true));
@@ -1931,7 +1932,7 @@ namespace PuppeteerSharp
             }
         }
 
-        private async Task OnAttachedToTarget(TargetAttachedToTargetResponse e)
+        private async Task OnAttachedToTargetAsync(TargetAttachedToTargetResponse e)
         {
             var targetInfo = e.TargetInfo;
             var sessionId = e.SessionId;
@@ -1950,7 +1951,7 @@ namespace PuppeteerSharp
                 }
                 return;
             }
-            var session = Client.CreateSession(TargetType.Worker, sessionId);
+            var session = Connection.FromSession(Client).GetSession(sessionId);
             var worker = new Worker(session, targetInfo.Url, AddConsoleMessage, HandleException);
             _workers[sessionId] = worker;
             WorkerCreated?.Invoke(this, new WorkerEventArgs(worker));

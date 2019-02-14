@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Messaging;
 using PuppeteerSharp.Transport;
@@ -33,12 +34,14 @@ namespace PuppeteerSharp
             Transport.Closed += Transport_Closed;
             _callbacks = new ConcurrentDictionary<int, MessageTask>();
             _sessions = new ConcurrentDictionary<string, CDPSession>();
+            _asyncSessions = new AsyncDictionaryHelper<string, CDPSession>(_sessions, "Session {0} not found");
         }
 
         #region Private Members
         private int _lastId;
         private readonly ConcurrentDictionary<int, MessageTask> _callbacks;
         private readonly ConcurrentDictionary<string, CDPSession> _sessions;
+        private readonly AsyncDictionaryHelper<string, CDPSession> _asyncSessions;
         #endregion
 
         #region Properties
@@ -86,6 +89,15 @@ namespace PuppeteerSharp
 
         #region Public Methods
 
+        internal int GetMessageID() => Interlocked.Increment(ref _lastId);
+        internal Task RawSendASync(int id, string method, object args)
+            => Transport.SendAsync(JsonConvert.SerializeObject(new ConnectionRequest
+            {
+                Id = id,
+                Method = method,
+                Params = args
+            }, JsonHelper.DefaultJsonSerializerSettings));
+
         internal async Task<JObject> SendAsync(string method, object args = null, bool waitForCallback = true)
         {
             if (IsClosed)
@@ -93,14 +105,7 @@ namespace PuppeteerSharp
                 throw new TargetClosedException($"Protocol error({method}): Target closed.", CloseReason);
             }
 
-            var id = Interlocked.Increment(ref _lastId);
-            var message = JsonConvert.SerializeObject(new ConnectionRequest
-            {
-                Id = id,
-                Method = method,
-                Params = args
-            }, JsonHelper.DefaultJsonSerializerSettings);
-
+            var id = GetMessageID();
             _logger.LogTrace("Send ► {Id} Method {Method} Params {@Params}", id, method, (object)args);
 
             MessageTask callback = null;
@@ -114,7 +119,7 @@ namespace PuppeteerSharp
                 _callbacks[id] = callback;
             }
 
-            await Transport.SendAsync(message).ConfigureAwait(false);
+            await RawSendASync(id, method, args).ConfigureAwait(false);
             return waitForCallback ? await callback.TaskWrapper.Task.ConfigureAwait(false) : null;
         }
 
@@ -130,9 +135,7 @@ namespace PuppeteerSharp
             {
                 TargetId = targetInfo.TargetId
             }).ConfigureAwait(false)).SessionId;
-            var session = new CDPSession(this, targetInfo.Type, sessionId);
-            _sessions.TryAdd(sessionId, session);
-            return session;
+            return await GetSessionAsync(sessionId).ConfigureAwait(false);
         }
 
         internal bool HasPendingCallbacks() => _callbacks.Count != 0;
@@ -166,15 +169,10 @@ namespace PuppeteerSharp
             _callbacks.Clear();
         }
 
-        internal static IConnection FromSession(CDPSession session)
-        {
-            var connection = session.Connection;
-            while (connection is CDPSession)
-            {
-                connection = connection.Connection;
-            }
-            return connection;
-        }
+        internal static Connection FromSession(CDPSession session) => session.Connection;
+        internal CDPSession GetSession(string sessionId) => _sessions.GetValueOrDefault(sessionId);
+        internal Task<CDPSession> GetSessionAsync(string sessionId) => _asyncSessions.GetItemAsync(sessionId);
+
         #region Private Methods
 
         private async void Transport_MessageReceived(object sender, MessageReceivedEventArgs e)
@@ -200,29 +198,7 @@ namespace PuppeteerSharp
                 }
 
                 _logger.LogTrace("◀ Receive {Message}", response);
-
-                var id = obj.Id;
-
-                if (id.HasValue)
-                {
-                    //If we get the object we are waiting for we return if
-                    //if not we add this to the list, sooner or later some one will come for it 
-                    if (_callbacks.TryRemove(id.Value, out var callback))
-                    {
-                        if (obj.Error != null)
-                        {
-                            callback.TaskWrapper.TrySetException(new MessageException(callback, obj.Error));
-                        }
-                        else
-                        {
-                            callback.TaskWrapper.TrySetResult(obj.Result);
-                        }
-                    }
-                }
-                else
-                {
-                    ProcessIncomingMessage(obj);
-                }
+                ProcessIncomingMessage(obj);
             }
             catch (Exception ex)
             {
@@ -237,13 +213,11 @@ namespace PuppeteerSharp
             var method = obj.Method;
             var param = obj.Params.ToObject<ConnectionResponseParams>();
 
-            if (method == "Target.receivedMessageFromTarget")
+            if (method == "Target.attachedToTarget")
             {
                 var sessionId = param.SessionId;
-                if (_sessions.TryGetValue(sessionId, out var session))
-                {
-                    session.OnMessage(param.Message);
-                }
+                var session = new CDPSession(this, param.TargetInfo.Type, sessionId);
+                _asyncSessions.AddItem(sessionId, session);
             }
             else if (method == "Target.detachedFromTarget")
             {
@@ -251,6 +225,27 @@ namespace PuppeteerSharp
                 if (_sessions.TryRemove(sessionId, out var session) && !session.IsClosed)
                 {
                     session.Close("Target.detachedFromTarget");
+                }
+            }
+            else if (!string.IsNullOrEmpty(obj.SessionId))
+            {
+                var session = GetSession(obj.SessionId);
+                session.OnMessage(obj);
+            }
+            else if (obj.Id.HasValue)
+            {
+                //If we get the object we are waiting for we return if
+                //if not we add this to the list, sooner or later some one will come for it 
+                if (_callbacks.TryRemove(obj.Id.Value, out var callback))
+                {
+                    if (obj.Error != null)
+                    {
+                        callback.TaskWrapper.TrySetException(new MessageException(callback, obj.Error));
+                    }
+                    else
+                    {
+                        callback.TaskWrapper.TrySetResult(obj.Result);
+                    }
                 }
             }
             else
