@@ -327,7 +327,7 @@ namespace PuppeteerSharp
         private void RemoveContext(ExecutionContext context)
         {
             if (context.Frame != null)
-            {                
+            {
                 context.Frame.RemoveExecutionContext();
             }
         }
