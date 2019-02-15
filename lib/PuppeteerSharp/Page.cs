@@ -967,6 +967,11 @@ namespace PuppeteerSharp
             if (!options.Type.HasValue)
             {
                 options.Type = ScreenshotOptions.GetScreenshotTypeFromFile(file);
+
+                if (options.Type == ScreenshotType.Jpeg && !options.Quality.HasValue)
+                {
+                    options.Quality = 90;
+                }
             }
             var data = await ScreenshotDataAsync(options).ConfigureAwait(false);
 
