@@ -28,7 +28,7 @@ namespace PuppeteerSharp
         private readonly ILogger _logger;
         private readonly CDPSession _client;
         private ExecutionContext _executionContext;
-        private readonly Func<ConsoleType, JSHandle[], Task> _consoleAPICalled;
+        private readonly Func<ConsoleType, JSHandle[], StackTrace, Task> _consoleAPICalled;
         private readonly Action<EvaluateExceptionResponseDetails> _exceptionThrown;
         private readonly TaskCompletionSource<ExecutionContext> _executionContextCallback;
         private Func<ExecutionContext, RemoteObject, JSHandle> _jsHandleFactory;
@@ -36,7 +36,7 @@ namespace PuppeteerSharp
         internal Worker(
             CDPSession client,
             string url,
-            Func<ConsoleType, JSHandle[], Task> consoleAPICalled,
+            Func<ConsoleType, JSHandle[], StackTrace, Task> consoleAPICalled,
             Action<EvaluateExceptionResponseDetails> exceptionThrown)
         {
             _logger = client.Connection.LoggerFactory.CreateLogger<Worker>();
@@ -128,7 +128,8 @@ namespace PuppeteerSharp
             var consoleData = e.MessageData.ToObject<PageConsoleResponse>(true);
             await _consoleAPICalled(
                 consoleData.Type,
-                consoleData.Args.Select(i => _jsHandleFactory(_executionContext, i)).ToArray())
+                consoleData.Args.Select(i => _jsHandleFactory(_executionContext, i)).ToArray(),
+                consoleData.StackTrace)
                     .ConfigureAwait(false);
         }
 

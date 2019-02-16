@@ -120,6 +120,48 @@ namespace PuppeteerSharp.Tests.PageTests.Events
         }
 
         [Fact]
+        public async Task ShouldHaveLocationWhenFetchFails()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var consoleTask = new TaskCompletionSource<ConsoleEventArgs>();
+            Page.Console += (sender, e) => consoleTask.TrySetResult(e);
+
+            await Task.WhenAll(
+                consoleTask.Task,
+                Page.SetContentAsync("<script>fetch('http://wat');</script>"));
+
+            var args = await consoleTask.Task;
+            Assert.Contains("ERR_NAME", args.Message.Text);
+            Assert.Equal(ConsoleType.Error, args.Message.Type);
+            Assert.Equal(new ConsoleMessageLocation
+            {
+                URL = "http://wat/",
+            }, args.Message.Location);
+        }
+
+        [Fact]
+        public async Task ShouldHaveLocationForConsoleAPICalls()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var consoleTask = new TaskCompletionSource<ConsoleEventArgs>();
+            Page.Console += (sender, e) => consoleTask.TrySetResult(e);
+
+            await Task.WhenAll(
+                consoleTask.Task,
+                Page.GoToAsync(TestConstants.ServerUrl + "/consolelog.html"));
+
+            var args = await consoleTask.Task;
+            Assert.Equal("yellow", args.Message.Text);
+            Assert.Equal(ConsoleType.Log, args.Message.Type);
+            Assert.Equal(new ConsoleMessageLocation
+            {
+                URL = TestConstants.ServerUrl + "/consolelog.html",
+                LineNumber = 7,
+                ColumnNumber = 14
+            }, args.Message.Location);
+        }
+
+        [Fact]
         public async Task ShouldNotThrowWhenThereAreConsoleMessagesInDetachedIframes()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
