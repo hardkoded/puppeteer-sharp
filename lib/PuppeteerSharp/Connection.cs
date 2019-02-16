@@ -17,7 +17,7 @@ namespace PuppeteerSharp
     /// <summary>
     /// A connection handles the communication with a Chromium browser
     /// </summary>
-    public class Connection : IDisposable, IConnection
+    public class Connection : IDisposable
     {
         private readonly ILogger _logger;
 
@@ -299,15 +299,6 @@ namespace PuppeteerSharp
             Close("Connection disposed");
             Transport.Dispose();
         }
-        #endregion
-
-        #region IConnection
-        ILoggerFactory IConnection.LoggerFactory => LoggerFactory;
-        bool IConnection.IsClosed => IsClosed;
-        Task<JObject> IConnection.SendAsync(string method, object args, bool waitForCallback)
-            => SendAsync(method, args, waitForCallback);
-        IConnection IConnection.Connection => null;
-        void IConnection.Close(string closeReason) => Close(closeReason);
         #endregion
     }
 }

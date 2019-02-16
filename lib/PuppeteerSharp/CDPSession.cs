@@ -37,7 +37,7 @@ namespace PuppeteerSharp
     /// });
     /// ]]></code>
     /// </summary>
-    public class CDPSession : IConnection
+    public class CDPSession
     {
         internal CDPSession(Connection connection, TargetType targetType, string sessionId, ILoggerFactory loggerFactory = null)
         {
@@ -238,15 +238,6 @@ namespace PuppeteerSharp
             Connection = null;
         }
 
-        #endregion
-
-        #region IConnection
-        ILoggerFactory IConnection.LoggerFactory => LoggerFactory;
-        bool IConnection.IsClosed => IsClosed;
-        Task<JObject> IConnection.SendAsync(string method, object args, bool waitForCallback)
-            => SendAsync(method, args, waitForCallback);
-        IConnection IConnection.Connection => Connection;
-        void IConnection.Close(string closeReason) => Close(closeReason);
         #endregion
     }
 }
