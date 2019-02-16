@@ -133,13 +133,6 @@ namespace PuppeteerSharp
                     $"Close reason: {CloseReason}");
             }
             var id = Connection.GetMessageID();
-            var message = JsonConvert.SerializeObject(new ConnectionRequest
-            {
-                Id = id,
-                Method = method,
-                Params = args
-            }, JsonHelper.DefaultJsonSerializerSettings);
-
             MessageTask callback = null;
             if (waitForCallback)
             {
@@ -153,7 +146,7 @@ namespace PuppeteerSharp
 
             try
             {
-                await Connection.RawSendASync(id, method, args).ConfigureAwait(false);
+                await Connection.RawSendASync(id, method, args, SessionId).ConfigureAwait(false);
             }
             catch (Exception ex)
             {

@@ -90,12 +90,13 @@ namespace PuppeteerSharp
         #region Public Methods
 
         internal int GetMessageID() => Interlocked.Increment(ref _lastId);
-        internal Task RawSendASync(int id, string method, object args)
+        internal Task RawSendASync(int id, string method, object args, string sessionId = null)
             => Transport.SendAsync(JsonConvert.SerializeObject(new ConnectionRequest
             {
                 Id = id,
                 Method = method,
-                Params = args
+                Params = args,
+                SessionId = sessionId
             }, JsonHelper.DefaultJsonSerializerSettings));
 
         internal async Task<JObject> SendAsync(string method, object args = null, bool waitForCallback = true)
@@ -133,7 +134,8 @@ namespace PuppeteerSharp
         {
             var sessionId = (await SendAsync<TargetAttachToTargetResponse>("Target.attachToTarget", new TargetAttachToTargetRequest
             {
-                TargetId = targetInfo.TargetId
+                TargetId = targetInfo.TargetId,
+                Flatten = true
             }).ConfigureAwait(false)).SessionId;
             return await GetSessionAsync(sessionId).ConfigureAwait(false);
         }
@@ -211,7 +213,7 @@ namespace PuppeteerSharp
         private void ProcessIncomingMessage(ConnectionResponse obj)
         {
             var method = obj.Method;
-            var param = obj.Params.ToObject<ConnectionResponseParams>();
+            var param = obj.Params?.ToObject<ConnectionResponseParams>();
 
             if (method == "Target.attachedToTarget")
             {
@@ -227,7 +229,8 @@ namespace PuppeteerSharp
                     session.Close("Target.detachedFromTarget");
                 }
             }
-            else if (!string.IsNullOrEmpty(obj.SessionId))
+
+            if (!string.IsNullOrEmpty(obj.SessionId))
             {
                 var session = GetSession(obj.SessionId);
                 session.OnMessage(obj);
