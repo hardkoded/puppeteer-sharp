@@ -76,16 +76,6 @@ namespace PuppeteerSharp
                 TransferMode = "ReturnAsStream",
                 Categories = string.Join(", ", categories)
             });
-
-            /*
-             * 
-                if (method == "Tracing.tracingComplete")
-                {
-                    TracingComplete?.Invoke(this, new TracingCompleteEventArgs
-                    {
-                        Stream = param.Stream
-                    });
-                }*/
         }
 
         /// <summary>

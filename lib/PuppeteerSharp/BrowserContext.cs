@@ -12,10 +12,10 @@ namespace PuppeteerSharp
     /// </summary>
     public class BrowserContext
     {
-        private readonly IConnection _connection;
+        private readonly Connection _connection;
         private readonly string _id;
 
-        internal BrowserContext(IConnection connection, Browser browser, string contextId)
+        internal BrowserContext(Connection connection, Browser browser, string contextId)
         {
             _connection = connection;
             Browser = browser;
