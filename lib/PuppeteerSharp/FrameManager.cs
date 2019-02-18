@@ -245,7 +245,7 @@ namespace PuppeteerSharp
 
             if (frame != null)
             {
-                frame.SetDefaultContext(context);
+                frame.AddExecutionContext(context);
             }
         }
 
@@ -318,7 +318,7 @@ namespace PuppeteerSharp
         {
             if (context.Frame != null)
             {
-                context.Frame.SetDefaultContext(null);
+                context.Frame.RemoveExecutionContext();
             }
         }
 
