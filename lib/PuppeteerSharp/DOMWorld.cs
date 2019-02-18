@@ -11,7 +11,7 @@ namespace PuppeteerSharp
     {
         private readonly FrameManager _frameManager;
         private readonly Frame _frame;
-        
+
         private bool _detached;
 
         private TaskCompletionSource<ExecutionContext> _contextResolveTaskWrapper;
@@ -133,7 +133,6 @@ namespace PuppeteerSharp
         {
             var waitUntil = options?.WaitUntil ?? new[] { WaitUntilNavigation.Load };
             var timeout = options?.Timeout ?? Puppeteer.DefaultTimeout;
-            var watcher = new LifecycleWatcher(_frameManager, _frame, waitUntil, timeout);
 
             // We rely upon the fact that document.open() will reset frame lifecycle with "init"
             // lifecycle event. @see https://crrev.com/608658
@@ -143,6 +142,7 @@ namespace PuppeteerSharp
                 document.close();
             }", html).ConfigureAwait(false);
 
+            var watcher = new LifecycleWatcher(_frameManager, _frame, waitUntil, timeout);
             var watcherTask = await Task.WhenAny(
                 watcher.TimeoutOrTerminationTask,
                 watcher.LifecycleTask).ConfigureAwait(false);
@@ -334,10 +334,10 @@ namespace PuppeteerSharp
 
         internal Task<ElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
             => WaitForSelectorOrXPathAsync(selector, false, options);
-        
+
         internal Task<ElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
             => WaitForSelectorOrXPathAsync(xpath, true, options);
-        
+
         internal Task<JSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args)
             => new WaitTask(this, script, false, "function", options.Polling, options.PollingInterval, options.Timeout, args).Task;
 
