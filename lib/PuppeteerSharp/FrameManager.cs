@@ -17,9 +17,8 @@ namespace PuppeteerSharp
         private bool _ensureNewDocumentNavigation;
         private readonly ILogger _logger;
         private readonly ConcurrentDictionary<string, Frame> _frames;
-        private readonly MultiMap<string, TaskCompletionSource<Frame>> _pendingFrameRequests;
-        private const int WaitForRequestDelay = 1000;
         private const string RefererHeaderName = "referer";
+        private readonly AsyncDictionaryHelper<string, Frame> _asyncFrames;
 
         private FrameManager(CDPSession client, Page page, NetworkManager networkManager)
         {
@@ -29,7 +28,7 @@ namespace PuppeteerSharp
             _contextIdToContext = new Dictionary<int, ExecutionContext>();
             _logger = Client.Connection.LoggerFactory.CreateLogger<FrameManager>();
             NetworkManager = networkManager;
-            _pendingFrameRequests = new MultiMap<string, TaskCompletionSource<Frame>>();
+            _asyncFrames = new AsyncDictionaryHelper<string, Frame>(_frames, "Frame {0} not found");
 
             Client.MessageReceived += Client_MessageReceived;
         }
@@ -291,7 +290,7 @@ namespace PuppeteerSharp
                     // Initial main frame navigation.
                     frame = new Frame(this, Client, null, framePayload.Id);
                 }
-                AddFrame(framePayload.Id, frame);
+                _asyncFrames.AddItem(framePayload.Id, frame);
                 MainFrame = frame;
             }
 
@@ -299,15 +298,6 @@ namespace PuppeteerSharp
             frame.Navigated(framePayload);
 
             FrameNavigated?.Invoke(this, new FrameEventArgs(frame));
-        }
-
-        private void AddFrame(string frameId, Frame frame)
-        {
-            _frames[frameId] = frame;
-            foreach (var tcs in _pendingFrameRequests.Get(frameId))
-            {
-                tcs.TrySetResult(frame);
-            }
         }
 
         internal Frame[] GetFrames() => _frames.Values.ToArray();
@@ -375,19 +365,7 @@ namespace PuppeteerSharp
             }
         }
 
-        internal async Task<Frame> GetFrameAsync(string frameId)
-        {
-            var tcs = new TaskCompletionSource<Frame>(TaskCreationOptions.RunContinuationsAsynchronously);
-            _pendingFrameRequests.Add(frameId, tcs);
-
-            if (_frames.TryGetValue(frameId, out var frame))
-            {
-                _pendingFrameRequests.Delete(frameId, tcs);
-                return frame;
-            }
-
-            return await tcs.Task.WithTimeout(WaitForRequestDelay, new PuppeteerException($"Frame '{frameId}' not found"));
-        }
+        internal Task<Frame> GetFrameAsync(string frameId) => _asyncFrames.GetItemAsync(frameId);
 
         #endregion
     }

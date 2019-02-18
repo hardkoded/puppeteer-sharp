@@ -4,5 +4,6 @@
     {
         public bool AutoAttach { get; set; }
         public bool WaitForDebuggerOnStart { get; set; }
+        public bool Flatten { get; set; }
     }
 }

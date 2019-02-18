@@ -86,13 +86,17 @@ namespace PuppeteerSharp
         {
             var taskWrapper = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
 
-            async void EventHandler(object sender, TracingCompleteEventArgs e)
+            async void EventHandler(object sender, MessageEventArgs e)
             {
                 try
                 {
-                    var tracingData = await ReadStream(e.Stream, _path).ConfigureAwait(false);
-                    _client.TracingComplete -= EventHandler;
-                    taskWrapper.TrySetResult(tracingData);
+                    if (e.MessageID == "Tracing.tracingComplete")
+                    {
+                        var stream = e.MessageData.ToObject<TracingCompleteResponse>().Stream;
+                        var tracingData = await ReadStream(stream, _path).ConfigureAwait(false);
+                        _client.MessageReceived -= EventHandler;
+                        taskWrapper.TrySetResult(tracingData);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -102,7 +106,7 @@ namespace PuppeteerSharp
                 }
             }
 
-            _client.TracingComplete += EventHandler;
+            _client.MessageReceived += EventHandler;
 
             await _client.SendAsync("Tracing.end").ConfigureAwait(false);
 
