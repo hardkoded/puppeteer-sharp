@@ -7,7 +7,7 @@ namespace PuppeteerSharp
 {
     internal class WaitTask
     {
-        private readonly DOMWorld _domWorld;
+        private readonly Frame _frame;
         private readonly string _predicateBody;
         private readonly WaitForFunctionPollingOption _polling;
         private readonly int? _pollingInterval;
@@ -111,7 +111,7 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
 }";
 
         internal WaitTask(
-            DOMWorld domWorld,
+            Frame frame,
             string predicateBody,
             bool isExpression,
             string title,
@@ -129,7 +129,7 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
                 throw new ArgumentOutOfRangeException(nameof(pollingInterval), "Cannot poll with non-positive interval");
             }
 
-            _domWorld = domWorld;
+            _frame = frame;
             _predicateBody = isExpression ? $"return ({predicateBody})" : $"return ({predicateBody})(...args)";
             _polling = polling;
             _pollingInterval = pollingInterval;
@@ -137,7 +137,7 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
             _args = args ?? new object[] { };
             _title = title;
 
-            _domWorld.WaitTasks.Add(this);
+            _frame.WaitTasks.Add(this);
 
             _cts = new CancellationTokenSource();
 
@@ -159,7 +159,7 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
             JSHandle success = null;
             Exception exception = null;
 
-            var context = await _domWorld.GetExecutionContextAsync().ConfigureAwait(false);
+            var context = await _frame.GetExecutionContextAsync().ConfigureAwait(false);
             try
             {
                 success = await context.EvaluateFunctionHandleAsync(WaitForPredicatePageFunction,
@@ -180,7 +180,7 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
                 return;
             }
             if (exception == null &&
-                await _domWorld.EvaluateFunctionAsync<bool>("s => !s", success)
+                await _frame.EvaluateFunctionAsync<bool>("s => !s", success)
                     .ContinueWith(task => task.IsFaulted || task.Result)
                     .ConfigureAwait(false))
             {
@@ -224,7 +224,7 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
         {
             _cts.Cancel();
             _cts?.Dispose();
-            _domWorld.WaitTasks.Remove(this);
+            _frame.WaitTasks.Remove(this);
         }
     }
 }

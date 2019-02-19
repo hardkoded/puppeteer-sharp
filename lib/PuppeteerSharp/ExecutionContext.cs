@@ -24,14 +24,16 @@ namespace PuppeteerSharp
         private readonly CDPSession _client;
         private readonly int _contextId;
 
+        internal DOMWorld World { get; }
+
         internal ExecutionContext(
             CDPSession client,
             ContextPayload contextPayload,
-            Frame frame)
+            DOMWorld world)
         {
             _client = client;
             _contextId = contextPayload.Id;
-            Frame = frame;
+            World = world;
         }
 
         /// <summary>
@@ -40,7 +42,7 @@ namespace PuppeteerSharp
         /// <remarks>
         /// NOTE Not every execution context is associated with a frame. For example, workers and extensions have execution contexts that are not associated with frames.
         /// </remarks>
-        public Frame Frame { get; }
+        public Frame Frame => World?.Frame;
 
         /// <summary>
         /// Executes a script in browser context

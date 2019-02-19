@@ -38,7 +38,6 @@ namespace PuppeteerSharp
     {
         private readonly bool _ignoreHTTPSErrors;
         private NetworkManager _networkManager;
-        private FrameManager _frameManager;
         private readonly TaskQueue _screenshotTaskQueue;
         private readonly EmulationManager _emulationManager;
         private readonly Dictionary<string, Delegate> _pageBindings;
@@ -208,8 +207,8 @@ namespace PuppeteerSharp
         /// </summary>
         public int DefaultNavigationTimeout
         {
-            get => _frameManager.DefaultNavigationTimeout;
-            set => _frameManager.DefaultNavigationTimeout = value;
+            get => FrameManager.DefaultNavigationTimeout;
+            set => FrameManager.DefaultNavigationTimeout = value;
         }
 
         /// <summary>
@@ -224,13 +223,13 @@ namespace PuppeteerSharp
         /// <remarks>
         /// Page is guaranteed to have a main frame which persists during navigations.
         /// </remarks>
-        public Frame MainFrame => _frameManager.MainFrame;
+        public Frame MainFrame => FrameManager.MainFrame;
 
         /// <summary>
         /// Gets all frames attached to the page.
         /// </summary>
         /// <value>An array of all frames attached to the page.</value>
-        public Frame[] Frames => _frameManager.GetFrames();
+        public Frame[] Frames => FrameManager.GetFrames();
 
         /// <summary>
         /// Gets all workers in the page.
@@ -319,6 +318,8 @@ namespace PuppeteerSharp
 
         internal bool JavascriptEnabled { get; set; } = true;
         internal bool HasPopupEventListeners => Popup?.GetInvocationList().Any() == true;
+        internal FrameManager FrameManager { get; private set; }
+
         #endregion
 
         #region Public Methods
@@ -717,7 +718,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>Task which resolves to the HTML content.</returns>
         /// <seealso cref="Frame.GetContentAsync"/>
-        public Task<string> GetContentAsync() => _frameManager.MainFrame.GetContentAsync();
+        public Task<string> GetContentAsync() => FrameManager.MainFrame.GetContentAsync();
 
         /// <summary>
         /// Sets the HTML markup to the page
@@ -726,7 +727,7 @@ namespace PuppeteerSharp
         /// <param name="options">The navigations options</param>
         /// <returns>Task.</returns>
         /// <seealso cref="Frame.SetContentAsync(string, NavigationOptions)"/>
-        public Task SetContentAsync(string html, NavigationOptions options = null) => _frameManager.MainFrame.SetContentAsync(html);
+        public Task SetContentAsync(string html, NavigationOptions options = null) => FrameManager.MainFrame.SetContentAsync(html);
 
         /// <summary>
         /// Navigates to an url
@@ -735,7 +736,7 @@ namespace PuppeteerSharp
         /// <param name="options">Navigation parameters.</param>
         /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.</returns>
         /// <seealso cref="GoToAsync(string, int?, WaitUntilNavigation[])"/>
-        public Task<Response> GoToAsync(string url, NavigationOptions options) => _frameManager.MainFrame.GoToAsync(url, options);
+        public Task<Response> GoToAsync(string url, NavigationOptions options) => FrameManager.MainFrame.GoToAsync(url, options);
 
         /// <summary>
         /// Navigates to an url
@@ -1162,7 +1163,7 @@ namespace PuppeteerSharp
         /// <seealso cref="EvaluateFunctionAsync{T}(string, object[])"/>
         /// <returns>Task which resolves to script return value</returns>
         public Task<JToken> EvaluateExpressionAsync(string script)
-            => _frameManager.MainFrame.EvaluateExpressionAsync<JToken>(script);
+            => FrameManager.MainFrame.EvaluateExpressionAsync<JToken>(script);
 
         /// <summary>
         /// Executes a script in browser context
@@ -1175,7 +1176,7 @@ namespace PuppeteerSharp
         /// <seealso cref="EvaluateFunctionAsync{T}(string, object[])"/>
         /// <returns>Task which resolves to script return value</returns>
         public Task<T> EvaluateExpressionAsync<T>(string script)
-            => _frameManager.MainFrame.EvaluateExpressionAsync<T>(script);
+            => FrameManager.MainFrame.EvaluateExpressionAsync<T>(script);
 
         /// <summary>
         /// Executes a function in browser context
@@ -1189,7 +1190,7 @@ namespace PuppeteerSharp
         /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
         /// <returns>Task which resolves to script return value</returns>
         public Task<JToken> EvaluateFunctionAsync(string script, params object[] args)
-            => _frameManager.MainFrame.EvaluateFunctionAsync<JToken>(script, args);
+            => FrameManager.MainFrame.EvaluateFunctionAsync<JToken>(script, args);
 
         /// <summary>
         /// Executes a function in browser context
@@ -1204,7 +1205,7 @@ namespace PuppeteerSharp
         /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
         /// <returns>Task which resolves to script return value</returns>
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
-            => _frameManager.MainFrame.EvaluateFunctionAsync<T>(script, args);
+            => FrameManager.MainFrame.EvaluateFunctionAsync<T>(script, args);
 
         /// <summary>
         /// Sets the user agent to be used in this page
@@ -1400,7 +1401,7 @@ namespace PuppeteerSharp
         /// ]]>
         /// </code>
         /// </example>
-        public Task<Response> WaitForNavigationAsync(NavigationOptions options = null) => _frameManager.WaitForFrameNavigationAsync(_frameManager.MainFrame, options);
+        public Task<Response> WaitForNavigationAsync(NavigationOptions options = null) => FrameManager.WaitForFrameNavigationAsync(FrameManager.MainFrame, options);
 
         /// <summary>
         /// Waits for a request.
@@ -1562,7 +1563,7 @@ namespace PuppeteerSharp
                     Enabled = true
                 }),
                 client.SendAsync("Network.enable", null),
-                client.SendAsync("Runtime.enable", null),
+                client.SendAsync("Runtime.enable", null).ContinueWith(t => page.FrameManager.EnsureSecondaryDOMWorldAsync()),
                 client.SendAsync("Security.enable", null),
                 client.SendAsync("Performance.enable", null),
                 client.SendAsync("Log.enable", null)
@@ -1587,12 +1588,12 @@ namespace PuppeteerSharp
         private async Task InitializeAsync(FrameTree frameTree)
         {
             _networkManager = new NetworkManager(Client);
-            _frameManager = await FrameManager.CreateFrameManagerAsync(Client, this, _networkManager, frameTree).ConfigureAwait(false);
-            _networkManager.FrameManager = _frameManager;
+            FrameManager = await FrameManager.CreateFrameManagerAsync(Client, this, _networkManager, frameTree).ConfigureAwait(false);
+            _networkManager.FrameManager = FrameManager;
 
-            _frameManager.FrameAttached += (sender, e) => FrameAttached?.Invoke(this, e);
-            _frameManager.FrameDetached += (sender, e) => FrameDetached?.Invoke(this, e);
-            _frameManager.FrameNavigated += (sender, e) => FrameNavigated?.Invoke(this, e);
+            FrameManager.FrameAttached += (sender, e) => FrameAttached?.Invoke(this, e);
+            FrameManager.FrameDetached += (sender, e) => FrameDetached?.Invoke(this, e);
+            FrameManager.FrameNavigated += (sender, e) => FrameNavigated?.Invoke(this, e);
 
             _networkManager.Request += (sender, e) => Request?.Invoke(this, e);
             _networkManager.RequestFailed += (sender, e) => RequestFailed?.Invoke(this, e);
@@ -2052,7 +2053,7 @@ namespace PuppeteerSharp
             {
                 return Task.CompletedTask;
             }
-            var ctx = _frameManager.ExecutionContextById(message.ExecutionContextId);
+            var ctx = FrameManager.ExecutionContextById(message.ExecutionContextId);
             var values = message.Args.Select(ctx.CreateJSHandle).ToArray();
 
             return AddConsoleMessageAsync(message.Type, values, message.StackTrace);

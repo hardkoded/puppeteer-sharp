@@ -10,19 +10,18 @@ namespace PuppeteerSharp
     internal class DOMWorld
     {
         private readonly FrameManager _frameManager;
-        private readonly Frame _frame;
-
         private bool _detached;
 
         private TaskCompletionSource<ExecutionContext> _contextResolveTaskWrapper;
         private TaskCompletionSource<ElementHandle> _documentCompletionSource;
 
         internal List<WaitTask> WaitTasks;
+        internal Frame Frame { get; }
 
         public DOMWorld(FrameManager frameManager, Frame frame)
         {
             _frameManager = frameManager;
-            _frame = frame;
+            Frame = frame;
 
             SetContext(null);
 
@@ -60,7 +59,7 @@ namespace PuppeteerSharp
         {
             if (_detached)
             {
-                throw new PuppeteerException($"Execution Context is not available in detached frame \"{_frame.Url}\"(are you trying to evaluate?)");
+                throw new PuppeteerException($"Execution Context is not available in detached frame \"{Frame.Url}\"(are you trying to evaluate?)");
             }
             return _contextResolveTaskWrapper.Task;
         }
@@ -142,7 +141,7 @@ namespace PuppeteerSharp
                 document.close();
             }", html).ConfigureAwait(false);
 
-            var watcher = new LifecycleWatcher(_frameManager, _frame, waitUntil, timeout);
+            var watcher = new LifecycleWatcher(_frameManager, Frame, waitUntil, timeout);
             var watcherTask = await Task.WhenAny(
                 watcher.TimeoutOrTerminationTask,
                 watcher.LifecycleTask).ConfigureAwait(false);
@@ -332,18 +331,6 @@ namespace PuppeteerSharp
             await handle.DisposeAsync().ConfigureAwait(false);
         }
 
-        internal Task<ElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
-            => WaitForSelectorOrXPathAsync(selector, false, options);
-
-        internal Task<ElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
-            => WaitForSelectorOrXPathAsync(xpath, true, options);
-
-        internal Task<JSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args)
-            => new WaitTask(this, script, false, "function", options.Polling, options.PollingInterval, options.Timeout, args).Task;
-
-        internal Task<JSHandle> WaitForExpressionAsync(string script, WaitForFunctionOptions options)
-            => new WaitTask(this, script, true, "function", options.Polling, options.PollingInterval, options.Timeout).Task;
-
         internal Task<string> GetTitleAsync() => EvaluateExpressionAsync<string>("document.title");
 
         private async Task<ElementHandle> GetDocument()
@@ -356,49 +343,6 @@ namespace PuppeteerSharp
                 _documentCompletionSource.TrySetResult(document as ElementHandle);
             }
             return await _documentCompletionSource.Task.ConfigureAwait(false);
-        }
-
-        private async Task<ElementHandle> WaitForSelectorOrXPathAsync(string selectorOrXPath, bool isXPath, WaitForSelectorOptions options = null)
-        {
-            options = options ?? new WaitForSelectorOptions();
-            const string predicate = @"
-              function predicate(selectorOrXPath, isXPath, waitForVisible, waitForHidden) {
-                const node = isXPath
-                  ? document.evaluate(selectorOrXPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue
-                  : document.querySelector(selectorOrXPath);
-                if (!node)
-                  return waitForHidden;
-                if (!waitForVisible && !waitForHidden)
-                  return node;
-                const element = node.nodeType === Node.TEXT_NODE ? node.parentElement : node;
-
-                const style = window.getComputedStyle(element);
-                const isVisible = style && style.visibility !== 'hidden' && hasVisibleBoundingBox();
-                const success = (waitForVisible === isVisible || waitForHidden === !isVisible);
-                return success ? node : null;
-
-                function hasVisibleBoundingBox() {
-                  const rect = element.getBoundingClientRect();
-                  return !!(rect.top || rect.bottom || rect.width || rect.height);
-                }
-              }";
-            var polling = options.Visible || options.Hidden ? WaitForFunctionPollingOption.Raf : WaitForFunctionPollingOption.Mutation;
-            var handle = await new WaitTask(
-                this,
-                predicate,
-                false,
-                $"{(isXPath ? "XPath" : "selector")} '{selectorOrXPath}'{(options.Hidden ? " to be hidden" : "")}",
-                options.Polling,
-                options.PollingInterval,
-                options.Timeout,
-                new object[]
-                {
-                    selectorOrXPath,
-                    isXPath,
-                    options.Visible,
-                    options.Hidden
-                }).Task.ConfigureAwait(false);
-            return handle as ElementHandle;
         }
     }
 }
