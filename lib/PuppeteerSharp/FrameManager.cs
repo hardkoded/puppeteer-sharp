@@ -390,7 +390,7 @@ namespace PuppeteerSharp
             _isolatedWorlds.Add(name);
             await Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new PageAddScriptToEvaluateOnNewDocumentRequest
             {
-                Source = $"//# sourceURL=${ExecutionContext.EvaluationScriptUrl}",
+                Source = $"//# sourceURL={ExecutionContext.EvaluationScriptUrl}",
                 WorldName = name,
             });
             await Task.WhenAll(GetFrames().Select(frame => Client.SendAsync("Page.createIsolatedWorld", new PageCreateIsolatedWorldRequest
