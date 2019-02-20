@@ -254,7 +254,7 @@ namespace PuppeteerSharp
         /// <seealso cref="Page.WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
         /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
         public Task<ElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
-            => WaitForSelectorOrXPathAsync(selector, false, options);
+            => MainWorld.WaitForSelectorAsync(selector, options);
 
         /// <summary>
         /// Waits for a selector to be added to the DOM
@@ -284,7 +284,7 @@ namespace PuppeteerSharp
         /// <seealso cref="Page.WaitForXPathAsync(string, WaitForSelectorOptions)"/>
         /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
         public Task<ElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
-            => WaitForSelectorOrXPathAsync(xpath, true, options);
+            => MainWorld.WaitForXPathAsync(xpath, options);
 
         /// <summary>
         /// Waits for a function to be evaluated to a truthy value
@@ -296,7 +296,7 @@ namespace PuppeteerSharp
         /// <seealso cref="Page.WaitForFunctionAsync(string, WaitForFunctionOptions, object[])"/>
         /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
         public Task<JSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args)
-            => new WaitTask(this, script, false, "function", options.Polling, options.PollingInterval, options.Timeout, args).Task;
+           => MainWorld.WaitForFunctionAsync(script, options, args);
 
         /// <summary>
         /// Waits for an expression to be evaluated to a truthy value
@@ -307,50 +307,8 @@ namespace PuppeteerSharp
         /// <seealso cref="Page.WaitForExpressionAsync(string, WaitForFunctionOptions)"/>
         /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
         public Task<JSHandle> WaitForExpressionAsync(string script, WaitForFunctionOptions options)
-            => new WaitTask(this, script, true, "function", options.Polling, options.PollingInterval, options.Timeout).Task;
+            => MainWorld.WaitForExpressionAsync(script, options);
 
-        private async Task<ElementHandle> WaitForSelectorOrXPathAsync(string selectorOrXPath, bool isXPath, WaitForSelectorOptions options = null)
-        {
-            options = options ?? new WaitForSelectorOptions();
-            const string predicate = @"
-              function predicate(selectorOrXPath, isXPath, waitForVisible, waitForHidden) {
-                const node = isXPath
-                  ? document.evaluate(selectorOrXPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue
-                  : document.querySelector(selectorOrXPath);
-                if (!node)
-                  return waitForHidden;
-                if (!waitForVisible && !waitForHidden)
-                  return node;
-                const element = node.nodeType === Node.TEXT_NODE ? node.parentElement : node;
-
-                const style = window.getComputedStyle(element);
-                const isVisible = style && style.visibility !== 'hidden' && hasVisibleBoundingBox();
-                const success = (waitForVisible === isVisible || waitForHidden === !isVisible);
-                return success ? node : null;
-
-                function hasVisibleBoundingBox() {
-                  const rect = element.getBoundingClientRect();
-                  return !!(rect.top || rect.bottom || rect.width || rect.height);
-                }
-              }";
-            var polling = options.Visible || options.Hidden ? WaitForFunctionPollingOption.Raf : WaitForFunctionPollingOption.Mutation;
-            var handle = await new WaitTask(
-                this,
-                predicate,
-                false,
-                $"{(isXPath ? "XPath" : "selector")} '{selectorOrXPath}'{(options.Hidden ? " to be hidden" : "")}",
-                options.Polling,
-                options.PollingInterval,
-                options.Timeout,
-                new object[]
-                {
-                    selectorOrXPath,
-                    isXPath,
-                    options.Visible,
-                    options.Hidden
-                }).Task.ConfigureAwait(false);
-            return handle as ElementHandle;
-        }
 
         /// <summary>
         /// Triggers a change and input event once all the provided options have been selected. 
