@@ -248,7 +248,7 @@ namespace PuppeteerSharp
             var frame = !string.IsNullOrEmpty(frameId) ? await GetFrameAsync(frameId).ConfigureAwait(false) : null;
             DOMWorld world = null;
 
-            if (frame == null)
+            if (frame != null)
             {
                 if (contextPayload.AuxData?.IsDefault == true)
                 {
