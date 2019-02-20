@@ -10,19 +10,17 @@ namespace PuppeteerSharp
     internal class DOMWorld
     {
         private readonly FrameManager _frameManager;
-        private readonly Frame _frame;
-
         private bool _detached;
-
         private TaskCompletionSource<ExecutionContext> _contextResolveTaskWrapper;
         private TaskCompletionSource<ElementHandle> _documentCompletionSource;
 
         internal List<WaitTask> WaitTasks;
+        internal Frame Frame { get; }
 
         public DOMWorld(FrameManager frameManager, Frame frame)
         {
             _frameManager = frameManager;
-            _frame = frame;
+            Frame = frame;
 
             SetContext(null);
 
@@ -60,7 +58,7 @@ namespace PuppeteerSharp
         {
             if (_detached)
             {
-                throw new PuppeteerException($"Execution Context is not available in detached frame \"{_frame.Url}\"(are you trying to evaluate?)");
+                throw new PuppeteerException($"Execution Context is not available in detached frame \"{Frame.Url}\"(are you trying to evaluate?)");
             }
             return _contextResolveTaskWrapper.Task;
         }
@@ -142,7 +140,7 @@ namespace PuppeteerSharp
                 document.close();
             }", html).ConfigureAwait(false);
 
-            var watcher = new LifecycleWatcher(_frameManager, _frame, waitUntil, timeout);
+            var watcher = new LifecycleWatcher(_frameManager, Frame, waitUntil, timeout);
             var watcherTask = await Task.WhenAny(
                 watcher.TimeoutOrTerminationTask,
                 watcher.LifecycleTask).ConfigureAwait(false);
