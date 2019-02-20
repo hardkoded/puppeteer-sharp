@@ -309,7 +309,6 @@ namespace PuppeteerSharp
         public Task<JSHandle> WaitForExpressionAsync(string script, WaitForFunctionOptions options)
             => MainWorld.WaitForExpressionAsync(script, options);
 
-
         /// <summary>
         /// Triggers a change and input event once all the provided options have been selected. 
         /// If there's no <![CDATA[<select>]]> element matching selector, the method throws an error.
