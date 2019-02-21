@@ -93,20 +93,21 @@ namespace PuppeteerSharp.Helpers
         private static async Task<bool> TimeoutTask(Task task, int milliseconds)
         {
             var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-            var cancellationToken = new CancellationTokenSource();
-
-            if (milliseconds > 0)
+            using (var cancellationToken = new CancellationTokenSource())
             {
-                cancellationToken.CancelAfter(milliseconds);
-            }
-            using (cancellationToken.Token.Register(s => ((TaskCompletionSource<bool>)s).TrySetResult(true), tcs))
-            {
-                if (task != await Task.WhenAny(task, tcs.Task))
+                if (milliseconds > 0)
                 {
-                    return true;
+                    cancellationToken.CancelAfter(milliseconds);
                 }
+                using (cancellationToken.Token.Register(s => ((TaskCompletionSource<bool>)s).TrySetResult(true), tcs))
+                {
+                    if (task != await Task.WhenAny(task, tcs.Task))
+                    {
+                        return true;
+                    }
+                }
+                return false;
             }
-            return false;
         }
     }
 }
