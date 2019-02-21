@@ -9,17 +9,7 @@ namespace PuppeteerSharp.Helpers
         private readonly ConcurrentDictionary<TKey, List<TValue>> _map = new ConcurrentDictionary<TKey, List<TValue>>();
 
         internal void Add(TKey key, TValue value)
-        {
-            if (_map.TryGetValue(key, out var set))
-            {
-                set.Add(value);
-            }
-            else
-            {
-                set = new List<TValue> { value };
-                _map.TryAdd(key, set);
-            }
-        }
+            => _map.GetOrAdd(key, k => new List<TValue>()).Add(value);
 
         internal List<TValue> Get(TKey key)
             => _map.TryGetValue(key, out var set) ? set : new List<TValue>();
