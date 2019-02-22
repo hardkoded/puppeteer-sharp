@@ -397,8 +397,8 @@ namespace PuppeteerSharp
                 predicate,
                 false,
                 $"{(isXPath ? "XPath" : "selector")} '{selectorOrXPath}'{(options.Hidden ? " to be hidden" : "")}",
-                options.Polling,
-                options.PollingInterval,
+                polling,
+                null,
                 options.Timeout,
                 new object[]
                 {
