@@ -153,6 +153,15 @@ namespace PuppeteerSharp.Tests.InputTests
         }
 
         [Fact]
+        public async Task ShouldClickTheButtonIfWindowNodeIsRemoved()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
+            await Page.EvaluateExpressionAsync("delete window.Node");
+            await Page.ClickAsync("button");
+            Assert.Equal("Clicked", await Page.EvaluateExpressionAsync("result"));
+        }
+
+        [Fact]
         public async Task ShouldClickTheButtonAfterNavigation()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
@@ -450,6 +459,15 @@ namespace PuppeteerSharp.Tests.InputTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
             await Page.ClickAsync("#button-8", new ClickOptions { Button = MouseButton.Right });
             Assert.Equal("context menu", await Page.EvaluateExpressionAsync<string>("document.querySelector('#button-8').textContent"));
+        }
+
+        [Fact]
+        public async Task ShouldTriggerHoverStateWithRemovedWindowNode()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
+            await Page.EvaluateExpressionAsync("delete window.Node");
+            await Page.HoverAsync("#button-6");
+            Assert.Equal("button-6", await Page.EvaluateExpressionAsync("document.querySelector('button:hover').id"));
         }
 
         [Fact]

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Input;
 
 namespace PuppeteerSharp
 {
@@ -386,6 +387,52 @@ namespace PuppeteerSharp
         /// <returns>page's title</returns>
         /// <seealso cref="Page.GetTitleAsync"/>
         public Task<string> GetTitleAsync() => SecondaryWorld.GetTitleAsync();
+
+        /// <summary>
+        /// Fetches an element with <paramref name="selector"/>, scrolls it into view if needed, and then uses <see cref="Page.Mouse"/> to click in the center of the element.
+        /// </summary>
+        /// <param name="selector">A selector to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.</param>
+        /// <param name="options">click options</param>
+        /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
+        /// <returns>Task which resolves when the element matching <paramref name="selector"/> is successfully clicked</returns>
+        public Task ClickAsync(string selector, ClickOptions options = null)
+            => SecondaryWorld.ClickAsync(selector, options);
+
+        /// <summary>
+        /// Fetches an element with <paramref name="selector"/>, scrolls it into view if needed, and then uses <see cref="Page.Mouse"/> to hover over the center of the element.
+        /// </summary>
+        /// <param name="selector">A selector to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered.</param>
+        /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
+        /// <returns>Task which resolves when the element matching <paramref name="selector"/> is successfully hovered</returns>
+        public Task HoverAsync(string selector) => SecondaryWorld.HoverAsync(selector);
+
+        /// <summary>
+        /// Fetches an element with <paramref name="selector"/> and focuses it
+        /// </summary>
+        /// <param name="selector">A selector to search for element to focus. If there are multiple elements satisfying the selector, the first will be focused.</param>
+        /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
+        /// <returns>Task which resolves when the element matching <paramref name="selector"/> is successfully focused</returns>
+        public Task FocusAsync(string selector) => SecondaryWorld.FocusAsync(selector);
+
+        /// <summary>
+        /// Sends a <c>keydown</c>, <c>keypress</c>/<c>input</c>, and <c>keyup</c> event for each character in the text.
+        /// </summary>
+        /// <param name="selector">A selector of an element to type into. If there are multiple elements satisfying the selector, the first will be used.</param>
+        /// <param name="text">A text to type into a focused element</param>
+        /// <param name="options"></param>
+        /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
+        /// <remarks>
+        /// To press a special key, like <c>Control</c> or <c>ArrowDown</c> use <see cref="Keyboard.PressAsync(string, PressOptions)"/>
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// page.TypeAsync("#mytextarea", "Hello"); // Types instantly
+        /// page.TypeAsync("#mytextarea", "World", new TypeOptions { Delay = 100 }); // Types slower, like a user
+        /// </code>
+        /// </example>
+        /// <returns>Task</returns>
+        public Task TypeAsync(string selector, string text, TypeOptions options = null)
+             => SecondaryWorld.TypeAsync(selector, text, options);
 
         internal void OnLoadingStopped()
         {
