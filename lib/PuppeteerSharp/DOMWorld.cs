@@ -291,6 +291,17 @@ namespace PuppeteerSharp
             await handle.DisposeAsync().ConfigureAwait(false);
         }
 
+        internal async Task FocusAsync(string selector)
+        {
+            var handle = await QuerySelectorAsync(selector).ConfigureAwait(false);
+            if (handle == null)
+            {
+                throw new SelectorException($"No node found for selector: {selector}", selector);
+            }
+            await handle.FocusAsync().ConfigureAwait(false);
+            await handle.DisposeAsync().ConfigureAwait(false);
+        }
+
         internal Task<string[]> SelectAsync(string selector, params string[] values)
             => QuerySelectorAsync(selector).EvaluateFunctionAsync<string[]>(@"(element, values) => {
                 if (element.nodeName.toLowerCase() !== 'select')

@@ -1108,16 +1108,7 @@ namespace PuppeteerSharp
         /// <param name="options">click options</param>
         /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
         /// <returns>Task which resolves when the element matching <paramref name="selector"/> is successfully clicked</returns>
-        public async Task ClickAsync(string selector, ClickOptions options = null)
-        {
-            var handle = await QuerySelectorAsync(selector).ConfigureAwait(false);
-            if (handle == null)
-            {
-                throw new SelectorException($"No node found for selector: {selector}", selector);
-            }
-            await handle.ClickAsync(options).ConfigureAwait(false);
-            await handle.DisposeAsync().ConfigureAwait(false);
-        }
+        public Task ClickAsync(string selector, ClickOptions options = null) => FrameManager.MainFrame.ClickAsync(selector, options);
 
         /// <summary>
         /// Fetches an element with <paramref name="selector"/>, scrolls it into view if needed, and then uses <see cref="Page.Mouse"/> to hover over the center of the element.
@@ -1125,16 +1116,7 @@ namespace PuppeteerSharp
         /// <param name="selector">A selector to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered.</param>
         /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
         /// <returns>Task which resolves when the element matching <paramref name="selector"/> is successfully hovered</returns>
-        public async Task HoverAsync(string selector)
-        {
-            var handle = await QuerySelectorAsync(selector).ConfigureAwait(false);
-            if (handle == null)
-            {
-                throw new SelectorException($"No node found for selector: {selector}", selector);
-            }
-            await handle.HoverAsync().ConfigureAwait(false);
-            await handle.DisposeAsync().ConfigureAwait(false);
-        }
+        public Task HoverAsync(string selector) => FrameManager.MainFrame.HoverAsync(selector);
 
         /// <summary>
         /// Fetches an element with <paramref name="selector"/> and focuses it
@@ -1142,16 +1124,7 @@ namespace PuppeteerSharp
         /// <param name="selector">A selector to search for element to focus. If there are multiple elements satisfying the selector, the first will be focused.</param>
         /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
         /// <returns>Task which resolves when the element matching <paramref name="selector"/> is successfully focused</returns>
-        public async Task FocusAsync(string selector)
-        {
-            var handle = await QuerySelectorAsync(selector).ConfigureAwait(false);
-            if (handle == null)
-            {
-                throw new SelectorException($"No node found for selector: {selector}", selector);
-            }
-            await handle.FocusAsync().ConfigureAwait(false);
-            await handle.DisposeAsync().ConfigureAwait(false);
-        }
+        public Task FocusAsync(string selector) => FrameManager.MainFrame.FocusAsync(selector);
 
         /// <summary>
         /// Executes a script in browser context
@@ -1191,6 +1164,34 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to script return value</returns>
         public Task<JToken> EvaluateFunctionAsync(string script, params object[] args)
             => FrameManager.MainFrame.EvaluateFunctionAsync<JToken>(script, args);
+
+        /// <summary>
+        /// Sends a <c>keydown</c>, <c>keypress</c>/<c>input</c>, and <c>keyup</c> event for each character in the text.
+        /// </summary>
+        /// <param name="selector">A selector of an element to type into. If there are multiple elements satisfying the selector, the first will be used.</param>
+        /// <param name="text">A text to type into a focused element</param>
+        /// <param name="options"></param>
+        /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
+        /// <remarks>
+        /// To press a special key, like <c>Control</c> or <c>ArrowDown</c> use <see cref="Keyboard.PressAsync(string, PressOptions)"/>
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// page.TypeAsync("#mytextarea", "Hello"); // Types instantly
+        /// page.TypeAsync("#mytextarea", "World", new TypeOptions { Delay = 100 }); // Types slower, like a user
+        /// </code>
+        /// </example>
+        /// <returns>Task</returns>
+        public async Task TypeAsync(string selector, string text, TypeOptions options = null)
+        {
+            var handle = await QuerySelectorAsync(selector).ConfigureAwait(false);
+            if (handle == null)
+            {
+                throw new SelectorException($"No node found for selector: {selector}", selector);
+            }
+            await handle.TypeAsync(text, options).ConfigureAwait(false);
+            await handle.DisposeAsync().ConfigureAwait(false);
+        }
 
         /// <summary>
         /// Executes a function in browser context
@@ -1273,34 +1274,6 @@ namespace PuppeteerSharp
         /// <seealso cref="Frame.SelectAsync(string, string[])"/>
         public Task<string[]> SelectAsync(string selector, params string[] values)
             => MainFrame.SelectAsync(selector, values);
-
-        /// <summary>
-        /// Sends a <c>keydown</c>, <c>keypress</c>/<c>input</c>, and <c>keyup</c> event for each character in the text.
-        /// </summary>
-        /// <param name="selector">A selector of an element to type into. If there are multiple elements satisfying the selector, the first will be used.</param>
-        /// <param name="text">A text to type into a focused element</param>
-        /// <param name="options"></param>
-        /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
-        /// <remarks>
-        /// To press a special key, like <c>Control</c> or <c>ArrowDown</c> use <see cref="Keyboard.PressAsync(string, PressOptions)"/>
-        /// </remarks>
-        /// <example>
-        /// <code>
-        /// page.TypeAsync("#mytextarea", "Hello"); // Types instantly
-        /// page.TypeAsync("#mytextarea", "World", new TypeOptions { Delay = 100 }); // Types slower, like a user
-        /// </code>
-        /// </example>
-        /// <returns>Task</returns>
-        public async Task TypeAsync(string selector, string text, TypeOptions options = null)
-        {
-            var handle = await QuerySelectorAsync(selector).ConfigureAwait(false);
-            if (handle == null)
-            {
-                throw new SelectorException($"No node found for selector: {selector}", selector);
-            }
-            await handle.TypeAsync(text, options).ConfigureAwait(false);
-            await handle.DisposeAsync().ConfigureAwait(false);
-        }
 
         /// <summary>
         /// Waits for a timeout
