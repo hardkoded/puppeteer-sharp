@@ -407,7 +407,13 @@ namespace PuppeteerSharp
                     options.Visible,
                     options.Hidden
                 }).Task.ConfigureAwait(false);
-            return handle as ElementHandle;
+
+            if (!(handle is ElementHandle elementHandle))
+            {
+                await handle?.DisposeAsync();
+                return null;
+            }
+            return elementHandle;
         }
     }
 }
