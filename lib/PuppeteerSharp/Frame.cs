@@ -246,8 +246,18 @@ namespace PuppeteerSharp
         /// <seealso cref="WaitForXPathAsync(string, WaitForSelectorOptions)"/>
         /// <seealso cref="Page.WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
         /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
-        public Task<ElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
-            => MainWorld.WaitForSelectorAsync(selector, options);
+        public async Task<ElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
+        {
+            var handle = await SecondaryWorld.WaitForSelectorAsync(selector, options).ConfigureAwait(false);
+            if (handle == null)
+            {
+                return null;
+            }
+            var mainExecutionContext = await MainWorld.GetExecutionContextAsync().ConfigureAwait(false);
+            var result = await mainExecutionContext.AdoptElementHandleASync(handle);
+            await handle.DisposeAsync().ConfigureAwait(false);
+            return result;
+        }
 
         /// <summary>
         /// Waits for a selector to be added to the DOM
@@ -277,8 +287,18 @@ namespace PuppeteerSharp
         /// <seealso cref="WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
         /// <seealso cref="Page.WaitForXPathAsync(string, WaitForSelectorOptions)"/>
         /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
-        public Task<ElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
-            => MainWorld.WaitForXPathAsync(xpath, options);
+        public async Task<ElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
+        {
+            var handle = await SecondaryWorld.WaitForXPathAsync(xpath, options).ConfigureAwait(false);
+            if (handle == null)
+            {
+                return null;
+            }
+            var mainExecutionContext = await MainWorld.GetExecutionContextAsync().ConfigureAwait(false);
+            var result = await mainExecutionContext.AdoptElementHandleASync(handle);
+            await handle.DisposeAsync().ConfigureAwait(false);
+            return result;
+        }
 
         /// <summary>
         /// Waits for a timeout
