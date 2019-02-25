@@ -20,7 +20,7 @@ await page.ScreenshotAsync(outputFile);
 You can also change the view port before generating the screenshot
 
 ```cs
-await page.SetViewport(new ViewPortOptions
+await page.SetViewportAsync(new ViewPortOptions
 {
     Width = 500,
     Height = 500
