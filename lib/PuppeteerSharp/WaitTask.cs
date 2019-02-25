@@ -194,6 +194,7 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
 
             if (exception?.Message.Contains("Execution context was destroyed") == true)
             {
+                _ = Rerun();
                 return;
             }
 
