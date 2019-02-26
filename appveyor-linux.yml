@@ -40,7 +40,7 @@ test_script:
 
     cd lib/PuppeteerSharp.Tests
 
-    dotnet test -f $framework -s test.runsettings
+    dotnet test -f $framework -s test.runsettings --filter FullyQualifiedName~ShouldRejectWaitForSelectorWhenBrowserCloses
 
 cache:
   - $HOME/.nuget/packages
