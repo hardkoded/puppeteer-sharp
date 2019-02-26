@@ -666,7 +666,7 @@ namespace PuppeteerSharp.Tests.InputTests
                 Timeout = 1000
             };
 
-           Task WaitForScrollPointAsync(DomPointInternal point)
+            Task WaitForScrollPointAsync(DomPointInternal point)
                 => Page.WaitForFunctionAsync(
                     @"(x, y) => document.body.scrollLeft === x && document.body.scrollTop === y",
                     waitForFunctionOptions,
@@ -710,34 +710,18 @@ namespace PuppeteerSharp.Tests.InputTests
                 DeltaY = deltaY;
             }
 
-            public decimal DeltaX
-            {
-                get;
-                set;
-            }
+            public decimal DeltaX { get; set; }
 
-            public decimal DeltaY
-            {
-                get;
-                set;
-            }
+            public decimal DeltaY { get; set; }
 
             public override string ToString() => $"({DeltaX}, {DeltaY})";
         }
 
         internal struct DomPointInternal
         {
-            public decimal X
-            {
-                get;
-                set;
-            }
+            public decimal X { get; set; }
 
-            public decimal Y
-            {
-                get;
-                set;
-            }
+            public decimal Y { get; set; }
 
             public override string ToString() => $"({X}, {Y})";
 
