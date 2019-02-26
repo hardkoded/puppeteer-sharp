@@ -125,7 +125,7 @@ namespace PuppeteerSharp
         /// <exception cref="PuppeteerSharp.PuppeteerException"></exception>
         public async Task<JObject> SendAsync(string method, object args = null, bool waitForCallback = true)
         {
-            if (Connection?.IsClosed != false)
+            if (Connection == null)
             {
                 throw new PuppeteerException(
                     $"Protocol error ({method}): Session closed. " +
