@@ -53,4 +53,7 @@
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.0.2" />
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.1" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Helpers\Json\" />
+  </ItemGroup>
 </Project>

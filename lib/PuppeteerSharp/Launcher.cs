@@ -4,6 +4,8 @@ using System.Linq;
 using System.IO;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Messaging;
+using System.Net.Http;
+using Newtonsoft.Json;
 
 namespace PuppeteerSharp
 {
@@ -86,9 +88,18 @@ namespace PuppeteerSharp
         {
             EnsureSingleLaunchOrConnect();
 
+            if (!string.IsNullOrEmpty(options.BrowserURL) && !string.IsNullOrEmpty(options.BrowserWSEndpoint))
+            {
+                throw new PuppeteerException("Exactly one of browserWSEndpoint or browserURL must be passed to puppeteer.connect");
+            }
+
             try
             {
-                var connection = await Connection.Create(options.BrowserWSEndpoint, options, _loggerFactory).ConfigureAwait(false);
+                var browserWSEndpoint = string.IsNullOrEmpty(options.BrowserURL)
+                    ? options.BrowserWSEndpoint
+                    : await GetWSEndpointAsync(options.BrowserURL).ConfigureAwait(false);
+
+                var connection = await Connection.Create(browserWSEndpoint, options, _loggerFactory).ConfigureAwait(false);
                 var response = await connection.SendAsync<GetBrowserContextsResponse>("Target.getBrowserContexts");
                 return await Browser
                     .CreateAsync(connection, response.BrowserContextIds, options.IgnoreHTTPSErrors, options.DefaultViewport, null)
@@ -97,6 +108,25 @@ namespace PuppeteerSharp
             catch (Exception ex)
             {
                 throw new ChromiumProcessException("Failed to create connection", ex);
+            }
+        }
+
+        private async Task<string> GetWSEndpointAsync(string browserURL)
+        {
+            try
+            {
+                if (Uri.TryCreate(new Uri(browserURL), "/json/version", out var endpointURL))
+                {
+                    var client = new HttpClient();
+                    var data = await client.GetStringAsync(endpointURL).ConfigureAwait(false);
+                    return JsonConvert.DeserializeObject<WSEndpointResponse>(data).WebSocketDebuggerUrl;
+                }
+
+                throw new PuppeteerException($"Invalid URL {browserURL}");
+            }
+            catch (Exception ex)
+            {
+                throw new PuppeteerException($"Failed to fetch browser webSocket url from {browserURL}.", ex);
             }
         }
 

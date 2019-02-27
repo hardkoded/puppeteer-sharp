@@ -10,5 +10,7 @@ namespace PuppeteerSharp.Messaging
         public decimal Y { get; set; }
         public int Modifiers { get; set; }
         public int ClickCount { get; set; }
+        public decimal DeltaX { get; set; }
+        public decimal DeltaY { get; set; }
     }
 }

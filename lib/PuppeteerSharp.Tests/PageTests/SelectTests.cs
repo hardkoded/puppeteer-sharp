@@ -112,7 +112,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 "select => Array.from(select.options).every(option => !option.selected)"));
         }
 
-        [Fact(Skip = "see https://github.com/GoogleChrome/puppeteer/issues/3327")]
+        [Fact]
         public async Task ShouldWorkWhenRedefiningTopLevelEventClass()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");

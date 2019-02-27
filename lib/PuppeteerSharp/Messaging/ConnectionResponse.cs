@@ -9,5 +9,6 @@ namespace PuppeteerSharp.Messaging
         public JObject Result { get; set; }
         public string Method { get; set; }
         public JToken Params { get; set; }
+        public string SessionId { get; set; }
     }
 }

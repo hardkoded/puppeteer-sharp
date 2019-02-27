@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
@@ -13,8 +14,8 @@ namespace PuppeteerSharp
         #region Private members
 
         private readonly CDPSession _client;
-        private readonly IDictionary<string, Request> _requestIdToRequest = new ConcurrentDictionary<string, Request>();
-        private readonly IDictionary<string, RequestWillBeSentPayload> _requestIdToRequestWillBeSentEvent =
+        private readonly ConcurrentDictionary<string, Request> _requestIdToRequest = new ConcurrentDictionary<string, Request>();
+        private readonly ConcurrentDictionary<string, RequestWillBeSentPayload> _requestIdToRequestWillBeSentEvent =
             new ConcurrentDictionary<string, RequestWillBeSentPayload>();
         private readonly MultiMap<string, string> _requestHashToRequestIds = new MultiMap<string, string>();
         private readonly MultiMap<string, string> _requestHashToInterceptionIds = new MultiMap<string, string>();
@@ -141,14 +142,14 @@ namespace PuppeteerSharp
             {
                 request.Failure = e.ErrorText;
                 request.Response?.BodyLoadedTaskWrapper.TrySetResult(true);
-                _requestIdToRequest.Remove(request.RequestId);
+                _requestIdToRequest.TryRemove(request.RequestId, out _);
 
                 if (request.InterceptionId != null)
                 {
                     _attemptedAuthentications.Remove(request.InterceptionId);
                 }
 
-                RequestFailed(this, new RequestEventArgs
+                RequestFailed?.Invoke(this, new RequestEventArgs
                 {
                     Request = request
                 });
@@ -162,7 +163,7 @@ namespace PuppeteerSharp
             if (_requestIdToRequest.TryGetValue(e.RequestId, out var request))
             {
                 request.Response?.BodyLoadedTaskWrapper.TrySetResult(true);
-                _requestIdToRequest.Remove(request.RequestId);
+                _requestIdToRequest.TryRemove(request.RequestId, out _);
 
                 if (request.InterceptionId != null)
                 {
@@ -248,13 +249,10 @@ namespace PuppeteerSharp
             var requestId = _requestHashToRequestIds.FirstValue(requestHash);
             if (requestId != null)
             {
-                _requestIdToRequestWillBeSentEvent.TryGetValue(requestId, out var requestWillBeSentEvent);
-
-                if (requestWillBeSentEvent != null)
+                if (_requestIdToRequestWillBeSentEvent.TryRemove(requestId, out var requestWillBeSentEvent))
                 {
                     await OnRequestAsync(requestWillBeSentEvent, e.InterceptionId);
                     _requestHashToRequestIds.Delete(requestHash, requestId);
-                    _requestIdToRequestWillBeSentEvent.Remove(requestId);
                 }
             }
             else
@@ -292,7 +290,7 @@ namespace PuppeteerSharp
 
                 _requestIdToRequest[e.RequestId] = request;
 
-                Request(this, new RequestEventArgs
+                Request?.Invoke(this, new RequestEventArgs
                 {
                     Request = request
                 });
@@ -321,7 +319,7 @@ namespace PuppeteerSharp
 
             if (request.RequestId != null)
             {
-                _requestIdToRequest.Remove(request.RequestId);
+                _requestIdToRequest.TryRemove(request.RequestId, out _);
             }
 
             if (request.InterceptionId != null)
@@ -329,12 +327,12 @@ namespace PuppeteerSharp
                 _attemptedAuthentications.Remove(request.InterceptionId);
             }
 
-            Response(this, new ResponseCreatedEventArgs
+            Response?.Invoke(this, new ResponseCreatedEventArgs
             {
                 Response = response
             });
 
-            RequestFinished(this, new RequestEventArgs
+            RequestFinished?.Invoke(this, new RequestEventArgs
             {
                 Request = request
             });
@@ -355,7 +353,8 @@ namespace PuppeteerSharp
                 else
                 {
                     _requestHashToRequestIds.Add(requestHash, e.RequestId);
-                    _requestIdToRequestWillBeSentEvent.Add(e.RequestId, e);
+                    // Under load, we may get to this section more than once
+                    _requestIdToRequestWillBeSentEvent.TryAdd(e.RequestId, e);
                 }
                 return;
             }

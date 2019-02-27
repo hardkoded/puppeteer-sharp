@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Helpers.Json;
 using System.Runtime.Serialization;
 
 namespace PuppeteerSharp

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Input;
 
 namespace PuppeteerSharp
 {
@@ -39,14 +39,14 @@ namespace PuppeteerSharp
     public class Frame
     {
         private readonly CDPSession _client;
-        private TaskCompletionSource<ElementHandle> _documentCompletionSource;
-        private TaskCompletionSource<ExecutionContext> _contextResolveTaskWrapper;
 
         internal List<WaitTask> WaitTasks { get; }
         internal string Id { get; set; }
         internal string LoaderId { get; set; }
         internal List<string> LifecycleEvents { get; }
         internal string NavigationURL { get; private set; }
+        internal DOMWorld MainWorld { get; }
+        internal DOMWorld SecondaryWorld { get; }
 
         internal Frame(FrameManager frameManager, CDPSession client, Frame parentFrame, string frameId)
         {
@@ -60,10 +60,11 @@ namespace PuppeteerSharp
                 ParentFrame.ChildFrames.Add(this);
             }
 
-            SetDefaultContext(null);
-
             WaitTasks = new List<WaitTask>();
             LifecycleEvents = new List<string>();
+
+            MainWorld = new DOMWorld(FrameManager, this);
+            SecondaryWorld = new DOMWorld(FrameManager, this);
         }
 
         #region Properties
@@ -152,11 +153,7 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to script return value</returns>
         /// <seealso cref="EvaluateFunctionAsync{T}(string, object[])"/>
         /// <seealso cref="Page.EvaluateExpressionAsync{T}(string)"/>
-        public async Task<JToken> EvaluateExpressionAsync(string script)
-        {
-            var context = await GetExecutionContextAsync().ConfigureAwait(false);
-            return await context.EvaluateExpressionAsync<JToken>(script).ConfigureAwait(false);
-        }
+        public Task<JToken> EvaluateExpressionAsync(string script) => MainWorld.EvaluateExpressionAsync(script);
 
         /// <summary>
         /// Executes a script in browser context
@@ -169,11 +166,7 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to script return value</returns>
         /// <seealso cref="EvaluateFunctionAsync{T}(string, object[])"/>
         /// <seealso cref="Page.EvaluateExpressionAsync{T}(string)"/>
-        public async Task<T> EvaluateExpressionAsync<T>(string script)
-        {
-            var context = await GetExecutionContextAsync().ConfigureAwait(false);
-            return await context.EvaluateExpressionAsync<T>(script).ConfigureAwait(false);
-        }
+        public Task<T> EvaluateExpressionAsync<T>(string script) => MainWorld.EvaluateExpressionAsync<T>(script);
 
         /// <summary>
         /// Executes a function in browser context
@@ -187,11 +180,7 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to script return value</returns>
         /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
         /// <seealso cref="Page.EvaluateFunctionAsync{T}(string, object[])"/>
-        public async Task<JToken> EvaluateFunctionAsync(string script, params object[] args)
-        {
-            var context = await GetExecutionContextAsync().ConfigureAwait(false);
-            return await context.EvaluateFunctionAsync<JToken>(script, args).ConfigureAwait(false);
-        }
+        public Task<JToken> EvaluateFunctionAsync(string script, params object[] args) => MainWorld.EvaluateFunctionAsync(script, args);
 
         /// <summary>
         /// Executes a function in browser context
@@ -206,11 +195,7 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to script return value</returns>
         /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
         /// <seealso cref="Page.EvaluateFunctionAsync{T}(string, object[])"/>
-        public async Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
-        {
-            var context = await GetExecutionContextAsync().ConfigureAwait(false);
-            return await context.EvaluateFunctionAsync<T>(script, args).ConfigureAwait(false);
-        }
+        public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args) => MainWorld.EvaluateFunctionAsync<T>(script, args);
 
         /// <summary>
         /// Passes an expression to the <see cref="ExecutionContext.EvaluateExpressionHandleAsync(string)"/>, returns a <see cref="Task"/>, then <see cref="ExecutionContext.EvaluateExpressionHandleAsync(string)"/> would wait for the <see cref="Task"/> to resolve and return its value.
@@ -223,11 +208,7 @@ namespace PuppeteerSharp
         /// </example>
         /// <returns>Resolves to the return value of <paramref name="script"/></returns>
         /// <param name="script">Expression to be evaluated in the <seealso cref="ExecutionContext"/></param>
-        public async Task<JSHandle> EvaluateExpressionHandleAsync(string script)
-        {
-            var context = await GetExecutionContextAsync().ConfigureAwait(false);
-            return await context.EvaluateExpressionHandleAsync(script).ConfigureAwait(false);
-        }
+        public Task<JSHandle> EvaluateExpressionHandleAsync(string script) => MainWorld.EvaluateExpressionHandleAsync(script);
 
         /// <summary>
         /// Passes a function to the <see cref="ExecutionContext.EvaluateFunctionAsync(string, object[])"/>, returns a <see cref="Task"/>, then <see cref="ExecutionContext.EvaluateFunctionHandleAsync(string, object[])"/> would wait for the <see cref="Task"/> to resolve and return its value.
@@ -247,43 +228,34 @@ namespace PuppeteerSharp
         /// <returns>Resolves to the return value of <paramref name="function"/></returns>
         /// <param name="function">Function to be evaluated in the <see cref="ExecutionContext"/></param>
         /// <param name="args">Arguments to pass to <paramref name="function"/></param>
-        public async Task<JSHandle> EvaluateFunctionHandleAsync(string function, params object[] args)
-        {
-            var context = await GetExecutionContextAsync().ConfigureAwait(false);
-            return await context.EvaluateFunctionHandleAsync(function, args).ConfigureAwait(false);
-        }
+        public Task<JSHandle> EvaluateFunctionHandleAsync(string function, params object[] args) => MainWorld.EvaluateFunctionHandleAsync(function, args);
 
         /// <summary>
         /// Gets the <see cref="ExecutionContext"/> associated with the frame.
         /// </summary>
         /// <returns><see cref="ExecutionContext"/> associated with the frame.</returns>
-        public Task<ExecutionContext> GetExecutionContextAsync()
-        {
-            if (Detached)
-            {
-                throw new PuppeteerException($"Execution Context is not available in detached frame '{Url}' (are you trying to evaluate?)");
-            }
-            return _contextResolveTaskWrapper.Task;
-        }
+        public Task<ExecutionContext> GetExecutionContextAsync() => MainWorld.GetExecutionContextAsync();
 
         /// <summary>
         /// Waits for a selector to be added to the DOM
         /// </summary>
         /// <param name="selector">A selector of an element to wait for</param>
         /// <param name="options">Optional waiting parameters</param>
-        /// <returns>A task that resolves when element specified by selector string is added to DOM</returns>
+        /// <returns>A task that resolves when element specified by selector string is added to DOM.
+        /// Resolves to `null` if waiting for `hidden: true` and selector is not found in DOM.</returns>
         /// <seealso cref="WaitForXPathAsync(string, WaitForSelectorOptions)"/>
         /// <seealso cref="Page.WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
         /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
         public Task<ElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
-            => WaitForSelectorOrXPathAsync(selector, false, options);
+            => MainWorld.WaitForSelectorAsync(selector, options);
 
         /// <summary>
         /// Waits for a selector to be added to the DOM
         /// </summary>
         /// <param name="xpath">A xpath selector of an element to wait for</param>
         /// <param name="options">Optional waiting parameters</param>
-        /// <returns>A task that resolves when element specified by selector string is added to DOM</returns>
+        /// <returns>A task which resolves when element specified by xpath string is added to DOM. 
+        /// Resolves to `null` if waiting for `hidden: true` and xpath is not found in DOM.</returns>
         /// <example>
         /// <code>
         /// <![CDATA[
@@ -306,7 +278,7 @@ namespace PuppeteerSharp
         /// <seealso cref="Page.WaitForXPathAsync(string, WaitForSelectorOptions)"/>
         /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
         public Task<ElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
-            => WaitForSelectorOrXPathAsync(xpath, true, options);
+            => MainWorld.WaitForXPathAsync(xpath, options);
 
         /// <summary>
         /// Waits for a timeout
@@ -327,7 +299,7 @@ namespace PuppeteerSharp
         /// <seealso cref="Page.WaitForFunctionAsync(string, WaitForFunctionOptions, object[])"/>
         /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
         public Task<JSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args)
-            => new WaitTask(this, script, false, "function", options.Polling, options.PollingInterval, options.Timeout, args).Task;
+           => MainWorld.WaitForFunctionAsync(script, options, args);
 
         /// <summary>
         /// Waits for an expression to be evaluated to a truthy value
@@ -338,7 +310,7 @@ namespace PuppeteerSharp
         /// <seealso cref="Page.WaitForExpressionAsync(string, WaitForFunctionOptions)"/>
         /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
         public Task<JSHandle> WaitForExpressionAsync(string script, WaitForFunctionOptions options)
-            => new WaitTask(this, script, true, "function", options.Polling, options.PollingInterval, options.Timeout).Task;
+            => MainWorld.WaitForExpressionAsync(script, options);
 
         /// <summary>
         /// Triggers a change and input event once all the provided options have been selected. 
@@ -350,22 +322,7 @@ namespace PuppeteerSharp
         /// all values are considered, otherwise only the first one is taken into account.</param>
         /// <returns>Returns an array of option values that have been successfully selected.</returns>
         /// <seealso cref="Page.SelectAsync(string, string[])"/>
-        public Task<string[]> SelectAsync(string selector, params string[] values)
-            => QuerySelectorAsync(selector).EvaluateFunctionAsync<string[]>(@"(element, values) => {
-                if (element.nodeName.toLowerCase() !== 'select')
-                    throw new Error('Element is not a <select> element.');
-
-                const options = Array.from(element.options);
-                element.value = undefined;
-                for (const option of options) {
-                    option.selected = values.includes(option.value);
-                    if (option.selected && !element.multiple)
-                      break;
-                }
-                element.dispatchEvent(new Event('input', { 'bubbles': true }));
-                element.dispatchEvent(new Event('change', { 'bubbles': true }));
-                return options.filter(option => option.selected).map(option => option.value);
-            }", new[] { values });
+        public Task<string[]> SelectAsync(string selector, params string[] values) => SecondaryWorld.SelectAsync(selector, values);
 
         /// <summary>
         /// Queries frame for the selector. If there's no such element within the frame, the method will resolve to <c>null</c>.
@@ -373,11 +330,7 @@ namespace PuppeteerSharp
         /// <param name="selector">Selector to query frame for</param>
         /// <returns>Task which resolves to <see cref="ElementHandle"/> pointing to the frame element</returns>
         /// <seealso cref="Page.QuerySelectorAsync(string)"/>
-        public async Task<ElementHandle> QuerySelectorAsync(string selector)
-        {
-            var document = await GetDocument().ConfigureAwait(false);
-            return await document.QuerySelectorAsync(selector).ConfigureAwait(false);
-        }
+        public Task<ElementHandle> QuerySelectorAsync(string selector) => MainWorld.QuerySelectorAsync(selector);
 
         /// <summary>
         /// Queries frame for the selector. If no elements match the selector, the return value resolve to <see cref="Array.Empty{T}"/>.
@@ -385,11 +338,7 @@ namespace PuppeteerSharp
         /// <param name="selector">A selector to query frame for</param>
         /// <returns>Task which resolves to ElementHandles pointing to the frame elements</returns>
         /// <seealso cref="Page.QuerySelectorAllAsync(string)"/>
-        public async Task<ElementHandle[]> QuerySelectorAllAsync(string selector)
-        {
-            var document = await GetDocument().ConfigureAwait(false);
-            return await document.QuerySelectorAllAsync(selector).ConfigureAwait(false);
-        }
+        public Task<ElementHandle[]> QuerySelectorAllAsync(string selector) => MainWorld.QuerySelectorAllAsync(selector);
 
         /// <summary>
         /// Evaluates the XPath expression
@@ -397,11 +346,7 @@ namespace PuppeteerSharp
         /// <param name="expression">Expression to evaluate <see href="https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate"/></param>
         /// <returns>Task which resolves to an array of <see cref="ElementHandle"/></returns>
         /// <seealso cref="Page.XPathAsync(string)"/>
-        public async Task<ElementHandle[]> XPathAsync(string expression)
-        {
-            var document = await GetDocument().ConfigureAwait(false);
-            return await document.XPathAsync(expression).ConfigureAwait(false);
-        }
+        public Task<ElementHandle[]> XPathAsync(string expression) => MainWorld.XPathAsync(expression);
 
         /// <summary>
         /// Adds a <c><![CDATA[<link rel="stylesheet">]]></c> tag into the page with the desired url or a <c><![CDATA[<link rel="stylesheet">]]></c> tag with the content
@@ -410,63 +355,7 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to the added tag when the stylesheet's onload fires or when the CSS content was injected into frame</returns>
         /// <seealso cref="Page.AddStyleTagAsync(AddTagOptions)"/>
         /// <seealso cref="Page.AddStyleTagAsync(string)"/>
-        public async Task<ElementHandle> AddStyleTag(AddTagOptions options)
-        {
-            const string addStyleUrl = @"async function addStyleUrl(url) {
-              const link = document.createElement('link');
-              link.rel = 'stylesheet';
-              link.href = url;
-              const promise = new Promise((res, rej) => {
-                link.onload = res;
-                link.onerror = rej;
-              });
-              document.head.appendChild(link);
-              await promise;
-              return link;
-            }";
-            const string addStyleContent = @"async function addStyleContent(content) {
-              const style = document.createElement('style');
-              style.type = 'text/css';
-              style.appendChild(document.createTextNode(content));
-              const promise = new Promise((res, rej) => {
-                style.onload = res;
-                style.onerror = rej;
-              });
-              document.head.appendChild(style);
-              await promise;
-              return style;
-            }";
-
-            if (!string.IsNullOrEmpty(options.Url))
-            {
-                var url = options.Url;
-                try
-                {
-                    var context = await GetExecutionContextAsync().ConfigureAwait(false);
-                    return (await context.EvaluateFunctionHandleAsync(addStyleUrl, url).ConfigureAwait(false)) as ElementHandle;
-                }
-                catch (PuppeteerException)
-                {
-                    throw new PuppeteerException($"Loading style from {url} failed");
-                }
-            }
-
-            if (!string.IsNullOrEmpty(options.Path))
-            {
-                var contents = await AsyncFileHelper.ReadAllText(options.Path).ConfigureAwait(false);
-                contents += "//# sourceURL=" + options.Path.Replace("\n", string.Empty);
-                var context = await GetExecutionContextAsync().ConfigureAwait(false);
-                return (await context.EvaluateFunctionHandleAsync(addStyleContent, contents).ConfigureAwait(false)) as ElementHandle;
-            }
-
-            if (!string.IsNullOrEmpty(options.Content))
-            {
-                var context = await GetExecutionContextAsync().ConfigureAwait(false);
-                return (await context.EvaluateFunctionHandleAsync(addStyleContent, options.Content).ConfigureAwait(false)) as ElementHandle;
-            }
-
-            throw new ArgumentException("Provide options with a `Url`, `Path` or `Content` property");
-        }
+        public Task<ElementHandle> AddStyleTag(AddTagOptions options) => MainWorld.AddStyleTag(options);
 
         /// <summary>
         /// Adds a <c><![CDATA[<script>]]></c> tag into the page with the desired url or content
@@ -475,83 +364,14 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to the added tag when the script's onload fires or when the script content was injected into frame</returns>
         /// <seealso cref="Page.AddScriptTagAsync(AddTagOptions)"/>
         /// <seealso cref="Page.AddScriptTagAsync(string)"/>
-        public async Task<ElementHandle> AddScriptTag(AddTagOptions options)
-        {
-            const string addScriptUrl = @"async function addScriptUrl(url, type) {
-              const script = document.createElement('script');
-              script.src = url;
-              if(type)
-                script.type = type;
-              const promise = new Promise((res, rej) => {
-                script.onload = res;
-                script.onerror = rej;
-              });
-              document.head.appendChild(script);
-              await promise;
-              return script;
-            }";
-            const string addScriptContent = @"function addScriptContent(content, type = 'text/javascript') {
-              const script = document.createElement('script');
-              script.type = type;
-              script.text = content;
-              let error = null;
-              script.onerror = e => error = e;
-              document.head.appendChild(script);
-              if (error)
-                throw error;
-              return script;
-            }";
-
-            async Task<ElementHandle> AddScriptTagPrivate(string script, string urlOrContent, string type)
-            {
-                var context = await GetExecutionContextAsync().ConfigureAwait(false);
-                return (string.IsNullOrEmpty(type)
-                        ? await context.EvaluateFunctionHandleAsync(script, urlOrContent).ConfigureAwait(false)
-                        : await context.EvaluateFunctionHandleAsync(script, urlOrContent, type).ConfigureAwait(false)) as ElementHandle;
-            }
-
-            if (!string.IsNullOrEmpty(options.Url))
-            {
-                var url = options.Url;
-                try
-                {
-                    return await AddScriptTagPrivate(addScriptUrl, url, options.Type).ConfigureAwait(false);
-                }
-                catch (PuppeteerException)
-                {
-                    throw new PuppeteerException($"Loading script from {url} failed");
-                }
-            }
-
-            if (!string.IsNullOrEmpty(options.Path))
-            {
-                var contents = await AsyncFileHelper.ReadAllText(options.Path).ConfigureAwait(false);
-                contents += "//# sourceURL=" + options.Path.Replace("\n", string.Empty);
-                return await AddScriptTagPrivate(addScriptContent, contents, options.Type).ConfigureAwait(false);
-            }
-
-            if (!string.IsNullOrEmpty(options.Content))
-            {
-                return await AddScriptTagPrivate(addScriptContent, options.Content, options.Type).ConfigureAwait(false);
-            }
-
-            throw new ArgumentException("Provide options with a `Url`, `Path` or `Content` property");
-        }
+        public Task<ElementHandle> AddScriptTag(AddTagOptions options) => MainWorld.AddScriptTag(options);
 
         /// <summary>
         /// Gets the full HTML contents of the page, including the doctype.
         /// </summary>
         /// <returns>Task which resolves to the HTML content.</returns>
         /// <seealso cref="Page.GetContentAsync"/>
-        public Task<string> GetContentAsync()
-            => EvaluateFunctionAsync<string>(@"() => {
-                let retVal = '';
-                if (document.doctype)
-                    retVal = new XMLSerializer().serializeToString(document.doctype);
-                if (document.documentElement)
-                    retVal += document.documentElement.outerHTML;
-                return retVal;
-            }");
+        public Task<string> GetContentAsync() => SecondaryWorld.GetContentAsync();
 
         /// <summary>
         /// Sets the HTML markup to the page
@@ -560,77 +380,61 @@ namespace PuppeteerSharp
         /// <param name="options">The options</param>
         /// <returns>Task.</returns>
         /// <seealso cref="Page.SetContentAsync(string, NavigationOptions)"/>
-        public async Task SetContentAsync(string html, NavigationOptions options = null)
-        {
-            var waitUntil = options?.WaitUntil ?? new[] { WaitUntilNavigation.Load };
-            var timeout = options?.Timeout ?? Puppeteer.DefaultTimeout;
-
-            // We rely upon the fact that document.open() will reset frame lifecycle with "init"
-            // lifecycle event. @see https://crrev.com/608658
-            await EvaluateFunctionAsync(@"html => {
-                document.open();
-                document.write(html);
-                document.close();
-            }", html);
-
-            var watcher = new LifecycleWatcher(FrameManager, this, waitUntil, timeout);
-
-            var watcherTask = await Task.WhenAny(
-                watcher.TimeoutOrTerminationTask,
-                watcher.LifecycleTask).ConfigureAwait(false);
-
-            await watcherTask.ConfigureAwait(false);
-        }
+        public Task SetContentAsync(string html, NavigationOptions options = null)
+            => SecondaryWorld.SetContentAsync(html, options);
 
         /// <summary>
         /// Returns page's title
         /// </summary>
         /// <returns>page's title</returns>
         /// <seealso cref="Page.GetTitleAsync"/>
-        public Task<string> GetTitleAsync() => EvaluateExpressionAsync<string>("document.title");
+        public Task<string> GetTitleAsync() => SecondaryWorld.GetTitleAsync();
 
-        internal async Task<ElementHandle> WaitForSelectorOrXPathAsync(string selectorOrXPath, bool isXPath, WaitForSelectorOptions options = null)
-        {
-            options = options ?? new WaitForSelectorOptions();
-            const string predicate = @"
-              function predicate(selectorOrXPath, isXPath, waitForVisible, waitForHidden) {
-                const node = isXPath
-                  ? document.evaluate(selectorOrXPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue
-                  : document.querySelector(selectorOrXPath);
-                if (!node)
-                  return waitForHidden;
-                if (!waitForVisible && !waitForHidden)
-                  return node;
-                const element = node.nodeType === Node.TEXT_NODE ? node.parentElement : node;
+        /// <summary>
+        /// Fetches an element with <paramref name="selector"/>, scrolls it into view if needed, and then uses <see cref="Page.Mouse"/> to click in the center of the element.
+        /// </summary>
+        /// <param name="selector">A selector to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.</param>
+        /// <param name="options">click options</param>
+        /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
+        /// <returns>Task which resolves when the element matching <paramref name="selector"/> is successfully clicked</returns>
+        public Task ClickAsync(string selector, ClickOptions options = null)
+            => SecondaryWorld.ClickAsync(selector, options);
 
-                const style = window.getComputedStyle(element);
-                const isVisible = style && style.visibility !== 'hidden' && hasVisibleBoundingBox();
-                const success = (waitForVisible === isVisible || waitForHidden === !isVisible);
-                return success ? node : null;
+        /// <summary>
+        /// Fetches an element with <paramref name="selector"/>, scrolls it into view if needed, and then uses <see cref="Page.Mouse"/> to hover over the center of the element.
+        /// </summary>
+        /// <param name="selector">A selector to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered.</param>
+        /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
+        /// <returns>Task which resolves when the element matching <paramref name="selector"/> is successfully hovered</returns>
+        public Task HoverAsync(string selector) => SecondaryWorld.HoverAsync(selector);
 
-                function hasVisibleBoundingBox() {
-                  const rect = element.getBoundingClientRect();
-                  return !!(rect.top || rect.bottom || rect.width || rect.height);
-                }
-              }";
-            var polling = options.Visible || options.Hidden ? WaitForFunctionPollingOption.Raf : WaitForFunctionPollingOption.Mutation;
-            var handle = await new WaitTask(
-                this,
-                predicate,
-                false,
-                $"{(isXPath ? "XPath" : "selector")} '{selectorOrXPath}'{(options.Hidden ? " to be hidden" : "")}",
-                options.Polling,
-                options.PollingInterval,
-                options.Timeout,
-                new object[]
-                {
-                    selectorOrXPath,
-                    isXPath,
-                    options.Visible,
-                    options.Hidden
-                }).Task.ConfigureAwait(false);
-            return handle as ElementHandle;
-        }
+        /// <summary>
+        /// Fetches an element with <paramref name="selector"/> and focuses it
+        /// </summary>
+        /// <param name="selector">A selector to search for element to focus. If there are multiple elements satisfying the selector, the first will be focused.</param>
+        /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
+        /// <returns>Task which resolves when the element matching <paramref name="selector"/> is successfully focused</returns>
+        public Task FocusAsync(string selector) => SecondaryWorld.FocusAsync(selector);
+
+        /// <summary>
+        /// Sends a <c>keydown</c>, <c>keypress</c>/<c>input</c>, and <c>keyup</c> event for each character in the text.
+        /// </summary>
+        /// <param name="selector">A selector of an element to type into. If there are multiple elements satisfying the selector, the first will be used.</param>
+        /// <param name="text">A text to type into a focused element</param>
+        /// <param name="options"></param>
+        /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
+        /// <remarks>
+        /// To press a special key, like <c>Control</c> or <c>ArrowDown</c> use <see cref="Keyboard.PressAsync(string, PressOptions)"/>
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// page.TypeAsync("#mytextarea", "Hello"); // Types instantly
+        /// page.TypeAsync("#mytextarea", "World", new TypeOptions { Delay = 100 }); // Types slower, like a user
+        /// </code>
+        /// </example>
+        /// <returns>Task</returns>
+        public Task TypeAsync(string selector, string text, TypeOptions options = null)
+             => SecondaryWorld.TypeAsync(selector, text, options);
 
         internal void OnLoadingStopped()
         {
@@ -657,52 +461,16 @@ namespace PuppeteerSharp
 
         internal void NavigatedWithinDocument(string url) => Url = url;
 
-        internal void SetDefaultContext(ExecutionContext context)
-        {
-            if (context != null)
-            {
-                _contextResolveTaskWrapper.TrySetResult(context);
-
-                foreach (var waitTask in WaitTasks)
-                {
-                    _ = waitTask.Rerun();
-                }
-            }
-            else
-            {
-                _documentCompletionSource = null;
-                _contextResolveTaskWrapper = new TaskCompletionSource<ExecutionContext>();
-            }
-        }
-
         internal void Detach()
         {
-            while (WaitTasks.Count > 0)
-            {
-                WaitTasks[0].Terminate(new Exception("waitForFunction failed: frame got detached."));
-            }
             Detached = true;
+            MainWorld.Detach();
+            SecondaryWorld.Detach();
             if (ParentFrame != null)
             {
                 ParentFrame.ChildFrames.Remove(this);
             }
             ParentFrame = null;
-        }
-
-        #endregion
-
-        #region Private Methods
-
-        private async Task<ElementHandle> GetDocument()
-        {
-            if (_documentCompletionSource == null)
-            {
-                _documentCompletionSource = new TaskCompletionSource<ElementHandle>(TaskCreationOptions.RunContinuationsAsynchronously);
-                var context = await GetExecutionContextAsync().ConfigureAwait(false);
-                var document = await context.EvaluateExpressionHandleAsync("document").ConfigureAwait(false);
-                _documentCompletionSource.TrySetResult(document as ElementHandle);
-            }
-            return await _documentCompletionSource.Task.ConfigureAwait(false);
         }
 
         #endregion

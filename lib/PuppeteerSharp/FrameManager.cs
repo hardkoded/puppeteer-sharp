@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
@@ -16,9 +17,11 @@ namespace PuppeteerSharp
         private bool _ensureNewDocumentNavigation;
         private readonly ILogger _logger;
         private readonly ConcurrentDictionary<string, Frame> _frames;
-        private readonly MultiMap<string, TaskCompletionSource<Frame>> _pendingFrameRequests;
-        private const int WaitForRequestDelay = 1000;
         private const string RefererHeaderName = "referer";
+        private readonly AsyncDictionaryHelper<string, Frame> _asyncFrames;
+        private readonly List<string> _isolatedWorlds = new List<string>();
+
+        private const string UtilityWorldName = "__puppeteer_utility_world__";
 
         private FrameManager(CDPSession client, Page page, NetworkManager networkManager)
         {
@@ -28,7 +31,7 @@ namespace PuppeteerSharp
             _contextIdToContext = new Dictionary<int, ExecutionContext>();
             _logger = Client.Connection.LoggerFactory.CreateLogger<FrameManager>();
             NetworkManager = networkManager;
-            _pendingFrameRequests = new MultiMap<string, TaskCompletionSource<Frame>>();
+            _asyncFrames = new AsyncDictionaryHelper<string, Frame>(_frames, "Frame {0} not found");
 
             Client.MessageReceived += Client_MessageReceived;
         }
@@ -215,8 +218,12 @@ namespace PuppeteerSharp
             while (_contextIdToContext.Count > 0)
             {
                 var contextItem = _contextIdToContext.ElementAt(0);
-                RemoveContext(contextItem.Value);
                 _contextIdToContext.Remove(contextItem.Key);
+
+                if (contextItem.Value.World != null)
+                {
+                    contextItem.Value.World.SetContext(null);
+                }
             }
         }
 
@@ -227,26 +234,41 @@ namespace PuppeteerSharp
             if (context != null)
             {
                 _contextIdToContext.Remove(executionContextId);
-                RemoveContext(context);
+
+                if (context.World != null)
+                {
+                    context.World.SetContext(null);
+                }
             }
         }
 
         private async Task OnExecutionContextCreatedAsync(ContextPayload contextPayload)
         {
-            var frameId = contextPayload.AuxData.IsDefault ? contextPayload.AuxData.FrameId : null;
-            var frame = !string.IsNullOrEmpty(frameId) ? await GetFrameAsync(frameId) : null;
-
-            var context = new ExecutionContext(
-                Client,
-                contextPayload,
-                frame);
-
-            _contextIdToContext[contextPayload.Id] = context;
+            var frameId = contextPayload.AuxData?.FrameId;
+            var frame = !string.IsNullOrEmpty(frameId) ? await GetFrameAsync(frameId).ConfigureAwait(false) : null;
+            DOMWorld world = null;
 
             if (frame != null)
             {
-                frame.SetDefaultContext(context);
+                if (contextPayload.AuxData?.IsDefault == true)
+                {
+                    world = frame.MainWorld;
+                }
+                else if (contextPayload.Name == UtilityWorldName)
+                {
+                    world = frame.SecondaryWorld;
+                }
             }
+            if (contextPayload.AuxData?.Type == DOMWorldType.Isolated)
+            {
+                _isolatedWorlds.Add(contextPayload.Name);
+            }
+            var context = new ExecutionContext(Client, contextPayload, world);
+            if (world != null)
+            {
+                world.SetContext(context);
+            }
+            _contextIdToContext[contextPayload.Id] = context;
         }
 
         private void OnFrameDetached(BasicFrameResponse e)
@@ -290,7 +312,7 @@ namespace PuppeteerSharp
                     // Initial main frame navigation.
                     frame = new Frame(this, Client, null, framePayload.Id);
                 }
-                AddFrame(framePayload.Id, frame);
+                _asyncFrames.AddItem(framePayload.Id, frame);
                 MainFrame = frame;
             }
 
@@ -298,15 +320,6 @@ namespace PuppeteerSharp
             frame.Navigated(framePayload);
 
             FrameNavigated?.Invoke(this, new FrameEventArgs(frame));
-        }
-
-        private void AddFrame(string frameId, Frame frame)
-        {
-            _frames[frameId] = frame;
-            foreach (var tcs in _pendingFrameRequests.Get(frameId))
-            {
-                tcs.TrySetResult(frame);
-            }
         }
 
         internal Frame[] GetFrames() => _frames.Values.ToArray();
@@ -320,14 +333,6 @@ namespace PuppeteerSharp
                 var eventArgs = new FrameEventArgs(frame);
                 FrameNavigatedWithinDocument?.Invoke(this, eventArgs);
                 FrameNavigated?.Invoke(this, eventArgs);
-            }
-        }
-
-        private void RemoveContext(ExecutionContext context)
-        {
-            if (context.Frame != null)
-            {
-                context.Frame.SetDefaultContext(null);
             }
         }
 
@@ -374,19 +379,29 @@ namespace PuppeteerSharp
             }
         }
 
-        internal async Task<Frame> GetFrameAsync(string frameId)
+        internal Task EnsureSecondaryDOMWorldAsync() => EnsureSecondaryDOMWorldAsync(UtilityWorldName);
+
+        internal async Task EnsureSecondaryDOMWorldAsync(string name)
         {
-            var tcs = new TaskCompletionSource<Frame>(TaskCreationOptions.RunContinuationsAsynchronously);
-            _pendingFrameRequests.Add(frameId, tcs);
-
-            if (_frames.TryGetValue(frameId, out var frame))
+            if (_isolatedWorlds.Contains(name))
             {
-                _pendingFrameRequests.Delete(frameId, tcs);
-                return frame;
+                return;
             }
-
-            return await tcs.Task.WithTimeout(WaitForRequestDelay, new PuppeteerException($"Frame '{frameId}' not found"));
+            _isolatedWorlds.Add(name);
+            await Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new PageAddScriptToEvaluateOnNewDocumentRequest
+            {
+                Source = $"//# sourceURL={ExecutionContext.EvaluationScriptUrl}",
+                WorldName = name,
+            });
+            await Task.WhenAll(GetFrames().Select(frame => Client.SendAsync("Page.createIsolatedWorld", new PageCreateIsolatedWorldRequest
+            {
+                FrameId = frame.Id,
+                GrantUniveralAccess = true,
+                WorldName = name
+            }))).ConfigureAwait(false);
         }
+
+        internal Task<Frame> GetFrameAsync(string frameId) => _asyncFrames.GetItemAsync(frameId);
 
         #endregion
     }

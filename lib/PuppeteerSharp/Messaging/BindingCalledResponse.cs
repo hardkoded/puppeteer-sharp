@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
-using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp.Messaging
 {
