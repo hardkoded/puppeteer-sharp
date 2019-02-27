@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp.Input
@@ -121,5 +120,19 @@ namespace PuppeteerSharp.Input
                 ClickCount = options.ClickCount
             });
         }
+
+        /// <summary>
+        /// Dispatches a <c>wheel</c> event.
+        /// </summary>
+        /// <returns>Task</returns>
+        public Task WheelAsync(decimal deltaX, decimal deltaY)
+            => _client.SendAsync(
+                "Input.dispatchMouseEvent",
+                new InputDispatchMouseEventRequest
+                {
+                    Type = MouseEventType.MouseWheel,
+                    DeltaX = deltaX,
+                    DeltaY = deltaY
+                });
     }
 }

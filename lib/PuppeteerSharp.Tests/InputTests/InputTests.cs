@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json;
-using PuppeteerSharp.Input;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using PuppeteerSharp.Input;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.InputTests
     public class InputTests : PuppeteerPageBaseTest
     {
         private Task dummy;
-        const string Dimensions = @"function dimensions() {
+        private const string Dimensions = @"function dimensions() {
             const rect = document.querySelector('textarea').getBoundingClientRect();
             return {
                 x: rect.left,
@@ -655,6 +655,81 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.Equal(
                 "👹 Tokyo street Japan \uD83C\uDDEF\uD83C\uDDF5",
                 await frame.QuerySelectorAsync("textarea").EvaluateFunctionAsync<string>("t => t.value"));
+        }
+
+        [Fact]
+        public async Task ShouldScrollAccordingToMouseWheel()
+        {
+            var waitForFunctionOptions = new WaitForFunctionOptions
+            {
+                PollingInterval = 50,
+                Timeout = 1000
+            };
+
+            Task WaitForScrollPointAsync(DomPointInternal point)
+                => Page.WaitForFunctionAsync(
+                    @"(x, y) => document.body.scrollLeft === x && document.body.scrollTop === y",
+                    waitForFunctionOptions,
+                    point.X,
+                    point.Y);
+
+            await Page.GoToAsync(
+                $@"{TestConstants.ServerUrl}/longText.html",
+                WaitUntilNavigation.Networkidle0);
+
+            var expectedWheelEvents = new[]
+            {
+                new WheelEventInternal(0, 500),
+                new WheelEventInternal(0, -200),
+                new WheelEventInternal(300, 0),
+                new WheelEventInternal(-150, 0)
+            };
+
+            var expectedScrollPoint = new DomPointInternal
+            {
+                X = 0,
+                Y = 0
+            };
+
+            await WaitForScrollPointAsync(expectedScrollPoint);
+
+            foreach (var @event in expectedWheelEvents)
+            {
+                await Page.Mouse.WheelAsync(@event.DeltaX, @event.DeltaY);
+
+                expectedScrollPoint.Scroll(@event.DeltaX, @event.DeltaY);
+                await WaitForScrollPointAsync(expectedScrollPoint);
+            }
+        }
+
+        internal struct WheelEventInternal
+        {
+            public WheelEventInternal(decimal deltaX, decimal deltaY)
+            {
+                DeltaX = deltaX;
+                DeltaY = deltaY;
+            }
+
+            public decimal DeltaX { get; set; }
+
+            public decimal DeltaY { get; set; }
+
+            public override string ToString() => $"({DeltaX}, {DeltaY})";
+        }
+
+        internal struct DomPointInternal
+        {
+            public decimal X { get; set; }
+
+            public decimal Y { get; set; }
+
+            public override string ToString() => $"({X}, {Y})";
+
+            public void Scroll(decimal deltaX, decimal deltaY)
+            {
+                X = Math.Max(0, X + deltaX);
+                Y = Math.Max(0, Y + deltaY);
+            }
         }
     }
 }
