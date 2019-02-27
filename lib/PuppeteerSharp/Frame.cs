@@ -63,8 +63,8 @@ namespace PuppeteerSharp
             WaitTasks = new List<WaitTask>();
             LifecycleEvents = new List<string>();
 
-            MainWorld = new DOMWorld(FrameManager, this);
-            SecondaryWorld = new DOMWorld(FrameManager, this);
+            MainWorld = new DOMWorld(FrameManager, this, FrameManager.TimeoutSettings);
+            SecondaryWorld = new DOMWorld(FrameManager, this, FrameManager.TimeoutSettings);
         }
 
         #region Properties

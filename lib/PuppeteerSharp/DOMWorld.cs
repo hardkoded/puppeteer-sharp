@@ -10,6 +10,7 @@ namespace PuppeteerSharp
     internal class DOMWorld
     {
         private readonly FrameManager _frameManager;
+        private readonly TimeoutSettings _timeoutSettings;
         private bool _detached;
         private TaskCompletionSource<ExecutionContext> _contextResolveTaskWrapper;
         private TaskCompletionSource<ElementHandle> _documentCompletionSource;
@@ -17,10 +18,11 @@ namespace PuppeteerSharp
         internal List<WaitTask> WaitTasks;
         internal Frame Frame { get; }
 
-        public DOMWorld(FrameManager frameManager, Frame frame)
+        public DOMWorld(FrameManager frameManager, Frame frame, TimeoutSettings timeoutSettings)
         {
             _frameManager = frameManager;
             Frame = frame;
+            _timeoutSettings = timeoutSettings;
 
             SetContext(null);
 
@@ -130,7 +132,7 @@ namespace PuppeteerSharp
         internal async Task SetContentAsync(string html, NavigationOptions options = null)
         {
             var waitUntil = options?.WaitUntil ?? new[] { WaitUntilNavigation.Load };
-            var timeout = options?.Timeout ?? Puppeteer.DefaultTimeout;
+            var timeout = options?.Timeout ?? _timeoutSettings.NavigationTimeout;
 
             // We rely upon the fact that document.open() will reset frame lifecycle with "init"
             // lifecycle event. @see https://crrev.com/608658
@@ -348,10 +350,25 @@ namespace PuppeteerSharp
             => WaitForSelectorOrXPathAsync(xpath, true, options);
 
         internal Task<JSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args)
-            => new WaitTask(this, script, false, "function", options.Polling, options.PollingInterval, options.Timeout, args).Task;
+            => new WaitTask(
+                this,
+                script,
+                false,
+                "function",
+                options.Polling,
+                options.PollingInterval,
+                options.Timeout ?? _timeoutSettings.Timeout,
+                args).Task;
 
         internal Task<JSHandle> WaitForExpressionAsync(string script, WaitForFunctionOptions options)
-            => new WaitTask(this, script, true, "function", options.Polling, options.PollingInterval, options.Timeout).Task;
+            => new WaitTask(
+                this,
+                script,
+                true,
+                "function",
+                options.Polling,
+                options.PollingInterval,
+                options.Timeout ?? _timeoutSettings.Timeout).Task;
 
         internal Task<string> GetTitleAsync() => EvaluateExpressionAsync<string>("document.title");
 

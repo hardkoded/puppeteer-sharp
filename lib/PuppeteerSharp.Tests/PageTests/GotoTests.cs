@@ -140,6 +140,27 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Fact]
+        public async Task ShouldFailWhenExceedingDefaultMaximumTimeout()
+        {
+            // Hang for request to the empty.html
+            Server.SetRoute("/empty.html", context => Task.Delay(-1));
+            Page.DefaultTimeout = 1;
+            var exception = await Assert.ThrowsAnyAsync<TimeoutException>(async () => await Page.GoToAsync(TestConstants.EmptyPage));
+            Assert.Contains("Timeout Exceeded: 1ms", exception.Message);
+        }
+
+        [Fact]
+        public async Task ShouldPrioritizeDefaultNavigationTimeoutOverDefaultTimeout()
+        {
+            // Hang for request to the empty.html
+            Server.SetRoute("/empty.html", context => Task.Delay(-1));
+            Page.DefaultTimeout = 0;
+            Page.DefaultNavigationTimeout = 1;
+            var exception = await Assert.ThrowsAnyAsync<TimeoutException>(async () => await Page.GoToAsync(TestConstants.EmptyPage));
+            Assert.Contains("Timeout Exceeded: 1ms", exception.Message);
+        }
+
+        [Fact]
         public async Task ShouldDisableTimeoutWhenItsSetTo0()
         {
             var loaded = false;

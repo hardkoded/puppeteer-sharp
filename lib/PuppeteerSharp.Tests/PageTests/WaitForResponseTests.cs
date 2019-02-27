@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -44,6 +45,30 @@ namespace PuppeteerSharp.Tests.PageTests
             }")
             );
             Assert.Equal(TestConstants.ServerUrl + "/digits/2.png", task.Result.Url);
+        }
+
+        [Fact]
+        public async Task ShouldRespectTimeout()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var exception = await Assert.ThrowsAnyAsync<TimeoutException>(async () =>
+                await Page.WaitForResponseAsync(request => false, new WaitForOptions
+                {
+                    Timeout = 1
+                }));
+
+            Assert.Contains("Timeout Exceeded: 1ms", exception.Message);
+        }
+
+        [Fact]
+        public async Task ShouldRespectDefaultTimeout()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            Page.DefaultTimeout = 1;
+            var exception = await Assert.ThrowsAnyAsync<TimeoutException>(async () =>
+                await Page.WaitForResponseAsync(request => false));
+
+            Assert.Contains("Timeout Exceeded: 1ms", exception.Message);
         }
 
         [Fact]
