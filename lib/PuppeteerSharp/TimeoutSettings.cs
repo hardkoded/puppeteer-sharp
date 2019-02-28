@@ -2,7 +2,6 @@
 {
     internal class TimeoutSettings
     {
-
         private int? _defaultNavigationTimeout;
 
         public int NavigationTimeout
