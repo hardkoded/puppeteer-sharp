@@ -85,7 +85,16 @@ namespace PuppeteerSharp.Transport
         /// <summary>
         /// Stops reading incoming data.
         /// </summary>
-        public void StopReading() => _readerCancellationSource.Cancel();
+        public void StopReading()
+        {
+            if (!IsClosed)
+            {
+                // No need to cancel reading if no reading operation is in progress. Moreover,
+                // the _readerCancellationSource may already have been disposed, so cancelling
+                // it could cause an ObjectDisposedException.
+                _readerCancellationSource.Cancel();
+            }
+        }
 
         /// <summary>
         /// Starts listening the socket
