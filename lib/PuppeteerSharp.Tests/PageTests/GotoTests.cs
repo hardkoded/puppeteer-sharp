@@ -145,7 +145,7 @@ namespace PuppeteerSharp.Tests.PageTests
             // Hang for request to the empty.html
             Server.SetRoute("/empty.html", context => Task.Delay(-1));
             Page.DefaultTimeout = 1;
-            var exception = await Assert.ThrowsAnyAsync<TimeoutException>(async () => await Page.GoToAsync(TestConstants.EmptyPage));
+            var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await Page.GoToAsync(TestConstants.EmptyPage));
             Assert.Contains("Timeout Exceeded: 1ms", exception.Message);
         }
 
@@ -156,7 +156,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Server.SetRoute("/empty.html", context => Task.Delay(-1));
             Page.DefaultTimeout = 0;
             Page.DefaultNavigationTimeout = 1;
-            var exception = await Assert.ThrowsAnyAsync<TimeoutException>(async () => await Page.GoToAsync(TestConstants.EmptyPage));
+            var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await Page.GoToAsync(TestConstants.EmptyPage));
             Assert.Contains("Timeout Exceeded: 1ms", exception.Message);
         }
 
