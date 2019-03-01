@@ -167,7 +167,6 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
             }
             catch (Exception ex)
             {
-                _taskCompletion.SetException(exception);
                 exception = ex;
             }
 
