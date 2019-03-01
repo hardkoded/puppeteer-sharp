@@ -20,10 +20,9 @@ namespace PuppeteerSharp
         private const string RefererHeaderName = "referer";
         private readonly AsyncDictionaryHelper<string, Frame> _asyncFrames;
         private readonly List<string> _isolatedWorlds = new List<string>();
-
         private const string UtilityWorldName = "__puppeteer_utility_world__";
 
-        private FrameManager(CDPSession client, Page page, NetworkManager networkManager)
+        private FrameManager(CDPSession client, Page page, NetworkManager networkManager, TimeoutSettings timeoutSettings)
         {
             Client = client;
             Page = page;
@@ -31,6 +30,7 @@ namespace PuppeteerSharp
             _contextIdToContext = new Dictionary<int, ExecutionContext>();
             _logger = Client.Connection.LoggerFactory.CreateLogger<FrameManager>();
             NetworkManager = networkManager;
+            TimeoutSettings = timeoutSettings;
             _asyncFrames = new AsyncDictionaryHelper<string, Frame>(_frames, "Frame {0} not found");
 
             Client.MessageReceived += Client_MessageReceived;
@@ -48,14 +48,18 @@ namespace PuppeteerSharp
         internal NetworkManager NetworkManager { get; }
         internal Frame MainFrame { get; set; }
         internal Page Page { get; }
-        internal int DefaultNavigationTimeout { get; set; } = 30000;
-
+        internal TimeoutSettings TimeoutSettings { get; }
         #endregion
 
         #region Public Methods
-        internal static async Task<FrameManager> CreateFrameManagerAsync(CDPSession client, Page page, NetworkManager networkManager, FrameTree frameTree)
+        internal static async Task<FrameManager> CreateFrameManagerAsync(
+            CDPSession client,
+            Page page,
+            NetworkManager networkManager,
+            FrameTree frameTree,
+            TimeoutSettings timeoutSettings)
         {
-            var frameManager = new FrameManager(client, page, networkManager);
+            var frameManager = new FrameManager(client, page, networkManager, timeoutSettings);
             await frameManager.HandleFrameTreeAsync(frameTree).ConfigureAwait(false);
             return frameManager;
         }
@@ -77,7 +81,7 @@ namespace PuppeteerSharp
                ? NetworkManager.ExtraHTTPHeaders?.GetValueOrDefault(RefererHeaderName)
                : options.Referer;
             var requests = new Dictionary<string, Request>();
-            var timeout = options?.Timeout ?? DefaultNavigationTimeout;
+            var timeout = options?.Timeout ?? TimeoutSettings.NavigationTimeout;
 
             using (var watcher = new LifecycleWatcher(this, frame, options?.WaitUntil, timeout))
             {
@@ -125,7 +129,7 @@ namespace PuppeteerSharp
 
         public async Task<Response> WaitForFrameNavigationAsync(Frame frame, NavigationOptions options = null)
         {
-            var timeout = options?.Timeout ?? DefaultNavigationTimeout;
+            var timeout = options?.Timeout ?? TimeoutSettings.NavigationTimeout;
             using (var watcher = new LifecycleWatcher(this, frame, options?.WaitUntil, timeout))
             {
                 var raceTask = await Task.WhenAny(

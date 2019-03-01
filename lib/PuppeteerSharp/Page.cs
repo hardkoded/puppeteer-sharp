@@ -47,6 +47,7 @@ namespace PuppeteerSharp
         private bool _screenshotBurstModeOn;
         private ScreenshotOptions _screenshotBurstModeOptions;
         private TaskCompletionSource<bool> _closeCompletedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        private TimeoutSettings _timeoutSettings;
 
         private static readonly Dictionary<string, decimal> _unitToPixels = new Dictionary<string, decimal> {
             {"px", 1},
@@ -69,6 +70,7 @@ namespace PuppeteerSharp
             Tracing = new Tracing(client);
             Coverage = new Coverage(client);
 
+            _timeoutSettings = new TimeoutSettings();
             _emulationManager = new EmulationManager(client);
             _pageBindings = new Dictionary<string, Delegate>();
             _workers = new Dictionary<string, Worker>();
@@ -198,24 +200,41 @@ namespace PuppeteerSharp
         public event EventHandler<PopupEventArgs> Popup;
 
         /// <summary>
-        /// This setting will change the default maximum navigation time of 30 seconds for the following methods:
+        /// This setting will change the default maximum time for the following methods:
         /// - <see cref="GoToAsync(string, NavigationOptions)"/>
         /// - <see cref="GoBackAsync(NavigationOptions)"/>
         /// - <see cref="GoForwardAsync(NavigationOptions)"/>
         /// - <see cref="ReloadAsync(NavigationOptions)"/>
+        /// - <see cref="SetContentAsync(string, NavigationOptions)"/>
         /// - <see cref="WaitForNavigationAsync(NavigationOptions)"/>
+        /// **NOTE** <see cref="DefaultNavigationTimeout"/> takes priority over <seealso cref="DefaultTimeout"/>
         /// </summary>
         public int DefaultNavigationTimeout
         {
-            get => FrameManager.DefaultNavigationTimeout;
-            set => FrameManager.DefaultNavigationTimeout = value;
+            get => _timeoutSettings.NavigationTimeout;
+            set => _timeoutSettings.NavigationTimeout = value;
         }
 
         /// <summary>
-        /// This setting will change the default maximum navigation time of 30 seconds for the following methods:
-        /// - <see cref="WaitForOptions"/>
+        /// This setting will change the default maximum times for the following methods:
+        /// - <see cref="Page.GoBackAsync(NavigationOptions)"/>
+        /// - <see cref="Page.GoForwardAsync(NavigationOptions)"/>
+        /// - <see cref="Page.GoToAsync(string, NavigationOptions)"/>
+        /// - <see cref="Page.ReloadAsync(NavigationOptions)"/>
+        /// - <see cref="Page.SetContentAsync(string, NavigationOptions)"/>
+        /// - <see cref="Page.WaitForFunctionAsync(string, object[])"/>
+        /// - <see cref="Page.WaitForNavigationAsync(NavigationOptions)"/>
+        /// - <see cref="Page.WaitForRequestAsync(string, WaitForOptions)"/>
+        /// - <see cref="Page.WaitForResponseAsync(string, WaitForOptions)"/>
+        /// - <see cref="Page.WaitForXPathAsync(string, WaitForSelectorOptions)"/>
+        /// - <see cref="Page.WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
+        /// - <see cref="Page.WaitForExpressionAsync(string, WaitForFunctionOptions)"/>
         /// </summary>
-        public int DefaultWaitForTimeout { get; set; } = 30000;
+        public int DefaultTimeout
+        {
+            get => _timeoutSettings.Timeout;
+            set => _timeoutSettings.Timeout = value;
+        }
 
         /// <summary>
         /// Gets page's main frame
@@ -727,7 +746,7 @@ namespace PuppeteerSharp
         /// <param name="options">The navigations options</param>
         /// <returns>Task.</returns>
         /// <seealso cref="Frame.SetContentAsync(string, NavigationOptions)"/>
-        public Task SetContentAsync(string html, NavigationOptions options = null) => FrameManager.MainFrame.SetContentAsync(html);
+        public Task SetContentAsync(string html, NavigationOptions options = null) => FrameManager.MainFrame.SetContentAsync(html, options);
 
         /// <summary>
         /// Navigates to an url
@@ -1403,7 +1422,7 @@ namespace PuppeteerSharp
         /// <param name="options">Options.</param>
         public async Task<Request> WaitForRequestAsync(Func<Request, bool> predicate, WaitForOptions options = null)
         {
-            var timeout = options?.Timeout ?? DefaultWaitForTimeout;
+            var timeout = options?.Timeout ?? DefaultTimeout;
             var requestTcs = new TaskCompletionSource<Request>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             void requestEventListener(object sender, RequestEventArgs e)
@@ -1453,7 +1472,7 @@ namespace PuppeteerSharp
         /// <param name="options">Options.</param>
         public async Task<Response> WaitForResponseAsync(Func<Response, bool> predicate, WaitForOptions options = null)
         {
-            var timeout = options?.Timeout ?? DefaultWaitForTimeout;
+            var timeout = options?.Timeout ?? DefaultTimeout;
             var responseTcs = new TaskCompletionSource<Response>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             void responseEventListener(object sender, ResponseCreatedEventArgs e)
@@ -1555,7 +1574,7 @@ namespace PuppeteerSharp
         private async Task InitializeAsync(FrameTree frameTree)
         {
             _networkManager = new NetworkManager(Client);
-            FrameManager = await FrameManager.CreateFrameManagerAsync(Client, this, _networkManager, frameTree).ConfigureAwait(false);
+            FrameManager = await FrameManager.CreateFrameManagerAsync(Client, this, _networkManager, frameTree, _timeoutSettings).ConfigureAwait(false);
             _networkManager.FrameManager = FrameManager;
 
             FrameManager.FrameAttached += (sender, e) => FrameAttached?.Invoke(this, e);
