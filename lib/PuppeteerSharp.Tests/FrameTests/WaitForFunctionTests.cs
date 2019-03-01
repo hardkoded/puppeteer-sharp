@@ -85,15 +85,11 @@ namespace PuppeteerSharp.Tests.FrameTests
 
         [Fact]
         public async Task ShouldReturnTheSuccessValueAsAJSHandle()
-        {
-            Assert.Equal(5, await (await Page.WaitForFunctionAsync("() => 5")).JsonValueAsync<int>());
-        }
+            => Assert.Equal(5, await (await Page.WaitForFunctionAsync("() => 5")).JsonValueAsync<int>());
 
         [Fact]
         public async Task ShouldReturnTheWindowAsASuccessValue()
-        {
-            Assert.NotNull(await Page.WaitForFunctionAsync("() => window"));
-        }
+            => Assert.NotNull(await Page.WaitForFunctionAsync("() => window"));
 
         [Fact]
         public async Task ShouldAcceptElementHandleArguments()
@@ -113,6 +109,16 @@ namespace PuppeteerSharp.Tests.FrameTests
         {
             var exception = await Assert.ThrowsAsync<WaitTaskTimeoutException>(()
                 => Page.WaitForExpressionAsync("false", new WaitForFunctionOptions { Timeout = 10 }));
+
+            Assert.Contains("waiting for function failed: timeout", exception.Message);
+        }
+
+        [Fact]
+        public async Task ShouldRespectDefaultTimeout()
+        {
+            Page.DefaultTimeout = 1;
+            var exception = await Assert.ThrowsAsync<WaitTaskTimeoutException>(()
+                => Page.WaitForExpressionAsync("false"));
 
             Assert.Contains("waiting for function failed: timeout", exception.Message);
         }
