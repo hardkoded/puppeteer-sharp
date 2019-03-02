@@ -1549,11 +1549,13 @@ namespace PuppeteerSharp
                     Enabled = true
                 }),
                 client.SendAsync("Network.enable", null),
-                client.SendAsync("Runtime.enable", null).ContinueWith(t => page.FrameManager.EnsureSecondaryDOMWorldAsync()),
+                client.SendAsync("Runtime.enable", null),
                 client.SendAsync("Security.enable", null),
                 client.SendAsync("Performance.enable", null),
                 client.SendAsync("Log.enable", null)
             ).ConfigureAwait(false);
+
+            await page.FrameManager.EnsureSecondaryDOMWorldAsync().ConfigureAwait(false);
 
             if (ignoreHTTPSErrors)
             {
