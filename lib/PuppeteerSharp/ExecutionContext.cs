@@ -266,5 +266,30 @@ namespace PuppeteerSharp
             }
             return message;
         }
+
+        internal async Task<ElementHandle> AdoptElementHandleASync(ElementHandle elementHandle)
+        {
+            if (elementHandle.ExecutionContext == this)
+            {
+                throw new PuppeteerException("Cannot adopt handle that already belongs to this execution context");
+            }
+            if (World == null)
+            {
+                throw new PuppeteerException("Cannot adopt handle without DOMWorld");
+            }
+
+            var nodeInfo = await _client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
+            {
+                ObjectId = elementHandle.RemoteObject.ObjectId,
+            }).ConfigureAwait(false);
+
+            var obj = await _client.SendAsync<DomResolveNodeResponse>("DOM.resolveNode", new DomResolveNodeRequest
+            {
+                BackendNodeId = nodeInfo.Node.BackendNodeId,
+                ExecutionContextId = _contextId
+            }).ConfigureAwait(false);
+
+            return CreateJSHandle(obj.Object) as ElementHandle;
+        }
     }
 }
