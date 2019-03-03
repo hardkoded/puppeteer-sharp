@@ -2,6 +2,12 @@
 <Project Sdk="Microsoft.Net.Sdk">
   <PropertyGroup>
     <TargetFramework>net461</TargetFramework>
+    <PackOnBuild>true</PackOnBuild>
+    <PackageVersion>1.11.2</PackageVersion>
+    <Authors>Darío Kondratiuk</Authors>
+    <Owners>Darío Kondratiuk</Owners>
+    <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
+    <Summary>Puppeteer-Sharp Helpers for ASP.NET Full Framework</Summary>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\PuppeteerSharp\PuppeteerSharp.csproj" />
