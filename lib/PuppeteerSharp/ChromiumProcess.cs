@@ -16,7 +16,7 @@ namespace PuppeteerSharp
     /// Represents a Chromium process and any associated temporary user data directory that have created
     /// by Puppeteer and therefore must be cleaned up when no longer needed.
     /// </summary>
-    public class ChromiumProcess : IDisposable
+    public class ChromiumProcess : IStateMachine<ChromiumProcess.State>, IDisposable
     {
         #region Constants
 
@@ -58,12 +58,12 @@ namespace PuppeteerSharp
 
         #region Instance fields
 
+        private State _currentState = State.Initial;
         private readonly LaunchOptions _options;
         private readonly TempDirectory _tempUserDataDir;
         private readonly ILogger _logger;
         private readonly TaskCompletionSource<string> _startCompletionSource = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
         private readonly TaskCompletionSource<bool> _exitCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-        private State _currentState = State.Initial;
 
         #endregion
 
@@ -297,6 +297,11 @@ namespace PuppeteerSharp
 
         #region State machine
 
+        State IStateMachine<State>.CurrentState => _currentState;
+
+        bool IStateMachine<State>.TryEnter(State newState, State fromState) 
+            => Interlocked.CompareExchange(ref _currentState, newState, fromState) == fromState;
+
         /// <summary>
         /// Represents state machine for Chromium process instances. The happy path runs along the
         /// following state transitions: <see cref="Initial"/>
@@ -346,7 +351,7 @@ namespace PuppeteerSharp
         /// </code>
         /// </para>
         /// </remarks>
-        private abstract class State
+        internal abstract class State : AbstractState<ChromiumProcess, State>
         {
             #region Predefined states
 
@@ -370,36 +375,11 @@ namespace PuppeteerSharp
             #region Methods
 
             /// <summary>
-            /// Attempts thread-safe transitions from a given state to this state.
-            /// </summary>
-            /// <param name="p">The Chromium process</param>
-            /// <param name="fromState">The state from which state transition takes place</param>
-            /// <returns>Returns <c>true</c> if transition is successful, or <c>false</c> if transition
-            /// cannot be made because current state does not equal <paramref name="fromState"/>.</returns>
-            protected bool TryEnter(ChromiumProcess p, State fromState)
-            {
-                if (Interlocked.CompareExchange(ref p._currentState, this, fromState) == fromState)
-                {
-                    fromState.Leave(p);
-                    return true;
-                }
-
-                return false;
-            }
-
-            /// <summary>
-            /// Notifies that state machine is about to transition to another state.
-            /// </summary>
-            /// <param name="p">The Chromium process</param>
-            protected virtual void Leave(ChromiumProcess p)
-            { }
-
-            /// <summary>
             /// Handles process start request.
             /// </summary>
             /// <param name="p">The Chromium process</param>
             /// <returns></returns>
-            public virtual Task StartAsync(ChromiumProcess p) => Task.FromException(InvalidOperation("start"));
+            public virtual Task StartAsync(ChromiumProcess p) => throw InvalidOperation();
 
             /// <summary>
             /// Handles process exit request.
@@ -407,14 +387,14 @@ namespace PuppeteerSharp
             /// <param name="p">The Chromium process</param>
             /// <param name="timeout">The maximum waiting time for a graceful process exit.</param>
             /// <returns></returns>
-            public virtual Task ExitAsync(ChromiumProcess p, TimeSpan timeout) => Task.FromException(InvalidOperation("exit"));
+            public virtual Task ExitAsync(ChromiumProcess p, TimeSpan timeout) => throw InvalidOperation();
 
             /// <summary>
             /// Handles process kill request.
             /// </summary>
             /// <param name="p">The Chromium process</param>
             /// <returns></returns>
-            public virtual Task KillAsync(ChromiumProcess p) => Task.FromException(InvalidOperation("kill"));
+            public virtual Task KillAsync(ChromiumProcess p) => throw InvalidOperation();
 
             /// <summary>
             /// Handles wait for process exit request.
@@ -429,20 +409,11 @@ namespace PuppeteerSharp
             /// <param name="p"></param>
             public virtual void Dispose(ChromiumProcess p) => Disposed.EnterFrom(p, this);
 
-            public override string ToString()
-            {
-                var name = GetType().Name;
-                return name.Substring(0, name.Length - "State".Length);
-            }
-
-            private Exception InvalidOperation(string operationName)
-                => new InvalidOperationException($"Cannot {operationName} in state {this}");
-
             /// <summary>
             /// Kills process if it is still alive.
             /// </summary>
             /// <param name="p"></param>
-            private static void Kill(ChromiumProcess p)
+            public static void Kill(ChromiumProcess p)
             {
                 try
                 {
@@ -477,7 +448,7 @@ namespace PuppeteerSharp
                     return Task.CompletedTask;
                 }
 
-                public override Task WaitForExitAsync(ChromiumProcess p) => Task.FromException(InvalidOperation("wait for exit"));
+                public override Task WaitForExitAsync(ChromiumProcess p) => throw InvalidOperation();
             }
 
             private class StartingState : State
