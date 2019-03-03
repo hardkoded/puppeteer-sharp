@@ -66,5 +66,12 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.CloseAsync();
             Assert.True(Page.IsClosed);
         }
+
+        [Fact(Timeout = 10000)]
+        public async Task ShouldCloseWhenConnectionBreaksPrematurely()
+        {
+            Browser.Connection.Dispose();
+            await Page.CloseAsync();
+        }
     }
 }
