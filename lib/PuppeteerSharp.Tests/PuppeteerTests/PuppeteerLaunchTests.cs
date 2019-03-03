@@ -180,13 +180,20 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             while (true)
             {
                 attempts++;
-                if (maxAttempts == attempts)
+
+                try
                 {
-                    return;
+                    if (File.Exists(cookiesFile) && File.ReadAllText(cookiesFile).Contains(valueToCheck))
+                    {
+                        return;
+                    }
                 }
-                if (File.Exists(cookiesFile) && File.ReadAllText(cookiesFile).Contains(valueToCheck))
+                catch (IOException)
                 {
-                    return;
+                    if (attempts == maxAttempts)
+                    {
+                        break;
+                    }
                 }
                 await Task.Delay(100);
             }
