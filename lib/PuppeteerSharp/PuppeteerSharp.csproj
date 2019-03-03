@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>1.11.2</PackageVersion>
+    <PackageVersion>1.12.0</PackageVersion>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
@@ -12,31 +12,51 @@
     <Description>Headless Chrome .NET API</Description>
     <PackageId>PuppeteerSharp</PackageId>
     <PackageReleaseNotes><![CDATA[
-# ChangeLog
- * No need to fix file permissions on Mac.
- * Fix race conditions in SetContentAsync.
- * Add missing ConfigureAwait in Accessibility.
- * Set headless option to false when Devtools are enabled.
- * CloseAsync should wait for the target to be closed.
- * Change TextAsync output type.
- * Browser.IsClosed should be true when the connection is closed.
+# New Features
 
-# Internal Changes
+ * Introduce Popup event.
+ * Add browserUrl option to Puppeteer.ConnectAsync.
+ * Introduce ConsoleMessage.Location.
+ * Implement support for mouseWheel (Mouse.WheelAsync).
+ * Introduce Page.SetDefaultTimeout.
 
- * Add classes to all Request/Response communications.
- * Connection messages should be dispatched synchronously.
- * Add TaskCreationOptions.RunContinuationsAsynchronously to TaskCompletionSources.
- * Remove Task.Delays.
- * Dispose CancellationTokens.
- * Add TaskCreationOptions.LongRunning to the WebSocketTransport loop.
- * Fix race condition in CloseAsync.
- * Prevent race conditions in tests.
- * Fix minor typo in XML docs.
- * Upgrade .NET Core projects to 2.2.
- * Upgrade to C# 7.3.
- * Replace timeouts with CancellationTokens.
+# Breaking Changes
+
+ * Provide default quality for jpeg screenshots.
+
+# Changelog
+ 
+ * Roll Chromium to r624492
+ * Improve async loop in AddConsoleMessage.
+ * Relax request matching heuristic.
+ * Throw on 0x0 screenshots.
+ * Make sure evaluation does not hang in detached iframes.
+ * Add failing test for skipping all debugger statements.
+ * Ignore console messages from destroyed execution contexts.
+ * Flexible ResourceType parse.
+ * Properly disable translate UI.
+ * Filter out "intervention" header.
+ * Fix repetitive setContent calls.
+ * Force color profile.
+ * Add test for waitForFunction with cross-process navigation.
+ * Make sure headful browser closes with beforeuload page.
+ * Page.WaitForFunctionAsync should work with multiline strings.
+ * Update device descriptors.
+ * Round the clip dimensions.
+ * Enable Network Service by default.
+ * Warn on nested js handle.
+ * Move to flatten protocol.
+ * Introduce DOM World.
+ * Use secondary DOMWorld to drive page.Select.
+ * Always dispose cancellation token sources.
+ * Use secondary world to drive clicks.
+ * Sync WaitForSelectorOrXPathAsync code.
+ * Teach waitForSelector to return null.
+ * Alternative approach to fixing KeyAlreadyAddedException.
+ * Fix race condition between disposal and cancellation of CancellationTokenSource.
+ * Execute frame.waitFor{Selector,XPath} in secondary world.
  ]]></PackageReleaseNotes>
-    <ReleaseVersion>1.11.2</ReleaseVersion>
+    <ReleaseVersion>1.12.0</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>
