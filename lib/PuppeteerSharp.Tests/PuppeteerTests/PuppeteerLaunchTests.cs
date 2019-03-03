@@ -160,7 +160,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                     await page.EvaluateExpressionAsync(
                         "document.cookie = 'doSomethingOnlyOnce=true; expires=Fri, 31 Dec 9999 23:59:59 GMT'");
                 }
-                await WaitForCookieInChromiumFileAsync(userDataDir.Path, "doSomethingOnlyOnce");
+                await TestUtils.WaitForCookieInChromiumFileAsync(userDataDir.Path, "doSomethingOnlyOnce");
 
                 using (var browser2 = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
                 {
@@ -168,34 +168,6 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                     await page2.GoToAsync(TestConstants.EmptyPage);
                     Assert.Equal("doSomethingOnlyOnce=true", await page2.EvaluateExpressionAsync<string>("document.cookie"));
                 }
-            }
-        }
-
-        private async Task WaitForCookieInChromiumFileAsync(string path, string valueToCheck)
-        {
-            var attempts = 0;
-            const int maxAttempts = 10;
-            var cookiesFile = Path.Combine(path, "Default", "Cookies");
-
-            while (true)
-            {
-                attempts++;
-
-                try
-                {
-                    if (File.Exists(cookiesFile) && File.ReadAllText(cookiesFile).Contains(valueToCheck))
-                    {
-                        return;
-                    }
-                }
-                catch (IOException)
-                {
-                    if (attempts == maxAttempts)
-                    {
-                        break;
-                    }
-                }
-                await Task.Delay(100);
             }
         }
 

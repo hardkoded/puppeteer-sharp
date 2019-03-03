@@ -69,6 +69,8 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                     "document.cookie = 'foo=true; expires=Fri, 31 Dec 9999 23:59:59 GMT'");
                 await browser.CloseAsync();
 
+                await TestUtils.WaitForCookieInChromiumFileAsync(userDataDir.Path, "foo");
+
                 options.Headless = true;
                 using (var browser2 = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
                 {
