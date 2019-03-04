@@ -160,6 +160,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                     await page.EvaluateExpressionAsync(
                         "document.cookie = 'doSomethingOnlyOnce=true; expires=Fri, 31 Dec 9999 23:59:59 GMT'");
                 }
+                await TestUtils.WaitForCookieInChromiumFileAsync(userDataDir.Path, "doSomethingOnlyOnce");
 
                 using (var browser2 = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
                 {
