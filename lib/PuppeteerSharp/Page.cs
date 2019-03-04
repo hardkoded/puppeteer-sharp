@@ -79,12 +79,20 @@ namespace PuppeteerSharp
             _ignoreHTTPSErrors = ignoreHTTPSErrors;
 
             _screenshotTaskQueue = screenshotTaskQueue;
-            target.CloseTask.ContinueWith((arg) =>
+            
+            _ = target.CloseTask.ContinueWith((arg) =>
             {
-                Close?.Invoke(this, EventArgs.Empty);
-                IsClosed = true;
-                _closeCompletedTcs.TrySetResult(true);
+                try
+                {
+                    Close?.Invoke(this, EventArgs.Empty);
+                }
+                finally
+                {
+                    IsClosed = true;
+                    _closeCompletedTcs.TrySetResult(true);
+                }
             });
+
 
             Client.MessageReceived += Client_MessageReceived;
         }
@@ -1104,7 +1112,7 @@ namespace PuppeteerSharp
                     return Client.Connection.SendAsync("Target.closeTarget", new TargetCloseTargetRequest
                     {
                         TargetId = Target.TargetId
-                    }).ContinueWith((task) => Target.CloseTask);
+                    }).ContinueWith(task => Target.CloseTask);
                 }
             }
 
