@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.WebSockets;
-using System.Threading;
-using System.Threading.Tasks;
 using PuppeteerSharp.Transport;
 
 namespace PuppeteerSharp
@@ -110,12 +108,18 @@ namespace PuppeteerSharp
         /// Optional factory for <see cref="WebSocket"/> implementations.
         /// If <see cref="Transport"/> is set this property will be ignored.
         /// </summary>
-        public Func<Uri, IConnectionOptions, CancellationToken, Task<WebSocket>> WebSocketFactory { get; set; }
+        public WebSocketFactory WebSocketFactory { get; set; }
 
         /// <summary>
         /// Optional connection transport.
         /// </summary>
+        [Obsolete("Use " + nameof(TransportFactory) + " instead")]
         public IConnectionTransport Transport { get; set; }
+
+        /// <summary>
+        /// Optional factory for <see cref="IConnectionTransport"/> implementations.
+        /// </summary>
+        public TransportFactory TransportFactory { get; set; }
 
         /// <summary>
         /// Gets or sets the default Viewport.

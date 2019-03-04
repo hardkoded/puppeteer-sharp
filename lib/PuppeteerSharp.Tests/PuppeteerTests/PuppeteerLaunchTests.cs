@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Transport;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -403,6 +402,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         }
 
         [Fact]
+        [Obsolete]
         public async Task ShouldSupportCustomWebSocket()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -416,6 +416,23 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             using (await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
             {
                 Assert.True(customSocketCreated);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldSupportCustomTransport()
+        {
+            var customTransportCreated = false;
+            var options = TestConstants.DefaultBrowserOptions();
+            options.TransportFactory = (url, opt, cancellationToken) =>
+            {
+                customTransportCreated = true;
+                return WebSocketTransport.DefaultTransportFactory(url, opt, cancellationToken);
+            };
+
+            using (await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
+            {
+                Assert.True(customTransportCreated);
             }
         }
 

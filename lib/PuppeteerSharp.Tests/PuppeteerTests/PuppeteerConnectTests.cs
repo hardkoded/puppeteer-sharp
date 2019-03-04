@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using PuppeteerSharp.Transport;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -78,6 +80,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         }
 
         [Fact]
+        [Obsolete]
         public async Task ShouldSupportCustomWebSocket()
         {
             var customSocketCreated = false;
@@ -94,6 +97,26 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             using (await Puppeteer.ConnectAsync(options, TestConstants.LoggerFactory))
             {
                 Assert.True(customSocketCreated);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldSupportCustomTransport()
+        {
+            var customTransportCreated = false;
+            var options = new ConnectOptions()
+            {
+                BrowserWSEndpoint = Browser.WebSocketEndpoint,
+                TransportFactory = (url, opt, cancellationToken) =>
+                {
+                    customTransportCreated = true;
+                    return WebSocketTransport.DefaultTransportFactory(url, opt, cancellationToken);
+                }
+            };
+
+            using (await Puppeteer.ConnectAsync(options, TestConstants.LoggerFactory))
+            {
+                Assert.True(customTransportCreated);
             }
         }
     }
