@@ -13,8 +13,8 @@ namespace PuppeteerSharp
     {
         #region Private members
         private TargetInfo _targetInfo;
-        private readonly string _targetId;
         private readonly Func<TargetInfo, Task<CDPSession>> _sessionFactory;
+        private readonly TaskCompletionSource<bool> _initializedTaskWrapper = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         #endregion
 
         internal bool IsInitialized;
@@ -25,24 +25,24 @@ namespace PuppeteerSharp
             BrowserContext browserContext)
         {
             _targetInfo = targetInfo;
-            _targetId = targetInfo.TargetId;
             _sessionFactory = sessionFactory;
             BrowserContext = browserContext;
             PageTask = null;
 
-            InitilizedTaskWrapper = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-            InitilizedTaskWrapper.Task.ContinueWith(async initializedTask =>
+            _ = _initializedTaskWrapper.Task.ContinueWith(async initializedTask =>
             {
                 var success = initializedTask.Result;
                 if (!success)
                 {
                     return;
                 }
-                if (Opener == null || Opener.PageTask == null || Type != TargetType.Page)
+
+                var openerPageTask = Opener?.PageTask;
+                if (openerPageTask == null || Type != TargetType.Page)
                 {
                     return;
                 }
-                var openerPage = await Opener.PageTask.ConfigureAwait(false);
+                var openerPage = await openerPageTask.ConfigureAwait(false);
                 if (!openerPage.HasPopupEventListeners)
                 {
                     return;
@@ -56,7 +56,7 @@ namespace PuppeteerSharp
 
             if (IsInitialized)
             {
-                InitilizedTaskWrapper.TrySetResult(true);
+                _initializedTaskWrapper.TrySetResult(true);
             }
         }
 
@@ -97,8 +97,7 @@ namespace PuppeteerSharp
         /// </summary>
         public BrowserContext BrowserContext { get; }
 
-        internal Task<bool> InitializedTask => InitilizedTaskWrapper.Task;
-        internal TaskCompletionSource<bool> InitilizedTaskWrapper { get; }
+        internal Task<bool> InitializedTask => _initializedTaskWrapper.Task;
         internal Task CloseTask => CloseTaskWrapper.Task;
         internal TaskCompletionSource<bool> CloseTaskWrapper { get; }
         internal Task<Page> PageTask { get; set; }
@@ -132,7 +131,7 @@ namespace PuppeteerSharp
             if (!IsInitialized && (_targetInfo.Type != TargetType.Page || _targetInfo.Url != string.Empty))
             {
                 IsInitialized = true;
-                InitilizedTaskWrapper.TrySetResult(true);
+                _initializedTaskWrapper.TrySetResult(true);
                 return;
             }
 
