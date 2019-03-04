@@ -93,7 +93,6 @@ namespace PuppeteerSharp
                 }
             });
 
-
             Client.MessageReceived += Client_MessageReceived;
         }
 
