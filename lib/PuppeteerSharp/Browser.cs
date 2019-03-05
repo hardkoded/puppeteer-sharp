@@ -355,6 +355,13 @@ namespace PuppeteerSharp
                 }
             }
 
+            // Ensure that remaining targets are always marked closed, so that asynchronous page close 
+            // operations on any associated pages don't get blocked.
+            foreach (var target in TargetsMap.Values)
+            {
+                target.CloseTaskWrapper.TrySetResult(false);
+            }
+
             Closed?.Invoke(this, new EventArgs());
         }
 

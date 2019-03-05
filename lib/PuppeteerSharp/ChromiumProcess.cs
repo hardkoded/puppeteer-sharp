@@ -193,7 +193,7 @@ namespace PuppeteerSharp
                 await _exitCompletionSource.Task.WithTimeout(() =>
                 {
                     taskCompleted = false;
-                }, timeout.Value.Milliseconds).ConfigureAwait(false);
+                }, timeout.Value).ConfigureAwait(false);
                 return taskCompleted;
             }
 
@@ -616,7 +616,7 @@ namespace PuppeteerSharp
                     {
                         await Killing.EnterFromAsync(p, this).ConfigureAwait(false);
                         await waitForExitTask.ConfigureAwait(false);
-                    }, timeout.Minutes).ConfigureAwait(false);
+                    }, timeout).ConfigureAwait(false);
                 }
 
                 public override Task KillAsync(ChromiumProcess p) => Killing.EnterFromAsync(p, this);
