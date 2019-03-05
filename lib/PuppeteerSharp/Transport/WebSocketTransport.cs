@@ -44,13 +44,6 @@ namespace PuppeteerSharp.Transport
 
         private static async Task<IConnectionTransport> CreateDefaultTransport(Uri url, IConnectionOptions connectionOptions, CancellationToken cancellationToken)
         {
-#pragma warning disable 618
-            // Backwards compatibility, but strongly discouraged!
-            if (connectionOptions.Transport != null)
-            {
-                return connectionOptions.Transport;
-            }
-#pragma warning restore 618
             var webSocketFactory = connectionOptions.WebSocketFactory ?? DefaultWebSocketFactory;
             var webSocket = await webSocketFactory(url, connectionOptions, cancellationToken);
             return new WebSocketTransport(webSocket, DefaultTransportScheduler, connectionOptions.EnqueueTransportMessages);
