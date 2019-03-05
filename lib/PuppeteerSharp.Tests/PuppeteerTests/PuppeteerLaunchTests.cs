@@ -402,7 +402,6 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         }
 
         [Fact]
-        [Obsolete]
         public async Task ShouldSupportCustomWebSocket()
         {
             var options = TestConstants.DefaultBrowserOptions();
