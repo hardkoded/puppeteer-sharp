@@ -89,7 +89,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 WebSocketFactory = (uri, socketOptions, cancellationToken) =>
                 {
                     customSocketCreated = true;
-                    return Connection.DefaultWebSocketFactory(uri, socketOptions, cancellationToken);
+                    return WebSocketTransport.DefaultWebSocketFactory(uri, socketOptions, cancellationToken);
                 }
             };
 
