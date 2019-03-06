@@ -10,6 +10,6 @@
             set => _defaultNavigationTimeout = value;
         }
 
-        public int Timeout { get; set; } = 3000;
+        public int Timeout { get; set; } = 30000;
     }
 }
