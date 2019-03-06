@@ -19,9 +19,8 @@ namespace PuppeteerSharp.Tests.PageTests
             var responses = new Dictionary<string, Response>();
             Page.Response += (sender, e) => responses[e.Response.Url.Split('/').Last()] = e.Response;
 
-            await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html",
-                waitUntil: new[] { WaitUntilNavigation.Networkidle2 });
-            await Page.ReloadAsync(waitUntil: new[] { WaitUntilNavigation.Networkidle2 });
+            await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
+            await Page.ReloadAsync();
             Assert.True(responses["one-style.css"].FromCache);
 
             await Page.SetCacheEnabledAsync(false);
