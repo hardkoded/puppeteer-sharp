@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Linq;
-using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -270,21 +269,19 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets default web socket factory implementation.
         /// </summary>
-        public static readonly Func<Uri, IConnectionOptions, CancellationToken, Task<WebSocket>> DefaultWebSocketFactory = async (uri, options, cancellationToken) =>
+        [Obsolete("Use " + nameof(WebSocketTransport) + "." + nameof(WebSocketTransport.DefaultWebSocketFactory) + " instead")]
+        public static readonly WebSocketFactory DefaultWebSocketFactory = WebSocketTransport.DefaultWebSocketFactory;
+
+        internal static async Task<Connection> Create(string url, IConnectionOptions connectionOptions, ILoggerFactory loggerFactory = null, CancellationToken cancellationToken = default)
         {
-            var result = new ClientWebSocket();
-            result.Options.KeepAliveInterval = TimeSpan.Zero;
-            await result.ConnectAsync(uri, cancellationToken).ConfigureAwait(false);
-            return result;
-        };
-
-        internal static async Task<Connection> Create(string url, IConnectionOptions connectionOptions, ILoggerFactory loggerFactory = null)
-        {
-            var transport = connectionOptions.Transport ?? new WebSocketTransport();
-            connectionOptions.WebSocketFactory = connectionOptions.WebSocketFactory ?? DefaultWebSocketFactory;
-
-            await transport.InitializeAsync(url, connectionOptions).ConfigureAwait(false);
-
+#pragma warning disable 618
+            var transport = connectionOptions.Transport;
+#pragma warning restore 618
+            if (transport == null)
+            {
+                var transportFactory = connectionOptions.TransportFactory ?? WebSocketTransport.DefaultTransportFactory;
+                transport = await transportFactory(new Uri(url), connectionOptions, cancellationToken);
+            }
             return new Connection(url, connectionOptions.SlowMo, transport, loggerFactory);
         }
 
