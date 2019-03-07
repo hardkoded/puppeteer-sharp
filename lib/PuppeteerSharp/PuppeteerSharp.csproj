@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>1.12.0</PackageVersion>
+    <PackageVersion>1.12.1</PackageVersion>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
@@ -56,7 +56,7 @@
  * Fix race condition between disposal and cancellation of CancellationTokenSource.
  * Execute frame.waitFor{Selector,XPath} in secondary world.
  ]]></PackageReleaseNotes>
-    <ReleaseVersion>1.12.0</ReleaseVersion>
+    <ReleaseVersion>1.12.1</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>
