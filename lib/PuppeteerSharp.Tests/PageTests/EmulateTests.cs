@@ -18,7 +18,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.EmulateAsync(TestConstants.IPhone);
 
             Assert.Equal(375, await Page.EvaluateExpressionAsync<int>("window.innerWidth"));
-            Assert.Contains("Safari", await Page.EvaluateExpressionAsync<string>("navigator.userAgent"));
+            Assert.Contains("iPhone", await Page.EvaluateExpressionAsync<string>("navigator.userAgent"));
         }
 
         [Fact]
