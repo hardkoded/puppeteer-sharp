@@ -327,7 +327,7 @@ namespace PuppeteerSharp.Tests.InputTests
                 if (event.key === 'l')
                   event.preventDefault();
                 if (event.key === 'o')
-                  Promise.resolve().then(() => event.preventDefault());
+                  event.preventDefault();
               }, false);
             }");
             await Page.Keyboard.TypeAsync("Hello World!");
@@ -359,8 +359,8 @@ namespace PuppeteerSharp.Tests.InputTests
             await mouse.MoveAsync(dimensions.X + dimensions.Width + 100, dimensions.Y + dimensions.Height + 100);
             await mouse.UpAsync();
             var newDimensions = await Page.EvaluateFunctionAsync<Dimensions>(Dimensions);
-            Assert.Equal(dimensions.Width + 104, newDimensions.Width);
-            Assert.Equal(dimensions.Height + 104, newDimensions.Height);
+            Assert.Equal(Math.Round(dimensions.Width + 104, MidpointRounding.AwayFromZero), newDimensions.Width);
+            Assert.Equal(Math.Round(dimensions.Height + 104, MidpointRounding.AwayFromZero), newDimensions.Height);
         }
 
         [Fact]
@@ -419,13 +419,18 @@ namespace PuppeteerSharp.Tests.InputTests
             await Page.FocusAsync("textarea");
             const string text = "This is the text that we are going to try to select. Let's see how it goes.";
             await Page.Keyboard.TypeAsync(text);
+            // Firefox needs an extra frame here after typing or it will fail to set the scrollTop
+            await Page.EvaluateExpressionAsync("new Promise(requestAnimationFrame)");
             await Page.EvaluateExpressionAsync("document.querySelector('textarea').scrollTop = 0");
             var dimensions = await Page.EvaluateFunctionAsync<Dimensions>(Dimensions);
             await Page.Mouse.MoveAsync(dimensions.X + 2, dimensions.Y + 2);
             await Page.Mouse.DownAsync();
             await Page.Mouse.MoveAsync(100, 100);
             await Page.Mouse.UpAsync();
-            Assert.Equal(text, await Page.EvaluateExpressionAsync<string>("window.getSelection().toString()"));
+            Assert.Equal(text, await Page.EvaluateFunctionAsync<string>(@"() => {
+                const textarea = document.querySelector('textarea');
+                return textarea.value.substring(textarea.selectionStart, textarea.selectionEnd);
+            }"));
         }
 
         [Fact]
