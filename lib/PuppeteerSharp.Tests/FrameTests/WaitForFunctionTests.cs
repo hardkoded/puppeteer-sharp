@@ -66,12 +66,12 @@ namespace PuppeteerSharp.Tests.FrameTests
         {
             Server.SetCSP("/empty.html", "script-src " + TestConstants.ServerUrl);
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var watchdog = Page.WaitForFunctionAsync("() => window.__FOO === 'hit'", new WaitForFunctionOptions
-            {
-                Polling = WaitForFunctionPollingOption.Raf
-            });
-            await Page.EvaluateExpressionAsync("window.__FOO = 'hit'");
-            await watchdog;
+            await Task.WhenAll(
+                Page.WaitForFunctionAsync("() => window.__FOO === 'hit'", new WaitForFunctionOptions
+                {
+                    Polling = WaitForFunctionPollingOption.Raf
+                }),
+                Page.EvaluateExpressionAsync("window.__FOO = 'hit'"));
         }
 
         [Fact]

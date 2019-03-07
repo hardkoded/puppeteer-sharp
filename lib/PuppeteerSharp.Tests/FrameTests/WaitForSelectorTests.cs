@@ -29,7 +29,11 @@ namespace PuppeteerSharp.Tests.FrameTests
         {
             await Page.EvaluateExpressionAsync("delete window.MutationObserver");
             var waitForSelector = Page.WaitForSelectorAsync(".zombo");
-            await Page.SetContentAsync("<div class='zombo'>anything</div>");
+
+            await Task.WhenAll(
+                waitForSelector,
+                Page.SetContentAsync("<div class='zombo'>anything</div>"));
+
             Assert.Equal("anything", await Page.EvaluateFunctionAsync<string>("x => x.textContent", await waitForSelector));
         }
 
