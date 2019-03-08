@@ -83,5 +83,6 @@ namespace PuppeteerSharp.Tests
                 await Task.Delay(100);
             }
         }
+        internal static bool IsFavicon(Request request) => request.Url.Contains("favicon.ico");
     }
 }
