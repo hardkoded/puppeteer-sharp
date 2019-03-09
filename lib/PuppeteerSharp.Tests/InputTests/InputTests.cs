@@ -552,6 +552,32 @@ namespace PuppeteerSharp.Tests.InputTests
             }, await Page.EvaluateExpressionAsync<int[][]>("result"));
         }
 
+        [Fact(Skip = "see https://crbug.com/929806")]
+        public async Task ShouldWorkWithMobileViewportsAndCrossProcessNavigations()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.SetViewportAsync(new ViewPortOptions
+            {
+                Width = 360,
+                Height = 640,
+                IsMobile = true
+            });
+            await Page.GoToAsync(TestConstants.CrossProcessUrl + "/mobile.html");
+            await Page.EvaluateFunctionAsync(@"() => {
+                document.addEventListener('click', event => {
+                    window.result = { x: event.clientX, y: event.clientY };
+                });
+            }");
+
+            await Page.Mouse.ClickAsync(30, 40);
+
+            Assert.Equal(new DomPointInternal()
+            {
+                X = 30,
+                Y = 40
+            }, await Page.EvaluateExpressionAsync<DomPointInternal>("result"));
+        }
+
         [Fact]
         public async Task ShouldTapTheButton()
         {
