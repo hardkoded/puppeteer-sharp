@@ -34,18 +34,6 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [Fact]
-        public async Task PageEventsRequestShouldReportPostData()
-        {
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            Server.SetRoute("/post", context => Task.CompletedTask);
-            Request request = null;
-            Page.Request += (sender, e) => request = e.Request;
-            await Page.EvaluateExpressionHandleAsync("fetch('./post', { method: 'POST', body: JSON.stringify({ foo: 'bar'})})");
-            Assert.NotNull(request);
-            Assert.Equal("{\"foo\":\"bar\"}", request.PostData);
-        }
-
-        [Fact]
         public async Task PageEventsResponse()
         {
             var responses = new List<Response>();
