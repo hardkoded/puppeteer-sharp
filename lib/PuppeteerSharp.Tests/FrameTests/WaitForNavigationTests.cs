@@ -32,7 +32,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         }
 
         [Fact]
-        public async Task ShouldRejectWhenFrameDetaches()
+        public async Task ShouldResolveWhenFrameDetaches()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
             var frame = Page.FirstChildFrame();
