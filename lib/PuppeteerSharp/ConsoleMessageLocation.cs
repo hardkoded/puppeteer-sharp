@@ -14,12 +14,12 @@ namespace PuppeteerSharp
         public string URL { get; set; }
 
         /// <summary>
-        /// Line number in the resource if known.
+        /// 0-based line number in the resource if known.
         /// </summary>
         public int? LineNumber { get; set; }
 
         /// <summary>
-        /// Column number in the resource if known.
+        /// 0-based column number in the resource if known.
         /// </summary>
         public int? ColumnNumber { get; set; }
 
