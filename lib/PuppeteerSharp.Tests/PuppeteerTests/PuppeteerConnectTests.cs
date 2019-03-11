@@ -36,6 +36,22 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         }
 
         [Fact]
+        public async Task ShouldBeAbleToCloseRemoteBrowser()
+        {
+            var originalBrowser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
+            var remoteBrowser = await Puppeteer.ConnectAsync(new ConnectOptions
+            {
+                BrowserWSEndpoint = originalBrowser.WebSocketEndpoint
+            });
+            var tcsDisconnected = new TaskCompletionSource<bool>();
+
+            originalBrowser.Disconnected += (sender, e) => tcsDisconnected.TrySetResult(true);
+            await Task.WhenAll(
+              tcsDisconnected.Task,
+              remoteBrowser.CloseAsync());
+        }
+
+        [Fact]
         public async Task ShouldSupportIgnoreHTTPSErrorsOption()
         {
             using (var originalBrowser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions()))
