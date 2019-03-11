@@ -60,6 +60,14 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Fact]
+        public async Task ShouldNotRunBeforeunloadByDefault()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/beforeunload.html");
+            await Page.ClickAsync("body");
+            await Page.CloseAsync();
+        }
+
+        [Fact]
         public async Task ShouldSetThePageCloseState()
         {
             Assert.False(Page.IsClosed);
