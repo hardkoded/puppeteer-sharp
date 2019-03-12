@@ -26,6 +26,11 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.SetRequestInterceptionAsync(true);
             Page.Request += async (sender, e) =>
             {
+                if (TestUtils.IsFavicon(e.Request))
+                {
+                    await e.Request.ContinueAsync();
+                    return;
+                }
                 Assert.Contains("empty.html", e.Request.Url);
                 Assert.NotNull(e.Request.Headers);
                 Assert.Equal(HttpMethod.Get, e.Request.Method);
@@ -61,9 +66,9 @@ namespace PuppeteerSharp.Tests.PageTests
 
             await Page.SetRequestInterceptionAsync(true);
             Page.Request += async (sender, e) => await e.Request.ContinueAsync();
-            
+
             await Page.GoToAsync(TestConstants.ServerUrl + "/intervention");
-            
+
             Assert.Contains("www.chromestatus.com", interventionHeader);
         }
 
@@ -95,13 +100,16 @@ namespace PuppeteerSharp.Tests.PageTests
 
             Page.Request += async (sender, e) =>
             {
-                await e.Request.ContinueAsync();
-                requests.Add(e.Request);
-
-                if (requests.Count > 1)
+                if (!TestUtils.IsFavicon(e.Request))
                 {
-                    requestsReadyTcs.TrySetResult(true);
+                    requests.Add(e.Request);
+
+                    if (requests.Count > 1)
+                    {
+                        requestsReadyTcs.TrySetResult(true);
+                    }
                 }
+                await e.Request.ContinueAsync();
             };
 
             await Page.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
@@ -333,7 +341,11 @@ namespace PuppeteerSharp.Tests.PageTests
             var requests = new List<Request>();
             Page.Request += async (sender, e) =>
             {
-                requests.Add(e.Request);
+                if (!TestUtils.IsFavicon(e.Request))
+                {
+                    requests.Add(e.Request);
+                }
+
                 await e.Request.ContinueAsync();
             };
 
@@ -402,6 +414,12 @@ namespace PuppeteerSharp.Tests.PageTests
             // Cancel 2nd request.
             Page.Request += async (sender, e) =>
             {
+                if (TestUtils.IsFavicon(e.Request))
+                {
+                    await e.Request.ContinueAsync();
+                    return;
+                }
+
                 if (spinner)
                 {
                     spinner = !spinner;
