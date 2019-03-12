@@ -78,11 +78,8 @@ namespace PuppeteerSharp.Tests.InputTests
         public async Task ShouldClickWrappedLinks()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/wrappedlink.html");
-            await Task.WhenAll(
-                Page.ClickAsync("a"),
-                Page.WaitForNavigationAsync()
-            );
-            Assert.Equal(TestConstants.ServerUrl + "/wrappedlink.html#clicked", Page.Url);
+            await Page.ClickAsync("a");
+            Assert.True(await Page.EvaluateExpressionAsync<bool>("window.__clicked"));
         }
 
         [Fact]
