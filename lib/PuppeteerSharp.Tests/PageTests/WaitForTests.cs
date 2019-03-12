@@ -69,7 +69,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public Task ShouldWaitForPredicate()
             => Task.WhenAll(
                 Page.WaitForFunctionAsync("() => window.innerWidth < 100"),
-                Page.SetViewportAsync(new ViewPortOptions { Width = 10, Height = 10 });
+                Page.SetViewportAsync(new ViewPortOptions { Width = 10, Height = 10 })
         );
 
         [Fact]
