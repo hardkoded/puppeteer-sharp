@@ -216,13 +216,22 @@ namespace PuppeteerSharp.Tests.InputTests
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
             var textarea = await Page.QuerySelectorAsync("textarea");
-            await textarea.PressAsync("a", new PressOptions { Text = "f" });
-            Assert.Equal("f", await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
+            await textarea.PressAsync("a");
+            Assert.Equal("a", await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
 
             await Page.EvaluateExpressionAsync("window.addEventListener('keydown', e => e.preventDefault(), true)");
 
-            await textarea.PressAsync("a", new PressOptions { Text = "y" });
-            Assert.Equal("f", await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
+            await textarea.PressAsync("b");
+            Assert.Equal("a", await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
+        }
+
+        [Fact]
+        public async Task ElementHandlePressShouldSupportTextOption()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
+            var textarea = await Page.QuerySelectorAsync("textarea");
+            await textarea.PressAsync("a", new PressOptions { Text = "ё" });
+            Assert.Equal("ё", await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
         }
 
         [Fact]
