@@ -63,6 +63,5 @@ namespace PuppeteerSharp.Tests.ConnectionsTests
 
             await originalBrowser.CloseAsync();
         }
-
     }
 }
