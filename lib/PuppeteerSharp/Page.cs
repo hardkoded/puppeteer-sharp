@@ -79,7 +79,7 @@ namespace PuppeteerSharp
             _ignoreHTTPSErrors = ignoreHTTPSErrors;
 
             _screenshotTaskQueue = screenshotTaskQueue;
-            
+
             _ = target.CloseTask.ContinueWith((arg) =>
             {
                 try
@@ -2089,7 +2089,7 @@ namespace PuppeteerSharp
 
             const string addPageBinding = @"function addPageBinding(bindingName) {
               const binding = window[bindingName];
-              window[bindingName] = async(...args) => {
+              window[bindingName] = (...args) => {
                 const me = window[bindingName];
                 let callbacks = me['callbacks'];
                 if (!callbacks) {
