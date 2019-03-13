@@ -30,10 +30,10 @@ namespace PuppeteerSharp.Tests.InputTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/touches.html");
             var button = await Page.QuerySelectorAsync("button");
             await button.TapAsync();
-            Assert.Equal(new object[] {
-                new { Touchstart = 0 },
-                new { Touchend = 0 }
-            }, await Page.EvaluateExpressionAsync("getResult()"));
+            Assert.Equal(new string[] {
+                "Touchstart: 0",
+                "Touchend: 0"
+            }, await Page.EvaluateExpressionAsync<string[]>("getResult()"));
         }
     }
 }
