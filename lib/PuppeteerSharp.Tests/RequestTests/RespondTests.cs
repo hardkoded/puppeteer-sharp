@@ -38,6 +38,36 @@ namespace PuppeteerSharp.Tests.RequestTests
         }
 
         [Fact]
+        public async Task ShouldRedirect()
+        {
+            await Page.SetRequestInterceptionAsync(true);
+
+            Page.Request += async (sender, e) =>
+            {
+                if (!e.Request.Url.Contains("rrredirect"))
+                {
+                    await e.Request.ContinueAsync();
+                    return;
+                }
+
+                await e.Request.RespondAsync(new ResponseData
+                {
+                    Status = HttpStatusCode.Redirect,
+                    Headers = new Dictionary<string, object>
+                    {
+                        ["location"] = TestConstants.EmptyPage
+                    }
+                });
+            };
+
+            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/rrredirect");
+
+            Assert.Single(response.Request.RedirectChain);
+            Assert.Equal(TestConstants.ServerUrl + "/rrredirect", response.Request.RedirectChain[0].Url);
+            Assert.Equal(TestConstants.EmptyPage, response.Url);
+        }
+
+        [Fact]
         public async Task ShouldAllowMockingBinaryResponses()
         {
             await Page.SetRequestInterceptionAsync(true);
