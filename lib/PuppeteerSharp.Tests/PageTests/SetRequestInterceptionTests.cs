@@ -91,6 +91,22 @@ namespace PuppeteerSharp.Tests.PageTests
             );
         }
 
+        [Fact(Skip = "see https://github.com/GoogleChrome/puppeteer/issues/3973")]
+        public async Task ShouldWorkWhenHeaderManipulationHeadersWithRedirect()
+        {
+            Server.SetRedirect("/rredirect", "/empty.html");
+            await Page.SetRequestInterceptionAsync(true);
+
+            Page.Request += async (sender, e) =>
+            {
+                var headers = e.Request.Headers.Clone();
+                headers["foo"] = "bar";
+                await e.Request.ContinueAsync(new Payload { Headers = headers });
+            };
+
+            await Page.GoToAsync(TestConstants.ServerUrl + "/rrredirect");
+        }
+
         [Fact]
         public async Task ShouldContainRefererHeader()
         {
