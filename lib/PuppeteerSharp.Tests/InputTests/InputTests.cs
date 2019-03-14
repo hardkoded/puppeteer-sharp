@@ -588,26 +588,6 @@ namespace PuppeteerSharp.Tests.InputTests
         }
 
         [Fact]
-        public async Task ShouldTapTheButton()
-        {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
-            await Page.TapAsync("button");
-            Assert.Equal("Clicked", await Page.EvaluateExpressionAsync<string>("result"));
-        }
-
-        [Fact(Skip = "test is ignored")]
-        public async Task ShouldReportTouches()
-        {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/input/touches.html");
-            var button = await Page.QuerySelectorAsync("button");
-            await button.TapAsync();
-            Assert.Equal(new object[] {
-                new { Touchstart = 0 },
-                new { Touchend = 0 }
-            }, await Page.EvaluateExpressionAsync("getResult()"));
-        }
-
-        [Fact]
         public async Task ShouldClickTheButtonInsideAnIframe()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
