@@ -76,7 +76,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 return Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
             });
 
-            Assert.Equal("Failed to launch chrome! path to executable does not exist", exception.Message);
+            Assert.Contains("Failed to launch", exception.Message);
             Assert.Equal(options.ExecutablePath, exception.FileName);
         }
 
@@ -341,18 +341,17 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         [Fact]
         public async Task ShouldHaveCustomUrlWhenLaunchingBrowser()
         {
-            var customUrl = TestConstants.EmptyPage;
             var options = TestConstants.DefaultBrowserOptions();
-            options.Args = options.Args.Prepend(customUrl).ToArray();
+            options.Args = options.Args.Prepend(TestConstants.EmptyPage).ToArray();
             using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
             {
                 var pages = await browser.PagesAsync();
                 Assert.Single(pages);
-                if (pages[0].Url != customUrl)
+                if (pages[0].Url != TestConstants.EmptyPage)
                 {
                     await pages[0].WaitForNavigationAsync();
                 }
-                Assert.Equal(customUrl, pages[0].Url);
+                Assert.Equal(TestConstants.EmptyPage, pages[0].Url);
             }
         }
 

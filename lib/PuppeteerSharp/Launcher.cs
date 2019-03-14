@@ -64,7 +64,7 @@ namespace PuppeteerSharp
                         .CreateAsync(connection, Array.Empty<string>(), options.IgnoreHTTPSErrors, options.DefaultViewport, Process)
                         .ConfigureAwait(false);
 
-                    await EnsureInitialPageAsync(browser).ConfigureAwait(false);
+                    await browser.WaitForTargetAsync(t => t.Type == TargetType.Page).ConfigureAwait(false);
                     return browser;
                 }
                 catch (Exception ex)
@@ -197,26 +197,6 @@ namespace PuppeteerSharp
                 throw new FileNotFoundException("Chromium revision is not downloaded. Run BrowserFetcher.DownloadAsync or download Chromium manually", revisionInfo.ExecutablePath);
             }
             return revisionInfo.ExecutablePath;
-        }
-
-        private static Task EnsureInitialPageAsync(Browser browser)
-        {
-            // Wait for initial page target to be created.
-            if (browser.Targets().Any(target => target.Type == TargetType.Page))
-            {
-                return Task.CompletedTask;
-            }
-            var initialPageCompletion = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-            void InitialPageCallback(object sender, TargetChangedArgs e)
-            {
-                if (e.Target.Type == TargetType.Page)
-                {
-                    initialPageCompletion.TrySetResult(true);
-                    browser.TargetCreated -= InitialPageCallback;
-                }
-            }
-            browser.TargetCreated += InitialPageCallback;
-            return initialPageCompletion.Task;
         }
 
         #endregion
