@@ -14,9 +14,16 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Fact]
-        public async Task ShouldGetAndSetCookies()
+        public async Task ShouldReturnNoCookiesInPristineBrowserContext()
         {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            Assert.Empty(await Page.GetCookiesAsync());
+        }
+
+        [Fact]
+        public async Task ShouldGetACookie()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.Empty(await Page.GetCookiesAsync());
 
             await Page.EvaluateExpressionAsync("document.cookie = 'username=John Doe'");
@@ -81,14 +88,6 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.False(cookie.HttpOnly);
             Assert.False(cookie.Secure);
             Assert.True(cookie.Session);
-            Assert.Equal("gridcookie=GRID", await Page.EvaluateExpressionAsync<string>("document.cookie"));
-
-            await Page.GoToAsync(TestConstants.ServerUrl + "/empty.html");
-            Assert.Empty(await Page.GetCookiesAsync());
-            Assert.Equal(string.Empty, await Page.EvaluateExpressionAsync<string>("document.cookie"));
-
-            await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
-            Assert.Equal("gridcookie=GRID", await Page.EvaluateExpressionAsync<string>("document.cookie"));
         }
 
         [Fact]
