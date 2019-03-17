@@ -11,14 +11,13 @@ namespace PuppeteerSharp.Tests.DumpIO
             {
                 Headless = true,
                 DumpIO = true,
-                ExecutablePath = args[1]
+                ExecutablePath = args[0]
             };
 
-            using (var browser = await Puppeteer.LaunchAsync(options))
-            using (var page = await browser.NewPageAsync())
-            {
-                await page.EvaluateFunctionAsync("_dumpioTextToLog => console.log(_dumpioTextToLog)", args[0]);
-            }
+            var browser = await Puppeteer.LaunchAsync(options);
+            var page = await browser.NewPageAsync();
+            await page.CloseAsync();
+            await browser.CloseAsync();
         }
     }
 }
