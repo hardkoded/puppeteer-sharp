@@ -306,6 +306,16 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
         }
 
         [Fact]
+        public async Task PlainTextFieldWithoutRoleShouldNotHaveContent()
+        {
+            await Page.SetContentAsync(
+                "<div contenteditable='plaintext-only'>Edit this image:<img src='fakeimage.png' alt='my fake image'></div>");
+            var snapshot = await Page.Accessibility.SnapshotAsync();
+            Assert.Equal("GenericContainer", snapshot.Children[0].Role);
+            Assert.Equal(string.Empty, snapshot.Children[0].Name);
+        }
+
+        [Fact]
         public async Task NonEditableTextboxWithRoleAndTabIndexAndLabelShouldNotHaveChildren()
         {
             await Page.SetContentAsync(@"
