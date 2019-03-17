@@ -301,6 +301,5 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.Equal("MetaLeft", result[code]);
             Assert.Equal(true, result[metaKey]);
         }
-
     }
 }
