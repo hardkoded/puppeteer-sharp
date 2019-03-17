@@ -2,7 +2,7 @@
 using Xunit;
 using Xunit.Abstractions;
 
-namespace PuppeteerSharp.Tests.ConnectionsTests
+namespace PuppeteerSharp.Tests.ChromiumSpecificTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class BrowserUrlOptionTests : PuppeteerPageBaseTest
