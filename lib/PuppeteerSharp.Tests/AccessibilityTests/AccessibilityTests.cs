@@ -147,6 +147,46 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
         }
 
         [Fact]
+        public async Task RoleDescription()
+        {
+            await Page.SetContentAsync("<div tabIndex=-1 aria-roledescription='foo'>Hi</div>");
+            var snapshot = await Page.Accessibility.SnapshotAsync();
+            Assert.Equal("foo", snapshot.Children[0].RoleDescription);
+        }
+
+        [Fact]
+        public async Task Orientation()
+        {
+            await Page.SetContentAsync("<a href='' role='slider' aria-orientation='vertical'>11</a>");
+            var snapshot = await Page.Accessibility.SnapshotAsync();
+            Assert.Equal("vertical", snapshot.Children[0].Orientation);
+        }
+
+        [Fact]
+        public async Task AutoComplete()
+        {
+            await Page.SetContentAsync("<input type='number' aria-autocomplete='list' />");
+            var snapshot = await Page.Accessibility.SnapshotAsync();
+            Assert.Equal("list", snapshot.Children[0].AutoComplete);
+        }
+
+        [Fact]
+        public async Task MultiSelectable()
+        {
+            await Page.SetContentAsync("<div role='grid' tabIndex=-1 aria-multiselectable=true>hey</div>");
+            var snapshot = await Page.Accessibility.SnapshotAsync();
+            Assert.True(snapshot.Children[0].Multiselectable);
+        }
+
+        [Fact]
+        public async Task KeyShortcuts()
+        {
+            await Page.SetContentAsync("<div role='grid' tabIndex=-1 aria-keyshortcuts='foo'>hey</div>");
+            var snapshot = await Page.Accessibility.SnapshotAsync();
+            Assert.Equal("foo", snapshot.Children[0].KeyShortcuts);
+        }
+
+        [Fact]
         public async Task ShouldNotReportTextNodesInsideControls()
         {
             await Page.SetContentAsync(@"
