@@ -105,7 +105,6 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(HttpStatusCode.OK, response.Status);
         }
 
-
         [Theory]
         [InlineData(WaitUntilNavigation.Networkidle0)]
         [InlineData(WaitUntilNavigation.Networkidle2)]
