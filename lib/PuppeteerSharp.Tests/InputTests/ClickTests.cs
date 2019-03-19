@@ -10,7 +10,6 @@ namespace PuppeteerSharp.Tests.InputTests
     [Collection("PuppeteerLoaderFixture collection")]
     public class ClickTests : PuppeteerPageBaseTest
     {
-        private Task dummy;
         private const string Dimensions = @"function dimensions() {
             const rect = document.querySelector('textarea').getBoundingClientRect();
             return {
