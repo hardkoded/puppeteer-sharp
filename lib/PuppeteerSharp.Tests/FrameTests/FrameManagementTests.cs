@@ -18,8 +18,8 @@ namespace PuppeteerSharp.Tests.FrameTests
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/nested-frames.html");
             Assert.Equal(
-                TestUtils.CompressText(TestConstants.NestedFramesDumpResult),
-                TestUtils.CompressText(FrameUtils.DumpFrames(Page.MainFrame)));
+                TestConstants.NestedFramesDumpResult,
+                FrameUtils.DumpFrames(Page.MainFrame));
         }
 
         [Fact]
