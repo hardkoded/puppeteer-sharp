@@ -26,6 +26,11 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.SetRequestInterceptionAsync(true);
             Page.Request += async (sender, e) =>
             {
+                if (TestUtils.IsFavicon(e.Request))
+                {
+                    await e.Request.ContinueAsync();
+                    return;
+                }
                 Assert.Contains("empty.html", e.Request.Url);
                 Assert.NotNull(e.Request.Headers);
                 Assert.Equal(HttpMethod.Get, e.Request.Method);
@@ -40,31 +45,6 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(response.Ok);
 
             Assert.Equal(TestConstants.Port, response.RemoteAddress.Port);
-        }
-
-        [Fact]
-        public async Task ShouldWorkWithInterventionHeaders()
-        {
-            Server.SetRoute("/intervention", context => context.Response.WriteAsync($@"
-              <script>
-                document.write('<script src=""{TestConstants.CrossProcessHttpPrefix}/intervention.js"">' + '</scr' + 'ipt>');
-              </script>
-            "));
-            Server.SetRedirect("/intervention.js", "/redirect.js");
-
-            string interventionHeader = null;
-            Server.SetRoute("/redirect.js", context =>
-            {
-                interventionHeader = context.Request.Headers["intervention"];
-                return context.Response.WriteAsync("console.log(1);");
-            });
-
-            await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (sender, e) => await e.Request.ContinueAsync();
-            
-            await Page.GoToAsync(TestConstants.ServerUrl + "/intervention");
-            
-            Assert.Contains("www.chromestatus.com", interventionHeader);
         }
 
         [Fact]
@@ -86,6 +66,22 @@ namespace PuppeteerSharp.Tests.PageTests
             );
         }
 
+        [Fact(Skip = "see https://github.com/GoogleChrome/puppeteer/issues/3973")]
+        public async Task ShouldWorkWhenHeaderManipulationHeadersWithRedirect()
+        {
+            Server.SetRedirect("/rredirect", "/empty.html");
+            await Page.SetRequestInterceptionAsync(true);
+
+            Page.Request += async (sender, e) =>
+            {
+                var headers = e.Request.Headers.Clone();
+                headers["foo"] = "bar";
+                await e.Request.ContinueAsync(new Payload { Headers = headers });
+            };
+
+            await Page.GoToAsync(TestConstants.ServerUrl + "/rrredirect");
+        }
+
         [Fact]
         public async Task ShouldContainRefererHeader()
         {
@@ -95,13 +91,16 @@ namespace PuppeteerSharp.Tests.PageTests
 
             Page.Request += async (sender, e) =>
             {
-                await e.Request.ContinueAsync();
-                requests.Add(e.Request);
-
-                if (requests.Count > 1)
+                if (!TestUtils.IsFavicon(e.Request))
                 {
-                    requestsReadyTcs.TrySetResult(true);
+                    requests.Add(e.Request);
+
+                    if (requests.Count > 1)
+                    {
+                        requestsReadyTcs.TrySetResult(true);
+                    }
                 }
+                await e.Request.ContinueAsync();
             };
 
             await Page.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
@@ -333,7 +332,11 @@ namespace PuppeteerSharp.Tests.PageTests
             var requests = new List<Request>();
             Page.Request += async (sender, e) =>
             {
-                requests.Add(e.Request);
+                if (!TestUtils.IsFavicon(e.Request))
+                {
+                    requests.Add(e.Request);
+                }
+
                 await e.Request.ContinueAsync();
             };
 
@@ -402,6 +405,12 @@ namespace PuppeteerSharp.Tests.PageTests
             // Cancel 2nd request.
             Page.Request += async (sender, e) =>
             {
+                if (TestUtils.IsFavicon(e.Request))
+                {
+                    await e.Request.ContinueAsync();
+                    return;
+                }
+
                 if (spinner)
                 {
                     spinner = !spinner;
