@@ -120,7 +120,7 @@ using (var page = await browser.NewPageAsync())
 using (var page = await browser.NewPageAsync())
 {
     await page.GoToAsync("http://www.spapage.com");
-    var watchDog = page.WaitForFunctionAsync("window.innerWidth < 100");
+    var watchDog = page.WaitForFunctionAsync("()=> window.innerWidth < 100");
     await page.SetViewportAsync(new ViewPortOptions { Width = 50, Height = 50 });
     await watchDog;
 }
