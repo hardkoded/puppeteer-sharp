@@ -34,6 +34,5 @@ namespace PuppeteerSharp.Tests.PageTests.Cookies
             await Page.DeleteCookieAsync(new CookieParam { Name = "cookie2" });
             Assert.Equal("cookie1=1; cookie3=3", await Page.EvaluateExpressionAsync<string>("document.cookie"));
         }
-
     }
 }

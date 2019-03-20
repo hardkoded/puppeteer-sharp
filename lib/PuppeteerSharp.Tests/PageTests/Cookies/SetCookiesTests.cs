@@ -23,7 +23,6 @@ namespace PuppeteerSharp.Tests.PageTests.Cookies
                 Value = "123456"
             });
             Assert.Equal("password=123456", await Page.EvaluateExpressionAsync<string>("document.cookie"));
-
         }
 
         [Fact]
