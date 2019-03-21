@@ -92,12 +92,9 @@ namespace PuppeteerSharp.Media
 
         /// <inheritdoc/>
         public override int GetHashCode()
-        {
-            var hashCode = 859600377;
-            hashCode = hashCode * -1521134295 + Width.GetHashCode();
-            hashCode = hashCode * -1521134295 + Height.GetHashCode();
-            return hashCode;
-        }
+            => 859600377
+                ^ Width.GetHashCode()
+                ^ Height.GetHashCode();
 
         /// <inheritdoc/>
         public static bool operator ==(PaperFormat left, PaperFormat right)

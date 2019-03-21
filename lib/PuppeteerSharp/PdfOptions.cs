@@ -116,22 +116,19 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public override int GetHashCode()
-        {
-            var hashCode = -711844102;
-            hashCode = hashCode * -1521134295 + Scale.GetHashCode();
-            hashCode = hashCode * -1521134295 + DisplayHeaderFooter.GetHashCode();
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(HeaderTemplate);
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(FooterTemplate);
-            hashCode = hashCode * -1521134295 + PrintBackground.GetHashCode();
-            hashCode = hashCode * -1521134295 + Landscape.GetHashCode();
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(PageRanges);
-            hashCode = hashCode * -1521134295 + EqualityComparer<PaperFormat>.Default.GetHashCode(Format);
-            hashCode = hashCode * -1521134295 + EqualityComparer<object>.Default.GetHashCode(Width);
-            hashCode = hashCode * -1521134295 + EqualityComparer<object>.Default.GetHashCode(Height);
-            hashCode = hashCode * -1521134295 + EqualityComparer<MarginOptions>.Default.GetHashCode(MarginOptions);
-            hashCode = hashCode * -1521134295 + PreferCSSPageSize.GetHashCode();
-            return hashCode;
-        }
+            => -711844102
+                ^ Scale.GetHashCode()
+                ^ DisplayHeaderFooter.GetHashCode()
+                ^ EqualityComparer<string>.Default.GetHashCode(HeaderTemplate)
+                ^ EqualityComparer<string>.Default.GetHashCode(FooterTemplate)
+                ^ PrintBackground.GetHashCode()
+                ^ Landscape.GetHashCode()
+                ^ EqualityComparer<string>.Default.GetHashCode(PageRanges)
+                ^ EqualityComparer<PaperFormat>.Default.GetHashCode(Format)
+                ^ EqualityComparer<object>.Default.GetHashCode(Width)
+                ^ EqualityComparer<object>.Default.GetHashCode(Height)
+                ^ EqualityComparer<MarginOptions>.Default.GetHashCode(MarginOptions)
+                ^ PreferCSSPageSize.GetHashCode();
 
         /// <inheritdoc/>
         public static bool operator ==(PdfOptions left, PdfOptions right)

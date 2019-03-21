@@ -54,19 +54,15 @@ namespace PuppeteerSharp.Media
 
         /// <inheritdoc/>
         public override int GetHashCode()
-        {
-            var hashCode = -481391125;
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Top);
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Left);
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Bottom);
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Right);
-            return hashCode;
-        }
+            => -481391125
+                ^ EqualityComparer<string>.Default.GetHashCode(Top)
+                ^ EqualityComparer<string>.Default.GetHashCode(Left)
+                ^ EqualityComparer<string>.Default.GetHashCode(Bottom)
+                ^ EqualityComparer<string>.Default.GetHashCode(Right);
 
         /// <inheritdoc/>
         public static bool operator ==(MarginOptions left, MarginOptions right)
             => EqualityComparer<MarginOptions>.Default.Equals(left, right);
-
         /// <inheritdoc/>
         public static bool operator !=(MarginOptions left, MarginOptions right) => !(left == right);
     }
