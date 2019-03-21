@@ -87,5 +87,19 @@ namespace PuppeteerSharp.Tests.TargetTests
                 }));
             Assert.Contains("Session closed.", exception.Message);
         }
+
+        [Fact]
+        public async Task ShouldThrowNiceErrors()
+        {
+            var client = await Page.Target.CreateCDPSessionAsync();
+            async Task TheSourceOfTheProblems() => await client.SendAsync("ThisCommand.DoesNotExist");
+
+            var exception = await Assert.ThrowsAsync<MessageException>(async () =>
+            {
+                await TheSourceOfTheProblems();
+            });
+            Assert.Contains("TheSourceOfTheProblems", exception.StackTrace);
+            Assert.Contains("ThisCommand.DoesNotExist", exception.Message);
+        }
     }
 }

@@ -183,20 +183,6 @@ namespace PuppeteerSharp.Tests.InputTests
         }
 
         [Fact]
-        public async Task KeyboardModifiers()
-        {
-            var keyboard = Page.Keyboard;
-            Assert.Equal(0, keyboard.Modifiers);
-            await keyboard.DownAsync(Key.Shift);
-            Assert.Equal(8, keyboard.Modifiers);
-            await keyboard.DownAsync(Key.Alt);
-            Assert.Equal(9, keyboard.Modifiers);
-            await keyboard.UpAsync(Key.Shift);
-            await keyboard.UpAsync(Key.Alt);
-            Assert.Equal(0, keyboard.Modifiers);
-        }
-
-        [Fact]
         public async Task ShouldSpecifyRepeatProperty()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
