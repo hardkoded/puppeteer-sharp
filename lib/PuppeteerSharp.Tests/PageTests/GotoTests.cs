@@ -18,10 +18,68 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Fact]
+        public async Task ShouldWork()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            Assert.Equal(TestConstants.EmptyPage, Page.Url);
+        }
+        [Fact]
+        public async Task ShouldWorkWithAnchorNavigation()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            Assert.Equal(TestConstants.EmptyPage, Page.Url);
+            await Page.GoToAsync($"{TestConstants.EmptyPage}#foo");
+            Assert.Equal($"{TestConstants.EmptyPage}#foo", Page.Url);
+            await Page.GoToAsync($"{TestConstants.EmptyPage}#bar");
+            Assert.Equal($"{TestConstants.EmptyPage}#bar", Page.Url);
+        }
+
+        [Fact]
+        public async Task ShouldWorkWithRedirects()
+        {
+            Server.SetRedirect("/redirect/1.html", "/redirect/2.html");
+            Server.SetRedirect("/redirect/2.html", "/empty.html");
+
+            await Page.GoToAsync(TestConstants.ServerUrl + "/redirect/1.html");
+            await Page.GoToAsync(TestConstants.EmptyPage);
+        }
+
+        [Fact]
         public async Task ShouldNavigateToAboutBlank()
         {
             var response = await Page.GoToAsync(TestConstants.AboutBlank);
             Assert.Null(response);
+        }
+
+        [Fact]
+        public async Task ShouldReturnResponseWhenPageChangesItsURLAfterLoad()
+        {
+            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/historyapi.html");
+            Assert.Equal(HttpStatusCode.OK, response.Status);
+        }
+
+        [Fact]
+        public async Task ShouldWorkWithSubframesReturn204()
+        {
+            Server.SetRoute("/frames/frame.html", context =>
+            {
+                context.Response.StatusCode = 204;
+                return Task.CompletedTask;
+            });
+            await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
+        }
+
+        [Fact]
+        public async Task ShouldFailWhenServerReturns204()
+        {
+            Server.SetRoute("/empty.html", context =>
+            {
+                context.Response.StatusCode = 204;
+                return Task.CompletedTask;
+            });
+            var exception = await Assert.ThrowsAnyAsync<PuppeteerException>(
+                () => Page.GoToAsync(TestConstants.EmptyPage));
+            Assert.Contains("net::ERR_ABORTED", exception.Message);
         }
 
         [Fact]
@@ -45,37 +103,6 @@ namespace PuppeteerSharp.Tests.PageTests
             }");
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             Assert.Equal(HttpStatusCode.OK, response.Status);
-        }
-
-        [Fact]
-        public async Task ShouldFailWhenServerReturns204()
-        {
-            Server.SetRoute("/empty.html", context =>
-            {
-                context.Response.StatusCode = 204;
-                return Task.CompletedTask;
-            });
-            var exception = await Assert.ThrowsAnyAsync<PuppeteerException>(
-                () => Page.GoToAsync(TestConstants.EmptyPage));
-            Assert.Contains("net::ERR_ABORTED", exception.Message);
-        }
-
-        [Fact]
-        public async Task ShouldReturnResponseWhenPageChangesItsURLAfterLoad()
-        {
-            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/historyapi.html");
-            Assert.Equal(HttpStatusCode.OK, response.Status);
-        }
-
-        [Fact]
-        public async Task ShouldWorkWithSubframesReturn204()
-        {
-            Server.SetRoute("/frames/frame.html", context =>
-            {
-                context.Response.StatusCode = 204;
-                return Task.CompletedTask;
-            });
-            await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
         }
 
         [Theory]
