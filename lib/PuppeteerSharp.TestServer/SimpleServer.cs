@@ -20,6 +20,11 @@ namespace PuppeteerSharp.TestServer
         private readonly IDictionary<string, string> _csp;
         private readonly IWebHost _webHost;
 
+        public void EnableGzip(string v)
+        {
+            throw new NotImplementedException();
+        }
+
         public static SimpleServer Create(int port, string contentRoot) => new SimpleServer(port, contentRoot, isHttps: false);
         public static SimpleServer CreateHttps(int port, string contentRoot) => new SimpleServer(port, contentRoot, isHttps: true);
 

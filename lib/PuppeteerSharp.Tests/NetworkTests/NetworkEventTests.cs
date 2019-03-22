@@ -70,38 +70,6 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [Fact]
-        public async Task ResponseFromCache()
-        {
-            var responses = new Dictionary<string, Response>();
-            Page.Response += (sender, e) => responses[e.Response.Url.Split('/').Last()] = e.Response;
-            await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
-            await Page.ReloadAsync();
-
-            Assert.Equal(2, responses.Count);
-            Assert.Equal(HttpStatusCode.NotModified, responses["one-style.html"].Status);
-            Assert.False(responses["one-style.html"].FromCache);
-            Assert.Equal(HttpStatusCode.OK, responses["one-style.css"].Status);
-            Assert.True(responses["one-style.css"].FromCache);
-        }
-
-        [Fact]
-        public async Task ResponseFromServiceWorker()
-        {
-            var responses = new Dictionary<string, Response>();
-            Page.Response += (sender, e) => responses[e.Response.Url.Split('/').Last()] = e.Response;
-            await Page.GoToAsync(TestConstants.ServerUrl + "/serviceworkers/fetch/sw.html",
-                waitUntil: new[] { WaitUntilNavigation.Networkidle2 });
-            await Page.EvaluateFunctionAsync("async () => await window.activationPromise");
-            await Page.ReloadAsync();
-
-            Assert.Equal(2, responses.Count);
-            Assert.Equal(HttpStatusCode.OK, responses["sw.html"].Status);
-            Assert.True(responses["sw.html"].FromServiceWorker);
-            Assert.Equal(HttpStatusCode.OK, responses["style.css"].Status);
-            Assert.True(responses["style.css"].FromServiceWorker);
-        }
-
-        [Fact]
         public async Task PageEventsResponseShouldProvideBody()
         {
             Response response = null;
@@ -111,64 +79,6 @@ namespace PuppeteerSharp.Tests.NetworkTests
             var responseText = await new HttpClient().GetStringAsync(TestConstants.ServerUrl + "/simple.json");
             Assert.Equal(responseText, await response.TextAsync());
             Assert.Equal(JObject.Parse(responseText), await response.JsonAsync());
-        }
-
-        [Fact]
-        public async Task PageEventsResponseShouldThrowWhenRequestingBodyOfRedirectedResponse()
-        {
-            Server.SetRedirect("/foo.html", "/empty.html");
-            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/foo.html");
-            var redirectChain = response.Request.RedirectChain;
-            Assert.Single(redirectChain);
-            var redirected = redirectChain[0].Response;
-            Assert.Equal(HttpStatusCode.Redirect, redirected.Status);
-
-            var exception = await Assert.ThrowsAsync<PuppeteerException>(async () => await redirected.TextAsync());
-            Assert.Contains("Response body is unavailable for redirect responses", exception.Message);
-        }
-
-        [Fact]
-        public async Task PageEventsResponseShouldNotReportBodyUnlessRequestIsFinished()
-        {
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            // Setup server to trap request.
-            var serverResponseCompletion = new TaskCompletionSource<bool>();
-            HttpResponse serverResponse = null;
-            Server.SetRoute("/get", context =>
-            {
-                serverResponse = context.Response;
-                context.Response.WriteAsync("hello ");
-                return serverResponseCompletion.Task;
-            });
-            // Setup page to trap response.
-            Response pageResponse = null;
-            var requestFinished = false;
-            Page.Response += (sender, e) => pageResponse = e.Response;
-            Page.RequestFinished += (sender, e) => requestFinished = true;
-            // send request and wait for server response
-            Task WaitForPageResponseEvent()
-            {
-                var completion = new TaskCompletionSource<bool>();
-                Page.Response += (sender, e) => completion.SetResult(true);
-                return completion.Task;
-            }
-            await Task.WhenAll(
-                Page.EvaluateExpressionAsync("fetch('/get', { method: 'GET'})"),
-                WaitForPageResponseEvent()
-            );
-
-            Assert.NotNull(serverResponse);
-            Assert.NotNull(pageResponse);
-            Assert.Equal(HttpStatusCode.OK, pageResponse.Status);
-            Assert.False(requestFinished);
-
-            var responseText = pageResponse.TextAsync();
-            // Write part of the response and wait for it to be flushed.
-            await serverResponse.WriteAsync("wor");
-            // Finish response.
-            await serverResponse.WriteAsync("ld!");
-            serverResponseCompletion.SetResult(true);
-            Assert.Equal("hello world!", await responseText);
         }
 
         [Fact]
