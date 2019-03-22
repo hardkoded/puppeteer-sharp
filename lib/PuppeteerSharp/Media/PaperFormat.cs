@@ -1,11 +1,15 @@
-﻿namespace PuppeteerSharp.Media
+﻿using System;
+using System.Collections.Generic;
+
+namespace PuppeteerSharp.Media
 {
     /// <summary>
     /// Paper format.
     /// </summary>
     /// <seealso cref="PdfOptions.Format"/>
-    public class PaperFormat
+    public class PaperFormat : IEquatable<PaperFormat>
     {
+        private PaperFormat() { }
         private PaperFormat(decimal width, decimal height)
         {
             Width = width;
@@ -68,5 +72,35 @@
         /// A6.
         /// </summary>
         public static readonly PaperFormat A6 = new PaperFormat(4.13m, 5.83m);
+
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+            {
+                return false;
+            }
+
+            return Equals((PaperFormat)obj);
+        }
+
+        /// <inheritdoc/>
+        public bool Equals(PaperFormat format)
+            => format != null &&
+                   Width == format.Width &&
+                   Height == format.Height;
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+            => 859600377
+                ^ Width.GetHashCode()
+                ^ Height.GetHashCode();
+
+        /// <inheritdoc/>
+        public static bool operator ==(PaperFormat left, PaperFormat right)
+            => EqualityComparer<PaperFormat>.Default.Equals(left, right);
+
+        /// <inheritdoc/>
+        public static bool operator !=(PaperFormat left, PaperFormat right) => !(left == right);
     }
 }
