@@ -53,35 +53,6 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [Fact]
-        public async Task ResponseStatusText()
-        {
-            Server.SetRoute("/cool", (context) =>
-            {
-                context.Response.StatusCode = 200;
-                //There are some debates about this on these issues
-                //https://github.com/aspnet/HttpAbstractions/issues/395
-                //https://github.com/aspnet/HttpAbstractions/issues/486
-                //https://github.com/aspnet/HttpAbstractions/issues/794
-                context.Features.Get<IHttpResponseFeature>().ReasonPhrase = "cool!";
-                return Task.CompletedTask;
-            });
-            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/cool");
-            Assert.Equal("cool!", response.StatusText);
-        }
-
-        [Fact]
-        public async Task PageEventsResponseShouldProvideBody()
-        {
-            Response response = null;
-            Page.Response += (sender, e) => response = e.Response;
-            await Page.GoToAsync(TestConstants.ServerUrl + "/simple.json");
-            Assert.NotNull(response);
-            var responseText = await new HttpClient().GetStringAsync(TestConstants.ServerUrl + "/simple.json");
-            Assert.Equal(responseText, await response.TextAsync());
-            Assert.Equal(JObject.Parse(responseText), await response.JsonAsync());
-        }
-
-        [Fact]
         public async Task PageEventsRequestFailed()
         {
             await Page.SetRequestInterceptionAsync(true);
