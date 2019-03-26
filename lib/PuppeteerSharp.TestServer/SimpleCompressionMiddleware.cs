@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -27,18 +28,19 @@ namespace PuppeteerSharp.TestServer
             var bodyWrapperStream = new MemoryStream();
             context.Response.Body = bodyWrapperStream;
 
-            try
+            await _next(context);
+            using (var stream = new MemoryStream())
             {
-                await _next(context);
-            }
-            finally
-            {
-                context.Response.Headers["Content-Encoding"] = "gzip";
-                using (var compressionStream = new GZipStream(response, CompressionMode.Compress, true))
+                using (var compressionStream = new GZipStream(stream, CompressionMode.Compress, true))
                 {
                     bodyWrapperStream.Position = 0;
                     bodyWrapperStream.CopyTo(compressionStream);
                 }
+
+                context.Response.Headers["Content-Encoding"] = "gzip";
+                context.Response.Headers["Content-Length"] = stream.Length.ToString();
+                stream.Position = 0;
+                stream.CopyTo(response);
                 context.Response.Body = response;
             }
         }
