@@ -23,6 +23,7 @@ namespace PuppeteerSharp.TestServer
                 await _next(context);
             }
 
+            var response = context.Response.Body;
             var bodyWrapperStream = new MemoryStream();
             context.Response.Body = bodyWrapperStream;
 
@@ -32,10 +33,10 @@ namespace PuppeteerSharp.TestServer
             }
             finally
             {
-                context.Response.Headers["Accept-Encoding"] = "gzip";
-                var response = new MemoryStream();
+                context.Response.Headers["Content-Encoding"] = "gzip";
                 using (var compressionStream = new GZipStream(response, CompressionMode.Compress, true))
                 {
+                    bodyWrapperStream.Position = 0;
                     bodyWrapperStream.CopyTo(compressionStream);
                 }
                 context.Response.Body = response;
