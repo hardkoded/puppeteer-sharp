@@ -11,7 +11,7 @@ using Xunit;
 using Xunit.Abstractions;
 using PuppeteerSharp.Helpers;
 
-namespace PuppeteerSharp.Tests.PageTests
+namespace PuppeteerSharp.Tests.NetworkTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
     public class SetRequestInterceptionTests : PuppeteerPageBaseTest
@@ -229,55 +229,6 @@ namespace PuppeteerSharp.Tests.PageTests
                 Page.GoToAsync(TestConstants.ServerUrl + "/grid.html")
             );
             Assert.Equal("http://google.com/", requestTask.Result);
-        }
-
-        [Fact]
-        public async Task ShouldAmendHTTPHeaders()
-        {
-            await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (sender, e) =>
-            {
-                var headers = new Dictionary<string, string>(e.Request.Headers)
-                {
-                    ["FOO"] = "bar"
-                };
-                await e.Request.ContinueAsync(new Payload { Headers = headers });
-            };
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            var requestTask = Server.WaitForRequest("/sleep.zzz", request => request.Headers["foo"].ToString());
-            await Task.WhenAll(
-                requestTask,
-                Page.EvaluateExpressionAsync("fetch('/sleep.zzz')")
-            );
-            Assert.Equal("bar", requestTask.Result);
-        }
-
-        [Fact]
-        public async Task ShouldAmendPostData()
-        {
-            await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (sender, e) =>
-            {
-                await e.Request.ContinueAsync(new Payload
-                {
-                    Method = HttpMethod.Post,
-                    PostData = "FooBar"
-                });
-            };
-            var requestTask = Server.WaitForRequest("/sleep.zzz", async request =>
-            {
-                using (var reader = new StreamReader(request.Body, Encoding.UTF8))
-                {
-                    return await reader.ReadToEndAsync();
-                }
-            });
-
-            await Task.WhenAll(
-                requestTask,
-                Page.GoToAsync(TestConstants.ServerUrl + "/sleep.zzz")
-            );
-
-            Assert.Equal("FooBar", await requestTask.Result);
         }
 
         [Fact]

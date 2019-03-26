@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace PuppeteerSharp.Tests.RequestTests
+namespace PuppeteerSharp.Tests.NetworkTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
-    public class RespondTests : PuppeteerPageBaseTest
+    public class RequestRespondTests : PuppeteerPageBaseTest
     {
-        public RespondTests(ITestOutputHelper output) : base(output)
+        public RequestRespondTests(ITestOutputHelper output) : base(output)
         {
         }
 

@@ -3,12 +3,12 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace PuppeteerSharp.Tests.PageTests
+namespace PuppeteerSharp.Tests.NetworkTests
 {
     [Collection("PuppeteerLoaderFixture collection")]
-    public class SetExtraHttpHeadersTests : PuppeteerPageBaseTest
+    public class PageSetExtraHttpHeadersTests : PuppeteerPageBaseTest
     {
-        public SetExtraHttpHeadersTests(ITestOutputHelper output) : base(output)
+        public PageSetExtraHttpHeadersTests(ITestOutputHelper output) : base(output)
         {
         }
 
