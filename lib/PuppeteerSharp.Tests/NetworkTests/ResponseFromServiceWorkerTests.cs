@@ -37,6 +37,5 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(HttpStatusCode.OK, responses["style.css"].Status);
             Assert.True(responses["style.css"].FromServiceWorker);
         }
-
     }
 }
