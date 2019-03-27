@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Net;
 using System.IO.Compression;
-using PuppeteerSharp.Helpers.Linux;
+using Mono.Unix;
 
 namespace PuppeteerSharp
 {
@@ -34,12 +34,12 @@ namespace PuppeteerSharp
             {Platform.Win64, "{0}/chromium-browser-snapshots/Win_x64/{1}/{2}.zip"}
         };
 
-        internal static readonly FilePermissions BrowserPermissionsInLinux =
-            FilePermissions.S_IRWXU |
-            FilePermissions.S_IRGRP |
-            FilePermissions.S_IXGRP |
-            FilePermissions.S_IROTH |
-            FilePermissions.S_IXOTH;
+        internal static readonly FileAccessPermissions BrowserPermissionsInLinux =
+            FileAccessPermissions.UserRead | FileAccessPermissions.UserWrite | FileAccessPermissions.UserExecute |
+            FileAccessPermissions.GroupRead |
+            FileAccessPermissions.GroupExecute |
+            FileAccessPermissions.OtherRead |
+            FileAccessPermissions.OtherExecute;
 
         /// <summary>
         /// Default Chromium revision.
@@ -210,7 +210,7 @@ namespace PuppeteerSharp
 
             if (revisionInfo != null && GetCurrentPlatform() == Platform.Linux)
             {
-                LinuxSysCall.SetPermissions(revisionInfo.ExecutablePath, BrowserPermissionsInLinux);
+                UnixFileSystemInfo.GetFileSystemEntry(revisionInfo.ExecutablePath).FileAccessPermissions = BrowserPermissionsInLinux;
             }
             return revisionInfo;
         }
