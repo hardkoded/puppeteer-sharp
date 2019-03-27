@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>1.12.1</PackageVersion>
+    <PackageVersion>1.13.0</PackageVersion>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
@@ -12,51 +12,46 @@
     <Description>Headless Chrome .NET API</Description>
     <PackageId>PuppeteerSharp</PackageId>
     <PackageReleaseNotes><![CDATA[
-# New Features
-
- * Introduce Popup event.
- * Add browserUrl option to Puppeteer.ConnectAsync.
- * Introduce ConsoleMessage.Location.
- * Implement support for mouseWheel (Mouse.WheelAsync).
- * Introduce Page.SetDefaultTimeout.
-
 # Breaking Changes
 
- * Provide default quality for jpeg screenshots.
+ * Response.Headers changed from `Dictionary<string, object>` to `Dictionary<string, string>`
 
 # Changelog
- 
- * Roll Chromium to r624492
- * Improve async loop in AddConsoleMessage.
- * Relax request matching heuristic.
- * Throw on 0x0 screenshots.
- * Make sure evaluation does not hang in detached iframes.
- * Add failing test for skipping all debugger statements.
- * Ignore console messages from destroyed execution contexts.
- * Flexible ResourceType parse.
- * Properly disable translate UI.
- * Filter out "intervention" header.
- * Fix repetitive setContent calls.
- * Force color profile.
- * Add test for waitForFunction with cross-process navigation.
- * Make sure headful browser closes with beforeuload page.
- * Page.WaitForFunctionAsync should work with multiline strings.
- * Update device descriptors.
- * Round the clip dimensions.
- * Enable Network Service by default.
- * Warn on nested js handle.
- * Move to flatten protocol.
- * Introduce DOM World.
- * Use secondary DOMWorld to drive page.Select.
- * Always dispose cancellation token sources.
- * Use secondary world to drive clicks.
- * Sync WaitForSelectorOrXPathAsync code.
- * Teach waitForSelector to return null.
- * Alternative approach to fixing KeyAlreadyAddedException.
- * Fix race condition between disposal and cancellation of CancellationTokenSource.
- * Execute frame.waitFor{Selector,XPath} in secondary world.
+
+ * PdfOptions should be serializable.
+ * Bump chromium to r637110.
+ * SetCacheEnable and WaitFor test updates.
+ * Input and target tests updates.
+ * Emulate and SetUserAgent test updates.
+ * ShouldEnableOrDisableTheCacheBasedOnTheStatePassed test improvements.
+ * Exclude favicon from tests.
+ * Disable flaky cookies test.
+ * Add failing for test for mobile + cross process navigation.
+ * RequestPostDataTests tests.
+ * Update ConsoleMessage.Location comments.
+ * WaitForNavigationTests updates.
+ * Beforeunload tests updates.
+ * New connect test.
+ * CloseTests updates.
+ * SetRequestInterceptionTests changes.
+ * WaitForTests changes.
+ * ElementHandlePress tests updates.
+ * ExposeFunction improvements.
+ * Launcher tests refactor.
+ * Touchscreen tests improvements.
+ * Add failing test for bad request interception.
+ * Override Permissions tests changes.
+ * Split out fixtures tests.
+ * Move some chromium specific tests.
+ * Keyboards tests.
+ * Add page.accessibility.snapshot tests.
+ * Test refactors.
+ * Cookies tests improvements.
+ * Click and Goto tests refactors.
+ * Minor test changes.
+ * Network tests refactor.
  ]]></PackageReleaseNotes>
-    <ReleaseVersion>1.12.1</ReleaseVersion>
+    <ReleaseVersion>1.13.0</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>
