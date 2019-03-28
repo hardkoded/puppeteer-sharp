@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Mono.Unix;
 using Xunit;
 using Xunit.Abstractions;
+using PuppeteerSharp.Helpers.Linux;
 
 namespace PuppeteerSharp.Tests.PuppeteerTests
 {
@@ -46,8 +47,8 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 {
 #if NETCOREAPP //don't need to run this code if we're not netcore app since net471 won't run on NIX. And UnixFileSystemInfo is not available for net471
                     Assert.Equal(
-                        BrowserFetcher.BrowserPermissionsInLinux, 
-                        UnixFileSystemInfo.GetFileSystemEntry(revisionInfo.ExecutablePath).FileAccessPermissions & BrowserFetcher.BrowserPermissionsInLinux);
+                        LinuxPermissionsSetter.BrowserPermissionsInLinux, 
+                        UnixFileSystemInfo.GetFileSystemEntry(revisionInfo.ExecutablePath).FileAccessPermissions & LinuxPermissionsSetter.BrowserPermissionsInLinux);
 #endif               
                 }
                 Assert.Equal(new[] { 123456 }, browserFetcher.LocalRevisions());
