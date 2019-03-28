@@ -489,12 +489,7 @@ namespace PuppeteerSharp
         /// <example>
         /// An example of overriding the navigator.languages property before the page loads:
         /// <code>
-        /// var overrideNavigatorLanguages = @"Object.defineProperty(navigator, 'languages', {
-        ///   get: function() {
-        ///     return ['en-US', 'en', 'bn'];
-        ///   };
-        /// });";
-        /// await page.EvaluateOnNewDocumentAsync(overrideNavigatorLanguages);
+        /// await page.EvaluateOnNewDocumentAsync("() => window.__example = true");
         /// </code>
         /// </example>
         /// <returns>Task</returns>
