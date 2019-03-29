@@ -47,8 +47,8 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 {
 #if NETCOREAPP //don't need to run this code if we're not netcore app since net471 won't run on NIX. And UnixFileSystemInfo is not available for net471
                     Assert.Equal(
-                        LinuxPermissionsSetter.BrowserPermissionsInLinux, 
-                        UnixFileSystemInfo.GetFileSystemEntry(revisionInfo.ExecutablePath).FileAccessPermissions & LinuxPermissionsSetter.BrowserPermissionsInLinux);
+                        LinuxPermissionsSetter.ExecutableFilePermissions, 
+                        UnixFileSystemInfo.GetFileSystemEntry(revisionInfo.ExecutablePath).FileAccessPermissions & LinuxPermissionsSetter.ExecutableFilePermissions);
 #endif               
                 }
                 Assert.Equal(new[] { 123456 }, browserFetcher.LocalRevisions());

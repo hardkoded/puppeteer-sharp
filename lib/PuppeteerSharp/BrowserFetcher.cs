@@ -204,7 +204,7 @@ namespace PuppeteerSharp
 
             if (revisionInfo != null && GetCurrentPlatform() == Platform.Linux)
             {
-                LinuxPermissionsSetter.SetBrowserPermissionsPermissions(revisionInfo.ExecutablePath);
+                LinuxPermissionsSetter.SetExecutableFilePermissions(revisionInfo.ExecutablePath);
             }
             return revisionInfo;
         }
