@@ -204,10 +204,7 @@ namespace PuppeteerSharp
 
             if (revisionInfo != null && GetCurrentPlatform() == Platform.Linux)
             {
-                void SetPermissions(string fullPath)
-                {
-                    LinuxPermissionsSetter.SetExecutableFilePermissions(fullPath);
-                }
+                void SetPermissions(string fullPath) => LinuxPermissionsSetter.SetExecutableFilePermissions(fullPath);
 
                 SetPermissions(revisionInfo.ExecutablePath);
             }
