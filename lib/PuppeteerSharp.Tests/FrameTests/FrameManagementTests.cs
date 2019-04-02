@@ -113,6 +113,21 @@ namespace PuppeteerSharp.Tests.FrameTests
         }
 
         [Fact]
+        public async Task ShouldReportFrameFromInsideShadowDOM()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/shadow.html");
+            await Page.EvaluateFunctionAsync(@"async url =>
+            {
+                const frame = document.createElement('iframe');
+                frame.src = url;
+                document.body.shadowRoot.appendChild(frame);
+                await new Promise(x => frame.onload = x);
+            }", TestConstants.EmptyPage);
+            Assert.Equal(2, Page.Frames.Length);
+            Assert.Single(Page.Frames, frame => frame.Url == TestConstants.EmptyPage);
+        }
+
+        [Fact]
         public async Task ShouldReportFrameName()
         {
             await FrameUtils.AttachFrameAsync(Page, "theFrameId", TestConstants.EmptyPage);
