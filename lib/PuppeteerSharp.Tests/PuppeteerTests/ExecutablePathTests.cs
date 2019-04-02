@@ -11,6 +11,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         {
             var executablePath = Puppeteer.GetExecutablePath();
             Assert.True(File.Exists(executablePath));
+            Assert.Equal(new FileInfo(executablePath).FullName, executablePath);
         }
     }
 }
