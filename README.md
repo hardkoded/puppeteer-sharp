@@ -147,6 +147,8 @@ using (var browser = await PuppeteerSharp.Puppeteer.ConnectAsync(options))
 ```
 
 # Monthly reports
+ * [April 2019](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-apr-2019)
+ * [March 2019](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-mar-2019)
  * [February 2019](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-feb-2019)
  * [January 2019](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-jan-2019)
  * [December 2018](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-dec-2018)
