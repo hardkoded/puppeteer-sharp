@@ -375,7 +375,8 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to the added tag when the stylesheet's onload fires or when the CSS content was injected into frame</returns>
         /// <seealso cref="Page.AddStyleTagAsync(AddTagOptions)"/>
         /// <seealso cref="Page.AddStyleTagAsync(string)"/>
-        public Task<ElementHandle> AddStyleTag(AddTagOptions options) => MainWorld.AddStyleTag(options);
+        [Obsolete("Use AddStyleTagAsync instead")]
+        public Task<ElementHandle> AddStyleTag(AddTagOptions options) => MainWorld.AddStyleTagAsync(options);
 
         /// <summary>
         /// Adds a <c><![CDATA[<script>]]></c> tag into the page with the desired url or content
@@ -384,7 +385,27 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to the added tag when the script's onload fires or when the script content was injected into frame</returns>
         /// <seealso cref="Page.AddScriptTagAsync(AddTagOptions)"/>
         /// <seealso cref="Page.AddScriptTagAsync(string)"/>
-        public Task<ElementHandle> AddScriptTag(AddTagOptions options) => MainWorld.AddScriptTag(options);
+        [Obsolete("Use AddScriptTagAsync instead")]
+        public Task<ElementHandle> AddScriptTag(AddTagOptions options) => MainWorld.AddScriptTagAsync(options);
+
+        /// <summary>
+        /// Adds a <c><![CDATA[<link rel="stylesheet">]]></c> tag into the page with the desired url or a <c><![CDATA[<link rel="stylesheet">]]></c> tag with the content
+        /// </summary>
+        /// <param name="options">add style tag options</param>
+        /// <returns>Task which resolves to the added tag when the stylesheet's onload fires or when the CSS content was injected into frame</returns>
+        /// <seealso cref="Page.AddStyleTagAsync(AddTagOptions)"/>
+        /// <seealso cref="Page.AddStyleTagAsync(string)"/>
+        public Task<ElementHandle> AddStyleTagAsync(AddTagOptions options) => MainWorld.AddStyleTagAsync(options);
+
+        /// <summary>
+        /// Adds a <c><![CDATA[<script>]]></c> tag into the page with the desired url or content
+        /// </summary>
+        /// <param name="options">add script tag options</param>
+        /// <returns>Task which resolves to the added tag when the script's onload fires or when the script content was injected into frame</returns>
+        /// <seealso cref="Page.AddScriptTagAsync(AddTagOptions)"/>
+        /// <seealso cref="Page.AddScriptTagAsync(string)"/>
+        public Task<ElementHandle> AddScriptTagAsync(AddTagOptions options) => MainWorld.AddScriptTagAsync(options);
+
 
         /// <summary>
         /// Gets the full HTML contents of the page, including the doctype.
