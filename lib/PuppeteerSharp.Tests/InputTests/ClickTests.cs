@@ -228,6 +228,23 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.Equal("Clicked", await frame.EvaluateExpressionAsync<string>("window.result"));
         }
 
+        [Fact(Skip = "see https://github.com/GoogleChrome/puppeteer/issues/4110")]
+        public async Task ShouldClickTheButtonWithFixedPositionInsideAnIframe()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.SetViewportAsync(new ViewPortOptions
+            {
+                Width = 500,
+                Height = 500
+            });
+            await Page.SetContentAsync("<div style=\"width:100px;height:2000px\">spacer</div>");
+            await FrameUtils.AttachFrameAsync(Page, "button-test", TestConstants.ServerUrl + "/input/button.html");
+            var frame = Page.FirstChildFrame();
+            await frame.QuerySelectorAsync("button").EvaluateFunctionAsync("button => button.style.setProperty('position', 'fixed')");
+            await frame.ClickAsync("button");
+            Assert.Equal("Clicked", await frame.EvaluateExpressionAsync<string>("window.result"));
+        }
+
         [Fact]
         public async Task ShouldClickTheButtonWithDeviceScaleFactorSet()
         {
