@@ -90,7 +90,6 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.SetBypassCSPAsync(true);
             await Page.ReloadAsync();
 
-
             // Make sure CSP prohibits addScriptTag in an iframe.
             frame = await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.ServerUrl + "/csp.html");
             await frame.AddScriptTagAsync(new AddTagOptions
@@ -98,7 +97,6 @@ namespace PuppeteerSharp.Tests.PageTests
                 Content = "window.__injected = 42;"
             }).ContinueWith(_ => Task.CompletedTask);
             Assert.Equal(42, await frame.EvaluateFunctionAsync<int?>("() => window.__injected"));
-
         }
     }
 }

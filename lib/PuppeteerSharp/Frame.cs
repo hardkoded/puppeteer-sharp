@@ -406,7 +406,6 @@ namespace PuppeteerSharp
         /// <seealso cref="Page.AddScriptTagAsync(string)"/>
         public Task<ElementHandle> AddScriptTagAsync(AddTagOptions options) => MainWorld.AddScriptTagAsync(options);
 
-
         /// <summary>
         /// Gets the full HTML contents of the page, including the doctype.
         /// </summary>
