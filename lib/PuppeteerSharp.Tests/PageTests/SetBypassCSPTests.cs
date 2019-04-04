@@ -83,7 +83,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await frame.AddScriptTagAsync(new AddTagOptions
             {
                 Content = "window.__injected = 42;"
-            });
+            }).ContinueWith(_ => Task.CompletedTask);
             Assert.Null(await frame.EvaluateFunctionAsync<int?>("() => window.__injected)"));
 
             // By-pass CSP and try one more time.
@@ -96,7 +96,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await frame.AddScriptTagAsync(new AddTagOptions
             {
                 Content = "window.__injected = 42;"
-            });
+            }).ContinueWith(_ => Task.CompletedTask);
             Assert.Equal(42, await frame.EvaluateFunctionAsync<int?>("() => window.__injected)"));
 
         }
