@@ -150,7 +150,7 @@ namespace PuppeteerSharp
             await watcherTask.ConfigureAwait(false);
         }
 
-        internal async Task<ElementHandle> AddScriptTag(AddTagOptions options)
+        internal async Task<ElementHandle> AddScriptTagAsync(AddTagOptions options)
         {
             const string addScriptUrl = @"async function addScriptUrl(url, type) {
               const script = document.createElement('script');
@@ -213,7 +213,7 @@ namespace PuppeteerSharp
             throw new ArgumentException("Provide options with a `Url`, `Path` or `Content` property");
         }
 
-        internal async Task<ElementHandle> AddStyleTag(AddTagOptions options)
+        internal async Task<ElementHandle> AddStyleTagAsync(AddTagOptions options)
         {
             const string addStyleUrl = @"async function addStyleUrl(url) {
               const link = document.createElement('link');
