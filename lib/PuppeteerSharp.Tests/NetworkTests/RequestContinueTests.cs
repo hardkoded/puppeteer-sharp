@@ -96,7 +96,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
                 await e.Request.ContinueAsync(new Payload
                 {
                     Method = HttpMethod.Post,
-                    PostData = "FooBar"
+                    PostData = "doggo"
                 });
             };
             var requestTask = Server.WaitForRequest("/sleep.zzz", async request =>
@@ -112,7 +112,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
                 Page.GoToAsync(TestConstants.ServerUrl + "/sleep.zzz")
             );
 
-            Assert.Equal("FooBar", await requestTask.Result);
+            Assert.Equal("doggo", await requestTask.Result);
         }
     }
 }
