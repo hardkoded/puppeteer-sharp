@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Messaging;
 using PuppeteerSharp.Helpers.Json;
+using System.Numerics;
 
 namespace PuppeteerSharp.Helpers
 {
@@ -15,6 +16,11 @@ namespace PuppeteerSharp.Helpers
 
             if (unserializableValue != null)
             {
+                if (remoteObject.Type == RemoteObjectType.Bigint &&
+                    decimal.TryParse(remoteObject.UnserializableValue.Replace("n", ""), out var decimalValue))
+                {
+                    return new BigInteger(decimalValue);
+                }
                 switch (unserializableValue)
                 {
                     case "-0":
