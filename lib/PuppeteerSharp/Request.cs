@@ -148,6 +148,7 @@ namespace PuppeteerSharp
 
         /// <summary>
         /// Continues request with optional request overrides. To use this, request interception should be enabled with <see cref="Page.SetRequestInterceptionAsync(bool)"/>. Exception is immediately thrown if the request interception is not enabled.
+        /// If the URL is set it won't perform a redirect. The request will be silently forwarded to the new url. For example, the address bar will show the original url.
         /// </summary>
         /// <param name="overrides">Optional request overwrites.</param>
         /// <returns>Task</returns>
