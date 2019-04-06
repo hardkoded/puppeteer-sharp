@@ -332,7 +332,6 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Contains("Are you passing a nested JSHandle?", exception.Message);
         }
 
-
         [Fact]
         public async Task ShouldWorkWithoutGenerics()
         {
