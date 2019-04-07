@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace PuppeteerSharp.Media
@@ -6,7 +6,7 @@ namespace PuppeteerSharp.Media
     /// <summary>
     /// Paper format.
     /// </summary>
-    /// <seealso cref="PdfOptions.Format"/>
+    /// <seealso cref="P:PuppeteerSharp.PdfOptions.Format" />
     public class PaperFormat : IEquatable<PaperFormat>
     {
         /// <summary>
