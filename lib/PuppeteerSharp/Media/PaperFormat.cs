@@ -24,13 +24,13 @@ namespace PuppeteerSharp.Media
         /// Page width in inches
         /// </summary>
         /// <value>The width.</value>
-        public decimal Width { get; set; }
+        public readonly decimal Width;
 
         /// <summary>
         /// Page height in inches
         /// </summary>
         /// <value>The Height.</value>
-        public decimal Height { get; set; }
+        public readonly decimal Height;
 
         /// <summary>
         /// Letter.
