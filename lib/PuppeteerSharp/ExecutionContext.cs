@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Messaging;
 using PuppeteerSharp.Helpers;
 using static PuppeteerSharp.Messaging.RuntimeQueryObjectsResponse;
+using System.Numerics;
 
 namespace PuppeteerSharp
 {
@@ -221,6 +222,12 @@ namespace PuppeteerSharp
         {
             switch (arg)
             {
+                case BigInteger big:
+                    return new { unserializableValue = $"{big}n" };
+
+                case int integer when integer == -0:
+                    return new { unserializableValue = "-0" };
+
                 case double d:
                     if (double.IsPositiveInfinity(d))
                     {
