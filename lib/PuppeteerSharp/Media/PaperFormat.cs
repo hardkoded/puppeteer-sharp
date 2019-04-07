@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace PuppeteerSharp.Media
@@ -9,8 +9,12 @@ namespace PuppeteerSharp.Media
     /// <seealso cref="PdfOptions.Format"/>
     public class PaperFormat : IEquatable<PaperFormat>
     {
-        private PaperFormat() { }
-        private PaperFormat(decimal width, decimal height)
+        /// <summary>
+        /// Page width and height in inches.
+        /// </summary>
+        /// <param name="width">Page width in inches</param>
+        /// <param name="height">Page height in inches</param>
+        public PaperFormat(decimal width, decimal height)
         {
             Width = width;
             Height = height;
