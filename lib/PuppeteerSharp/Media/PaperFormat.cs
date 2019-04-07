@@ -6,7 +6,7 @@ namespace PuppeteerSharp.Media
     /// <summary>
     /// Paper format.
     /// </summary>
-    /// <seealso cref="PdfOptions.Format" />
+    /// <seealso cref="PdfOptions.Format"/>
     public class PaperFormat : IEquatable<PaperFormat>
     {
         /// <summary>
