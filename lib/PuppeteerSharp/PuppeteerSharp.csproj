@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>1.13.0</PackageVersion>
+    <PackageVersion>1.14.0</PackageVersion>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
@@ -12,46 +12,21 @@
     <Description>Headless Chrome .NET API</Description>
     <PackageId>PuppeteerSharp</PackageId>
     <PackageReleaseNotes><![CDATA[
-# Breaking Changes
+# New Features
 
- * Response.Headers changed from `Dictionary<string, object>` to `Dictionary<string, string>`
+ * BigInteger support.
 
 # Changelog
-
- * PdfOptions should be serializable.
- * Bump chromium to r637110.
- * SetCacheEnable and WaitFor test updates.
- * Input and target tests updates.
- * Emulate and SetUserAgent test updates.
- * ShouldEnableOrDisableTheCacheBasedOnTheStatePassed test improvements.
- * Exclude favicon from tests.
- * Disable flaky cookies test.
- * Add failing for test for mobile + cross process navigation.
- * RequestPostDataTests tests.
- * Update ConsoleMessage.Location comments.
- * WaitForNavigationTests updates.
- * Beforeunload tests updates.
- * New connect test.
- * CloseTests updates.
- * SetRequestInterceptionTests changes.
- * WaitForTests changes.
- * ElementHandlePress tests updates.
- * ExposeFunction improvements.
- * Launcher tests refactor.
- * Touchscreen tests improvements.
- * Add failing test for bad request interception.
- * Override Permissions tests changes.
- * Split out fixtures tests.
- * Move some chromium specific tests.
- * Keyboards tests.
- * Add page.accessibility.snapshot tests.
- * Test refactors.
- * Cookies tests improvements.
- * Click and Goto tests refactors.
- * Minor test changes.
- * Network tests refactor.
+ 
+* Drop Mono dependency.
+ * Roll chromium to r641577.
+ * Make sure frames are reported from-inside shadow DOM.
+ * Add a failing test that tries to click a fixed button in an iframe.
+ * Ensure Page.setBypassCSP works with iFrames.
+ * Sync Request.Continue tests.
+ * Public constructor for PaperFormat.
  ]]></PackageReleaseNotes>
-    <ReleaseVersion>1.13.0</ReleaseVersion>
+    <ReleaseVersion>1.14.0</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>
