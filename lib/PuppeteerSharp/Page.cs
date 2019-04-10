@@ -1438,7 +1438,11 @@ namespace PuppeteerSharp
 
             _networkManager.Request += requestEventListener;
 
-            return await requestTcs.Task.WithTimeout(timeout).ConfigureAwait(false);
+            return await requestTcs.Task.WithTimeout(timeout, t =>
+            {
+                _networkManager.Request -= requestEventListener;
+                return new TimeoutException($"Timeout Exceeded: {t.TotalMilliseconds}ms exceeded");
+            }).ConfigureAwait(false);
         }
 
         /// <summary>
