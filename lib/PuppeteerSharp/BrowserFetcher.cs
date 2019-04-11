@@ -205,14 +205,12 @@ namespace PuppeteerSharp
 
             var revisionInfo = RevisionInfo(revision);
 
-#if NETSTANDARD2_0
             if (revisionInfo != null && GetCurrentPlatform() == Platform.Linux)
             {
                 void SetPermissions(string fullPath) => LinuxPermissionsSetter.SetExecutableFilePermissions(fullPath);
 
                 SetPermissions(revisionInfo.ExecutablePath);
             }
-#endif
             return revisionInfo;
         }
 

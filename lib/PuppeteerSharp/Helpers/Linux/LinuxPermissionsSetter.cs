@@ -22,4 +22,16 @@ namespace PuppeteerSharp.Helpers.Linux
     }
 }
 
+#else
+
+namespace PuppeteerSharp.Helpers.Linux
+{
+    internal static class LinuxPermissionsSetter
+    {   
+        public static void SetExecutableFilePermissions(string revisionInfoExecutablePath)
+        {
+        }
+    }
+}
+
 #endif
