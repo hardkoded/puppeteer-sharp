@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>1.14.0</PackageVersion>
+    <PackageVersion>1.14.1</PackageVersion>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
@@ -26,7 +26,7 @@
  * Sync Request.Continue tests.
  * Public constructor for PaperFormat.
  ]]></PackageReleaseNotes>
-    <ReleaseVersion>1.14.0</ReleaseVersion>
+    <ReleaseVersion>1.14.1</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>
