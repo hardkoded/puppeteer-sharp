@@ -1,4 +1,7 @@
-﻿using Mono.Unix;
+﻿
+#if NETSTANDARD2_0
+
+using Mono.Unix;
 
 namespace PuppeteerSharp.Helpers.Linux
 {
@@ -19,3 +22,5 @@ namespace PuppeteerSharp.Helpers.Linux
         }
     }
 }
+
+#endif

@@ -8,8 +8,11 @@ using System.Net;
 using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using Mono.Unix;
 using PuppeteerSharp.Helpers.Linux;
+
+#if NETSTANDARD2_0
+using Mono.Unix;
+#endif
 
 namespace PuppeteerSharp
 {
@@ -86,7 +89,7 @@ namespace PuppeteerSharp
             Platform = options.Platform ?? GetCurrentPlatform();
         }
 
-        #region Public Methods
+#region Public Methods
 
         /// <summary>
         /// The method initiates a HEAD request to check if the revision is available.
@@ -202,12 +205,14 @@ namespace PuppeteerSharp
 
             var revisionInfo = RevisionInfo(revision);
 
+#if NETSTANDARD2_0
             if (revisionInfo != null && GetCurrentPlatform() == Platform.Linux)
             {
                 void SetPermissions(string fullPath) => LinuxPermissionsSetter.SetExecutableFilePermissions(fullPath);
 
                 SetPermissions(revisionInfo.ExecutablePath);
             }
+#endif
             return revisionInfo;
         }
 
@@ -243,9 +248,9 @@ namespace PuppeteerSharp
             }
         }
 
-        #endregion
+#endregion
 
-        #region Private Methods
+#region Private Methods
 
         internal static Platform GetCurrentPlatform()
         {
@@ -314,6 +319,6 @@ namespace PuppeteerSharp
         private static string GetDownloadURL(Platform platform, string host, int revision)
             => string.Format(_downloadUrls[platform], host, revision, GetArchiveName(platform, revision));
 
-        #endregion
+#endregion
     }
 }
