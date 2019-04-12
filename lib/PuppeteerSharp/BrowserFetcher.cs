@@ -10,10 +10,6 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using PuppeteerSharp.Helpers.Linux;
 
-#if NETSTANDARD2_0
-using Mono.Unix;
-#endif
-
 namespace PuppeteerSharp
 {
     /// <summary>
@@ -207,9 +203,7 @@ namespace PuppeteerSharp
 
             if (revisionInfo != null && GetCurrentPlatform() == Platform.Linux)
             {
-                void SetPermissions(string fullPath) => LinuxPermissionsSetter.SetExecutableFilePermissions(fullPath);
-
-                SetPermissions(revisionInfo.ExecutablePath);
+                LinuxSysCall.Chmod(revisionInfo.ExecutablePath, LinuxSysCall.ExecutableFilePermissions);
             }
             return revisionInfo;
         }
