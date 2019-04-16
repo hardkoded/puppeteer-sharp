@@ -47,4 +47,7 @@
   <ItemGroup>
     <Folder Include="Helpers\Json\" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PuppeteerSharp.Abstractions\PuppeteerSharp.Abstractions.csproj" />
+  </ItemGroup>
 </Project>
