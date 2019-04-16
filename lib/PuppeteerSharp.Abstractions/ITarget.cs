@@ -13,5 +13,4 @@ namespace PuppeteerSharp.Abstractions
         Task<IPage> PageAsync();
         Task<ICDPSession> CreateCDPSessionAsync();
     }
-
 }

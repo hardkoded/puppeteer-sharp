@@ -10,5 +10,4 @@ namespace PuppeteerSharp.Abstractions
         Task Accept(string promptText = "");
         Task Dismiss();
     }
-
 }

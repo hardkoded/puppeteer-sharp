@@ -9,5 +9,4 @@ namespace PuppeteerSharp.Abstractions
         void StopReading();
         void Dispose();
     }
-
 }

@@ -30,5 +30,4 @@ namespace PuppeteerSharp.Abstractions
         Task<IFrame> ContentFrameAsync();
         Task<bool> IsIntersectingViewportAsync();
     }
-
 }

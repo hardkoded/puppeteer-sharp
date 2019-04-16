@@ -11,5 +11,4 @@ namespace PuppeteerSharp.Abstractions
         Task UpAsync(ClickOptions options = null);
         Task WheelAsync(decimal deltaX, decimal deltaY);
     }
-
 }

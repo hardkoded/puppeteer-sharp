@@ -6,5 +6,4 @@ namespace PuppeteerSharp.Abstractions
     {
         Task TapAsync(decimal x, decimal y);
     }
-
 }

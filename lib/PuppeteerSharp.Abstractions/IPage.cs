@@ -110,5 +110,4 @@ namespace PuppeteerSharp.Abstractions
         Task SetBurstModeOffAsync();
         void Dispose();
     }
-
 }

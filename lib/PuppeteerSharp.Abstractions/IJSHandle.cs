@@ -14,5 +14,4 @@ namespace PuppeteerSharp.Abstractions
         Task DisposeAsync();
         string ToString();
     }
-
 }

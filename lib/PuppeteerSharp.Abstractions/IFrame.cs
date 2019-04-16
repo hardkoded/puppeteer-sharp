@@ -42,5 +42,4 @@ namespace PuppeteerSharp.Abstractions
         Task FocusAsync(string selector);
         Task TypeAsync(string selector, string text, TypeOptions options = null);
     }
-
 }

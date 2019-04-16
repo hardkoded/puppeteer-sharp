@@ -23,5 +23,4 @@ namespace PuppeteerSharp.Abstractions
         Task<JObject> JsonAsync();
         Task<T> JsonAsync<T>();
     }
-
 }

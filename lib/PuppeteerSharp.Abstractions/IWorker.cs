@@ -8,5 +8,4 @@ namespace PuppeteerSharp.Abstractions
         Task<T> EvaluateExpressionAsync<T>(string script);
         Task<IJSHandle> EvaluateExpressionHandleAsync(string script);
     }
-
 }

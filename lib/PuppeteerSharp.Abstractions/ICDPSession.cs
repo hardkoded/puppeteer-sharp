@@ -15,5 +15,4 @@ namespace PuppeteerSharp.Abstractions
         Task<JObject> SendAsync(string method, object args = null, bool waitForCallback = true);
         Task DetachAsync();
     }
-
 }

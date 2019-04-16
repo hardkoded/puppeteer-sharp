@@ -12,5 +12,4 @@ namespace PuppeteerSharp.Abstractions
         Task<T> EvaluateFunctionAsync<T>(string script, params object[] args);
         Task<IJSHandle> QueryObjectsAsync(IJSHandle prototypeHandle);
     }
-
 }

@@ -10,5 +10,4 @@ namespace PuppeteerSharp.Abstractions
         Task StartCSSCoverageAsync(CoverageStartOptions options = null);
         Task<CoverageEntry[]> StopCSSCoverageAsync();
     }
-
 }
