@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using PuppeteerSharp.Abstractions;
 using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp

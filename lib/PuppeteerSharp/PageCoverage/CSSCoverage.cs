@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using PuppeteerSharp.Abstractions.PageCoverage;
 using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Messaging;
 

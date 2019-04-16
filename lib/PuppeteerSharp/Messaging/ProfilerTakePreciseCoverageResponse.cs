@@ -1,4 +1,6 @@
-﻿namespace PuppeteerSharp.Messaging
+﻿using PuppeteerSharp.Abstractions.PageCoverage;
+
+namespace PuppeteerSharp.Messaging
 {
     internal class ProfilerTakePreciseCoverageResponse
     {

@@ -2,7 +2,7 @@
 using System.Net;
 using System.Text;
 
-namespace PuppeteerSharp
+namespace PuppeteerSharp.Abstractions
 {
     /// <summary>
     /// Response that will fulfill a request.

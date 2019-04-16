@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using PuppeteerSharp.Abstractions;
+using PuppeteerSharp.Abstractions.Mobile;
 
 namespace PuppeteerSharp.Mobile
 {

@@ -1,4 +1,4 @@
-﻿namespace PuppeteerSharp.Mobile
+﻿namespace PuppeteerSharp.Abstractions.Mobile
 {
     /// <summary>
     /// Device descriptor.
@@ -9,16 +9,16 @@
         /// Device name.
         /// </summary>
         /// <value>The name.</value>
-        public string Name { get; internal set; }
+        public string Name { get; set; }
         /// <summary>
         /// User Agent
         /// </summary>
         /// <value>The user agent.</value>
-        public string UserAgent { get; internal set; }
+        public string UserAgent { get; set; }
         /// <summary>
         /// ViewPort.
         /// </summary>
         /// <value>The view port.</value>
-        public ViewPortOptions ViewPort { get; internal set; }
+        public ViewPortOptions ViewPort { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Abstractions.Input;
 
 namespace PuppeteerSharp.Abstractions
 {
@@ -31,10 +32,6 @@ namespace PuppeteerSharp.Abstractions
         Task<IElementHandle> QuerySelectorAsync(string selector);
         Task<IElementHandle[]> QuerySelectorAllAsync(string selector);
         Task<IElementHandle[]> XPathAsync(string expression);
-        [Obsolete("Use AddStyleTagAsync instead")]
-        Task<IElementHandle> AddStyleTag(AddTagOptions options);
-        [Obsolete("Use AddScriptTagAsync instead")]
-        Task<IElementHandle> AddScriptTag(AddTagOptions options);
         Task<IElementHandle> AddStyleTagAsync(AddTagOptions options);
         Task<IElementHandle> AddScriptTagAsync(AddTagOptions options);
         Task<string> GetContentAsync();

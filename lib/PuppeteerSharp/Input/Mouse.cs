@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using PuppeteerSharp.Abstractions.Input;
 using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp.Input

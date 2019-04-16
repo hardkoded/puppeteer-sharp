@@ -1,4 +1,5 @@
-﻿using PuppeteerSharp.Media;
+﻿using PuppeteerSharp.Abstractions.Media;
+using PuppeteerSharp.Media;
 
 namespace PuppeteerSharp.Messaging
 {

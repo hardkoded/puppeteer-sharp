@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using PuppeteerSharp.Abstractions;
 
 namespace PuppeteerSharp.Messaging
 {

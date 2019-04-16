@@ -50,7 +50,7 @@ namespace PuppeteerSharp.Abstractions
             Height = height;
         }
 
-        internal Clip ToClip() => new Clip
+        public Clip ToClip() => new Clip
         {
             X = X,
             Y = Y,

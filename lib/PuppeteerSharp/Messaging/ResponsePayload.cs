@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using PuppeteerSharp.Abstractions;
 using System.Collections.Generic;
 using System.Net;
 

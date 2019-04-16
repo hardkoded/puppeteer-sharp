@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
+using PuppeteerSharp.Abstractions.Input;
 using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp.Input
@@ -17,10 +18,7 @@ namespace PuppeteerSharp.Input
 
         internal int Modifiers { get; set; }
 
-        internal Keyboard(CDPSession client)
-        {
-            _client = client;
-        }
+        internal Keyboard(CDPSession client) => _client = client;
 
         /// <summary>
         /// Dispatches a <c>keydown</c> event

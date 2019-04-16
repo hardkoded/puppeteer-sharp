@@ -7,7 +7,6 @@ namespace PuppeteerSharp.Abstractions
     {
         IExecutionContext ExecutionContext { get; }
         bool Disposed { get; set; }
-        RemoteObject RemoteObject { get; }
         Task<IJSHandle> GetPropertyAsync(string propertyName);
         Task<Dictionary<string, IJSHandle>> GetPropertiesAsync();
         Task<object> JsonValueAsync();

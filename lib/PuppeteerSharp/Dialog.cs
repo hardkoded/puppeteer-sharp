@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using PuppeteerSharp.Abstractions;
 using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp

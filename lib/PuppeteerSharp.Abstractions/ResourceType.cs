@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
-using PuppeteerSharp.Helpers.Json;
+using PuppeteerSharp.Abstractions.Helpers.Json;
 using System.Runtime.Serialization;
 
-namespace PuppeteerSharp
+namespace PuppeteerSharp.Abstractions
 {
     /// <summary>
     /// Resource type.

@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 using Newtonsoft.Json;
-using PuppeteerSharp.Helpers.Json;
+using PuppeteerSharp.Abstractions.Helpers.Json;
 
 namespace PuppeteerSharp.Abstractions
 {

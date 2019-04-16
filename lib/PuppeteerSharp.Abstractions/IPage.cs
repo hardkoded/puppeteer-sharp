@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Abstractions.Input;
+using PuppeteerSharp.Abstractions.Media;
+using PuppeteerSharp.Abstractions.Mobile;
 
 namespace PuppeteerSharp.Abstractions
 {
@@ -18,13 +21,12 @@ namespace PuppeteerSharp.Abstractions
         IKeyboard Keyboard { get; }
         ITouchscreen Touchscreen { get; }
         ICoverage Coverage { get; }
-        ITracing Tracing { get; }
         IMouse Mouse { get; }
         ViewPortOptions Viewport { get; set; }
         IBrowser Browser { get; }
         IBrowserContext BrowserContext { get; }
         bool IsClosed { get; set; }
-        IAccessibility Accessibility { get; }
+        // IAccessibility Accessibility { get; }
         Task SetGeolocationAsync(GeolocationOption options);
         Task<Dictionary<string, decimal>> MetricsAsync();
         Task TapAsync(string selector);

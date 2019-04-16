@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.WebSockets;
+using PuppeteerSharp.Abstractions.Transport;
 using PuppeteerSharp.Transport;
 
 namespace PuppeteerSharp

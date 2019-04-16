@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using PuppeteerSharp.Abstractions.PageCoverage;
 
 namespace PuppeteerSharp.Abstractions
 {

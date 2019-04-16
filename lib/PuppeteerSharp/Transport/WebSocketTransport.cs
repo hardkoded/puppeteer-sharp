@@ -3,6 +3,7 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using PuppeteerSharp.Abstractions.Transport;
 using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Transport
@@ -92,7 +93,7 @@ namespace PuppeteerSharp.Transport
         #region Properties
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="PuppeteerSharp.Transport.IConnectionTransport"/> is closed.
+        /// Gets a value indicating whether this <see cref="IConnectionTransport"/> is closed.
         /// </summary>
         public bool IsClosed { get; private set; }
         /// <summary>

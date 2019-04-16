@@ -3,6 +3,7 @@
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using PuppeteerSharp.Abstractions.Transport;
 
     /// <summary>
     /// Delegate for creation of <see cref="IConnectionTransport"/> instances.

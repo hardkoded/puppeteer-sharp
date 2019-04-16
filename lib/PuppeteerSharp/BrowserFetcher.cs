@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Mono.Unix;
+using PuppeteerSharp.Abstractions;
 using PuppeteerSharp.Helpers.Linux;
 
 namespace PuppeteerSharp

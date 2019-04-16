@@ -1,10 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Net;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
 
-namespace PuppeteerSharp
+namespace PuppeteerSharp.Abstractions
 {
     /// <summary>
     /// Represents the security details when response was received over the secure connection.

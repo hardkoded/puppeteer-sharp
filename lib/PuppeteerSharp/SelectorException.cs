@@ -7,7 +7,7 @@ namespace PuppeteerSharp
     /// </summary>
     /// <seealso cref="Extensions.EvaluateFunctionAsync{T}(System.Threading.Tasks.Task{ElementHandle}, string, object[])"/>
     /// <seealso cref="Frame.SelectAsync(string, string[])"/>
-    /// <seealso cref="Page.ClickAsync(string, Input.ClickOptions)"/>
+    /// <seealso cref="Page.ClickAsync(string, Abstractions.Input.ClickOptions)"/>
     /// <seealso cref="Page.TapAsync(string)"/>
     /// <seealso cref="Page.HoverAsync(string)"/>
     /// <seealso cref="Page.FocusAsync(string)"/>
@@ -33,9 +33,6 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="message">Message.</param>
         /// <param name="selector">Selector.</param>
-        public SelectorException(string message, string selector) : base(message)
-        {
-            Selector = selector;
-        }
+        public SelectorException(string message, string selector) : base(message) => Selector = selector;
     }
 }

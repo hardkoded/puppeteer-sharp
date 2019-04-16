@@ -1,7 +1,7 @@
-﻿namespace PuppeteerSharp.Input
+﻿namespace PuppeteerSharp.Abstractions.Input
 {
     /// <summary>
-    /// options to use <see cref="Mouse.MoveAsync(decimal, decimal, MoveOptions)"/>
+    /// options to use <see cref="IMouse.MoveAsync(decimal, decimal, MoveOptions)"/>
     /// </summary>
     public class MoveOptions
     {

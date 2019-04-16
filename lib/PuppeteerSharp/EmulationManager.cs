@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using PuppeteerSharp.Abstractions;
 using PuppeteerSharp.Media;
 using PuppeteerSharp.Messaging;
 
@@ -11,10 +12,7 @@ namespace PuppeteerSharp
         private bool _hasTouch;
         private bool _emulatingMobile;
 
-        public EmulationManager(CDPSession client)
-        {
-            _client = client;
-        }
+        public EmulationManager(CDPSession client) => _client = client;
 
         internal async Task<bool> EmulateViewport(ViewPortOptions viewport)
         {

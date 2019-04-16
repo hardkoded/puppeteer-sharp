@@ -1,4 +1,4 @@
-﻿namespace PuppeteerSharp
+﻿namespace PuppeteerSharp.Abstractions
 {
     /// <summary>
     /// Page close options.

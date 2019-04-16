@@ -64,7 +64,7 @@ namespace PuppeteerSharp.Abstractions
         /// ]]></example>
         [JsonIgnore]
         public bool BurstMode { get; set; } = false;
-        internal static ScreenshotType? GetScreenshotTypeFromFile(string file)
+        public static ScreenshotType? GetScreenshotTypeFromFile(string file)
         {
             var extension = new FileInfo(file).Extension.Replace(".", string.Empty);
             _extensionScreenshotTypeMap.TryGetValue(extension, out var result);

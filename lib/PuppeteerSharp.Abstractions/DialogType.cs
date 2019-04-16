@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace PuppeteerSharp
+namespace PuppeteerSharp.Abstractions
 {
     /// <summary>
     /// Dialog type.

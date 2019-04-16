@@ -9,12 +9,12 @@
         /// A start offset in text, inclusive.
         /// </summary>
         /// <value>Start offset.</value>
-        public int Start { get; internal set; }
+        public int Start { get; set; }
         /// <summary>
         /// An end offset in text, exclusive.
         /// </summary>
         /// <value>End offset.</value>
-        public int End { get; internal set; }
+        public int End { get; set; }
 
         /// <inheritdoc/>
         public override bool Equals(object obj)

@@ -2,11 +2,11 @@
 
 namespace PuppeteerSharp.Abstractions.PageCoverage
 {
-    internal class CoverageEntryPoint : IComparable<CoverageEntryPoint>
+    public class CoverageEntryPoint : IComparable<CoverageEntryPoint>
     {
-        public int Offset { get; internal set; }
-        public int Type { get; internal set; }
-        public CoverageResponseRange Range { get; internal set; }
+        public int Offset { get; set; }
+        public int Type { get; set; }
+        public CoverageResponseRange Range { get; set; }
 
         public int CompareTo(CoverageEntryPoint other)
         {
@@ -35,7 +35,7 @@ namespace PuppeteerSharp.Abstractions.PageCoverage
     }
 
     // TODO: clean this:
-    internal class CoverageResponseRange
+    public class CoverageResponseRange
     {
         public int StartOffset { get; set; }
         public int EndOffset { get; set; }

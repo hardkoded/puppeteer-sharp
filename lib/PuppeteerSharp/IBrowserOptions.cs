@@ -1,4 +1,6 @@
-﻿namespace PuppeteerSharp
+﻿using PuppeteerSharp.Abstractions;
+
+namespace PuppeteerSharp
 {
     /// <summary>
     /// Browser options.

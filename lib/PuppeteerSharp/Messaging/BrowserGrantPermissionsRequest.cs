@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using PuppeteerSharp.Abstractions;
 
 namespace PuppeteerSharp.Messaging
 {

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Abstractions;
+using PuppeteerSharp.Abstractions.Input;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Input;
 

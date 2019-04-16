@@ -20,7 +20,6 @@ namespace PuppeteerSharp.Abstractions
         IRequest[] RedirectChain { get; }
         Task ContinueAsync(Payload overrides = null);
         Task RespondAsync(ResponseData response);
-        Task AbortAsync(RequestAbortErrorCode errorCode = RequestAbortErrorCode.Failed);
+        Task AbortAsync();
     }
-
 }

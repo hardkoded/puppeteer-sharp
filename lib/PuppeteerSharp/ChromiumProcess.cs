@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using PuppeteerSharp.Abstractions;
 using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
