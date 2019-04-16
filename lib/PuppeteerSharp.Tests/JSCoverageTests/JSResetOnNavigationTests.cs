@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using PuppeteerSharp.Abstractions.PageCoverage;
 using PuppeteerSharp.PageCoverage;
 using Xunit;
 using Xunit.Abstractions;

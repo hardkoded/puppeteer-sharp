@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using PuppeteerSharp.Abstractions;
 
 namespace PuppeteerSharp.Tests.PageTests.Events
 {

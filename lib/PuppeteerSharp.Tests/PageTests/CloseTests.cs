@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using PuppeteerSharp.Abstractions;
 using Xunit;
 using Xunit.Abstractions;
 

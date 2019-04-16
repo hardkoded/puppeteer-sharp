@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using PuppeteerSharp.Abstractions.Media;
 using PuppeteerSharp.Media;
 using Xunit;
 using Xunit.Abstractions;

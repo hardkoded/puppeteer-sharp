@@ -1,8 +1,5 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using PuppeteerSharp.PageCoverage;
+﻿using System.Threading.Tasks;
+using PuppeteerSharp.Abstractions.PageCoverage;
 using Xunit;
 using Xunit.Abstractions;
 

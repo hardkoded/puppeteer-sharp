@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Abstractions;
 using Xunit;
 using Xunit.Abstractions;
 

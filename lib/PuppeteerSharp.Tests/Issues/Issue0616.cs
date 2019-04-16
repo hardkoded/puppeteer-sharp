@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using PuppeteerSharp.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -25,7 +26,7 @@ namespace PuppeteerSharp.Tests.Issues
             await Page.SetRequestInterceptionAsync(true);
             Page.Request += async (sender, e) =>
             {
-                var payload = new Payload()
+                var payload = new Payload
                 {
                     Method = HttpMethod.Post,
                     PostData = "foo"

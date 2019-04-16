@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Xunit;
+using PuppeteerSharp.Abstractions.Mobile;
 using PuppeteerSharp.Mobile;
 using Xunit.Abstractions;
 

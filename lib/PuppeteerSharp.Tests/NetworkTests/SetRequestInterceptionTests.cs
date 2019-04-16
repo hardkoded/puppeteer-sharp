@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Abstractions;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
