@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
-using PuppeteerSharp.Abstractions.Input;
+using PuppeteerSharp.Abstractions;
 using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp.Input
@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Input
     /// 
     /// For finer control, you can use <see cref="Keyboard.DownAsync(string, DownOptions)"/>, <see cref="UpAsync(string)"/>, and <see cref="SendCharacterAsync(string)"/> to manually fire events as if they were generated from a real keyboard.
     /// </summary>
-    public class Keyboard
+    public class Keyboard : IKeyboard
     {
         private readonly CDPSession _client;
         private readonly HashSet<string> _pressedKeys = new HashSet<string>();
@@ -31,7 +31,20 @@ namespace PuppeteerSharp.Input
         /// After the key is pressed once, subsequent calls to <see cref="DownAsync(string, DownOptions)"/> will have <see href="https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/repeat">repeat</see> set to <c>true</c>. To release the key, use <see cref="UpAsync(string)"/>
         /// </remarks>
         /// <returns>Task</returns>
-        public Task DownAsync(string key, DownOptions options = null)
+        [System.Obsolete("Use DownAsync(string key, Abstractions.Input.DownOptions options = null) instead")]
+        public Task DownAsync(string key, DownOptions options = null) => DownAsync(key, options);
+        /// <summary>
+        /// Dispatches a <c>keydown</c> event
+        /// </summary>
+        /// <param name="key">Name of key to press, such as <c>ArrowLeft</c>. <see cref="KeyDefinitions"/> for a list of all key names.</param>
+        /// <param name="options">down options</param>
+        /// <remarks>
+        /// If <c>key</c> is a single character and no modifier keys besides <c>Shift</c> are being held down, a <c>keypress</c>/<c>input</c> event will also generated. The <c>text</c> option can be specified to force an input event to be generated.
+        /// If <c>key</c> is a modifier key, <c>Shift</c>, <c>Meta</c>, <c>Control</c>, or <c>Alt</c>, subsequent key presses will be sent with that modifier active. To release the modifier key, use <see cref="UpAsync(string)"/>
+        /// After the key is pressed once, subsequent calls to <see cref="DownAsync(string, DownOptions)"/> will have <see href="https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/repeat">repeat</see> set to <c>true</c>. To release the key, use <see cref="UpAsync(string)"/>
+        /// </remarks>
+        /// <returns>Task</returns>
+        public Task DownAsync(string key, Abstractions.Input.DownOptions options = null)
         {
             var description = KeyDescriptionForString(key);
 
@@ -99,7 +112,18 @@ namespace PuppeteerSharp.Input
         /// To press a special key, like <c>Control</c> or <c>ArrowDown</c>, use <see cref="PressAsync(string, PressOptions)"/>
         /// </remarks>
         /// <returns>Task</returns>
-        public async Task TypeAsync(string text, TypeOptions options = null)
+        [System.Obsolete("Use TypeAsync(string text, Abstractions.Input.TypeOptions options = null) instead")]
+        public Task TypeAsync(string text, TypeOptions options = null) => TypeAsync(text, options);
+        /// <summary>
+        /// Sends a <c>keydown</c>, <c>keypress</c>/<c>input</c>, and <c>keyup</c> event for each character in the text.
+        /// </summary>
+        /// <param name="text">A text to type into a focused element</param>
+        /// <param name="options">type options</param>
+        /// <remarks>
+        /// To press a special key, like <c>Control</c> or <c>ArrowDown</c>, use <see cref="PressAsync(string, PressOptions)"/>
+        /// </remarks>
+        /// <returns>Task</returns>
+        public async Task TypeAsync(string text, Abstractions.Input.TypeOptions options = null)
         {
             var delay = 0;
             if (options?.Delay != null)
@@ -113,7 +137,7 @@ namespace PuppeteerSharp.Input
                 var letter = textParts.Current;
                 if (KeyDefinitions.ContainsKey(letter.ToString()))
                 {
-                    await PressAsync(letter.ToString(), new PressOptions { Delay = delay }).ConfigureAwait(false);
+                    await PressAsync(letter.ToString(), new Abstractions.Input.PressOptions { Delay = delay }).ConfigureAwait(false);
                 }
                 else
                 {
@@ -132,11 +156,23 @@ namespace PuppeteerSharp.Input
         /// <param name="key">Name of key to press, such as <c>ArrowLeft</c>. <see cref="KeyDefinitions"/> for a list of all key names.</param>
         /// <param name="options">press options</param>
         /// <remarks>
-        /// If <paramref name="key"/> is a single character and no modifier keys besides <c>Shift</c> are being held down, a <c>keypress</c>/<c>input</c> event will also generated. The <see cref="DownOptions.Text"/> option can be specified to force an input event to be generated.
+        /// If <paramref name="key"/> is a single character and no modifier keys besides <c>Shift</c> are being held down, a <c>keypress</c>/<c>input</c> event will also generated. The <see cref="Abstractions.Input.DownOptions.Text"/> option can be specified to force an input event to be generated.
         /// Modifier keys DO effect <see cref="ElementHandle.PressAsync(string, PressOptions)"/>. Holding down <c>Shift</c> will type the text in upper case.
         /// </remarks>
         /// <returns>Task</returns>
-        public async Task PressAsync(string key, PressOptions options = null)
+        [System.Obsolete("Use PressAsync(string key, Abstractions.Input.PressOptions options = null) instead")]
+        public Task PressAsync(string key, PressOptions options = null) => PressAsync(key, options);
+        /// <summary>
+        /// Shortcut for <see cref="DownAsync(string, DownOptions)"/> and <see cref="UpAsync(string)"/>
+        /// </summary>
+        /// <param name="key">Name of key to press, such as <c>ArrowLeft</c>. <see cref="KeyDefinitions"/> for a list of all key names.</param>
+        /// <param name="options">press options</param>
+        /// <remarks>
+        /// If <paramref name="key"/> is a single character and no modifier keys besides <c>Shift</c> are being held down, a <c>keypress</c>/<c>input</c> event will also generated. The <see cref="Abstractions.Input. DownOptions.Text"/> option can be specified to force an input event to be generated.
+        /// Modifier keys DO effect <see cref="ElementHandle.PressAsync(string, PressOptions)"/>. Holding down <c>Shift</c> will type the text in upper case.
+        /// </remarks>
+        /// <returns>Task</returns>
+        public async Task PressAsync(string key, Abstractions.Input.PressOptions options = null)
         {
             await DownAsync(key, options).ConfigureAwait(false);
             if (options?.Delay > 0)
@@ -234,5 +270,11 @@ namespace PuppeteerSharp.Input
 
             return description;
         }
+
+        Task IKeyboard.DownAsync(string key, Abstractions.Input.DownOptions options) => DownAsync(key, options);
+
+        Task IKeyboard.TypeAsync(string text, Abstractions.Input.TypeOptions options) => TypeAsync(text, options);
+
+        Task IKeyboard.PressAsync(string key, Abstractions.Input.PressOptions options) => PressAsync(key, options);
     }
 }

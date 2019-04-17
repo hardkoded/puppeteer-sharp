@@ -11,7 +11,7 @@ namespace PuppeteerSharp
     /// BrowserContexts provide a way to operate multiple independent browser sessions. When a browser is launched, it has
     /// a single <see cref="BrowserContext"/> used by default. The method <see cref="Browser.NewPageAsync"/> creates a <see cref="Page"/> in the default <see cref="BrowserContext"/>
     /// </summary>
-    public class BrowserContext
+    public class BrowserContext : IBrowserContext
     {
         private readonly Connection _connection;
         private readonly string _id;
@@ -52,6 +52,8 @@ namespace PuppeteerSharp
         /// </summary>
         public Browser Browser { get; }
 
+        IBrowser IBrowserContext.Browser => Browser;
+
         /// <summary>
         /// Gets an array of all active targets inside the browser context 
         /// </summary>
@@ -72,7 +74,25 @@ namespace PuppeteerSharp
         /// <param name="predicate">A function to be run for every target</param>
         /// <param name="options">options</param>
         /// <returns>Resolves to the first target found that matches the predicate function.</returns>
+        [Obsolete("Use WaitForTargetAsync(Func<Target, bool> predicate, Abstractions.WaitForOptions options = null) instead")]
         public Task<Target> WaitForTargetAsync(Func<Target, bool> predicate, WaitForOptions options = null)
+            => Browser.WaitForTargetAsync((target) => target.BrowserContext == this && predicate(target), options);
+
+        /// <summary>
+        /// This searches for a target in this specific browser context.
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// await page.EvaluateAsync("() => window.open('https://www.example.com/')");
+        /// var newWindowTarget = await browserContext.WaitForTargetAsync((target) => target.Url == "https://www.example.com/");
+        /// ]]>
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <param name="predicate">A function to be run for every target</param>
+        /// <param name="options">options</param>
+        /// <returns>Resolves to the first target found that matches the predicate function.</returns>
+        public Task<Target> WaitForTargetAsync(Func<Target, bool> predicate, Abstractions.WaitForOptions options = null)
             => Browser.WaitForTargetAsync((target) => target.BrowserContext == this && predicate(target), options);
 
         /// <summary>
@@ -120,7 +140,31 @@ namespace PuppeteerSharp
         /// ]]>
         /// </example>
         /// <seealso href="https://developer.mozilla.org/en-US/docs/Glossary/Origin"/>
+        [Obsolete("Use OverridePermissionsAsync(string origin, IEnumerable<Abstractions.OverridePermission> permissions) instead")]
         public Task OverridePermissionsAsync(string origin, IEnumerable<OverridePermission> permissions)
+            => _connection.SendAsync("Browser.grantPermissions", new BrowserGrantPermissionsRequest
+            {
+                Origin = origin,
+                BrowserContextId = _id,
+                Permissions = permissions.Select(p => (Abstractions.OverridePermission)Enum.Parse(typeof(Abstractions.OverridePermission), p.ToString())).ToArray()
+            });
+
+        /// <summary>
+        /// Overrides the browser context permissions.
+        /// </summary>
+        /// <returns>The task.</returns>
+        /// <param name="origin">The origin to grant permissions to, e.g. "https://example.com"</param>
+        /// <param name="permissions">
+        /// An array of permissions to grant. All permissions that are not listed here will be automatically denied.
+        /// </param>
+        /// <example>
+        /// <![CDATA[
+        /// var context = browser.DefaultBrowserContext;
+        /// await context.OverridePermissionsAsync("https://html5demos.com", new List<string> {"geolocation"});
+        /// ]]>
+        /// </example>
+        /// <seealso href="https://developer.mozilla.org/en-US/docs/Glossary/Origin"/>
+        public Task OverridePermissionsAsync(string origin, params Abstractions.OverridePermission[] permissions)
             => _connection.SendAsync("Browser.grantPermissions", new BrowserGrantPermissionsRequest
             {
                 Origin = origin,
@@ -143,5 +187,17 @@ namespace PuppeteerSharp
         internal void OnTargetDestroyed(Browser browser, TargetChangedArgs args) => TargetDestroyed?.Invoke(browser, args);
 
         internal void OnTargetChanged(Browser browser, TargetChangedArgs args) => TargetChanged?.Invoke(browser, args);
+
+        ITarget[] IBrowserContext.Targets() => Targets();
+
+        async Task<ITarget> IBrowserContext.WaitForTargetAsync(Func<ITarget, bool> predicate, Abstractions.WaitForOptions options)
+           => await WaitForTargetAsync(predicate, options);
+
+        async Task<IPage[]> IBrowserContext.PagesAsync() => await PagesAsync();
+
+        async Task<IPage> IBrowserContext.NewPageAsync() => await NewPageAsync();
+
+        Task IBrowserContext.OverridePermissionsAsync(string origin, IEnumerable<Abstractions.OverridePermission> permissions)
+            => OverridePermissionsAsync(origin, permissions.ToArray());
     }
 }
