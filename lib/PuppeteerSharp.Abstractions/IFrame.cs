@@ -6,7 +6,7 @@ using PuppeteerSharp.Abstractions.Input;
 
 namespace PuppeteerSharp.Abstractions
 {
-    interface IFrame
+    public interface IFrame
     {
         List<IFrame> ChildFrames { get; }
         string Name { get; set; }

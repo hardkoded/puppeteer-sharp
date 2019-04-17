@@ -3,7 +3,7 @@ using PuppeteerSharp.Abstractions.Input;
 
 namespace PuppeteerSharp.Abstractions
 {
-    interface IMouse
+    public interface IMouse
     {
         Task MoveAsync(decimal x, decimal y, MoveOptions options = null);
         Task ClickAsync(decimal x, decimal y, ClickOptions options = null);

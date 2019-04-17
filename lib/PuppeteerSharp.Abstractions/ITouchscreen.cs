@@ -2,7 +2,7 @@
 
 namespace PuppeteerSharp.Abstractions
 {
-    interface ITouchscreen
+    public interface ITouchscreen
     {
         Task TapAsync(decimal x, decimal y);
     }

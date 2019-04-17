@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace PuppeteerSharp.Abstractions
 {
-    interface IBrowser
+    public interface IBrowser : IDisposable
     {
         string WebSocketEndpoint { get; }
         Process Process { get; }
@@ -23,6 +23,5 @@ namespace PuppeteerSharp.Abstractions
         void Disconnect();
         Task CloseAsync();
         Task<ITarget> WaitForTargetAsync(Func<ITarget, bool> predicate, WaitForOptions options = null);
-        void Dispose();
     }
 }

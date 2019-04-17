@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 
 namespace PuppeteerSharp.Abstractions
 {
-    interface IExecutionContext
+    public interface IExecutionContext
     {
         IFrame Frame { get; }
         Task<JToken> EvaluateExpressionAsync(string script);

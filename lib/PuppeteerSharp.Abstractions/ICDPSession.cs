@@ -4,12 +4,12 @@ using Newtonsoft.Json.Linq;
 
 namespace PuppeteerSharp.Abstractions
 {
-    interface ICDPSession
+    public interface ICDPSession
     {
         TargetType TargetType { get; }
         string SessionId { get; }
-        bool IsClosed { get; set; }
-        string CloseReason { get; set; }
+        bool IsClosed { get; }
+        string CloseReason { get; }
         ILoggerFactory LoggerFactory { get; }
         Task<T> SendAsync<T>(string method, object args = null);
         Task<JObject> SendAsync(string method, object args = null, bool waitForCallback = true);

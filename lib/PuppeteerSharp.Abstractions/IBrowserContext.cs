@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace PuppeteerSharp.Abstractions
 {
-    interface IBrowserContext
+    public interface IBrowserContext
     {
         bool IsIncognito { get; }
         IBrowser Browser { get; }

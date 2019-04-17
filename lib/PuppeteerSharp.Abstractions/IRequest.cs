@@ -4,19 +4,19 @@ using System.Threading.Tasks;
 
 namespace PuppeteerSharp.Abstractions
 {
-    interface IRequest
+    public interface IRequest
     {
-        IResponse Response { get; set; }
-        string Failure { get; set; }
-        string RequestId { get; set; }
-        string InterceptionId { get; set; }
-        ResourceType ResourceType { get; set; }
+        IResponse Response { get; }
+        string Failure { get; }
+        string RequestId { get; }
+        string InterceptionId { get; }
+        ResourceType ResourceType { get; }
         IFrame Frame { get; }
         bool IsNavigationRequest { get; }
-        HttpMethod Method { get; set; }
-        object PostData { get; set; }
-        Dictionary<string, string> Headers { get; set; }
-        string Url { get; set; }
+        HttpMethod Method { get; }
+        object PostData { get; }
+        Dictionary<string, string> Headers { get; }
+        string Url { get; }
         IRequest[] RedirectChain { get; }
         Task ContinueAsync(Payload overrides = null);
         Task RespondAsync(ResponseData response);

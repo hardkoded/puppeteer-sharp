@@ -4,7 +4,7 @@ using PuppeteerSharp.Abstractions.Input;
 
 namespace PuppeteerSharp.Abstractions
 {
-    interface IElementHandle
+    public interface IElementHandle
     {
         Task ScreenshotAsync(string file);
         Task ScreenshotAsync(string file, ScreenshotOptions options);

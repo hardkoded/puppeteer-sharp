@@ -3,7 +3,7 @@ using PuppeteerSharp.Abstractions.Input;
 
 namespace PuppeteerSharp.Abstractions
 {
-    interface IKeyboard
+    public interface IKeyboard
     {
         Task DownAsync(string key, DownOptions options = null);
         Task UpAsync(string key);

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace PuppeteerSharp.Abstractions
 {
-    interface IJSHandle
+    public interface IJSHandle
     {
         IExecutionContext ExecutionContext { get; }
         bool Disposed { get; set; }

@@ -2,7 +2,7 @@
 
 namespace PuppeteerSharp.Abstractions
 {
-    interface IWorker
+    public interface IWorker
     {
         string Url { get; }
         Task<T> EvaluateExpressionAsync<T>(string script);

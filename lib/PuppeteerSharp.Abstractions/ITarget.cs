@@ -2,7 +2,7 @@
 
 namespace PuppeteerSharp.Abstractions
 {
-    interface ITarget
+    public interface ITarget
     {
         string Url { get; }
         TargetType Type { get; }

@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 
 namespace PuppeteerSharp.Abstractions
 {
-    interface IResponse
+    public interface IResponse
     {
         string Url { get; }
         Dictionary<string, string> Headers { get; }

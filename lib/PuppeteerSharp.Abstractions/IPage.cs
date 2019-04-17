@@ -9,10 +9,10 @@ using PuppeteerSharp.Abstractions.Mobile;
 
 namespace PuppeteerSharp.Abstractions
 {
-    interface IPage
+    public interface IPage
     {
-        int DefaultNavigationTimeout        { get; set; }
-        int DefaultTimeout        { get; set; }
+        int DefaultNavigationTimeout { get; set; }
+        int DefaultTimeout { get; set; }
         IFrame MainFrame { get; }
         IFrame[] Frames { get; }
         IWorker[] Workers { get; }
@@ -20,13 +20,11 @@ namespace PuppeteerSharp.Abstractions
         ITarget Target { get; }
         IKeyboard Keyboard { get; }
         ITouchscreen Touchscreen { get; }
-        ICoverage Coverage { get; }
         IMouse Mouse { get; }
-        ViewPortOptions Viewport { get; set; }
+        ViewPortOptions Viewport { get; }
         IBrowser Browser { get; }
         IBrowserContext BrowserContext { get; }
-        bool IsClosed { get; set; }
-        // IAccessibility Accessibility { get; }
+        bool IsClosed { get; }
         Task SetGeolocationAsync(GeolocationOption options);
         Task<Dictionary<string, decimal>> MetricsAsync();
         Task TapAsync(string selector);
