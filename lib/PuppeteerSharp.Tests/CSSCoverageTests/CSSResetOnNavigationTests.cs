@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using PuppeteerSharp.Abstractions.PageCoverage;
+using PuppeteerSharp.PageCoverage;
 using Xunit;
 using Xunit.Abstractions;
 
