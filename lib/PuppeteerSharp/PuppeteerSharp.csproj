@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>1.14.0</PackageVersion>
+    <PackageVersion>1.14.1</PackageVersion>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
@@ -26,7 +26,7 @@
  * Sync Request.Continue tests.
  * Public constructor for PaperFormat.
  ]]></PackageReleaseNotes>
-    <ReleaseVersion>1.14.0</ReleaseVersion>
+    <ReleaseVersion>1.14.1</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>
@@ -38,13 +38,9 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.2" />
-    <PackageReference Include="Mono.Posix.NETStandard" Version="1.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="System.Net.Http" Version="4.3.3" />
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.0.2" />
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.1" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Helpers\Json\" />
   </ItemGroup>
 </Project>
