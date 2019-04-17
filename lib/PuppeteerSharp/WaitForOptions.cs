@@ -9,12 +9,8 @@ namespace PuppeteerSharp
     /// <seealso cref="Page.WaitForRequestAsync(string, WaitForOptions)"/>
     /// <seealso cref="Page.WaitForResponseAsync(string, WaitForOptions)"/>
     /// <seealso cref="Page.WaitForResponseAsync(Func{Response, bool}, WaitForOptions)"/>
-    public class WaitForOptions
+    [System.Obsolete("Use PuppeteerSharp.Abstractions.WaitForOptions class instead")]
+    public class WaitForOptions : Abstractions.WaitForOptions
     {
-        /// <summary>
-        /// Maximum time to wait for in milliseconds. Defaults to 30000 (30 seconds). Pass 0 to disable timeout.
-        /// The default value can be changed by setting the <see cref="Page.DefaultTimeout"/> property.
-        /// </summary>
-        public int Timeout { get; set; } = Puppeteer.DefaultTimeout;
     }
 }

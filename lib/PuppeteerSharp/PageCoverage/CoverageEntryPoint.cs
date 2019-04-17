@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 
-namespace PuppeteerSharp.Abstractions.PageCoverage
+namespace PuppeteerSharp.PageCoverage
 {
     public class CoverageEntryPoint : IComparable<CoverageEntryPoint>
     {

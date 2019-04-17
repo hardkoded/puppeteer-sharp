@@ -7,7 +7,6 @@ using System.Net;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using PuppeteerSharp.Abstractions;
 using PuppeteerSharp.Helpers;
 using Xunit;
 using Xunit.Abstractions;

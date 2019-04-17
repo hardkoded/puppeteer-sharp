@@ -1,7 +1,6 @@
-﻿namespace PuppeteerSharp.Abstractions.PageCoverage
+namespace PuppeteerSharp.PageCoverage
 {
-    // TODO: clean this:
-    public class CoverageResponseRange
+    internal class CoverageResponseRange
     {
         public int StartOffset { get; set; }
         public int EndOffset { get; set; }

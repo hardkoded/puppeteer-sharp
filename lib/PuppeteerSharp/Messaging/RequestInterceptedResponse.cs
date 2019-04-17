@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Net;
-using PuppeteerSharp.Abstractions;
 
 namespace PuppeteerSharp.Messaging
 {

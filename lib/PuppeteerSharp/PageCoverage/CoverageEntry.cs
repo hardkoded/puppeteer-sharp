@@ -1,4 +1,4 @@
-﻿namespace PuppeteerSharp.Abstractions.PageCoverage
+namespace PuppeteerSharp.PageCoverage
 {
     /// <summary>
     /// Coverage report for all non-anonymous scripts.

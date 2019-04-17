@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net.WebSockets;
-using PuppeteerSharp.Abstractions;
 using PuppeteerSharp.Abstractions.Transport;
 using PuppeteerSharp.Transport;
 
@@ -59,7 +58,7 @@ namespace PuppeteerSharp
         /// Optional connection transport.
         /// </summary>
         [Obsolete("Use " + nameof(TransportFactory) + " instead")]
-        public IConnectionTransport Transport { get; set; }
+        public Abstractions.Transport.IConnectionTransport Transport { get; set; }
 
         /// <summary>
         /// Optional factory for <see cref="IConnectionTransport"/> implementations.

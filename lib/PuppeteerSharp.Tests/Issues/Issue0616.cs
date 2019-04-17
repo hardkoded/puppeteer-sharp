@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using PuppeteerSharp.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.IO;

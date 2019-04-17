@@ -2,7 +2,6 @@
 using Xunit;
 using Xunit.Abstractions;
 using System.Linq;
-using PuppeteerSharp.Abstractions;
 
 namespace PuppeteerSharp.Tests.Issues
 {

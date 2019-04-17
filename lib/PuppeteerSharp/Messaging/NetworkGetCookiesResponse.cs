@@ -1,5 +1,4 @@
-﻿using PuppeteerSharp.Abstractions;
-
+﻿
 namespace PuppeteerSharp.Messaging
 {
     internal class NetworkGetCookiesResponse

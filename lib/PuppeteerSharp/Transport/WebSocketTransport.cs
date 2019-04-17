@@ -3,7 +3,6 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using PuppeteerSharp.Abstractions.Transport;
 using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Transport
@@ -11,7 +10,7 @@ namespace PuppeteerSharp.Transport
     /// <summary>
     /// Default web socket transport.
     /// </summary>
-    public class WebSocketTransport : IConnectionTransport
+    public class WebSocketTransport : IConnectionTransport, Abstractions.Transport.IConnectionTransport
     {
         #region Static fields
 
@@ -99,11 +98,11 @@ namespace PuppeteerSharp.Transport
         /// <summary>
         /// Occurs when the transport is closed.
         /// </summary>
-        public event EventHandler<TransportClosedEventArgs> Closed;
+        public event EventHandler<Abstractions.Transport.TransportClosedEventArgs> Closed;
         /// <summary>
         /// Occurs when a message is received.
         /// </summary>
-        public event EventHandler<MessageReceivedEventArgs> MessageReceived;
+        public event EventHandler<Abstractions.Transport.MessageReceivedEventArgs> MessageReceived;
 
         #endregion
 
@@ -195,7 +194,7 @@ namespace PuppeteerSharp.Transport
                     }
                 }
 
-                MessageReceived?.Invoke(this, new MessageReceivedEventArgs(response.ToString()));
+                MessageReceived?.Invoke(this, new Abstractions.Transport.MessageReceivedEventArgs(response.ToString()));
             }
 
             return null;
@@ -207,7 +206,7 @@ namespace PuppeteerSharp.Transport
             {
                 IsClosed = true;
                 StopReading();
-                Closed?.Invoke(this, new TransportClosedEventArgs(closeReason));
+                Closed?.Invoke(this, new Abstractions.Transport.TransportClosedEventArgs(closeReason));
             }
         }
 

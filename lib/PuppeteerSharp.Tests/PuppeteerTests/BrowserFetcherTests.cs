@@ -6,7 +6,6 @@ using Mono.Unix;
 using Xunit;
 using Xunit.Abstractions;
 using PuppeteerSharp.Helpers.Linux;
-using PuppeteerSharp.Abstractions;
 
 namespace PuppeteerSharp.Tests.PuppeteerTests
 {

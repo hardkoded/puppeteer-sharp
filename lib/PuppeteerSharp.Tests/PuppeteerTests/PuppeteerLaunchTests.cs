@@ -5,7 +5,6 @@ using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using PuppeteerSharp.Abstractions;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Transport;
 using Xunit;

@@ -31,7 +31,7 @@ namespace PuppeteerSharp
         /// Optional connection transport factory.
         /// </summary>
         [Obsolete("Use " + nameof(TransportFactory) + " instead")]
-        IConnectionTransport Transport { get; set; }
+        Abstractions.Transport.IConnectionTransport Transport { get; set; }
 
         /// <summary>
         /// Optional factory for <see cref="IConnectionTransport"/> implementations.

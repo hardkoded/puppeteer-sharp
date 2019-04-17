@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using PuppeteerSharp.Abstractions;
 using Xunit;
 using Xunit.Abstractions;
 
