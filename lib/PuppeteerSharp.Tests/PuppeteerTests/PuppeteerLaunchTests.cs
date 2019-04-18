@@ -241,7 +241,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             options.IgnoreDefaultArgs = true;
             using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
             {
-                Assert.Single(await browser.PagesAsync());
+                Assert.NotEmpty(await browser.PagesAsync());
                 using (var page = await browser.NewPageAsync())
                 {
                     Assert.Equal(121, await page.EvaluateExpressionAsync<int>("11 * 11"));

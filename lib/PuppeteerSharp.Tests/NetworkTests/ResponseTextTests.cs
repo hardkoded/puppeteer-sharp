@@ -19,7 +19,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldWork()
         {
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/simple.json");
-            Assert.Equal("{\"foo\": \"bar\"}\n", await response.TextAsync());
+            Assert.Equal("{\"foo\": \"bar\"}", (await response.TextAsync()).Trim());
         }
 
         [Fact]
@@ -28,7 +28,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Server.EnableGzip("/simple.json");
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/simple.json");
             Assert.Equal("gzip", response.Headers["Content-Encoding"]);
-            Assert.Equal("{\"foo\": \"bar\"}\n", await response.TextAsync());
+            Assert.Equal("{\"foo\": \"bar\"}", (await response.TextAsync()).Trim());
         }
 
         [Fact]
