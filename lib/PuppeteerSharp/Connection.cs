@@ -90,13 +90,16 @@ namespace PuppeteerSharp
 
         internal int GetMessageID() => Interlocked.Increment(ref _lastId);
         internal Task RawSendASync(int id, string method, object args, string sessionId = null)
-            => Transport.SendAsync(JsonConvert.SerializeObject(new ConnectionRequest
+        {
+            _logger.LogTrace("Send ► {Id} Method {Method} Params {@Params}", id, method, args);
+            return Transport.SendAsync(JsonConvert.SerializeObject(new ConnectionRequest
             {
                 Id = id,
                 Method = method,
                 Params = args,
                 SessionId = sessionId
             }, JsonHelper.DefaultJsonSerializerSettings));
+        }
 
         internal async Task<JObject> SendAsync(string method, object args = null, bool waitForCallback = true)
         {
@@ -106,8 +109,7 @@ namespace PuppeteerSharp
             }
 
             var id = GetMessageID();
-            _logger.LogTrace("Send ► {Id} Method {Method} Params {@Params}", id, method, (object)args);
-
+            
             MessageTask callback = null;
             if (waitForCallback)
             {
