@@ -241,6 +241,8 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             options.IgnoreDefaultArgs = true;
             using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
             {
+                //Puppeteer's code checks for a Single page.
+                //As "Microsoft Edge" opens two pages, checking for "NotEmpty" would help us run this test against both browsers.
                 Assert.NotEmpty(await browser.PagesAsync());
                 using (var page = await browser.NewPageAsync())
                 {
