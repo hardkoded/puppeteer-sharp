@@ -39,20 +39,17 @@ namespace PuppeteerSharp
     /// </summary>
     public class CDPSession
     {
-        internal CDPSession(Connection connection, TargetType targetType, string sessionId, ILoggerFactory loggerFactory = null)
+        internal CDPSession(Connection connection, TargetType targetType, string sessionId)
         {
-            LoggerFactory = loggerFactory ?? new LoggerFactory();
             Connection = connection;
             TargetType = targetType;
             SessionId = sessionId;
 
             _callbacks = new ConcurrentDictionary<int, MessageTask>();
-            _logger = Connection.LoggerFactory.CreateLogger<CDPSession>();
         }
 
         #region Private Members
         private readonly ConcurrentDictionary<int, MessageTask> _callbacks;
-        private readonly ILogger _logger;
         #endregion
 
         #region Properties
@@ -92,7 +89,7 @@ namespace PuppeteerSharp
         /// Gets the logger factory.
         /// </summary>
         /// <value>The logger factory.</value>
-        public ILoggerFactory LoggerFactory { get; }
+        public ILoggerFactory LoggerFactory => Connection.LoggerFactory;
         #endregion
 
         #region Public Methods
