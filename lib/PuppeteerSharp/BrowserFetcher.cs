@@ -268,7 +268,7 @@ namespace PuppeteerSharp
         {
             var process = new Process();
             process.StartInfo.FileName = "unzip";
-            process.StartInfo.Arguments = $"{zipPath} -d {folderPath}";
+            process.StartInfo.Arguments = $"\"{zipPath}\" -d \"{folderPath}\"";
             process.Start();
             process.WaitForExit();
         }
