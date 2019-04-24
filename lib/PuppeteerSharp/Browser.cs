@@ -47,19 +47,16 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="connection">The connection</param>
         /// <param name="contextIds">The context ids></param>
-        /// <param name="ignoreHTTPSErrors">The option to ignoreHTTPSErrors</param>
-        /// <param name="defaultViewport">Default viewport</param>
+        /// <param name="options">Browser options</param>
         /// <param name="chromiumProcess">The Chromium process</param>
         public Browser(
             Connection connection,
             string[] contextIds,
-            bool ignoreHTTPSErrors,
-            ViewPortOptions defaultViewport,
+            IBrowserOptions options,
             ChromiumProcess chromiumProcess)
         {
             Connection = connection;
-            IgnoreHTTPSErrors = ignoreHTTPSErrors;
-            DefaultViewport = defaultViewport;
+            _options = options;
             TargetsMap = new ConcurrentDictionary<string, Target>();
             ScreenshotTaskQueue = new TaskQueue();
             DefaultContext = new BrowserContext(Connection, this, null);
@@ -81,6 +78,7 @@ namespace PuppeteerSharp
         private readonly Dictionary<string, BrowserContext> _contexts;
         private readonly ILogger<Browser> _logger;
         private Task _closeTask;
+        private readonly IBrowserOptions _options;
 
         #endregion
 
@@ -133,7 +131,11 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets or Sets whether to ignore HTTPS errors during navigation
         /// </summary>
-        public bool IgnoreHTTPSErrors { get; set; }
+        public bool IgnoreHTTPSErrors
+        {
+            get => _options.IgnoreHTTPSErrors;
+            set => _options.IgnoreHTTPSErrors = value;
+        }
 
         /// <summary>
         /// Gets a value indicating if the browser is closed
@@ -158,7 +160,7 @@ namespace PuppeteerSharp
 
         internal TaskQueue ScreenshotTaskQueue { get; set; }
         internal Connection Connection { get; }
-        internal ViewPortOptions DefaultViewport { get; }
+        internal ViewPortOptions DefaultViewport => _options.DefaultViewport;
         internal ChromiumProcess ChromiumProcess { get; set; }
 
         /// <summary>
@@ -174,7 +176,17 @@ namespace PuppeteerSharp
         /// Creates a new page
         /// </summary>
         /// <returns>Task which resolves to a new <see cref="Page"/> object</returns>
-        public Task<Page> NewPageAsync() => DefaultContext.NewPageAsync();
+        public Task<Page> NewPageAsync()
+        {
+            if (_options.EnqueueNewPages)
+            {
+                return ScreenshotTaskQueue.Enqueue(() => DefaultContext.NewPageAsync());
+            }
+            else
+            {
+                return DefaultContext.NewPageAsync();
+            }
+        }
 
         /// <summary>
         /// Returns An Array of all active targets
@@ -509,11 +521,10 @@ namespace PuppeteerSharp
         internal static async Task<Browser> CreateAsync(
             Connection connection,
             string[] contextIds,
-            bool ignoreHTTPSErrors,
-            ViewPortOptions defaultViewPort,
+            IBrowserOptions options,
             ChromiumProcess chromiumProcess)
         {
-            var browser = new Browser(connection, contextIds, ignoreHTTPSErrors, defaultViewPort, chromiumProcess);
+            var browser = new Browser(connection, contextIds, options, chromiumProcess);
             await connection.SendAsync("Target.setDiscoverTargets", new TargetSetDiscoverTargetsRequest
             {
                 Discover = true

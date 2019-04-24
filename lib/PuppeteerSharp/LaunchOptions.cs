@@ -135,5 +135,13 @@ namespace PuppeteerSharp
         /// Setting this to <c>false</c> proved to work in .NET Core but it tends to fail on .NET Framework.
         /// </remarks>
         public bool EnqueueTransportMessages { get; set; } = true;
+
+        /// <summary>
+        /// If `true`, the browser will enqueue all <seealso cref="Browser.NewPageAsync"/> calls in the <seealso cref="Browser.ScreenshotTaskQueue"/>.
+        /// So new pages call won't interfere with the <seealso cref="Page.ScreenshotBase64Async(ScreenshotOptions)"/> method call.
+        /// EnqueueNewPages might be needed when using Chromium with <seealso cref="LaunchOptions.Headless"/> in false and making calls in parallel.
+        /// It is false by default because enqueuing <seealso cref="Browser.NewPageAsync"/> it's not necesarry all the time and it's a performance hit.
+        /// </summary>
+        public bool EnqueueNewPages { get; set; }
     }
 }

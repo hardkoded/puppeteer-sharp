@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using PuppeteerSharp.Media;
 using Xunit;
 using Xunit.Abstractions;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Tests.PageTests
 {

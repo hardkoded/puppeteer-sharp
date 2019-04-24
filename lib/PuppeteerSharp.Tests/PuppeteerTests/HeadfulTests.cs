@@ -142,5 +142,40 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
 
             return targetCreatedTcs.Task;
         }
+
+        [Fact]
+        public async Task ShouldLockActivePageWhenNeeded()
+        {
+            var tcs = new TaskCompletionSource<bool>();
+
+            var headfulOptions = TestConstants.DefaultBrowserOptions();
+            headfulOptions.Headless = false;
+            headfulOptions.EnqueueNewPages = true;
+            using (var browser = await Puppeteer.LaunchAsync(headfulOptions))
+            using (var page = await browser.NewPageAsync())
+            {
+                _ = Task.Run(async () =>
+                {
+                    await page.GoToAsync("https://www.google.com");
+                    await page.SetViewportAsync(new ViewPortOptions
+                    {
+                        Width = 800,
+                        Height = 800
+                    });
+                    Console.WriteLine("Pre");
+                    await page.ScreenshotDataAsync();
+                    Console.WriteLine("Post");
+                    tcs.TrySetResult(true);
+                });
+
+                for (var i = 0; i < 20; i++)
+                {
+                    Console.WriteLine(i);
+                    await browser.NewPageAsync();
+                }
+            }
+
+            await tcs.Task.WithTimeout();
+        }
     }
 }
