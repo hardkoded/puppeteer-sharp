@@ -20,7 +20,7 @@ namespace PuppeteerSharp
     /// 
     /// If request gets a 'redirect' response, the request is successfully finished with the <see cref="Page.RequestFinished"/> event, and a new request is issued to a redirected url.
     /// </summary>
-    public class Request
+    public class Request : IRequest
     {
         #region Private Members
         private readonly CDPSession _client;
@@ -143,6 +143,12 @@ namespace PuppeteerSharp
 
         internal bool FromMemoryCache { get; set; }
         internal List<Request> RedirectChainList { get; }
+
+        IResponse IRequest.Response => Response;
+
+        IFrame IRequest.Frame => Frame;
+
+        IRequest[] IRequest.RedirectChain => throw new NotImplementedException();
         #endregion
 
         #region Public Methods
@@ -328,6 +334,8 @@ namespace PuppeteerSharp
                 _logger.LogError(ex.ToString());
             }
         }
+
+        Task IRequest.AbortAsync() => AbortAsync(RequestAbortErrorCode.Failed);
         #endregion
     }
 }

@@ -13,7 +13,7 @@ namespace PuppeteerSharp
     /// <summary>
     /// <see cref="Response"/> class represents responses which are received by page.
     /// </summary>
-    public class Response
+    public class Response : IResponse
     {
         private readonly CDPSession _client;
         private readonly bool _fromDiskCache;
@@ -105,6 +105,14 @@ namespace PuppeteerSharp
         /// A <see cref="Frame"/> that initiated this request. Or null if navigating to error pages.
         /// </summary>
         public Frame Frame => Request.Frame;
+
+        IRequest IResponse.Request => Request;
+
+        IFrame IResponse.Frame => Frame;
+
+        Abstractions.SecurityDetails IResponse.SecurityDetails => SecurityDetails;
+
+        Abstractions.RemoteAddress IResponse.RemoteAddress => RemoteAddress;
 
         #endregion
 

@@ -16,7 +16,7 @@ namespace PuppeteerSharp
     /// Each <see cref="Frame"/> has a separate <see cref="ExecutionContext"/>
     /// All kind of web workers have their own contexts
     /// </summary>
-    public class ExecutionContext
+    public class ExecutionContext : IExecutionContext
     {
         internal const string EvaluationScriptUrl = "__puppeteer_evaluation_script__";
 
@@ -44,6 +44,8 @@ namespace PuppeteerSharp
         /// NOTE Not every execution context is associated with a frame. For example, workers and extensions have execution contexts that are not associated with frames.
         /// </remarks>
         public Frame Frame => World?.Frame;
+
+        IFrame IExecutionContext.Frame => throw new NotImplementedException();
 
         /// <summary>
         /// Executes a script in browser context
@@ -298,5 +300,7 @@ namespace PuppeteerSharp
 
             return CreateJSHandle(obj.Object) as ElementHandle;
         }
+
+        async Task<IJSHandle> IExecutionContext.QueryObjectsAsync(IJSHandle prototypeHandle) => await QueryObjectsAsync((JSHandle)prototypeHandle);
     }
 }

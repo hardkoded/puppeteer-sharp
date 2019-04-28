@@ -38,7 +38,7 @@ namespace PuppeteerSharp
     /// });
     /// ]]></code>
     /// </summary>
-    public class CDPSession
+    public class CDPSession : ICDPSession
     {
         internal CDPSession(Connection connection, TargetType targetType, string sessionId, ILoggerFactory loggerFactory = null)
         {
@@ -62,6 +62,9 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The target type.</value>
         public TargetType TargetType { get; }
+
+        Abstractions.TargetType ICDPSession.TargetType => (Abstractions.TargetType)Enum.Parse(typeof(Abstractions.TargetType), TargetType.ToString());
+
         /// <summary>
         /// Gets the session identifier.
         /// </summary>

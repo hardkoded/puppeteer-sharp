@@ -9,7 +9,7 @@ namespace PuppeteerSharp
     /// </summary>
     /// <seealso cref="BrowserContext.OverridePermissionsAsync(string, System.Collections.Generic.IEnumerable{OverridePermission})"/>
     [JsonConverter(typeof(StringEnumConverter))]
-    [System.Obsolete("Use PuppeteerSharp.Abstractions.SecurityDetails enum instead")]
+    [System.Obsolete("Use PuppeteerSharp.Abstractions.OverridePermission enum instead")]
     public enum OverridePermission
     {
         /// <summary>

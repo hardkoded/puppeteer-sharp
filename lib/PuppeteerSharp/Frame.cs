@@ -38,7 +38,7 @@ namespace PuppeteerSharp
     /// ]]>
     /// </code>
     /// </example>
-    public class Frame
+    public class Frame : IFrame
     {
         private readonly CDPSession _client;
 
@@ -97,6 +97,12 @@ namespace PuppeteerSharp
         public Frame ParentFrame { get; private set; }
 
         internal FrameManager FrameManager { get; }
+
+        List<IFrame> IFrame.ChildFrames => throw new NotImplementedException();
+
+        string IFrame.Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        string IFrame.Url { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        IFrame IFrame.ParentFrame { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         #endregion
 
         #region Public Methods
@@ -439,7 +445,7 @@ namespace PuppeteerSharp
         /// <param name="options">click options</param>
         /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
         /// <returns>Task which resolves when the element matching <paramref name="selector"/> is successfully clicked</returns>
-        public Task ClickAsync(string selector, ClickOptions options = null)
+        public Task ClickAsync(string selector, Input.ClickOptions options = null)
             => SecondaryWorld.ClickAsync(selector, options);
 
         /// <summary>
@@ -475,7 +481,7 @@ namespace PuppeteerSharp
         /// </code>
         /// </example>
         /// <returns>Task</returns>
-        public Task TypeAsync(string selector, string text, TypeOptions options = null)
+        public Task TypeAsync(string selector, string text, Input.TypeOptions options = null)
              => SecondaryWorld.TypeAsync(selector, text, options);
 
         internal void OnLoadingStopped()
@@ -514,6 +520,36 @@ namespace PuppeteerSharp
             }
             ParentFrame = null;
         }
+
+        async Task<IResponse> IFrame.GoToAsync(string url, NavigationOptions options) => await GoToAsync(url, options);
+
+        async Task<IResponse> IFrame.GoToAsync(string url, int? timeout, WaitUntilNavigation[] waitUntil) => await GoToAsync(url, timeout, waitUntil);
+
+        async Task<IResponse> IFrame.WaitForNavigationAsync(NavigationOptions options) => await WaitForNavigationAsync(options);
+
+        async Task<IJSHandle> IFrame.EvaluateExpressionHandleAsync(string script) => await EvaluateExpressionHandleAsync(script);
+
+        async Task<IJSHandle> IFrame.EvaluateFunctionHandleAsync(string function, params object[] args) => await EvaluateFunctionHandleAsync(function, args);
+
+        async Task<IExecutionContext> IFrame.GetExecutionContextAsync() => await GetExecutionContextAsync();
+
+        async Task<IElementHandle> IFrame.WaitForSelectorAsync(string selector, WaitForSelectorOptions options) => await WaitForSelectorAsync(selector, options);
+
+        async Task<IElementHandle> IFrame.WaitForXPathAsync(string xpath, WaitForSelectorOptions options) => await WaitForXPathAsync(xpath, options);
+
+        async Task<IJSHandle> IFrame.WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args) => await WaitForFunctionAsync(script, options, args);
+
+        async Task<IJSHandle> IFrame.WaitForExpressionAsync(string script, WaitForFunctionOptions options) => await WaitForExpressionAsync(script, options);
+
+        async Task<IElementHandle> IFrame.QuerySelectorAsync(string selector) => await QuerySelectorAsync(selector);
+
+        async Task<IElementHandle[]> IFrame.QuerySelectorAllAsync(string selector) => await QuerySelectorAllAsync(selector);
+
+        async Task<IElementHandle[]> IFrame.XPathAsync(string expression) => await XPathAsync(expression);
+
+        async Task<IElementHandle> IFrame.AddStyleTagAsync(AddTagOptions options) => await AddStyleTagAsync(options);
+
+        async Task<IElementHandle> IFrame.AddScriptTagAsync(AddTagOptions options) => await AddScriptTagAsync(options);
 
         #endregion
     }

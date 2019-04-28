@@ -21,7 +21,7 @@ namespace PuppeteerSharp
     {
         private readonly ILogger _logger;
 
-        internal Connection(string url, int delay, IConnectionTransport transport, ILoggerFactory loggerFactory = null)
+        internal Connection(string url, int delay, PuppeteerSharp.Transport.IConnectionTransport transport, ILoggerFactory loggerFactory = null)
         {
             LoggerFactory = loggerFactory ?? new LoggerFactory();
             Url = url;
@@ -59,7 +59,7 @@ namespace PuppeteerSharp
         /// Gets the Connection transport.
         /// </summary>
         /// <value>Connection transport.</value>
-        public IConnectionTransport Transport { get; }
+        public PuppeteerSharp.Transport.IConnectionTransport Transport { get; }
         /// <summary>
         /// Occurs when the connection is closed.
         /// </summary>
@@ -177,7 +177,7 @@ namespace PuppeteerSharp
 
         #region Private Methods
 
-        private async void Transport_MessageReceived(object sender, MessageReceivedEventArgs e)
+        private async void Transport_MessageReceived(object sender, Transport.MessageReceivedEventArgs e)
         {
             try
             {
@@ -261,7 +261,7 @@ namespace PuppeteerSharp
             }
         }
 
-        void Transport_Closed(object sender, TransportClosedEventArgs e) => Close(e.CloseReason);
+        void Transport_Closed(object sender, Transport.TransportClosedEventArgs e) => Close(e.CloseReason);
 
         #endregion
 

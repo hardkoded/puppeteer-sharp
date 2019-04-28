@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.WebSockets;
-using PuppeteerSharp.Abstractions;
 using PuppeteerSharp.Abstractions.Transport;
 using PuppeteerSharp.Transport;
 

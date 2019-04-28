@@ -23,7 +23,7 @@ namespace PuppeteerSharp
     /// ]]>
     /// </code>
     /// </example>
-    public class Worker
+    public class Worker : IWorker
     {
         private readonly ILogger _logger;
         private readonly CDPSession _client;
@@ -145,5 +145,7 @@ namespace PuppeteerSharp
                 _executionContextCallback.TrySetResult(_executionContext);
             }
         }
+
+        async Task<IJSHandle> IWorker.EvaluateExpressionHandleAsync(string script) => await EvaluateExpressionHandleAsync(script);
     }
 }

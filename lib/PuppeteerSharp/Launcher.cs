@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Messaging;
 using System.Net.Http;
 using Newtonsoft.Json;
-using PuppeteerSharp.Abstractions;
 
 namespace PuppeteerSharp
 {

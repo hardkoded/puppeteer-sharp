@@ -36,7 +36,7 @@ namespace PuppeteerSharp
     /// ]]>
     /// </code>
     /// </example>
-    public class Browser : IDisposable
+    public class Browser : IBrowser
     {
         /// <summary>
         /// Time in milliseconds for chromium process to exit gracefully.
@@ -51,6 +51,12 @@ namespace PuppeteerSharp
         /// <param name="ignoreHTTPSErrors">The option to ignoreHTTPSErrors</param>
         /// <param name="defaultViewport">Default viewport</param>
         /// <param name="chromiumProcess">The Chromium process</param>
+        [Obsolete(@"Use Browser(
+            Connection connection,
+            string[] contextIds,
+            bool ignoreHTTPSErrors,
+            Abstractions.ViewPortOptions defaultViewport,
+            ChromiumProcess chromiumProcess) instead")]
         public Browser(
             Connection connection,
             string[] contextIds,
@@ -74,6 +80,39 @@ namespace PuppeteerSharp
             ChromiumProcess = chromiumProcess;
             _logger = Connection.LoggerFactory.CreateLogger<Browser>();
         }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Browser"/> class.
+        /// </summary>
+        /// <param name="connection">The connection</param>
+        /// <param name="contextIds">The context ids></param>
+        /// <param name="ignoreHTTPSErrors">The option to ignoreHTTPSErrors</param>
+        /// <param name="defaultViewport">Default viewport</param>
+        /// <param name="chromiumProcess">The Chromium process</param>
+        internal Browser(
+            Connection connection,
+            string[] contextIds,
+            bool ignoreHTTPSErrors,
+            Abstractions.ViewPortOptions defaultViewport,
+            ChromiumProcess chromiumProcess)
+        {
+            Connection = connection;
+            IgnoreHTTPSErrors = ignoreHTTPSErrors;
+            DefaultViewport = ViewPortOptions.From(defaultViewport);
+            TargetsMap = new ConcurrentDictionary<string, Target>();
+            ScreenshotTaskQueue = new TaskQueue();
+            DefaultContext = new BrowserContext(Connection, this, null);
+            _contexts = contextIds.ToDictionary(
+                contextId => contextId,
+                contextId => new BrowserContext(Connection, this, contextId));
+
+            Connection.Disconnected += Connection_Disconnected;
+            Connection.MessageReceived += Connect_MessageReceived;
+
+            ChromiumProcess = chromiumProcess;
+            _logger = Connection.LoggerFactory.CreateLogger<Browser>();
+        }
+
 
         #region Private members
 
@@ -159,7 +198,7 @@ namespace PuppeteerSharp
 
         internal TaskQueue ScreenshotTaskQueue { get; set; }
         internal Connection Connection { get; }
-        internal ViewPortOptions DefaultViewport { get; }
+        internal Abstractions.ViewPortOptions DefaultViewport { get; }
         internal ChromiumProcess ChromiumProcess { get; set; }
 
         /// <summary>
@@ -187,6 +226,10 @@ namespace PuppeteerSharp
         /// A target associated with the browser.
         /// </summary>
         public Target Target => Targets().FirstOrDefault(t => t.Type == TargetType.Browser);
+
+        IBrowserContext IBrowser.DefaultContext => throw new NotImplementedException();
+
+        ITarget IBrowser.Target => throw new NotImplementedException();
 
         /// <summary>
         /// Creates a new incognito browser context. This won't share cookies/cache with other browser contexts.
@@ -284,7 +327,55 @@ namespace PuppeteerSharp
         /// <param name="predicate">A function to be run for every target</param>
         /// <param name="options">options</param>
         /// <returns>Resolves to the first target found that matches the predicate function.</returns>
+        [Obsolete("Use WaitForTargetAsync(Func<Target, bool> predicate, Abstractions.WaitForOptions options = null) instead")]
         public async Task<Target> WaitForTargetAsync(Func<Target, bool> predicate, WaitForOptions options = null)
+        {
+            var timeout = options?.Timeout ?? DefaultWaitForTimeout;
+            var existingTarget = Targets().FirstOrDefault(predicate);
+            if (existingTarget != null)
+            {
+                return existingTarget;
+            }
+
+            var targetCompletionSource = new TaskCompletionSource<Target>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            void TargetHandler(object sender, TargetChangedArgs e)
+            {
+                if (predicate(e.Target))
+                {
+                    targetCompletionSource.TrySetResult(e.Target);
+                }
+            }
+
+            try
+            {
+                TargetCreated += TargetHandler;
+                TargetChanged += TargetHandler;
+
+                return await targetCompletionSource.Task.WithTimeout(timeout).ConfigureAwait(false);
+            }
+            finally
+            {
+                TargetCreated -= TargetHandler;
+                TargetChanged -= TargetHandler;
+            }
+        }
+
+        /// <summary>
+        /// This searches for a target in this specific browser context.
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// await page.EvaluateAsync("() => window.open('https://www.example.com/')");
+        /// var newWindowTarget = await browserContext.WaitForTargetAsync((target) => target.Url == "https://www.example.com/");
+        /// ]]>
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <param name="predicate">A function to be run for every target</param>
+        /// <param name="options">options</param>
+        /// <returns>Resolves to the first target found that matches the predicate function.</returns>
+        public async Task<Target> WaitForTargetAsync(Func<Target, bool> predicate, Abstractions.WaitForOptions options = null)
         {
             var timeout = options?.Timeout ?? DefaultWaitForTimeout;
             var existingTarget = Targets().FirstOrDefault(predicate);
@@ -511,7 +602,7 @@ namespace PuppeteerSharp
             Connection connection,
             string[] contextIds,
             bool ignoreHTTPSErrors,
-            ViewPortOptions defaultViewPort,
+            Abstractions.ViewPortOptions defaultViewPort,
             ChromiumProcess chromiumProcess)
         {
             var browser = new Browser(connection, contextIds, ignoreHTTPSErrors, defaultViewPort, chromiumProcess);
@@ -531,6 +622,19 @@ namespace PuppeteerSharp
         /// created by Puppeteer.
         /// </summary>
         public void Dispose() => _ = CloseAsync();
+
+        async Task<IPage> IBrowser.NewPageAsync() => await NewPageAsync();
+
+        ITarget[] IBrowser.Targets() => Targets();
+
+        async Task<IBrowserContext> IBrowser.CreateIncognitoBrowserContextAsync() => await CreateIncognitoBrowserContextAsync();
+
+        IBrowserContext[] IBrowser.BrowserContexts() => BrowserContexts();
+
+        async Task<IPage[]> IBrowser.PagesAsync() => await PagesAsync();
+
+        async Task<ITarget> IBrowser.WaitForTargetAsync(Func<ITarget, bool> predicate, Abstractions.WaitForOptions options)
+            => await WaitForTargetAsync(predicate, options);
 
         #endregion
     }

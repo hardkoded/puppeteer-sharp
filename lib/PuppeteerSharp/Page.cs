@@ -38,7 +38,7 @@ namespace PuppeteerSharp
     /// </code>
     /// </example>
     [DebuggerDisplay("Page {Url}")]
-    public class Page : IDisposable
+    public class Page : IPage, IDisposable
     {
         private readonly bool _ignoreHTTPSErrors;
         private NetworkManager _networkManager;
@@ -349,6 +349,26 @@ namespace PuppeteerSharp
         internal bool JavascriptEnabled { get; set; } = true;
         internal bool HasPopupEventListeners => Popup?.GetInvocationList().Any() == true;
         internal FrameManager FrameManager { get; private set; }
+
+        IFrame IPage.MainFrame => MainFrame;
+
+        IFrame[] IPage.Frames => Frames;
+
+        IWorker[] IPage.Workers => Workers;
+
+        ITarget IPage.Target => Target;
+
+        IKeyboard IPage.Keyboard => Keyboard;
+
+        ITouchscreen IPage.Touchscreen => Touchscreen;
+
+        ICoverage IPage.Coverage => Coverage;
+
+        IMouse IPage.Mouse => Mouse;
+
+        IBrowser IPage.Browser => Browser;
+
+        IBrowserContext IPage.BrowserContext => BrowserContext;
 
         #endregion
 
@@ -1168,7 +1188,7 @@ namespace PuppeteerSharp
         /// </code>
         /// </example>
         /// <returns>Task</returns>
-        public Task TypeAsync(string selector, string text, TypeOptions options = null)
+        public Task TypeAsync(string selector, string text, Input.TypeOptions options = null)
             => FrameManager.MainFrame.TypeAsync(selector, text, options);
 
         /// <summary>
@@ -2145,6 +2165,67 @@ namespace PuppeteerSharp
         /// calling <see cref="Dispose"/>, you must release all references to the <see cref="Page"/> so
         /// the garbage collector can reclaim the memory that the <see cref="Page"/> was occupying.</remarks>
         public void Dispose() => CloseAsync();
+
+        #endregion
+
+        #region IPage
+
+        async Task<IElementHandle> IPage.QuerySelectorAsync(string selector) => await QuerySelectorAsync(selector);
+
+        async Task<IElementHandle[]> IPage.QuerySelectorAllAsync(string selector) => await QuerySelectorAllAsync(selector);
+
+        async Task<IJSHandle> IPage.QuerySelectorAllHandleAsync(string selector) => await QuerySelectorAllHandleAsync(selector);
+
+        async Task<IElementHandle[]> IPage.XPathAsync(string expression) => await XPathAsync(expression);
+
+        async Task<IJSHandle> IPage.EvaluateExpressionHandleAsync(string script) => await EvaluateExpressionHandleAsync(script);
+
+        async Task<IJSHandle> IPage.EvaluateFunctionHandleAsync(string pageFunction, params object[] args) => await EvaluateFunctionHandleAsync(pageFunction, args);
+
+        async Task<IJSHandle> IPage.QueryObjectsAsync(IJSHandle prototypeHandle) => await QueryObjectsAsync((JSHandle)prototypeHandle);
+
+        async Task<IElementHandle> IPage.AddScriptTagAsync(AddTagOptions options) => await AddScriptTagAsync(options);
+
+        async Task<IElementHandle> IPage.AddScriptTagAsync(string url) => await AddScriptTagAsync(url);
+
+        async Task<IElementHandle> IPage.AddStyleTagAsync(AddTagOptions options) => await AddStyleTagAsync(options);
+
+        async Task<IElementHandle> IPage.AddStyleTagAsync(string url) => await AddStyleTagAsync(url);
+
+        async Task<IResponse> IPage.GoToAsync(string url, NavigationOptions options) => await GoToAsync(url, options);
+
+        async Task<IResponse> IPage.GoToAsync(string url, int? timeout, WaitUntilNavigation[] waitUntil) => await GoToAsync(url, timeout, waitUntil);
+
+        async Task<IResponse> IPage.GoToAsync(string url, WaitUntilNavigation waitUntil) => await GoToAsync(url, waitUntil);
+
+        async Task<IResponse> IPage.ReloadAsync(NavigationOptions options) => await ReloadAsync(options);
+
+        async Task<IResponse> IPage.ReloadAsync(int? timeout, WaitUntilNavigation[] waitUntil) => await ReloadAsync(timeout, waitUntil);
+
+        async Task<IJSHandle> IPage.WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args) => await WaitForFunctionAsync(script, options, args);
+        
+        async Task<IJSHandle> IPage.WaitForFunctionAsync(string script, params object[] args) => await WaitForFunctionAsync(script, args);
+        
+        async Task<IJSHandle> IPage.WaitForExpressionAsync(string script, WaitForFunctionOptions options) => await WaitForExpressionAsync(script, options);
+        
+        async Task<IElementHandle> IPage.WaitForSelectorAsync(string selector, WaitForSelectorOptions options) => await WaitForSelectorAsync(selector, options);
+        
+        async Task<IElementHandle> IPage.WaitForXPathAsync(string xpath, WaitForSelectorOptions options) => await WaitForXPathAsync(xpath, options);
+        
+        async Task<IResponse> IPage.WaitForNavigationAsync(NavigationOptions options) => await WaitForNavigationAsync(options);
+        
+        async Task<IRequest> IPage.WaitForRequestAsync(string url, WaitForOptions options) => await WaitForRequestAsync(url, options);
+        
+        async Task<IRequest> IPage.WaitForRequestAsync(Func<IRequest, bool> predicate, WaitForOptions options) => await WaitForRequestAsync(predicate, options);
+        
+        async Task<IResponse> IPage.WaitForResponseAsync(string url, WaitForOptions options) => await WaitForResponseAsync(url, options);
+        
+        async Task<IResponse> IPage.WaitForResponseAsync(Func<IResponse, bool> predicate, WaitForOptions options) => await WaitForResponseAsync(predicate, options);
+        
+        async Task<IResponse> IPage.GoBackAsync(NavigationOptions options) => await GoBackAsync(options);
+        
+        async Task<IResponse> IPage.GoForwardAsync(NavigationOptions options) => await GoForwardAsync(options);
+
         #endregion
     }
 }

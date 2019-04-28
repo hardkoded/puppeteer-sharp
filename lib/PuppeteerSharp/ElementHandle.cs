@@ -17,7 +17,7 @@ namespace PuppeteerSharp
     /// Inherits from <see cref="JSHandle"/>. It represents an in-page DOM element. 
     /// ElementHandles can be created by <see cref="Page.QuerySelectorAsync(string)"/> or <see cref="Page.QuerySelectorAllAsync(string)"/>.
     /// </summary>
-    public class ElementHandle : JSHandle
+    public class ElementHandle : JSHandle, IElementHandle
     {
         private readonly FrameManager _frameManager;
         private readonly ILogger<ElementHandle> _logger;
@@ -45,7 +45,7 @@ namespace PuppeteerSharp
         /// <param name="file">The file path to save the image to. The screenshot type will be inferred from file extension. 
         /// If path is a relative path, then it is resolved relative to current working directory. If no path is provided, 
         /// the image won't be saved to the disk.</param>
-        public Task ScreenshotAsync(string file) => ScreenshotAsync(file, new ScreenshotOptions());
+        public Task ScreenshotAsync(string file) => ScreenshotAsync(file, new PuppeteerSharp.ScreenshotOptions());
 
         /// <summary>
         /// This method scrolls element into view if needed, and then uses <seealso cref="Page.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element. 
@@ -56,7 +56,7 @@ namespace PuppeteerSharp
         /// If path is a relative path, then it is resolved relative to current working directory. If no path is provided, 
         /// the image won't be saved to the disk.</param>
         /// <param name="options">Screenshot options.</param>
-        public async Task ScreenshotAsync(string file, ScreenshotOptions options)
+        public async Task ScreenshotAsync(string file, PuppeteerSharp.ScreenshotOptions options)
         {
             if (!options.Type.HasValue)
             {
@@ -76,7 +76,7 @@ namespace PuppeteerSharp
         /// If the element is detached from DOM, the method throws an error.
         /// </summary>
         /// <returns>Task which resolves to a <see cref="Stream"/> containing the image data.</returns>
-        public Task<Stream> ScreenshotStreamAsync() => ScreenshotStreamAsync(new ScreenshotOptions());
+        public Task<Stream> ScreenshotStreamAsync() => ScreenshotStreamAsync(new PuppeteerSharp.ScreenshotOptions());
 
         /// <summary>
         /// This method scrolls element into view if needed, and then uses <seealso cref="Page.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element. 
@@ -84,7 +84,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>Task which resolves to a <see cref="Stream"/> containing the image data.</returns>
         /// <param name="options">Screenshot options.</param>
-        public async Task<Stream> ScreenshotStreamAsync(ScreenshotOptions options)
+        public async Task<Stream> ScreenshotStreamAsync(PuppeteerSharp.ScreenshotOptions options)
             => new MemoryStream(await ScreenshotDataAsync(options).ConfigureAwait(false));
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>Task which resolves to a <see cref="byte"/>[] containing the image data.</returns>
         /// <param name="options">Screenshot options.</param>
-        public async Task<byte[]> ScreenshotDataAsync(ScreenshotOptions options)
+        public async Task<byte[]> ScreenshotDataAsync(PuppeteerSharp.ScreenshotOptions options)
             => Convert.FromBase64String(await ScreenshotBase64Async(options).ConfigureAwait(false));
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace PuppeteerSharp
         /// If the element is detached from DOM, the method throws an error.
         /// </summary>
         /// <returns>Task which resolves to a <see cref="string"/> containing the image data as base64.</returns>
-        public Task<string> ScreenshotBase64Async() => ScreenshotBase64Async(new ScreenshotOptions());
+        public Task<string> ScreenshotBase64Async() => ScreenshotBase64Async(new PuppeteerSharp.ScreenshotOptions());
 
         /// <summary>
         /// This method scrolls element into view if needed, and then uses <seealso cref="Page.ScreenshotBase64Async(ScreenshotOptions)"/> to take a screenshot of the element. 
@@ -116,7 +116,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>Task which resolves to a <see cref="string"/> containing the image data as base64.</returns>
         /// <param name="options">Screenshot options.</param>
-        public async Task<string> ScreenshotBase64Async(ScreenshotOptions options)
+        public async Task<string> ScreenshotBase64Async(PuppeteerSharp.ScreenshotOptions options)
         {
             var needsViewportReset = false;
             var boundingBox = await BoundingBoxAsync().ConfigureAwait(false);
@@ -191,7 +191,7 @@ namespace PuppeteerSharp
         /// <param name="options">click options</param>
         /// <exception cref="PuppeteerException">if the element is detached from DOM</exception>
         /// <returns>Task which resolves when the element is successfully clicked</returns>
-        public async Task ClickAsync(ClickOptions options = null)
+        public async Task ClickAsync(Input.ClickOptions options = null)
         {
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
             var (x, y) = await ClickablePointAsync().ConfigureAwait(false);
@@ -254,7 +254,7 @@ namespace PuppeteerSharp
         /// </code>
         /// </example>
         /// <returns>Task</returns>
-        public async Task TypeAsync(string text, TypeOptions options = null)
+        public async Task TypeAsync(string text, Input.TypeOptions options = null)
         {
             await FocusAsync().ConfigureAwait(false);
             await Page.Keyboard.TypeAsync(text, options).ConfigureAwait(false);
@@ -269,7 +269,13 @@ namespace PuppeteerSharp
         /// If <c>key</c> is a single character and no modifier keys besides <c>Shift</c> are being held down, a <c>keypress</c>/<c>input</c> event will also be generated. The <see cref="DownOptions.Text"/> option can be specified to force an input event to be generated.
         /// </remarks>
         /// <returns></returns>
-        public async Task PressAsync(string key, PressOptions options = null)
+        public async Task PressAsync(string key, Input.PressOptions options = null)
+        {
+            await FocusAsync().ConfigureAwait(false);
+            await Page.Keyboard.PressAsync(key, options).ConfigureAwait(false);
+        }
+
+        public async Task PressAsync(string key, Abstractions.Input.PressOptions options = null)
         {
             await FocusAsync().ConfigureAwait(false);
             await Page.Keyboard.PressAsync(key, options).ConfigureAwait(false);
@@ -533,5 +539,33 @@ namespace PuppeteerSharp
             }
             return Math.Abs(area);
         }
+
+        async Task<IElementHandle> IElementHandle.QuerySelectorAsync(string selector) => await QuerySelectorAsync(selector);
+
+        async Task<IElementHandle[]> IElementHandle.QuerySelectorAllAsync(string selector) => await QuerySelectorAllAsync(selector);
+
+        async Task<IJSHandle> IElementHandle.QuerySelectorAllHandleAsync(string selector) => await QuerySelectorAllHandleAsync(selector);
+
+        async Task<IElementHandle[]> IElementHandle.XPathAsync(string expression) => await XPathAsync(expression);
+
+        async Task<IFrame> IElementHandle.ContentFrameAsync() => await ContentFrameAsync();
+
+        async Task IElementHandle.ScreenshotAsync(string file, Abstractions.ScreenshotOptions options) => await ScreenshotAsync(file, options);
+
+        async Task<Stream> IElementHandle.ScreenshotStreamAsync(Abstractions.ScreenshotOptions options) => await ScreenshotStreamAsync(options);
+
+        async Task<byte[]> IElementHandle.ScreenshotDataAsync(Abstractions.ScreenshotOptions options) => await ScreenshotDataAsync(options);
+
+        async Task<string> IElementHandle.ScreenshotBase64Async(Abstractions.ScreenshotOptions options) => await ScreenshotBase64Async(options);
+
+        async Task IElementHandle.ClickAsync(Abstractions.Input.ClickOptions options = null) => await ClickAsync(options);
+
+        async Task IElementHandle.TypeAsync(string text, Abstractions.Input.TypeOptions options = null) => await TypeAsync(text, options);
+
+        async Task IElementHandle.PressAsync(string key, Abstractions.Input.PressOptions options = null) => await PressAsync(key, options);
+
+        async Task<Abstractions.BoundingBox> IElementHandle.BoundingBoxAsync() => await BoundingBoxAsync();
+
+        async Task<Abstractions.BoxModel> IElementHandle.BoxModelAsync() => await BoxModelAsync();
     }
 }

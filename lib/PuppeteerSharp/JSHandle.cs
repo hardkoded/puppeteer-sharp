@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using PuppeteerSharp.Abstractions;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Messaging;
@@ -12,7 +14,7 @@ namespace PuppeteerSharp
     /// JSHandle represents an in-page JavaScript object. JSHandles can be created with the <see cref="Page.EvaluateExpressionHandleAsync(string)"/> and <see cref="Page.EvaluateFunctionHandleAsync(string, object[])"/> methods.
     /// </summary>
     [JsonConverter(typeof(JSHandleMethodConverter))]
-    public class JSHandle
+    public class JSHandle : IJSHandle
     {
         internal JSHandle(ExecutionContext context, CDPSession client, RemoteObject remoteObject)
         {
@@ -47,6 +49,10 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The logger.</value>
         protected ILogger Logger { get; }
+
+        IExecutionContext IJSHandle.ExecutionContext => throw new System.NotImplementedException();
+
+        bool IJSHandle.Disposed { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
 
         /// <summary>
         /// Fetches a single property from the referenced object
@@ -194,5 +200,10 @@ namespace PuppeteerSharp
 
             return new { objectId };
         }
+
+        async Task<IJSHandle> IJSHandle.GetPropertyAsync(string propertyName) => await GetPropertyAsync(propertyName);
+
+        async Task<Dictionary<string, IJSHandle>> IJSHandle.GetPropertiesAsync() => (await GetPropertiesAsync())
+            .ToDictionary(pair => pair.Key, pair => (IJSHandle)pair.Value);
     }
 }

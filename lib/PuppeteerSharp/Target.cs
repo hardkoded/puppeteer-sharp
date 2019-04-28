@@ -10,7 +10,7 @@ namespace PuppeteerSharp
     /// Target.
     /// </summary>
     [DebuggerDisplay("Target {Type} - {Url}")]
-    public class Target
+    public class Target : ITarget
     {
         #region Private members
         private TargetInfo _targetInfo;
@@ -67,11 +67,19 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The URL.</value>
         public string Url => _targetInfo.Url;
+
         /// <summary>
         /// Gets the type. It will be <see cref="TargetInfo.Type"/> if it's "page" or "service_worker". Otherwise it will be "other"
         /// </summary>
         /// <value>The type.</value>
+        [Obsolete("use Abstractions.TargetType ITarget.Type instead")]
         public TargetType Type => _targetInfo.Type;
+
+        /// <summary>
+        /// Gets the type. It will be <see cref="TargetInfo.Type"/> if it's "page" or "service_worker". Otherwise it will be "other"
+        /// </summary>
+        /// <value>The type.</value>
+        Abstractions.TargetType ITarget.Type => Enum.TryParse<Abstractions.TargetType>(Type.ToString(), out var type) ? type : Abstractions.TargetType.Other;
 
         /// <summary>
         /// Gets the target identifier.
@@ -102,6 +110,12 @@ namespace PuppeteerSharp
         internal Task CloseTask => CloseTaskWrapper.Task;
         internal TaskCompletionSource<bool> CloseTaskWrapper { get; }
         internal Task<Page> PageTask { get; set; }
+
+        ITarget ITarget.Opener => Opener;
+
+        IBrowser ITarget.Browser => Browser;
+
+        IBrowserContext ITarget.BrowserContext => BrowserContext;
         #endregion
 
         /// <summary>
@@ -147,5 +161,9 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>A task that returns a <see cref="CDPSession"/></returns>
         public Task<CDPSession> CreateCDPSessionAsync() => Browser.Connection.CreateSessionAsync(_targetInfo);
+
+        async Task<IPage> ITarget.PageAsync() => await PageAsync();
+
+        async Task<ICDPSession> ITarget.CreateCDPSessionAsync() => await CreateCDPSessionAsync();
     }
 }
