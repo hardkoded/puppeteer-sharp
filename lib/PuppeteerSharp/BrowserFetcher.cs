@@ -37,7 +37,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Default Chromium revision.
         /// </summary>
-        public const int DefaultRevision = 641577;
+        public const int DefaultRevision = 650583;
 
         /// <summary>
         /// Gets the downloads folder.
@@ -85,7 +85,7 @@ namespace PuppeteerSharp
             Platform = options.Platform ?? GetCurrentPlatform();
         }
 
-#region Public Methods
+        #region Public Methods
 
         /// <summary>
         /// The method initiates a HEAD request to check if the revision is available.
@@ -240,9 +240,9 @@ namespace PuppeteerSharp
             }
         }
 
-#endregion
+        #endregion
 
-#region Private Methods
+        #region Private Methods
 
         internal static Platform GetCurrentPlatform()
         {
@@ -267,7 +267,7 @@ namespace PuppeteerSharp
         private void NativeExtractToDirectory(string zipPath, string folderPath)
         {
             var process = new Process();
-            
+
             process.StartInfo.FileName = "unzip";
             process.StartInfo.Arguments = $"\"{zipPath}\" -d \"{folderPath}\"";
             process.Start();
@@ -312,6 +312,6 @@ namespace PuppeteerSharp
         private static string GetDownloadURL(Platform platform, string host, int revision)
             => string.Format(_downloadUrls[platform], host, revision, GetArchiveName(platform, revision));
 
-#endregion
+        #endregion
     }
 }
