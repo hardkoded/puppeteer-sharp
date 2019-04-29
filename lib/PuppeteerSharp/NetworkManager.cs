@@ -106,11 +106,14 @@ namespace PuppeteerSharp
             {
                 switch (e.MessageID)
                 {
+                    case "Fetch.requestPaused":
+                        await OnRequestPaused(e.MessageData.ToObject<RequestPausedResponse>(true));
+                        break;
+                    case "Fetch.authRequired":
+                        await OnAuthRequired(e.MessageData.ToObject<AuthRequiredResponse>(true));
+                        break;
                     case "Network.requestWillBeSent":
                         await OnRequestWillBeSentAsync(e.MessageData.ToObject<RequestWillBeSentPayload>(true));
-                        break;
-                    case "Network.requestIntercepted":
-                        await OnRequestInterceptedAsync(e.MessageData.ToObject<RequestInterceptedResponse>(true)).ConfigureAwait(false);
                         break;
                     case "Network.requestServedFromCache":
                         OnRequestServedFromCache(e.MessageData.ToObject<RequestServedFromCacheResponse>(true));
@@ -196,68 +199,53 @@ namespace PuppeteerSharp
             }
         }
 
-        private async Task OnRequestInterceptedAsync(RequestInterceptedResponse e)
+        private async Task OnAuthRequired(AuthRequiredResponse e)
         {
-            if (e.AuthChallenge != null)
+            var response = "Default";
+            if (_attemptedAuthentications.Contains(e.RequestId))
             {
-                var response = "Default";
-                if (_attemptedAuthentications.Contains(e.InterceptionId))
-                {
-                    response = "CancelAuth";
-                }
-                else if (_credentials != null)
-                {
-                    response = "ProvideCredentials";
-                    _attemptedAuthentications.Add(e.InterceptionId);
-                }
-                var credentials = _credentials ?? new Credentials();
-                try
-                {
-                    await _client.SendAsync("Network.continueInterceptedRequest", new NetworkContinueInterceptedRequestRequest
-                    {
-                        InterceptionId = e.InterceptionId,
-                        AuthChallengeResponse = new NetworkContinueInterceptedRequestChallengeResponse
-                        {
-                            Response = response,
-                            Username = credentials.Username,
-                            Password = credentials.Password
-                        }
-                    }).ConfigureAwait(false);
-                }
-                catch (PuppeteerException ex)
-                {
-                    _logger.LogError(ex.ToString());
-                }
-                return;
+                response = "CancelAuth";
             }
+            else if (_credentials != null)
+            {
+                response = "ProvideCredentials";
+                _attemptedAuthentications.Add(e.RequestId);
+            }
+            var credentials = _credentials ?? new Credentials();
+            try
+            {
+                await _client.SendAsync("Fetch.continueWithAuth", new ContinueWithAuthRequest
+                {
+                    RequestId = e.RequestId,
+                    AuthChallengeResponse = new ContinueWithAuthRequestChallengeResponse
+                    {
+                        Response = response,
+                        Username = credentials.Username,
+                        Password = credentials.Password
+                    }
+                }).ConfigureAwait(false);
+            }
+            catch (PuppeteerException ex)
+            {
+                _logger.LogError(ex.ToString());
+            }
+        }
+
+        private async Task OnRequestPaused(RequestPausedResponse e)
+        {
             if (!_userRequestInterceptionEnabled && _protocolRequestInterceptionEnabled)
             {
                 try
                 {
-                    await _client.SendAsync("Network.continueInterceptedRequest", new NetworkContinueInterceptedRequestRequest
+                    await _client.SendAsync("Fetch.continueRequest", new ContinueRequestRequest
                     {
-                        InterceptionId = e.InterceptionId
+                        RequestId = e.RequestId
                     }).ConfigureAwait(false);
                 }
                 catch (PuppeteerException ex)
                 {
                     _logger.LogError(ex.ToString());
                 }
-            }
-
-            var requestHash = e.Request.Hash;
-            var requestId = _requestHashToRequestIds.FirstValue(requestHash);
-            if (requestId != null)
-            {
-                if (_requestIdToRequestWillBeSentEvent.TryRemove(requestId, out var requestWillBeSentEvent))
-                {
-                    await OnRequestAsync(requestWillBeSentEvent, e.InterceptionId);
-                    _requestHashToRequestIds.Delete(requestHash, requestId);
-                }
-            }
-            else
-            {
-                _requestHashToInterceptionIds.Add(requestHash, e.InterceptionId);
             }
         }
 
@@ -371,21 +359,32 @@ namespace PuppeteerSharp
             }
 
             _protocolRequestInterceptionEnabled = enabled;
-            var patterns = enabled ?
-                new object[] { new KeyValuePair<string, string>("urlPattern", "*") } :
-                Array.Empty<object>();
-
-            await Task.WhenAll(
-                _client.SendAsync("Network.setCacheDisabled", new NetworkSetCacheDisabledRequest
-                {
-                    CacheDisabled = enabled
-                }),
-                _client.SendAsync("Network.setRequestInterception", new NetworkSetRequestInterceptionRequest
-                {
-                    Patterns = patterns
-                })
-            ).ConfigureAwait(false);
+            if (enabled)
+            {
+                await Task.WhenAll(
+                     _client.SendAsync("Network.setCacheDisabled", new NetworkSetCacheDisabledRequest
+                     {
+                         CacheDisabled = enabled
+                     }),
+                    _client.SendAsync("Fetch.enable", new FetchEnableRequest
+                    {
+                        HandleAuthRequests = true,
+                        Patterns = new[] { new FetchEnableRequest.Pattern { UrlPattern = "*" } }
+                    })
+                ).ConfigureAwait(false);
+            }
+            else
+            {
+                await Task.WhenAll(
+                    _client.SendAsync("Network.setCacheDisabled", new NetworkSetCacheDisabledRequest
+                    {
+                        CacheDisabled = enabled
+                    }),
+                    _client.SendAsync("Fetch.disable")
+                ).ConfigureAwait(false);
+            }
         }
+
         #endregion
     }
 }
