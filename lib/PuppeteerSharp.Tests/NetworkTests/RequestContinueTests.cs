@@ -130,6 +130,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
                 Page.GoToAsync(TestConstants.EmptyPage)
             );
             Assert.Equal(HttpMethod.Post.Method, serverRequest.Result.Method);
-            Assert.Equal("doggo", serverRequest.Result.Body);        }
+            Assert.Equal("doggo", serverRequest.Result.Body);
+        }
     }
 }
