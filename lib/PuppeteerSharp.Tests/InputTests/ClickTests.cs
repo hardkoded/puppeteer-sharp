@@ -31,6 +31,21 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.Equal("Clicked", await Page.EvaluateExpressionAsync("result"));
         }
 
+        [Fact(Skip = "See https://github.com/GoogleChrome/puppeteer/issues/4281")]
+        public async Task ShouldClickOnASpanWithAnInlineElementInside()
+        {
+            await Page.SetContentAsync($@"
+                <style>
+                span::before {{
+                    content: 'q';
+                }}
+                </style>
+                <span onclick='javascript:window.CLICKED=42'></span>
+            ");
+            await Page.ClickAsync("span");
+            Assert.Equal(42, await Page.EvaluateFunctionAsync<int>("() => window.CLICKED"));
+        }
+
         [Fact]
         public async Task ShouldClickTheButtonAfterNavigation()
         {
