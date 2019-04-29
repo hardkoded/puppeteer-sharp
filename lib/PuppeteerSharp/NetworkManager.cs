@@ -107,10 +107,10 @@ namespace PuppeteerSharp
                 switch (e.MessageID)
                 {
                     case "Fetch.requestPaused":
-                        await OnRequestPaused(e.MessageData.ToObject<RequestPausedResponse>(true));
+                        await OnRequestPaused(e.MessageData.ToObject<FetchRequestPausedResponse>(true));
                         break;
                     case "Fetch.authRequired":
-                        await OnAuthRequired(e.MessageData.ToObject<AuthRequiredResponse>(true));
+                        await OnAuthRequired(e.MessageData.ToObject<FetchAuthRequiredResponse>(true));
                         break;
                     case "Network.requestWillBeSent":
                         await OnRequestWillBeSentAsync(e.MessageData.ToObject<RequestWillBeSentPayload>(true));
@@ -199,7 +199,7 @@ namespace PuppeteerSharp
             }
         }
 
-        private async Task OnAuthRequired(AuthRequiredResponse e)
+        private async Task OnAuthRequired(FetchAuthRequiredResponse e)
         {
             var response = "Default";
             if (_attemptedAuthentications.Contains(e.RequestId))
@@ -231,7 +231,7 @@ namespace PuppeteerSharp
             }
         }
 
-        private async Task OnRequestPaused(RequestPausedResponse e)
+        private async Task OnRequestPaused(FetchRequestPausedResponse e)
         {
             if (!_userRequestInterceptionEnabled && _protocolRequestInterceptionEnabled)
             {

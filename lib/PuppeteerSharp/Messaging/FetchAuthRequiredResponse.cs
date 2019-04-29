@@ -3,7 +3,7 @@ using System.Net;
 
 namespace PuppeteerSharp.Messaging
 {
-    internal class AuthRequiredResponse
+    internal class FetchAuthRequiredResponse
     {
         public string RequestId { get; set; }
         public Payload Request { get; set; }

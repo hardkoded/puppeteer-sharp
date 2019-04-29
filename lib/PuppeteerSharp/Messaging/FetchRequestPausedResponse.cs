@@ -1,6 +1,6 @@
 ﻿namespace PuppeteerSharp.Messaging
 {
-    internal class RequestPausedResponse
+    internal class FetchRequestPausedResponse
     {
         public string RequestId { get; set; }
     }
