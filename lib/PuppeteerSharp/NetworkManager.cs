@@ -237,7 +237,7 @@ namespace PuppeteerSharp
             {
                 try
                 {
-                    await _client.SendAsync("Fetch.continueRequest", new ContinueRequestRequest
+                    await _client.SendAsync("Fetch.continueRequest", new FetchContinueRequestRequest
                     {
                         RequestId = e.RequestId
                     }).ConfigureAwait(false);

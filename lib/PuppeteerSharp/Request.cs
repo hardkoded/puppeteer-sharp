@@ -173,7 +173,7 @@ namespace PuppeteerSharp
 
             try
             {
-                var requestData = new ContinueRequestRequest
+                var requestData = new FetchContinueRequestRequest
                 {
                     RequestId = InterceptionId
                 };
@@ -194,17 +194,10 @@ namespace PuppeteerSharp
 
                 if (overrides?.Headers?.Count > 0)
                 {
-                    requestData.Headers = overrides.Headers;
+                    requestData.Headers = HeadersArray(overrides.Headers);
                 }
 
-                await _client.SendAsync("Fetch.continueRequest", new FetchContinueRequestRequest
-                {
-                    RequestId = InterceptionId,
-                    Url = requestData.Url,
-                    Method = requestData.Method,
-                    PostData = requestData.PostData,
-                    Headers = HeadersArray(requestData.Headers)
-                }).ConfigureAwait(false);
+                await _client.SendAsync("Fetch.continueRequest", requestData).ConfigureAwait(false);
             }
             catch (PuppeteerException ex)
             {
