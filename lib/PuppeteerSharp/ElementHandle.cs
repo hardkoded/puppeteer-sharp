@@ -433,16 +433,17 @@ namespace PuppeteerSharp
             });
             var layoutTask = Client.SendAsync<PageGetLayoutMetricsResponse>("Page.getLayoutMetrics");
 
-            await Task.WhenAll(contentQuadsTask, layoutTask).ConfigureAwait(false);
+            try
+            {
+                await Task.WhenAll(contentQuadsTask, layoutTask).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unable to get content quads");
+            }
 
-            if (contentQuadsTask.Exception != null)
-            {
-                _logger.LogError(contentQuadsTask.Exception, "Unable to get content quads");
-            }
-            else
-            {
-                result = contentQuadsTask.Result;
-            }
+            result = contentQuadsTask.Result;
+
 
             if (result == null || result.Quads.Length == 0)
             {
