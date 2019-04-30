@@ -436,14 +436,12 @@ namespace PuppeteerSharp
             try
             {
                 await Task.WhenAll(contentQuadsTask, layoutTask).ConfigureAwait(false);
+                result = contentQuadsTask.Result;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Unable to get content quads");
             }
-
-            result = contentQuadsTask.Result;
-
 
             if (result == null || result.Quads.Length == 0)
             {
