@@ -5,6 +5,7 @@ using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Input;
 using PuppeteerSharp.Messaging;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -426,16 +427,21 @@ namespace PuppeteerSharp
         {
             GetContentQuadsResponse result = null;
 
-            try
+            var contentQuadsTask = Client.SendAsync<GetContentQuadsResponse>("DOM.getContentQuads", new DomGetContentQuadsRequest
             {
-                result = await Client.SendAsync<GetContentQuadsResponse>("DOM.getContentQuads", new DomGetContentQuadsRequest
-                {
-                    ObjectId = RemoteObject.ObjectId
-                }).ConfigureAwait(false);
+                ObjectId = RemoteObject.ObjectId
+            });
+            var layoutTask = Client.SendAsync<PageGetLayoutMetricsResponse>("Page.getLayoutMetrics");
+
+            await Task.WhenAll(contentQuadsTask, layoutTask).ConfigureAwait(false);
+
+            if (contentQuadsTask.Exception != null)
+            {
+                _logger.LogError(contentQuadsTask.Exception, "Unable to get content quads");
             }
-            catch (Exception ex)
+            else
             {
-                _logger.LogError(ex.Message);
+                result = contentQuadsTask.Result;
             }
 
             if (result == null || result.Quads.Length == 0)
@@ -444,7 +450,11 @@ namespace PuppeteerSharp
             }
 
             // Filter out quads that have too small area to click into.
-            var quads = result.Quads.Select(FromProtocolQuad).Where(q => ComputeQuadArea(q) > 1);
+            var quads = result.Quads
+                .Select(FromProtocolQuad)
+                .Select(q => IntersectQuadWithViewport(q, layoutTask.Result))
+                .Where(q => ComputeQuadArea(q.ToArray()) > 1);
+
             if (!quads.Any())
             {
                 throw new PuppeteerException("Node is either not visible or not an HTMLElement");
@@ -465,6 +475,13 @@ namespace PuppeteerSharp
                 y: y / 4
             );
         }
+
+        private IEnumerable<BoxModelPoint> IntersectQuadWithViewport(IEnumerable<BoxModelPoint> quad, PageGetLayoutMetricsResponse viewport)
+            => quad.Select(point => new BoxModelPoint
+            {
+                X = Math.Min(Math.Max(point.X, 0), viewport.ContentSize.Width),
+                Y = Math.Min(Math.Max(point.Y, 0), viewport.ContentSize.Height),
+            });
 
         private async Task ScrollIntoViewIfNeededAsync()
         {

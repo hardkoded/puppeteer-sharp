@@ -69,6 +69,23 @@ namespace PuppeteerSharp.Tests.InputTests
         }
 
         [Fact]
+        public async Task ShouldClickWhenOneOfInlineBoxChildrenIsOutsideOfViewport()
+        {
+            await Page.SetContentAsync($@"
+            <style>
+            i {{
+                position: absolute;
+                top: -1000px;
+            }}
+            </style>
+            <span onclick='javascript:window.CLICKED = 42;'><i>woof</i><b>doggo</b></span>
+            ");
+
+            await Page.ClickAsync("span");
+            Assert.Equal(42, await Page.EvaluateFunctionAsync<int>("() => window.CLICKED"));
+        }
+
+        [Fact]
         public async Task ShouldSelectTheTextByTripleClicking()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
