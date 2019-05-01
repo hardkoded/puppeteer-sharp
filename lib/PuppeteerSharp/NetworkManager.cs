@@ -17,8 +17,7 @@ namespace PuppeteerSharp
         private readonly ConcurrentDictionary<string, Request> _requestIdToRequest = new ConcurrentDictionary<string, Request>();
         private readonly ConcurrentDictionary<string, RequestWillBeSentPayload> _requestIdToRequestWillBeSentEvent =
             new ConcurrentDictionary<string, RequestWillBeSentPayload>();
-        private readonly MultiMap<string, string> _requestHashToRequestIds = new MultiMap<string, string>();
-        private readonly MultiMap<string, string> _requestHashToInterceptionIds = new MultiMap<string, string>();
+        private readonly ConcurrentDictionary<string, string> _requestIdToInterceptionId = new ConcurrentDictionary<string, string>();
         private readonly ILogger _logger;
         private Dictionary<string, string> _extraHTTPHeaders;
         private bool _offine;
@@ -245,19 +244,13 @@ namespace PuppeteerSharp
                 }
             }
 
-            var requestHash = e.Request.Hash;
-            var requestId = _requestHashToRequestIds.FirstValue(requestHash);
-            if (requestId != null)
+            if (e.RequestId != null && _requestIdToRequestWillBeSentEvent.TryRemove(e.RequestId, out var requestWillBeSentEvent))
             {
-                if (_requestIdToRequestWillBeSentEvent.TryRemove(requestId, out var requestWillBeSentEvent))
-                {
-                    await OnRequestAsync(requestWillBeSentEvent, e.InterceptionId);
-                    _requestHashToRequestIds.Delete(requestHash, requestId);
-                }
+                await OnRequestAsync(requestWillBeSentEvent, e.InterceptionId);
             }
             else
             {
-                _requestHashToInterceptionIds.Add(requestHash, e.InterceptionId);
+                _requestIdToInterceptionId[requestId] = e.InterceptionId;
             }
         }
 
@@ -343,16 +336,12 @@ namespace PuppeteerSharp
             // Request interception doesn't happen for data URLs with Network Service.
             if (_protocolRequestInterceptionEnabled && !e.Request.Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase))
             {
-                var requestHash = e.Request.Hash;
-                var interceptionId = _requestHashToInterceptionIds.FirstValue(requestHash);
-                if (interceptionId != null)
+                if (_requestIdToInterceptionId.TryRemove(e.RequestId, out var interceptionId))
                 {
                     await OnRequestAsync(e, interceptionId);
-                    _requestHashToInterceptionIds.Delete(requestHash, interceptionId);
                 }
                 else
                 {
-                    _requestHashToRequestIds.Add(requestHash, e.RequestId);
                     // Under load, we may get to this section more than once
                     _requestIdToRequestWillBeSentEvent.TryAdd(e.RequestId, e);
                 }
