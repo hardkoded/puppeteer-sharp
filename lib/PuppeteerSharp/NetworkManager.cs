@@ -250,7 +250,7 @@ namespace PuppeteerSharp
             }
             else
             {
-                _requestIdToInterceptionId[requestId] = e.InterceptionId;
+                _requestIdToInterceptionId[e.RequestId] = e.InterceptionId;
             }
         }
 
