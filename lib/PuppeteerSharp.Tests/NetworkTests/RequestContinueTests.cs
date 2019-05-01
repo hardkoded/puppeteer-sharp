@@ -114,5 +114,23 @@ namespace PuppeteerSharp.Tests.NetworkTests
 
             Assert.Equal("doggo", await requestTask.Result);
         }
+
+        [Fact]
+        public async Task ShouldAmendBothPostDataAndMethodOnNavigation()
+        {
+            await Page.SetRequestInterceptionAsync(true);
+            Page.Request += async (sender, e) => await e.Request.ContinueAsync(new Payload
+            {
+                Method = HttpMethod.Post,
+                PostData = "doggo"
+            });
+            var serverRequest = Server.WaitForRequest("/empty.html", req => new { req.Method, Body = new StreamReader(req.Body).ReadToEnd() });
+            await Task.WhenAll(
+                serverRequest,
+                Page.GoToAsync(TestConstants.EmptyPage)
+            );
+            Assert.Equal(HttpMethod.Post.Method, serverRequest.Result.Method);
+            Assert.Equal("doggo", serverRequest.Result.Body);
+        }
     }
 }
