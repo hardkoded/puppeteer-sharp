@@ -47,6 +47,8 @@ namespace PuppeteerSharp
             }
         }
 
+        internal bool HasContext => _contextResolveTaskWrapper != null;
+
         internal void Detach()
         {
             _detached = true;
