@@ -31,7 +31,7 @@ namespace PuppeteerSharp
             _fromDiskCache = responseMessage.FromDiskCache;
             FromServiceWorker = responseMessage.FromServiceWorker;
 
-            Headers = new Dictionary<string, string>();
+            Headers = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
             if (responseMessage.Headers != null)
             {
                 foreach (var keyValue in responseMessage.Headers)
