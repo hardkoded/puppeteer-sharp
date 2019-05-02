@@ -14,6 +14,7 @@ namespace PuppeteerSharp.Messaging
         public HttpStatusCode ResponseStatusCode { get; set; }
         public string RedirectUrl { get; set; }
         public AuthChallengeData AuthChallenge { get; set; }
+        public string RequestId { get; set; }
 
         internal class AuthChallengeData
         {
