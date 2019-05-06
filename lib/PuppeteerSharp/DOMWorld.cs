@@ -47,7 +47,7 @@ namespace PuppeteerSharp
             }
         }
 
-        internal bool HasContext => _contextResolveTaskWrapper != null;
+        internal bool HasContext => _contextResolveTaskWrapper?.Task.IsCompleted == true;
 
         internal void Detach()
         {
