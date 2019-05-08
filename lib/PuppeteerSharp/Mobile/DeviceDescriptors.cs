@@ -1,11 +1,13 @@
+﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace PuppeteerSharp.Mobile
 {
     /// <summary>
     /// Device descriptors.
     /// </summary>
-    public class DeviceDescriptors
+    public static class DeviceDescriptors
     {
         private static readonly Dictionary<DeviceDescriptorName, DeviceDescriptor> Devices = new Dictionary<DeviceDescriptorName, DeviceDescriptor>
         {
@@ -976,12 +978,18 @@ namespace PuppeteerSharp.Mobile
                 }
             }
         };
-            
+
+        private static Lazy<IReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor>> _readOnlyDevices =
+            new Lazy<IReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor>>(() => new ReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor>(Devices));
+
+        internal static IReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor> ToReadOnly() => _readOnlyDevices.Value;
+
         /// <summary>
         /// Get the specified device description.
         /// </summary>
         /// <returns>The device descriptor.</returns>
         /// <param name="name">Device Name.</param>
+        [Obsolete("Use Puppeteer.Devices instead")]
         public static DeviceDescriptor Get(DeviceDescriptorName name) => Devices[name];
     }
 }
