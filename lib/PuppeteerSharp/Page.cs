@@ -36,8 +36,6 @@ namespace PuppeteerSharp
     [DebuggerDisplay("Page {Url}")]
     public class Page : IDisposable
     {
-        private readonly bool _ignoreHTTPSErrors;
-        private NetworkManager _networkManager;
         private readonly TaskQueue _screenshotTaskQueue;
         private readonly EmulationManager _emulationManager;
         private readonly Dictionary<string, Delegate> _pageBindings;
@@ -59,7 +57,6 @@ namespace PuppeteerSharp
         private Page(
             CDPSession client,
             Target target,
-            bool ignoreHTTPSErrors,
             TaskQueue screenshotTaskQueue)
         {
             Client = client;
@@ -76,7 +73,6 @@ namespace PuppeteerSharp
             _workers = new Dictionary<string, Worker>();
             _logger = Client.Connection.LoggerFactory.CreateLogger<Page>();
             Accessibility = new Accessibility(client);
-            _ignoreHTTPSErrors = ignoreHTTPSErrors;
 
             _screenshotTaskQueue = screenshotTaskQueue;
 
@@ -521,14 +517,14 @@ namespace PuppeteerSharp
         /// <returns>The request interception task.</returns>
         /// <param name="value">Whether to enable request interception..</param>
         public Task SetRequestInterceptionAsync(bool value)
-            => _networkManager.SetRequestInterceptionAsync(value);
+            => FrameManager.NetworkManager.SetRequestInterceptionAsync(value);
 
         /// <summary>
         /// Set offline mode for the page.
         /// </summary>
         /// <returns>Result task</returns>
         /// <param name="value">When <c>true</c> enables offline mode for the page.</param>
-        public Task SetOfflineModeAsync(bool value) => _networkManager.SetOfflineModeAsync(value);
+        public Task SetOfflineModeAsync(bool value) => FrameManager.NetworkManager.SetOfflineModeAsync(value);
 
         /// <summary>
         /// Returns the page's cookies
@@ -1120,7 +1116,7 @@ namespace PuppeteerSharp
         /// <param name="enabled">sets the <c>enabled</c> state of the cache</param>
         /// <returns>Task</returns>
         public Task SetCacheEnabledAsync(bool enabled = true)
-            => Client.SendAsync("Network.setCacheDisabled", new NetworkSetCacheDisabledRequest { CacheDisabled = !enabled });
+            => FrameManager.NetworkManager.SetCacheEnabledAsync(enabled);
 
         /// <summary>
         /// Fetches an element with <paramref name="selector"/>, scrolls it into view if needed, and then uses <see cref="Page.Mouse"/> to click in the center of the element.
@@ -1227,7 +1223,7 @@ namespace PuppeteerSharp
         /// <param name="userAgent">Specific user agent to use in this page</param>
         /// <returns>Task</returns>
         public Task SetUserAgentAsync(string userAgent)
-            => _networkManager.SetUserAgentAsync(userAgent);
+            => FrameManager.NetworkManager.SetUserAgentAsync(userAgent);
 
         /// <summary>
         /// Sets extra HTTP headers that will be sent with every request the page initiates
@@ -1235,7 +1231,7 @@ namespace PuppeteerSharp
         /// <param name="headers">Additional http headers to be sent with every request</param>
         /// <returns>Task</returns>
         public Task SetExtraHttpHeadersAsync(Dictionary<string, string> headers)
-            => _networkManager.SetExtraHTTPHeadersAsync(headers);
+            => FrameManager.NetworkManager.SetExtraHTTPHeadersAsync(headers);
 
         /// <summary>
         /// Provide credentials for http authentication <see href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication"/>
@@ -1245,7 +1241,7 @@ namespace PuppeteerSharp
         /// <remarks>
         /// To disable authentication, pass <c>null</c>
         /// </remarks>
-        public Task AuthenticateAsync(Credentials credentials) => _networkManager.AuthenticateAsync(credentials);
+        public Task AuthenticateAsync(Credentials credentials) => FrameManager.NetworkManager.AuthenticateAsync(credentials);
 
         /// <summary>
         /// Reloads the page
@@ -1432,15 +1428,15 @@ namespace PuppeteerSharp
                 if (predicate(e.Request))
                 {
                     requestTcs.TrySetResult(e.Request);
-                    _networkManager.Request -= requestEventListener;
+                    FrameManager.NetworkManager.Request -= requestEventListener;
                 }
             }
 
-            _networkManager.Request += requestEventListener;
+            FrameManager.NetworkManager.Request += requestEventListener;
 
             return await requestTcs.Task.WithTimeout(timeout, t =>
             {
-                _networkManager.Request -= requestEventListener;
+                FrameManager.NetworkManager.Request -= requestEventListener;
                 return new TimeoutException($"Timeout Exceeded: {t.TotalMilliseconds}ms exceeded");
             }).ConfigureAwait(false);
         }
@@ -1486,11 +1482,11 @@ namespace PuppeteerSharp
                 if (predicate(e.Response))
                 {
                     responseTcs.TrySetResult(e.Response);
-                    _networkManager.Response -= responseEventListener;
+                    FrameManager.NetworkManager.Response -= responseEventListener;
                 }
             }
 
-            _networkManager.Response += responseEventListener;
+            FrameManager.NetworkManager.Response += responseEventListener;
 
             return await responseTcs.Task.WithTimeout(timeout).ConfigureAwait(false);
         }
@@ -1538,10 +1534,8 @@ namespace PuppeteerSharp
             ViewPortOptions defaultViewPort,
             TaskQueue screenshotTaskQueue)
         {
-            await client.SendAsync("Page.enable", null).ConfigureAwait(false);
-            var result = await client.SendAsync<PageGetFrameTreeResponse>("Page.getFrameTree").ConfigureAwait(false);
-            var page = new Page(client, target, ignoreHTTPSErrors, screenshotTaskQueue);
-            await page.InitializeAsync(new FrameTree(result.FrameTree)).ConfigureAwait(false);
+            var page = new Page(client, target, screenshotTaskQueue);
+            await page.InitializeAsync(ignoreHTTPSErrors).ConfigureAwait(false);
 
             await Task.WhenAll(
                 client.SendAsync("Target.setAutoAttach", new TargetSetAutoAttachRequest
@@ -1561,8 +1555,6 @@ namespace PuppeteerSharp
                 client.SendAsync("Log.enable", null)
             ).ConfigureAwait(false);
 
-            await page.FrameManager.EnsureSecondaryDOMWorldAsync().ConfigureAwait(false);
-
             if (ignoreHTTPSErrors)
             {
                 await client.SendAsync("Security.setOverrideCertificateErrors", new SecuritySetOverrideCertificateErrorsRequest
@@ -1579,20 +1571,19 @@ namespace PuppeteerSharp
             return page;
         }
 
-        private async Task InitializeAsync(FrameTree frameTree)
+        private async Task InitializeAsync(bool ignoreHTTPSErrors)
         {
-            _networkManager = new NetworkManager(Client);
-            FrameManager = await FrameManager.CreateFrameManagerAsync(Client, this, _networkManager, frameTree, _timeoutSettings).ConfigureAwait(false);
-            _networkManager.FrameManager = FrameManager;
+            FrameManager = await FrameManager.CreateFrameManagerAsync(Client, this, ignoreHTTPSErrors, _timeoutSettings).ConfigureAwait(false);
+            var networkManager = FrameManager.NetworkManager;
 
             FrameManager.FrameAttached += (sender, e) => FrameAttached?.Invoke(this, e);
             FrameManager.FrameDetached += (sender, e) => FrameDetached?.Invoke(this, e);
             FrameManager.FrameNavigated += (sender, e) => FrameNavigated?.Invoke(this, e);
 
-            _networkManager.Request += (sender, e) => Request?.Invoke(this, e);
-            _networkManager.RequestFailed += (sender, e) => RequestFailed?.Invoke(this, e);
-            _networkManager.Response += (sender, e) => Response?.Invoke(this, e);
-            _networkManager.RequestFinished += (sender, e) => RequestFinished?.Invoke(this, e);
+            networkManager.Request += (sender, e) => Request?.Invoke(this, e);
+            networkManager.RequestFailed += (sender, e) => RequestFailed?.Invoke(this, e);
+            networkManager.Response += (sender, e) => Response?.Invoke(this, e);
+            networkManager.RequestFinished += (sender, e) => RequestFinished?.Invoke(this, e);
         }
 
         private async Task<Response> GoAsync(int delta, NavigationOptions options)
@@ -1830,9 +1821,6 @@ namespace PuppeteerSharp
                     case "Runtime.exceptionThrown":
                         HandleException(e.MessageData.ToObject<RuntimeExceptionThrownResponse>(true).ExceptionDetails);
                         break;
-                    case "Security.certificateError":
-                        await OnCertificateError(e.MessageData.ToObject<CertificateErrorResponse>(true)).ConfigureAwait(false);
-                        break;
                     case "Inspector.targetCrashed":
                         OnTargetCrashed();
                         break;
@@ -1993,25 +1981,6 @@ namespace PuppeteerSharp
 
         private void EmitMetrics(PerformanceMetricsResponse metrics)
             => Metrics?.Invoke(this, new MetricEventArgs(metrics.Title, BuildMetricsObject(metrics.Metrics)));
-
-        private async Task OnCertificateError(CertificateErrorResponse e)
-        {
-            if (_ignoreHTTPSErrors)
-            {
-                try
-                {
-                    await Client.SendAsync("Security.handleCertificateError", new SecurityHandleCertificateErrorResponse
-                    {
-                        EventId = e.EventId,
-                        Action = "continue"
-                    }).ConfigureAwait(false);
-                }
-                catch (PuppeteerException ex)
-                {
-                    _logger.LogError(ex.ToString());
-                }
-            }
-        }
 
         private void HandleException(EvaluateExceptionResponseDetails exceptionDetails)
             => PageError?.Invoke(this, new PageErrorEventArgs(GetExceptionMessage(exceptionDetails)));
