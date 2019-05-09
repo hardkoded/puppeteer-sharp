@@ -158,6 +158,14 @@ namespace PuppeteerSharp.Mobile
         /// </summary>
         IPhoneXLandscape,
         /// <summary>
+        /// JioPhone 2
+        /// </summary>
+        JioPhone2,
+        /// <summary>
+        /// JioPhone 2 landscape
+        /// </summary>
+        JioPhone2Landscape,
+        /// <summary>
         /// Kindle Fire HDX
         /// </summary>
         KindleFireHDX,

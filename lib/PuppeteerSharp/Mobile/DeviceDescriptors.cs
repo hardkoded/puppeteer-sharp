@@ -1,11 +1,13 @@
+﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace PuppeteerSharp.Mobile
 {
     /// <summary>
     /// Device descriptors.
     /// </summary>
-    public class DeviceDescriptors
+    public static class DeviceDescriptors
     {
         private static readonly Dictionary<DeviceDescriptorName, DeviceDescriptor> Devices = new Dictionary<DeviceDescriptorName, DeviceDescriptor>
         {
@@ -152,7 +154,7 @@ namespace PuppeteerSharp.Mobile
             [DeviceDescriptorName.GalaxyS5] = new DeviceDescriptor
             {
                 Name = "Galaxy S5",
-                UserAgent = "Mozilla/5.0 (Linux; Android 5.0; SM-G900P Build/LRX21T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3679.0 Mobile Safari/537.36",
+                UserAgent = "Mozilla/5.0 (Linux; Android 5.0; SM-G900P Build/LRX21T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3765.0 Mobile Safari/537.36",
                 ViewPort = new ViewPortOptions
                 {
                     Width = 360,
@@ -166,7 +168,7 @@ namespace PuppeteerSharp.Mobile
             [DeviceDescriptorName.GalaxyS5Landscape] = new DeviceDescriptor
             {
                 Name = "Galaxy S5 landscape",
-                UserAgent = "Mozilla/5.0 (Linux; Android 5.0; SM-G900P Build/LRX21T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3679.0 Mobile Safari/537.36",
+                UserAgent = "Mozilla/5.0 (Linux; Android 5.0; SM-G900P Build/LRX21T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3765.0 Mobile Safari/537.36",
                 ViewPort = new ViewPortOptions
                 {
                     Width = 640,
@@ -541,6 +543,34 @@ namespace PuppeteerSharp.Mobile
                     IsLandscape = true
                 }
             },
+            [DeviceDescriptorName.JioPhone2] = new DeviceDescriptor
+            {
+                Name = "JioPhone 2",
+                UserAgent = "Mozilla/5.0 (Mobile; LYF/F300B/LYF-F300B-001-01-15-130718-i;Android; rv:48.0) Gecko/48.0 Firefox/48.0 KAIOS/2.5",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 240,
+                    Height = 320,
+                    DeviceScaleFactor = 1,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = false
+                }
+            },
+            [DeviceDescriptorName.JioPhone2Landscape] = new DeviceDescriptor
+            {
+                Name = "JioPhone 2 landscape",
+                UserAgent = "Mozilla/5.0 (Mobile; LYF/F300B/LYF-F300B-001-01-15-130718-i;Android; rv:48.0) Gecko/48.0 Firefox/48.0 KAIOS/2.5",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 320,
+                    Height = 240,
+                    DeviceScaleFactor = 1,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = true
+                }
+            },
             [DeviceDescriptorName.KindleFireHDX] = new DeviceDescriptor
             {
                 Name = "Kindle Fire HDX",
@@ -572,7 +602,7 @@ namespace PuppeteerSharp.Mobile
             [DeviceDescriptorName.LGOptimusL70] = new DeviceDescriptor
             {
                 Name = "LG Optimus L70",
-                UserAgent = "Mozilla/5.0 (Linux; U; Android 4.4.2; en-us; LGMS323 Build/KOT49I.MS32310c) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/73.0.3679.0 Mobile Safari/537.36",
+                UserAgent = "Mozilla/5.0 (Linux; U; Android 4.4.2; en-us; LGMS323 Build/KOT49I.MS32310c) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3765.0 Mobile Safari/537.36",
                 ViewPort = new ViewPortOptions
                 {
                     Width = 384,
@@ -586,7 +616,7 @@ namespace PuppeteerSharp.Mobile
             [DeviceDescriptorName.LGOptimusL70Landscape] = new DeviceDescriptor
             {
                 Name = "LG Optimus L70 landscape",
-                UserAgent = "Mozilla/5.0 (Linux; U; Android 4.4.2; en-us; LGMS323 Build/KOT49I.MS32310c) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/73.0.3679.0 Mobile Safari/537.36",
+                UserAgent = "Mozilla/5.0 (Linux; U; Android 4.4.2; en-us; LGMS323 Build/KOT49I.MS32310c) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3765.0 Mobile Safari/537.36",
                 ViewPort = new ViewPortOptions
                 {
                     Width = 640,
@@ -642,7 +672,7 @@ namespace PuppeteerSharp.Mobile
             [DeviceDescriptorName.Nexus10] = new DeviceDescriptor
             {
                 Name = "Nexus 10",
-                UserAgent = "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 10 Build/MOB31T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3679.0 Safari/537.36",
+                UserAgent = "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 10 Build/MOB31T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3765.0 Safari/537.36",
                 ViewPort = new ViewPortOptions
                 {
                     Width = 800,
@@ -656,7 +686,7 @@ namespace PuppeteerSharp.Mobile
             [DeviceDescriptorName.Nexus10Landscape] = new DeviceDescriptor
             {
                 Name = "Nexus 10 landscape",
-                UserAgent = "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 10 Build/MOB31T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3679.0 Safari/537.36",
+                UserAgent = "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 10 Build/MOB31T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3765.0 Safari/537.36",
                 ViewPort = new ViewPortOptions
                 {
                     Width = 1280,
@@ -670,7 +700,7 @@ namespace PuppeteerSharp.Mobile
             [DeviceDescriptorName.Nexus4] = new DeviceDescriptor
             {
                 Name = "Nexus 4",
-                UserAgent = "Mozilla/5.0 (Linux; Android 4.4.2; Nexus 4 Build/KOT49H) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3679.0 Mobile Safari/537.36",
+                UserAgent = "Mozilla/5.0 (Linux; Android 4.4.2; Nexus 4 Build/KOT49H) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3765.0 Mobile Safari/537.36",
                 ViewPort = new ViewPortOptions
                 {
                     Width = 384,
@@ -684,7 +714,7 @@ namespace PuppeteerSharp.Mobile
             [DeviceDescriptorName.Nexus4Landscape] = new DeviceDescriptor
             {
                 Name = "Nexus 4 landscape",
-                UserAgent = "Mozilla/5.0 (Linux; Android 4.4.2; Nexus 4 Build/KOT49H) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3679.0 Mobile Safari/537.36",
+                UserAgent = "Mozilla/5.0 (Linux; Android 4.4.2; Nexus 4 Build/KOT49H) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3765.0 Mobile Safari/537.36",
                 ViewPort = new ViewPortOptions
                 {
                     Width = 640,
@@ -698,7 +728,7 @@ namespace PuppeteerSharp.Mobile
             [DeviceDescriptorName.Nexus5] = new DeviceDescriptor
             {
                 Name = "Nexus 5",
-                UserAgent = "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3679.0 Mobile Safari/537.36",
+                UserAgent = "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3765.0 Mobile Safari/537.36",
                 ViewPort = new ViewPortOptions
                 {
                     Width = 360,
@@ -712,7 +742,7 @@ namespace PuppeteerSharp.Mobile
             [DeviceDescriptorName.Nexus5Landscape] = new DeviceDescriptor
             {
                 Name = "Nexus 5 landscape",
-                UserAgent = "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3679.0 Mobile Safari/537.36",
+                UserAgent = "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3765.0 Mobile Safari/537.36",
                 ViewPort = new ViewPortOptions
                 {
                     Width = 640,
@@ -726,7 +756,7 @@ namespace PuppeteerSharp.Mobile
             [DeviceDescriptorName.Nexus5X] = new DeviceDescriptor
             {
                 Name = "Nexus 5X",
-                UserAgent = "Mozilla/5.0 (Linux; Android 8.0.0; Nexus 5X Build/OPR4.170623.006) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3679.0 Mobile Safari/537.36",
+                UserAgent = "Mozilla/5.0 (Linux; Android 8.0.0; Nexus 5X Build/OPR4.170623.006) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3765.0 Mobile Safari/537.36",
                 ViewPort = new ViewPortOptions
                 {
                     Width = 412,
@@ -740,7 +770,7 @@ namespace PuppeteerSharp.Mobile
             [DeviceDescriptorName.Nexus5XLandscape] = new DeviceDescriptor
             {
                 Name = "Nexus 5X landscape",
-                UserAgent = "Mozilla/5.0 (Linux; Android 8.0.0; Nexus 5X Build/OPR4.170623.006) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3679.0 Mobile Safari/537.36",
+                UserAgent = "Mozilla/5.0 (Linux; Android 8.0.0; Nexus 5X Build/OPR4.170623.006) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3765.0 Mobile Safari/537.36",
                 ViewPort = new ViewPortOptions
                 {
                     Width = 732,
@@ -754,7 +784,7 @@ namespace PuppeteerSharp.Mobile
             [DeviceDescriptorName.Nexus6] = new DeviceDescriptor
             {
                 Name = "Nexus 6",
-                UserAgent = "Mozilla/5.0 (Linux; Android 7.1.1; Nexus 6 Build/N6F26U) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3679.0 Mobile Safari/537.36",
+                UserAgent = "Mozilla/5.0 (Linux; Android 7.1.1; Nexus 6 Build/N6F26U) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3765.0 Mobile Safari/537.36",
                 ViewPort = new ViewPortOptions
                 {
                     Width = 412,
@@ -768,7 +798,7 @@ namespace PuppeteerSharp.Mobile
             [DeviceDescriptorName.Nexus6Landscape] = new DeviceDescriptor
             {
                 Name = "Nexus 6 landscape",
-                UserAgent = "Mozilla/5.0 (Linux; Android 7.1.1; Nexus 6 Build/N6F26U) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3679.0 Mobile Safari/537.36",
+                UserAgent = "Mozilla/5.0 (Linux; Android 7.1.1; Nexus 6 Build/N6F26U) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3765.0 Mobile Safari/537.36",
                 ViewPort = new ViewPortOptions
                 {
                     Width = 732,
@@ -782,7 +812,7 @@ namespace PuppeteerSharp.Mobile
             [DeviceDescriptorName.Nexus6P] = new DeviceDescriptor
             {
                 Name = "Nexus 6P",
-                UserAgent = "Mozilla/5.0 (Linux; Android 8.0.0; Nexus 6P Build/OPP3.170518.006) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3679.0 Mobile Safari/537.36",
+                UserAgent = "Mozilla/5.0 (Linux; Android 8.0.0; Nexus 6P Build/OPP3.170518.006) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3765.0 Mobile Safari/537.36",
                 ViewPort = new ViewPortOptions
                 {
                     Width = 412,
@@ -796,7 +826,7 @@ namespace PuppeteerSharp.Mobile
             [DeviceDescriptorName.Nexus6PLandscape] = new DeviceDescriptor
             {
                 Name = "Nexus 6P landscape",
-                UserAgent = "Mozilla/5.0 (Linux; Android 8.0.0; Nexus 6P Build/OPP3.170518.006) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3679.0 Mobile Safari/537.36",
+                UserAgent = "Mozilla/5.0 (Linux; Android 8.0.0; Nexus 6P Build/OPP3.170518.006) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3765.0 Mobile Safari/537.36",
                 ViewPort = new ViewPortOptions
                 {
                     Width = 732,
@@ -810,7 +840,7 @@ namespace PuppeteerSharp.Mobile
             [DeviceDescriptorName.Nexus7] = new DeviceDescriptor
             {
                 Name = "Nexus 7",
-                UserAgent = "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 7 Build/MOB30X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3679.0 Safari/537.36",
+                UserAgent = "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 7 Build/MOB30X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3765.0 Safari/537.36",
                 ViewPort = new ViewPortOptions
                 {
                     Width = 600,
@@ -824,7 +854,7 @@ namespace PuppeteerSharp.Mobile
             [DeviceDescriptorName.Nexus7Landscape] = new DeviceDescriptor
             {
                 Name = "Nexus 7 landscape",
-                UserAgent = "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 7 Build/MOB30X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3679.0 Safari/537.36",
+                UserAgent = "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 7 Build/MOB30X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3765.0 Safari/537.36",
                 ViewPort = new ViewPortOptions
                 {
                     Width = 960,
@@ -894,7 +924,7 @@ namespace PuppeteerSharp.Mobile
             [DeviceDescriptorName.Pixel2] = new DeviceDescriptor
             {
                 Name = "Pixel 2",
-                UserAgent = "Mozilla/5.0 (Linux; Android 8.0; Pixel 2 Build/OPD3.170816.012) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3679.0 Mobile Safari/537.36",
+                UserAgent = "Mozilla/5.0 (Linux; Android 8.0; Pixel 2 Build/OPD3.170816.012) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3765.0 Mobile Safari/537.36",
                 ViewPort = new ViewPortOptions
                 {
                     Width = 411,
@@ -908,7 +938,7 @@ namespace PuppeteerSharp.Mobile
             [DeviceDescriptorName.Pixel2Landscape] = new DeviceDescriptor
             {
                 Name = "Pixel 2 landscape",
-                UserAgent = "Mozilla/5.0 (Linux; Android 8.0; Pixel 2 Build/OPD3.170816.012) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3679.0 Mobile Safari/537.36",
+                UserAgent = "Mozilla/5.0 (Linux; Android 8.0; Pixel 2 Build/OPD3.170816.012) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3765.0 Mobile Safari/537.36",
                 ViewPort = new ViewPortOptions
                 {
                     Width = 731,
@@ -922,7 +952,7 @@ namespace PuppeteerSharp.Mobile
             [DeviceDescriptorName.Pixel2XL] = new DeviceDescriptor
             {
                 Name = "Pixel 2 XL",
-                UserAgent = "Mozilla/5.0 (Linux; Android 8.0.0; Pixel 2 XL Build/OPD1.170816.004) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3679.0 Mobile Safari/537.36",
+                UserAgent = "Mozilla/5.0 (Linux; Android 8.0.0; Pixel 2 XL Build/OPD1.170816.004) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3765.0 Mobile Safari/537.36",
                 ViewPort = new ViewPortOptions
                 {
                     Width = 411,
@@ -936,7 +966,7 @@ namespace PuppeteerSharp.Mobile
             [DeviceDescriptorName.Pixel2XLLandscape] = new DeviceDescriptor
             {
                 Name = "Pixel 2 XL landscape",
-                UserAgent = "Mozilla/5.0 (Linux; Android 8.0.0; Pixel 2 XL Build/OPD1.170816.004) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3679.0 Mobile Safari/537.36",
+                UserAgent = "Mozilla/5.0 (Linux; Android 8.0.0; Pixel 2 XL Build/OPD1.170816.004) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3765.0 Mobile Safari/537.36",
                 ViewPort = new ViewPortOptions
                 {
                     Width = 823,
@@ -949,11 +979,17 @@ namespace PuppeteerSharp.Mobile
             }
         };
 
+        private static Lazy<IReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor>> _readOnlyDevices =
+            new Lazy<IReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor>>(() => new ReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor>(Devices));
+
+        internal static IReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor> ToReadOnly() => _readOnlyDevices.Value;
+
         /// <summary>
         /// Get the specified device description.
         /// </summary>
         /// <returns>The device descriptor.</returns>
         /// <param name="name">Device Name.</param>
+        [Obsolete("Use Puppeteer.Devices instead")]
         public static DeviceDescriptor Get(DeviceDescriptorName name) => Devices[name];
     }
 }
