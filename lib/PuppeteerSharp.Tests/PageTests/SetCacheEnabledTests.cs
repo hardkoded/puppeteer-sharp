@@ -34,5 +34,22 @@ namespace PuppeteerSharp.Tests.PageTests
 
             Assert.True(string.IsNullOrEmpty(waitForRequestTask.Result));
         }
+
+        [Fact]
+        public async Task ShouldStayDisabledWhenTogglingRequestInterceptionOnOff()
+        {
+            await Page.SetCacheEnabledAsync(false);
+            await Page.SetRequestInterceptionAsync(true);
+            await Page.SetRequestInterceptionAsync(false);
+
+            await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
+            var waitForRequestTask = Server.WaitForRequest<string>("/cached/one-style.html", (request) => request.Headers["if-modified-since"]);
+
+            await Task.WhenAll(
+              waitForRequestTask,
+              Page.ReloadAsync());
+
+            Assert.True(string.IsNullOrEmpty(waitForRequestTask.Result));
+        }
     }
 }
