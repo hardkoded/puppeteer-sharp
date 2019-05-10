@@ -1555,14 +1555,6 @@ namespace PuppeteerSharp
                 client.SendAsync("Log.enable", null)
             ).ConfigureAwait(false);
 
-            if (ignoreHTTPSErrors)
-            {
-                await client.SendAsync("Security.setOverrideCertificateErrors", new SecuritySetOverrideCertificateErrorsRequest
-                {
-                    Override = true
-                }).ConfigureAwait(false);
-            }
-
             if (defaultViewPort != null)
             {
                 await page.SetViewportAsync(defaultViewPort).ConfigureAwait(false);
