@@ -88,8 +88,6 @@ namespace PuppeteerSharp
                     _closeCompletedTcs.TrySetResult(true);
                 }
             });
-
-            Client.MessageReceived += Client_MessageReceived;
         }
 
         internal CDPSession Client { get; }
@@ -1568,6 +1566,7 @@ namespace PuppeteerSharp
             FrameManager = await FrameManager.CreateFrameManagerAsync(Client, this, ignoreHTTPSErrors, _timeoutSettings).ConfigureAwait(false);
             var networkManager = FrameManager.NetworkManager;
 
+            Client.MessageReceived += Client_MessageReceived;
             FrameManager.FrameAttached += (sender, e) => FrameAttached?.Invoke(this, e);
             FrameManager.FrameDetached += (sender, e) => FrameDetached?.Invoke(this, e);
             FrameManager.FrameNavigated += (sender, e) => FrameNavigated?.Invoke(this, e);
@@ -1805,7 +1804,7 @@ namespace PuppeteerSharp
                         Load?.Invoke(this, EventArgs.Empty);
                         break;
                     case "Runtime.consoleAPICalled":
-                        await OnConsoleAPI(e.MessageData.ToObject<PageConsoleResponse>(true)).ConfigureAwait(false);
+                        await OnConsoleAPIAsync(e.MessageData.ToObject<PageConsoleResponse>(true)).ConfigureAwait(false);
                         break;
                     case "Page.javascriptDialogOpening":
                         OnDialog(e.MessageData.ToObject<PageJavascriptDialogOpeningResponse>(true));
@@ -2002,7 +2001,7 @@ namespace PuppeteerSharp
             Dialog?.Invoke(this, new DialogEventArgs(dialog));
         }
 
-        private Task OnConsoleAPI(PageConsoleResponse message)
+        private Task OnConsoleAPIAsync(PageConsoleResponse message)
         {
             if (message.ExecutionContextId == 0)
             {
