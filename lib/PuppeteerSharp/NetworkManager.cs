@@ -283,7 +283,6 @@ namespace PuppeteerSharp
             {
                 _requestIdToInterceptionId[requestId] = interceptionId;
             }
-
         }
 
         private async Task OnRequestAsync(RequestWillBeSentPayload e, string interceptionId)
