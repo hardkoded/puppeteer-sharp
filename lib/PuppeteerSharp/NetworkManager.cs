@@ -27,7 +27,6 @@ namespace PuppeteerSharp
         private bool _protocolRequestInterceptionEnabled;
         private bool _ignoreHTTPSErrors;
         private bool _userCacheDisabled;
-
         #endregion
 
         internal NetworkManager(CDPSession client, bool ignoreHTTPSErrors)
@@ -272,18 +271,19 @@ namespace PuppeteerSharp
                 {
                     _logger.LogError(ex.ToString());
                 }
-
-                var requestId = e.NetworkId;
-                var interceptionId = e.RequestId;
-                if (!string.IsNullOrEmpty(requestId) && _requestIdToRequestWillBeSentEvent.TryRemove(requestId, out var requestWillBeSentEvent))
-                {
-                    await OnRequestAsync(requestWillBeSentEvent, interceptionId);
-                }
-                else
-                {
-                    _requestIdToInterceptionId[requestId] = interceptionId;
-                }
             }
+
+            var requestId = e.NetworkId;
+            var interceptionId = e.RequestId;
+            if (!string.IsNullOrEmpty(requestId) && _requestIdToRequestWillBeSentEvent.TryRemove(requestId, out var requestWillBeSentEvent))
+            {
+                await OnRequestAsync(requestWillBeSentEvent, interceptionId);
+            }
+            else
+            {
+                _requestIdToInterceptionId[requestId] = interceptionId;
+            }
+
         }
 
         private async Task OnRequestAsync(RequestWillBeSentPayload e, string interceptionId)
