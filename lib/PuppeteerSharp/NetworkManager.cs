@@ -277,7 +277,7 @@ namespace PuppeteerSharp
             var interceptionId = e.RequestId;
             if (!string.IsNullOrEmpty(requestId) && _requestIdToRequestWillBeSentEvent.TryRemove(requestId, out var requestWillBeSentEvent))
             {
-                await OnRequestAsync(requestWillBeSentEvent, interceptionId);
+                await OnRequestAsync(requestWillBeSentEvent, interceptionId).ConfigureAwait(false);
             }
             else
             {
@@ -370,7 +370,7 @@ namespace PuppeteerSharp
             {
                 if (_requestIdToInterceptionId.TryRemove(e.RequestId, out var interceptionId))
                 {
-                    await OnRequestAsync(e, interceptionId);
+                    await OnRequestAsync(e, interceptionId).ConfigureAwait(false);
                 }
                 else
                 {
@@ -379,7 +379,7 @@ namespace PuppeteerSharp
                 }
                 return;
             }
-            await OnRequestAsync(e, null);
+            await OnRequestAsync(e, null).ConfigureAwait(false);
         }
 
         private async Task UpdateProtocolRequestInterceptionAsync()
