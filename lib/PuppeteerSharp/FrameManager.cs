@@ -22,14 +22,15 @@ namespace PuppeteerSharp
         private readonly List<string> _isolatedWorlds = new List<string>();
         private const string UtilityWorldName = "__puppeteer_utility_world__";
 
-        private FrameManager(CDPSession client, Page page, NetworkManager networkManager, TimeoutSettings timeoutSettings)
+        private FrameManager(CDPSession client, Page page, bool ignoreHTTPSErrors, TimeoutSettings timeoutSettings)
         {
             Client = client;
             Page = page;
             _frames = new ConcurrentDictionary<string, Frame>();
             _contextIdToContext = new Dictionary<int, ExecutionContext>();
             _logger = Client.Connection.LoggerFactory.CreateLogger<FrameManager>();
-            NetworkManager = networkManager;
+            NetworkManager = new NetworkManager(client, ignoreHTTPSErrors);
+            NetworkManager.FrameManager = this;
             TimeoutSettings = timeoutSettings;
             _asyncFrames = new AsyncDictionaryHelper<string, Frame>(_frames, "Frame {0} not found");
 
@@ -55,12 +56,25 @@ namespace PuppeteerSharp
         internal static async Task<FrameManager> CreateFrameManagerAsync(
             CDPSession client,
             Page page,
-            NetworkManager networkManager,
-            FrameTree frameTree,
+            bool ignoreHTTPSErrors,
             TimeoutSettings timeoutSettings)
         {
-            var frameManager = new FrameManager(client, page, networkManager, timeoutSettings);
-            await frameManager.HandleFrameTreeAsync(frameTree).ConfigureAwait(false);
+            var frameManager = new FrameManager(client, page, ignoreHTTPSErrors, timeoutSettings);
+            var getFrameTreeTask = client.SendAsync<PageGetFrameTreeResponse>("Page.getFrameTree");
+
+            await Task.WhenAll(
+                client.SendAsync("Page.enable"),
+                getFrameTreeTask).ConfigureAwait(false);
+
+            await frameManager.HandleFrameTreeAsync(new FrameTree(getFrameTreeTask.Result.FrameTree)).ConfigureAwait(false);
+
+            await Task.WhenAll(
+                client.SendAsync("Page.setLifecycleEventsEnabled", new PageSetLifecycleEventsEnabledRequest { Enabled = true }),
+                client.SendAsync("Runtime.enable"),
+                frameManager.NetworkManager.InitializeAsync()).ConfigureAwait(false);
+
+            await frameManager.EnsureSecondaryDOMWorldAsync().ConfigureAwait(false);
+
             return frameManager;
         }
 
@@ -258,8 +272,11 @@ namespace PuppeteerSharp
                 {
                     world = frame.MainWorld;
                 }
-                else if (contextPayload.Name == UtilityWorldName)
+                else if (contextPayload.Name == UtilityWorldName && !frame.SecondaryWorld.HasContext)
                 {
+                    // In case of multiple sessions to the same target, there's a race between
+                    // connections so we might end up creating multiple isolated worlds.
+                    // We can use either.
                     world = frame.SecondaryWorld;
                 }
             }
@@ -383,9 +400,9 @@ namespace PuppeteerSharp
             }
         }
 
-        internal Task EnsureSecondaryDOMWorldAsync() => EnsureSecondaryDOMWorldAsync(UtilityWorldName);
+        private Task EnsureSecondaryDOMWorldAsync() => EnsureSecondaryDOMWorldAsync(UtilityWorldName);
 
-        internal async Task EnsureSecondaryDOMWorldAsync(string name)
+        private async Task EnsureSecondaryDOMWorldAsync(string name)
         {
             if (_isolatedWorlds.Contains(name))
             {

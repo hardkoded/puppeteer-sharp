@@ -66,7 +66,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             );
         }
 
-        [Fact(Skip = "see https://github.com/GoogleChrome/puppeteer/issues/3973")]
+        [Fact]
         public async Task ShouldWorkWhenHeaderManipulationHeadersWithRedirect()
         {
             Server.SetRedirect("/rredirect", "/empty.html");

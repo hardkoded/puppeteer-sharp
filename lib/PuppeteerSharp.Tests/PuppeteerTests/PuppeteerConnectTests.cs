@@ -96,6 +96,31 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         }
 
         [Fact]
+        public async Task ShouldBeAbleToConnectToTheSamePageSimultaneously()
+        {
+            var browserOne = await Puppeteer.LaunchAsync(new LaunchOptions());
+            var browserTwo = await Puppeteer.ConnectAsync(new ConnectOptions
+            {
+                BrowserWSEndpoint = browserOne.WebSocketEndpoint
+            });
+            var tcs = new TaskCompletionSource<Page>();
+            async void TargetCreated(object sender, TargetChangedArgs e)
+            {
+                tcs.TrySetResult(await e.Target.PageAsync());
+                browserOne.TargetCreated -= TargetCreated;
+            }
+            browserOne.TargetCreated += TargetCreated;
+            var page2Task = browserOne.NewPageAsync();
+
+            await Task.WhenAll(tcs.Task, page2Task);
+            var page1 = tcs.Task.Result;
+            var page2 = page2Task.Result;
+
+            Assert.Equal(56, await page1.EvaluateExpressionAsync<int>("7 * 8"));
+            Assert.Equal(42, await page1.EvaluateExpressionAsync<int>("7 * 6"));
+            await browserOne.CloseAsync();
+        }
+        [Fact]
         public async Task ShouldSupportCustomWebSocket()
         {
             var customSocketCreated = false;

@@ -8,7 +8,7 @@ namespace PuppeteerSharp.Tests.InputTests
     [Collection("PuppeteerLoaderFixture collection")]
     public class TouchScreenTests : PuppeteerPageBaseTest
     {
-        private readonly DeviceDescriptor _iPhone = DeviceDescriptors.Get(DeviceDescriptorName.IPhone6);
+        private readonly DeviceDescriptor _iPhone = Puppeteer.Devices[DeviceDescriptorName.IPhone6];
 
         public TouchScreenTests(ITestOutputHelper output) : base(output)
         {
