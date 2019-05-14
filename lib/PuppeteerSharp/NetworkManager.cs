@@ -273,7 +273,6 @@ namespace PuppeteerSharp
                     _logger.LogError(ex.ToString());
                 }
 
-
                 var requestId = e.NetworkId;
                 var interceptionId = e.RequestId;
                 if (!string.IsNullOrEmpty(requestId) && _requestIdToRequestWillBeSentEvent.TryRemove(requestId, out var requestWillBeSentEvent))
