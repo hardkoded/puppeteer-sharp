@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>1.14.1</PackageVersion>
+    <PackageVersion>1.15.0</PackageVersion>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
@@ -12,21 +12,30 @@
     <Description>Headless Chrome .NET API</Description>
     <PackageId>PuppeteerSharp</PackageId>
     <PackageReleaseNotes><![CDATA[
-# New Features
+# Important Changes
 
- * BigInteger support.
+ * Remove Mono.Posix.NETStandard dependency.
+ * Headers should be case insensitive.
 
 # Changelog
- 
-* Drop Mono dependency.
- * Roll chromium to r641577.
- * Make sure frames are reported from-inside shadow DOM.
- * Add a failing test that tries to click a fixed button in an iframe.
- * Ensure Page.setBypassCSP works with iFrames.
- * Sync Request.Continue tests.
- * Public constructor for PaperFormat.
+
+* Roll Chromium to r650583.
+* Improve WhatForRequest event detach.
+ * Fix session logs.
+ * Microsoft Edge Friendly tests.
+ * Fix unzip command in MacOS.
+ * Remove a dead flag in Default Args.
+ * Add failing test for clicking certain elements.
+ * Add a test for queryObjects with navigation.
+ * Intersect content quads with viewport.
+ * Verify overriding postdata and method on navigation.
+ * Use new requestId for interception request matching.
+ * Gracefully handle multiple contexts for secondary DOM World.
+ * Update DeviceDescriptors.
+ * Fix cache disabling should stick when toggling request interception.
+ * Migrate onto Fetch domain.
  ]]></PackageReleaseNotes>
-    <ReleaseVersion>1.14.1</ReleaseVersion>
+    <ReleaseVersion>1.15.0</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>
