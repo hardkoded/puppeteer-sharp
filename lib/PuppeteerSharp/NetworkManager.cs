@@ -411,12 +411,6 @@ namespace PuppeteerSharp
             }
         }
 
-        private Task UpdateProtocolCacheDisabledAsync()
-            => _client.SendAsync("Network.setCacheDisabled", new NetworkSetCacheDisabledRequest
-            {
-                CacheDisabled = _userCacheDisabled || _protocolRequestInterceptionEnabled
-            });
-
         #endregion
     }
 }
