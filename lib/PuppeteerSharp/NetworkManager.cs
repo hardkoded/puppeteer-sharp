@@ -18,7 +18,7 @@ namespace PuppeteerSharp
         private readonly ConcurrentDictionary<string, RequestWillBeSentPayload> _requestIdToRequestWillBeSentEvent =
             new ConcurrentDictionary<string, RequestWillBeSentPayload>();
         private readonly MultiMap<string, string> _requestHashToRequestIds = new MultiMap<string, string>();
-        private readonly MultiMap<string, string> _requestHashToInterceptionIds = new MultiMap<string, string>();
+        private readonly MultiMap<string, string> _requestIdToInterceptionIds = new MultiMap<string, string>();
         private readonly ILogger _logger;
         private Dictionary<string, string> _extraHTTPHeaders;
         private bool _offine;
@@ -26,6 +26,7 @@ namespace PuppeteerSharp
         private List<string> _attemptedAuthentications = new List<string>();
         private bool _userRequestInterceptionEnabled;
         private bool _protocolRequestInterceptionEnabled;
+        private bool _userCacheDisabled;
 
         #endregion
 
@@ -246,6 +247,17 @@ namespace PuppeteerSharp
                 {
                     _logger.LogError(ex.ToString());
                 }
+
+                var requestId = e.NetworkId;
+                var interceptionId = e.RequestId;
+                if (!string.IsNullOrEmpty(requestId) && _requestIdToRequestWillBeSentEvent.TryRemove(requestId, out var requestWillBeSentEvent))
+                {
+                    await OnRequestAsync(requestWillBeSentEvent, interceptionId);
+                }
+                else
+                {
+                    _requestIdToInterceptionId.Try(requestId, interceptionId);
+                }
             }
         }
 
@@ -332,11 +344,11 @@ namespace PuppeteerSharp
             if (_protocolRequestInterceptionEnabled && !e.Request.Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase))
             {
                 var requestHash = e.Request.Hash;
-                var interceptionId = _requestHashToInterceptionIds.FirstValue(requestHash);
+                var interceptionId = _requestIdToInterceptionIds.FirstValue(requestHash);
                 if (interceptionId != null)
                 {
                     await OnRequestAsync(e, interceptionId);
-                    _requestHashToInterceptionIds.Delete(requestHash, interceptionId);
+                    _requestIdToInterceptionIds.Delete(requestHash, interceptionId);
                 }
                 else
                 {
@@ -358,14 +370,10 @@ namespace PuppeteerSharp
                 return;
             }
 
-            _protocolRequestInterceptionEnabled = enabled;
             if (enabled)
             {
                 await Task.WhenAll(
-                     _client.SendAsync("Network.setCacheDisabled", new NetworkSetCacheDisabledRequest
-                     {
-                         CacheDisabled = enabled
-                     }),
+                     UpdateProtocolCacheDisabledAsync(),
                     _client.SendAsync("Fetch.enable", new FetchEnableRequest
                     {
                         HandleAuthRequests = true,
@@ -376,14 +384,17 @@ namespace PuppeteerSharp
             else
             {
                 await Task.WhenAll(
-                    _client.SendAsync("Network.setCacheDisabled", new NetworkSetCacheDisabledRequest
-                    {
-                        CacheDisabled = enabled
-                    }),
+                    UpdateProtocolCacheDisabledAsync(),
                     _client.SendAsync("Fetch.disable")
                 ).ConfigureAwait(false);
             }
         }
+
+        private Task UpdateProtocolCacheDisabledAsync()
+            => _client.SendAsync("Network.setCacheDisabled", new NetworkSetCacheDisabledRequest
+            {
+                CacheDisabled = _userCacheDisabled || _protocolRequestInterceptionEnabled
+            });
 
         #endregion
     }
