@@ -390,7 +390,7 @@ namespace PuppeteerSharp
             {
                 return;
             }
-
+            _protocolRequestInterceptionEnabled = enabled;
             if (enabled)
             {
                 await Task.WhenAll(
