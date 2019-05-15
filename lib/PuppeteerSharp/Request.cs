@@ -230,13 +230,13 @@ namespace PuppeteerSharp
 
             _interceptionHandled = true;
 
-            var responseHeaders = new Dictionary<string, object>();
+            var responseHeaders = new Dictionary<string, string>();
 
             if (response.Headers != null)
             {
                 foreach (var keyValue in response.Headers)
                 {
-                    responseHeaders[keyValue.Key] = keyValue.Value;
+                    responseHeaders[keyValue.Key] = keyValue.Value.ToString();
                 }
             }
 
@@ -247,7 +247,7 @@ namespace PuppeteerSharp
 
             if (!responseHeaders.ContainsKey("content-length") && response.BodyData != null)
             {
-                responseHeaders["content-length"] = response.BodyData.Length;
+                responseHeaders["content-length"] = response.BodyData.Length.ToString();
             }
 
             try
@@ -256,7 +256,7 @@ namespace PuppeteerSharp
                 {
                     RequestId = InterceptionId,
                     ResponseCode = response.Status != null ? (int)response.Status : 200,
-                    ResponseHeaders = HeadersArray(Headers),
+                    ResponseHeaders = HeadersArray(responseHeaders),
                     Body = Convert.ToBase64String(response.BodyData)
                 }).ConfigureAwait(false);
             }
