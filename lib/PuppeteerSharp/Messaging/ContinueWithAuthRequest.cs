@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 namespace PuppeteerSharp.Messaging
 {
-    internal class NetworkContinueInterceptedRequestRequest
+    internal class ContinueWithAuthRequest
     {
-        public string InterceptionId { get; set; }
-        public NetworkContinueInterceptedRequestChallengeResponse AuthChallengeResponse { get; set; }
+        public string RequestId { get; set; }
+        public ContinueWithAuthRequestChallengeResponse AuthChallengeResponse { get; set; }
         public string RawResponse { get; set; }
         public string ErrorReason { get; set; }
         public string Url { get; set; }

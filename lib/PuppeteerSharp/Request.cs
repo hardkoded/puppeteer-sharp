@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -172,9 +173,9 @@ namespace PuppeteerSharp
 
             try
             {
-                var requestData = new NetworkContinueInterceptedRequestRequest
+                var requestData = new FetchContinueRequestRequest
                 {
-                    InterceptionId = InterceptionId
+                    RequestId = InterceptionId
                 };
                 if (overrides?.Url != null)
                 {
@@ -193,10 +194,10 @@ namespace PuppeteerSharp
 
                 if (overrides?.Headers?.Count > 0)
                 {
-                    requestData.Headers = overrides.Headers;
+                    requestData.Headers = HeadersArray(overrides.Headers);
                 }
 
-                await _client.SendAsync("Network.continueInterceptedRequest", requestData).ConfigureAwait(false);
+                await _client.SendAsync("Fetch.continueRequest", requestData).ConfigureAwait(false);
             }
             catch (PuppeteerException ex)
             {
@@ -229,13 +230,13 @@ namespace PuppeteerSharp
 
             _interceptionHandled = true;
 
-            var responseHeaders = new Dictionary<string, object>();
+            var responseHeaders = new Dictionary<string, string>();
 
             if (response.Headers != null)
             {
                 foreach (var keyValue in response.Headers)
                 {
-                    responseHeaders[keyValue.Key] = keyValue.Value;
+                    responseHeaders[keyValue.Key] = keyValue.Value.ToString();
                 }
             }
 
@@ -246,36 +247,17 @@ namespace PuppeteerSharp
 
             if (!responseHeaders.ContainsKey("content-length") && response.BodyData != null)
             {
-                responseHeaders["content-length"] = response.BodyData.Length;
-            }
-
-            var statusCode = response.Status ?? HttpStatusCode.OK;
-            var statusText = statusCode.ToString();
-            var text = new StringBuilder();
-            text.AppendLine($"HTTP/1.1 {(int)statusCode} {statusText}");
-
-            foreach (var header in responseHeaders)
-            {
-                text.AppendLine($"{header.Key}: {header.Value}");
-            }
-            text.AppendLine(string.Empty);
-
-            var responseData = Encoding.UTF8.GetBytes(text.ToString());
-
-            if (response.BodyData != null)
-            {
-                var concatenatedData = new byte[responseData.Length + response.BodyData.Length];
-                responseData.CopyTo(concatenatedData, 0);
-                response.BodyData.CopyTo(concatenatedData, responseData.Length);
-                responseData = concatenatedData;
+                responseHeaders["content-length"] = response.BodyData.Length.ToString();
             }
 
             try
             {
-                await _client.SendAsync("Network.continueInterceptedRequest", new NetworkContinueInterceptedRequestRequest
+                await _client.SendAsync("Fetch.fulfillRequest", new FetchFulfillRequest
                 {
-                    InterceptionId = InterceptionId,
-                    RawResponse = Convert.ToBase64String(responseData)
+                    RequestId = InterceptionId,
+                    ResponseCode = response.Status != null ? (int)response.Status : 200,
+                    ResponseHeaders = HeadersArray(responseHeaders),
+                    Body = response.BodyData != null ? Convert.ToBase64String(response.BodyData) : null
                 }).ConfigureAwait(false);
             }
             catch (PuppeteerException ex)
@@ -314,9 +296,9 @@ namespace PuppeteerSharp
 
             try
             {
-                await _client.SendAsync("Network.continueInterceptedRequest", new NetworkContinueInterceptedRequestRequest
+                await _client.SendAsync("Fetch.failRequest", new FetchFailRequest
                 {
-                    InterceptionId = InterceptionId,
+                    RequestId = InterceptionId,
                     ErrorReason = errorReason
                 }).ConfigureAwait(false);
             }
@@ -328,5 +310,8 @@ namespace PuppeteerSharp
             }
         }
         #endregion
+
+        private Header[] HeadersArray(Dictionary<string, string> headers)
+            => headers?.Select(pair => new Header { Name = pair.Key, Value = pair.Value }).ToArray();
     }
 }
