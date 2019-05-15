@@ -257,7 +257,7 @@ namespace PuppeteerSharp
                     RequestId = InterceptionId,
                     ResponseCode = response.Status != null ? (int)response.Status : 200,
                     ResponseHeaders = HeadersArray(responseHeaders),
-                    Body = Convert.ToBase64String(response.BodyData)
+                    Body = response.BodyData != null ? Convert.ToBase64String(response.BodyData) : null
                 }).ConfigureAwait(false);
             }
             catch (PuppeteerException ex)
