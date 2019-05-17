@@ -82,9 +82,7 @@ namespace PuppeteerSharp.Tests.PageTests
             {
                 return Page.EvaluateFunctionAsync(@"() => {
                     location.reload();
-                    return new Promise(resolve => {
-                        setTimeout(() => resolve(1), 0);
-                    });
+                    return new Promise(() => {});
                 }");
             });
 
