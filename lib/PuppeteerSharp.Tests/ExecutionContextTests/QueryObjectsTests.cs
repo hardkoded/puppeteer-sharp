@@ -24,7 +24,6 @@ namespace PuppeteerSharp.Tests.ExecutionContextTests
             Assert.Equal(new[] { "hello", "world" }, values);
         }
 
-        [Fact(Skip = "See https://github.com/GoogleChrome/puppeteer/issues/4263")]
         public async Task ShouldWorkForNonBlankPage()
         {
             // Instantiate an object
