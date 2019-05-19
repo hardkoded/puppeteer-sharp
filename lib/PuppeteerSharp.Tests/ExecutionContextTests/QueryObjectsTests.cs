@@ -24,6 +24,7 @@ namespace PuppeteerSharp.Tests.ExecutionContextTests
             Assert.Equal(new[] { "hello", "world" }, values);
         }
 
+        [Fact]
         public async Task ShouldWorkForNonBlankPage()
         {
             // Instantiate an object
