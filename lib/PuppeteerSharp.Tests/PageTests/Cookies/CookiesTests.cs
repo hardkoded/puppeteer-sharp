@@ -40,6 +40,48 @@ namespace PuppeteerSharp.Tests.PageTests.Cookies
         }
 
         [Fact]
+        public async Task ShouldProperlyReportHttpOnlyCookie()
+        {
+            Server.SetRoute("/empty.html", context =>
+            {
+                context.Response.Headers["Set-Cookie"] = ";HttpOnly; Path=/";
+                return Task.CompletedTask;
+            });
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var cookies = await Page.GetCookiesAsync();
+            Assert.Single(cookies);
+            Assert.True(cookies[0].HttpOnly);
+        }
+
+        [Fact]
+        public async Task ShouldProperlyReportSStrictSameSiteCookie()
+        {
+            Server.SetRoute("/empty.html", context =>
+            {
+                context.Response.Headers["Set-Cookie"] = ";SameSite=Strict";
+                return Task.CompletedTask;
+            });
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var cookies = await Page.GetCookiesAsync();
+            Assert.Single(cookies);
+            Assert.Equal(SameSite.Strict, cookies[0].SameSite);
+        }
+
+        [Fact]
+        public async Task ShouldProperlyReportLaxSameSiteCookie()
+        {
+            Server.SetRoute("/empty.html", context =>
+            {
+                context.Response.Headers["Set-Cookie"] = ";SameSite=Lax";
+                return Task.CompletedTask;
+            });
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var cookies = await Page.GetCookiesAsync();
+            Assert.Single(cookies);
+            Assert.Equal(SameSite.Lax, cookies[0].SameSite);
+        }
+
+        [Fact]
         public async Task ShouldGetMultipleCookies()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
