@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
@@ -138,11 +139,11 @@ namespace PuppeteerSharp
 
             // We rely upon the fact that document.open() will reset frame lifecycle with "init"
             // lifecycle event. @see https://crrev.com/608658
-            await EvaluateFunctionAsync(@"html => {
+            await EvaluateFunctionAsync(@"base64html => {
                 document.open();
-                document.write(html);
+                document.write(atob(base64html));
                 document.close();
-            }", html).ConfigureAwait(false);
+            }", Convert.ToBase64String(Encoding.UTF8.GetBytes(html))).ConfigureAwait(false);
 
             var watcher = new LifecycleWatcher(_frameManager, Frame, waitUntil, timeout);
             var watcherTask = await Task.WhenAny(

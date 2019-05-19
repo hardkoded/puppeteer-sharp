@@ -100,5 +100,12 @@ namespace PuppeteerSharp.Tests.PageTests
                 await Page.SetContentAsync("<div>yo</div>");
             }
         }
+
+        [Fact]
+        public async Task ShouldWorkWithTrickyContent()
+        {
+            await Page.SetContentAsync("<div>hello world</div>\x7F");
+            Assert.Equal("hello world", await Page.QuerySelectorAsync("div").EvaluateFunctionAsync<string>("div => div.textContent"));
+        }
     }
 }
