@@ -165,7 +165,10 @@ namespace PuppeteerSharp
         /// Dafault wait time in milliseconds. Defaults to 30 seconds.
         /// </summary>
         public int DefaultWaitForTimeout { get; set; } = Puppeteer.DefaultTimeout;
-
+        /// <summary>
+        /// Indicates that the browser is connected.
+        /// </summary>
+        public bool IsConnected => !Connection.IsClosed;
         #endregion
 
         #region Public Methods
