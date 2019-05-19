@@ -54,21 +54,21 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>Start task</returns>
         /// <param name="options">Tracing options</param>
-        public Task StartAsync(TracingOptions options)
+        public Task StartAsync(TracingOptions options = null)
         {
             if (_recording)
             {
                 throw new InvalidOperationException("Cannot start recording trace while already recording trace.");
             }
 
-            var categories = options.Categories ?? _defaultCategories;
+            var categories = options?.Categories ?? _defaultCategories;
 
-            if (options.Screenshots)
+            if (options?.Screenshots == true)
             {
                 categories.Add("disabled-by-default-devtools.screenshot");
             }
 
-            _path = options.Path;
+            _path = options?.Path;
             _recording = true;
 
             return _client.SendAsync("Tracing.start", new TracingStartRequest
