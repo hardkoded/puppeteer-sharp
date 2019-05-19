@@ -159,6 +159,24 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.True(response.Ok);
         }
 
+        [Fact(Skip = "https://github.com/GoogleChrome/puppeteer/issues/4337")]
+        public async Task ShouldWorkWithRedirectInsideSyncXHR()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            Server.SetRedirect("/logo.png", "/pptr.png");
+            await Page.SetRequestInterceptionAsync(true);
+            Page.Request += async (sender, e) => await e.Request.ContinueAsync();
+
+            var status = await Page.EvaluateFunctionAsync<int>(@"async () =>
+            {
+                const request = new XMLHttpRequest();
+                request.open('GET', '/logo.png', false);  // `false` makes the request synchronous
+                request.send(null);
+                return request.status;
+            }");
+            Assert.Equal(200, status);
+        }
+
         [Fact]
         public async Task ShouldWorksWithCustomizingRefererHeaders()
         {
