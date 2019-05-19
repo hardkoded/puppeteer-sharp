@@ -160,7 +160,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [Fact(Skip = "https://github.com/GoogleChrome/puppeteer/issues/4337")]
-        public async Task ShouldWorkWithRedirectInsideSyncHHR()
+        public async Task ShouldWorkWithRedirectInsideSyncXHR()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             Server.SetRedirect("/logo.png", "/pptr.png");
