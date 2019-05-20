@@ -82,7 +82,6 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                 await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions { Root = menu }));
         }
 
-
         [Fact]
         public async Task ShouldReturnNullWhenTheElementIsNoLongerInDOM()
         {
