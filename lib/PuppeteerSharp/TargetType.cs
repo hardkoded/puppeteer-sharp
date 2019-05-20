@@ -63,6 +63,11 @@ namespace PuppeteerSharp
         /// Target type recommendation
         /// </summary>
         [EnumMember(Value = "recommendation")]
-        Recommendation
+        Recommendation,
+        /// <summary>
+        /// Target type shared worker.
+        /// </summary>
+        [EnumMember(Value = "shared_worker")]
+        SharedWorker,
     }
 }

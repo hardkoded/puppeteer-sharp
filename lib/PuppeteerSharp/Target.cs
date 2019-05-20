@@ -2,6 +2,8 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Helpers.Json;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
@@ -13,15 +15,16 @@ namespace PuppeteerSharp
     {
         #region Private members
         private TargetInfo _targetInfo;
-        private readonly Func<TargetInfo, Task<CDPSession>> _sessionFactory;
+        private readonly Func<Task<CDPSession>> _sessionFactory;
         private readonly TaskCompletionSource<bool> _initializedTaskWrapper = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        private TaskCompletionSource<Worker> _workerTaskWrapper;
         #endregion
 
         internal bool IsInitialized;
 
         internal Target(
             TargetInfo targetInfo,
-            Func<TargetInfo, Task<CDPSession>> sessionFactory,
+            Func<Task<CDPSession>> sessionFactory,
             BrowserContext browserContext)
         {
             _targetInfo = targetInfo;
@@ -67,7 +70,8 @@ namespace PuppeteerSharp
         /// <value>The URL.</value>
         public string Url => _targetInfo.Url;
         /// <summary>
-        /// Gets the type. It will be <see cref="TargetInfo.Type"/> if it's "page" or "service_worker". Otherwise it will be "other"
+        /// Gets the type. It will be <see cref="TargetInfo.Type"/>.
+        /// Can be `"page"`, `"background_page"`, `"service_worker"`, `"shared_worker"`, `"browser"` or `"other"`.
         /// </summary>
         /// <value>The type.</value>
         public TargetType Type => _targetInfo.Type;
@@ -116,6 +120,50 @@ namespace PuppeteerSharp
 
             return PageTask ?? Task.FromResult<Page>(null);
         }
+
+        /// <summary>
+        /// If the target is not of type `"service_worker"` or `"shared_worker"`, returns `null`.
+        /// </summary>
+        /// <returns>A task that returns a <see cref="Worker"/></returns>
+        public async Task<Worker> WorkerAsync()
+        {
+            if (_targetInfo.Type != TargetType.ServiceWorker && _targetInfo.Type != TargetType.SharedWorker)
+            {
+                return null;
+            }
+            if (_workerTaskWrapper == null)
+            {
+                var client = await _sessionFactory().ConfigureAwait(false);
+                var targetAttachedWrapper = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+                void MessageReceived(object sender, MessageEventArgs e)
+                {
+                    if (e.MessageID == "Target.attachedToTarget")
+                    {
+                        targetAttachedWrapper.TrySetResult(e.MessageData.ToObject<TargetAttachedToTargetResponse>(true).SessionId);
+                        client.MessageReceived -= MessageReceived;
+                    }
+                }
+                client.MessageReceived += MessageReceived;
+
+                await Task.WhenAll(
+                    targetAttachedWrapper.Task,
+                    client.SendAsync("Target.setAutoAttach", new TargetSetAutoAttachRequest
+                    {
+                        AutoAttach = true,
+                        WaitForDebuggerOnStart = false,
+                        Flatten = true
+                    }));
+                var session = Connection.FromSession(client).GetSession(targetAttachedWrapper.Task.Result);
+                return new Worker(
+                    session,
+                    _targetInfo.Url,
+                    (consoleType, handles, stackTrace) => Task.CompletedTask,
+                    () => { });
+            }
+
+            return _workerTaskWrapper.Task;
+        }
+
 
         private async Task<Page> CreatePageAsync()
         {
