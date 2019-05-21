@@ -17,7 +17,7 @@ namespace PuppeteerSharp
         private TargetInfo _targetInfo;
         private readonly Func<Task<CDPSession>> _sessionFactory;
         private readonly TaskCompletionSource<bool> _initializedTaskWrapper = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-        private TaskCompletionSource<Worker> _workerTaskWrapper;
+        private Task<Worker> _workerTask;
         #endregion
 
         internal bool IsInitialized;
@@ -125,49 +125,53 @@ namespace PuppeteerSharp
         /// If the target is not of type `"service_worker"` or `"shared_worker"`, returns `null`.
         /// </summary>
         /// <returns>A task that returns a <see cref="Worker"/></returns>
-        public async Task<Worker> WorkerAsync()
+        public Task<Worker> WorkerAsync()
         {
             if (_targetInfo.Type != TargetType.ServiceWorker && _targetInfo.Type != TargetType.SharedWorker)
             {
                 return null;
             }
-            if (_workerTaskWrapper == null)
+            if (_workerTask == null)
             {
-                var client = await _sessionFactory().ConfigureAwait(false);
-                var targetAttachedWrapper = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
-                void MessageReceived(object sender, MessageEventArgs e)
-                {
-                    if (e.MessageID == "Target.attachedToTarget")
-                    {
-                        targetAttachedWrapper.TrySetResult(e.MessageData.ToObject<TargetAttachedToTargetResponse>(true).SessionId);
-                        client.MessageReceived -= MessageReceived;
-                    }
-                }
-                client.MessageReceived += MessageReceived;
-
-                await Task.WhenAll(
-                    targetAttachedWrapper.Task,
-                    client.SendAsync("Target.setAutoAttach", new TargetSetAutoAttachRequest
-                    {
-                        AutoAttach = true,
-                        WaitForDebuggerOnStart = false,
-                        Flatten = true
-                    }));
-                var session = Connection.FromSession(client).GetSession(targetAttachedWrapper.Task.Result);
-                return new Worker(
-                    session,
-                    _targetInfo.Url,
-                    (consoleType, handles, stackTrace) => Task.CompletedTask,
-                    () => { });
+                _workerTask = WorkerInternalAsync();
             }
 
-            return _workerTaskWrapper.Task;
+            return _workerTask;
         }
 
+        private async Task<Worker> WorkerInternalAsync()
+        {
+            var client = await _sessionFactory().ConfigureAwait(false);
+            var targetAttachedWrapper = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+            void MessageReceived(object sender, MessageEventArgs e)
+            {
+                if (e.MessageID == "Target.attachedToTarget")
+                {
+                    targetAttachedWrapper.TrySetResult(e.MessageData.ToObject<TargetAttachedToTargetResponse>(true).SessionId);
+                    client.MessageReceived -= MessageReceived;
+                }
+            }
+            client.MessageReceived += MessageReceived;
+
+            await Task.WhenAll(
+                targetAttachedWrapper.Task,
+                client.SendAsync("Target.setAutoAttach", new TargetSetAutoAttachRequest
+                {
+                    AutoAttach = true,
+                    WaitForDebuggerOnStart = false,
+                    Flatten = true
+                })).ConfigureAwait(false);
+            var session = Connection.FromSession(client).GetSession(targetAttachedWrapper.Task.Result);
+            return new Worker(
+                session,
+                _targetInfo.Url,
+                (consoleType, handles, stackTrace) => Task.CompletedTask,
+                (e) => { });
+        }
 
         private async Task<Page> CreatePageAsync()
         {
-            var session = await _sessionFactory(_targetInfo).ConfigureAwait(false);
+            var session = await _sessionFactory().ConfigureAwait(false);
             return await Page.CreateAsync(session, this, Browser.IgnoreHTTPSErrors, Browser.DefaultViewport, Browser.ScreenshotTaskQueue).ConfigureAwait(false);
         }
 
