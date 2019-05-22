@@ -34,15 +34,38 @@ namespace PuppeteerSharp.PageAccessibility
         {
             var response = await _client.SendAsync<AccessibilityGetFullAXTreeResponse>("Accessibility.getFullAXTree").ConfigureAwait(false);
             var nodes = response.Nodes;
-            var root = AXNode.CreateTree(nodes);
+            int? backendNodeId = null;
+            if (options?.Root != null)
+            {
+                var node = await _client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
+                {
+                    ObjectId = options.Root.RemoteObject.ObjectId
+                }).ConfigureAwait(false);
+                backendNodeId = node.Node.BackendNodeId;
+            }
+            var defaultRoot = AXNode.CreateTree(nodes);
+            var needle = defaultRoot;
+            if (backendNodeId.HasValue)
+            {
+                needle = defaultRoot.Find(node => node.Payload.BackendDOMNodeId == backendNodeId);
+                if (needle == null)
+                {
+                    return null;
+                }
+            }
+
             if (options?.InterestingOnly == false)
             {
-                return SerializeTree(root)[0];
+                return SerializeTree(needle)[0];
             }
 
             var interestingNodes = new List<AXNode>();
-            CollectInterestingNodes(interestingNodes, root, false);
-            return SerializeTree(root, interestingNodes)[0];
+            CollectInterestingNodes(interestingNodes, defaultRoot, false);
+            if (!interestingNodes.Contains(needle))
+            {
+                return null;
+            }
+            return SerializeTree(needle, interestingNodes)[0];
         }
 
         private void CollectInterestingNodes(List<AXNode> collection, AXNode node, bool insideControl)

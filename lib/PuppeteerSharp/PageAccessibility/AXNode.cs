@@ -68,6 +68,23 @@ namespace PuppeteerSharp.PageAccessibility
             return _cachedHasFocusableChild.Value;
         }
 
+        internal AXNode Find(Func<AXNode, bool> predicate)
+        {
+            if (predicate(this))
+            {
+                return this;
+            }
+            foreach (var child in Children)
+            {
+                var result = child.Find(predicate);
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+            return null;
+        }
+
         internal bool IsLeafNode()
         {
             if (Children.Count == 0)
