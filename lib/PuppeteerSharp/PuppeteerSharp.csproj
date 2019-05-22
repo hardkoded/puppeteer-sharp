@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>1.15.0</PackageVersion>
+    <PackageVersion>1.16.0</PackageVersion>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
@@ -12,30 +12,24 @@
     <Description>Headless Chrome .NET API</Description>
     <PackageId>PuppeteerSharp</PackageId>
     <PackageReleaseNotes><![CDATA[
-# Important Changes
+# New Features
 
- * Remove Mono.Posix.NETStandard dependency.
- * Headers should be case insensitive.
+ * Tracing.StartAsync without options.
+ * Add Browser.IsConnected.
 
 # Changelog
 
-* Roll Chromium to r650583.
-* Improve WhatForRequest event detach.
- * Fix session logs.
- * Microsoft Edge Friendly tests.
- * Fix unzip command in MacOS.
- * Remove a dead flag in Default Args.
- * Add failing test for clicking certain elements.
- * Add a test for queryObjects with navigation.
- * Intersect content quads with viewport.
- * Verify overriding postdata and method on navigation.
- * Use new requestId for interception request matching.
- * Gracefully handle multiple contexts for secondary DOM World.
- * Update DeviceDescriptors.
- * Fix cache disabling should stick when toggling request interception.
- * Migrate onto Fetch domain.
+ * Roll Chromium to r656675.
+ * Update Accessibility comments.
+ * Add failing test for request interception with sync XHRs.
+ * Teach Page.SetContentAsync to work with tricky content.
+ * Make sure exposeFunction works with complex args.
+ * Add cookie tests.
+ * Eoot option in Page.Accessibility.SnapshotAsync().
+ * Create workers from service workers and shared workers.
+
  ]]></PackageReleaseNotes>
-    <ReleaseVersion>1.15.0</ReleaseVersion>
+    <ReleaseVersion>1.16.0</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>
