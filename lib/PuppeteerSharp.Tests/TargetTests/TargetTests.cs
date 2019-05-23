@@ -117,6 +117,29 @@ namespace PuppeteerSharp.Tests.TargetTests
         }
 
         [Fact]
+        public async Task ShouldCreateAWorkerFromAServiceWorker()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/serviceworkers/empty/sw.html");
+
+            var target = await Context.WaitForTargetAsync(t => t.Type == TargetType.ServiceWorker);
+            var worker = await target.WorkerAsync();
+            Assert.Equal("[object ServiceWorkerGlobalScope]", await worker.EvaluateFunctionAsync("() => self.toString()"));
+        }
+
+        [Fact]
+        public async Task ShouldCreateAWorkerFromASharedWorker()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.EvaluateFunctionAsync(@"() =>
+            {
+                new SharedWorker('data:text/javascript,console.log(""hi"")');
+            }");
+            var target = await Context.WaitForTargetAsync(t => t.Type == TargetType.SharedWorker);
+            var worker = await target.WorkerAsync();
+            Assert.Equal("[object SharedWorkerGlobalScope]", await worker.EvaluateFunctionAsync("() => self.toString()"));
+        }
+
+        [Fact]
         public async Task ShouldReportWhenATargetUrlChanges()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

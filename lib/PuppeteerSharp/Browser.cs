@@ -491,7 +491,7 @@ namespace PuppeteerSharp
 
             var target = new Target(
                 e.TargetInfo,
-                info => Connection.CreateSessionAsync(info),
+                () => Connection.CreateSessionAsync(targetInfo),
                 context);
 
             if (TargetsMap.ContainsKey(e.TargetInfo.TargetId))
