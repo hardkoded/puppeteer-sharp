@@ -76,6 +76,10 @@ namespace PuppeteerSharp.Tests.PageTests
             => Assert.Null(await Page.EvaluateFunctionAsync<object>("() => [Symbol('foo4')]"));
 
         [Fact]
+        public async Task ShouldWorkWithUnicodeChars()
+            => Assert.Equal(42, await Page.EvaluateFunctionAsync<int>("a => a['中文字符']", new Dictionary<string, int> { ["中文字符"] = 42 }));
+
+        [Fact]
         public async Task ShouldThrowWhenEvaluationTriggersReload()
         {
             var exception = await Assert.ThrowsAsync<EvaluationFailedException>(() =>

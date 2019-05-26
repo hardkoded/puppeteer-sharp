@@ -139,11 +139,11 @@ namespace PuppeteerSharp
 
             // We rely upon the fact that document.open() will reset frame lifecycle with "init"
             // lifecycle event. @see https://crrev.com/608658
-            await EvaluateFunctionAsync(@"base64html => {
+            await EvaluateFunctionAsync(@"html => {
                 document.open();
-                document.write(atob(base64html));
+                document.write(html);
                 document.close();
-            }", Convert.ToBase64String(Encoding.UTF8.GetBytes(html))).ConfigureAwait(false);
+            }", html).ConfigureAwait(false);
 
             var watcher = new LifecycleWatcher(_frameManager, Frame, waitUntil, timeout);
             var watcherTask = await Task.WhenAny(
