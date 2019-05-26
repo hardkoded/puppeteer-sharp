@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>1.16.0</PackageVersion>
+    <PackageVersion>1.17.0</PackageVersion>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
@@ -12,24 +12,16 @@
     <Description>Headless Chrome .NET API</Description>
     <PackageId>PuppeteerSharp</PackageId>
     <PackageReleaseNotes><![CDATA[
-# New Features
-
- * Tracing.StartAsync without options.
- * Add Browser.IsConnected.
-
 # Changelog
 
- * Roll Chromium to r656675.
- * Update Accessibility comments.
- * Add failing test for request interception with sync XHRs.
- * Teach Page.SetContentAsync to work with tricky content.
- * Make sure exposeFunction works with complex args.
- * Add cookie tests.
- * Eoot option in Page.Accessibility.SnapshotAsync().
- * Create workers from service workers and shared workers.
+ * Roll Chromium to r662092.
+ * Add SVG clicking test.
+ * Stringify response headers for intercepted requests.
+ * Evaluation test with UTF8.
+ * Page.SetContentAsync working with unicode strings.
 
  ]]></PackageReleaseNotes>
-    <ReleaseVersion>1.16.0</ReleaseVersion>
+    <ReleaseVersion>1.17.0</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>
