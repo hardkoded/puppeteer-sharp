@@ -91,5 +91,28 @@ namespace PuppeteerSharp.Tests.NetworkTests
             var img = await Page.QuerySelectorAsync("img");
             Assert.True(ScreenshotHelper.PixelMatch("mock-binary-response.png", await img.ScreenshotDataAsync()));
         }
+
+        [Fact]
+        public async Task ShouldStringifyInterceptedRequestResponseHeaders()
+        {
+            await Page.SetRequestInterceptionAsync(true);
+            Page.Request += async (sender, e) =>
+            {
+                await e.Request.RespondAsync(new ResponseData
+                {
+                    Status = HttpStatusCode.OK,
+                    Headers = new Dictionary<string, object>
+                    {
+                        ["foo"] = true
+                    },
+                    Body = "Yo, page!"
+                });
+            };
+
+            var response = await Page.GoToAsync(TestConstants.EmptyPage);
+            Assert.Equal(HttpStatusCode.OK, response.Status);
+            Assert.Equal("True", response.Headers["foo"]);
+            Assert.Equal("Yo, page!", await Page.EvaluateExpressionAsync<string>("document.body.textContent"));
+        }
     }
 }
