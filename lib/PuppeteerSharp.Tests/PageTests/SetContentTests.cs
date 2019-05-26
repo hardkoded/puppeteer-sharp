@@ -107,5 +107,26 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.SetContentAsync("<div>hello world</div>\x7F");
             Assert.Equal("hello world", await Page.QuerySelectorAsync("div").EvaluateFunctionAsync<string>("div => div.textContent"));
         }
+
+        [Fact]
+        public async Task ShouldWorkWithAccents()
+        {
+            await Page.SetContentAsync("<div>aberración</div>");
+            Assert.Equal("aberración", await Page.QuerySelectorAsync("div").EvaluateFunctionAsync<string>("div => div.textContent"));
+        }
+
+        [Fact]
+        public async Task ShouldWorkWithEmojis()
+        {
+            await Page.SetContentAsync("<div>🐥</div>");
+            Assert.Equal("🐥", await Page.QuerySelectorAsync("div").EvaluateFunctionAsync<string>("div => div.textContent"));
+        }
+
+        [Fact]
+        public async Task ShouldWorkWithNewline()
+        {
+            await Page.SetContentAsync("<div>\n</div>");
+            Assert.Equal("\n", await Page.QuerySelectorAsync("div").EvaluateFunctionAsync<string>("div => div.textContent"));
+        }
     }
 }
