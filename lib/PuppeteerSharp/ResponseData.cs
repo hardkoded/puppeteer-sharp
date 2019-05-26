@@ -25,7 +25,7 @@ namespace PuppeteerSharp
         /// <value>The body as binary.</value>
         public byte[] BodyData { get; set; }
         /// <summary>
-        /// Response headers.
+        /// Response headers. Header values will be converted to a string.
         /// </summary>
         /// <value>Headers.</value>
         public Dictionary<string, object> Headers { get; set; }
