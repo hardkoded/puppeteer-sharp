@@ -23,6 +23,18 @@ namespace PuppeteerSharp.Tests.InputTests
         }
 
         [Fact]
+        public async Task ShouldClickSvg()
+        {
+            await Page.SetContentAsync($@"
+                <svg height=""100"" width=""100"">
+                  <circle onclick=""javascript:window.__CLICKED=42"" cx=""50"" cy=""50"" r=""40"" stroke=""black"" stroke-width=""3"" fill=""red""/>
+                </svg>
+            ");
+            await Page.ClickAsync("circle");
+            Assert.Equal(42, await Page.EvaluateFunctionAsync<int>("() => window.__CLICKED"));
+        }
+
+        [Fact]
         public async Task ShouldClickTheButtonIfWindowNodeIsRemoved()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
