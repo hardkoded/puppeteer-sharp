@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>1.17.0</PackageVersion>
+    <PackageVersion>1.17.1</PackageVersion>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
@@ -21,7 +21,7 @@
  * Page.SetContentAsync working with unicode strings.
 
  ]]></PackageReleaseNotes>
-    <ReleaseVersion>1.17.0</ReleaseVersion>
+    <ReleaseVersion>1.17.1</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>
