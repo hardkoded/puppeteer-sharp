@@ -275,13 +275,17 @@ namespace PuppeteerSharp
 
             var requestId = e.NetworkId;
             var interceptionId = e.RequestId;
-            if (!string.IsNullOrEmpty(requestId) && _requestIdToRequestWillBeSentEvent.TryRemove(requestId, out var requestWillBeSentEvent))
+
+            if (!string.IsNullOrEmpty(requestId))
             {
-                await OnRequestAsync(requestWillBeSentEvent, interceptionId).ConfigureAwait(false);
-            }
-            else
-            {
-                _requestIdToInterceptionId[requestId] = interceptionId;
+                if (_requestIdToRequestWillBeSentEvent.TryRemove(requestId, out var requestWillBeSentEvent))
+                {
+                    await OnRequestAsync(requestWillBeSentEvent, interceptionId).ConfigureAwait(false);
+                }
+                else
+                {
+                    _requestIdToInterceptionId[requestId] = interceptionId;
+                }
             }
         }
 
