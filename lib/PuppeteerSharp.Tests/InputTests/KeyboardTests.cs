@@ -27,25 +27,23 @@ namespace PuppeteerSharp.Tests.InputTests
         [Fact]
         public async Task ShouldMoveWithTheArrowKeys()
         {
-            Task dummy;
-
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
             await Page.TypeAsync("textarea", "Hello World!");
             Assert.Equal("Hello World!", await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
             for (var i = 0; i < "World!".Length; i++)
             {
-                dummy = Page.Keyboard.PressAsync("ArrowLeft");
+                _ = Page.Keyboard.PressAsync("ArrowLeft");
             }
 
             await Page.Keyboard.TypeAsync("inserted ");
             Assert.Equal("Hello inserted World!", await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
-            dummy = Page.Keyboard.DownAsync("Shift");
+            _ = Page.Keyboard.DownAsync("Shift");
             for (var i = 0; i < "inserted ".Length; i++)
             {
-                dummy = Page.Keyboard.PressAsync("ArrowLeft");
+                _ = Page.Keyboard.PressAsync("ArrowLeft");
             }
 
-            dummy = Page.Keyboard.UpAsync("Shift");
+            _ = Page.Keyboard.UpAsync("Shift");
             await Page.Keyboard.PressAsync("Backspace");
             Assert.Equal("Hello World!", await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
         }

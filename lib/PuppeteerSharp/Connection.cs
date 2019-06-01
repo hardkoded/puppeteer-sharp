@@ -19,6 +19,7 @@ namespace PuppeteerSharp
     public class Connection : IDisposable
     {
         private readonly ILogger _logger;
+        private TaskQueue _callbackQueue = new TaskQueue();
 
         internal Connection(string url, int delay, IConnectionTransport transport, ILoggerFactory loggerFactory = null)
         {
@@ -109,7 +110,7 @@ namespace PuppeteerSharp
             }
 
             var id = GetMessageID();
-            
+
             MessageTask callback = null;
             if (waitForCallback)
             {
@@ -178,7 +179,9 @@ namespace PuppeteerSharp
 
         #region Private Methods
 
-        private async void Transport_MessageReceived(object sender, MessageReceivedEventArgs e)
+        private async void Transport_MessageReceived(object sender, MessageReceivedEventArgs e) => await _callbackQueue.Enqueue(() => ProcessMessage(e));
+
+        private async Task ProcessMessage(MessageReceivedEventArgs e)
         {
             try
             {
