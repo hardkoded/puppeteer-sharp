@@ -1,7 +1,8 @@
-﻿using System.Net;
+﻿using System;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
@@ -44,6 +45,51 @@ namespace PuppeteerSharp.Tests.PageTests
             }")
             );
             Assert.Equal(TestConstants.ServerUrl + "/digits/2.png", task.Result.Url);
+        }
+
+        [Fact]
+        public async Task ShouldRespectTimeout()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var exception = await Assert.ThrowsAnyAsync<TimeoutException>(async () =>
+                await Page.WaitForRequestAsync(request => false, new WaitForOptions
+                {
+                    Timeout = 1
+                }));
+
+            Assert.Contains("Timeout Exceeded: 1ms", exception.Message);
+        }
+
+        [Fact]
+        public async Task ShouldRespectDefaultTimeout()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            Page.DefaultTimeout = 1;
+            var exception = await Assert.ThrowsAnyAsync<TimeoutException>(async () =>
+                await Page.WaitForRequestAsync(request => false));
+
+            Assert.Contains("Timeout Exceeded: 1ms", exception.Message);
+        }
+
+        [Fact]
+        public async Task ShouldProperyStopListeningNewRequests()
+        {
+            var tcs = new TaskCompletionSource<bool>();
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            Page.DefaultTimeout = 1;
+            var exception = await Assert.ThrowsAnyAsync<TimeoutException>(async () =>
+                await Page.WaitForRequestAsync(request =>
+                {
+                    if (request.Url.Contains("/digits/1.png"))
+                    {
+                        tcs.TrySetResult(true);
+                    }
+
+                    return true;
+                }));
+
+            await Page.EvaluateFunctionAsync(@"() => fetch('/digits/1.png')");
+            await Assert.ThrowsAnyAsync<TimeoutException>(() => tcs.Task.WithTimeout(1));
         }
 
         [Fact]

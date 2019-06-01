@@ -7,6 +7,7 @@
         internal class DomNode
         {
             public string FrameId { get; set; }
+            public int BackendNodeId { get; set; }
         }
     }
 }

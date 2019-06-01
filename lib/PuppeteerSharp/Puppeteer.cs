@@ -1,4 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
+using PuppeteerSharp.Mobile;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp
@@ -75,5 +78,22 @@ namespace PuppeteerSharp
         /// <param name="options">Options.</param>
         public static BrowserFetcher CreateBrowserFetcher(BrowserFetcherOptions options)
             => new BrowserFetcher(options);
+
+        /// <summary>
+        /// Returns a list of devices to be used with <seealso cref="Page.EmulateAsync(DeviceDescriptor)"/>. 
+        /// </summary>
+        /// <example>
+        /// <code>
+        ///<![CDATA[
+        /// var iPhone = Puppeteer.Devices[DeviceDescriptorName.IPhone6];
+        /// using(var page = await browser.NewPageAsync())
+        /// {
+        ///     await page.EmulateAsync(iPhone);
+        ///     await page.goto('https://www.google.com');
+        /// }
+        /// ]]>
+        /// </code>
+        /// </example>
+        public static IReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor> Devices => DeviceDescriptors.ToReadOnly();
     }
 }

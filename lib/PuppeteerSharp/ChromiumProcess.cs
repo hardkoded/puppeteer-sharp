@@ -22,6 +22,7 @@ namespace PuppeteerSharp
 
         internal static readonly string[] DefaultArgs = {
             "--disable-background-networking",
+            "--enable-features=NetworkService,NetworkServiceInProcess",
             "--disable-background-timer-throttling",
             "--disable-backgrounding-occluded-windows",
             "--disable-breakpad",
@@ -29,17 +30,16 @@ namespace PuppeteerSharp
             "--disable-default-apps",
             "--disable-dev-shm-usage",
             "--disable-extensions",
-            "--disable-features=site-per-process",
+            "--disable-features=site-per-process,TranslateUI,BlinkGenPropertyTrees",
             "--disable-hang-monitor",
             "--disable-ipc-flooding-protection",
             "--disable-popup-blocking",
             "--disable-prompt-on-repost",
             "--disable-renderer-backgrounding",
             "--disable-sync",
-            "--disable-translate",
+            "--force-color-profile=srgb",
             "--metrics-recording-only",
             "--no-first-run",
-            "--safebrowsing-disable-auto-update",
             "--enable-automation",
             "--password-store=basic",
             "--use-mock-keychain"
@@ -192,7 +192,7 @@ namespace PuppeteerSharp
                 await _exitCompletionSource.Task.WithTimeout(() =>
                 {
                     taskCompleted = false;
-                }, timeout.Value.Milliseconds).ConfigureAwait(false);
+                }, timeout.Value).ConfigureAwait(false);
                 return taskCompleted;
             }
 
@@ -615,7 +615,7 @@ namespace PuppeteerSharp
                     {
                         await Killing.EnterFromAsync(p, this).ConfigureAwait(false);
                         await waitForExitTask.ConfigureAwait(false);
-                    }, timeout.Minutes).ConfigureAwait(false);
+                    }, timeout).ConfigureAwait(false);
                 }
 
                 public override Task KillAsync(ChromiumProcess p) => Killing.EnterFromAsync(p, this);

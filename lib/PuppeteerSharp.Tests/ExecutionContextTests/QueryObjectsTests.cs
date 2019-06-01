@@ -25,6 +25,18 @@ namespace PuppeteerSharp.Tests.ExecutionContextTests
         }
 
         [Fact]
+        public async Task ShouldWorkForNonBlankPage()
+        {
+            // Instantiate an object
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.EvaluateFunctionAsync("() => window.set = new Set(['hello', 'world'])");
+            var prototypeHandle = await Page.EvaluateFunctionHandleAsync("() => Set.prototype");
+            var objectsHandle = await Page.QueryObjectsAsync(prototypeHandle);
+            var count = await Page.EvaluateFunctionAsync<int>("objects => objects.length", objectsHandle);
+            Assert.Equal(1, count);
+        }
+
+        [Fact]
         public async Task ShouldFailForDisposedHandles()
         {
             var prototypeHandle = await Page.EvaluateExpressionHandleAsync("HTMLBodyElement.prototype");

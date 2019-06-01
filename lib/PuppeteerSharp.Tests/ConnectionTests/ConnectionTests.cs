@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -13,17 +12,6 @@ namespace PuppeteerSharp.Tests.ConnectionsTests
         }
 
         [Fact]
-        public async Task ShouldThrowNiceErrors()
-        {
-            var exception = await Assert.ThrowsAsync<MessageException>(async () =>
-            {
-                await TheSourceOfTheProblems();
-            });
-            Assert.Contains("TheSourceOfTheProblems", exception.StackTrace);
-            Assert.Contains("ThisCommand.DoesNotExist", exception.Message);
-        }
-
-        [Fact]
         public async Task ShouldCleanCallbackList()
         {
             await Browser.GetVersionAsync();
@@ -34,7 +22,5 @@ namespace PuppeteerSharp.Tests.ConnectionsTests
             await Page.SetJavaScriptEnabledAsync(true);
             Assert.False(Page.Client.HasPendingCallbacks());
         }
-
-        private async Task TheSourceOfTheProblems() => await Page.Client.SendAsync("ThisCommand.DoesNotExist");
     }
 }

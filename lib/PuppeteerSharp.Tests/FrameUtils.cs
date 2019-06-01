@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp.Tests
@@ -26,12 +27,17 @@ namespace PuppeteerSharp.Tests
             }", frameId);
         }
 
-        public static string DumpFrames(Frame frame, string indentation = "")
+        public static IEnumerable<string> DumpFrames(Frame frame, string indentation = "")
         {
-            var result = indentation + Regex.Replace(frame.Url, @":\d{4}", ":<PORT>");
+            var description = indentation + Regex.Replace(frame.Url, @":\d{4}", ":<PORT>");
+            if (!string.IsNullOrEmpty(frame.Name))
+            {
+                description += $" ({frame.Name})";
+            }
+            var result = new List<string>() { description };
             foreach (var child in frame.ChildFrames)
             {
-                result += "\n" + DumpFrames(child, "    " + indentation);
+                result.AddRange(DumpFrames(child, "    " + indentation));
             }
 
             return result;

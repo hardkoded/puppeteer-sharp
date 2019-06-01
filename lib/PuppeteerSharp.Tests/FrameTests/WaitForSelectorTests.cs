@@ -25,6 +25,19 @@ namespace PuppeteerSharp.Tests.FrameTests
         }
 
         [Fact]
+        public async Task ShouldWorkWithRemovedMutationObserver()
+        {
+            await Page.EvaluateExpressionAsync("delete window.MutationObserver");
+            var waitForSelector = Page.WaitForSelectorAsync(".zombo");
+
+            await Task.WhenAll(
+                waitForSelector,
+                Page.SetContentAsync("<div class='zombo'>anything</div>"));
+
+            Assert.Equal("anything", await Page.EvaluateFunctionAsync<string>("x => x.textContent", await waitForSelector));
+        }
+
+        [Fact]
         public async Task ShouldResolveTaskWhenNodeIsAdded()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -73,17 +86,6 @@ namespace PuppeteerSharp.Tests.FrameTests
             await frame2.EvaluateFunctionAsync(AddElement, "div");
             var eHandle = await waitForSelectorPromise;
             Assert.Equal(frame2, eHandle.ExecutionContext.Frame);
-        }
-
-        [Fact]
-        public async Task ShouldThrowIfEvaluationFailed()
-        {
-            await Page.EvaluateOnNewDocumentAsync(@"function() {
-                document.querySelector = null;
-            }");
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            var exception = await Assert.ThrowsAnyAsync<PuppeteerException>(() => Page.WaitForSelectorAsync("*"));
-            Assert.Contains("document.querySelector is not a function", exception.Message);
         }
 
         [Fact]
@@ -173,6 +175,13 @@ namespace PuppeteerSharp.Tests.FrameTests
         }
 
         [Fact]
+        public async Task ShouldReturnNullIfWaitingToHideNonExistingElement()
+        {
+            var handle = await Page.WaitForSelectorAsync("non-existing", new WaitForSelectorOptions { Hidden = true });
+            Assert.Null(handle);
+        }
+
+        [Fact]
         public async Task ShouldRespectTimeout()
         {
             var exception = await Assert.ThrowsAsync<WaitTaskTimeoutException>(async ()
@@ -208,6 +217,14 @@ namespace PuppeteerSharp.Tests.FrameTests
             var waitForSelector = Page.WaitForSelectorAsync(".zombo");
             await Page.SetContentAsync("<div class='zombo'>anything</div>");
             Assert.Equal("anything", await Page.EvaluateFunctionAsync<string>("x => x.textContent", await waitForSelector));
+        }
+
+        [Fact]
+        public async Task ShouldHaveCorrectStackTraceForTimeout()
+        {
+            var exception = await Assert.ThrowsAsync<WaitTaskTimeoutException>(async ()
+                => await Page.WaitForSelectorAsync(".zombo", new WaitForSelectorOptions { Timeout = 10 }));
+            Assert.Contains("WaitForSelectorTests", exception.StackTrace);
         }
     }
 }

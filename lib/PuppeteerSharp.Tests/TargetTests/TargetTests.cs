@@ -55,15 +55,15 @@ namespace PuppeteerSharp.Tests.TargetTests
         [Fact]
         public async Task ShouldReportWhenANewPageIsCreatedAndClosed()
         {
-            var otherPageTaskCompletion = new TaskCompletionSource<Page>();
-            async void TargetCreatedEventHandler(object sender, TargetChangedArgs e)
-            {
-                otherPageTaskCompletion.SetResult(await e.Target.PageAsync());
-                Context.TargetCreated -= TargetCreatedEventHandler;
-            }
-            Context.TargetCreated += TargetCreatedEventHandler;
-            await Page.EvaluateFunctionHandleAsync("url => window.open(url)", TestConstants.CrossProcessUrl);
-            var otherPage = await otherPageTaskCompletion.Task;
+            var otherPageTask = Context.WaitForTargetAsync(t => t.Url == TestConstants.CrossProcessUrl + "/empty.html")
+                .ContinueWith(t => t.Result.PageAsync());
+
+            await Task.WhenAll(
+                otherPageTask,
+                Page.EvaluateFunctionHandleAsync("url => window.open(url)", TestConstants.CrossProcessUrl + "/empty.html")
+                );
+
+            var otherPage = await otherPageTask.Result;
             Assert.Contains(TestConstants.CrossProcessUrl, otherPage.Url);
 
             Assert.Equal("Hello world", await otherPage.EvaluateExpressionAsync<string>("['Hello', 'world'].join(' ')"));
@@ -114,6 +114,29 @@ namespace PuppeteerSharp.Tests.TargetTests
             Context.TargetDestroyed += TargetDestroyedEventHandler;
             await Page.EvaluateExpressionAsync("window.registrationPromise.then(registration => registration.unregister())");
             Assert.Equal(createdTarget, await targetDestroyedTaskCompletion.Task);
+        }
+
+        [Fact]
+        public async Task ShouldCreateAWorkerFromAServiceWorker()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/serviceworkers/empty/sw.html");
+
+            var target = await Context.WaitForTargetAsync(t => t.Type == TargetType.ServiceWorker);
+            var worker = await target.WorkerAsync();
+            Assert.Equal("[object ServiceWorkerGlobalScope]", await worker.EvaluateFunctionAsync("() => self.toString()"));
+        }
+
+        [Fact]
+        public async Task ShouldCreateAWorkerFromASharedWorker()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.EvaluateFunctionAsync(@"() =>
+            {
+                new SharedWorker('data:text/javascript,console.log(""hi"")');
+            }");
+            var target = await Context.WaitForTargetAsync(t => t.Type == TargetType.SharedWorker);
+            var worker = await target.WorkerAsync();
+            Assert.Equal("[object SharedWorkerGlobalScope]", await worker.EvaluateFunctionAsync("() => self.toString()"));
         }
 
         [Fact]

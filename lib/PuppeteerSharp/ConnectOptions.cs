@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Net.WebSockets;
+using PuppeteerSharp.Transport;
 
 namespace PuppeteerSharp
 {
-    using System.Threading;
-    using System.Threading.Tasks;
-    using PuppeteerSharp.Transport;
-
     /// <summary>
     /// Options for connecting to an existing browser.
     /// </summary>
@@ -28,6 +25,12 @@ namespace PuppeteerSharp
         public string BrowserWSEndpoint { get; set; }
 
         /// <summary>
+        /// A browser url to connect to, in format `http://${host}:${port}`.
+        /// Use interchangeably with `browserWSEndpoint` to let Puppeteer fetch it from <see href="https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target">metadata endpoin</see>.
+        /// </summary>
+        public string BrowserURL { get; set; }
+        
+        /// <summary>
         /// Slows down Puppeteer operations by the specified amount of milliseconds. Useful so that you can see what is going on.
         /// </summary>
         public int SlowMo { get; set; }
@@ -42,7 +45,7 @@ namespace PuppeteerSharp
         /// Optional factory for <see cref="WebSocket"/> implementations.
         /// If <see cref="Transport"/> is set this property will be ignored.
         /// </summary>
-        public Func<Uri, IConnectionOptions, CancellationToken, Task<WebSocket>> WebSocketFactory { get; set; }
+        public WebSocketFactory WebSocketFactory { get; set; }
 
         /// <summary>
         /// Gets or sets the default Viewport.
@@ -53,7 +56,14 @@ namespace PuppeteerSharp
         /// <summary>
         /// Optional connection transport.
         /// </summary>
+        [Obsolete("Use " + nameof(TransportFactory) + " instead")]
         public IConnectionTransport Transport { get; set; }
+
+        /// <summary>
+        /// Optional factory for <see cref="IConnectionTransport"/> implementations.
+        /// </summary>
+        public TransportFactory TransportFactory { get; set; }
+
         /// <summary>
         /// If not <see cref="Transport"/> is set this will be use to determine is the default <see cref="WebSocketTransport"/> will enqueue messages.
         /// </summary>

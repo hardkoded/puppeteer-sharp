@@ -88,6 +88,16 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Fact]
+        public async Task ShouldWorkWithComplexObjects()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/frames/nested-frames.html");
+            await Page.ExposeFunctionAsync("complexObject", (dynamic a, dynamic b) => Task.FromResult(new { X = a.x + b.x }));
+
+            var result = await Page.EvaluateExpressionAsync<JToken>("complexObject({x: 5}, {x: 2})");
+            Assert.Equal(7, result.SelectToken("x").ToObject<int>());
+        }
+
+        [Fact]
         public async Task ShouldAwaitReturnedTask()
         {
             bool called = false;

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
@@ -164,7 +165,10 @@ namespace PuppeteerSharp
         /// Dafault wait time in milliseconds. Defaults to 30 seconds.
         /// </summary>
         public int DefaultWaitForTimeout { get; set; } = Puppeteer.DefaultTimeout;
-
+        /// <summary>
+        /// Indicates that the browser is connected.
+        /// </summary>
+        public bool IsConnected => !Connection.IsClosed;
         #endregion
 
         #region Public Methods
@@ -354,6 +358,13 @@ namespace PuppeteerSharp
                 }
             }
 
+            // Ensure that remaining targets are always marked closed, so that asynchronous page close 
+            // operations on any associated pages don't get blocked.
+            foreach (var target in TargetsMap.Values)
+            {
+                target.CloseTaskWrapper.TrySetResult(false);
+            }
+
             Closed?.Invoke(this, new EventArgs());
         }
 
@@ -480,7 +491,7 @@ namespace PuppeteerSharp
 
             var target = new Target(
                 e.TargetInfo,
-                info => Connection.CreateSessionAsync(info),
+                () => Connection.CreateSessionAsync(targetInfo),
                 context);
 
             if (TargetsMap.ContainsKey(e.TargetInfo.TargetId))

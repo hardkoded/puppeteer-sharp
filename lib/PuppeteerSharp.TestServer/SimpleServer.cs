@@ -20,6 +20,7 @@ namespace PuppeteerSharp.TestServer
         private readonly IDictionary<string, string> _csp;
         private readonly IWebHost _webHost;
 
+        internal IList<string> GzipRoutes { get; }
         public static SimpleServer Create(int port, string contentRoot) => new SimpleServer(port, contentRoot, isHttps: false);
         public static SimpleServer CreateHttps(int port, string contentRoot) => new SimpleServer(port, contentRoot, isHttps: true);
 
@@ -29,6 +30,8 @@ namespace PuppeteerSharp.TestServer
             _routes = new ConcurrentDictionary<string, RequestDelegate>();
             _auths = new ConcurrentDictionary<string, (string username, string password)>();
             _csp = new ConcurrentDictionary<string, string>();
+            GzipRoutes = new List<string>();
+
             _webHost = new WebHostBuilder()
                 .ConfigureAppConfiguration((context, builder) => builder
                     .SetBasePath(context.HostingEnvironment.ContentRootPath)
@@ -50,13 +53,15 @@ namespace PuppeteerSharp.TestServer
                         {
                             return handler(context);
                         }
+
                         return next();
                     })
+                    .UseMiddleware<SimpleCompressionMiddleware>(this)
                     .UseStaticFiles(new StaticFileOptions
                     {
                         OnPrepareResponse = fileResponseContext =>
                         {
-                            if(_csp.TryGetValue(fileResponseContext.Context.Request.Path, out var csp))
+                            if (_csp.TryGetValue(fileResponseContext.Context.Request.Path, out var csp))
                             {
                                 fileResponseContext.Context.Response.Headers["Content-Security-Policy"] = csp;
                             }
@@ -95,12 +100,15 @@ namespace PuppeteerSharp.TestServer
             _routes.Clear();
             _auths.Clear();
             _csp.Clear();
+            GzipRoutes.Clear();
             foreach (var subscriber in _requestSubscribers.Values)
             {
                 subscriber(null);
             }
             _requestSubscribers.Clear();
         }
+
+        public void EnableGzip(string path) => GzipRoutes.Add(path);
 
         public void SetRoute(string path, RequestDelegate handler) => _routes.Add(path, handler);
 

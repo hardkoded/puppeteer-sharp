@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Messaging;
-using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp
 {
@@ -31,7 +31,7 @@ namespace PuppeteerSharp
             _fromDiskCache = responseMessage.FromDiskCache;
             FromServiceWorker = responseMessage.FromServiceWorker;
 
-            Headers = new Dictionary<string, object>();
+            Headers = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
             if (responseMessage.Headers != null)
             {
                 foreach (var keyValue in responseMessage.Headers)
@@ -58,7 +58,7 @@ namespace PuppeteerSharp
         /// An object with HTTP headers associated with the response. All header names are lower-case.
         /// </summary>
         /// <value>The headers.</value>
-        public Dictionary<string, object> Headers { get; }
+        public Dictionary<string, string> Headers { get; }
         /// <summary>
         /// Contains the status code of the response
         /// </summary>

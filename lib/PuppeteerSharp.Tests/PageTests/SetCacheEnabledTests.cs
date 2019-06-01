@@ -16,17 +16,40 @@ namespace PuppeteerSharp.Tests.PageTests
         [Fact]
         public async Task ShouldEnableOrDisableTheCacheBasedOnTheStatePassed()
         {
-            var responses = new Dictionary<string, Response>();
-            Page.Response += (sender, e) => responses[e.Response.Url.Split('/').Last()] = e.Response;
+            await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
+            var waitForRequestTask = Server.WaitForRequest<string>("/cached/one-style.html", (request) => request.Headers["if-modified-since"]);
 
-            await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html",
-                waitUntil: new[] { WaitUntilNavigation.Networkidle2 });
-            await Page.ReloadAsync(waitUntil: new[] { WaitUntilNavigation.Networkidle2 });
-            Assert.True(responses["one-style.css"].FromCache);
+            await Task.WhenAll(
+                waitForRequestTask,
+                Page.ReloadAsync());
+
+            Assert.False(string.IsNullOrEmpty(waitForRequestTask.Result));
 
             await Page.SetCacheEnabledAsync(false);
-            await Page.ReloadAsync(waitUntil: new[] { WaitUntilNavigation.Networkidle2 });
-            Assert.False(responses["one-style.css"].FromCache);
+            waitForRequestTask = Server.WaitForRequest<string>("/cached/one-style.html", (request) => request.Headers["if-modified-since"]);
+
+            await Task.WhenAll(
+                waitForRequestTask,
+                Page.ReloadAsync());
+
+            Assert.True(string.IsNullOrEmpty(waitForRequestTask.Result));
+        }
+
+        [Fact]
+        public async Task ShouldStayDisabledWhenTogglingRequestInterceptionOnOff()
+        {
+            await Page.SetCacheEnabledAsync(false);
+            await Page.SetRequestInterceptionAsync(true);
+            await Page.SetRequestInterceptionAsync(false);
+
+            await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
+            var waitForRequestTask = Server.WaitForRequest<string>("/cached/one-style.html", (request) => request.Headers["if-modified-since"]);
+
+            await Task.WhenAll(
+              waitForRequestTask,
+              Page.ReloadAsync());
+
+            Assert.True(string.IsNullOrEmpty(waitForRequestTask.Result));
         }
     }
 }

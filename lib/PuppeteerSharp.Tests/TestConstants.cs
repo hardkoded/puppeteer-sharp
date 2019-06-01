@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using Microsoft.Extensions.Logging;
@@ -21,16 +22,19 @@ namespace PuppeteerSharp.Tests
         public static readonly string CrossProcessUrl = ServerIpUrl;
         public static readonly string ExtensionPath = Path.Combine(Directory.GetCurrentDirectory(), "Assets", "simple-extension");
 
-        public static readonly DeviceDescriptor IPhone = DeviceDescriptors.Get(DeviceDescriptorName.IPhone6);
-        public static readonly DeviceDescriptor IPhone6Landscape = DeviceDescriptors.Get(DeviceDescriptorName.IPhone6Landscape);
+        public static readonly DeviceDescriptor IPhone = Puppeteer.Devices[DeviceDescriptorName.IPhone6];
+        public static readonly DeviceDescriptor IPhone6Landscape = Puppeteer.Devices[DeviceDescriptorName.IPhone6Landscape];
 
         public static ILoggerFactory LoggerFactory { get; private set; }
 
-        public static readonly string NestedFramesDumpResult = @"http://localhost:<PORT>/frames/nested-frames.html
-    http://localhost:<PORT>/frames/two-frames.html
-        http://localhost:<PORT>/frames/frame.html
-        http://localhost:<PORT>/frames/frame.html
-    http://localhost:<PORT>/frames/frame.html";
+        public static readonly IEnumerable<string> NestedFramesDumpResult = new List<string>()
+        {
+            "http://localhost:<PORT>/frames/nested-frames.html",
+            "    http://localhost:<PORT>/frames/two-frames.html (2frames)",
+            "        http://localhost:<PORT>/frames/frame.html (uno)",
+            "        http://localhost:<PORT>/frames/frame.html (dos)",
+            "    http://localhost:<PORT>/frames/frame.html (aframe)"
+        };
 
         public static LaunchOptions DefaultBrowserOptions() => new LaunchOptions
         {

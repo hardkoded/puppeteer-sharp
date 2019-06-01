@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace PuppeteerSharp.Tests
 {
@@ -54,5 +55,34 @@ namespace PuppeteerSharp.Tests
 
             return sb.ToString();
         }
+
+        internal static async Task WaitForCookieInChromiumFileAsync(string path, string valueToCheck)
+        {
+            var attempts = 0;
+            const int maxAttempts = 10;
+            var cookiesFile = Path.Combine(path, "Default", "Cookies");
+
+            while (true)
+            {
+                attempts++;
+
+                try
+                {
+                    if (File.Exists(cookiesFile) && File.ReadAllText(cookiesFile).Contains(valueToCheck))
+                    {
+                        return;
+                    }
+                }
+                catch (IOException)
+                {
+                    if (attempts == maxAttempts)
+                    {
+                        break;
+                    }
+                }
+                await Task.Delay(100);
+            }
+        }
+        internal static bool IsFavicon(Request request) => request.Url.Contains("favicon.ico");
     }
 }

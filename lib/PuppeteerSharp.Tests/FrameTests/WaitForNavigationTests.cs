@@ -32,18 +32,19 @@ namespace PuppeteerSharp.Tests.FrameTests
         }
 
         [Fact]
-        public async Task ShouldRejectWhenFrameDetaches()
+        public async Task ShouldFailWhenFrameDetaches()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
             var frame = Page.FirstChildFrame();
             Server.SetRoute("/empty.html", context => Task.Delay(10000));
             var waitForNavigationResult = frame.WaitForNavigationAsync();
             await Task.WhenAll(
-             Server.WaitForRequest("/empty.html"),
-            frame.EvaluateFunctionAsync($"() => window.location = '{TestConstants.EmptyPage}'"));
+                Server.WaitForRequest("/empty.html"),
+                frame.EvaluateFunctionAsync($"() => window.location = '{TestConstants.EmptyPage}'"));
 
             await Page.QuerySelectorAsync("iframe").EvaluateFunctionAsync("frame => frame.remove()");
-            var response = await waitForNavigationResult;
+            var exception = await Assert.ThrowsAsync<PuppeteerException>(() => waitForNavigationResult);
+            Assert.Equal("Navigating frame was detached", exception.Message);
         }
     }
 }

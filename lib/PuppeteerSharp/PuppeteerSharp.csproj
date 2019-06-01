@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>1.11.2</PackageVersion>
+    <PackageVersion>1.17.1</PackageVersion>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
@@ -12,31 +12,16 @@
     <Description>Headless Chrome .NET API</Description>
     <PackageId>PuppeteerSharp</PackageId>
     <PackageReleaseNotes><![CDATA[
-# ChangeLog
- * No need to fix file permissions on Mac.
- * Fix race conditions in SetContentAsync.
- * Add missing ConfigureAwait in Accessibility.
- * Set headless option to false when Devtools are enabled.
- * CloseAsync should wait for the target to be closed.
- * Change TextAsync output type.
- * Browser.IsClosed should be true when the connection is closed.
+# Changelog
 
-# Internal Changes
+ * Roll Chromium to r662092.
+ * Add SVG clicking test.
+ * Stringify response headers for intercepted requests.
+ * Evaluation test with UTF8.
+ * Page.SetContentAsync working with unicode strings.
 
- * Add classes to all Request/Response communications.
- * Connection messages should be dispatched synchronously.
- * Add TaskCreationOptions.RunContinuationsAsynchronously to TaskCompletionSources.
- * Remove Task.Delays.
- * Dispose CancellationTokens.
- * Add TaskCreationOptions.LongRunning to the WebSocketTransport loop.
- * Fix race condition in CloseAsync.
- * Prevent race conditions in tests.
- * Fix minor typo in XML docs.
- * Upgrade .NET Core projects to 2.2.
- * Upgrade to C# 7.3.
- * Replace timeouts with CancellationTokens.
  ]]></PackageReleaseNotes>
-    <ReleaseVersion>1.11.2</ReleaseVersion>
+    <ReleaseVersion>1.17.1</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>

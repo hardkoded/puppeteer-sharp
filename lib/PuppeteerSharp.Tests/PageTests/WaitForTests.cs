@@ -57,17 +57,23 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Fact]
-        public async Task ShouldWaitForPredicate()
+        public async Task ShouldWorkWithMultilineBody()
         {
-            var watchdog = Page.WaitForFunctionAsync("() => window.innerWidth < 100");
-            var viewPortTask = Page.SetViewportAsync(new ViewPortOptions { Width = 10, Height = 10 });
-            await watchdog;
+            var result = await Page.WaitForExpressionAsync(@"
+                (() => true)()
+            ");
+            Assert.True(await result.JsonValueAsync<bool>());
         }
 
         [Fact]
+        public Task ShouldWaitForPredicate()
+            => Task.WhenAll(
+                Page.WaitForFunctionAsync("() => window.innerWidth < 100"),
+                Page.SetViewportAsync(new ViewPortOptions { Width = 10, Height = 10 })
+        );
+
+        [Fact]
         public async Task ShouldWaitForPredicateWithArguments()
-        {
-            await Page.WaitForFunctionAsync("(arg1, arg2) => arg1 !== arg2", new WaitForFunctionOptions(), 1, 2);
-        }
+            => await Page.WaitForFunctionAsync("(arg1, arg2) => arg1 !== arg2", new WaitForFunctionOptions(), 1, 2);
     }
 }

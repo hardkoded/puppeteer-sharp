@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Messaging;
 using PuppeteerSharp.Transport;
 
@@ -17,9 +16,10 @@ namespace PuppeteerSharp
     /// <summary>
     /// A connection handles the communication with a Chromium browser
     /// </summary>
-    public class Connection : IDisposable, IConnection
+    public class Connection : IDisposable
     {
         private readonly ILogger _logger;
+        private TaskQueue _callbackQueue = new TaskQueue();
 
         internal Connection(string url, int delay, IConnectionTransport transport, ILoggerFactory loggerFactory = null)
         {
@@ -34,12 +34,14 @@ namespace PuppeteerSharp
             Transport.Closed += Transport_Closed;
             _callbacks = new ConcurrentDictionary<int, MessageTask>();
             _sessions = new ConcurrentDictionary<string, CDPSession>();
+            _asyncSessions = new AsyncDictionaryHelper<string, CDPSession>(_sessions, "Session {0} not found");
         }
 
         #region Private Members
         private int _lastId;
         private readonly ConcurrentDictionary<int, MessageTask> _callbacks;
         private readonly ConcurrentDictionary<string, CDPSession> _sessions;
+        private readonly AsyncDictionaryHelper<string, CDPSession> _asyncSessions;
         #endregion
 
         #region Properties
@@ -87,6 +89,19 @@ namespace PuppeteerSharp
 
         #region Public Methods
 
+        internal int GetMessageID() => Interlocked.Increment(ref _lastId);
+        internal Task RawSendASync(int id, string method, object args, string sessionId = null)
+        {
+            _logger.LogTrace("Send ► {Id} Method {Method} Params {@Params}", id, method, args);
+            return Transport.SendAsync(JsonConvert.SerializeObject(new ConnectionRequest
+            {
+                Id = id,
+                Method = method,
+                Params = args,
+                SessionId = sessionId
+            }, JsonHelper.DefaultJsonSerializerSettings));
+        }
+
         internal async Task<JObject> SendAsync(string method, object args = null, bool waitForCallback = true)
         {
             if (IsClosed)
@@ -94,15 +109,7 @@ namespace PuppeteerSharp
                 throw new TargetClosedException($"Protocol error({method}): Target closed.", CloseReason);
             }
 
-            var id = Interlocked.Increment(ref _lastId);
-            var message = JsonConvert.SerializeObject(new ConnectionRequest
-            {
-                Id = id,
-                Method = method,
-                Params = args
-            }, JsonHelper.DefaultJsonSerializerSettings);
-
-            _logger.LogTrace("Send ► {Id} Method {Method} Params {@Params}", id, method, (object)args);
+            var id = GetMessageID();
 
             MessageTask callback = null;
             if (waitForCallback)
@@ -115,7 +122,7 @@ namespace PuppeteerSharp
                 _callbacks[id] = callback;
             }
 
-            await Transport.SendAsync(message).ConfigureAwait(false);
+            await RawSendASync(id, method, args).ConfigureAwait(false);
             return waitForCallback ? await callback.TaskWrapper.Task.ConfigureAwait(false) : null;
         }
 
@@ -129,11 +136,10 @@ namespace PuppeteerSharp
         {
             var sessionId = (await SendAsync<TargetAttachToTargetResponse>("Target.attachToTarget", new TargetAttachToTargetRequest
             {
-                TargetId = targetInfo.TargetId
+                TargetId = targetInfo.TargetId,
+                Flatten = true
             }).ConfigureAwait(false)).SessionId;
-            var session = new CDPSession(this, targetInfo.Type, sessionId);
-            _sessions.TryAdd(sessionId, session);
-            return session;
+            return await GetSessionAsync(sessionId).ConfigureAwait(false);
         }
 
         internal bool HasPendingCallbacks() => _callbacks.Count != 0;
@@ -167,18 +173,15 @@ namespace PuppeteerSharp
             _callbacks.Clear();
         }
 
-        internal static IConnection FromSession(CDPSession session)
-        {
-            var connection = session.Connection;
-            while (connection is CDPSession)
-            {
-                connection = connection.Connection;
-            }
-            return connection;
-        }
+        internal static Connection FromSession(CDPSession session) => session.Connection;
+        internal CDPSession GetSession(string sessionId) => _sessions.GetValueOrDefault(sessionId);
+        internal Task<CDPSession> GetSessionAsync(string sessionId) => _asyncSessions.GetItemAsync(sessionId);
+
         #region Private Methods
 
-        private async void Transport_MessageReceived(object sender, MessageReceivedEventArgs e)
+        private async void Transport_MessageReceived(object sender, MessageReceivedEventArgs e) => await _callbackQueue.Enqueue(() => ProcessMessage(e));
+
+        private async Task ProcessMessage(MessageReceivedEventArgs e)
         {
             try
             {
@@ -201,29 +204,7 @@ namespace PuppeteerSharp
                 }
 
                 _logger.LogTrace("◀ Receive {Message}", response);
-
-                var id = obj.Id;
-
-                if (id.HasValue)
-                {
-                    //If we get the object we are waiting for we return if
-                    //if not we add this to the list, sooner or later some one will come for it 
-                    if (_callbacks.TryRemove(id.Value, out var callback))
-                    {
-                        if (obj.Error != null)
-                        {
-                            callback.TaskWrapper.TrySetException(new MessageException(callback, obj.Error));
-                        }
-                        else
-                        {
-                            callback.TaskWrapper.TrySetResult(obj.Result);
-                        }
-                    }
-                }
-                else
-                {
-                    ProcessIncomingMessage(obj);
-                }
+                ProcessIncomingMessage(obj);
             }
             catch (Exception ex)
             {
@@ -236,15 +217,13 @@ namespace PuppeteerSharp
         private void ProcessIncomingMessage(ConnectionResponse obj)
         {
             var method = obj.Method;
-            var param = obj.Params.ToObject<ConnectionResponseParams>();
+            var param = obj.Params?.ToObject<ConnectionResponseParams>();
 
-            if (method == "Target.receivedMessageFromTarget")
+            if (method == "Target.attachedToTarget")
             {
                 var sessionId = param.SessionId;
-                if (_sessions.TryGetValue(sessionId, out var session))
-                {
-                    session.OnMessage(param.Message);
-                }
+                var session = new CDPSession(this, param.TargetInfo.Type, sessionId);
+                _asyncSessions.AddItem(sessionId, session);
             }
             else if (method == "Target.detachedFromTarget")
             {
@@ -252,6 +231,28 @@ namespace PuppeteerSharp
                 if (_sessions.TryRemove(sessionId, out var session) && !session.IsClosed)
                 {
                     session.Close("Target.detachedFromTarget");
+                }
+            }
+
+            if (!string.IsNullOrEmpty(obj.SessionId))
+            {
+                var session = GetSession(obj.SessionId);
+                session.OnMessage(obj);
+            }
+            else if (obj.Id.HasValue)
+            {
+                //If we get the object we are waiting for we return if
+                //if not we add this to the list, sooner or later some one will come for it 
+                if (_callbacks.TryRemove(obj.Id.Value, out var callback))
+                {
+                    if (obj.Error != null)
+                    {
+                        callback.TaskWrapper.TrySetException(new MessageException(callback, obj.Error));
+                    }
+                    else
+                    {
+                        callback.TaskWrapper.TrySetResult(obj.Result);
+                    }
                 }
             }
             else
@@ -273,21 +274,19 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets default web socket factory implementation.
         /// </summary>
-        public static readonly Func<Uri, IConnectionOptions, CancellationToken, Task<WebSocket>> DefaultWebSocketFactory = async (uri, options, cancellationToken) =>
+        [Obsolete("Use " + nameof(WebSocketTransport) + "." + nameof(WebSocketTransport.DefaultWebSocketFactory) + " instead")]
+        public static readonly WebSocketFactory DefaultWebSocketFactory = WebSocketTransport.DefaultWebSocketFactory;
+
+        internal static async Task<Connection> Create(string url, IConnectionOptions connectionOptions, ILoggerFactory loggerFactory = null, CancellationToken cancellationToken = default)
         {
-            var result = new ClientWebSocket();
-            result.Options.KeepAliveInterval = TimeSpan.Zero;
-            await result.ConnectAsync(uri, cancellationToken).ConfigureAwait(false);
-            return result;
-        };
-
-        internal static async Task<Connection> Create(string url, IConnectionOptions connectionOptions, ILoggerFactory loggerFactory = null)
-        {
-            var transport = connectionOptions.Transport ?? new WebSocketTransport();
-            connectionOptions.WebSocketFactory = connectionOptions.WebSocketFactory ?? DefaultWebSocketFactory;
-
-            await transport.InitializeAsync(url, connectionOptions).ConfigureAwait(false);
-
+#pragma warning disable 618
+            var transport = connectionOptions.Transport;
+#pragma warning restore 618
+            if (transport == null)
+            {
+                var transportFactory = connectionOptions.TransportFactory ?? WebSocketTransport.DefaultTransportFactory;
+                transport = await transportFactory(new Uri(url), connectionOptions, cancellationToken);
+            }
             return new Connection(url, connectionOptions.SlowMo, transport, loggerFactory);
         }
 
@@ -305,15 +304,6 @@ namespace PuppeteerSharp
             Close("Connection disposed");
             Transport.Dispose();
         }
-        #endregion
-
-        #region IConnection
-        ILoggerFactory IConnection.LoggerFactory => LoggerFactory;
-        bool IConnection.IsClosed => IsClosed;
-        Task<JObject> IConnection.SendAsync(string method, object args, bool waitForCallback)
-            => SendAsync(method, args, waitForCallback);
-        IConnection IConnection.Connection => null;
-        void IConnection.Close(string closeReason) => Close(closeReason);
         #endregion
     }
 }

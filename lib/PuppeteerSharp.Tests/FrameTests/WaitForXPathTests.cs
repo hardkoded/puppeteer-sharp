@@ -39,18 +39,6 @@ namespace PuppeteerSharp.Tests.FrameTests
         }
 
         [Fact]
-        public async Task ShouldThrowIfEvaluationFailed()
-        {
-            await Page.EvaluateOnNewDocumentAsync(@"function() {
-                document.evaluate = null;
-            }");
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            var exception = await Assert.ThrowsAsync<EvaluationFailedException>(()
-                => Page.WaitForXPathAsync("*"));
-            Assert.Contains("document.evaluate is not a function", exception.Message);
-        }
-
-        [Fact]
         public async Task ShouldThrowWhenFrameIsDetached()
         {
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);

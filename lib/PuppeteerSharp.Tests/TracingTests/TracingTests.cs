@@ -123,6 +123,15 @@ namespace PuppeteerSharp.Tests.TracingTests
         }
 
         [Fact]
+        public async Task ShouldWorkWithoutOptions()
+        {
+            await Page.Tracing.StartAsync();
+            await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+            var trace = await Page.Tracing.StopAsync();
+            Assert.NotNull(trace);
+        }
+
+        [Fact]
         public async Task ShouldSupportABufferWithoutAPath()
         {
             await Page.Tracing.StartAsync(new TracingOptions

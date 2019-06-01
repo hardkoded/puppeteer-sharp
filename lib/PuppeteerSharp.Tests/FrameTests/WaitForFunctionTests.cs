@@ -66,12 +66,12 @@ namespace PuppeteerSharp.Tests.FrameTests
         {
             Server.SetCSP("/empty.html", "script-src " + TestConstants.ServerUrl);
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var watchdog = Page.WaitForFunctionAsync("() => window.__FOO === 'hit'", new WaitForFunctionOptions
-            {
-                Polling = WaitForFunctionPollingOption.Raf
-            });
-            await Page.EvaluateExpressionAsync("window.__FOO = 'hit'");
-            await watchdog;
+            await Task.WhenAll(
+                Page.WaitForFunctionAsync("() => window.__FOO === 'hit'", new WaitForFunctionOptions
+                {
+                    Polling = WaitForFunctionPollingOption.Raf
+                }),
+                Page.EvaluateExpressionAsync("window.__FOO = 'hit'"));
         }
 
         [Fact]
@@ -85,15 +85,11 @@ namespace PuppeteerSharp.Tests.FrameTests
 
         [Fact]
         public async Task ShouldReturnTheSuccessValueAsAJSHandle()
-        {
-            Assert.Equal(5, await (await Page.WaitForFunctionAsync("() => 5")).JsonValueAsync<int>());
-        }
+            => Assert.Equal(5, await (await Page.WaitForFunctionAsync("() => 5")).JsonValueAsync<int>());
 
         [Fact]
         public async Task ShouldReturnTheWindowAsASuccessValue()
-        {
-            Assert.NotNull(await Page.WaitForFunctionAsync("() => window"));
-        }
+            => Assert.NotNull(await Page.WaitForFunctionAsync("() => window"));
 
         [Fact]
         public async Task ShouldAcceptElementHandleArguments()
@@ -118,6 +114,16 @@ namespace PuppeteerSharp.Tests.FrameTests
         }
 
         [Fact]
+        public async Task ShouldRespectDefaultTimeout()
+        {
+            Page.DefaultTimeout = 1;
+            var exception = await Assert.ThrowsAsync<WaitTaskTimeoutException>(()
+                => Page.WaitForExpressionAsync("false"));
+
+            Assert.Contains("waiting for function failed: timeout", exception.Message);
+        }
+
+        [Fact]
         public async Task ShouldDisableTimeoutWhenItsSetTo0()
         {
             var watchdog = Page.WaitForFunctionAsync(@"() => {
@@ -127,6 +133,23 @@ namespace PuppeteerSharp.Tests.FrameTests
             await Page.WaitForFunctionAsync("() => window.__counter > 10");
             await Page.EvaluateExpressionAsync("window.__injected = true");
             await watchdog;
+        }
+
+        [Fact]
+        public async Task ShouldSurviveCrossProcessNavigation()
+        {
+            var fooFound = false;
+            var waitForFunction = Page.WaitForExpressionAsync("window.__FOO === 1")
+                .ContinueWith(_ => fooFound = true);
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            Assert.False(fooFound);
+            await Page.ReloadAsync();
+            Assert.False(fooFound);
+            await Page.GoToAsync(TestConstants.CrossProcessUrl + "/grid.html");
+            Assert.False(fooFound);
+            await Page.EvaluateExpressionAsync("window.__FOO = 1");
+            await waitForFunction;
+            Assert.True(fooFound);
         }
     }
 }

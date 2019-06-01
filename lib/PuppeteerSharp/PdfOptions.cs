@@ -1,12 +1,21 @@
-﻿using PuppeteerSharp.Media;
+﻿using System;
+using System.Collections.Generic;
+using PuppeteerSharp.Media;
 
 namespace PuppeteerSharp
 {
     /// <summary>
     /// Options to be used in <see cref="Page.PdfAsync(string, PdfOptions)"/>, <see cref="Page.PdfStreamAsync(PdfOptions)"/> and <see cref="Page.PdfDataAsync(PdfOptions)"/>
     /// </summary>
-    public class PdfOptions
+    public class PdfOptions : IEquatable<PdfOptions>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PuppeteerSharp.PdfOptions"/> class.
+        /// </summary>
+        public PdfOptions()
+        {
+        }
+
         /// <summary>
         /// Scale of the webpage rendering. Defaults to <c>1</c>. Scale amount must be between 0.1 and 2.
         /// </summary>
@@ -77,5 +86,55 @@ namespace PuppeteerSharp
         /// Defaults to <c>false</c>, which will scale the content to fit the paper size.
         /// </summary>
         public bool PreferCSSPageSize { get; set; }
+
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+            {
+                return false;
+            }
+
+            return Equals((PdfOptions)obj);
+        }
+
+        /// <inheritdoc/>
+        public bool Equals(PdfOptions options)
+            => options != null &&
+                   Scale == options.Scale &&
+                   DisplayHeaderFooter == options.DisplayHeaderFooter &&
+                   HeaderTemplate == options.HeaderTemplate &&
+                   FooterTemplate == options.FooterTemplate &&
+                   PrintBackground == options.PrintBackground &&
+                   Landscape == options.Landscape &&
+                   PageRanges == options.PageRanges &&
+                   EqualityComparer<PaperFormat>.Default.Equals(Format, options.Format) &&
+                   EqualityComparer<object>.Default.Equals(Width, options.Width) &&
+                   EqualityComparer<object>.Default.Equals(Height, options.Height) &&
+                   EqualityComparer<MarginOptions>.Default.Equals(MarginOptions, options.MarginOptions) &&
+                   PreferCSSPageSize == options.PreferCSSPageSize;
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+            => -711844102
+                ^ Scale.GetHashCode()
+                ^ DisplayHeaderFooter.GetHashCode()
+                ^ EqualityComparer<string>.Default.GetHashCode(HeaderTemplate)
+                ^ EqualityComparer<string>.Default.GetHashCode(FooterTemplate)
+                ^ PrintBackground.GetHashCode()
+                ^ Landscape.GetHashCode()
+                ^ EqualityComparer<string>.Default.GetHashCode(PageRanges)
+                ^ EqualityComparer<PaperFormat>.Default.GetHashCode(Format)
+                ^ EqualityComparer<object>.Default.GetHashCode(Width)
+                ^ EqualityComparer<object>.Default.GetHashCode(Height)
+                ^ EqualityComparer<MarginOptions>.Default.GetHashCode(MarginOptions)
+                ^ PreferCSSPageSize.GetHashCode();
+
+        /// <inheritdoc/>
+        public static bool operator ==(PdfOptions left, PdfOptions right)
+            => EqualityComparer<PdfOptions>.Default.Equals(left, right);
+
+        /// <inheritdoc/>
+        public static bool operator !=(PdfOptions left, PdfOptions right) => !(left == right);
     }
 }

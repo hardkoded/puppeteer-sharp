@@ -7,7 +7,7 @@ namespace PuppeteerSharp.Messaging
     internal class ResponsePayload
     {
         public string Url { get; set; }
-        public Dictionary<string, object> Headers { get; set; }
+        public Dictionary<string, string> Headers { get; set; }
         public HttpStatusCode Status { get; set; }
         public SecurityDetails SecurityDetails { get; set; }
         public bool FromDiskCache { get; set; }

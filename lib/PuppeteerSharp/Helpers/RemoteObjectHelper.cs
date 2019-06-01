@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Messaging;
+using PuppeteerSharp.Helpers.Json;
+using System.Numerics;
 
 namespace PuppeteerSharp.Helpers
 {
@@ -14,19 +16,7 @@ namespace PuppeteerSharp.Helpers
 
             if (unserializableValue != null)
             {
-                switch (unserializableValue)
-                {
-                    case "-0":
-                        return -0;
-                    case "NaN":
-                        return double.NaN;
-                    case "Infinity":
-                        return double.PositiveInfinity;
-                    case "-Infinity":
-                        return double.NegativeInfinity;
-                    default:
-                        throw new Exception("Unsupported unserializable value: " + unserializableValue);
-                }
+                return ValueFromUnserializableValue(remoteObject, unserializableValue);
             }
 
             var value = remoteObject.Value;
@@ -36,9 +26,11 @@ namespace PuppeteerSharp.Helpers
                 return null;
             }
 
-            // https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-RemoteObject
-            var objectType = remoteObject.Type;
+            return ValueFromType<T>(value, remoteObject.Type);
+        }
 
+        private static object ValueFromType<T>(JToken value, RemoteObjectType objectType)
+        {
             switch (objectType)
             {
                 case RemoteObjectType.Object:
@@ -53,6 +45,28 @@ namespace PuppeteerSharp.Helpers
                     return value.Value<double>();
                 default: // string, symbol, function
                     return value.ToObject<T>();
+            }
+        }
+
+        private static object ValueFromUnserializableValue(RemoteObject remoteObject, string unserializableValue)
+        {
+            if (remoteObject.Type == RemoteObjectType.Bigint &&
+                                decimal.TryParse(remoteObject.UnserializableValue.Replace("n", ""), out var decimalValue))
+            {
+                return new BigInteger(decimalValue);
+            }
+            switch (unserializableValue)
+            {
+                case "-0":
+                    return -0;
+                case "NaN":
+                    return double.NaN;
+                case "Infinity":
+                    return double.PositiveInfinity;
+                case "-Infinity":
+                    return double.NegativeInfinity;
+                default:
+                    throw new Exception("Unsupported unserializable value: " + unserializableValue);
             }
         }
 

@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.Diagnostics.Contracts;
 using PuppeteerSharp.Helpers;
-using System.Threading;
 
 namespace PuppeteerSharp
 {
@@ -32,7 +31,6 @@ namespace PuppeteerSharp
         private TaskCompletionSource<bool> _sameDocumentNavigationTaskWrapper;
         private TaskCompletionSource<bool> _lifecycleTaskWrapper;
         private TaskCompletionSource<bool> _terminationTaskWrapper;
-        private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
         public LifecycleWatcher(
             FrameManager frameManager,
@@ -58,11 +56,13 @@ namespace PuppeteerSharp
             _lifecycleTaskWrapper = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             _terminationTaskWrapper = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
-            frameManager.LifecycleEvent += CheckLifecycleComplete;
+            frameManager.LifecycleEvent += FrameManager_LifecycleEvent;
             frameManager.FrameNavigatedWithinDocument += NavigatedWithinDocument;
             frameManager.FrameDetached += OnFrameDetached;
             frameManager.NetworkManager.Request += OnRequest;
             frameManager.Client.Disconnected += OnClientDisconnected;
+
+            CheckLifecycleComplete();
         }
 
         #region Properties
@@ -71,15 +71,17 @@ namespace PuppeteerSharp
         public Task<bool> NewDocumentNavigationTask => _newDocumentNavigationTaskWrapper.Task;
         public Response NavigationResponse => _navigationRequest?.Response;
         public Task TimeoutOrTerminationTask
-            => _terminationTaskWrapper?.Task.WithTimeout(_timeout, cancellationToken: _cancellationTokenSource.Token);
+            => _terminationTaskWrapper.Task.WithTimeout(_timeout);
         public Task LifecycleTask => _lifecycleTaskWrapper.Task;
-        public string name = "none";
+
         #endregion
 
         #region Private methods
 
         private void OnClientDisconnected(object sender, EventArgs e)
-            => Terminate(new TargetClosedException(name + "Navigation failed because browser has disconnected!", _frameManager.Client.CloseReason));
+            => Terminate(new TargetClosedException("Navigation failed because browser has disconnected!", _frameManager.Client.CloseReason));
+
+        void FrameManager_LifecycleEvent(object sender, FrameEventArgs e) => CheckLifecycleComplete();
 
         private void OnFrameDetached(object sender, FrameEventArgs e)
         {
@@ -89,10 +91,10 @@ namespace PuppeteerSharp
                 Terminate(new PuppeteerException("Navigating frame was detached"));
                 return;
             }
-            CheckLifecycleComplete(sender, e);
+            CheckLifecycleComplete();
         }
 
-        private void CheckLifecycleComplete(object sender, FrameEventArgs e)
+        private void CheckLifecycleComplete()
         {
             // We expect navigation to commit.
             if (!CheckLifecycle(_frame, _expectedLifecycle))
@@ -115,7 +117,7 @@ namespace PuppeteerSharp
             }
         }
 
-        private void Terminate(PuppeteerException ex) => _terminationTaskWrapper?.TrySetException(ex);
+        private void Terminate(PuppeteerException ex) => _terminationTaskWrapper.TrySetException(ex);
 
         private void OnRequest(object sender, RequestEventArgs e)
         {
@@ -133,7 +135,7 @@ namespace PuppeteerSharp
                 return;
             }
             _hasSameDocumentNavigation = true;
-            CheckLifecycleComplete(sender, e);
+            CheckLifecycleComplete();
         }
 
         private bool CheckLifecycle(Frame frame, IEnumerable<string> expectedLifecycle)
@@ -155,25 +157,13 @@ namespace PuppeteerSharp
             return true;
         }
 
-        public void Cleanup()
-        {
-            if (TimeoutOrTerminationTask?.IsFaulted == true)
-            {
-                TimeoutOrTerminationTask.Exception.Flatten().Handle(_ => true);
-            }
-
-            _cancellationTokenSource.Cancel();
-            _terminationTaskWrapper = null;
-        }
-
         public void Dispose() => Dispose(true);
 
         ~LifecycleWatcher() => Dispose(false);
 
         public void Dispose(bool disposing)
         {
-            Cleanup();
-            _frameManager.LifecycleEvent -= CheckLifecycleComplete;
+            _frameManager.LifecycleEvent -= FrameManager_LifecycleEvent;
             _frameManager.FrameNavigatedWithinDocument -= NavigatedWithinDocument;
             _frameManager.FrameDetached -= OnFrameDetached;
             _frameManager.NetworkManager.Request -= OnRequest;

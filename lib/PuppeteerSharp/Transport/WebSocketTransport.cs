@@ -3,7 +3,6 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Transport
@@ -13,12 +12,84 @@ namespace PuppeteerSharp.Transport
     /// </summary>
     public class WebSocketTransport : IConnectionTransport
     {
-        private WebSocket _client;
-        private bool _queueRequests;
-        private readonly TaskQueue _socketQueue;
-        private readonly bool _startReading;
+        #region Static fields
 
-        private CancellationTokenSource _readerCancellationSource { get; }
+        /// <summary>
+        /// Gets the default <see cref="WebSocketFactory"/>. This factory does not support Windows 7.
+        /// </summary>
+        public static readonly TransportFactory DefaultTransportFactory = CreateDefaultTransport;
+
+        /// <summary>
+        /// Gets the default <see cref="TransportFactory"/>
+        /// </summary>
+        public static readonly WebSocketFactory DefaultWebSocketFactory = CreateDefaultWebSocket;
+
+        /// <summary>
+        /// Gets the default <see cref="TransportTaskScheduler"/>
+        /// </summary>
+        public static readonly TransportTaskScheduler DefaultTransportScheduler = ScheduleTransportTask;
+
+        #endregion
+
+        #region Static methods
+
+        private static async Task<WebSocket> CreateDefaultWebSocket(Uri url, IConnectionOptions options, CancellationToken cancellationToken)
+        {
+            var result = new ClientWebSocket();
+            result.Options.KeepAliveInterval = TimeSpan.Zero;
+            await result.ConnectAsync(url, cancellationToken).ConfigureAwait(false);
+            return result;
+        }
+
+
+        private static async Task<IConnectionTransport> CreateDefaultTransport(Uri url, IConnectionOptions connectionOptions, CancellationToken cancellationToken)
+        {
+            var webSocketFactory = connectionOptions.WebSocketFactory ?? DefaultWebSocketFactory;
+            var webSocket = await webSocketFactory(url, connectionOptions, cancellationToken);
+            return new WebSocketTransport(webSocket, DefaultTransportScheduler, connectionOptions.EnqueueTransportMessages);
+        }
+
+        private static void ScheduleTransportTask(Func<CancellationToken, Task> taskFactory, CancellationToken cancellationToken)
+            => Task.Factory.StartNew(() => taskFactory(cancellationToken), TaskCreationOptions.LongRunning);
+
+        #endregion
+
+        #region Instance fields
+
+        private readonly WebSocket _client;
+        private readonly bool _queueRequests;
+        private readonly TaskQueue _socketQueue = new TaskQueue();
+        private CancellationTokenSource _readerCancellationSource = new CancellationTokenSource();
+
+        #endregion
+
+        #region Constructor(s)
+
+        /// <summary>
+        /// Initialize the Transport
+        /// </summary>
+        /// <param name="client">The web socket</param>
+        /// <param name="scheduler">The scheduler to use for long-running tasks.</param>
+        /// <param name="queueRequests">Indicates whether requests should be queued.</param>
+        public WebSocketTransport(WebSocket client, TransportTaskScheduler scheduler, bool queueRequests)
+        {
+            if (client == null)
+            {
+                throw new ArgumentNullException(nameof(client));
+            }
+            if (scheduler == null)
+            {
+                throw new ArgumentNullException(nameof(scheduler));
+            }
+
+            _client = client;
+            _queueRequests = queueRequests;
+            scheduler(GetResponseAsync, _readerCancellationSource.Token);
+        }
+
+        #endregion
+
+        #region Properties
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="PuppeteerSharp.Transport.IConnectionTransport"/> is closed.
@@ -33,40 +104,9 @@ namespace PuppeteerSharp.Transport
         /// </summary>
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PuppeteerSharp.Transport.WebSocketTransport"/> class.
-        /// </summary>
-        /// <param name="startReading">If set to <c>true</c> the Transport will start reading as soon as it's initialized.</param>
-        public WebSocketTransport(bool startReading = true)
-        {
-            _startReading = startReading;
-            _socketQueue = new TaskQueue();
-            _readerCancellationSource = new CancellationTokenSource();
+        #endregion
 
-        }
-
-        /// <summary>
-        /// Initialize the Transport
-        /// </summary>
-        /// <param name="url">Chromium URL</param>
-        /// <param name="connectionOptions">Connection options</param>
-        /// <param name="loggerFactory">Logger factory</param>
-        public virtual async Task InitializeAsync(string url, IConnectionOptions connectionOptions, ILoggerFactory loggerFactory = null)
-        {
-            _client = await connectionOptions.WebSocketFactory(
-                new Uri(url),
-                connectionOptions,
-                default).ConfigureAwait(false);
-
-            _queueRequests = connectionOptions.EnqueueTransportMessages;
-
-            if (_startReading)
-            {
-                StartReading();
-            }
-        }
-
-        private void StartReading() => Task.Factory.StartNew(GetResponseAsync, TaskCreationOptions.LongRunning);
+        #region  Public methods
 
         /// <summary>
         /// Sends a message using the transport.
@@ -77,33 +117,48 @@ namespace PuppeteerSharp.Transport
         {
             var encoded = Encoding.UTF8.GetBytes(message);
             var buffer = new ArraySegment<byte>(encoded, 0, encoded.Length);
-            Task sendTask() => _client.SendAsync(buffer, WebSocketMessageType.Text, true, default);
+            Task SendCoreAsync() => _client.SendAsync(buffer, WebSocketMessageType.Text, true, default);
 
-            return _queueRequests ? _socketQueue.Enqueue(sendTask) : sendTask();
+            return _queueRequests ? _socketQueue.Enqueue(SendCoreAsync) : SendCoreAsync();
         }
 
         /// <summary>
         /// Stops reading incoming data.
         /// </summary>
-        public void StopReading() => _readerCancellationSource.Cancel();
+        public void StopReading()
+        {
+            var readerCts = Interlocked.CompareExchange(ref _readerCancellationSource, null, _readerCancellationSource);
+            if (readerCts != null)
+            {
+                // Asynchronous read operations may still be in progress, so cancel it first and then dispose
+                // the associated CancellationTokenSource.
+                readerCts.Cancel();
+                readerCts.Dispose();
+            }
+        }
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            // Make sure any outstanding asynchronous read operation is cancelled.
+            StopReading();
+            _client?.Dispose();
+        }
+
+        #endregion
+
+        #region Private methods
 
         /// <summary>
         /// Starts listening the socket
         /// </summary>
         /// <returns>The start.</returns>
-        protected async Task<object> GetResponseAsync()
+        private async Task<object> GetResponseAsync(CancellationToken cancellationToken)
         {
             var buffer = new byte[2048];
 
-            //If it's not in the list we wait for it
-            while (true)
+            while (!IsClosed)
             {
-                if (IsClosed)
-                {
-                    OnClose("WebSocket is closed");
-                    return null;
-                }
-
                 var endOfMessage = false;
                 var response = new StringBuilder();
 
@@ -114,7 +169,7 @@ namespace PuppeteerSharp.Transport
                     {
                         result = await _client.ReceiveAsync(
                             new ArraySegment<byte>(buffer),
-                            _readerCancellationSource.Token).ConfigureAwait(false);
+                            cancellationToken).ConfigureAwait(false);
                     }
                     catch (OperationCanceledException)
                     {
@@ -141,19 +196,20 @@ namespace PuppeteerSharp.Transport
 
                 MessageReceived?.Invoke(this, new MessageReceivedEventArgs(response.ToString()));
             }
+
+            return null;
         }
 
         private void OnClose(string closeReason)
         {
-            Closed?.Invoke(this, new TransportClosedEventArgs(closeReason));
-            IsClosed = true;
+            if (!IsClosed)
+            {
+                IsClosed = true;
+                StopReading();
+                Closed?.Invoke(this, new TransportClosedEventArgs(closeReason));
+            }
         }
 
-        /// <inheritdoc/>
-        public void Dispose()
-        {
-            _client?.Dispose();
-            _readerCancellationSource?.Dispose();
-        }
+        #endregion
     }
 }

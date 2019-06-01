@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Messaging;
 using PuppeteerSharp.Helpers;
 using static PuppeteerSharp.Messaging.RuntimeQueryObjectsResponse;
+using System.Numerics;
 
 namespace PuppeteerSharp
 {
@@ -24,14 +25,16 @@ namespace PuppeteerSharp
         private readonly CDPSession _client;
         private readonly int _contextId;
 
+        internal DOMWorld World { get; }
+
         internal ExecutionContext(
             CDPSession client,
             ContextPayload contextPayload,
-            Frame frame)
+            DOMWorld world)
         {
             _client = client;
             _contextId = contextPayload.Id;
-            Frame = frame;
+            World = world;
         }
 
         /// <summary>
@@ -40,7 +43,7 @@ namespace PuppeteerSharp
         /// <remarks>
         /// NOTE Not every execution context is associated with a frame. For example, workers and extensions have execution contexts that are not associated with frames.
         /// </remarks>
-        public Frame Frame { get; }
+        public Frame Frame => World?.Frame;
 
         /// <summary>
         /// Executes a script in browser context
@@ -219,6 +222,12 @@ namespace PuppeteerSharp
         {
             switch (arg)
             {
+                case BigInteger big:
+                    return new { unserializableValue = $"{big}n" };
+
+                case int integer when integer == -0:
+                    return new { unserializableValue = "-0" };
+
                 case double d:
                     if (double.IsPositiveInfinity(d))
                     {
@@ -263,6 +272,31 @@ namespace PuppeteerSharp
                 }
             }
             return message;
+        }
+
+        internal async Task<ElementHandle> AdoptElementHandleASync(ElementHandle elementHandle)
+        {
+            if (elementHandle.ExecutionContext == this)
+            {
+                throw new PuppeteerException("Cannot adopt handle that already belongs to this execution context");
+            }
+            if (World == null)
+            {
+                throw new PuppeteerException("Cannot adopt handle without DOMWorld");
+            }
+
+            var nodeInfo = await _client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
+            {
+                ObjectId = elementHandle.RemoteObject.ObjectId,
+            }).ConfigureAwait(false);
+
+            var obj = await _client.SendAsync<DomResolveNodeResponse>("DOM.resolveNode", new DomResolveNodeRequest
+            {
+                BackendNodeId = nodeInfo.Node.BackendNodeId,
+                ExecutionContextId = _contextId
+            }).ConfigureAwait(false);
+
+            return CreateJSHandle(obj.Object) as ElementHandle;
         }
     }
 }

@@ -12,10 +12,14 @@ namespace PuppeteerSharp.Tests.PageTests
         [Fact]
         public async Task ShouldRejectAllPromisesWhenPageIsClosed()
         {
-            var neverResolves = Page.EvaluateFunctionAsync("() => new Promise(r => {})");
-            _ = Page.CloseAsync();
+            var exceptionTask = Assert.ThrowsAsync<EvaluationFailedException>(() => Page.EvaluateFunctionAsync("() => new Promise(r => {})"));
 
-            var exception = await Assert.ThrowsAsync<EvaluationFailedException>(async () => await neverResolves);
+            await Task.WhenAll(
+                exceptionTask,
+                Page.CloseAsync()
+            );
+
+            var exception = await exceptionTask;
             Assert.IsType<TargetClosedException>(exception.InnerException);
             Assert.Contains("Protocol error", exception.Message);
             Assert.Equal("Target.detachedFromTarget", ((TargetClosedException)exception.InnerException).CloseReason);
@@ -60,11 +64,26 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Fact]
+        public async Task ShouldNotRunBeforeunloadByDefault()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/beforeunload.html");
+            await Page.ClickAsync("body");
+            await Page.CloseAsync();
+        }
+
+        [Fact]
         public async Task ShouldSetThePageCloseState()
         {
             Assert.False(Page.IsClosed);
             await Page.CloseAsync();
             Assert.True(Page.IsClosed);
+        }
+
+        [Fact(Timeout = 10000)]
+        public async Task ShouldCloseWhenConnectionBreaksPrematurely()
+        {
+            Browser.Connection.Dispose();
+            await Page.CloseAsync();
         }
     }
 }

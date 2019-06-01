@@ -12,6 +12,8 @@ namespace PuppeteerSharp.Messaging
         [EnumMember(Value = "mousePressed")]
         MousePressed,
         [EnumMember(Value = "mouseReleased")]
-        MouseReleased
+        MouseReleased,
+        [EnumMember(Value = "mouseWheel")]
+        MouseWheel
     }
 }

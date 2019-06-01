@@ -16,7 +16,7 @@ only_commits:
     - appveyor-fullframework.yml
 before_build:
 - ps: >-
-    nuget.exe restore .\lib\PuppeteerSharp.AspNetFramework.sln
+    dotnet restore .\lib\PuppeteerSharp.AspNetFramework.sln
 
     New-SelfSignedCertificate -Subject "localhost" -FriendlyName "Puppeteer" -CertStoreLocation "cert:\CurrentUser\My"
 
@@ -24,13 +24,10 @@ before_build:
 
 build:
   project: .\lib\PuppeteerSharp.AspNetFramework.sln
-  publish_nuget: false
+  publish_nuget: true
   include_nuget_references: true
   verbosity: minimal
 test: off
-after_build:
-- cmd: >-
-    nuget pack C:\projects\puppeteer-sharp\lib\PuppeteerSharp.AspNetFramework\PuppeteerSharp.AspNetFramework.csproj -Prop Configuration=Release
 artifacts:
 - path: PuppeteerSharp.AspNetFramework.*.nupkg
   name: PuppeteerSharp.AspNetFramework Package

@@ -8,10 +8,7 @@ namespace PuppeteerSharp.Helpers
     {
         private readonly SemaphoreSlim _semaphore;
 
-        internal TaskQueue()
-        {
-            _semaphore = new SemaphoreSlim(1);
-        }
+        internal TaskQueue() => _semaphore = new SemaphoreSlim(1);
 
         internal async Task<T> Enqueue<T>(Func<Task<T>> taskGenerator)
         {

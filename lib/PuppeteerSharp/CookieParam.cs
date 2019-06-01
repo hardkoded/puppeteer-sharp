@@ -68,5 +68,10 @@ namespace PuppeteerSharp
         /// <value>Whether it's session only or not.</value>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public bool? Session { get; set; }
+        /// <summary>
+        /// Gets or sets the cookies SameSite value.
+        /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public SameSite? SameSite { get; set; }
     }
 }

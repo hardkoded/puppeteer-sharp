@@ -18,10 +18,68 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Fact]
+        public async Task ShouldWork()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            Assert.Equal(TestConstants.EmptyPage, Page.Url);
+        }
+        [Fact]
+        public async Task ShouldWorkWithAnchorNavigation()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            Assert.Equal(TestConstants.EmptyPage, Page.Url);
+            await Page.GoToAsync($"{TestConstants.EmptyPage}#foo");
+            Assert.Equal($"{TestConstants.EmptyPage}#foo", Page.Url);
+            await Page.GoToAsync($"{TestConstants.EmptyPage}#bar");
+            Assert.Equal($"{TestConstants.EmptyPage}#bar", Page.Url);
+        }
+
+        [Fact]
+        public async Task ShouldWorkWithRedirects()
+        {
+            Server.SetRedirect("/redirect/1.html", "/redirect/2.html");
+            Server.SetRedirect("/redirect/2.html", "/empty.html");
+
+            await Page.GoToAsync(TestConstants.ServerUrl + "/redirect/1.html");
+            await Page.GoToAsync(TestConstants.EmptyPage);
+        }
+
+        [Fact]
         public async Task ShouldNavigateToAboutBlank()
         {
             var response = await Page.GoToAsync(TestConstants.AboutBlank);
             Assert.Null(response);
+        }
+
+        [Fact]
+        public async Task ShouldReturnResponseWhenPageChangesItsURLAfterLoad()
+        {
+            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/historyapi.html");
+            Assert.Equal(HttpStatusCode.OK, response.Status);
+        }
+
+        [Fact]
+        public async Task ShouldWorkWithSubframesReturn204()
+        {
+            Server.SetRoute("/frames/frame.html", context =>
+            {
+                context.Response.StatusCode = 204;
+                return Task.CompletedTask;
+            });
+            await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
+        }
+
+        [Fact]
+        public async Task ShouldFailWhenServerReturns204()
+        {
+            Server.SetRoute("/empty.html", context =>
+            {
+                context.Response.StatusCode = 204;
+                return Task.CompletedTask;
+            });
+            var exception = await Assert.ThrowsAnyAsync<PuppeteerException>(
+                () => Page.GoToAsync(TestConstants.EmptyPage));
+            Assert.Contains("net::ERR_ABORTED", exception.Message);
         }
 
         [Fact]
@@ -45,37 +103,6 @@ namespace PuppeteerSharp.Tests.PageTests
             }");
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             Assert.Equal(HttpStatusCode.OK, response.Status);
-        }
-
-        [Fact]
-        public async Task ShouldFailWhenServerReturns204()
-        {
-            Server.SetRoute("/empty.html", context =>
-            {
-                context.Response.StatusCode = 204;
-                return Task.CompletedTask;
-            });
-            var exception = await Assert.ThrowsAnyAsync<PuppeteerException>(
-                () => Page.GoToAsync(TestConstants.EmptyPage));
-            Assert.Contains("net::ERR_ABORTED", exception.Message);
-        }
-
-        [Fact]
-        public async Task ShouldReturnResponseWhenPageChangesItsURLAfterLoad()
-        {
-            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/historyapi.html");
-            Assert.Equal(HttpStatusCode.OK, response.Status);
-        }
-
-        [Fact]
-        public async Task ShouldWorkWithSubframesReturn204()
-        {
-            Server.SetRoute("/frames/frame.html", context =>
-            {
-                context.Response.StatusCode = 204;
-                return Task.CompletedTask;
-            });
-            await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
         }
 
         [Theory]
@@ -134,6 +161,27 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             Server.SetRoute("/empty.html", context => Task.Delay(-1));
 
+            Page.DefaultNavigationTimeout = 1;
+            var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await Page.GoToAsync(TestConstants.EmptyPage));
+            Assert.Contains("Timeout Exceeded: 1ms", exception.Message);
+        }
+
+        [Fact]
+        public async Task ShouldFailWhenExceedingDefaultMaximumTimeout()
+        {
+            // Hang for request to the empty.html
+            Server.SetRoute("/empty.html", context => Task.Delay(-1));
+            Page.DefaultTimeout = 1;
+            var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await Page.GoToAsync(TestConstants.EmptyPage));
+            Assert.Contains("Timeout Exceeded: 1ms", exception.Message);
+        }
+
+        [Fact]
+        public async Task ShouldPrioritizeDefaultNavigationTimeoutOverDefaultTimeout()
+        {
+            // Hang for request to the empty.html
+            Server.SetRoute("/empty.html", context => Task.Delay(-1));
+            Page.DefaultTimeout = 0;
             Page.DefaultNavigationTimeout = 1;
             var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await Page.GoToAsync(TestConstants.EmptyPage));
             Assert.Contains("Timeout Exceeded: 1ms", exception.Message);
@@ -280,7 +328,13 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldNavigateToDataURLAndFireDataURLRequests()
         {
             var requests = new List<Request>();
-            Page.Request += (sender, e) => requests.Add(e.Request);
+            Page.Request += (sender, e) =>
+            {
+                if (!TestUtils.IsFavicon(e.Request))
+                {
+                    requests.Add(e.Request);
+                }
+            };
             var dataUrl = "data:text/html,<div>yo</div>";
             var response = await Page.GoToAsync(dataUrl);
             Assert.Equal(HttpStatusCode.OK, response.Status);
@@ -292,7 +346,13 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldNavigateToURLWithHashAndFireRequestsWithoutHash()
         {
             var requests = new List<Request>();
-            Page.Request += (sender, e) => requests.Add(e.Request);
+            Page.Request += (sender, e) =>
+            {
+                if (!TestUtils.IsFavicon(e.Request))
+                {
+                    requests.Add(e.Request);
+                }
+            };
             var response = await Page.GoToAsync(TestConstants.EmptyPage + "#hash");
             Assert.Equal(HttpStatusCode.OK, response.Status);
             Assert.Equal(TestConstants.EmptyPage, response.Url);

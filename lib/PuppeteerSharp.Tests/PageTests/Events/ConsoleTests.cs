@@ -118,5 +118,68 @@ namespace PuppeteerSharp.Tests.PageTests.Events
             Assert.Contains("No 'Access-Control-Allow-Origin'", message.Text);
             Assert.Equal(ConsoleType.Error, message.Type);
         }
+
+        [Fact]
+        public async Task ShouldHaveLocationWhenFetchFails()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var consoleTask = new TaskCompletionSource<ConsoleEventArgs>();
+            Page.Console += (sender, e) => consoleTask.TrySetResult(e);
+
+            await Task.WhenAll(
+                consoleTask.Task,
+                Page.SetContentAsync("<script>fetch('http://wat');</script>"));
+
+            var args = await consoleTask.Task;
+            Assert.Contains("ERR_NAME", args.Message.Text);
+            Assert.Equal(ConsoleType.Error, args.Message.Type);
+            Assert.Equal(new ConsoleMessageLocation
+            {
+                URL = "http://wat/",
+            }, args.Message.Location);
+        }
+
+        [Fact]
+        public async Task ShouldHaveLocationForConsoleAPICalls()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var consoleTask = new TaskCompletionSource<ConsoleEventArgs>();
+            Page.Console += (sender, e) => consoleTask.TrySetResult(e);
+
+            await Task.WhenAll(
+                consoleTask.Task,
+                Page.GoToAsync(TestConstants.ServerUrl + "/consolelog.html"));
+
+            var args = await consoleTask.Task;
+            Assert.Equal("yellow", args.Message.Text);
+            Assert.Equal(ConsoleType.Log, args.Message.Type);
+            Assert.Equal(new ConsoleMessageLocation
+            {
+                URL = TestConstants.ServerUrl + "/consolelog.html",
+                LineNumber = 7,
+                ColumnNumber = 14
+            }, args.Message.Location);
+        }
+
+        [Fact]
+        public async Task ShouldNotThrowWhenThereAreConsoleMessagesInDetachedIframes()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.EvaluateFunctionAsync(@"async () =>
+            {
+                // 1. Create a popup that Puppeteer is not connected to.
+                const win = window.open(window.location.href, 'Title', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=780,height=200,top=0,left=0');
+                await new Promise(x => win.onload = x);
+                // 2. In this popup, create an iframe that console.logs a message.
+                win.document.body.innerHTML = `<iframe src='/consolelog.html'></iframe>`;
+                const frame = win.document.querySelector('iframe');
+                await new Promise(x => frame.onload = x);
+                // 3. After that, remove the iframe.
+                frame.remove();
+            }");
+            var popupTarget = Page.BrowserContext.Targets().First(target => target != Page.Target);
+            // 4. Connect to the popup and make sure it doesn't throw.
+            await popupTarget.PageAsync();
+        }
     }
 }

@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using PuppeteerSharp.Transport;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -31,6 +33,22 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 var response = await originalPage.EvaluateExpressionAsync<int>("7 * 6");
                 Assert.Equal(42, response);
             }
+        }
+
+        [Fact]
+        public async Task ShouldBeAbleToCloseRemoteBrowser()
+        {
+            var originalBrowser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
+            var remoteBrowser = await Puppeteer.ConnectAsync(new ConnectOptions
+            {
+                BrowserWSEndpoint = originalBrowser.WebSocketEndpoint
+            });
+            var tcsDisconnected = new TaskCompletionSource<bool>();
+
+            originalBrowser.Disconnected += (sender, e) => tcsDisconnected.TrySetResult(true);
+            await Task.WhenAll(
+              tcsDisconnected.Task,
+              remoteBrowser.CloseAsync());
         }
 
         [Fact]
@@ -71,12 +89,37 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 var restoredPage = pages.FirstOrDefault(x => x.Url == url);
                 Assert.NotNull(restoredPage);
                 var frameDump = FrameUtils.DumpFrames(restoredPage.MainFrame);
-                Assert.Equal(TestUtils.CompressText(TestConstants.NestedFramesDumpResult), TestUtils.CompressText(frameDump));
+                Assert.Equal(TestConstants.NestedFramesDumpResult, frameDump);
                 var response = await restoredPage.EvaluateExpressionAsync<int>("7 * 8");
                 Assert.Equal(56, response);
             }
         }
 
+        [Fact]
+        public async Task ShouldBeAbleToConnectToTheSamePageSimultaneously()
+        {
+            var browserOne = await Puppeteer.LaunchAsync(new LaunchOptions());
+            var browserTwo = await Puppeteer.ConnectAsync(new ConnectOptions
+            {
+                BrowserWSEndpoint = browserOne.WebSocketEndpoint
+            });
+            var tcs = new TaskCompletionSource<Page>();
+            async void TargetCreated(object sender, TargetChangedArgs e)
+            {
+                tcs.TrySetResult(await e.Target.PageAsync());
+                browserOne.TargetCreated -= TargetCreated;
+            }
+            browserOne.TargetCreated += TargetCreated;
+            var page2Task = browserOne.NewPageAsync();
+
+            await Task.WhenAll(tcs.Task, page2Task);
+            var page1 = tcs.Task.Result;
+            var page2 = page2Task.Result;
+
+            Assert.Equal(56, await page1.EvaluateExpressionAsync<int>("7 * 8"));
+            Assert.Equal(42, await page1.EvaluateExpressionAsync<int>("7 * 6"));
+            await browserOne.CloseAsync();
+        }
         [Fact]
         public async Task ShouldSupportCustomWebSocket()
         {
@@ -87,13 +130,33 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 WebSocketFactory = (uri, socketOptions, cancellationToken) =>
                 {
                     customSocketCreated = true;
-                    return Connection.DefaultWebSocketFactory(uri, socketOptions, cancellationToken);
+                    return WebSocketTransport.DefaultWebSocketFactory(uri, socketOptions, cancellationToken);
                 }
             };
 
             using (await Puppeteer.ConnectAsync(options, TestConstants.LoggerFactory))
             {
                 Assert.True(customSocketCreated);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldSupportCustomTransport()
+        {
+            var customTransportCreated = false;
+            var options = new ConnectOptions()
+            {
+                BrowserWSEndpoint = Browser.WebSocketEndpoint,
+                TransportFactory = (url, opt, cancellationToken) =>
+                {
+                    customTransportCreated = true;
+                    return WebSocketTransport.DefaultTransportFactory(url, opt, cancellationToken);
+                }
+            };
+
+            using (await Puppeteer.ConnectAsync(options, TestConstants.LoggerFactory))
+            {
+                Assert.True(customTransportCreated);
             }
         }
     }

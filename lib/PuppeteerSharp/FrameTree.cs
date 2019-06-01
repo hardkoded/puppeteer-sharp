@@ -47,6 +47,7 @@ namespace PuppeteerSharp
                         Frame = new FramePayload
                         {
                             Id = childFrame.Id,
+                            Name = childFrame.Name,
                             ParentId = childFrame.ParentId,
                             Url = childFrame.Url
                         }

@@ -1,7 +1,6 @@
 ﻿using System.Runtime.Serialization;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp
 {
@@ -64,6 +63,11 @@ namespace PuppeteerSharp
         /// Target type recommendation
         /// </summary>
         [EnumMember(Value = "recommendation")]
-        Recommendation
+        Recommendation,
+        /// <summary>
+        /// Target type shared worker.
+        /// </summary>
+        [EnumMember(Value = "shared_worker")]
+        SharedWorker,
     }
 }
