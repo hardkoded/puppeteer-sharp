@@ -45,5 +45,26 @@ namespace PuppeteerSharp.Tests.PageTests
                 }));
             Assert.Contains("Invalid longitude '200'", exception.Message);
         }
+
+        [Fact]
+        public async Task ShouldWorkWithDecimalValues()
+        {
+            await Context.OverridePermissionsAsync(TestConstants.ServerUrl, new[] { OverridePermission.Geolocation });
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.SetGeolocationAsync(new GeolocationOption
+            {
+                Longitude = 10.25m,
+                Latitude = 10.54m
+            });
+            var geolocation = await Page.EvaluateFunctionAsync<GeolocationOption>(
+                @"() => new Promise(resolve => navigator.geolocation.getCurrentPosition(position => {
+                    resolve({latitude: position.coords.latitude, longitude: position.coords.longitude});
+                }))");
+            Assert.Equal(new GeolocationOption
+            {
+                Longitude = 10.25m,
+                Latitude = 10.54m
+            }, geolocation);
+        }
     }
 }
