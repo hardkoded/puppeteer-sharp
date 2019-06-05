@@ -20,7 +20,7 @@ namespace PupppeterSharpAspNetFrameworkSample.Services
             using (var browser = await Puppeteer.LaunchAsync(new LaunchOptions()
             {
                 Headless = true,
-                Transport = new AspNetWebSocketTransport(),
+                TransportFactory = AspNetWebSocketTransport.AspNetTransportFactory,
                 ExecutablePath = browserFetcher.GetExecutablePath(BrowserFetcher.DefaultRevision)
             }).ConfigureAwait(false))
             using(var page = await browser.NewPageAsync().ConfigureAwait(false))
