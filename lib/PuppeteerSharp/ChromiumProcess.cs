@@ -522,13 +522,8 @@ namespace PuppeteerSharp
                         }
                     }
                     void OnProcessExitedWhileStarting(object sender, EventArgs e)
-                    {
-                        p._startCompletionSource.SetException(new ChromiumProcessException($"Failed to launch Chromium! {output}"));
-                    }
-                    void OnProcessExited(object sender, EventArgs e)
-                    {
-                        Exited.EnterFrom(p, p._currentState);
-                    }
+                        => p._startCompletionSource.TrySetException(new ChromiumProcessException($"Failed to launch Chromium! {output}"));
+                    void OnProcessExited(object sender, EventArgs e) => Exited.EnterFrom(p, p._currentState);
 
                     p.Process.ErrorDataReceived += OnProcessDataReceivedWhileStarting;
                     p.Process.Exited += OnProcessExitedWhileStarting;

@@ -205,7 +205,7 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
 
             if (exception != null)
             {
-                _taskCompletion.SetException(exception);
+                _taskCompletion.TrySetException(exception);
             }
             else
             {

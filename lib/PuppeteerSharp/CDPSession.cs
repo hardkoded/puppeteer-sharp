@@ -149,7 +149,7 @@ namespace PuppeteerSharp
             {
                 if (waitForCallback && _callbacks.TryRemove(id, out _))
                 {
-                    callback.TaskWrapper.SetException(new MessageException(ex.Message, ex));
+                    callback.TaskWrapper.TrySetException(new MessageException(ex.Message, ex));
                 }
             }
 
