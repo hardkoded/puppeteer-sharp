@@ -10,6 +10,11 @@ Puppeteer Sharp is a .NET port of the official [Node.JS Puppeteer API](https://g
  * If you have issues running Chrome on Linux, the Puppeteer repo has a [great troubleshooting guide](https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md).
 
 # Monthly reports
+ * [June 2019](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-jun-2019)
+ * [May 2019](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-may-2019)
+ * [April 2019](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-apr-2019)
+ * [March 2019](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-mar-2019)
+ * [February 2019](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-feb-2019)
  * [January 2019](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-jan-2019)
  * [December 2018](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-dec-2018)
  * [November 2018](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-nov-2018)
