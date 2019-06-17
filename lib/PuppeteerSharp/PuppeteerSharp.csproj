@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>1.17.1</PackageVersion>
+    <PackageVersion>1.17.2</PackageVersion>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
@@ -19,9 +19,12 @@
  * Stringify response headers for intercepted requests.
  * Evaluation test with UTF8.
  * Page.SetContentAsync working with unicode strings.
-
+ * Fix SlowMo.
+ * Decimal support on GeoLocation options.
+ * Update the ASP.NET Full Framework example.
+ * Add missing TrySetExceptions.
  ]]></PackageReleaseNotes>
-    <ReleaseVersion>1.17.1</ReleaseVersion>
+    <ReleaseVersion>1.17.2</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>
