@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Helpers;
@@ -109,10 +110,10 @@ namespace PuppeteerSharp
             return UpdateProtocolCacheDisabledAsync();
         }
 
-        internal Task SetRequestInterceptionAsync(bool value)
+        internal Task SetRequestInterceptionAsync(bool value, params FetchEnableRequest.Pattern[] fetchRequestPatterns)
         {
             _userRequestInterceptionEnabled = value;
-            return UpdateProtocolRequestInterceptionAsync();
+            return UpdateProtocolRequestInterceptionAsync(fetchRequestPatterns);
         }
 
         #endregion
@@ -385,7 +386,7 @@ namespace PuppeteerSharp
             await OnRequestAsync(e, null).ConfigureAwait(false);
         }
 
-        private async Task UpdateProtocolRequestInterceptionAsync()
+        private async Task UpdateProtocolRequestInterceptionAsync(params FetchEnableRequest.Pattern[] fetchRequestPatterns)
         {
             var enabled = _userRequestInterceptionEnabled || _credentials != null;
 
@@ -396,12 +397,16 @@ namespace PuppeteerSharp
             _protocolRequestInterceptionEnabled = enabled;
             if (enabled)
             {
+                {
+                    fetchRequestPatterns = new[] { new FetchEnableRequest.Pattern { UrlPattern = "*" } };
+                }
+
                 await Task.WhenAll(
                      UpdateProtocolCacheDisabledAsync(),
                     _client.SendAsync("Fetch.enable", new FetchEnableRequest
                     {
                         HandleAuthRequests = true,
-                        Patterns = new[] { new FetchEnableRequest.Pattern { UrlPattern = "*" } }
+                        Patterns = fetchRequestPatterns
                     })
                 ).ConfigureAwait(false);
             }

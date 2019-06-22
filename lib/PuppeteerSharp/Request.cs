@@ -148,7 +148,7 @@ namespace PuppeteerSharp
         #region Public Methods
 
         /// <summary>
-        /// Continues request with optional request overrides. To use this, request interception should be enabled with <see cref="Page.SetRequestInterceptionAsync(bool)"/>. Exception is immediately thrown if the request interception is not enabled.
+        /// Continues request with optional request overrides. To use this, request interception should be enabled with <see cref="Page.SetRequestInterceptionAsync"/>. Exception is immediately thrown if the request interception is not enabled.
         /// If the URL is set it won't perform a redirect. The request will be silently forwarded to the new url. For example, the address bar will show the original url.
         /// </summary>
         /// <param name="overrides">Optional request overwrites.</param>
@@ -208,7 +208,7 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Fulfills request with given response. To use this, request interception should be enabled with <see cref="Page.SetRequestInterceptionAsync(bool)"/>. Exception is thrown if request interception is not enabled.
+        /// Fulfills request with given response. To use this, request interception should be enabled with <see cref="Page.SetRequestInterceptionAsync"/>. Exception is thrown if request interception is not enabled.
         /// </summary>
         /// <param name="response">Response that will fulfill this request</param>
         /// <returns>Task</returns>
@@ -269,7 +269,7 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Aborts request. To use this, request interception should be enabled with <see cref="Page.SetRequestInterceptionAsync(bool)"/>.
+        /// Aborts request. To use this, request interception should be enabled with <see cref="Page.SetRequestInterceptionAsync"/>.
         /// Exception is immediately thrown if the request interception is not enabled.
         /// </summary>
         /// <param name="errorCode">Optional error code. Defaults to <see cref="RequestAbortErrorCode.Failed"/></param>
