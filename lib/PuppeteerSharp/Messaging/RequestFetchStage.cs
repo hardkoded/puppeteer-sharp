@@ -19,5 +19,4 @@ namespace PuppeteerSharp.Messaging
         /// </summary>
         Response
     }
-
 }
