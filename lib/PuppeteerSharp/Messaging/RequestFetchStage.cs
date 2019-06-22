@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Messaging
         Request,
 
         /// <summary>
-        /// Response will intercept after the response is received (but before response body is received.
+        /// Response will intercept after the response is received (but before response body is received).
         /// </summary>
         Response
     }
