@@ -397,6 +397,7 @@ namespace PuppeteerSharp
             _protocolRequestInterceptionEnabled = enabled;
             if (enabled)
             {
+                if (fetchRequestPatterns == null || !fetchRequestPatterns.Any())
                 {
                     fetchRequestPatterns = new[] { new FetchEnableRequest.Pattern { UrlPattern = "*" } };
                 }
