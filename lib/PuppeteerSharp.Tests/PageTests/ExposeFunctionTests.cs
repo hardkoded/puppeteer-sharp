@@ -44,7 +44,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             var called = false;
             await Page.ExposeFunctionAsync("woof", () => called = true);
-            await Page.EvaluateOnNewDocumentAsync("() => woof()");
+            await Page.EvaluateFunctionOnNewDocumentAsync("() => woof()");
             await Page.ReloadAsync();
             Assert.True(called);
         }

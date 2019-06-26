@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         [Fact]
         public async Task ShouldWorkWhenResolvedRightBeforeExecutionContextDisposal()
         {
-            await Page.EvaluateOnNewDocumentAsync("() => window.__RELOADED = true");
+            await Page.EvaluateFunctionOnNewDocumentAsync("() => window.__RELOADED = true");
             await Page.WaitForFunctionAsync(@"() =>
             {
                 if (!window.__RELOADED)

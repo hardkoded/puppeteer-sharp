@@ -44,8 +44,8 @@ namespace PuppeteerSharp
         private PageGetLayoutMetricsResponse _burstModeMetrics;
         private bool _screenshotBurstModeOn;
         private ScreenshotOptions _screenshotBurstModeOptions;
-        private TaskCompletionSource<bool> _closeCompletedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-        private TimeoutSettings _timeoutSettings;
+        private readonly TaskCompletionSource<bool> _closeCompletedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        private readonly TimeoutSettings _timeoutSettings;
 
         private static readonly Dictionary<string, decimal> _unitToPixels = new Dictionary<string, decimal> {
             {"px", 1},
@@ -105,7 +105,7 @@ namespace PuppeteerSharp
         public event EventHandler<ErrorEventArgs> Error;
 
         /// <summary>
-        /// Raised when the JavaScript code makes a call to <c>console.timeStamp</c>. For the list of metrics see <see cref="Page.MetricsAsync"/>.
+        /// Raised when the JavaScript code makes a call to <c>console.timeStamp</c>. For the list of metrics see <see cref="MetricsAsync"/>.
         /// </summary>
         public event EventHandler<MetricEventArgs> Metrics;
 
@@ -218,18 +218,18 @@ namespace PuppeteerSharp
 
         /// <summary>
         /// This setting will change the default maximum times for the following methods:
-        /// - <see cref="Page.GoBackAsync(NavigationOptions)"/>
-        /// - <see cref="Page.GoForwardAsync(NavigationOptions)"/>
-        /// - <see cref="Page.GoToAsync(string, NavigationOptions)"/>
-        /// - <see cref="Page.ReloadAsync(NavigationOptions)"/>
-        /// - <see cref="Page.SetContentAsync(string, NavigationOptions)"/>
-        /// - <see cref="Page.WaitForFunctionAsync(string, object[])"/>
-        /// - <see cref="Page.WaitForNavigationAsync(NavigationOptions)"/>
-        /// - <see cref="Page.WaitForRequestAsync(string, WaitForOptions)"/>
-        /// - <see cref="Page.WaitForResponseAsync(string, WaitForOptions)"/>
-        /// - <see cref="Page.WaitForXPathAsync(string, WaitForSelectorOptions)"/>
-        /// - <see cref="Page.WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
-        /// - <see cref="Page.WaitForExpressionAsync(string, WaitForFunctionOptions)"/>
+        /// - <see cref="GoBackAsync(NavigationOptions)"/>
+        /// - <see cref="GoForwardAsync(NavigationOptions)"/>
+        /// - <see cref="GoToAsync(string, NavigationOptions)"/>
+        /// - <see cref="ReloadAsync(NavigationOptions)"/>
+        /// - <see cref="SetContentAsync(string, NavigationOptions)"/>
+        /// - <see cref="WaitForFunctionAsync(string, object[])"/>
+        /// - <see cref="WaitForNavigationAsync(NavigationOptions)"/>
+        /// - <see cref="WaitForRequestAsync(string, WaitForOptions)"/>
+        /// - <see cref="WaitForResponseAsync(string, WaitForOptions)"/>
+        /// - <see cref="WaitForXPathAsync(string, WaitForSelectorOptions)"/>
+        /// - <see cref="WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
+        /// - <see cref="WaitForExpressionAsync(string, WaitForFunctionOptions)"/>
         /// </summary>
         public int DefaultTimeout
         {
@@ -487,7 +487,28 @@ namespace PuppeteerSharp
         /// </code>
         /// </example>
         /// <returns>Task</returns>
+        [Obsolete("User EvaluateFunctionOnNewDocumentAsync instead")]
         public Task EvaluateOnNewDocumentAsync(string pageFunction, params object[] args)
+            => EvaluateFunctionOnNewDocumentAsync(pageFunction, args);
+
+        /// <summary>
+        /// Adds a function which would be invoked in one of the following scenarios:
+        /// - whenever the page is navigated
+        /// - whenever the child frame is attached or navigated. In this case, the function is invoked in the context of the newly attached frame
+        /// </summary>
+        /// <param name="pageFunction">Function to be evaluated in browser context</param>
+        /// <param name="args">Arguments to pass to <c>pageFunction</c></param>
+        /// <remarks>
+        /// The function is invoked after the document was created but before any of its scripts were run. This is useful to amend JavaScript environment, e.g. to seed <c>Math.random</c>.
+        /// </remarks>
+        /// <example>
+        /// An example of overriding the navigator.languages property before the page loads:
+        /// <code>
+        /// await page.EvaluateFunctionOnNewDocumentAsync("() => window.__example = true");
+        /// </code>
+        /// </example>
+        /// <returns>Task</returns>
+        public Task EvaluateFunctionOnNewDocumentAsync(string pageFunction, params object[] args)
         {
             var source = EvaluationString(pageFunction, args);
             return Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new PageAddScriptToEvaluateOnNewDocumentRequest
@@ -495,6 +516,28 @@ namespace PuppeteerSharp
                 Source = source
             });
         }
+
+        /// <summary>
+        /// Adds a function which would be invoked in one of the following scenarios:
+        /// - whenever the page is navigated
+        /// - whenever the child frame is attached or navigated. In this case, the function is invoked in the context of the newly attached frame
+        /// </summary>
+        /// <param name="expression">Javascript expression to be evaluated in browser context</param>
+        /// <remarks>
+        /// The function is invoked after the document was created but before any of its scripts were run. This is useful to amend JavaScript environment, e.g. to seed <c>Math.random</c>.
+        /// </remarks>
+        /// <example>
+        /// An example of overriding the navigator.languages property before the page loads:
+        /// <code>
+        /// await page.EvaluateExpressionOnNewDocumentAsync("window.__example = true;");
+        /// </code>
+        /// </example>
+        /// <returns>Task</returns>
+        public Task EvaluateExpressionOnNewDocumentAsync(string expression)
+            => Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new PageAddScriptToEvaluateOnNewDocumentRequest
+            {
+                Source = expression
+            });
 
         /// <summary>
         /// The method iterates JavaScript heap and finds all the objects with the given prototype.
@@ -1095,13 +1138,11 @@ namespace PuppeteerSharp
                 {
                     return Client.SendAsync("Page.close");
                 }
-                else
+
+                return Client.Connection.SendAsync("Target.closeTarget", new TargetCloseTargetRequest
                 {
-                    return Client.Connection.SendAsync("Target.closeTarget", new TargetCloseTargetRequest
-                    {
-                        TargetId = Target.TargetId
-                    }).ContinueWith(task => Target.CloseTask);
-                }
+                    TargetId = Target.TargetId
+                }).ContinueWith(task => Target.CloseTask);
             }
 
             _logger.LogWarning("Protocol error: Connection closed. Most likely the page has been closed.");
@@ -1117,7 +1158,7 @@ namespace PuppeteerSharp
             => FrameManager.NetworkManager.SetCacheEnabledAsync(enabled);
 
         /// <summary>
-        /// Fetches an element with <paramref name="selector"/>, scrolls it into view if needed, and then uses <see cref="Page.Mouse"/> to click in the center of the element.
+        /// Fetches an element with <paramref name="selector"/>, scrolls it into view if needed, and then uses <see cref="Mouse"/> to click in the center of the element.
         /// </summary>
         /// <param name="selector">A selector to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.</param>
         /// <param name="options">click options</param>
@@ -1126,7 +1167,7 @@ namespace PuppeteerSharp
         public Task ClickAsync(string selector, ClickOptions options = null) => FrameManager.MainFrame.ClickAsync(selector, options);
 
         /// <summary>
-        /// Fetches an element with <paramref name="selector"/>, scrolls it into view if needed, and then uses <see cref="Page.Mouse"/> to hover over the center of the element.
+        /// Fetches an element with <paramref name="selector"/>, scrolls it into view if needed, and then uses <see cref="Mouse"/> to hover over the center of the element.
         /// </summary>
         /// <param name="selector">A selector to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered.</param>
         /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
@@ -1754,8 +1795,7 @@ namespace PuppeteerSharp
                 return 0;
             }
 
-            var pixels = 0m;
-
+            decimal pixels;
             if (parameter is decimal || parameter is int)
             {
                 pixels = Convert.ToDecimal(parameter);
@@ -1764,8 +1804,7 @@ namespace PuppeteerSharp
             {
                 var text = parameter.ToString();
                 var unit = text.Substring(text.Length - 2).ToLower();
-                var valueText = "";
-
+                string valueText;
                 if (_unitToPixels.ContainsKey(unit))
                 {
                     valueText = text.Substring(0, text.Length - 2);
@@ -1842,8 +1881,7 @@ namespace PuppeteerSharp
 
         private async Task OnBindingCalled(BindingCalledResponse e)
         {
-            string expression = null;
-
+            string expression;
             try
             {
                 var result = await ExecuteBinding(e).ConfigureAwait(false);
