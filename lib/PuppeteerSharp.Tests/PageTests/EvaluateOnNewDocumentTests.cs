@@ -18,7 +18,7 @@ namespace PuppeteerSharp.Tests.PageTests
         [Fact]
         public async Task ShouldEvaluateBeforeAnythingElseOnThePage()
         {
-            await Page.EvaluateOnNewDocumentAsync(@"function(){
+            await Page.EvaluateFunctionOnNewDocumentAsync(@"function(){
                 window.injected = 123;
             }");
             await Page.GoToAsync(TestConstants.ServerUrl + "/tamperable.html");
@@ -29,7 +29,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldWorkWithCSP()
         {
             Server.SetCSP("/empty.html", "script-src " + TestConstants.ServerUrl);
-            await Page.EvaluateOnNewDocumentAsync(@"function(){
+            await Page.EvaluateFunctionOnNewDocumentAsync(@"function(){
                 window.injected = 123;
             }");
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -41,6 +41,14 @@ namespace PuppeteerSharp.Tests.PageTests
                 Content = "window.e = 10;"
             }).ContinueWith(_ => Task.CompletedTask);
             Assert.Null(await Page.EvaluateExpressionAsync("window.e"));
+        }
+
+        [Fact]
+        public async Task ShouldWorkWithExpressions()
+        {
+            await Page.EvaluateExpressionOnNewDocumentAsync("window.injected = 123;");
+            await Page.GoToAsync(TestConstants.ServerUrl + "/tamperable.html");
+            Assert.Equal(123, await Page.EvaluateExpressionAsync<int>("window.result"));
         }
     }
 }
