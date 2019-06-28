@@ -58,6 +58,19 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.Equal(42, await Page.EvaluateFunctionAsync<int>("() => window.CLICKED"));
         }
 
+        /// <summary>
+        /// This test is called ShouldNotThrowUnhandledPromiseRejectionWhenPageCloses in puppeteer.
+        /// </summary>
+        [Fact]
+        public async Task ShouldGracefullyFailWhenPageCloses()
+        {
+            var newPage = await Browser.NewPageAsync();
+            await Assert.ThrowsAsync<TargetClosedException>(() => Task.WhenAll(
+                newPage.CloseAsync(),
+                newPage.Mouse.ClickAsync(1, 2)
+             ));
+        }
+
         [Fact]
         public async Task ShouldClickTheButtonAfterNavigation()
         {
