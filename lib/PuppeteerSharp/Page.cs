@@ -974,8 +974,22 @@ namespace PuppeteerSharp
         /// <summary>
         /// Sets the viewport.
         /// In the case of multiple pages in a single browser, each page can have its own viewport size.
-        /// NOTE in certain cases, setting viewport will reload the page in order to set the isMobile or hasTouch properties.
+        /// <see cref="SetViewportAsync(ViewPortOptions)"/> will resize the page. A lot of websites don't expect phones to change size, so you should set the viewport before navigating to the page.
         /// </summary>
+        /// <example>
+        ///<![CDATA[
+        /// using(var page = await browser.NewPageAsync())
+        /// {
+        ///     await page.SetViewPortAsync(new ViewPortOptions
+        ///     {
+        ///         Width = 640, 
+        ///         Height = 480, 
+        ///         DeviceScaleFactor = 1
+        ///     });
+        ///     await page.goto('https://www.example.com');
+        /// }
+        /// ]]>
+        /// </example>
         /// <returns>The viewport task.</returns>
         /// <param name="viewport">Viewport options.</param>
         public async Task SetViewportAsync(ViewPortOptions viewport)
@@ -994,9 +1008,21 @@ namespace PuppeteerSharp
         /// </summary>
         /// <remarks>
         /// This method is a shortcut for calling two methods:
-        /// page.SetViewportAsync(userAgent)
-        /// page.SetUserAgentAsync(viewport)
+        /// <see cref="SetViewportAsync(ViewPortOptions)"/>
+        /// <see cref="SetUserAgentAsync(string)"/>
+        /// To aid emulation, puppeteer provides a list of device descriptors which can be obtained via the <see cref="Puppeteer.Devices"/>.
+        /// <see cref="EmulateAsync(DeviceDescriptor)"/> will resize the page. A lot of websites don't expect phones to change size, so you should emulate before navigating to the page.
         /// </remarks>
+        /// <example>
+        ///<![CDATA[
+        /// var iPhone = Puppeteer.Devices[DeviceDescriptorName.IPhone6];
+        /// using(var page = await browser.NewPageAsync())
+        /// {
+        ///     await page.EmulateAsync(iPhone);
+        ///     await page.goto('https://www.google.com');
+        /// }
+        /// ]]>
+        /// </example>
         /// <returns>Task.</returns>
         /// <param name="options">Emulation options.</param>
         public Task EmulateAsync(DeviceDescriptor options) => Task.WhenAll(
