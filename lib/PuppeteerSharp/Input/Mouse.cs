@@ -67,14 +67,24 @@ namespace PuppeteerSharp.Input
         {
             options = options ?? new ClickOptions();
 
-            await MoveAsync(x, y).ConfigureAwait(false);
-            await DownAsync(options).ConfigureAwait(false);
-
             if (options.Delay > 0)
             {
+                await Task.WhenAll(
+                    MoveAsync(x, y),
+                    DownAsync(options)
+                ).ConfigureAwait(false);
+
                 await Task.Delay(options.Delay).ConfigureAwait(false);
+                await UpAsync(options).ConfigureAwait(false);
             }
-            await UpAsync(options).ConfigureAwait(false);
+            else
+            {
+                await Task.WhenAll(
+                   MoveAsync(x, y),
+                   DownAsync(options),
+                   UpAsync(options)
+               ).ConfigureAwait(false);
+            }
         }
 
         /// <summary>
