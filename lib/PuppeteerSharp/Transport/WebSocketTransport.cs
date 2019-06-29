@@ -37,7 +37,6 @@ namespace PuppeteerSharp.Transport
         private static async Task<WebSocket> CreateDefaultWebSocket(Uri url, IConnectionOptions options, CancellationToken cancellationToken)
         {
             var result = SystemClientWebSocket.CreateClientWebSocket();
-
             switch (result)
             {
                 case ClientWebSocket cws:
@@ -47,7 +46,6 @@ namespace PuppeteerSharp.Transport
                     mcws.Options.KeepAliveInterval = TimeSpan.Zero;
                     break;
             }
-            
             await result.ConnectAsync(url, cancellationToken).ConfigureAwait(false);
             return result;
         }
