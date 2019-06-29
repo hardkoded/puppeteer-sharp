@@ -50,7 +50,6 @@ namespace PuppeteerSharp.Transport
             return result;
         }
 
-
         private static async Task<IConnectionTransport> CreateDefaultTransport(Uri url, IConnectionOptions connectionOptions, CancellationToken cancellationToken)
         {
             var webSocketFactory = connectionOptions.WebSocketFactory ?? DefaultWebSocketFactory;
