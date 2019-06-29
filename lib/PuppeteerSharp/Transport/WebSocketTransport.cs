@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
+using Managed = System.Net.WebSockets.Managed;
 
 namespace PuppeteerSharp.Transport
 {
@@ -35,8 +36,18 @@ namespace PuppeteerSharp.Transport
 
         private static async Task<WebSocket> CreateDefaultWebSocket(Uri url, IConnectionOptions options, CancellationToken cancellationToken)
         {
-            var result = new ClientWebSocket();
-            result.Options.KeepAliveInterval = TimeSpan.Zero;
+            var result = SystemClientWebSocket.CreateClientWebSocket();
+
+            switch (result)
+            {
+                case ClientWebSocket cws:
+                    cws.Options.KeepAliveInterval = TimeSpan.Zero;
+                    break;
+                case Managed.ClientWebSocket mcws:
+                    mcws.Options.KeepAliveInterval = TimeSpan.Zero;
+                    break;
+            }
+            
             await result.ConnectAsync(url, cancellationToken).ConfigureAwait(false);
             return result;
         }
