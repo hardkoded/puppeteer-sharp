@@ -108,6 +108,30 @@ namespace PuppeteerSharp
         /// Optional factory for <see cref="WebSocket"/> implementations.
         /// If <see cref="Transport"/> is set this property will be ignored.
         /// </summary>
+        /// <remarks>
+        /// If you need to run Puppeteer-Sharp on Windows 7, you can use <seealso cref="WebSocketFactory"/> to inject <see href="https://www.nuget.org/packages/System.Net.WebSockets.Client.Managed/">System.Net.WebSockets.Client.Managed</see>.
+        /// <example>
+        /// <![CDATA[
+        /// WebSocketFactory = async (uri, socketOptions, cancellationToken) =>
+        /// {
+        ///     var client = SystemClientWebSocket.CreateClientWebSocket();
+        ///     if (client is System.Net.WebSockets.Managed.ClientWebSocket managed)
+        ///     {
+        ///        managed.Options.KeepAliveInterval = TimeSpan.FromSeconds(0);
+        ///         await managed.ConnectAsync(uri, cancellationToken);
+        ///     }
+        ///     else
+        ///     {
+        ///         var coreSocket = client as ClientWebSocket;
+        ///         coreSocket.Options.KeepAliveInterval = TimeSpan.FromSeconds(0);
+        ///         await coreSocket.ConnectAsync(uri, cancellationToken);
+        ///     }
+        ///
+        ///     return client;
+        /// },
+        /// ]]>
+        /// </example>
+        /// </remarks>
         public WebSocketFactory WebSocketFactory { get; set; }
 
         /// <summary>
