@@ -69,5 +69,10 @@ namespace PuppeteerSharp
         /// </summary>
         [EnumMember(Value = "shared_worker")]
         SharedWorker,
+        /// <summary>
+        /// Target type iFrame.
+        /// </summary>
+        [EnumMember(Value = "iframe")]
+        iFrame
     }
 }
