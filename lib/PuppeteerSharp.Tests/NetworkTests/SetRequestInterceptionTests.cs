@@ -429,6 +429,8 @@ namespace PuppeteerSharp.Tests.NetworkTests
             };
             var dataURL = "data:text/html,<div>yo</div>";
             var text = await Page.EvaluateFunctionAsync<string>("url => fetch(url).then(r => r.text())", dataURL);
+
+            Assert.Equal("<div>yo</div>", text);
             Assert.Single(requests);
             Assert.Equal(dataURL, requests[0].Url);
         }
