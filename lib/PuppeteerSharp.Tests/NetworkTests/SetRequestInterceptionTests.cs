@@ -417,6 +417,23 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [Fact]
+        public async Task ShouldBeAbleToFetchDataURLAndFireDataURLRequests()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.SetRequestInterceptionAsync(true);
+            var requests = new List<Request>();
+            Page.Request += async (sender, e) =>
+            {
+                requests.Add(e.Request);
+                await e.Request.ContinueAsync();
+            };
+            var dataURL = "data:text/html,<div>yo</div>";
+            var text = await Page.EvaluateFunctionAsync<string>("url => fetch(url).then(r => r.text())", dataURL);
+            Assert.Single(requests);
+            Assert.Equal(dataURL, requests[0].Url);
+        }
+
+        [Fact]
         public async Task ShouldNavigateToURLWithHashAndAndFireRequestsWithoutHash()
         {
             await Page.SetRequestInterceptionAsync(true);
