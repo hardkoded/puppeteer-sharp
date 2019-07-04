@@ -261,10 +261,6 @@ namespace PuppeteerSharp
                     "--hide-scrollbars",
                     "--mute-audio"
                 });
-                if (BrowserFetcher.GetCurrentPlatform() == Platform.Win32)
-                {
-                    chromeArguments.Add("--disable-gpu");
-                }
             }
 
             if (options.Args.All(arg => arg.StartsWith("-", StringComparison.Ordinal)))
