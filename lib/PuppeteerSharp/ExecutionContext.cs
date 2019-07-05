@@ -131,20 +131,8 @@ namespace PuppeteerSharp
 
         private async Task<T> RemoteObjectTaskToObject<T>(Task<RemoteObject> remote)
         {
-            try
-            {
-                var response = await remote.ConfigureAwait(false);
-                return (T)RemoteObjectHelper.ValueFromRemoteObject<T>(response);
-            }
-            catch (Exception ex)
-            {
-                if (ex.Message.Contains("Object reference chain is too long") ||
-                    ex.Message.Contains("Object couldn't be returned by value"))
-                {
-                    return default;
-                }
-                throw new EvaluationFailedException(ex.Message, ex);
-            }
+            var response = await remote.ConfigureAwait(false);
+            return (T)RemoteObjectHelper.ValueFromRemoteObject<T>(response);
         }
 
         private Task<RemoteObject> EvaluateExpressionInternalAsync(bool returnByValue, string script)
@@ -170,15 +158,27 @@ namespace PuppeteerSharp
 
         private async Task<RemoteObject> ExecuteEvaluationAsync(string method, object args)
         {
-            var response = await _client.SendAsync<EvaluateHandleResponse>(method, args).ConfigureAwait(false);
-
-            if (response.ExceptionDetails != null)
+            try
             {
-                throw new EvaluationFailedException("Evaluation failed: " +
-                    GetExceptionMessage(response.ExceptionDetails));
-            }
+                var response = await _client.SendAsync<EvaluateHandleResponse>(method, args).ConfigureAwait(false);
 
-            return response.Result;
+                if (response.ExceptionDetails != null)
+                {
+                    throw new EvaluationFailedException("Evaluation failed: " +
+                        GetExceptionMessage(response.ExceptionDetails));
+                }
+
+                return response.Result;
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.Contains("Object reference chain is too long") ||
+                    ex.Message.Contains("Object couldn't be returned by value"))
+                {
+                    return default;
+                }
+                throw new EvaluationFailedException(ex.Message, ex);
+            }
         }
 
         internal JSHandle CreateJSHandle(RemoteObject remoteObject)
