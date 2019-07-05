@@ -104,7 +104,6 @@ namespace PuppeteerSharp
         internal async Task<JSHandle> EvaluateFunctionHandleAsync(string script, params object[] args)
             => CreateJSHandle(await EvaluateFunctionInternalAsync(false, script, args).ConfigureAwait(false));
 
-
         /// <summary>
         /// The method iterates JavaScript heap and finds all the objects with the given prototype.
         /// </summary>
@@ -171,24 +170,17 @@ namespace PuppeteerSharp
 
         private async Task<RemoteObject> ExecuteEvaluationAsync(string method, object args)
         {
-            try
+            var response = await _client.SendAsync<EvaluateHandleResponse>(method, args).ConfigureAwait(false);
+
+            if (response.ExceptionDetails != null)
             {
-                var response = await _client.SendAsync<EvaluateHandleResponse>(method, args).ConfigureAwait(false);
-
-                if (response.ExceptionDetails != null)
-                {
-                    throw new EvaluationFailedException("Evaluation failed: " +
-                        GetExceptionMessage(response.ExceptionDetails));
-                }
-
-                return response.Result;
+                throw new EvaluationFailedException("Evaluation failed: " +
+                    GetExceptionMessage(response.ExceptionDetails));
             }
 
-            catch (Exception ex)
-            {
-                throw new EvaluationFailedException(ex.Message, ex);
-            }
+            return response.Result;
         }
+
         internal JSHandle CreateJSHandle(RemoteObject remoteObject)
             => remoteObject.Subtype == RemoteObjectSubtype.Node && Frame != null
                 ? new ElementHandle(this, _client, remoteObject, Frame.FrameManager.Page, Frame.FrameManager)
