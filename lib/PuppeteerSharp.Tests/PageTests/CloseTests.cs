@@ -20,9 +20,9 @@ namespace PuppeteerSharp.Tests.PageTests
             );
 
             var exception = await exceptionTask;
-            Assert.IsType<TargetClosedException>(exception.InnerException);
+            Assert.IsType<TargetClosedException>(exception.InnerException.InnerException);
             Assert.Contains("Protocol error", exception.Message);
-            Assert.Equal("Target.detachedFromTarget", ((TargetClosedException)exception.InnerException).CloseReason);
+            Assert.Equal("Target.detachedFromTarget", ((TargetClosedException)exception.InnerException.InnerException).CloseReason);
         }
 
         [Fact]

@@ -31,6 +31,18 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Fact]
+        public async Task ShouldNotThrowWhenSelectCausesNavigation()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
+            await Page.QuerySelectorAsync("select").EvaluateFunctionAsync("select => select.addEventListener('input', () => window.location = '/empty.html')");
+            await Task.WhenAll(
+              Page.SelectAsync("select", "blue"),
+              Page.WaitForNavigationAsync()
+            );
+            Assert.Contains("empty.html", Page.Url);
+        }
+
+        [Fact]
         public async Task ShouldSelectMultipleOptions()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");

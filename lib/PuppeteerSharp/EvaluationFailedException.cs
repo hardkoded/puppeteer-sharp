@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// Exception thrown by <see cref="ExecutionContext.EvaluateHandleAsync(string, object)"/>.
+    /// Exception thrown by <see cref="ExecutionContext.ExecuteEvaluationAsync(string, object)"/>.
     /// </summary>
     [Serializable]
     public class EvaluationFailedException : PuppeteerException

@@ -26,7 +26,7 @@ namespace PuppeteerSharp.Helpers
                 return null;
             }
 
-            return ValueFromType<T>(value, remoteObject.Type);
+            return typeof(T) == typeof(JToken) ? value : ValueFromType<T>(value, remoteObject.Type);
         }
 
         private static object ValueFromType<T>(JToken value, RemoteObjectType objectType)

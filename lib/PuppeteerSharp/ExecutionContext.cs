@@ -55,8 +55,7 @@ namespace PuppeteerSharp
         /// <seealso cref="EvaluateFunctionAsync{T}(string, object[])"/>
         /// <seealso cref="EvaluateExpressionHandleAsync(string)"/>
         /// <returns>Task which resolves to script return value</returns>
-        public Task<JToken> EvaluateExpressionAsync(string script)
-            => EvaluateAsync<JToken>(EvaluateExpressionHandleAsync(script));
+        public Task<JToken> EvaluateExpressionAsync(string script) => EvaluateExpressionAsync<JToken>(script);
 
         /// <summary>
         /// Executes a script in browser context
@@ -70,7 +69,13 @@ namespace PuppeteerSharp
         /// <seealso cref="EvaluateExpressionHandleAsync(string)"/>
         /// <returns>Task which resolves to script return value</returns>
         public Task<T> EvaluateExpressionAsync<T>(string script)
-            => EvaluateAsync<T>(EvaluateExpressionHandleAsync(script));
+            => RemoteObjectTaskTo<T>(EvaluateExpressionInternalAsync(true, script));
+
+        internal async Task<JSHandle> EvaluateExpressionHandleAsync(string script)
+        {
+            var result = await EvaluateExpressionInternalAsync(false, script).ConfigureAwait(false);
+            return CreateJSHandle(result);
+        }
 
         /// <summary>
         /// Executes a function in browser context
@@ -82,10 +87,8 @@ namespace PuppeteerSharp
         /// <see cref="JSHandle"/> instances can be passed as arguments
         /// </remarks>
         /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
-        /// <seealso cref="EvaluateFunctionHandleAsync(string, object[])"/>
         /// <returns>Task which resolves to script return value</returns>
-        public Task<JToken> EvaluateFunctionAsync(string script, params object[] args)
-            => EvaluateAsync<JToken>(EvaluateFunctionHandleAsync(script, args));
+        public Task<JToken> EvaluateFunctionAsync(string script, params object[] args) => EvaluateFunctionAsync<JToken>(script, args);
 
         /// <summary>
         /// Executes a function in browser context
@@ -98,10 +101,15 @@ namespace PuppeteerSharp
         /// <see cref="JSHandle"/> instances can be passed as arguments
         /// </remarks>
         /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
-        /// <seealso cref="EvaluateFunctionHandleAsync(string, object[])"/>
         /// <returns>Task which resolves to script return value</returns>
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
-            => EvaluateAsync<T>(EvaluateFunctionHandleAsync(script, args));
+            => RemoteObjectTaskTo<T>(EvaluateFunctionInternalAsync(true, script, args));
+
+        internal async Task<JSHandle> EvaluateFunctionHandleAsync(string script, params object[] args)
+        {
+            var result = await EvaluateFunctionInternalAsync(false, script, args).ConfigureAwait(false);
+            return CreateJSHandle(result);
+        }
 
         /// <summary>
         /// The method iterates JavaScript heap and finds all the objects with the given prototype.
@@ -128,69 +136,12 @@ namespace PuppeteerSharp
             return CreateJSHandle(response.Objects);
         }
 
-        internal async Task<JSHandle> EvaluateExpressionHandleAsync(string script)
+        private async Task<T> RemoteObjectTaskTo<T>(Task<RemoteObject> remote)
         {
-            if (string.IsNullOrEmpty(script))
-            {
-                return null;
-            }
-
             try
             {
-                return await EvaluateHandleAsync("Runtime.evaluate", new Dictionary<string, object>
-                {
-                    ["expression"] = _sourceUrlRegex.IsMatch(script) ? script : $"{script}\n{EvaluationScriptSuffix}",
-                    ["contextId"] = _contextId,
-                    ["returnByValue"] = false,
-                    ["awaitPromise"] = true,
-                    ["userGesture"] = true
-                }).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                throw new EvaluationFailedException(ex.Message, ex);
-            }
-        }
-
-        internal async Task<JSHandle> EvaluateFunctionHandleAsync(string script, params object[] args)
-        {
-            if (string.IsNullOrEmpty(script))
-            {
-                return null;
-            }
-
-            try
-            {
-                return await EvaluateHandleAsync("Runtime.callFunctionOn", new RuntimeCallFunctionOnRequest
-                {
-                    FunctionDeclaration = $"{script}\n{EvaluationScriptSuffix}\n",
-                    ExecutionContextId = _contextId,
-                    Arguments = args.Select(FormatArgument),
-                    ReturnByValue = false,
-                    AwaitPromise = true,
-                    UserGesture = true
-                }).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                throw new EvaluationFailedException(ex.Message, ex);
-            }
-        }
-
-        internal JSHandle CreateJSHandle(RemoteObject remoteObject)
-            => remoteObject.Subtype == RemoteObjectSubtype.Node && Frame != null
-                ? new ElementHandle(this, _client, remoteObject, Frame.FrameManager.Page, Frame.FrameManager)
-                : new JSHandle(this, _client, remoteObject);
-
-        private async Task<T> EvaluateAsync<T>(Task<JSHandle> handleEvaluator)
-        {
-            var handle = await handleEvaluator.ConfigureAwait(false);
-            var result = default(T);
-
-            try
-            {
-                result = await handle.JsonValueAsync<T>()
-                    .ContinueWith(jsonTask => jsonTask.Exception != null ? default : jsonTask.Result).ConfigureAwait(false);
+                var response = await remote.ConfigureAwait(false);
+                return (T)RemoteObjectHelper.ValueFromRemoteObject<T>(response);
             }
             catch (Exception ex)
             {
@@ -201,22 +152,53 @@ namespace PuppeteerSharp
                 }
                 throw new EvaluationFailedException(ex.Message, ex);
             }
-            await handle.DisposeAsync().ConfigureAwait(false);
-            return result is JToken token && token.Type == JTokenType.Null ? default : result;
         }
 
-        private async Task<JSHandle> EvaluateHandleAsync(string method, object args)
-        {
-            var response = await _client.SendAsync<EvaluateHandleResponse>(method, args).ConfigureAwait(false);
-
-            if (response.ExceptionDetails != null)
+        private Task<RemoteObject> EvaluateExpressionInternalAsync(bool returnByValue, string script)
+            => ExecuteEvaluationAsync("Runtime.evaluate", new Dictionary<string, object>
             {
-                throw new EvaluationFailedException("Evaluation failed: " +
-                    GetExceptionMessage(response.ExceptionDetails));
+                ["expression"] = _sourceUrlRegex.IsMatch(script) ? script : $"{script}\n{EvaluationScriptSuffix}",
+                ["contextId"] = _contextId,
+                ["returnByValue"] = returnByValue,
+                ["awaitPromise"] = true,
+                ["userGesture"] = true
+            });
+
+        private Task<RemoteObject> EvaluateFunctionInternalAsync(bool returnByValue, string script, params object[] args)
+            => ExecuteEvaluationAsync("Runtime.callFunctionOn", new RuntimeCallFunctionOnRequest
+            {
+                FunctionDeclaration = $"{script}\n{EvaluationScriptSuffix}\n",
+                ExecutionContextId = _contextId,
+                Arguments = args.Select(FormatArgument),
+                ReturnByValue = returnByValue,
+                AwaitPromise = true,
+                UserGesture = true
+            });
+
+        private async Task<RemoteObject> ExecuteEvaluationAsync(string method, object args)
+        {
+            try
+            {
+                var response = await _client.SendAsync<EvaluateHandleResponse>(method, args).ConfigureAwait(false);
+
+                if (response.ExceptionDetails != null)
+                {
+                    throw new EvaluationFailedException("Evaluation failed: " +
+                        GetExceptionMessage(response.ExceptionDetails));
+                }
+
+                return response.Result;
             }
 
-            return CreateJSHandle(response.Result);
+            catch (Exception ex)
+            {
+                throw new EvaluationFailedException(ex.Message, ex);
+            }
         }
+        internal JSHandle CreateJSHandle(RemoteObject remoteObject)
+            => remoteObject.Subtype == RemoteObjectSubtype.Node && Frame != null
+                ? new ElementHandle(this, _client, remoteObject, Frame.FrameManager.Page, Frame.FrameManager)
+                : new JSHandle(this, _client, remoteObject);
 
         private object FormatArgument(object arg)
         {
