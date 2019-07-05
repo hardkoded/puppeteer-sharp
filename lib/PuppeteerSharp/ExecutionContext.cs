@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Messaging;
 using PuppeteerSharp.Helpers;
-using static PuppeteerSharp.Messaging.RuntimeQueryObjectsResponse;
 using System.Numerics;
 
 namespace PuppeteerSharp
@@ -21,7 +20,7 @@ namespace PuppeteerSharp
         internal const string EvaluationScriptUrl = "__puppeteer_evaluation_script__";
 
         private readonly string EvaluationScriptSuffix = $"//# sourceURL={EvaluationScriptUrl}";
-        private static Regex _sourceUrlRegex = new Regex(@"^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$", RegexOptions.Multiline);
+        private static readonly Regex _sourceUrlRegex = new Regex(@"^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$", RegexOptions.Multiline);
         private readonly CDPSession _client;
         private readonly int _contextId;
 
@@ -69,13 +68,10 @@ namespace PuppeteerSharp
         /// <seealso cref="EvaluateExpressionHandleAsync(string)"/>
         /// <returns>Task which resolves to script return value</returns>
         public Task<T> EvaluateExpressionAsync<T>(string script)
-            => RemoteObjectTaskTo<T>(EvaluateExpressionInternalAsync(true, script));
+            => RemoteObjectTaskToObject<T>(EvaluateExpressionInternalAsync(true, script));
 
         internal async Task<JSHandle> EvaluateExpressionHandleAsync(string script)
-        {
-            var result = await EvaluateExpressionInternalAsync(false, script).ConfigureAwait(false);
-            return CreateJSHandle(result);
-        }
+            => CreateJSHandle(await EvaluateExpressionInternalAsync(false, script).ConfigureAwait(false));
 
         /// <summary>
         /// Executes a function in browser context
@@ -103,13 +99,11 @@ namespace PuppeteerSharp
         /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
         /// <returns>Task which resolves to script return value</returns>
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
-            => RemoteObjectTaskTo<T>(EvaluateFunctionInternalAsync(true, script, args));
+            => RemoteObjectTaskToObject<T>(EvaluateFunctionInternalAsync(true, script, args));
 
         internal async Task<JSHandle> EvaluateFunctionHandleAsync(string script, params object[] args)
-        {
-            var result = await EvaluateFunctionInternalAsync(false, script, args).ConfigureAwait(false);
-            return CreateJSHandle(result);
-        }
+            => CreateJSHandle(await EvaluateFunctionInternalAsync(false, script, args).ConfigureAwait(false));
+
 
         /// <summary>
         /// The method iterates JavaScript heap and finds all the objects with the given prototype.
@@ -136,7 +130,7 @@ namespace PuppeteerSharp
             return CreateJSHandle(response.Objects);
         }
 
-        private async Task<T> RemoteObjectTaskTo<T>(Task<RemoteObject> remote)
+        private async Task<T> RemoteObjectTaskToObject<T>(Task<RemoteObject> remote)
         {
             try
             {
@@ -269,7 +263,7 @@ namespace PuppeteerSharp
 
             var nodeInfo = await _client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
             {
-                ObjectId = elementHandle.RemoteObject.ObjectId,
+                ObjectId = elementHandle.RemoteObject.ObjectId
             }).ConfigureAwait(false);
 
             var obj = await _client.SendAsync<DomResolveNodeResponse>("DOM.resolveNode", new DomResolveNodeRequest
