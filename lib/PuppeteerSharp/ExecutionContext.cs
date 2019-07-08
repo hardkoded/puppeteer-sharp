@@ -132,7 +132,7 @@ namespace PuppeteerSharp
         private async Task<T> RemoteObjectTaskToObject<T>(Task<RemoteObject> remote)
         {
             var response = await remote.ConfigureAwait(false);
-            return (T)RemoteObjectHelper.ValueFromRemoteObject<T>(response);
+            return response == null ? default : (T)RemoteObjectHelper.ValueFromRemoteObject<T>(response);
         }
 
         private Task<RemoteObject> EvaluateExpressionInternalAsync(bool returnByValue, string script)
