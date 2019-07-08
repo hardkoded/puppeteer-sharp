@@ -264,6 +264,18 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Fact]
+        public async Task ShouldNotThrowAnErrorWhenEvaluationDoesANavigation()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
+            var result = await Page.EvaluateFunctionAsync<int[]>(@"() =>
+            {
+                window.location = '/empty.html';
+                return [42];
+            }");
+            Assert.Equal(new[] { 42 }, result);
+        }
+
+        [Fact]
         public async Task ShouldWorkWithDifferentSerializerSettings()
         {
             var result = await Page.EvaluateFunctionAsync<ComplexObjectTestClass>("() => { return { foo: 'bar' }}");
