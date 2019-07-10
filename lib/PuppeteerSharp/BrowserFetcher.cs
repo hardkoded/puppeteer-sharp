@@ -33,6 +33,7 @@ namespace PuppeteerSharp
             {Platform.Win32, "{0}/chromium-browser-snapshots/Win/{1}/{2}.zip"},
             {Platform.Win64, "{0}/chromium-browser-snapshots/Win_x64/{1}/{2}.zip"}
         };
+        private readonly WebClient _webClient = new WebClient();
 
         /// <summary>
         /// Default Chromium revision.
@@ -56,6 +57,15 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The platform.</value>
         public Platform Platform { get; }
+
+        /// <summary>
+        /// Proxy used by the WebClient in <see cref="DownloadAsync(int)"/> and <see cref="CanDownloadAsync(int)"/>
+        /// </summary>
+        public IWebProxy WebProxy
+        {
+            get => _webClient.Proxy;
+            set => _webClient.Proxy = value;
+        }
 
         /// <summary>
         /// Occurs when download progress in <see cref="DownloadAsync(int)"/> changes.
@@ -94,16 +104,20 @@ namespace PuppeteerSharp
         /// <param name="revision">A revision to check availability.</param>
         public async Task<bool> CanDownloadAsync(int revision)
         {
-            var url = GetDownloadURL(Platform, DownloadHost, revision);
-
-            var client = new HttpClient();
-            var response = await client.SendAsync(new HttpRequestMessage
+            try
             {
-                RequestUri = new Uri(url),
-                Method = HttpMethod.Head
-            }).ConfigureAwait(false);
+                var url = GetDownloadURL(Platform, DownloadHost, revision);
 
-            return response.IsSuccessStatusCode;
+                var client = WebRequest.Create(url);
+                client.Proxy = _webClient.Proxy;
+                client.Method = "HEAD";
+                var response = await client.GetResponseAsync().ConfigureAwait(false) as HttpWebResponse;
+                return response.StatusCode == HttpStatusCode.OK;
+            }
+            catch (WebException)
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -177,13 +191,11 @@ namespace PuppeteerSharp
                 downloadFolder.Create();
             }
 
-            var webClient = new WebClient();
-
             if (DownloadProgressChanged != null)
             {
-                webClient.DownloadProgressChanged += DownloadProgressChanged;
+                _webClient.DownloadProgressChanged += DownloadProgressChanged;
             }
-            await webClient.DownloadFileTaskAsync(new Uri(url), zipPath).ConfigureAwait(false);
+            await _webClient.DownloadFileTaskAsync(new Uri(url), zipPath).ConfigureAwait(false);
 
             if (Platform == Platform.MacOS)
             {
