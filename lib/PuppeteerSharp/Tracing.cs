@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
@@ -93,7 +94,8 @@ namespace PuppeteerSharp
                     if (e.MessageID == "Tracing.tracingComplete")
                     {
                         var stream = e.MessageData.ToObject<TracingCompleteResponse>().Stream;
-                        var tracingData = await ReadStream(stream, _path).ConfigureAwait(false);
+                        var tracingData = await ProtocolStreamReader.ReadProtocolStreamStringAsync(_client, stream, _path).ConfigureAwait(false);
+
                         _client.MessageReceived -= EventHandler;
                         taskWrapper.TrySetResult(tracingData);
                     }
@@ -113,39 +115,6 @@ namespace PuppeteerSharp
             _recording = false;
 
             return await taskWrapper.Task.ConfigureAwait(false);
-        }
-
-        private async Task<string> ReadStream(string stream, string path)
-        {
-            var result = new StringBuilder();
-            var eof = false;
-
-            while (!eof)
-            {
-                var response = await _client.SendAsync<IOReadResponse>("IO.read", new IOReadRequest
-                {
-                    Handle = stream
-                }).ConfigureAwait(false);
-
-                eof = response.Eof;
-
-                result.Append(response.Data);
-            }
-
-            if (!string.IsNullOrEmpty(path))
-            {
-                using (var fs = new StreamWriter(path))
-                {
-                    await fs.WriteAsync(result.ToString()).ConfigureAwait(false);
-                }
-            }
-
-            await _client.SendAsync("IO.close", new IOCloseRequest
-            {
-                Handle = stream
-            }).ConfigureAwait(false);
-
-            return result.ToString();
         }
     }
 }
