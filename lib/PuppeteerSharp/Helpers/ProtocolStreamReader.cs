@@ -12,7 +12,6 @@ namespace PuppeteerSharp.Helpers
     {
         internal static async Task<string> ReadProtocolStreamStringAsync(CDPSession client, string handle, string path)
         {
-
             var result = new StringBuilder();
             var fs = !string.IsNullOrEmpty(path) ? AsyncFileHelper.CreateStream(path, FileMode.Create) : null;
 
@@ -95,6 +94,5 @@ namespace PuppeteerSharp.Helpers
                 fs?.Dispose();
             }
         }
-
     }
 }
