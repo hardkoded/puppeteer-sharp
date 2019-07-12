@@ -16,5 +16,6 @@
         public decimal MarginRight { get; set; }
         public string PageRanges { get; set; }
         public bool PreferCSSPageSize { get; set; }
+        public string TransferMode { get; set; }
     }
 }

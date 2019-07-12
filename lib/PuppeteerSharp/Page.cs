@@ -855,14 +855,7 @@ namespace PuppeteerSharp
         /// Generating a pdf is currently only supported in Chrome headless
         /// </remarks>
         public async Task PdfAsync(string file, PdfOptions options)
-        {
-            var data = await PdfDataAsync(options).ConfigureAwait(false);
-
-            using (var fs = AsyncFileHelper.CreateStream(file, FileMode.Create))
-            {
-                await fs.WriteAsync(data, 0, data.Length).ConfigureAwait(false);
-            }
-        }
+            => await PdfInternalAsync(file, options).ConfigureAwait(false);
 
         /// <summary>
         /// generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaAsync(MediaType)"/> with <see cref="MediaType.Screen"/>
@@ -901,7 +894,9 @@ namespace PuppeteerSharp
         /// <remarks>
         /// Generating a pdf is currently only supported in Chrome headless
         /// </remarks>
-        public async Task<byte[]> PdfDataAsync(PdfOptions options)
+        public Task<byte[]> PdfDataAsync(PdfOptions options) => PdfInternalAsync(null, options);
+
+        internal async Task<byte[]> PdfInternalAsync(string file, PdfOptions options)
         {
             var paperWidth = PaperFormat.Letter.Width;
             var paperHeight = PaperFormat.Letter.Height;
@@ -930,6 +925,7 @@ namespace PuppeteerSharp
 
             var result = await Client.SendAsync<PagePrintToPDFResponse>("Page.printToPDF", new PagePrintToPDFRequest
             {
+                TransferMode = "ReturnAsStream",
                 Landscape = options.Landscape,
                 DisplayHeaderFooter = options.DisplayHeaderFooter,
                 HeaderTemplate = options.HeaderTemplate,
@@ -946,7 +942,7 @@ namespace PuppeteerSharp
                 PreferCSSPageSize = options.PreferCSSPageSize
             }).ConfigureAwait(false);
 
-            return Convert.FromBase64String(result.Data);
+            return await ProtocolStreamReader.ReadProtocolStreamByteAsync(Client, result.Stream, file).ConfigureAwait(false);
         }
 
         /// <summary>
