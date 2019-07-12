@@ -67,14 +67,7 @@ namespace PuppeteerSharp.Helpers
 
                     eof = response.Eof;
                     var data = Convert.FromBase64String(response.Data);
-                    if (result == null)
-                    {
-                        result = data;
-                    }
-                    else
-                    {
-                        result = result.Concat(data);
-                    }
+                    result = result == null ? data : result.Concat(data);
 
                     if (fs != null)
                     {
