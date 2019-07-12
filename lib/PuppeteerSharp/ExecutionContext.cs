@@ -170,7 +170,7 @@ namespace PuppeteerSharp
 
                 return response.Result;
             }
-            catch (Exception ex)
+            catch (MessageException ex)
             {
                 if (ex.Message.Contains("Object reference chain is too long") ||
                     ex.Message.Contains("Object couldn't be returned by value"))

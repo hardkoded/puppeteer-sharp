@@ -85,12 +85,8 @@ namespace PuppeteerSharp.Tests.BrowserTests.Events
                 var page = await remote.NewPageAsync();
                 var watchdog = page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Timeout = 60000 });
                 remote.Disconnect();
-                var exception = await Assert.ThrowsAsync<EvaluationFailedException>(() => watchdog);
-                //Using the type instead of the message because the exception could come
-                //Whether from the Connection rejecting a message from the CDPSession 
-                //or from the CDPSession trying to send a message to a closed connection
-                Assert.IsType<TargetClosedException>(exception.InnerException);
-                Assert.Equal("Connection disposed", ((TargetClosedException)exception.InnerException).CloseReason);
+                var exception = await Assert.ThrowsAsync<TargetClosedException>(() => watchdog);
+                Assert.Equal("Connection disposed", exception.CloseReason);
             }
         }
     }

@@ -203,6 +203,20 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Null(result);
         }
 
+        [Fact]
+        public async Task ShouldBeAbleToThrowATrickyError()
+        {
+            var windowHandle = await Page.EvaluateFunctionHandleAsync("() => window");
+            PuppeteerException exception = await Assert.ThrowsAsync<MessageException>(() => windowHandle.JsonValueAsync());
+            var errorText = exception.Message;
+
+            exception = await Assert.ThrowsAsync<EvaluationFailedException>(() => Page.EvaluateFunctionAsync(@"errorText =>
+            {
+                throw new Error(errorText);
+            }", errorText));
+            Assert.Contains(errorText, exception.Message);
+        }
+
         [Theory]
         [InlineData("1 + 5;", 6)] //ShouldAcceptSemiColons
         [InlineData("2 + 5\n// do some math!'", 7)] //ShouldAceptStringComments
