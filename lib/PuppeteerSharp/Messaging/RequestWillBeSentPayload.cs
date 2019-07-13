@@ -8,7 +8,7 @@ namespace PuppeteerSharp.Messaging
         public string LoaderId { get; set; }
         public Payload Request { get; set; }
 
-        public ResponsePayload RedirectResponse { get; set; }
+        public ResponsePayload Response { get; set; }
         public ResourceType Type { get; set; }
         public string FrameId { get; set; }
     }

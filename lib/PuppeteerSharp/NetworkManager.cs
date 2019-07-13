@@ -279,8 +279,9 @@ namespace PuppeteerSharp
 
             if (!string.IsNullOrEmpty(requestId))
             {
-                if (_requestIdToRequestWillBeSentEvent.TryRemove(requestId, out var requestWillBeSentEvent))
+                if (_requestIdToRequestWillBeSentEvent.TryRemove(requestId, out RequestWillBeSentPayload requestWillBeSentEvent))
                 {
+                    MergePayloads(requestWillBeSentEvent, e);
                     await OnRequestAsync(requestWillBeSentEvent, interceptionId).ConfigureAwait(false);
                 }
                 else
@@ -290,17 +291,28 @@ namespace PuppeteerSharp
             }
         }
 
+        private void MergePayloads(RequestWillBeSentPayload requestWillBeSentPayload, FetchRequestPausedResponse fetchRequestPausedResponse)
+        {
+            requestWillBeSentPayload.Type = fetchRequestPausedResponse.ResourceType;
+            requestWillBeSentPayload.Response = new ResponsePayload
+            {
+                Headers = fetchRequestPausedResponse.ResponseHeaders.ToDictionary(k => k.Name, v => v.Value),
+                Status = fetchRequestPausedResponse.ResponseStatusCode,
+                StatusText = fetchRequestPausedResponse.ResponseStatusCode.ToString()
+            };
+        }
+
         private async Task OnRequestAsync(RequestWillBeSentPayload e, string interceptionId)
         {
             Request request;
             var redirectChain = new List<Request>();
-            if (e.RedirectResponse != null)
+            if (e.Response != null)
             {
                 _requestIdToRequest.TryGetValue(e.RequestId, out request);
                 // If we connect late to the target, we could have missed the requestWillBeSent event.
                 if (request != null)
                 {
-                    HandleRequestRedirect(request, e.RedirectResponse);
+                    HandleRequestRedirect(request, e.Response);
                     redirectChain = request.RedirectChainList;
                 }
             }

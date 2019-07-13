@@ -51,6 +51,7 @@ namespace PuppeteerSharp
             PostData = e.Request.PostData;
             Frame = frame;
             RedirectChainList = redirectChain;
+            Response = new Response(client, this, e.Response);
 
             Headers = new Dictionary<string, string>();
             foreach (var keyValue in e.Request.Headers)
