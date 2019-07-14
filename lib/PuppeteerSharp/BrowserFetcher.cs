@@ -38,7 +38,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Default Chromium revision.
         /// </summary>
-        public const int DefaultRevision = 669486;
+        public const int DefaultRevision = 672088;
 
         /// <summary>
         /// Gets the downloads folder.
