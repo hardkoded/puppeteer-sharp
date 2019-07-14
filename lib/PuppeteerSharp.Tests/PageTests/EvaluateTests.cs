@@ -289,6 +289,16 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(new[] { 42 }, result);
         }
 
+        /// <summary>
+        /// Original Name "should transfer 100Mb of data from page to node.js"
+        /// </summary>
+        [Fact]
+        public async Task ShouldTransfer100MbOfDataFromPage()
+        {
+            var a = await Page.EvaluateFunctionAsync<string>("() => Array(100 * 1024 * 1024 + 1).join('a')");
+            Assert.Equal(100 * 1024 * 1024, a.Length);
+        }
+
         [Fact]
         public async Task ShouldWorkWithDifferentSerializerSettings()
         {
