@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>1.17.2</PackageVersion>
+    <PackageVersion>1.18.0</PackageVersion>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
@@ -12,19 +12,33 @@
     <Description>Headless Chrome .NET API</Description>
     <PackageId>PuppeteerSharp</PackageId>
     <PackageReleaseNotes><![CDATA[
+# New Features
+
+ * Tracing.StartAsync without options.
+ * OOPIF support.
+ * Expose IWebProxy in BrowserFetcher.
+
+# Breaking Changes
+
+ * Evaluate expressions on new document support. EvaluateOnNewDocumentAsync is marked as obsolete.
+
 # Changelog
 
- * Roll Chromium to r662092.
- * Add SVG clicking test.
- * Stringify response headers for intercepted requests.
- * Evaluation test with UTF8.
- * Page.SetContentAsync working with unicode strings.
- * Fix SlowMo.
- * Decimal support on GeoLocation options.
- * Update the ASP.NET Full Framework example.
- * Add missing TrySetExceptions.
+ * Bump Chromium to r672088.
+ * Do evaluations with one roundtrip.
+ * Fix A2 and A3 format size.
+ * Use .NET HttpCode phrases.
+ * 'Add EmulateAsync and SetViewPortAsync notes.
+ * Mouse.ClickAsync improvements.
+ * Add WebSocketFactory example.
+ * Add test to verify fetching of dataURL requests.
+ * Remove "--disable-gpu" flag in Windows.
+ * Clarify frame/page.GotAsync()'s handling of HTTP error statuses.
+ * Be able to throw protocol like errors.
+ * Move Path.PdfAsync to protocol streams.
+ * Add max payload test.
  ]]></PackageReleaseNotes>
-    <ReleaseVersion>1.17.2</ReleaseVersion>
+    <ReleaseVersion>1.18.0</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>
