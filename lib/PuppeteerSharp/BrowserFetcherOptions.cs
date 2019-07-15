@@ -6,7 +6,7 @@
     public class BrowserFetcherOptions
     {
         /// <summary>
-        /// Platform, defaults to currenct platform.
+        /// Platform, defaults to current platform.
         /// </summary>
         public Platform? Platform { get; set; }
         /// <summary>
