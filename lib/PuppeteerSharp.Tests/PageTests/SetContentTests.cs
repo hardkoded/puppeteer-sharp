@@ -133,31 +133,42 @@ namespace PuppeteerSharp.Tests.PageTests
         [Fact]
         public async Task ShouldWorkWithoutThrowingUnhandledTaskExceptions()
         {
-            var exceptions = new List<TargetClosedException>();
+            TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
 
-            TaskScheduler.UnobservedTaskException += (_, args) =>
+            WeakReference<Page> weak = null;
+
+            Func<Task> func = async () =>
             {
-                args.Exception.Handle(ex =>
-                {
-                    if (ex is TargetClosedException exception)
-                    {
-                        exceptions.Add(exception);
-                        return true;
-                    }
+                var page = await Browser.NewPageAsync();
+                await page.SetContentAsync("<html></html>");
+                await page.CloseAsync();
 
-                    return false;
-                });
+                weak = new WeakReference<Page>(page, true);
             };
 
-            var page = await Browser.NewPageAsync();
-            await page.SetContentAsync("<html></html>");
-            await page.CloseAsync();
-            page = null;
-
-            GC.Collect();
+            await func();
+            GC.Collect(0, GCCollectionMode.Forced);
             GC.WaitForPendingFinalizers();
 
             Assert.Empty(exceptions);
+
+            TaskScheduler.UnobservedTaskException -= TaskScheduler_UnobservedTaskException;
+        }
+
+        private static List<TargetClosedException> exceptions = new List<TargetClosedException>();
+
+        private void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs args)
+        {
+            args.Exception.Handle(ex =>
+            {
+                if (ex is TargetClosedException exception)
+                {
+                    exceptions.Add(exception);
+                    return true;
+                }
+
+                return false;
+            });
         }
     }
 }

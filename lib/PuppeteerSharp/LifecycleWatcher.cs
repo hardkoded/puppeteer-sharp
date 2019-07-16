@@ -172,21 +172,18 @@ namespace PuppeteerSharp
 
         public void Dispose(bool disposing)
         {
+            var exception = _terminationTaskWrapper.Task.Exception;
+
+            foreach (var task in _issuedTimeoutOrTerminationTasks)
+            {
+                exception = task.Exception;
+            }
+
             _frameManager.LifecycleEvent -= FrameManager_LifecycleEvent;
             _frameManager.FrameNavigatedWithinDocument -= NavigatedWithinDocument;
             _frameManager.FrameDetached -= OnFrameDetached;
             _frameManager.NetworkManager.Request -= OnRequest;
             _frameManager.Client.Disconnected -= OnClientDisconnected;
-
-            if (_terminationTaskWrapper.Task.Status == TaskStatus.Faulted)
-            {
-                _terminationTaskWrapper.Task.ContinueWith(_ => true, TaskContinuationOptions.OnlyOnFaulted);
-            }
-
-            foreach (var task in _issuedTimeoutOrTerminationTasks)
-            {
-                task.ContinueWith(_ => true, TaskContinuationOptions.OnlyOnFaulted);
-            }
         }
 
         #endregion
