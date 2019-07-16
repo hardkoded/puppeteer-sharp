@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -127,6 +128,36 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.SetContentAsync("<div>\n</div>");
             Assert.Equal("\n", await Page.QuerySelectorAsync("div").EvaluateFunctionAsync<string>("div => div.textContent"));
+        }
+
+        [Fact]
+        public async Task ShouldWorkWithoutThrowingUnhandledTaskExceptions()
+        {
+            var exceptions = new List<TargetClosedException>();
+
+            TaskScheduler.UnobservedTaskException += (_, args) =>
+            {
+                args.Exception.Handle(ex =>
+                {
+                    if (ex is TargetClosedException exception)
+                    {
+                        exceptions.Add(exception);
+                        return true;
+                    }
+
+                    return false;
+                });
+            };
+
+            var page = await Browser.NewPageAsync();
+            await page.SetContentAsync("<html></html>");
+            await page.CloseAsync();
+            page = null;
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
+            Assert.Empty(exceptions);
         }
     }
 }

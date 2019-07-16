@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.Diagnostics.Contracts;
 using PuppeteerSharp.Helpers;
+using System.Collections.Concurrent;
 
 namespace PuppeteerSharp
 {
@@ -31,6 +32,7 @@ namespace PuppeteerSharp
         private TaskCompletionSource<bool> _sameDocumentNavigationTaskWrapper;
         private TaskCompletionSource<bool> _lifecycleTaskWrapper;
         private TaskCompletionSource<bool> _terminationTaskWrapper;
+        private ConcurrentBag<Task> _issuedTimeoutOrTerminationTasks = new ConcurrentBag<Task>();
 
         public LifecycleWatcher(
             FrameManager frameManager,
@@ -71,7 +73,14 @@ namespace PuppeteerSharp
         public Task<bool> NewDocumentNavigationTask => _newDocumentNavigationTaskWrapper.Task;
         public Response NavigationResponse => _navigationRequest?.Response;
         public Task TimeoutOrTerminationTask
-            => _terminationTaskWrapper.Task.WithTimeout(_timeout);
+        {
+            get
+            {
+                var task = _terminationTaskWrapper.Task.WithTimeout(_timeout);
+                _issuedTimeoutOrTerminationTasks.Add(task);
+                return task;
+            }
+        }
         public Task LifecycleTask => _lifecycleTaskWrapper.Task;
 
         #endregion
@@ -168,6 +177,33 @@ namespace PuppeteerSharp
             _frameManager.FrameDetached -= OnFrameDetached;
             _frameManager.NetworkManager.Request -= OnRequest;
             _frameManager.Client.Disconnected -= OnClientDisconnected;
+
+            if (_terminationTaskWrapper.Task.Status == TaskStatus.Faulted)
+            {
+                try
+                {
+                    _terminationTaskWrapper.Task.GetAwaiter().GetResult();
+                }
+                catch
+                {
+                    // We try and catch so that the task isn't flagged as unhandled
+                }
+            }
+
+            foreach (var task in _issuedTimeoutOrTerminationTasks)
+            {
+                if (task.Status == TaskStatus.Faulted)
+                {
+                    try
+                    {
+                        task.GetAwaiter().GetResult();
+                    }
+                    catch
+                    {
+                        // We try and catch so that the task isn't flagged as unhandled
+                    }
+                }
+            }
         }
 
         #endregion
