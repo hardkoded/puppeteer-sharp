@@ -151,5 +151,15 @@ namespace PuppeteerSharp.Tests.FrameTests
             await waitForFunction;
             Assert.True(fooFound);
         }
+
+        [Fact]
+        public async Task ShouldSurviveNavigations()
+        {
+            var watchdog = Page.WaitForFunctionAsync("() => window.__done");
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.GoToAsync(TestConstants.ServerUrl + "/consolelog.html");
+            await Page.EvaluateFunctionAsync("() => window.__done = true");
+            await watchdog;
+        }
     }
 }
