@@ -180,29 +180,12 @@ namespace PuppeteerSharp
 
             if (_terminationTaskWrapper.Task.Status == TaskStatus.Faulted)
             {
-                try
-                {
-                    _terminationTaskWrapper.Task.GetAwaiter().GetResult();
-                }
-                catch
-                {
-                    // We try and catch so that the task isn't flagged as unhandled
-                }
+                _terminationTaskWrapper.Task.ContinueWith(_ => true, TaskContinuationOptions.OnlyOnFaulted);
             }
 
             foreach (var task in _issuedTimeoutOrTerminationTasks)
             {
-                if (task.Status == TaskStatus.Faulted)
-                {
-                    try
-                    {
-                        task.GetAwaiter().GetResult();
-                    }
-                    catch
-                    {
-                        // We try and catch so that the task isn't flagged as unhandled
-                    }
-                }
+                task.ContinueWith(_ => true, TaskContinuationOptions.OnlyOnFaulted);
             }
         }
 
