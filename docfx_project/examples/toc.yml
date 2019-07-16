@@ -10,4 +10,7 @@
       href: Page.WaitForSelectorAsync.Searching.md
     - name: Download and Reuse Chrome from a custom location
       href: ReuseChrome.md
-
+- name: Advanced
+  items:
+    - name: How to log CDP communication
+      href: LogCDP.md 
