@@ -133,6 +133,9 @@ namespace PuppeteerSharp.Tests.PageTests
         [Fact]
         public async Task ShouldWorkWithoutThrowingUnhandledTaskExceptions()
         {
+            // Using this technique to test finalizers:
+            // https://www.inversionofcontrol.co.uk/unit-testing-finalizers-in-csharp/
+
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
 
             WeakReference<Page> weak = null;

@@ -145,12 +145,14 @@ namespace PuppeteerSharp
                 document.close();
             }", html).ConfigureAwait(false);
 
-            var watcher = new LifecycleWatcher(_frameManager, Frame, waitUntil, timeout);
-            var watcherTask = await Task.WhenAny(
-                watcher.TimeoutOrTerminationTask,
-                watcher.LifecycleTask).ConfigureAwait(false);
+            using (var watcher = new LifecycleWatcher(_frameManager, Frame, waitUntil, timeout))
+            {
+                var watcherTask = await Task.WhenAny(
+                    watcher.TimeoutOrTerminationTask,
+                    watcher.LifecycleTask).ConfigureAwait(false);
 
-            await watcherTask.ConfigureAwait(false);
+                await watcherTask.ConfigureAwait(false);
+            }
         }
 
         internal async Task<ElementHandle> AddScriptTagAsync(AddTagOptions options)
