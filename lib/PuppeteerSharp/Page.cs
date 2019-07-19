@@ -90,9 +90,12 @@ namespace PuppeteerSharp
             });
         }
 
-        internal CDPSession Client { get; }
-
         #region Public Properties
+
+        /// <summary>
+        /// Chrome DevTools Protocol session.
+        /// </summary>
+        public CDPSession Client { get; }
 
         /// <summary>
         /// Raised when the JavaScript <c>load</c> <see href="https://developer.mozilla.org/en-US/docs/Web/Events/load"/> event is dispatched.
