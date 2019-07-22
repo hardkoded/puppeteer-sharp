@@ -32,7 +32,7 @@ namespace PuppeteerSharp
         private TaskCompletionSource<bool> _sameDocumentNavigationTaskWrapper;
         private TaskCompletionSource<bool> _lifecycleTaskWrapper;
         private TaskCompletionSource<bool> _terminationTaskWrapper;
-        private ConcurrentBag<Task> _issuedTimeoutOrTerminationTasks = new ConcurrentBag<Task>();
+        private Task _timeoutOrTerminationTask;
 
         public LifecycleWatcher(
             FrameManager frameManager,
@@ -72,15 +72,8 @@ namespace PuppeteerSharp
         public Task<bool> SameDocumentNavigationTask => _sameDocumentNavigationTaskWrapper.Task;
         public Task<bool> NewDocumentNavigationTask => _newDocumentNavigationTaskWrapper.Task;
         public Response NavigationResponse => _navigationRequest?.Response;
-        public Task TimeoutOrTerminationTask
-        {
-            get
-            {
-                var task = _terminationTaskWrapper.Task.WithTimeout(_timeout);
-                _issuedTimeoutOrTerminationTasks.Add(task);
-                return task;
-            }
-        }
+        public Task TimeoutOrTerminationTask => _timeoutOrTerminationTask
+            ?? (_timeoutOrTerminationTask = _terminationTaskWrapper.Task.WithTimeout(_timeout));
         public Task LifecycleTask => _lifecycleTaskWrapper.Task;
 
         #endregion
@@ -173,11 +166,7 @@ namespace PuppeteerSharp
         public void Dispose(bool disposing)
         {
             var exception = _terminationTaskWrapper.Task.Exception;
-
-            foreach (var task in _issuedTimeoutOrTerminationTasks)
-            {
-                exception = task.Exception;
-            }
+            exception = _timeoutOrTerminationTask.Exception;
 
             _frameManager.LifecycleEvent -= FrameManager_LifecycleEvent;
             _frameManager.FrameNavigatedWithinDocument -= NavigatedWithinDocument;
