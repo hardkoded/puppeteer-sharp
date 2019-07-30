@@ -1603,6 +1603,13 @@ namespace PuppeteerSharp
 
             return Task.CompletedTask;
         }
+
+        /// <summary>
+        /// Brings page to front (activates tab).
+        /// </summary>
+        /// <returns>A task which resolves when the message was sent to Chromium.</returns>
+        public Task BringToFrontAsync() => Client.SendAsync("Page.bringToFront");
+
         #endregion
 
         internal void OnPopup(Page popupPage) => Popup?.Invoke(this, new PopupEventArgs { PopupPage = popupPage });
