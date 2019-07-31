@@ -1592,10 +1592,56 @@ namespace PuppeteerSharp.Input
                 Key = "\"",
                 Code = "Quote"
             },
+            ["SoftLeft"] = new KeyDefinition
+            {
+                Key = "SoftLeft",
+                Code = "SoftLeft",
+                Location = 4
+            },
+            ["SoftRight"] = new KeyDefinition
+            {
+                Key = "SoftRight",
+                Code = "SoftRight",
+                Location = 4
+            },
+            ["Camera"] = new KeyDefinition
+            {
+                KeyCode = 44,
+                Key = "Camera",
+                Code = "Camera",
+                Location = 4
+            },
+            ["Call"] = new KeyDefinition
+            {
+                Key = "Call",
+                Code = "Call",
+                Location = 4
+            },
+            ["EndCall"] = new KeyDefinition
+            {
+                KeyCode = 95,
+                Key = "EndCall",
+                Code = "EndCall",
+                Location = 4
+            },
+            ["VolumeDown"] = new KeyDefinition
+            {
+                KeyCode = 182,
+                Key = "VolumeDown",
+                Code = "VolumeDown",
+                Location = 4
+            },
+            ["VolumeUp"] = new KeyDefinition
+            {
+                KeyCode = 183,
+                Key = "VolumeUp",
+                Code = "VolumeUp",
+                Location = 4
+            }
         };
 
         internal static KeyDefinition Get(string key) => Definitions[key];
-        
+
         internal static bool ContainsKey(string key) => Definitions.ContainsKey(key);
     }
 }
