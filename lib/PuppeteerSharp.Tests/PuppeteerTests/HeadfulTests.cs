@@ -121,6 +121,30 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             }
         }
 
+        [Fact]
+        public async Task BringToFrontShouldWork()
+        {
+            using (var browserWithExtension = await Puppeteer.LaunchAsync(
+                TestConstants.BrowserWithExtensionOptions(),
+                TestConstants.LoggerFactory))
+            using (var page = await browserWithExtension.NewPageAsync())
+            {
+                await page.GoToAsync(TestConstants.EmptyPage);
+                Assert.Equal("visible", await page.EvaluateExpressionAsync<string>("document.visibilityState"));
+
+                var newPage = await browserWithExtension.NewPageAsync();
+                await newPage.GoToAsync(TestConstants.EmptyPage);
+                Assert.Equal("hidden", await page.EvaluateExpressionAsync<string>("document.visibilityState"));
+                Assert.Equal("visible", await newPage.EvaluateExpressionAsync<string>("document.visibilityState"));
+
+                await page.BringToFrontAsync();
+                Assert.Equal("visible", await page.EvaluateExpressionAsync<string>("document.visibilityState"));
+                Assert.Equal("hidden", await newPage.EvaluateExpressionAsync<string>("document.visibilityState"));
+
+                await newPage.CloseAsync();
+            }
+        }
+
         private Task<Target> WaitForBackgroundPageTargetAsync(Browser browser)
         {
             var target = browser.Targets().FirstOrDefault(t => t.Type == TargetType.BackgroundPage);
