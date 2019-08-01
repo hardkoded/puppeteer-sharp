@@ -90,6 +90,5 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             Assert.Equal(3, await Page.MainFrame.EvaluateExpressionAsync<int>("1 + 2"));
             Assert.Equal(5, await Page.FirstChildFrame().EvaluateExpressionAsync<int>("2 + 3"));
         }
-
     }
 }
