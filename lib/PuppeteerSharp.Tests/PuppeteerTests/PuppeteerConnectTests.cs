@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Connections.Features;
 using PuppeteerSharp.Transport;
 using Xunit;
 using Xunit.Abstractions;
@@ -62,7 +63,14 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             }))
             using (var page = await browser.NewPageAsync())
             {
-                var response = await page.GoToAsync(TestConstants.HttpsPrefix + "/empty.html");
+                var requestTask = HttpsServer.WaitForRequest("/empty.html", request => request.HttpContext.Features.Get<ITlsHandshakeFeature>().Protocol);
+                var responseTask = page.GoToAsync(TestConstants.HttpsPrefix + "/empty.html");
+
+                await Task.WhenAll(
+                    requestTask,
+                    responseTask);
+
+                var response = responseTask.Result;
                 Assert.True(response.Ok);
                 Assert.NotNull(response.SecurityDetails);
                 Assert.Equal("TLS 1.2", response.SecurityDetails.Protocol);
