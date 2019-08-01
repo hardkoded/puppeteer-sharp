@@ -33,7 +33,9 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             var response = responseTask.Result;
             Assert.Equal(HttpStatusCode.OK, response.Status);
             Assert.NotNull(response.SecurityDetails);
-            Assert.Equal(CurateProtocol(requestTask.Result.ToString()), CurateProtocol(response.SecurityDetails.Protocol));
+            Assert.Equal(
+                TestUtils.CurateProtocol(requestTask.Result.ToString()),
+                TestUtils.CurateProtocol(response.SecurityDetails.Protocol));
         }
 
         [Fact]
@@ -57,7 +59,9 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
 
             Assert.Equal(2, responses.Count);
             Assert.Equal(HttpStatusCode.Found, responses[0].Status);
-            Assert.Equal(CurateProtocol(requestTask.Result.ToString()), CurateProtocol(response.SecurityDetails.Protocol));
+            Assert.Equal(
+                TestUtils.CurateProtocol(requestTask.Result.ToString()),
+                TestUtils.CurateProtocol(response.SecurityDetails.Protocol));
         }
 
         [Fact]
@@ -86,8 +90,6 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             Assert.Equal(3, await Page.MainFrame.EvaluateExpressionAsync<int>("1 + 2"));
             Assert.Equal(5, await Page.FirstChildFrame().EvaluateExpressionAsync<int>("2 + 3"));
         }
-
-        private string CurateProtocol(string protocol) => protocol.ToLower().Replace(" ", string.Empty).Replace(".", string.Empty);
 
     }
 }

@@ -75,7 +75,9 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 var response = responseTask.Result;
                 Assert.True(response.Ok);
                 Assert.NotNull(response.SecurityDetails);
-                Assert.Equal("TLS 1.2", response.SecurityDetails.Protocol);
+                Assert.Equal(
+                    TestUtils.CurateProtocol(requestTask.Result.ToString()),
+                    TestUtils.CurateProtocol(response.SecurityDetails.Protocol));
             }
         }
 
