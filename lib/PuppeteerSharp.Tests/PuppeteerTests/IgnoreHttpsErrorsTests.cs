@@ -21,7 +21,9 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         [Fact]
         public async Task ShouldWork()
         {
-            var requestTask = HttpsServer.WaitForRequest("/empty.html", request => request.HttpContext.Features.Get<ITlsHandshakeFeature>().Protocol);
+            var requestTask = HttpsServer.WaitForRequest(
+                "/empty.html",
+                request => request.HttpContext.Features.Get<ITlsHandshakeFeature>().Protocol);
             var responseTask = Page.GoToAsync(TestConstants.HttpsPrefix + "/empty.html");
 
             await Task.WhenAll(
@@ -42,7 +44,9 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
 
             Page.Response += (sender, e) => responses.Add(e.Response);
 
-            var requestTask = HttpsServer.WaitForRequest("/empty.html", request => request.HttpContext.Features.Get<ITlsHandshakeFeature>().Protocol);
+            var requestTask = HttpsServer.WaitForRequest(
+                "/empty.html",
+                request => request.HttpContext.Features.Get<ITlsHandshakeFeature>().Protocol);
             var responseTask = Page.GoToAsync(TestConstants.HttpsPrefix + "/plzredirect");
 
             await Task.WhenAll(

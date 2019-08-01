@@ -63,7 +63,9 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             }))
             using (var page = await browser.NewPageAsync())
             {
-                var requestTask = HttpsServer.WaitForRequest("/empty.html", request => request.HttpContext.Features.Get<ITlsHandshakeFeature>().Protocol);
+                var requestTask = HttpsServer.WaitForRequest(
+                    "/empty.html",
+                    request => request.HttpContext.Features.Get<ITlsHandshakeFeature>().Protocol);
                 var responseTask = page.GoToAsync(TestConstants.HttpsPrefix + "/empty.html");
 
                 await Task.WhenAll(
