@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         {
             var requestTask = HttpsServer.WaitForRequest(
                 "/empty.html",
-                request => request);
+                request => request.HttpContext.Features.Get<ITlsHandshakeFeature>().Protocol);
             var responseTask = Page.GoToAsync(TestConstants.HttpsPrefix + "/empty.html");
 
             await Task.WhenAll(
@@ -34,7 +34,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             Assert.Equal(HttpStatusCode.OK, response.Status);
             Assert.NotNull(response.SecurityDetails);
             Assert.Equal(
-                TestUtils.CurateProtocol(requestTask.Result.HttpContext.Features.Get<ITlsHandshakeFeature>().Protocol.ToString()),
+                TestUtils.CurateProtocol(requestTask.Result.ToString()),
                 TestUtils.CurateProtocol(response.SecurityDetails.Protocol));
         }
 
