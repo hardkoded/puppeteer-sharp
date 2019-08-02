@@ -27,6 +27,7 @@ namespace PuppeteerSharp
             "--disable-backgrounding-occluded-windows",
             "--disable-breakpad",
             "--disable-client-side-phishing-detection",
+            "--disable-component-extensions-with-background-pages",
             "--disable-default-apps",
             "--disable-dev-shm-usage",
             "--disable-extensions",
