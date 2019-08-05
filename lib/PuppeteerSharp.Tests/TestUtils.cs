@@ -84,5 +84,10 @@ namespace PuppeteerSharp.Tests
             }
         }
         internal static bool IsFavicon(Request request) => request.Url.Contains("favicon.ico");
+        internal static string CurateProtocol(string protocol)
+            => protocol
+                .ToLower()
+                .Replace(" ", string.Empty)
+                .Replace(".", string.Empty);
     }
 }
