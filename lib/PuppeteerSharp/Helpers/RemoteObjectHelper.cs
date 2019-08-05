@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Helpers
 
             if (value == null)
             {
-                return null;
+                return default(T);
             }
 
             return typeof(T) == typeof(JToken) ? value : ValueFromType<T>(value, remoteObject.Type);
