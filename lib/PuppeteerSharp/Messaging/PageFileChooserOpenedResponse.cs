@@ -1,6 +1,6 @@
 ﻿namespace PuppeteerSharp.Messaging
 {
-    internal class FileChooser
+    public class PageFileChooserOpenedResponse
     {
     }
 }

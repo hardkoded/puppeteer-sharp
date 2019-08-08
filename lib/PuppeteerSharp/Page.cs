@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -47,7 +48,7 @@ namespace PuppeteerSharp
         private readonly TaskCompletionSource<bool> _closeCompletedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         private readonly TimeoutSettings _timeoutSettings;
         private bool _fileChooserInterceptionIsDisabled;
-        private List<TaskCompletionSource<FileChooser>> _fileChooserInterceptors = new List<TaskCompletionSource<FileChooser>>();
+        private ConcurrentDictionary<Guid, TaskCompletionSource<FileChooser>> _fileChooserInterceptors;
 
         private static readonly Dictionary<string, decimal> _unitToPixels = new Dictionary<string, decimal> {
             {"px", 1},
@@ -69,6 +70,7 @@ namespace PuppeteerSharp
             Tracing = new Tracing(client);
             Coverage = new Coverage(client);
 
+            _fileChooserInterceptors = new ConcurrentDictionary<Guid, TaskCompletionSource<FileChooser>>();
             _timeoutSettings = new TimeoutSettings();
             _emulationManager = new EmulationManager(client);
             _pageBindings = new Dictionary<string, Delegate>();
@@ -1575,599 +1577,604 @@ namespace PuppeteerSharp
             return await responseTcs.Task.WithTimeout(timeout).ConfigureAwait(false);
         }
 
-        public async Task<FileChooser> WaitForFileChooserAsync(WaitForFileChooserOptions options = null)
+        public Task<FileChooser> WaitForFileChooserAsync(WaitForFileChooserOptions options = null)
         {
             if (_fileChooserInterceptionIsDisabled)
             {
                 throw new PuppeteerException("File chooser handling does not work with multiple connections to the same page");
             }
 
+            var timeout = options?.Timeout ?? _timeoutSettings.Timeout;
             var tcs = new TaskCompletionSource<FileChooser>();
+            var guid = Guid.NewGuid();
+            _fileChooserInterceptors.TryAdd(guid, tcs);
 
-            _fileChooserInterceptors.Add(tcs);
+            try
+            {
+                return tcs.Task.WithTimeout(timeout);
+            }
+            catch (Exception ex)
+            {
+                _fileChooserInterceptors.TryRemove(guid, out _);
+                throw ex;
+            }
+        }
 
-            await tcs.Task.WithTimeout(options?.Timeout ?? _timeoutSettings.Timeout);
-            return helper.waitWithTimeout(promise, 'waiting for file chooser', timeout).catch (e => {
-                this._fileChooserInterceptors.delete(callback);
-                throw e;
-            });
+        /// <summary>
+        /// Navigate to the previous page in history.
+        /// </summary>
+        /// <returns>Task that resolves to the main resource response. In case of multiple redirects, 
+        /// the navigation will resolve with the response of the last redirect. If can not go back, resolves to null.</returns>
+        /// <param name="options">Navigation parameters.</param>
+        public Task<Response> GoBackAsync(NavigationOptions options = null) => GoAsync(-1, options);
+
+        /// <summary>
+        /// Navigate to the next page in history.
+        /// </summary>
+        /// <returns>Task that resolves to the main resource response. In case of multiple redirects, 
+        /// the navigation will resolve with the response of the last redirect. If can not go forward, resolves to null.</returns>
+        /// <param name="options">Navigation parameters.</param>
+        public Task<Response> GoForwardAsync(NavigationOptions options = null) => GoAsync(1, options);
+
+        /// <summary>
+        /// Resets the background color and Viewport after taking Screenshots using BurstMode.
+        /// </summary>
+        /// <returns>The burst mode off.</returns>
+        public Task SetBurstModeOffAsync()
+        {
+            _screenshotBurstModeOn = false;
+            if (_screenshotBurstModeOptions != null)
+            {
+                ResetBackgroundColorAndViewportAsync(_screenshotBurstModeOptions);
             }
 
-            /// <summary>
-            /// Navigate to the previous page in history.
-            /// </summary>
-            /// <returns>Task that resolves to the main resource response. In case of multiple redirects, 
-            /// the navigation will resolve with the response of the last redirect. If can not go back, resolves to null.</returns>
-            /// <param name="options">Navigation parameters.</param>
-            public Task<Response> GoBackAsync(NavigationOptions options = null) => GoAsync(-1, options);
+            return Task.CompletedTask;
+        }
 
-            /// <summary>
-            /// Navigate to the next page in history.
-            /// </summary>
-            /// <returns>Task that resolves to the main resource response. In case of multiple redirects, 
-            /// the navigation will resolve with the response of the last redirect. If can not go forward, resolves to null.</returns>
-            /// <param name="options">Navigation parameters.</param>
-            public Task<Response> GoForwardAsync(NavigationOptions options = null) => GoAsync(1, options);
+        /// <summary>
+        /// Brings page to front (activates tab).
+        /// </summary>
+        /// <returns>A task that resolves when the message has been sent to Chromium.</returns>
+        public Task BringToFrontAsync() => Client.SendAsync("Page.bringToFront");
 
-            /// <summary>
-            /// Resets the background color and Viewport after taking Screenshots using BurstMode.
-            /// </summary>
-            /// <returns>The burst mode off.</returns>
-            public Task SetBurstModeOffAsync()
+        #endregion
+
+        internal void OnPopup(Page popupPage) => Popup?.Invoke(this, new PopupEventArgs { PopupPage = popupPage });
+
+        #region Private Method
+
+        internal static async Task<Page> CreateAsync(
+            CDPSession client,
+            Target target,
+            bool ignoreHTTPSErrors,
+            ViewPortOptions defaultViewPort,
+            TaskQueue screenshotTaskQueue)
+        {
+            var page = new Page(client, target, screenshotTaskQueue);
+            await page.InitializeAsync(ignoreHTTPSErrors).ConfigureAwait(false);
+
+            if (defaultViewPort != null)
             {
-                _screenshotBurstModeOn = false;
-                if (_screenshotBurstModeOptions != null)
+                await page.SetViewportAsync(defaultViewPort).ConfigureAwait(false);
+            }
+
+            return page;
+        }
+
+        private async Task InitializeAsync(bool ignoreHTTPSErrors)
+        {
+            FrameManager = await FrameManager.CreateFrameManagerAsync(Client, this, ignoreHTTPSErrors, _timeoutSettings).ConfigureAwait(false);
+            var networkManager = FrameManager.NetworkManager;
+
+            Client.MessageReceived += Client_MessageReceived;
+            FrameManager.FrameAttached += (sender, e) => FrameAttached?.Invoke(this, e);
+            FrameManager.FrameDetached += (sender, e) => FrameDetached?.Invoke(this, e);
+            FrameManager.FrameNavigated += (sender, e) => FrameNavigated?.Invoke(this, e);
+
+            networkManager.Request += (sender, e) => Request?.Invoke(this, e);
+            networkManager.RequestFailed += (sender, e) => RequestFailed?.Invoke(this, e);
+            networkManager.Response += (sender, e) => Response?.Invoke(this, e);
+            networkManager.RequestFinished += (sender, e) => RequestFinished?.Invoke(this, e);
+
+            await Task.WhenAll(
+               Client.SendAsync("Target.setAutoAttach", new TargetSetAutoAttachRequest
+               {
+                   AutoAttach = true,
+                   WaitForDebuggerOnStart = false,
+                   Flatten = true
+               }),
+               Client.SendAsync("Performance.enable", null),
+               Client.SendAsync("Log.enable", null)
+           ).ConfigureAwait(false);
+
+            try
+            {
+                await Client.SendAsync("Page.setInterceptFileChooserDialog", new PageSetInterceptFileChooserDialog
                 {
-                    ResetBackgroundColorAndViewportAsync(_screenshotBurstModeOptions);
+                    Enabled = true
+                }).ConfigureAwait(false);
+            }
+            catch
+            {
+                _fileChooserInterceptionIsDisabled = true;
+            }
+        }
+
+        private async Task<Response> GoAsync(int delta, NavigationOptions options)
+        {
+            var history = await Client.SendAsync<PageGetNavigationHistoryResponse>("Page.getNavigationHistory").ConfigureAwait(false);
+
+            if (history.Entries.Count <= history.CurrentIndex + delta)
+            {
+                return null;
+            }
+            var entry = history.Entries[history.CurrentIndex + delta];
+            var waitTask = WaitForNavigationAsync(options);
+
+            await Task.WhenAll(
+                waitTask,
+                Client.SendAsync("Page.navigateToHistoryEntry", new PageNavigateToHistoryEntryRequest
+                {
+                    EntryId = entry.Id
+                })
+            ).ConfigureAwait(false);
+
+            return waitTask.Result;
+        }
+
+        private Dictionary<string, decimal> BuildMetricsObject(List<Metric> metrics)
+        {
+            var result = new Dictionary<string, decimal>();
+
+            foreach (var item in metrics)
+            {
+                if (SupportedMetrics.Contains(item.Name))
+                {
+                    result.Add(item.Name, item.Value);
                 }
-
-                return Task.CompletedTask;
             }
 
-            /// <summary>
-            /// Brings page to front (activates tab).
-            /// </summary>
-            /// <returns>A task that resolves when the message has been sent to Chromium.</returns>
-            public Task BringToFrontAsync() => Client.SendAsync("Page.bringToFront");
+            return result;
+        }
 
-            #endregion
-
-            internal void OnPopup(Page popupPage) => Popup?.Invoke(this, new PopupEventArgs { PopupPage = popupPage });
-
-            #region Private Method
-
-            internal static async Task<Page> CreateAsync(
-                CDPSession client,
-                Target target,
-                bool ignoreHTTPSErrors,
-                ViewPortOptions defaultViewPort,
-                TaskQueue screenshotTaskQueue)
+        private async Task<string> PerformScreenshot(ScreenshotType type, ScreenshotOptions options)
+        {
+            if (!_screenshotBurstModeOn)
             {
-                var page = new Page(client, target, screenshotTaskQueue);
-                await page.InitializeAsync(ignoreHTTPSErrors).ConfigureAwait(false);
-
-                if (defaultViewPort != null)
+                await Client.SendAsync("Target.activateTarget", new TargetActivateTargetRequest
                 {
-                    await page.SetViewportAsync(defaultViewPort).ConfigureAwait(false);
-                }
-
-                return page;
+                    TargetId = Target.TargetId
+                }).ConfigureAwait(false);
             }
 
-            private async Task InitializeAsync(bool ignoreHTTPSErrors)
+            var clip = options.Clip != null ? ProcessClip(options.Clip) : null;
+
+            if (!_screenshotBurstModeOn)
             {
-                FrameManager = await FrameManager.CreateFrameManagerAsync(Client, this, ignoreHTTPSErrors, _timeoutSettings).ConfigureAwait(false);
-                var networkManager = FrameManager.NetworkManager;
-
-                Client.MessageReceived += Client_MessageReceived;
-                FrameManager.FrameAttached += (sender, e) => FrameAttached?.Invoke(this, e);
-                FrameManager.FrameDetached += (sender, e) => FrameDetached?.Invoke(this, e);
-                FrameManager.FrameNavigated += (sender, e) => FrameNavigated?.Invoke(this, e);
-
-                networkManager.Request += (sender, e) => Request?.Invoke(this, e);
-                networkManager.RequestFailed += (sender, e) => RequestFailed?.Invoke(this, e);
-                networkManager.Response += (sender, e) => Response?.Invoke(this, e);
-                networkManager.RequestFinished += (sender, e) => RequestFinished?.Invoke(this, e);
-
-                await Task.WhenAll(
-                   Client.SendAsync("Target.setAutoAttach", new TargetSetAutoAttachRequest
-                   {
-                       AutoAttach = true,
-                       WaitForDebuggerOnStart = false,
-                       Flatten = true
-                   }),
-                   Client.SendAsync("Performance.enable", null),
-                   Client.SendAsync("Log.enable", null)
-               ).ConfigureAwait(false);
-
-                try
+                if (options != null && options.FullPage)
                 {
-                    await Client.SendAsync("Page.setInterceptFileChooserDialog", new PageSetInterceptFileChooserDialog
+                    var metrics = _screenshotBurstModeOn
+                        ? _burstModeMetrics :
+                        await Client.SendAsync<PageGetLayoutMetricsResponse>("Page.getLayoutMetrics").ConfigureAwait(false);
+
+                    if (options.BurstMode)
                     {
-                        Enabled = true
-                    }).ConfigureAwait(false);
-                }
-                catch
-                {
-                    _fileChooserInterceptionIsDisabled = true;
-                }
-            }
-
-            private async Task<Response> GoAsync(int delta, NavigationOptions options)
-            {
-                var history = await Client.SendAsync<PageGetNavigationHistoryResponse>("Page.getNavigationHistory").ConfigureAwait(false);
-
-                if (history.Entries.Count <= history.CurrentIndex + delta)
-                {
-                    return null;
-                }
-                var entry = history.Entries[history.CurrentIndex + delta];
-                var waitTask = WaitForNavigationAsync(options);
-
-                await Task.WhenAll(
-                    waitTask,
-                    Client.SendAsync("Page.navigateToHistoryEntry", new PageNavigateToHistoryEntryRequest
-                    {
-                        EntryId = entry.Id
-                    })
-                ).ConfigureAwait(false);
-
-                return waitTask.Result;
-            }
-
-            private Dictionary<string, decimal> BuildMetricsObject(List<Metric> metrics)
-            {
-                var result = new Dictionary<string, decimal>();
-
-                foreach (var item in metrics)
-                {
-                    if (SupportedMetrics.Contains(item.Name))
-                    {
-                        result.Add(item.Name, item.Value);
+                        _burstModeMetrics = metrics;
                     }
-                }
 
-                return result;
-            }
+                    var contentSize = metrics.ContentSize;
 
-            private async Task<string> PerformScreenshot(ScreenshotType type, ScreenshotOptions options)
-            {
-                if (!_screenshotBurstModeOn)
-                {
-                    await Client.SendAsync("Target.activateTarget", new TargetActivateTargetRequest
+                    var width = Convert.ToInt32(Math.Ceiling(contentSize.Width));
+                    var height = Convert.ToInt32(Math.Ceiling(contentSize.Height));
+
+                    // Overwrite clip for full page at all times.
+                    clip = new Clip
                     {
-                        TargetId = Target.TargetId
-                    }).ConfigureAwait(false);
-                }
+                        X = 0,
+                        Y = 0,
+                        Width = width,
+                        Height = height,
+                        Scale = 1
+                    };
 
-                var clip = options.Clip != null ? ProcessClip(options.Clip) : null;
-
-                if (!_screenshotBurstModeOn)
-                {
-                    if (options != null && options.FullPage)
-                    {
-                        var metrics = _screenshotBurstModeOn
-                            ? _burstModeMetrics :
-                            await Client.SendAsync<PageGetLayoutMetricsResponse>("Page.getLayoutMetrics").ConfigureAwait(false);
-
-                        if (options.BurstMode)
+                    var isMobile = Viewport?.IsMobile ?? false;
+                    var deviceScaleFactor = Viewport?.DeviceScaleFactor ?? 1;
+                    var isLandscape = Viewport?.IsLandscape ?? false;
+                    var screenOrientation = isLandscape ?
+                        new ScreenOrientation
                         {
-                            _burstModeMetrics = metrics;
-                        }
-
-                        var contentSize = metrics.ContentSize;
-
-                        var width = Convert.ToInt32(Math.Ceiling(contentSize.Width));
-                        var height = Convert.ToInt32(Math.Ceiling(contentSize.Height));
-
-                        // Overwrite clip for full page at all times.
-                        clip = new Clip
+                            Angle = 90,
+                            Type = ScreenOrientationType.LandscapePrimary
+                        } :
+                        new ScreenOrientation
                         {
-                            X = 0,
-                            Y = 0,
-                            Width = width,
-                            Height = height,
-                            Scale = 1
+                            Angle = 0,
+                            Type = ScreenOrientationType.PortraitPrimary
                         };
 
-                        var isMobile = Viewport?.IsMobile ?? false;
-                        var deviceScaleFactor = Viewport?.DeviceScaleFactor ?? 1;
-                        var isLandscape = Viewport?.IsLandscape ?? false;
-                        var screenOrientation = isLandscape ?
-                            new ScreenOrientation
-                            {
-                                Angle = 90,
-                                Type = ScreenOrientationType.LandscapePrimary
-                            } :
-                            new ScreenOrientation
-                            {
-                                Angle = 0,
-                                Type = ScreenOrientationType.PortraitPrimary
-                            };
-
-                        await Client.SendAsync("Emulation.setDeviceMetricsOverride", new EmulationSetDeviceMetricsOverrideRequest
-                        {
-                            Mobile = isMobile,
-                            Width = width,
-                            Height = height,
-                            DeviceScaleFactor = deviceScaleFactor,
-                            ScreenOrientation = screenOrientation
-                        }).ConfigureAwait(false);
-                    }
-
-                    if (options?.OmitBackground == true && type == ScreenshotType.Png)
+                    await Client.SendAsync("Emulation.setDeviceMetricsOverride", new EmulationSetDeviceMetricsOverrideRequest
                     {
-                        await Client.SendAsync("Emulation.setDefaultBackgroundColorOverride", new EmulationSetDefaultBackgroundColorOverrideRequest
+                        Mobile = isMobile,
+                        Width = width,
+                        Height = height,
+                        DeviceScaleFactor = deviceScaleFactor,
+                        ScreenOrientation = screenOrientation
+                    }).ConfigureAwait(false);
+                }
+
+                if (options?.OmitBackground == true && type == ScreenshotType.Png)
+                {
+                    await Client.SendAsync("Emulation.setDefaultBackgroundColorOverride", new EmulationSetDefaultBackgroundColorOverrideRequest
+                    {
+                        Color = new EmulationSetDefaultBackgroundColorOverrideColor
                         {
-                            Color = new EmulationSetDefaultBackgroundColorOverrideColor
-                            {
-                                R = 0,
-                                G = 0,
-                                B = 0,
-                                A = 0
-                            }
-                        }).ConfigureAwait(false);
-                    }
+                            R = 0,
+                            G = 0,
+                            B = 0,
+                            A = 0
+                        }
+                    }).ConfigureAwait(false);
                 }
+            }
 
-                var screenMessage = new PageCaptureScreenshotRequest
+            var screenMessage = new PageCaptureScreenshotRequest
+            {
+                Format = type.ToString().ToLower()
+            };
+
+            if (options.Quality.HasValue)
+            {
+                screenMessage.Quality = options.Quality.Value;
+            }
+
+            if (clip != null)
+            {
+                screenMessage.Clip = clip;
+            }
+
+            var result = await Client.SendAsync<PageCaptureScreenshotResponse>("Page.captureScreenshot", screenMessage).ConfigureAwait(false);
+
+            if (options.BurstMode)
+            {
+                _screenshotBurstModeOptions = options;
+                _screenshotBurstModeOn = true;
+            }
+            else
+            {
+                await ResetBackgroundColorAndViewportAsync(options).ConfigureAwait(false);
+            }
+            return result.Data;
+        }
+
+        private Clip ProcessClip(Clip clip)
+        {
+            var x = Math.Round(clip.X);
+            var y = Math.Round(clip.Y);
+
+            return new Clip
+            {
+                X = x,
+                Y = y,
+                Width = Math.Round(clip.Width + clip.X - x, MidpointRounding.AwayFromZero),
+                Height = Math.Round(clip.Height + clip.Y - y, MidpointRounding.AwayFromZero),
+                Scale = 1
+            };
+        }
+
+        private Task ResetBackgroundColorAndViewportAsync(ScreenshotOptions options)
+        {
+            var omitBackgroundTask = options?.OmitBackground == true && options.Type == ScreenshotType.Png ?
+                Client.SendAsync("Emulation.setDefaultBackgroundColorOverride") : Task.CompletedTask;
+            var setViewPortTask = (options?.FullPage == true && Viewport != null) ?
+                SetViewportAsync(Viewport) : Task.CompletedTask;
+            return Task.WhenAll(omitBackgroundTask, setViewPortTask);
+        }
+
+        private decimal ConvertPrintParameterToInches(object parameter)
+        {
+            if (parameter == null)
+            {
+                return 0;
+            }
+
+            decimal pixels;
+            if (parameter is decimal || parameter is int)
+            {
+                pixels = Convert.ToDecimal(parameter);
+            }
+            else
+            {
+                var text = parameter.ToString();
+                var unit = text.Substring(text.Length - 2).ToLower();
+                string valueText;
+                if (_unitToPixels.ContainsKey(unit))
                 {
-                    Format = type.ToString().ToLower()
-                };
-
-                if (options.Quality.HasValue)
-                {
-                    screenMessage.Quality = options.Quality.Value;
-                }
-
-                if (clip != null)
-                {
-                    screenMessage.Clip = clip;
-                }
-
-                var result = await Client.SendAsync<PageCaptureScreenshotResponse>("Page.captureScreenshot", screenMessage).ConfigureAwait(false);
-
-                if (options.BurstMode)
-                {
-                    _screenshotBurstModeOptions = options;
-                    _screenshotBurstModeOn = true;
+                    valueText = text.Substring(0, text.Length - 2);
                 }
                 else
                 {
-                    await ResetBackgroundColorAndViewportAsync(options).ConfigureAwait(false);
-                }
-                return result.Data;
-            }
-
-            private Clip ProcessClip(Clip clip)
-            {
-                var x = Math.Round(clip.X);
-                var y = Math.Round(clip.Y);
-
-                return new Clip
-                {
-                    X = x,
-                    Y = y,
-                    Width = Math.Round(clip.Width + clip.X - x, MidpointRounding.AwayFromZero),
-                    Height = Math.Round(clip.Height + clip.Y - y, MidpointRounding.AwayFromZero),
-                    Scale = 1
-                };
-            }
-
-            private Task ResetBackgroundColorAndViewportAsync(ScreenshotOptions options)
-            {
-                var omitBackgroundTask = options?.OmitBackground == true && options.Type == ScreenshotType.Png ?
-                    Client.SendAsync("Emulation.setDefaultBackgroundColorOverride") : Task.CompletedTask;
-                var setViewPortTask = (options?.FullPage == true && Viewport != null) ?
-                    SetViewportAsync(Viewport) : Task.CompletedTask;
-                return Task.WhenAll(omitBackgroundTask, setViewPortTask);
-            }
-
-            private decimal ConvertPrintParameterToInches(object parameter)
-            {
-                if (parameter == null)
-                {
-                    return 0;
+                    // In case of unknown unit try to parse the whole parameter as number of pixels.
+                    // This is consistent with phantom's paperSize behavior.
+                    unit = "px";
+                    valueText = text;
                 }
 
-                decimal pixels;
-                if (parameter is decimal || parameter is int)
+                if (decimal.TryParse(valueText, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out var number))
                 {
-                    pixels = Convert.ToDecimal(parameter);
+                    pixels = number * _unitToPixels[unit];
                 }
                 else
                 {
-                    var text = parameter.ToString();
-                    var unit = text.Substring(text.Length - 2).ToLower();
-                    string valueText;
-                    if (_unitToPixels.ContainsKey(unit))
-                    {
-                        valueText = text.Substring(0, text.Length - 2);
-                    }
-                    else
-                    {
-                        // In case of unknown unit try to parse the whole parameter as number of pixels.
-                        // This is consistent with phantom's paperSize behavior.
-                        unit = "px";
-                        valueText = text;
-                    }
-
-                    if (decimal.TryParse(valueText, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out var number))
-                    {
-                        pixels = number * _unitToPixels[unit];
-                    }
-                    else
-                    {
-                        throw new ArgumentException($"Failed to parse parameter value: '{text}'", nameof(parameter));
-                    }
-                }
-
-                return pixels / 96;
-            }
-
-            private async void Client_MessageReceived(object sender, MessageEventArgs e)
-            {
-                try
-                {
-                    switch (e.MessageID)
-                    {
-                        case "Page.domContentEventFired":
-                            DOMContentLoaded?.Invoke(this, EventArgs.Empty);
-                            break;
-                        case "Page.loadEventFired":
-                            Load?.Invoke(this, EventArgs.Empty);
-                            break;
-                        case "Runtime.consoleAPICalled":
-                            await OnConsoleAPIAsync(e.MessageData.ToObject<PageConsoleResponse>(true)).ConfigureAwait(false);
-                            break;
-                        case "Page.javascriptDialogOpening":
-                            OnDialog(e.MessageData.ToObject<PageJavascriptDialogOpeningResponse>(true));
-                            break;
-                        case "Runtime.exceptionThrown":
-                            HandleException(e.MessageData.ToObject<RuntimeExceptionThrownResponse>(true).ExceptionDetails);
-                            break;
-                        case "Inspector.targetCrashed":
-                            OnTargetCrashed();
-                            break;
-                        case "Performance.metrics":
-                            EmitMetrics(e.MessageData.ToObject<PerformanceMetricsResponse>(true));
-                            break;
-                        case "Target.attachedToTarget":
-                            await OnAttachedToTargetAsync(e.MessageData.ToObject<TargetAttachedToTargetResponse>(true)).ConfigureAwait(false);
-                            break;
-                        case "Target.detachedFromTarget":
-                            OnDetachedFromTarget(e.MessageData.ToObject<TargetDetachedFromTargetResponse>(true));
-                            break;
-                        case "Log.entryAdded":
-                            await OnLogEntryAddedAsync(e.MessageData.ToObject<LogEntryAddedResponse>(true)).ConfigureAwait(false);
-                            break;
-                        case "Runtime.bindingCalled":
-                            await OnBindingCalled(e.MessageData.ToObject<BindingCalledResponse>(true)).ConfigureAwait(false);
-                            break;
-                        case "Page.fileChooserOpened":
-                            OnFileChooser(e.MessageData.ToObject<FileChooser>(true));
-                            break;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    var message = $"Page failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
-                    _logger.LogError(ex, message);
-                    Client.Close(message);
+                    throw new ArgumentException($"Failed to parse parameter value: '{text}'", nameof(parameter));
                 }
             }
 
-            private void OnFileChooser(FileChooser pageFileChooserOpenedResponse)
-            {
-                throw new NotImplementedException();
-            }
+            return pixels / 96;
+        }
 
-            private async Task OnBindingCalled(BindingCalledResponse e)
+        private async void Client_MessageReceived(object sender, MessageEventArgs e)
+        {
+            try
             {
-                string expression;
-                try
+                switch (e.MessageID)
                 {
-                    var result = await ExecuteBinding(e).ConfigureAwait(false);
+                    case "Page.domContentEventFired":
+                        DOMContentLoaded?.Invoke(this, EventArgs.Empty);
+                        break;
+                    case "Page.loadEventFired":
+                        Load?.Invoke(this, EventArgs.Empty);
+                        break;
+                    case "Runtime.consoleAPICalled":
+                        await OnConsoleAPIAsync(e.MessageData.ToObject<PageConsoleResponse>(true)).ConfigureAwait(false);
+                        break;
+                    case "Page.javascriptDialogOpening":
+                        OnDialog(e.MessageData.ToObject<PageJavascriptDialogOpeningResponse>(true));
+                        break;
+                    case "Runtime.exceptionThrown":
+                        HandleException(e.MessageData.ToObject<RuntimeExceptionThrownResponse>(true).ExceptionDetails);
+                        break;
+                    case "Inspector.targetCrashed":
+                        OnTargetCrashed();
+                        break;
+                    case "Performance.metrics":
+                        EmitMetrics(e.MessageData.ToObject<PerformanceMetricsResponse>(true));
+                        break;
+                    case "Target.attachedToTarget":
+                        await OnAttachedToTargetAsync(e.MessageData.ToObject<TargetAttachedToTargetResponse>(true)).ConfigureAwait(false);
+                        break;
+                    case "Target.detachedFromTarget":
+                        OnDetachedFromTarget(e.MessageData.ToObject<TargetDetachedFromTargetResponse>(true));
+                        break;
+                    case "Log.entryAdded":
+                        await OnLogEntryAddedAsync(e.MessageData.ToObject<LogEntryAddedResponse>(true)).ConfigureAwait(false);
+                        break;
+                    case "Runtime.bindingCalled":
+                        await OnBindingCalled(e.MessageData.ToObject<BindingCalledResponse>(true)).ConfigureAwait(false);
+                        break;
+                    case "Page.fileChooserOpened":
+                        OnFileChooser(e.MessageData.ToObject<PageFileChooserOpenedResponse>(true));
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                var message = $"Page failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
+                _logger.LogError(ex, message);
+                Client.Close(message);
+            }
+        }
 
-                    expression = EvaluationString(
-                        @"function deliverResult(name, seq, result) {
+        private void OnFileChooser(FileChooser pageFileChooserOpenedResponse)
+        {
+            throw new NotImplementedException();
+        }
+
+        private async Task OnBindingCalled(BindingCalledResponse e)
+        {
+            string expression;
+            try
+            {
+                var result = await ExecuteBinding(e).ConfigureAwait(false);
+
+                expression = EvaluationString(
+                    @"function deliverResult(name, seq, result) {
                         window[name]['callbacks'].get(seq).resolve(result);
                         window[name]['callbacks'].delete(seq);
                     }", e.BindingPayload.Name, e.BindingPayload.Seq, result);
-                }
-                catch (Exception ex)
+            }
+            catch (Exception ex)
+            {
+                if (ex is TargetInvocationException)
                 {
-                    if (ex is TargetInvocationException)
-                    {
-                        ex = ex.InnerException;
-                    }
+                    ex = ex.InnerException;
+                }
 
-                    expression = EvaluationString(
-                        @"function deliverError(name, seq, message, stack) {
+                expression = EvaluationString(
+                    @"function deliverError(name, seq, message, stack) {
                         const error = new Error(message);
                         error.stack = stack;
                         window[name]['callbacks'].get(seq).reject(error);
                         window[name]['callbacks'].delete(seq);
                     }", e.BindingPayload.Name, e.BindingPayload.Seq, ex.Message, ex.StackTrace);
-                }
-
-                Client.Send("Runtime.evaluate", new
-                {
-                    expression,
-                    contextId = e.ExecutionContextId
-                });
             }
 
-            private async Task<object> ExecuteBinding(BindingCalledResponse e)
+            Client.Send("Runtime.evaluate", new
             {
-                const string taskResultPropertyName = "Result";
-                object result;
-                var binding = _pageBindings[e.BindingPayload.Name];
-                var methodParams = binding.Method.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
+                expression,
+                contextId = e.ExecutionContextId
+            });
+        }
 
-                var args = e.BindingPayload.Args.Select((token, i) => token.ToObject(methodParams[i])).ToArray();
+        private async Task<object> ExecuteBinding(BindingCalledResponse e)
+        {
+            const string taskResultPropertyName = "Result";
+            object result;
+            var binding = _pageBindings[e.BindingPayload.Name];
+            var methodParams = binding.Method.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
 
-                result = binding.DynamicInvoke(args);
-                if (result is Task taskResult)
+            var args = e.BindingPayload.Args.Select((token, i) => token.ToObject(methodParams[i])).ToArray();
+
+            result = binding.DynamicInvoke(args);
+            if (result is Task taskResult)
+            {
+                await taskResult.ConfigureAwait(false);
+
+                if (taskResult.GetType().IsGenericType)
                 {
-                    await taskResult.ConfigureAwait(false);
+                    // the task is already awaited and therefore the call to property Result will not deadlock
+                    result = taskResult.GetType().GetProperty(taskResultPropertyName).GetValue(taskResult);
+                }
+            }
 
-                    if (taskResult.GetType().IsGenericType)
+            return result;
+        }
+
+        private void OnDetachedFromTarget(TargetDetachedFromTargetResponse e)
+        {
+            var sessionId = e.SessionId;
+            if (_workers.TryGetValue(sessionId, out var worker))
+            {
+                WorkerDestroyed?.Invoke(this, new WorkerEventArgs(worker));
+                _workers.Remove(sessionId);
+            }
+        }
+
+        private async Task OnAttachedToTargetAsync(TargetAttachedToTargetResponse e)
+        {
+            var targetInfo = e.TargetInfo;
+            var sessionId = e.SessionId;
+            if (targetInfo.Type != TargetType.Worker)
+            {
+                try
+                {
+                    await Client.SendAsync("Target.detachFromTarget", new TargetDetachFromTargetRequest
                     {
-                        // the task is already awaited and therefore the call to property Result will not deadlock
-                        result = taskResult.GetType().GetProperty(taskResultPropertyName).GetValue(taskResult);
-                    }
+                        SessionId = sessionId
+                    }).ConfigureAwait(false);
                 }
-
-                return result;
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.ToString());
+                }
+                return;
             }
 
-            private void OnDetachedFromTarget(TargetDetachedFromTargetResponse e)
+            var session = Connection.FromSession(Client).GetSession(sessionId);
+            var worker = new Worker(session, targetInfo.Url, AddConsoleMessageAsync, HandleException);
+            _workers[sessionId] = worker;
+            WorkerCreated?.Invoke(this, new WorkerEventArgs(worker));
+        }
+
+        private async Task OnLogEntryAddedAsync(LogEntryAddedResponse e)
+        {
+            if (e.Entry.Args != null)
             {
-                var sessionId = e.SessionId;
-                if (_workers.TryGetValue(sessionId, out var worker))
+                foreach (var arg in e.Entry?.Args)
                 {
-                    WorkerDestroyed?.Invoke(this, new WorkerEventArgs(worker));
-                    _workers.Remove(sessionId);
+                    await RemoteObjectHelper.ReleaseObjectAsync(Client, arg, _logger).ConfigureAwait(false);
                 }
             }
-
-            private async Task OnAttachedToTargetAsync(TargetAttachedToTargetResponse e)
+            if (e.Entry.Source != TargetType.Worker)
             {
-                var targetInfo = e.TargetInfo;
-                var sessionId = e.SessionId;
-                if (targetInfo.Type != TargetType.Worker)
-                {
-                    try
+                Console?.Invoke(this, new ConsoleEventArgs(new ConsoleMessage(
+                    e.Entry.Level,
+                    e.Entry.Text,
+                    null,
+                    new ConsoleMessageLocation
                     {
-                        await Client.SendAsync("Target.detachFromTarget", new TargetDetachFromTargetRequest
-                        {
-                            SessionId = sessionId
-                        }).ConfigureAwait(false);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex.ToString());
-                    }
-                    return;
-                }
+                        URL = e.Entry.URL,
+                        LineNumber = e.Entry.LineNumber
+                    })));
+            }
+        }
 
-                var session = Connection.FromSession(Client).GetSession(sessionId);
-                var worker = new Worker(session, targetInfo.Url, AddConsoleMessageAsync, HandleException);
-                _workers[sessionId] = worker;
-                WorkerCreated?.Invoke(this, new WorkerEventArgs(worker));
+        private void OnTargetCrashed()
+        {
+            if (Error == null)
+            {
+                throw new TargetCrashedException();
             }
 
-            private async Task OnLogEntryAddedAsync(LogEntryAddedResponse e)
+            Error.Invoke(this, new ErrorEventArgs("Page crashed!"));
+        }
+
+        private void EmitMetrics(PerformanceMetricsResponse metrics)
+            => Metrics?.Invoke(this, new MetricEventArgs(metrics.Title, BuildMetricsObject(metrics.Metrics)));
+
+        private void HandleException(EvaluateExceptionResponseDetails exceptionDetails)
+            => PageError?.Invoke(this, new PageErrorEventArgs(GetExceptionMessage(exceptionDetails)));
+
+        private string GetExceptionMessage(EvaluateExceptionResponseDetails exceptionDetails)
+        {
+            if (exceptionDetails.Exception != null)
             {
-                if (e.Entry.Args != null)
+                return exceptionDetails.Exception.Description;
+            }
+            var message = exceptionDetails.Text;
+            if (exceptionDetails.StackTrace != null)
+            {
+                foreach (var callframe in exceptionDetails.StackTrace.CallFrames)
                 {
-                    foreach (var arg in e.Entry?.Args)
-                    {
-                        await RemoteObjectHelper.ReleaseObjectAsync(Client, arg, _logger).ConfigureAwait(false);
-                    }
-                }
-                if (e.Entry.Source != TargetType.Worker)
-                {
-                    Console?.Invoke(this, new ConsoleEventArgs(new ConsoleMessage(
-                        e.Entry.Level,
-                        e.Entry.Text,
-                        null,
-                        new ConsoleMessageLocation
-                        {
-                            URL = e.Entry.URL,
-                            LineNumber = e.Entry.LineNumber
-                        })));
+                    var location = $"{callframe.Url}:{callframe.LineNumber}:{callframe.ColumnNumber}";
+                    var functionName = callframe.FunctionName ?? "<anonymous>";
+                    message += $"\n at {functionName} ({location})";
                 }
             }
+            return message;
+        }
 
-            private void OnTargetCrashed()
+        private void OnDialog(PageJavascriptDialogOpeningResponse message)
+        {
+            var dialog = new Dialog(Client, message.Type, message.Message, message.DefaultPrompt);
+            Dialog?.Invoke(this, new DialogEventArgs(dialog));
+        }
+
+        private Task OnConsoleAPIAsync(PageConsoleResponse message)
+        {
+            if (message.ExecutionContextId == 0)
             {
-                if (Error == null)
-                {
-                    throw new TargetCrashedException();
-                }
+                return Task.CompletedTask;
+            }
+            var ctx = FrameManager.ExecutionContextById(message.ExecutionContextId);
+            var values = message.Args.Select(ctx.CreateJSHandle).ToArray();
 
-                Error.Invoke(this, new ErrorEventArgs("Page crashed!"));
+            return AddConsoleMessageAsync(message.Type, values, message.StackTrace);
+        }
+
+        private async Task AddConsoleMessageAsync(ConsoleType type, JSHandle[] values, Messaging.StackTrace stackTrace)
+        {
+            if (Console?.GetInvocationList().Length == 0)
+            {
+                await Task.WhenAll(values.Select(v => RemoteObjectHelper.ReleaseObjectAsync(Client, v.RemoteObject, _logger))).ConfigureAwait(false);
+                return;
             }
 
-            private void EmitMetrics(PerformanceMetricsResponse metrics)
-                => Metrics?.Invoke(this, new MetricEventArgs(metrics.Title, BuildMetricsObject(metrics.Metrics)));
+            var tokens = values.Select(i => i.RemoteObject.ObjectId != null
+                ? i.ToString()
+                : RemoteObjectHelper.ValueFromRemoteObject<string>(i.RemoteObject));
 
-            private void HandleException(EvaluateExceptionResponseDetails exceptionDetails)
-                => PageError?.Invoke(this, new PageErrorEventArgs(GetExceptionMessage(exceptionDetails)));
-
-            private string GetExceptionMessage(EvaluateExceptionResponseDetails exceptionDetails)
+            var location = new ConsoleMessageLocation();
+            if (stackTrace?.CallFrames?.Length > 0)
             {
-                if (exceptionDetails.Exception != null)
-                {
-                    return exceptionDetails.Exception.Description;
-                }
-                var message = exceptionDetails.Text;
-                if (exceptionDetails.StackTrace != null)
-                {
-                    foreach (var callframe in exceptionDetails.StackTrace.CallFrames)
-                    {
-                        var location = $"{callframe.Url}:{callframe.LineNumber}:{callframe.ColumnNumber}";
-                        var functionName = callframe.FunctionName ?? "<anonymous>";
-                        message += $"\n at {functionName} ({location})";
-                    }
-                }
-                return message;
+                var callFrame = stackTrace.CallFrames[0];
+                location.URL = callFrame.URL;
+                location.LineNumber = callFrame.LineNumber;
+                location.ColumnNumber = callFrame.ColumnNumber;
             }
 
-            private void OnDialog(PageJavascriptDialogOpeningResponse message)
+            var consoleMessage = new ConsoleMessage(type, string.Join(" ", tokens), values, location);
+            Console?.Invoke(this, new ConsoleEventArgs(consoleMessage));
+        }
+
+        private async Task ExposeFunctionAsync(string name, Delegate puppeteerFunction)
+        {
+            if (_pageBindings.ContainsKey(name))
             {
-                var dialog = new Dialog(Client, message.Type, message.Message, message.DefaultPrompt);
-                Dialog?.Invoke(this, new DialogEventArgs(dialog));
+                throw new PuppeteerException($"Failed to add page binding with name {name}: window['{name}'] already exists!");
             }
+            _pageBindings.Add(name, puppeteerFunction);
 
-            private Task OnConsoleAPIAsync(PageConsoleResponse message)
-            {
-                if (message.ExecutionContextId == 0)
-                {
-                    return Task.CompletedTask;
-                }
-                var ctx = FrameManager.ExecutionContextById(message.ExecutionContextId);
-                var values = message.Args.Select(ctx.CreateJSHandle).ToArray();
-
-                return AddConsoleMessageAsync(message.Type, values, message.StackTrace);
-            }
-
-            private async Task AddConsoleMessageAsync(ConsoleType type, JSHandle[] values, Messaging.StackTrace stackTrace)
-            {
-                if (Console?.GetInvocationList().Length == 0)
-                {
-                    await Task.WhenAll(values.Select(v => RemoteObjectHelper.ReleaseObjectAsync(Client, v.RemoteObject, _logger))).ConfigureAwait(false);
-                    return;
-                }
-
-                var tokens = values.Select(i => i.RemoteObject.ObjectId != null
-                    ? i.ToString()
-                    : RemoteObjectHelper.ValueFromRemoteObject<string>(i.RemoteObject));
-
-                var location = new ConsoleMessageLocation();
-                if (stackTrace?.CallFrames?.Length > 0)
-                {
-                    var callFrame = stackTrace.CallFrames[0];
-                    location.URL = callFrame.URL;
-                    location.LineNumber = callFrame.LineNumber;
-                    location.ColumnNumber = callFrame.ColumnNumber;
-                }
-
-                var consoleMessage = new ConsoleMessage(type, string.Join(" ", tokens), values, location);
-                Console?.Invoke(this, new ConsoleEventArgs(consoleMessage));
-            }
-
-            private async Task ExposeFunctionAsync(string name, Delegate puppeteerFunction)
-            {
-                if (_pageBindings.ContainsKey(name))
-                {
-                    throw new PuppeteerException($"Failed to add page binding with name {name}: window['{name}'] already exists!");
-                }
-                _pageBindings.Add(name, puppeteerFunction);
-
-                const string addPageBinding = @"function addPageBinding(bindingName) {
+            const string addPageBinding = @"function addPageBinding(bindingName) {
               const binding = window[bindingName];
               window[bindingName] = (...args) => {
                 const me = window[bindingName];
@@ -2183,45 +2190,45 @@ namespace PuppeteerSharp
                 return promise;
               };
             }";
-                var expression = EvaluationString(addPageBinding, name);
-                await Client.SendAsync("Runtime.addBinding", new RuntimeAddBindingRequest { Name = name }).ConfigureAwait(false);
-                await Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new PageAddScriptToEvaluateOnNewDocumentRequest
-                {
-                    Source = expression
-                }).ConfigureAwait(false);
-
-                await Task.WhenAll(Frames.Select(frame => frame.EvaluateExpressionAsync(expression)
-                    .ContinueWith(task =>
-                    {
-                        if (task.IsFaulted)
-                        {
-                            _logger.LogError(task.Exception.ToString());
-                        }
-                    }))).ConfigureAwait(false);
-            }
-
-            private static string EvaluationString(string fun, params object[] args)
+            var expression = EvaluationString(addPageBinding, name);
+            await Client.SendAsync("Runtime.addBinding", new RuntimeAddBindingRequest { Name = name }).ConfigureAwait(false);
+            await Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new PageAddScriptToEvaluateOnNewDocumentRequest
             {
-                return $"({fun})({string.Join(",", args.Select(SerializeArgument))})";
+                Source = expression
+            }).ConfigureAwait(false);
 
-                string SerializeArgument(object arg)
+            await Task.WhenAll(Frames.Select(frame => frame.EvaluateExpressionAsync(expression)
+                .ContinueWith(task =>
                 {
-                    return arg == null
-                        ? "undefined"
-                        : JsonConvert.SerializeObject(arg, JsonHelper.DefaultJsonSerializerSettings);
-                }
-            }
-            #endregion
-
-            #region IDisposable
-            /// <summary>
-            /// Releases all resource used by the <see cref="Page"/> object by calling the <see cref="CloseAsync"/> method.
-            /// </summary>
-            /// <remarks>Call <see cref="Dispose"/> when you are finished using the <see cref="Page"/>. The
-            /// <see cref="Dispose"/> method leaves the <see cref="Page"/> in an unusable state. After
-            /// calling <see cref="Dispose"/>, you must release all references to the <see cref="Page"/> so
-            /// the garbage collector can reclaim the memory that the <see cref="Page"/> was occupying.</remarks>
-            public void Dispose() => CloseAsync();
-            #endregion
+                    if (task.IsFaulted)
+                    {
+                        _logger.LogError(task.Exception.ToString());
+                    }
+                }))).ConfigureAwait(false);
         }
+
+        private static string EvaluationString(string fun, params object[] args)
+        {
+            return $"({fun})({string.Join(",", args.Select(SerializeArgument))})";
+
+            string SerializeArgument(object arg)
+            {
+                return arg == null
+                    ? "undefined"
+                    : JsonConvert.SerializeObject(arg, JsonHelper.DefaultJsonSerializerSettings);
+            }
+        }
+        #endregion
+
+        #region IDisposable
+        /// <summary>
+        /// Releases all resource used by the <see cref="Page"/> object by calling the <see cref="CloseAsync"/> method.
+        /// </summary>
+        /// <remarks>Call <see cref="Dispose"/> when you are finished using the <see cref="Page"/>. The
+        /// <see cref="Dispose"/> method leaves the <see cref="Page"/> in an unusable state. After
+        /// calling <see cref="Dispose"/>, you must release all references to the <see cref="Page"/> so
+        /// the garbage collector can reclaim the memory that the <see cref="Page"/> was occupying.</remarks>
+        public void Dispose() => CloseAsync();
+        #endregion
     }
+}
