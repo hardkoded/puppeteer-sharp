@@ -1577,7 +1577,32 @@ namespace PuppeteerSharp
             return await responseTcs.Task.WithTimeout(timeout).ConfigureAwait(false);
         }
 
-        public Task<FileChooser> WaitForFileChooserAsync(WaitForFileChooserOptions options = null)
+        /// <summary>
+        /// Waits for a page to open a file picker
+        /// </summary>
+        /// <remarks>
+        /// In non-headless Chromium, this method results in the native file picker dialog **not showing up** for the user.
+        /// </remarks>
+        /// <example>
+        /// This method is typically coupled with an action that triggers file choosing.
+        /// The following example clicks a button that issues a file chooser, and then
+        /// responds with `/tmp/myfile.pdf` as if a user has selected this file.
+        /// <code>
+        /// <![CDATA[
+        /// var waitTask = page.WaitForFileChooserAsync();
+        /// await Task.WhenAll(
+        ///     waitTask,
+        ///     page.ClickAsync("#upload-file-button")); // some button that triggers file selection
+        /// 
+        /// await waitTask.Result.AcceptAsync('/tmp/myfile.pdf');
+        /// ]]>
+        /// </code>
+        /// 
+        /// This must be called *before* the file chooser is launched. It will not return a currently active file chooser.
+        /// </example>
+        /// <param name="options">Optional waiting parameters.</param>
+        /// <returns>A task that resolves after a page requests a file picker.</returns>
+        public async Task<FileChooser> WaitForFileChooserAsync(WaitForFileChooserOptions options = null)
         {
             if (_fileChooserInterceptionIsDisabled)
             {
@@ -1591,7 +1616,7 @@ namespace PuppeteerSharp
 
             try
             {
-                return tcs.Task.WithTimeout(timeout);
+                return await tcs.Task.WithTimeout(timeout);
             }
             catch (Exception ex)
             {
@@ -1952,7 +1977,7 @@ namespace PuppeteerSharp
                         await OnBindingCalled(e.MessageData.ToObject<BindingCalledResponse>(true)).ConfigureAwait(false);
                         break;
                     case "Page.fileChooserOpened":
-                        OnFileChooser(e.MessageData.ToObject<PageFileChooserOpenedResponse>(true));
+                        await OnFileChooserAsync(e.MessageData.ToObject<PageFileChooserOpenedResponse>(true)).ConfigureAwait(false);
                         break;
                 }
             }
@@ -1964,9 +1989,34 @@ namespace PuppeteerSharp
             }
         }
 
-        private void OnFileChooser(FileChooser pageFileChooserOpenedResponse)
+        private async Task OnFileChooserAsync(PageFileChooserOpenedResponse e)
         {
-            throw new NotImplementedException();
+            if (_fileChooserInterceptors.Count == 0)
+            {
+                try
+                {
+                    await Client.SendAsync("Page.handleFileChooser", new PageHandleFileChooserRequest
+                    {
+                        Action = FileChooserAction.Fallback
+                    }).ConfigureAwait(false);
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, ex.ToString());
+                }
+            }
+
+            var fileChooser = new FileChooser(Client, e);
+            while (_fileChooserInterceptors.Count > 0)
+            {
+                var key = _fileChooserInterceptors.FirstOrDefault().Key;
+
+                if (_fileChooserInterceptors.TryRemove(key, out var tcs))
+                {
+                    tcs.TrySetResult(fileChooser);
+                }
+            }
         }
 
         private async Task OnBindingCalled(BindingCalledResponse e)

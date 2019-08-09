@@ -3,7 +3,7 @@
     /// <summary>
     /// Optional waiting parameters.
     /// </summary>
-    /// <seealso cref="Page.WaitForFileChooserAsync(WaitForFileChooserOptions)(Func{Request, bool}, WaitForOptions)"/>
+    /// <seealso cref="Page.WaitForFileChooserAsync(WaitForFileChooserOptions)"/>
     public class WaitForFileChooserOptions
     {
         /// <summary>

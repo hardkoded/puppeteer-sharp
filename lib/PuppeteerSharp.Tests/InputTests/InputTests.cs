@@ -38,7 +38,7 @@ namespace PuppeteerSharp.Tests.InputTests
         public async Task ShouldUploadTheFile()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/fileupload.html");
-            var filePath = "./Assets/file-to-upload.txt";
+            var filePath = TestConstants.FileToUpload;
             var input = await Page.QuerySelectorAsync("input");
             await input.UploadFileAsync(filePath);
             Assert.Equal("file-to-upload.txt", await Page.EvaluateFunctionAsync<string>("e => e.files[0].name", input));
