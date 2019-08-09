@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>1.18.0</PackageVersion>
+    <PackageVersion>1.19.0</PackageVersion>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
@@ -14,31 +14,25 @@
     <PackageReleaseNotes><![CDATA[
 # New Features
 
- * Tracing.StartAsync without options.
- * OOPIF support.
- * Expose IWebProxy in BrowserFetcher.
-
-# Breaking Changes
-
- * Evaluate expressions on new document support. EvaluateOnNewDocumentAsync is marked as obsolete.
+ * Expose Page.Session.
+ * Phone buttons support.
+ * Introduce Page.BringToFrontAsync.
+ * Introduce file chooser interception.
 
 # Changelog
 
- * Bump Chromium to r672088.
- * Do evaluations with one roundtrip.
- * Fix A2 and A3 format size.
- * Use .NET HttpCode phrases.
- * 'Add EmulateAsync and SetViewPortAsync notes.
- * Mouse.ClickAsync improvements.
- * Add WebSocketFactory example.
- * Add test to verify fetching of dataURL requests.
- * Remove "--disable-gpu" flag in Windows.
- * Clarify frame/page.GotAsync()'s handling of HTTP error statuses.
- * Be able to throw protocol like errors.
- * Move Path.PdfAsync to protocol streams.
- * Add max payload test.
+ * Roll Chromium to r674921.
+ * Disable component extensions.
+ * Slightly enhanced wording.
+ * Add a missing test.
+ * Fix typo.
+ * Add Log CDP example.
+ * Fix typo and replace "which" by "that".
+ * Get TLS version from request.
+ * Properly create isolated worlds.
+
  ]]></PackageReleaseNotes>
-    <ReleaseVersion>1.18.0</ReleaseVersion>
+    <ReleaseVersion>1.19.0</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>
