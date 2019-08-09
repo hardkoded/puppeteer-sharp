@@ -56,7 +56,7 @@ namespace PuppeteerSharp.Tests.InputTests
             _ = Page.WaitForFileChooserAsync().ContinueWith(t => t.Result.AcceptAsync(TestConstants.FileToUpload));
 
             Assert.Equal(
-                "contents of file",
+                "contents of the file",
                 await Page.QuerySelectorAsync("input").EvaluateFunctionAsync<string>(@"async picker =>
                 {
                     picker.click();
