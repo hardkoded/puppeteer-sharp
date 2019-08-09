@@ -51,9 +51,9 @@ namespace PuppeteerSharp
         /// <returns>A task that resolves after the accept message is processed by the browser</returns>
         public Task AcceptAsync(params string[] filePaths)
         {
-            if (!_handled)
+            if (_handled)
             {
-                throw new ArgumentException("Cannot accept FileChooser which is already handled!");
+                throw new PuppeteerException("Cannot accept FileChooser which is already handled!");
             }
 
             _handled = true;
@@ -72,9 +72,9 @@ namespace PuppeteerSharp
         /// <returns>A task that resolves after the cancel message is processed by the browser</returns>
         public Task CancelAsync()
         {
-            if (!_handled)
+            if (_handled)
             {
-                throw new ArgumentException("Cannot accept FileChooser which is already handled!");
+                throw new PuppeteerException("Cannot accept FileChooser which is already handled!");
             }
 
             _handled = true;
