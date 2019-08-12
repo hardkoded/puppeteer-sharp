@@ -26,6 +26,7 @@ namespace PuppeteerSharp.Tests
         public static readonly DeviceDescriptor IPhone6Landscape = Puppeteer.Devices[DeviceDescriptorName.IPhone6Landscape];
 
         public static ILoggerFactory LoggerFactory { get; private set; }
+        public static string FileToUpload => Path.Combine(Directory.GetCurrentDirectory(), "Assets", "file-to-upload.txt");
 
         public static readonly IEnumerable<string> NestedFramesDumpResult = new List<string>()
         {

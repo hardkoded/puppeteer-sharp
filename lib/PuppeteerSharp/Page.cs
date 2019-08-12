@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -46,6 +47,8 @@ namespace PuppeteerSharp
         private ScreenshotOptions _screenshotBurstModeOptions;
         private readonly TaskCompletionSource<bool> _closeCompletedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         private readonly TimeoutSettings _timeoutSettings;
+        private bool _fileChooserInterceptionIsDisabled;
+        private ConcurrentDictionary<Guid, TaskCompletionSource<FileChooser>> _fileChooserInterceptors;
 
         private static readonly Dictionary<string, decimal> _unitToPixels = new Dictionary<string, decimal> {
             {"px", 1},
@@ -67,6 +70,7 @@ namespace PuppeteerSharp
             Tracing = new Tracing(client);
             Coverage = new Coverage(client);
 
+            _fileChooserInterceptors = new ConcurrentDictionary<Guid, TaskCompletionSource<FileChooser>>();
             _timeoutSettings = new TimeoutSettings();
             _emulationManager = new EmulationManager(client);
             _pageBindings = new Dictionary<string, Delegate>();
@@ -1574,6 +1578,54 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
+        /// Waits for a page to open a file picker
+        /// </summary>
+        /// <remarks>
+        /// In non-headless Chromium, this method results in the native file picker dialog **not showing up** for the user.
+        /// </remarks>
+        /// <example>
+        /// This method is typically coupled with an action that triggers file choosing.
+        /// The following example clicks a button that issues a file chooser, and then
+        /// responds with `/tmp/myfile.pdf` as if a user has selected this file.
+        /// <code>
+        /// <![CDATA[
+        /// var waitTask = page.WaitForFileChooserAsync();
+        /// await Task.WhenAll(
+        ///     waitTask,
+        ///     page.ClickAsync("#upload-file-button")); // some button that triggers file selection
+        /// 
+        /// await waitTask.Result.AcceptAsync('/tmp/myfile.pdf');
+        /// ]]>
+        /// </code>
+        /// 
+        /// This must be called *before* the file chooser is launched. It will not return a currently active file chooser.
+        /// </example>
+        /// <param name="options">Optional waiting parameters.</param>
+        /// <returns>A task that resolves after a page requests a file picker.</returns>
+        public async Task<FileChooser> WaitForFileChooserAsync(WaitForFileChooserOptions options = null)
+        {
+            if (_fileChooserInterceptionIsDisabled)
+            {
+                throw new PuppeteerException("File chooser handling does not work with multiple connections to the same page");
+            }
+
+            var timeout = options?.Timeout ?? _timeoutSettings.Timeout;
+            var tcs = new TaskCompletionSource<FileChooser>();
+            var guid = Guid.NewGuid();
+            _fileChooserInterceptors.TryAdd(guid, tcs);
+
+            try
+            {
+                return await tcs.Task.WithTimeout(timeout).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                _fileChooserInterceptors.TryRemove(guid, out _);
+                throw ex;
+            }
+        }
+
+        /// <summary>
         /// Navigate to the previous page in history.
         /// </summary>
         /// <returns>Task that resolves to the main resource response. In case of multiple redirects, 
@@ -1626,24 +1678,6 @@ namespace PuppeteerSharp
             var page = new Page(client, target, screenshotTaskQueue);
             await page.InitializeAsync(ignoreHTTPSErrors).ConfigureAwait(false);
 
-            await Task.WhenAll(
-                client.SendAsync("Target.setAutoAttach", new TargetSetAutoAttachRequest
-                {
-                    AutoAttach = true,
-                    WaitForDebuggerOnStart = false,
-                    Flatten = true
-                }),
-                client.SendAsync("Page.setLifecycleEventsEnabled", new PageSetLifecycleEventsEnabledRequest
-                {
-                    Enabled = true
-                }),
-                client.SendAsync("Network.enable", null),
-                client.SendAsync("Runtime.enable", null),
-                client.SendAsync("Security.enable", null),
-                client.SendAsync("Performance.enable", null),
-                client.SendAsync("Log.enable", null)
-            ).ConfigureAwait(false);
-
             if (defaultViewPort != null)
             {
                 await page.SetViewportAsync(defaultViewPort).ConfigureAwait(false);
@@ -1666,6 +1700,29 @@ namespace PuppeteerSharp
             networkManager.RequestFailed += (sender, e) => RequestFailed?.Invoke(this, e);
             networkManager.Response += (sender, e) => Response?.Invoke(this, e);
             networkManager.RequestFinished += (sender, e) => RequestFinished?.Invoke(this, e);
+
+            await Task.WhenAll(
+               Client.SendAsync("Target.setAutoAttach", new TargetSetAutoAttachRequest
+               {
+                   AutoAttach = true,
+                   WaitForDebuggerOnStart = false,
+                   Flatten = true
+               }),
+               Client.SendAsync("Performance.enable", null),
+               Client.SendAsync("Log.enable", null)
+           ).ConfigureAwait(false);
+
+            try
+            {
+                await Client.SendAsync("Page.setInterceptFileChooserDialog", new PageSetInterceptFileChooserDialog
+                {
+                    Enabled = true
+                }).ConfigureAwait(false);
+            }
+            catch
+            {
+                _fileChooserInterceptionIsDisabled = true;
+            }
         }
 
         private async Task<Response> GoAsync(int delta, NavigationOptions options)
@@ -1919,6 +1976,9 @@ namespace PuppeteerSharp
                     case "Runtime.bindingCalled":
                         await OnBindingCalled(e.MessageData.ToObject<BindingCalledResponse>(true)).ConfigureAwait(false);
                         break;
+                    case "Page.fileChooserOpened":
+                        await OnFileChooserAsync(e.MessageData.ToObject<PageFileChooserOpenedResponse>(true)).ConfigureAwait(false);
+                        break;
                 }
             }
             catch (Exception ex)
@@ -1926,6 +1986,36 @@ namespace PuppeteerSharp
                 var message = $"Page failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
                 _logger.LogError(ex, message);
                 Client.Close(message);
+            }
+        }
+
+        private async Task OnFileChooserAsync(PageFileChooserOpenedResponse e)
+        {
+            if (_fileChooserInterceptors.Count == 0)
+            {
+                try
+                {
+                    await Client.SendAsync("Page.handleFileChooser", new PageHandleFileChooserRequest
+                    {
+                        Action = FileChooserAction.Fallback
+                    }).ConfigureAwait(false);
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, ex.ToString());
+                }
+            }
+
+            var fileChooser = new FileChooser(Client, e);
+            while (_fileChooserInterceptors.Count > 0)
+            {
+                var key = _fileChooserInterceptors.FirstOrDefault().Key;
+
+                if (_fileChooserInterceptors.TryRemove(key, out var tcs))
+                {
+                    tcs.TrySetResult(fileChooser);
+                }
             }
         }
 
