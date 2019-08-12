@@ -1616,7 +1616,7 @@ namespace PuppeteerSharp
 
             try
             {
-                return await tcs.Task.WithTimeout(timeout);
+                return await tcs.Task.WithTimeout(timeout).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
