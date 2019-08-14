@@ -146,22 +146,14 @@ using (var browser = await PuppeteerSharp.Puppeteer.ConnectAsync(options))
 ```
 
 # Monthly reports
+ * [August 2019](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-aug-2019)
+ * [July 2019](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-jul-2019)
  * [June 2019](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-jun-2019)
  * [May 2019](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-may-2019)
  * [April 2019](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-apr-2019)
  * [March 2019](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-mar-2019)
  * [February 2019](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-feb-2019)
  * [January 2019](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-jan-2019)
- * [December 2018](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-dec-2018)
- * [November 2018](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-nov-2018)
- * [October 2018](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-oct-2018)
- * [September 2018](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-sep-2018)
- * [July 2018](https://www.hardkoded.com/blog/puppeteer-sharp-monthly-jul-2018)
- * [June 2018](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-jun-2018)
- * [May 2018](http://www.hardkoded.com/blogs/puppeteer-sharp-monthly-may-2018)
- * [April 2018](http://www.hardkoded.com/blogs/puppeteer-sharp-monthly-april-2018)
- * [March 2018](http://www.hardkoded.com/blogs/puppeteer-sharp-monthly-march-2018)
- * [February 2018](http://www.hardkoded.com/blogs/puppeteer-sharp-monthly-february-2018)
 
 # Backers
 
