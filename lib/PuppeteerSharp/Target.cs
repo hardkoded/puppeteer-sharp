@@ -108,9 +108,9 @@ namespace PuppeteerSharp
         #endregion
 
         /// <summary>
-        /// Creates a new <see cref="Page"/>. If the target is not <c>"page"</c> or <c>"background_page"</c> returns <c>null</c>
+        /// Returns the <see cref="Page"/> associated with the target. If the target is not <c>"page"</c> or <c>"background_page"</c> returns <c>null</c>
         /// </summary>
-        /// <returns>a task that returns a new <see cref="Page"/></returns>
+         /// <returns>a task that returns a <see cref="Page"/></returns>
         public Task<Page> PageAsync()
         {
             if ((TargetInfo.Type == TargetType.Page || TargetInfo.Type == TargetType.BackgroundPage) && PageTask == null)
