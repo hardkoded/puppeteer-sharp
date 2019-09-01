@@ -296,9 +296,9 @@ namespace PuppeteerSharp
             requestWillBeSentPayload.Type = fetchRequestPausedResponse.ResourceType;
             requestWillBeSentPayload.Response = new ResponsePayload
             {
-                Headers = fetchRequestPausedResponse.ResponseHeaders.ToDictionary(k => k.Name, v => v.Value),
                 Status = fetchRequestPausedResponse.ResponseStatusCode,
-                StatusText = fetchRequestPausedResponse.ResponseStatusCode.ToString()
+                StatusText = fetchRequestPausedResponse.ResponseStatusCode.ToString(),
+                Headers = fetchRequestPausedResponse.ResponseHeadersDictionary
             };
         }
 
@@ -382,7 +382,7 @@ namespace PuppeteerSharp
         private async Task OnRequestWillBeSentAsync(RequestWillBeSentPayload e)
         {
             // Request interception doesn't happen for data URLs with Network Service.
-            if (_protocolRequestInterceptionEnabled && !e.Request.Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase))
+            if (_protocolRequestInterceptionEnabled && e.IsInterceptable)
             {
                 if (_requestIdToInterceptionId.TryRemove(e.RequestId, out var interceptionId))
                 {

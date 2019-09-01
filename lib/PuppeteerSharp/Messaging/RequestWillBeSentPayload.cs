@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 
 namespace PuppeteerSharp.Messaging
 {
@@ -11,5 +12,7 @@ namespace PuppeteerSharp.Messaging
         public ResponsePayload Response { get; set; }
         public ResourceType Type { get; set; }
         public string FrameId { get; set; }
+
+        internal bool IsInterceptable => !Request.Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase);
     }
 }

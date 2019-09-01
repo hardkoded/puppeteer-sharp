@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Messaging;
@@ -51,7 +49,10 @@ namespace PuppeteerSharp
             PostData = e.Request.PostData;
             Frame = frame;
             RedirectChainList = redirectChain;
-            Response = new Response(client, this, e.Response);
+            if (e.IsInterceptable && e.Response != null)
+            {
+                Response = new Response(client, this, e.Response);
+            }
 
             Headers = new Dictionary<string, string>();
             foreach (var keyValue in e.Request.Headers)
