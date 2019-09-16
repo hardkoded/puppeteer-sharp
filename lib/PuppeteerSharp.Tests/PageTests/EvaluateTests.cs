@@ -259,7 +259,11 @@ namespace PuppeteerSharp.Tests.PageTests
 
         [Fact]
         public async Task ShouldSimulateAUserGesture()
-            => Assert.True(await Page.EvaluateFunctionAsync<bool>("() => document.execCommand('copy')"));
+            => Assert.True(await Page.EvaluateFunctionAsync<bool>(@"() => {
+                document.body.appendChild(document.createTextNode('test'));
+                document.execCommand('selectAll');
+                return document.execCommand('copy'); 
+            }"));
 
         [Fact]
         public async Task ShouldThrowANiceErrorAfterANavigation()
