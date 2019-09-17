@@ -125,10 +125,10 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             var exception = await Assert.ThrowsAsync<EvaluationFailedException>(() =>
             {
-                return Page.EvaluateFunctionAsync("() => not.existing.object.property");
+                return Page.EvaluateFunctionAsync("() => not_existing_object.property");
             });
 
-            Assert.Contains("not is not defined", exception.Message);
+            Assert.Contains("not_existing_object", exception.Message);
         }
 
         [Fact]
