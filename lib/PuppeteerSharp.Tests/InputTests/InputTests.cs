@@ -154,7 +154,6 @@ namespace PuppeteerSharp.Tests.InputTests
             }, await Page.EvaluateExpressionAsync<int[][]>("result"));
         }
 
-        [Fact(Skip = "see https://crbug.com/929806")]
         public async Task ShouldWorkWithMobileViewportsAndCrossProcessNavigations()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
