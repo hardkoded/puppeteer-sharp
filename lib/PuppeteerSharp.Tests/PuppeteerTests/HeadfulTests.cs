@@ -22,7 +22,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 TestConstants.LoggerFactory))
             using (var page = await browserWithExtension.NewPageAsync())
             {
-                var backgroundPageTarget = await WaitForBackgroundPageTargetAsync(browserWithExtension);
+                var backgroundPageTarget = await browserWithExtension.WaitForTargetAsync(t => t.Type == TargetType.BackgroundPage);
                 Assert.NotNull(backgroundPageTarget);
             }
         }
@@ -34,10 +34,12 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 TestConstants.BrowserWithExtensionOptions(),
                 TestConstants.LoggerFactory))
             {
-                var backgroundPageTarget = await WaitForBackgroundPageTargetAsync(browserWithExtension);
-                var page = await backgroundPageTarget.PageAsync();
-                Assert.Equal(6, await page.EvaluateFunctionAsync<int>("() => 2 * 3"));
-                Assert.Equal(42, await page.EvaluateFunctionAsync<int>("() => window.MAGIC"));
+                var backgroundPageTarget = await browserWithExtension.WaitForTargetAsync(t => t.Type == TargetType.BackgroundPage);
+                using (var page = await backgroundPageTarget.PageAsync())
+                {
+                    Assert.Equal(6, await page.EvaluateFunctionAsync<int>("() => 2 * 3"));
+                    Assert.Equal(42, await page.EvaluateFunctionAsync<int>("() => window.MAGIC"));
+                }
             }
         }
 
@@ -62,13 +64,13 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 var options = TestConstants.DefaultBrowserOptions();
                 options.Args = options.Args.Concat(new[] { $"--user-data-dir=\"{userDataDir}\"" }).ToArray();
                 options.Headless = false;
-
-                var browser = await launcher.LaunchAsync(options);
-                var page = await browser.NewPageAsync();
-                await page.GoToAsync(TestConstants.EmptyPage);
-                await page.EvaluateExpressionAsync(
-                    "document.cookie = 'foo=true; expires=Fri, 31 Dec 9999 23:59:59 GMT'");
-                await browser.CloseAsync();
+                using (var browser = await launcher.LaunchAsync(options))
+                using (var page = await browser.NewPageAsync())
+                {
+                    await page.GoToAsync(TestConstants.EmptyPage);
+                    await page.EvaluateExpressionAsync(
+                        "document.cookie = 'foo=true; expires=Fri, 31 Dec 9999 23:59:59 GMT'");
+                }
 
                 await TestUtils.WaitForCookieInChromiumFileAsync(userDataDir.Path, "foo");
 
@@ -144,28 +146,6 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
 
                 await newPage.CloseAsync();
             }
-        }
-
-        private Task<Target> WaitForBackgroundPageTargetAsync(Browser browser)
-        {
-            var target = browser.Targets().FirstOrDefault(t => t.Type == TargetType.BackgroundPage);
-            if (target != null)
-            {
-                return Task.FromResult(target);
-            }
-            var targetCreatedTcs = new TaskCompletionSource<Target>();
-            void targetCreated(object sender, TargetChangedArgs e)
-            {
-                if (e.Target.Type != TargetType.BackgroundPage)
-                {
-                    return;
-                }
-                targetCreatedTcs.TrySetResult(e.Target);
-                browser.TargetCreated -= targetCreated;
-            }
-            browser.TargetCreated += targetCreated;
-
-            return targetCreatedTcs.Task;
         }
     }
 }
