@@ -106,7 +106,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(35, await Page.EvaluateExpressionAsync<int>("__injected"));
         }
 
-        [Fact]
+        [Fact(Skip = "@see https://github.com/GoogleChrome/puppeteer/issues/4840")]
         public async Task ShouldThrowWhenAddedWithContentToTheCSPPage()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/csp.html");
