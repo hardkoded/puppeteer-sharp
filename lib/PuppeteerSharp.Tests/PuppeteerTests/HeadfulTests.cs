@@ -84,7 +84,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             }
         }
 
-        [Fact]
+        [Fact(Skip = "TODO: Support OOOPIF. @see https://github.com/GoogleChrome/puppeteer/issues/2548")]
         public async Task OOPIFShouldReportGoogleComFrame()
         {
             // https://google.com is isolated by default in Chromium embedder.
@@ -121,6 +121,20 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 await page.GoToAsync(TestConstants.ServerUrl + "/beforeunload.html");
                 // We have to interact with a page so that 'beforeunload' handlers fire.
                 await page.ClickAsync("body");
+            }
+        }
+
+        [Fact]
+        public async Task ShouldOpenDevtoolsWhenDevtoolsTrueOptionIsGiven()
+        {
+            var headfulOptions = TestConstants.DefaultBrowserOptions();
+            headfulOptions.Devtools = true;
+            using (var browser = await Puppeteer.LaunchAsync(headfulOptions))
+            {
+                var context = await browser.CreateIncognitoBrowserContextAsync();
+                await Task.WhenAll(
+                    context.NewPageAsync(),
+                    context.WaitForTargetAsync(target => target.Url.Contains("devtools://")));
             }
         }
 

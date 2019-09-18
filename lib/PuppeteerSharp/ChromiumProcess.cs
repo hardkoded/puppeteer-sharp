@@ -31,7 +31,7 @@ namespace PuppeteerSharp
             "--disable-default-apps",
             "--disable-dev-shm-usage",
             "--disable-extensions",
-            "--disable-features=site-per-process,TranslateUI,BlinkGenPropertyTrees",
+            "--disable-features=TranslateUI,BlinkGenPropertyTrees",
             "--disable-hang-monitor",
             "--disable-ipc-flooding-protection",
             "--disable-popup-blocking",
