@@ -83,6 +83,26 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [Fact]
+        public async Task ShouldBeAbleToRemoveHeaders()
+        {
+            await Page.SetRequestInterceptionAsync(true);
+            Page.Request += async (sender, e) =>
+            {
+                var headers = e.Request.Headers.Clone();
+                headers["foo"] = "bar";
+                headers.Remove("origin");
+                await e.Request.ContinueAsync(new Payload { Headers = headers });
+            };
+
+            var requestTask = Server.WaitForRequest("/empty.html", request => request.Headers["origin"]);
+            await Task.WhenAll(
+                requestTask,
+                Page.GoToAsync(TestConstants.ServerUrl + "/empty.html")
+            );
+            Assert.True(string.IsNullOrEmpty(requestTask.Result));
+        }
+
+        [Fact]
         public async Task ShouldContainRefererHeader()
         {
             await Page.SetRequestInterceptionAsync(true);
