@@ -154,6 +154,7 @@ namespace PuppeteerSharp.Tests.InputTests
             }, await Page.EvaluateExpressionAsync<int[][]>("result"));
         }
 
+        [Fact]
         public async Task ShouldWorkWithMobileViewportsAndCrossProcessNavigations()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
