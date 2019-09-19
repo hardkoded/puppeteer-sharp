@@ -110,7 +110,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Returns the <see cref="Page"/> associated with the target. If the target is not <c>"page"</c> or <c>"background_page"</c> returns <c>null</c>
         /// </summary>
-         /// <returns>a task that returns a <see cref="Page"/></returns>
+        /// <returns>a task that returns a <see cref="Page"/></returns>
         public Task<Page> PageAsync()
         {
             if ((TargetInfo.Type == TargetType.Page || TargetInfo.Type == TargetType.BackgroundPage) && PageTask == null)
@@ -142,28 +142,8 @@ namespace PuppeteerSharp
         private async Task<Worker> WorkerInternalAsync()
         {
             var client = await _sessionFactory().ConfigureAwait(false);
-            var targetAttachedWrapper = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
-            void MessageReceived(object sender, MessageEventArgs e)
-            {
-                if (e.MessageID == "Target.attachedToTarget")
-                {
-                    targetAttachedWrapper.TrySetResult(e.MessageData.ToObject<TargetAttachedToTargetResponse>(true).SessionId);
-                    client.MessageReceived -= MessageReceived;
-                }
-            }
-            client.MessageReceived += MessageReceived;
-
-            await Task.WhenAll(
-                targetAttachedWrapper.Task,
-                client.SendAsync("Target.setAutoAttach", new TargetSetAutoAttachRequest
-                {
-                    AutoAttach = true,
-                    WaitForDebuggerOnStart = false,
-                    Flatten = true
-                })).ConfigureAwait(false);
-            var session = Connection.FromSession(client).GetSession(targetAttachedWrapper.Task.Result);
             return new Worker(
-                session,
+                client,
                 TargetInfo.Url,
                 (consoleType, handles, stackTrace) => Task.CompletedTask,
                 (e) => { });
