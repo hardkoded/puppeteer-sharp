@@ -13,7 +13,6 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
     {
         public DefaultBrowserContextTests(ITestOutputHelper output) : base(output)
         {
-
         }
 
         public override async Task InitializeAsync()
