@@ -5,7 +5,7 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.ChromiumSpecificTests
 {
-    [Collection("PuppeteerLoaderFixture collection")]
+    [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageTests : PuppeteerPageBaseTest
     {
         public PageTests(ITestOutputHelper output) : base(output)

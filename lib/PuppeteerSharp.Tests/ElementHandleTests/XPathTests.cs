@@ -4,7 +4,7 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.ElementHandleTests
 {
-    [Collection("PuppeteerLoaderFixture collection")]
+    [Collection(TestConstants.TestFixtureCollectionName)]
     public class XPathTests : PuppeteerPageBaseTest
     {
         public XPathTests(ITestOutputHelper output) : base(output)

@@ -5,7 +5,7 @@ using Xunit;
 
 namespace PuppeteerSharp.Tests.Issues
 {
-    [Collection("PuppeteerLoaderFixture collection")]
+    [Collection(TestConstants.TestFixtureCollectionName)]
     public class Issue0128
     {
         [Fact]

@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace PuppeteerSharp.Tests.Issues
 {
-    [Collection("PuppeteerLoaderFixture collection")]
+    [Collection(TestConstants.TestFixtureCollectionName)]
     public class Issue0343 : PuppeteerPageBaseTest
     {
         public Issue0343(ITestOutputHelper output) : base(output)

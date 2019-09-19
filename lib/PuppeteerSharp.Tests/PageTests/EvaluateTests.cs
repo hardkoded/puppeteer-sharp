@@ -9,7 +9,7 @@ using System.Numerics;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
-    [Collection("PuppeteerLoaderFixture collection")]
+    [Collection(TestConstants.TestFixtureCollectionName)]
     public class EvaluateTests : PuppeteerPageBaseTest
     {
         public EvaluateTests(ITestOutputHelper output) : base(output)

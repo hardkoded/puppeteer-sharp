@@ -6,7 +6,7 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.PageTests.Cookies
 {
-    [Collection("PuppeteerLoaderFixture collection")]
+    [Collection(TestConstants.TestFixtureCollectionName)]
     public class SetCookiesTests : PuppeteerPageBaseTest
     {
         public SetCookiesTests(ITestOutputHelper output) : base(output)

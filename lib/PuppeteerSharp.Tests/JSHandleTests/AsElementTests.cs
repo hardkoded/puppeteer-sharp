@@ -4,7 +4,7 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.JSHandleTests
 {
-    [Collection("PuppeteerLoaderFixture collection")]
+    [Collection(TestConstants.TestFixtureCollectionName)]
     public class AsElementTests : PuppeteerPageBaseTest
     {
         public AsElementTests(ITestOutputHelper output) : base(output)

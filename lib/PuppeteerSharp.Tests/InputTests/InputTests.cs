@@ -7,7 +7,7 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.InputTests
 {
-    [Collection("PuppeteerLoaderFixture collection")]
+    [Collection(TestConstants.TestFixtureCollectionName)]
     public class InputTests : PuppeteerPageBaseTest
     {
         private const string Dimensions = @"function dimensions() {

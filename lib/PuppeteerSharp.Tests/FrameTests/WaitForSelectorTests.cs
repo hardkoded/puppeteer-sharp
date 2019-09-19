@@ -5,7 +5,7 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.FrameTests
 {
-    [Collection("PuppeteerLoaderFixture collection")]
+    [Collection(TestConstants.TestFixtureCollectionName)]
     public class WaitForSelectorTests : PuppeteerPageBaseTest
     {
         const string AddElement = "tag => document.body.appendChild(document.createElement(tag))";

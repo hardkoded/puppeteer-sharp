@@ -2,7 +2,7 @@
 
 namespace PuppeteerSharp.Tests
 {
-    [CollectionDefinition("PuppeteerLoaderFixture collection")]
+    [CollectionDefinition(TestConstants.TestFixtureCollectionName)]
     public class PuppeteerLoaderCollection : ICollectionFixture<PuppeteerLoaderFixture>
     {
         // This class has no code, and is never created. Its purpose is simply

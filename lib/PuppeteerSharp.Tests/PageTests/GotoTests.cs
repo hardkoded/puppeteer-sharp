@@ -10,7 +10,7 @@ using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
-    [Collection("PuppeteerLoaderFixture collection")]
+    [Collection(TestConstants.TestFixtureCollectionName)]
     public class GotoTests : PuppeteerPageBaseTest
     {
         public GotoTests(ITestOutputHelper output) : base(output)

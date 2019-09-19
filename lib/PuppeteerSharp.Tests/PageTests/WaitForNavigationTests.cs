@@ -6,7 +6,7 @@ using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
-    [Collection("PuppeteerLoaderFixture collection")]
+    [Collection(TestConstants.TestFixtureCollectionName)]
     public class WaitForNavigationTests : PuppeteerPageBaseTest
     {
         public WaitForNavigationTests(ITestOutputHelper output) : base(output)

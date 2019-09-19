@@ -9,7 +9,7 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.PuppeteerTests
 {
-    [Collection("PuppeteerLoaderFixture collection")]
+    [Collection(TestConstants.TestFixtureCollectionName)]
     public class IgnoreHttpsErrorsTests : PuppeteerPageBaseTest
     {
         public IgnoreHttpsErrorsTests(ITestOutputHelper output) : base(output)

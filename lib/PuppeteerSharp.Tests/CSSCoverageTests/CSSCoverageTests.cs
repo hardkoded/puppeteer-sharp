@@ -9,7 +9,7 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.CSSCoverageTests
 {
-    [Collection("PuppeteerLoaderFixture collection")]
+    [Collection(TestConstants.TestFixtureCollectionName)]
     public class CSSCoverageTests : PuppeteerPageBaseTest
     {
         public CSSCoverageTests(ITestOutputHelper output) : base(output)

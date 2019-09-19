@@ -3,7 +3,7 @@ using Xunit;
 
 namespace PuppeteerSharp.Tests.PuppeteerTests
 {
-    [Collection("PuppeteerLoaderFixture collection")]
+    [Collection(TestConstants.TestFixtureCollectionName)]
     public class ExecutablePathTests
     {
         [Fact]

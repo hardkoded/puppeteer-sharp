@@ -4,7 +4,7 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.ConnectionsTests
 {
-    [Collection("PuppeteerLoaderFixture collection")]
+    [Collection(TestConstants.TestFixtureCollectionName)]
     public class ConnectionTests : PuppeteerPageBaseTest
     {
         public ConnectionTests(ITestOutputHelper output) : base(output)

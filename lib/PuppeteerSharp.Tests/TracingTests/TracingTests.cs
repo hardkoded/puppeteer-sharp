@@ -11,7 +11,7 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.TracingTests
 {
-    [Collection("PuppeteerLoaderFixture collection")]
+    [Collection(TestConstants.TestFixtureCollectionName)]
     public class TracingTests : PuppeteerPageBaseTest
     {
         private readonly string _file;

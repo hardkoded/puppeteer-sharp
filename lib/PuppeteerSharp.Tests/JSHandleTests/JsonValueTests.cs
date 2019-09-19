@@ -5,7 +5,7 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.JSHandleTests
 {
-    [Collection("PuppeteerLoaderFixture collection")]
+    [Collection(TestConstants.TestFixtureCollectionName)]
     public class JsonValueTests : PuppeteerPageBaseTest
     {
         public JsonValueTests(ITestOutputHelper output) : base(output)

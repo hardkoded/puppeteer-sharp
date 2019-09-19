@@ -8,7 +8,7 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.TargetTests
 {
-    [Collection("PuppeteerLoaderFixture collection")]
+    [Collection(TestConstants.TestFixtureCollectionName)]
     public class CreateCDPSessionTests : PuppeteerPageBaseTest
     {
         public CreateCDPSessionTests(ITestOutputHelper output) : base(output)

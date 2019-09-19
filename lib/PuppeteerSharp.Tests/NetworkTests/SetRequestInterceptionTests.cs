@@ -13,7 +13,7 @@ using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
-    [Collection("PuppeteerLoaderFixture collection")]
+    [Collection(TestConstants.TestFixtureCollectionName)]
     public class SetRequestInterceptionTests : PuppeteerPageBaseTest
     {
         public SetRequestInterceptionTests(ITestOutputHelper output) : base(output)

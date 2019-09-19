@@ -8,7 +8,7 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.JSCoverageTests
 {
-    [Collection("PuppeteerLoaderFixture collection")]
+    [Collection(TestConstants.TestFixtureCollectionName)]
     public class JSResetOnNavigationTests : PuppeteerPageBaseTest
     {
         public JSResetOnNavigationTests(ITestOutputHelper output) : base(output)
