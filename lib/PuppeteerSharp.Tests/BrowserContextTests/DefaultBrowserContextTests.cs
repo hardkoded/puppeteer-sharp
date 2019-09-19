@@ -13,10 +13,19 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
     {
         public DefaultBrowserContextTests(ITestOutputHelper output) : base(output)
         {
+
+        }
+
+        public override async Task InitializeAsync()
+        {
+            await base.InitializeAsync();
+
+            Context = Browser.DefaultContext;
+            Page = await Context.NewPageAsync();
         }
 
         [Fact]
-        public async Task PageCookiesShouldWork()
+        public async Task PageGetCookiesAsyncShouldWork()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
 
@@ -34,7 +43,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         }
 
         [Fact]
-        public async Task PageSetCookieShouldWork()
+        public async Task PageSetCookiesAsyncShouldWork()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
 
@@ -57,7 +66,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         }
 
         [Fact]
-        public async Task PageDeleteCookieShouldWork()
+        public async Task PageDeleteCookieAsyncShouldWork()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
 
@@ -76,8 +85,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.Equal("cookie1=1; cookie2=2", await Page.EvaluateExpressionAsync<string>("document.cookie"));
             await Page.DeleteCookieAsync(new CookieParam
             {
-                Name = "cookie2",
-                Value = "2"
+                Name = "cookie2"
             });
             Assert.Equal("cookie1=1", await Page.EvaluateExpressionAsync<string>("document.cookie"));
 
