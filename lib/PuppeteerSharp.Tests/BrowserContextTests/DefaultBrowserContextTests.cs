@@ -26,7 +26,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.Equal("John Doe", cookie.Value);
             Assert.Equal("localhost", cookie.Domain);
             Assert.Equal("/", cookie.Path);
-            Assert.Equal(cookie.Expires, -1);
+            Assert.Equal(-1, cookie.Expires);
             Assert.Equal(16, cookie.Size);
             Assert.False(cookie.HttpOnly);
             Assert.False(cookie.Secure);
@@ -49,7 +49,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.Equal("John Doe", cookie.Value);
             Assert.Equal("localhost", cookie.Domain);
             Assert.Equal("/", cookie.Path);
-            Assert.Equal(cookie.Expires, -1);
+            Assert.Equal(-1, cookie.Expires);
             Assert.Equal(16, cookie.Size);
             Assert.False(cookie.HttpOnly);
             Assert.False(cookie.Secure);
@@ -86,7 +86,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.Equal("1", cookie.Value);
             Assert.Equal("localhost", cookie.Domain);
             Assert.Equal("/", cookie.Path);
-            Assert.Equal(cookie.Expires, -1);
+            Assert.Equal(-1, cookie.Expires);
             Assert.Equal(8, cookie.Size);
             Assert.False(cookie.HttpOnly);
             Assert.False(cookie.Secure);
