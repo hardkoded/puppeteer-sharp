@@ -46,6 +46,7 @@ namespace PuppeteerSharp
         private bool _screenshotBurstModeOn;
         private ScreenshotOptions _screenshotBurstModeOptions;
         private readonly TaskCompletionSource<bool> _closeCompletedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        private TaskCompletionSource<bool> _sessionClosedTcs;
         private readonly TimeoutSettings _timeoutSettings;
         private bool _fileChooserInterceptionIsDisabled;
         private ConcurrentDictionary<Guid, TaskCompletionSource<FileChooser>> _fileChooserInterceptors;
@@ -347,6 +348,25 @@ namespace PuppeteerSharp
         internal bool HasPopupEventListeners => Popup?.GetInvocationList().Any() == true;
         internal FrameManager FrameManager { get; private set; }
 
+        internal Task SessionClosedTask
+        {
+            get
+            {
+                if (_sessionClosedTcs == null)
+                {
+                    _sessionClosedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                    Client.Disconnected += clientDisconnected;
+
+                    void clientDisconnected(object sender, EventArgs e)
+                    {
+                        _sessionClosedTcs.TrySetException(new TargetClosedException("Target closed", "Session closed"));
+                        Client.Disconnected -= clientDisconnected;
+                    }
+                }
+
+                return _sessionClosedTcs.Task;
+            }
+        }
         #endregion
 
         #region Public Methods
@@ -1520,11 +1540,17 @@ namespace PuppeteerSharp
 
             FrameManager.NetworkManager.Request += requestEventListener;
 
-            return await requestTcs.Task.WithTimeout(timeout, t =>
+            await Task.WhenAny(requestTcs.Task, SessionClosedTask).WithTimeout(timeout, t =>
             {
                 FrameManager.NetworkManager.Request -= requestEventListener;
                 return new TimeoutException($"Timeout Exceeded: {t.TotalMilliseconds}ms exceeded");
             }).ConfigureAwait(false);
+
+            if (SessionClosedTask.IsFaulted)
+            {
+                await SessionClosedTask;
+            }
+            return await requestTcs.Task;
         }
 
         /// <summary>
@@ -1574,7 +1600,14 @@ namespace PuppeteerSharp
 
             FrameManager.NetworkManager.Response += responseEventListener;
 
-            return await responseTcs.Task.WithTimeout(timeout).ConfigureAwait(false);
+            await Task.WhenAny(responseTcs.Task, SessionClosedTask).WithTimeout(timeout).ConfigureAwait(false);
+
+            if (SessionClosedTask.IsFaulted)
+            {
+                await SessionClosedTask;
+            }
+
+            return await responseTcs.Task;
         }
 
         /// <summary>

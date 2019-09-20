@@ -78,6 +78,24 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(Page.IsClosed);
         }
 
+        [Fact]
+        public async Task ShouldTerminateNetworkWaiters()
+        {
+            var newPage = await Context.NewPageAsync();
+            var requestTask = newPage.WaitForRequestAsync(TestConstants.EmptyPage);
+            var responseTask = newPage.WaitForResponseAsync(TestConstants.EmptyPage);
+
+            await newPage.CloseAsync();
+
+            var exception = await Assert.ThrowsAsync<TargetClosedException>(() => requestTask);
+            Assert.Contains("Target closed", exception.Message);
+            Assert.DoesNotContain("Timeout", exception.Message);
+
+            exception = await Assert.ThrowsAsync<TargetClosedException>(() => responseTask);
+            Assert.Contains("Target closed", exception.Message);
+            Assert.DoesNotContain("Timeout", exception.Message);
+        }
+
         [Fact(Timeout = 10000)]
         public async Task ShouldCloseWhenConnectionBreaksPrematurely()
         {
