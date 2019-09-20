@@ -304,6 +304,17 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Fact]
+        public async Task ShouldThrowErrorWithDetailedInformationOnExceptionInsidePromise()
+        {
+            var exception = await Assert.ThrowsAsync<EvaluationFailedException>(() =>
+                Page.EvaluateFunctionAsync(
+                    @"() => new Promise(() => {
+                        throw new Error('Error in promise');
+                    })"));
+            Assert.Contains("Error in promise", exception.Message);
+        }
+
+        [Fact]
         public async Task ShouldWorkWithDifferentSerializerSettings()
         {
             var result = await Page.EvaluateFunctionAsync<ComplexObjectTestClass>("() => { return { foo: 'bar' }}");
