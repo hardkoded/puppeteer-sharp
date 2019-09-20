@@ -12,7 +12,7 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.PuppeteerTests
 {
-    [Collection("PuppeteerLoaderFixture collection")]
+    [Collection(TestConstants.TestFixtureCollectionName)]
     public class FixturesTests : PuppeteerBaseTest
     {
         public FixturesTests(ITestOutputHelper output) : base(output) { }

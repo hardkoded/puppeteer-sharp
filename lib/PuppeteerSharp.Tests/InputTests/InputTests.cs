@@ -7,7 +7,7 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.InputTests
 {
-    [Collection("PuppeteerLoaderFixture collection")]
+    [Collection(TestConstants.TestFixtureCollectionName)]
     public class InputTests : PuppeteerPageBaseTest
     {
         private const string Dimensions = @"function dimensions() {
@@ -154,6 +154,7 @@ namespace PuppeteerSharp.Tests.InputTests
             }, await Page.EvaluateExpressionAsync<int[][]>("result"));
         }
 
+        [Fact]
         public async Task ShouldWorkWithMobileViewportsAndCrossProcessNavigations()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 namespace PuppeteerSharp.Tests.PuppeteerTests
 {
-    [Collection("PuppeteerLoaderFixture collection")]
+    [Collection(TestConstants.TestFixtureCollectionName)]
     public class BrowserFetcherTests : PuppeteerBaseTest
     {
         private readonly string _downloadsFolder;

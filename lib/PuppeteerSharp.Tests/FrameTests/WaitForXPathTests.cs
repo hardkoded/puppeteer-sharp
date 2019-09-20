@@ -7,7 +7,7 @@ using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Tests.FrameTests
 {
-    [Collection("PuppeteerLoaderFixture collection")]
+    [Collection(TestConstants.TestFixtureCollectionName)]
     public class WaitForXPathTests : PuppeteerPageBaseTest
     {
         const string addElement = "tag => document.body.appendChild(document.createElement(tag))";

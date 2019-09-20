@@ -11,6 +11,7 @@ namespace PuppeteerSharp.Tests
 {
     public static class TestConstants
     {
+        public const string TestFixtureCollectionName = "PuppeteerLoaderFixture collection";
         public const int Port = 8081;
         public const int HttpsPort = Port + 1;
         public const string ServerUrl = "http://localhost:8081";

@@ -8,7 +8,7 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.BrowserTests.Events
 {
-    [Collection("PuppeteerLoaderFixture collection")]
+    [Collection(TestConstants.TestFixtureCollectionName)]
     public class TargetTests : PuppeteerBrowserBaseTest
     {
         public TargetTests(ITestOutputHelper output) : base(output)

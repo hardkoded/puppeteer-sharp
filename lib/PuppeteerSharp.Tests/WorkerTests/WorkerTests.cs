@@ -5,7 +5,7 @@ using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Tests.WorkerTests
 {
-    [Collection("PuppeteerLoaderFixture collection")]
+    [Collection(TestConstants.TestFixtureCollectionName)]
     public class WorkerTests : PuppeteerPageBaseTest
     {
         public WorkerTests(ITestOutputHelper output) : base(output)

@@ -5,7 +5,7 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.AccesibilityTests
 {
-    [Collection("PuppeteerLoaderFixture collection")]
+    [Collection(TestConstants.TestFixtureCollectionName)]
     public class RootOptionTests : PuppeteerPageBaseTest
     {
         public RootOptionTests(ITestOutputHelper output) : base(output)

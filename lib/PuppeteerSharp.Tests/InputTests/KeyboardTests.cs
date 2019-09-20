@@ -7,7 +7,7 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.InputTests
 {
-    [Collection("PuppeteerLoaderFixture collection")]
+    [Collection(TestConstants.TestFixtureCollectionName)]
     public class KeyboardTests : PuppeteerPageBaseTest
     {
         public KeyboardTests(ITestOutputHelper output) : base(output)

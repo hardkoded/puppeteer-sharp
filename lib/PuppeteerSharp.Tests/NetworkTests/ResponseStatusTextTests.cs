@@ -5,7 +5,7 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
-    [Collection("PuppeteerLoaderFixture collection")]
+    [Collection(TestConstants.TestFixtureCollectionName)]
     public class ResponseStatusTextTests : PuppeteerPageBaseTest
     {
         public ResponseStatusTextTests(ITestOutputHelper output) : base(output)

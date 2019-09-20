@@ -13,7 +13,7 @@ using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
-    [Collection("PuppeteerLoaderFixture collection")]
+    [Collection(TestConstants.TestFixtureCollectionName)]
     public class SetRequestInterceptionTests : PuppeteerPageBaseTest
     {
         public SetRequestInterceptionTests(ITestOutputHelper output) : base(output)
@@ -179,6 +179,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.True(response.Ok);
         }
 
+        [Fact]
         public async Task ShouldWorkWithRedirectInsideSyncXHR()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

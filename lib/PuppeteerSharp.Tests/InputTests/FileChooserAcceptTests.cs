@@ -6,7 +6,7 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.InputTests
 {
-    [Collection("PuppeteerLoaderFixture collection")]
+    [Collection(TestConstants.TestFixtureCollectionName)]
     public class FileChooserAcceptTests : PuppeteerPageBaseTest
     {
         public FileChooserAcceptTests(ITestOutputHelper output) : base(output)

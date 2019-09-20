@@ -6,7 +6,7 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.OOPIFTests
 {
-    [Collection("PuppeteerLoaderFixture collection")]
+    [Collection(TestConstants.TestFixtureCollectionName)]
     public class OOPIFTests : PuppeteerPageBaseTest
     {
         public OOPIFTests(ITestOutputHelper output) : base(output)

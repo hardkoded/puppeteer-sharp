@@ -8,7 +8,7 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
-    [Collection("PuppeteerLoaderFixture collection")]
+    [Collection(TestConstants.TestFixtureCollectionName)]
     public class EvaluateOnNewDocumentTests : PuppeteerPageBaseTest
     {
         public EvaluateOnNewDocumentTests(ITestOutputHelper output) : base(output)

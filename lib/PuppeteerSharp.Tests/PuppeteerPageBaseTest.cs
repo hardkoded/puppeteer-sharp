@@ -8,8 +8,8 @@ namespace PuppeteerSharp.Tests
         public PuppeteerPageBaseTest(ITestOutputHelper output) : base(output)
         {
         }
-        
-        protected Page Page { get; private set; }
+
+        protected Page Page { get; set; }
 
         public override async Task InitializeAsync()
         {
