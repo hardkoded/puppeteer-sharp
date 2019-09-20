@@ -348,7 +348,7 @@ namespace PuppeteerSharp
         internal bool HasPopupEventListeners => Popup?.GetInvocationList().Any() == true;
         internal FrameManager FrameManager { get; private set; }
 
-        internal Task SessionClosedTask
+        private Task SessionClosedTask
         {
             get
             {
