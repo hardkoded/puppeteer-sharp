@@ -29,9 +29,9 @@ namespace PuppeteerSharp
         private bool _userCacheDisabled;
         #endregion
 
-        internal NetworkManager(CDPSession client, bool ignoreHTTPSErrors)
+        internal NetworkManager(CDPSession client, bool ignoreHTTPSErrors, FrameManager frameManager)
         {
-            FrameManager = null;
+            FrameManager = frameManager;
             _client = client;
             _ignoreHTTPSErrors = ignoreHTTPSErrors;
             _client.MessageReceived += Client_MessageReceived;
@@ -306,7 +306,7 @@ namespace PuppeteerSharp
             if (!_requestIdToRequest.TryGetValue(e.RequestId, out var currentRequest) ||
               currentRequest.Frame == null)
             {
-                var frame = await FrameManager?.GetFrameAsync(e.FrameId);
+                var frame = await FrameManager.GetFrameAsync(e.FrameId);
 
                 request = new Request(
                     _client,
