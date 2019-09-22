@@ -1606,7 +1606,6 @@ namespace PuppeteerSharp
             {
                 await SessionClosedTask;
             }
-
             return await responseTcs.Task;
         }
 
