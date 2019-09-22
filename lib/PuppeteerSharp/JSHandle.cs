@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Messaging;
@@ -55,11 +56,11 @@ namespace PuppeteerSharp
         /// <returns>Task of <see cref="JSHandle"/></returns>
         public async Task<JSHandle> GetPropertyAsync(string propertyName)
         {
-            var objectHandle = await ExecutionContext.EvaluateFunctionHandleAsync(@"(object, propertyName) => {
+            var objectHandle = await EvaluateFunctionHandleAsync(@"(object, propertyName) => {
               const result = { __proto__: null};
               result[propertyName] = object[propertyName];
               return result;
-            }", this, propertyName).ConfigureAwait(false);
+            }", propertyName).ConfigureAwait(false);
             var properties = await objectHandle.GetPropertiesAsync().ConfigureAwait(false);
             properties.TryGetValue(propertyName, out var result);
             await objectHandle.DisposeAsync().ConfigureAwait(false);
@@ -164,6 +165,58 @@ namespace PuppeteerSharp
             }
 
             return "JSHandle:" + RemoteObjectHelper.ValueFromRemoteObject<object>(RemoteObject)?.ToString();
+        }
+
+        /// <summary>
+        /// Executes a script in browser context
+        /// </summary>
+        /// <param name="pageFunction">Script to be evaluated in browser context</param>
+        /// <param name="args">Function arguments</param>
+        /// <remarks>
+        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+        /// <see cref="JSHandle"/> instances can be passed as arguments
+        /// </remarks>
+        /// <returns>Task which resolves to script return value</returns>
+        public Task<JSHandle> EvaluateFunctionHandleAsync(string pageFunction, params object[] args)
+        {
+            var list = new List<object>(args);
+            list.Insert(0, this);
+            return ExecutionContext.EvaluateFunctionHandleAsync(pageFunction, list.ToArray());
+        }
+
+        /// <summary>
+        /// Executes a function in browser context
+        /// </summary>
+        /// <param name="script">Script to be evaluated in browser context</param>
+        /// <param name="args">Arguments to pass to script</param>
+        /// <remarks>
+        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+        /// <see cref="JSHandle"/> instances can be passed as arguments
+        /// </remarks>
+        /// <returns>Task which resolves to script return value</returns>
+        public Task<JToken> EvaluateFunctionAsync(string script, params object[] args)
+        {
+            var list = new List<object>(args);
+            list.Insert(0, this);
+            return ExecutionContext.EvaluateFunctionAsync<JToken>(script, list.ToArray());
+        }
+
+        /// <summary>
+        /// Executes a function in browser context
+        /// </summary>
+        /// <typeparam name="T">The type to deserialize the result to</typeparam>
+        /// <param name="script">Script to be evaluated in browser context</param>
+        /// <param name="args">Arguments to pass to script</param>
+        /// <remarks>
+        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+        /// <see cref="JSHandle"/> instances can be passed as arguments
+        /// </remarks>
+        /// <returns>Task which resolves to script return value</returns>
+        public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
+        {
+            var list = new List<object>(args);
+            list.Insert(0, this);
+            return ExecutionContext.EvaluateFunctionAsync<T>(script, list.ToArray());
         }
 
         internal object FormatArgument(ExecutionContext context)

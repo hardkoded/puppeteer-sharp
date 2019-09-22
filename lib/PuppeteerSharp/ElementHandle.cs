@@ -230,7 +230,7 @@ namespace PuppeteerSharp
         /// Calls <c>focus</c> <see href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus"/> on the element.
         /// </summary>
         /// <returns>Task</returns>
-        public Task FocusAsync() => ExecutionContext.EvaluateFunctionAsync("element => element.focus()", this);
+        public Task FocusAsync() => EvaluateFunctionAsync("element => element.focus()");
 
         /// <summary>
         /// Focuses the element, and sends a <c>keydown</c>, <c>keypress</c>/<c>input</c>, and <c>keyup</c> event for each character in the text.
@@ -281,9 +281,9 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to <see cref="ElementHandle"/> pointing to the frame element</returns>
         public async Task<ElementHandle> QuerySelectorAsync(string selector)
         {
-            var handle = await ExecutionContext.EvaluateFunctionHandleAsync(
+            var handle = await EvaluateFunctionHandleAsync(
                 "(element, selector) => element.querySelector(selector)",
-                this, selector).ConfigureAwait(false);
+                selector).ConfigureAwait(false);
 
             if (handle is ElementHandle element)
             {
@@ -301,9 +301,9 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to ElementHandles pointing to the frame elements</returns>
         public async Task<ElementHandle[]> QuerySelectorAllAsync(string selector)
         {
-            var arrayHandle = await ExecutionContext.EvaluateFunctionHandleAsync(
+            var arrayHandle = await EvaluateFunctionHandleAsync(
                 "(element, selector) => element.querySelectorAll(selector)",
-                this, selector).ConfigureAwait(false);
+                selector).ConfigureAwait(false);
 
             var properties = await arrayHandle.GetPropertiesAsync().ConfigureAwait(false);
             await arrayHandle.DisposeAsync().ConfigureAwait(false);
@@ -423,6 +423,36 @@ namespace PuppeteerSharp
                 return visibleRatio > 0;
             }", this);
 
+        /// <summary>
+        /// Triggers a `change` and `input` event once all the provided options have been selected.
+        /// If there's no `select` element matching `selector`, the method throws an exception.
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// await handle.SelectAsync("blue"); // single selection
+        /// await handle.SelectAsync("red", "green", "blue"); // multiple selections
+        /// </code>
+        /// </example>
+        /// <param name="values">Values of options to select. If the `select` has the `multiple` attribute, all values are considered, otherwise only the first one is taken into account.</param>
+        /// <returns>A task that resolves to an array of option values that have been successfully selected.</returns>
+        public Task<string[]> SelectAsync(params string[] values)
+            => EvaluateFunctionAsync<string[]>(@"(element, values) =>
+            {
+                if (element.nodeName.toLowerCase() !== 'select')
+                    throw new Error('Element is not a <select> element.');
+
+                const options = Array.from(element.options);
+                element.value = undefined;
+                for (const option of options) {
+                    option.selected = values.includes(option.value);
+                    if (option.selected && !element.multiple)
+                        break;
+                }
+                element.dispatchEvent(new Event('input', { 'bubbles': true }));
+                element.dispatchEvent(new Event('change', { 'bubbles': true }));
+                return options.filter(option => option.selected).map(option => option.value);
+            }", new[] { values });
+
         private async Task<(decimal x, decimal y)> ClickablePointAsync()
         {
             GetContentQuadsResponse result = null;
@@ -484,7 +514,7 @@ namespace PuppeteerSharp
 
         private async Task ScrollIntoViewIfNeededAsync()
         {
-            var errorMessage = await ExecutionContext.EvaluateFunctionAsync<string>(@"async(element, pageJavascriptEnabled) => {
+            var errorMessage = await EvaluateFunctionAsync<string>(@"async(element, pageJavascriptEnabled) => {
               if (!element.isConnected)
                 return 'Node is detached from document';
               if (element.nodeType !== Node.ELEMENT_NODE)
@@ -504,7 +534,7 @@ namespace PuppeteerSharp
               if (visibleRatio !== 1.0)
                 element.scrollIntoView({block: 'center', inline: 'center', behavior: 'instant'});
               return null;
-            }", this, Page.JavascriptEnabled).ConfigureAwait(false);
+            }", Page.JavascriptEnabled).ConfigureAwait(false);
 
             if (errorMessage != null)
             {
