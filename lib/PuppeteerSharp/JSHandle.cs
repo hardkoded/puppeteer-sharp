@@ -198,7 +198,7 @@ namespace PuppeteerSharp
         {
             var list = new List<object>(args);
             list.Insert(0, this);
-            return ExecutionContext.EvaluateFunctionAsync<JToken>(script, args);
+            return ExecutionContext.EvaluateFunctionAsync<JToken>(script, list.ToArray());
         }
 
         /// <summary>
@@ -216,7 +216,7 @@ namespace PuppeteerSharp
         {
             var list = new List<object>(args);
             list.Insert(0, this);
-            return ExecutionContext.EvaluateFunctionAsync<T>(script, args);
+            return ExecutionContext.EvaluateFunctionAsync<T>(script, list.ToArray());
         }
 
         internal object FormatArgument(ExecutionContext context)
