@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>1.19.0</PackageVersion>
+    <PackageVersion>1.20.0</PackageVersion>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
@@ -14,25 +14,26 @@
     <PackageReleaseNotes><![CDATA[
 # New Features
 
- * Expose Page.Session.
- * Phone buttons support.
- * Introduce Page.BringToFrontAsync.
- * Introduce file chooser interception.
+ * Add element.SelectAsync, element.EvaluateFunctionAsync, element.EvaluateFunctionHandleAsync methods.
 
 # Changelog
-
- * Roll Chromium to r674921.
- * Disable component extensions.
- * Slightly enhanced wording.
- * Add a missing test.
- * Fix typo.
- * Add Log CDP example.
- * Fix typo and replace "which" by "that".
- * Get TLS version from request.
- * Properly create isolated worlds.
-
+ * Improve target doc.
+ * Background page tests should wait for the page.
+ * Make sure selection is not empty before running copy command.
+ * Update DeviceDescriptors to include 6.5 inch iPhone XR.
+ * Make eval test resilient to error format.
+ * Enable redirect inside sync XHR test.
+ * Enable cross-process viewport test.
+ * Be able to remove headers using request.continue.
+ * Roll Chromium to r682225.
+ * Roll Chromium to r686378.
+ * Add default context cookies test.
+ * Add a test for errors inside promise.
+ * Pass FrameManager to NetworkManager constructor.
+ * Abort page.waitForRequest/Response when page closes.
+ 
  ]]></PackageReleaseNotes>
-    <ReleaseVersion>1.19.0</ReleaseVersion>
+    <ReleaseVersion>1.20.0</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>
