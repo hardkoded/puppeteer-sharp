@@ -54,10 +54,7 @@ namespace PuppeteerSharp
                 throw new SelectorException("Error: failed to find element matching selector");
             }
 
-            var newArgs = new object[args.Length + 1];
-            newArgs[0] = elementHandle;
-            args.CopyTo(newArgs, 1);
-            var result = await elementHandle.ExecutionContext.EvaluateFunctionAsync<T>(pageFunction, newArgs).ConfigureAwait(false);
+            var result = await elementHandle.EvaluateFunctionAsync<T>(pageFunction, args).ConfigureAwait(false);
             await elementHandle.DisposeAsync().ConfigureAwait(false);
             return result;
         }
@@ -93,12 +90,7 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to the return value of <c>pageFunction</c></returns>
         public static async Task<T> EvaluateFunctionAsync<T>(this JSHandle arrayHandle, string pageFunction, params object[] args)
         {
-            var response = await arrayHandle.JsonValueAsync<object[]>().ConfigureAwait(false);
-
-            var newArgs = new object[args.Length + 1];
-            newArgs[0] = arrayHandle;
-            args.CopyTo(newArgs, 1);
-            var result = await arrayHandle.ExecutionContext.EvaluateFunctionAsync<T>(pageFunction, newArgs).ConfigureAwait(false);
+            var result = await arrayHandle.EvaluateFunctionAsync<T>(pageFunction, args).ConfigureAwait(false);
             await arrayHandle.DisposeAsync().ConfigureAwait(false);
             return result;
         }
