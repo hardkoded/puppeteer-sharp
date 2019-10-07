@@ -7,7 +7,7 @@ You need to test a chrome extension
 
 ## Solution
 
-Use `Page.Launch` passing arguments specifiying to load your extension
+Use `Puppeteer.LaunchAsync` passing arguments specifying to load your extension.
 
 ```cs
 await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
