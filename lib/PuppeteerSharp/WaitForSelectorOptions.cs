@@ -8,9 +8,9 @@
     public class WaitForSelectorOptions
     {
         /// <summary>
-        /// Maximum time to wait for in milliseconds. Defaults to 30000 (30 seconds). Pass 0 to disable timeout.
+        /// Maximum time to wait for in milliseconds. Pass 0 to disable timeout.
         /// </summary>
-        public int Timeout { get; set; } = Puppeteer.DefaultTimeout;
+        public int? Timeout { get; set; }
 
         /// <summary>
         /// Wait for selector to become visible.

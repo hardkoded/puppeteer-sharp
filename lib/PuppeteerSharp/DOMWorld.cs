@@ -145,12 +145,14 @@ namespace PuppeteerSharp
                 document.close();
             }", html).ConfigureAwait(false);
 
-            var watcher = new LifecycleWatcher(_frameManager, Frame, waitUntil, timeout);
-            var watcherTask = await Task.WhenAny(
-                watcher.TimeoutOrTerminationTask,
-                watcher.LifecycleTask).ConfigureAwait(false);
+            using (var watcher = new LifecycleWatcher(_frameManager, Frame, waitUntil, timeout))
+            {
+                var watcherTask = await Task.WhenAny(
+                    watcher.TimeoutOrTerminationTask,
+                    watcher.LifecycleTask).ConfigureAwait(false);
 
-            await watcherTask.ConfigureAwait(false);
+                await watcherTask.ConfigureAwait(false);
+            }
         }
 
         internal async Task<ElementHandle> AddScriptTagAsync(AddTagOptions options)
@@ -384,6 +386,8 @@ namespace PuppeteerSharp
         private async Task<ElementHandle> WaitForSelectorOrXPathAsync(string selectorOrXPath, bool isXPath, WaitForSelectorOptions options = null)
         {
             options = options ?? new WaitForSelectorOptions();
+            var timeout = options.Timeout ?? _timeoutSettings.Timeout;
+
             const string predicate = @"
               function predicate(selectorOrXPath, isXPath, waitForVisible, waitForHidden) {
                 const node = isXPath
@@ -413,7 +417,7 @@ namespace PuppeteerSharp
                 $"{(isXPath ? "XPath" : "selector")} '{selectorOrXPath}'{(options.Hidden ? " to be hidden" : "")}",
                 polling,
                 null,
-                options.Timeout,
+                timeout,
                 new object[]
                 {
                     selectorOrXPath,
