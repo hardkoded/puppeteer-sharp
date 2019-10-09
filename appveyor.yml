@@ -27,6 +27,8 @@ build:
   project: .\lib\PuppeteerSharp.sln
   publish_nuget: true
   include_nuget_references: true
+  publish_nuget_symbols: true
+  use_snupkg_format: true
   verbosity: minimal
 test_script:
 - cmd: >-
