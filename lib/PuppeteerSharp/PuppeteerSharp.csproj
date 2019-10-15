@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>1.20.0</PackageVersion>
+    <PackageVersion>1.20.0-alpha</PackageVersion>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
@@ -33,7 +33,7 @@
  * Abort page.waitForRequest/Response when page closes.
  
  ]]></PackageReleaseNotes>
-    <ReleaseVersion>1.20.0-alpha</ReleaseVersion>
+    <ReleaseVersion>1.20.0</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
