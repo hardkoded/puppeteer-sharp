@@ -57,7 +57,7 @@ using(var page = await browser.NewPageAsync())
 ```cs
 using (var page = await browser.NewPageAsync())
 {
-    var seven = await page.EvaluateFunctionAsync<int>("()=> 4 + 3");
+    var seven = await page.EvaluateExpressionAsync<int>("()=> 4 + 3");
     var someObject = await page.EvaluateFunctionAsync<dynamic>("(value) => ({a: value})", 5);
     Console.WriteLine(someObject.a);
 }
