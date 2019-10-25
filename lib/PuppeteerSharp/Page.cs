@@ -1261,8 +1261,8 @@ namespace PuppeteerSharp
         /// </remarks>
         /// <example>
         /// <code>
-        /// page.TypeAsync("#mytextarea", "Hello"); // Types instantly
-        /// page.TypeAsync("#mytextarea", "World", new TypeOptions { Delay = 100 }); // Types slower, like a user
+        /// await page.TypeAsync("#mytextarea", "Hello"); // Types instantly
+        /// await page.TypeAsync("#mytextarea", "World", new TypeOptions { Delay = 100 }); // Types slower, like a user
         /// </code>
         /// </example>
         /// <returns>Task</returns>
