@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Helpers
     public static class TaskHelper
     {
         private static readonly Func<TimeSpan, Exception> DefaultExceptionFactory =
-            timeout => new TimeoutException($"Timeout Exceeded: {timeout.TotalMilliseconds}ms exceeded");
+            timeout => new TimeoutException($"Timeout of {timeout.TotalMilliseconds} ms exceeded");
 
         //Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
         /// <summary>
