@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
 using PuppeteerSharp.PageAccessibility;
 using Xunit;
 using Xunit.Abstractions;
@@ -35,6 +37,81 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                     <option>Second Option</option>
                 </select>
             </body>");
+
+            Console.WriteLine(JsonConvert.SerializeObject(new SerializedAXNode
+            {
+                Role = "WebArea",
+                Name = "Accessibility Test",
+                Children = new SerializedAXNode[]
+                    {
+                        new SerializedAXNode
+                        {
+                            Role = "text",
+                            Name = "Hello World"
+                        },
+                        new SerializedAXNode
+                        {
+                            Role = "heading",
+                            Name = "Inputs",
+                            Level = 1
+                        },
+                        new SerializedAXNode{
+                            Role = "textbox",
+                            Name = "Empty input",
+                            Focused = true
+                        },
+                        new SerializedAXNode{
+                            Role = "textbox",
+                            Name = "readonly input",
+                            Readonly = true
+                        },
+                        new SerializedAXNode{
+                            Role = "textbox",
+                            Name = "disabled input",
+                            Disabled= true
+                        },
+                        new SerializedAXNode{
+                            Role = "textbox",
+                            Name = "Input with whitespace",
+                            Value= "  "
+                        },
+                        new SerializedAXNode{
+                            Role = "textbox",
+                            Name = "",
+                            Value= "value only"
+                        },
+                        new SerializedAXNode{
+                            Role = "textbox",
+                            Name = "placeholder",
+                            Value= "and a value"
+                        },
+                        new SerializedAXNode{
+                            Role = "textbox",
+                            Name = "placeholder",
+                            Value= "and a value",
+                            Description= "This is a description!"},
+                        new SerializedAXNode{
+                            Role= "combobox",
+                            Name= "",
+                            Value= "First Option",
+                            Children= new SerializedAXNode[]{
+                                new SerializedAXNode
+                                {
+                                    Role = "menuitem",
+                                    Name = "First Option",
+                                    Selected= true
+                                },
+                                new SerializedAXNode
+                                {
+                                    Role = "menuitem",
+                                    Name = "Second Option"
+                                }
+                            }
+                        }
+                    }
+            }));
+            Console.WriteLine(JsonConvert.SerializeObject(await Page.Accessibility.SnapshotAsync()));
+
             Assert.Equal(
                 new SerializedAXNode
                 {
