@@ -8,6 +8,9 @@ namespace PuppeteerSharp.PageAccessibility
     /// </summary>
     public class SerializedAXNode : IEquatable<SerializedAXNode>
     {
+        /// <summary>
+        /// Creates a new serialized node
+        /// </summary>
         public SerializedAXNode() => Children = new SerializedAXNode[] { };
 
         /// <summary>
