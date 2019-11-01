@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
 using PuppeteerSharp.PageAccessibility;
 using Xunit;
 using Xunit.Abstractions;
@@ -36,12 +38,11 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                 </select>
             </body>");
 
-            Assert.Equal(
-                new SerializedAXNode
-                {
-                    Role = "WebArea",
-                    Name = "Accessibility Test",
-                    Children = new SerializedAXNode[]
+            var nodeToCheck = new SerializedAXNode
+            {
+                Role = "WebArea",
+                Name = "Accessibility Test",
+                Children = new SerializedAXNode[]
                     {
                         new SerializedAXNode
                         {
@@ -108,8 +109,14 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                             }
                         }
                     }
-                },
-                await Page.Accessibility.SnapshotAsync());
+            };
+
+            var snapshot = await Page.Accessibility.SnapshotAsync();
+
+            Console.WriteLine(JsonConvert.SerializeObject(nodeToCheck));
+            Console.WriteLine(JsonConvert.SerializeObject(snapshot));
+
+            Assert.Equal(nodeToCheck, snapshot);
         }
 
         [Fact]
