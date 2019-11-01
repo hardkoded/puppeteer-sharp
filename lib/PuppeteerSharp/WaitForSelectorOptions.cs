@@ -15,7 +15,7 @@
         public int? Timeout { get; set; }
 
         /// <summary>
-        /// Wwit for element to be present in DOM and to be visible.
+        /// Wait for element to be present in DOM and to be visible.
         /// </summary>
         public bool Visible { get; set; }
 
