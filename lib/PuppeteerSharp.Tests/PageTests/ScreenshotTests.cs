@@ -170,12 +170,12 @@ namespace PuppeteerSharp.Tests.PageTests
             var pageTasks = new List<Task<Page>>();
             for (var i = 0; i < n; i++)
             {
-                Func<Task<Page>> func = async () =>
+                async Task<Page> func()
                 {
                     var page = await Context.NewPageAsync();
                     await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
                     return page;
-                };
+                }
 
                 pageTasks.Add(func());
             }
