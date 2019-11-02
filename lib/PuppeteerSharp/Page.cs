@@ -1709,13 +1709,9 @@ namespace PuppeteerSharp
                     TimezoneId = timezoneId ?? ""
                 }).ConfigureAwait(false);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex.Message.Contains("Invalid timezone"))
             {
-                if (ex.Message.Contains("Invalid timezone"))
-                {
-                    throw new PuppeteerException($"Invalid timezone ID: { timezoneId }");
-                }
-                throw ex;
+                throw new PuppeteerException($"Invalid timezone ID: { timezoneId }");
             }
         }
 
