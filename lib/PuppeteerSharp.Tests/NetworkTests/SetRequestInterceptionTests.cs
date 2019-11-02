@@ -198,7 +198,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [Fact]
-        public async Task ShouldWorksWithCustomizingRefererHeaders()
+        public async Task ShouldWorkWithCustomRefererHeaders()
         {
             await Page.SetExtraHttpHeadersAsync(new Dictionary<string, string>
             {

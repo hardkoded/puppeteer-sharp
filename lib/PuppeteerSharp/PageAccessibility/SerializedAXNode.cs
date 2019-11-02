@@ -9,6 +9,11 @@ namespace PuppeteerSharp.PageAccessibility
     public class SerializedAXNode : IEquatable<SerializedAXNode>
     {
         /// <summary>
+        /// Creates a new serialized node
+        /// </summary>
+        public SerializedAXNode() => Children = new SerializedAXNode[] { };
+
+        /// <summary>
         /// The <see fref="https://www.w3.org/TR/wai-aria/#usage_intro">role</see>.
         /// </summary>
         public string Role { get; set; }

@@ -1543,7 +1543,7 @@ namespace PuppeteerSharp
             await Task.WhenAny(requestTcs.Task, SessionClosedTask).WithTimeout(timeout, t =>
             {
                 FrameManager.NetworkManager.Request -= requestEventListener;
-                return new TimeoutException($"Timeout Exceeded: {t.TotalMilliseconds}ms exceeded");
+                return new TimeoutException($"Timeout of {t.TotalMilliseconds} ms exceeded");
             }).ConfigureAwait(false);
 
             if (SessionClosedTask.IsFaulted)
