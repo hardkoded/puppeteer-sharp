@@ -1706,7 +1706,7 @@ namespace PuppeteerSharp
             {
                 await Client.SendAsync("Emulation.setTimezoneOverride", new EmulateTimezoneRequest
                 {
-                    TimezoneId = timezoneId ?? ""
+                    TimezoneId = timezoneId ?? string.Empty
                 }).ConfigureAwait(false);
             }
             catch (Exception ex) when (ex.Message.Contains("Invalid timezone"))
