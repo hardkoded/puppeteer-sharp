@@ -18,6 +18,7 @@ namespace PuppeteerSharp.PageAccessibility
         private readonly bool _richlyEditable;
         private readonly bool _editable;
         private readonly bool _expanded;
+        private readonly bool _hidden;
         private bool? _cachedHasFocusableChild;
 
         public AXNode(AccessibilityGetFullAXTreeResponse.AXTreeNode payload)
@@ -31,6 +32,7 @@ namespace PuppeteerSharp.PageAccessibility
             _richlyEditable = payload.Properties.FirstOrDefault(p => p.Name == "editable")?.Value.Value.ToObject<string>() == "richtext";
             _editable |= _richlyEditable;
             _expanded = payload.Properties.FirstOrDefault(p => p.Name == "expanded")?.Value.Value.ToObject<bool>() == true;
+            _hidden = payload.Properties.FirstOrDefault(p => p.Name == "hidden")?.Value.Value.ToObject<bool>() == true;
             Focusable = payload.Properties.FirstOrDefault(p => p.Name == "focusable")?.Value.Value.ToObject<bool>() == true;
         }
 
@@ -166,7 +168,7 @@ namespace PuppeteerSharp.PageAccessibility
 
         internal bool IsInteresting(bool insideControl)
         {
-            if (_role == "Ignored")
+            if (_role == "Ignored" || _hidden)
             {
                 return false;
             }
