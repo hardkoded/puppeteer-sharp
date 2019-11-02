@@ -1694,6 +1694,27 @@ namespace PuppeteerSharp
         /// <returns>A task that resolves when the message has been sent to Chromium.</returns>
         public Task BringToFrontAsync() => Client.SendAsync("Page.bringToFront");
 
+        /// <summary>
+        /// Changes the timezone of the page.
+        /// </summary>
+        /// <param name="timezoneId">Timezone to set. See <seealso href="https://cs.chromium.org/chromium/src/third_party/icu/source/data/misc/metaZones.txt?rcl=faee8bc70570192d82d2978a71e2a615788597d1" >ICU’s `metaZones.txt`</seealso>
+        /// for a list of supported timezone IDs. Passing `null` disables timezone emulation.</param>
+        /// <returns>The viewport task.</returns>
+        public async Task EmulateTimezoneAsync(string timezoneId)
+        {
+            try
+            {
+                await Client.SendAsync("Emulation.setTimezoneOverride", new EmulateTimezoneRequest
+                {
+                    TimezoneId = timezoneId ?? string.Empty
+                }).ConfigureAwait(false);
+            }
+            catch (Exception ex) when (ex.Message.Contains("Invalid timezone"))
+            {
+                throw new PuppeteerException($"Invalid timezone ID: { timezoneId }");
+            }
+        }
+
         #endregion
 
         internal void OnPopup(Page popupPage) => Popup?.Invoke(this, new PopupEventArgs { PopupPage = popupPage });
