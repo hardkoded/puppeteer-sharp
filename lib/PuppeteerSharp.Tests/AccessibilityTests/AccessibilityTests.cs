@@ -110,12 +110,8 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                         }
                     }
             };
-
+            await Page.FocusAsync("[placeholder='Empty input']");
             var snapshot = await Page.Accessibility.SnapshotAsync();
-
-            Console.WriteLine(JsonConvert.SerializeObject(nodeToCheck));
-            Console.WriteLine(JsonConvert.SerializeObject(snapshot));
-
             Assert.Equal(nodeToCheck, snapshot);
         }
 
@@ -123,6 +119,8 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
         public async Task ShouldReportUninterestingNodes()
         {
             await Page.SetContentAsync("<textarea autofocus>hi</textarea>");
+            await Page.FocusAsync("textarea");
+
             Assert.Equal(
                 new SerializedAXNode
                 {
