@@ -1009,8 +1009,77 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>Task.</returns>
         /// <param name="media">Media to set.</param>
-        public Task EmulateMediaAsync(MediaType media)
-            => Client.SendAsync("Emulation.setEmulatedMedia", new EmulationSetEmulatedMediaRequest { Media = media });
+        [Obsolete("User EmulateMediaTypeAsync instead")]
+        public Task EmulateMediaAsync(MediaType media) => EmulateMediaTypeAsync(media);
+
+        /// <summary>
+        /// Emulates a media such as screen or print.
+        /// </summary>
+        /// <param name="type">Media to set.</param>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// await page.EvaluateFunctionAsync<bool>("() => matchMedia('screen').matches)");
+        /// // → true
+        /// await page.EvaluateFunctionAsync<bool>("() => matchMedia('print').matches)");
+        /// // → true
+        /// await page.EmulateMediaTypeAsync(MediaType.Print);
+        /// await page.EvaluateFunctionAsync<bool>("() => matchMedia('screen').matches)");
+        /// // → false
+        /// await page.EvaluateFunctionAsync<bool>("() => matchMedia('print').matches)");
+        /// // → true
+        /// await page.EmulateMediaTypeAsync(MediaType.None);
+        /// await page.EvaluateFunctionAsync<bool>("() => matchMedia('screen').matches)");
+        /// // → true
+        /// await page.EvaluateFunctionAsync<bool>("() => matchMedia('print').matches)");
+        /// // → true
+        /// ]]>
+        /// </code>
+        /// </example>
+        /// <returns>Emulate media type task.</returns>
+        public Task EmulateMediaTypeAsync(MediaType type)
+            => Client.SendAsync("Emulation.setEmulatedMedia", new EmulationSetEmulatedMediaTypeRequest { Media = type });
+
+        /// <summary>
+        /// Given an array of media feature objects, emulates CSS media features on the page.
+        /// </summary>
+        /// <param name="features">Features to apply</param>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// await page.EmulateMediaFeaturesAsync(new MediaFeature[]{ new MediaFeature { MediaFeature =  MediaFeature.PrefersColorScheme, Value = "dark" }});
+        /// await page.EvaluateFunctionAsync<bool>("() => matchMedia('(prefers-color-scheme: dark)').matches)");
+        /// // → true
+        /// await page.EvaluateFunctionAsync<bool>("() => matchMedia('(prefers-color-scheme: light)').matches)");
+        /// // → false
+        /// await page.EvaluateFunctionAsync<bool>("() => matchMedia('(prefers-color-scheme: no-preference)').matches)");
+        /// // → false
+        /// await page.EmulateMediaFeaturesAsync(new MediaFeature[]{ new MediaFeature { MediaFeature = MediaFeature.PrefersReducedMotion, Value = "reduce" }});
+        /// await page.EvaluateFunctionAsync<bool>("() => matchMedia('(prefers-reduced-motion: reduce)').matches)");
+        /// // → true
+        /// await page.EvaluateFunctionAsync<bool>("() => matchMedia('(prefers-color-scheme: no-preference)').matches)");
+        /// // → false
+        /// await page.EmulateMediaFeaturesAsync(new MediaFeature[]
+        /// { 
+        ///   new MediaFeature { MediaFeature = MediaFeature.PrefersColorScheme, Value = "dark" },
+        ///   new MediaFeature { MediaFeature = MediaFeature.PrefersReducedMotion, Value = "reduce" },
+        /// });
+        /// await page.EvaluateFunctionAsync<bool>("() => matchMedia('(prefers-color-scheme: dark)').matches)");
+        /// // → true
+        /// await page.EvaluateFunctionAsync<bool>("() => matchMedia('(prefers-color-scheme: light)').matches)");
+        /// // → false
+        /// await page.EvaluateFunctionAsync<bool>("() => matchMedia('(prefers-color-scheme: no-preference)').matches)");
+        /// // → false
+        /// await page.EvaluateFunctionAsync<bool>("() => matchMedia('(prefers-reduced-motion: reduce)').matches)");
+        /// // → true
+        /// await page.EvaluateFunctionAsync<bool>("() => matchMedia('(prefers-color-scheme: no-preference)').matches)");
+        /// // → false
+        /// ]]>
+        /// </code>
+        /// </example>
+        /// <returns>Emulate features task</returns>
+        public Task EmulateMediaFeaturesAsync(IEnumerable<MediaFeatureValue> features)
+            => Client.SendAsync("Emulation.setEmulatedMedia", new EmulationSetEmulatedMediaFeatureRequest { Features = features });
 
         /// <summary>
         /// Sets the viewport.
