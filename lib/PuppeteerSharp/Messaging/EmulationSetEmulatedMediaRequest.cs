@@ -1,8 +1,9 @@
-﻿using PuppeteerSharp.Media;
+﻿using System.Collections.Generic;
+using PuppeteerSharp.Media;
 
 namespace PuppeteerSharp.Messaging
 {
-    internal class EmulationSetEmulatedMediaRequest
+    internal class EmulationSetEmulatedMediaTypeRequest
     {
         public MediaType Media { get; set; }
     }
