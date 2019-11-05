@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>1.20.0</PackageVersion>
+    <PackageVersion>2.0.0</PackageVersion>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
@@ -14,26 +14,19 @@
     <PackageReleaseNotes><![CDATA[
 # New Features
 
- * Add element.SelectAsync, element.EvaluateFunctionAsync, element.EvaluateFunctionHandleAsync methods.
+ * Add Page.EmulateTimezoneAsync.
+ * Add Page.EmulateMediaTypeAsync and Page.EmulateMediaFeaturesAsync.
 
 # Changelog
- * Improve target doc.
- * Background page tests should wait for the page.
- * Make sure selection is not empty before running copy command.
- * Update DeviceDescriptors to include 6.5 inch iPhone XR.
- * Make eval test resilient to error format.
- * Enable redirect inside sync XHR test.
- * Enable cross-process viewport test.
- * Be able to remove headers using request.continue.
- * Roll Chromium to r682225.
- * Roll Chromium to r686378.
- * Add default context cookies test.
- * Add a test for errors inside promise.
- * Pass FrameManager to NetworkManager constructor.
- * Abort page.waitForRequest/Response when page closes.
+ * Roll Chromium to r705776.
+ * Fix WaitFor Timeout defaults.
+ * Check cancellation on WaitTask.Cleanup.
+ * Improve WaitForSelector docs.
+ * Add page.screenshot viewport clipping test.
+ * Avoid unnecessary zero-delays in input code.
  
  ]]></PackageReleaseNotes>
-    <ReleaseVersion>1.20.0</ReleaseVersion>
+    <ReleaseVersion>2.0.0</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>
