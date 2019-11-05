@@ -119,11 +119,11 @@ namespace PuppeteerSharp.Input
                 }
                 else
                 {
+                    if (delay > 0)
+                    {
+                        await Task.Delay(delay).ConfigureAwait(false);
+                    }
                     await SendCharacterAsync(letter.ToString()).ConfigureAwait(false);
-                }
-                if (delay > 0)
-                {
-                    await Task.Delay(delay).ConfigureAwait(false);
                 }
             }
         }
