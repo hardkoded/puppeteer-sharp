@@ -163,6 +163,7 @@ Support us with a monthly donation and help us continue our activities. [Become 
 <a href="https://opencollective.com/puppeteer-sharp/backer/1/website" target="_blank"><img src="https://opencollective.com/puppeteer-sharp/backer/1/avatar.svg"></a>
 <a href="https://opencollective.com/puppeteer-sharp/backer/2/website" target="_blank"><img src="https://opencollective.com/puppeteer-sharp/backer/2/avatar.svg"></a>
 <a href="https://opencollective.com/puppeteer-sharp/backer/3/website" target="_blank"><img src="https://opencollective.com/puppeteer-sharp/backer/3/avatar.svg"></a>
+<a href="https://opencollective.com/puppeteer-sharp/backer/3/website" target="_blank"><img src="https://opencollective.com/puppeteer-sharp/backer/4/avatar.svg"></a>
 
 # Thanks
 
