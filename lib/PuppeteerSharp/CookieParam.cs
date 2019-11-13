@@ -39,7 +39,7 @@ namespace PuppeteerSharp
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string Path { get; set; }
         /// <summary>
-        /// Gets or sets the expiration.
+        /// Gets or sets the expiration. Unix time in seconds.
         /// </summary>
         /// <value>Expiration.</value>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
