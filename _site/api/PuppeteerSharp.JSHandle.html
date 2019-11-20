@@ -1,0 +1,757 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class JSHandle
+   </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class JSHandle
+   ">
+    <meta name="generator" content="docfx 2.47.0.0">
+    
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="PuppeteerSharp.JSHandle">
+  
+  
+  <h1 id="PuppeteerSharp_JSHandle" data-uid="PuppeteerSharp.JSHandle" class="text-break">Class JSHandle
+  </h1>
+  <div class="markdown level0 summary"><p>JSHandle represents an in-page JavaScript object. JSHandles can be created with the <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_EvaluateExpressionHandleAsync_System_String_">EvaluateExpressionHandleAsync(String)</a> and <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_EvaluateFunctionHandleAsync_System_String_System_Object___">EvaluateFunctionHandleAsync(String, Object[])</a> methods.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><span class="xref">System.Object</span></div>
+    <div class="level1"><span class="xref">JSHandle</span></div>
+      <div class="level2"><a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object, System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.GetHashCode()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.GetType()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.MemberwiseClone()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.ReferenceEquals(System.Object, System.Object)</span>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="PuppeteerSharp.html">PuppeteerSharp</a></h6>
+  <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
+  <h5 id="PuppeteerSharp_JSHandle_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[JsonConverter(typeof(JSHandleMethodConverter))]
+public class JSHandle</code></pre>
+  </div>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/docfx-playground-es/new/master/apiSpec/new?filename=PuppeteerSharp_JSHandle_Client.md&amp;value=---%0Auid%3A%20PuppeteerSharp.JSHandle.Client%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/docfx-playground-es/blob/master/lib/PuppeteerSharp/JSHandle.cs/#L45">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_JSHandle_Client_" data-uid="PuppeteerSharp.JSHandle.Client*"></a>
+  <h4 id="PuppeteerSharp_JSHandle_Client" data-uid="PuppeteerSharp.JSHandle.Client">Client</h4>
+  <div class="markdown level1 summary"><p>Gets the client.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected CDPSession Client { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.CDPSession.html">CDPSession</a></td>
+        <td><p>The client.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/docfx-playground-es/new/master/apiSpec/new?filename=PuppeteerSharp_JSHandle_Disposed.md&amp;value=---%0Auid%3A%20PuppeteerSharp.JSHandle.Disposed%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/docfx-playground-es/blob/master/lib/PuppeteerSharp/JSHandle.cs/#L35">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_JSHandle_Disposed_" data-uid="PuppeteerSharp.JSHandle.Disposed*"></a>
+  <h4 id="PuppeteerSharp_JSHandle_Disposed" data-uid="PuppeteerSharp.JSHandle.Disposed">Disposed</h4>
+  <div class="markdown level1 summary"><p>Gets or sets a value indicating whether this <a class="xref" href="PuppeteerSharp.JSHandle.html">JSHandle</a> is disposed.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool Disposed { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><p><code>true</code> if disposed; otherwise, <code>false</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/docfx-playground-es/new/master/apiSpec/new?filename=PuppeteerSharp_JSHandle_ExecutionContext.md&amp;value=---%0Auid%3A%20PuppeteerSharp.JSHandle.ExecutionContext%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/docfx-playground-es/blob/master/lib/PuppeteerSharp/JSHandle.cs/#L30">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_JSHandle_ExecutionContext_" data-uid="PuppeteerSharp.JSHandle.ExecutionContext*"></a>
+  <h4 id="PuppeteerSharp_JSHandle_ExecutionContext" data-uid="PuppeteerSharp.JSHandle.ExecutionContext">ExecutionContext</h4>
+  <div class="markdown level1 summary"><p>Gets the execution context.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ExecutionContext ExecutionContext { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.ExecutionContext.html">ExecutionContext</a></td>
+        <td><p>The execution context.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/docfx-playground-es/new/master/apiSpec/new?filename=PuppeteerSharp_JSHandle_Logger.md&amp;value=---%0Auid%3A%20PuppeteerSharp.JSHandle.Logger%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/docfx-playground-es/blob/master/lib/PuppeteerSharp/JSHandle.cs/#L50">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_JSHandle_Logger_" data-uid="PuppeteerSharp.JSHandle.Logger*"></a>
+  <h4 id="PuppeteerSharp_JSHandle_Logger" data-uid="PuppeteerSharp.JSHandle.Logger">Logger</h4>
+  <div class="markdown level1 summary"><p>Gets the logger.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected ILogger Logger { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Microsoft.Extensions.Logging.ILogger</span></td>
+        <td><p>The logger.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/docfx-playground-es/new/master/apiSpec/new?filename=PuppeteerSharp_JSHandle_RemoteObject.md&amp;value=---%0Auid%3A%20PuppeteerSharp.JSHandle.RemoteObject%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/docfx-playground-es/blob/master/lib/PuppeteerSharp/JSHandle.cs/#L40">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_JSHandle_RemoteObject_" data-uid="PuppeteerSharp.JSHandle.RemoteObject*"></a>
+  <h4 id="PuppeteerSharp_JSHandle_RemoteObject" data-uid="PuppeteerSharp.JSHandle.RemoteObject">RemoteObject</h4>
+  <div class="markdown level1 summary"><p>Gets or sets the remote object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public RemoteObject RemoteObject { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.Messaging.RemoteObject.html">RemoteObject</a></td>
+        <td><p>The remote object.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/docfx-playground-es/new/master/apiSpec/new?filename=PuppeteerSharp_JSHandle_DisposeAsync.md&amp;value=---%0Auid%3A%20PuppeteerSharp.JSHandle.DisposeAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/docfx-playground-es/blob/master/lib/PuppeteerSharp/JSHandle.cs/#L145">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_JSHandle_DisposeAsync_" data-uid="PuppeteerSharp.JSHandle.DisposeAsync*"></a>
+  <h4 id="PuppeteerSharp_JSHandle_DisposeAsync" data-uid="PuppeteerSharp.JSHandle.DisposeAsync">DisposeAsync()</h4>
+  <div class="markdown level1 summary"><p>Disposes the Handle. It will mark the JSHandle as disposed and release the <a class="xref" href="PuppeteerSharp.JSHandle.html#PuppeteerSharp_JSHandle_RemoteObject">RemoteObject</a></p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task DisposeAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td><p>The async.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/docfx-playground-es/new/master/apiSpec/new?filename=PuppeteerSharp_JSHandle_EvaluateFunctionAsync_System_String_System_Object___.md&amp;value=---%0Auid%3A%20PuppeteerSharp.JSHandle.EvaluateFunctionAsync(System.String%2CSystem.Object%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/docfx-playground-es/blob/master/lib/PuppeteerSharp/JSHandle.cs/#L197">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_JSHandle_EvaluateFunctionAsync_" data-uid="PuppeteerSharp.JSHandle.EvaluateFunctionAsync*"></a>
+  <h4 id="PuppeteerSharp_JSHandle_EvaluateFunctionAsync_System_String_System_Object___" data-uid="PuppeteerSharp.JSHandle.EvaluateFunctionAsync(System.String,System.Object[])">EvaluateFunctionAsync(String, Object[])</h4>
+  <div class="markdown level1 summary"><p>Executes a function in browser context</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;JToken&gt; EvaluateFunctionAsync(string script, params object[] args)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">script</span></td>
+        <td><p>Script to be evaluated in browser context</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Object</span>[]</td>
+        <td><span class="parametername">args</span></td>
+        <td><p>Arguments to pass to script</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">Newtonsoft.Json.Linq.JToken</span>&gt;</td>
+        <td><p>Task which resolves to script return value</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_JSHandle_EvaluateFunctionAsync_System_String_System_Object____remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+<a class="xref" href="PuppeteerSharp.JSHandle.html">JSHandle</a> instances can be passed as arguments</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/docfx-playground-es/new/master/apiSpec/new?filename=PuppeteerSharp_JSHandle_EvaluateFunctionAsync__1_System_String_System_Object___.md&amp;value=---%0Auid%3A%20PuppeteerSharp.JSHandle.EvaluateFunctionAsync%60%601(System.String%2CSystem.Object%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/docfx-playground-es/blob/master/lib/PuppeteerSharp/JSHandle.cs/#L215">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_JSHandle_EvaluateFunctionAsync_" data-uid="PuppeteerSharp.JSHandle.EvaluateFunctionAsync*"></a>
+  <h4 id="PuppeteerSharp_JSHandle_EvaluateFunctionAsync__1_System_String_System_Object___" data-uid="PuppeteerSharp.JSHandle.EvaluateFunctionAsync``1(System.String,System.Object[])">EvaluateFunctionAsync&lt;T&gt;(String, Object[])</h4>
+  <div class="markdown level1 summary"><p>Executes a function in browser context</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;T&gt; EvaluateFunctionAsync&lt;T&gt;(string script, params object[] args)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">script</span></td>
+        <td><p>Script to be evaluated in browser context</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Object</span>[]</td>
+        <td><span class="parametername">args</span></td>
+        <td><p>Arguments to pass to script</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;T&gt;</td>
+        <td><p>Task which resolves to script return value</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type to deserialize the result to</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_JSHandle_EvaluateFunctionAsync__1_System_String_System_Object____remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+<a class="xref" href="PuppeteerSharp.JSHandle.html">JSHandle</a> instances can be passed as arguments</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/docfx-playground-es/new/master/apiSpec/new?filename=PuppeteerSharp_JSHandle_EvaluateFunctionHandleAsync_System_String_System_Object___.md&amp;value=---%0Auid%3A%20PuppeteerSharp.JSHandle.EvaluateFunctionHandleAsync(System.String%2CSystem.Object%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/docfx-playground-es/blob/master/lib/PuppeteerSharp/JSHandle.cs/#L180">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_JSHandle_EvaluateFunctionHandleAsync_" data-uid="PuppeteerSharp.JSHandle.EvaluateFunctionHandleAsync*"></a>
+  <h4 id="PuppeteerSharp_JSHandle_EvaluateFunctionHandleAsync_System_String_System_Object___" data-uid="PuppeteerSharp.JSHandle.EvaluateFunctionHandleAsync(System.String,System.Object[])">EvaluateFunctionHandleAsync(String, Object[])</h4>
+  <div class="markdown level1 summary"><p>Executes a script in browser context</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;JSHandle&gt; EvaluateFunctionHandleAsync(string pageFunction, params object[] args)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">pageFunction</span></td>
+        <td><p>Script to be evaluated in browser context</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Object</span>[]</td>
+        <td><span class="parametername">args</span></td>
+        <td><p>Function arguments</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="PuppeteerSharp.JSHandle.html">JSHandle</a>&gt;</td>
+        <td><p>Task which resolves to script return value</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_JSHandle_EvaluateFunctionHandleAsync_System_String_System_Object____remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+<a class="xref" href="PuppeteerSharp.JSHandle.html">JSHandle</a> instances can be passed as arguments</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/docfx-playground-es/new/master/apiSpec/new?filename=PuppeteerSharp_JSHandle_GetPropertiesAsync.md&amp;value=---%0Auid%3A%20PuppeteerSharp.JSHandle.GetPropertiesAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/docfx-playground-es/blob/master/lib/PuppeteerSharp/JSHandle.cs/#L83">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_JSHandle_GetPropertiesAsync_" data-uid="PuppeteerSharp.JSHandle.GetPropertiesAsync*"></a>
+  <h4 id="PuppeteerSharp_JSHandle_GetPropertiesAsync" data-uid="PuppeteerSharp.JSHandle.GetPropertiesAsync">GetPropertiesAsync()</h4>
+  <div class="markdown level1 summary"><p>Returns a <span class="xref">System.Collections.Generic.Dictionary&lt;TKey, TValue&gt;</span> with property names as keys and <a class="xref" href="PuppeteerSharp.JSHandle.html">JSHandle</a> instances for the property values.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;Dictionary&lt;string, JSHandle&gt;&gt; GetPropertiesAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">System.Collections.Generic.Dictionary</span>&lt;<span class="xref">System.String</span>, <a class="xref" href="PuppeteerSharp.JSHandle.html">JSHandle</a>&gt;&gt;</td>
+        <td><p>Task which resolves to a <span class="xref">System.Collections.Generic.Dictionary&lt;TKey, TValue&gt;</span></p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_JSHandle_GetPropertiesAsync_examples">Examples</h5>
+  <pre><code>var handle = await page.EvaluateExpressionHandle(&quot;({window, document})&quot;);
+var properties = await handle.GetPropertiesAsync();
+var windowHandle = properties[&quot;window&quot;];
+var documentHandle = properties[&quot;document&quot;];
+await handle.DisposeAsync();</code></pre>
+
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/docfx-playground-es/new/master/apiSpec/new?filename=PuppeteerSharp_JSHandle_GetPropertyAsync_System_String_.md&amp;value=---%0Auid%3A%20PuppeteerSharp.JSHandle.GetPropertyAsync(System.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/docfx-playground-es/blob/master/lib/PuppeteerSharp/JSHandle.cs/#L57">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_JSHandle_GetPropertyAsync_" data-uid="PuppeteerSharp.JSHandle.GetPropertyAsync*"></a>
+  <h4 id="PuppeteerSharp_JSHandle_GetPropertyAsync_System_String_" data-uid="PuppeteerSharp.JSHandle.GetPropertyAsync(System.String)">GetPropertyAsync(String)</h4>
+  <div class="markdown level1 summary"><p>Fetches a single property from the referenced object</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;JSHandle&gt; GetPropertyAsync(string propertyName)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">propertyName</span></td>
+        <td><p>property to get</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="PuppeteerSharp.JSHandle.html">JSHandle</a>&gt;</td>
+        <td><p>Task of <a class="xref" href="PuppeteerSharp.JSHandle.html">JSHandle</a></p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/docfx-playground-es/new/master/apiSpec/new?filename=PuppeteerSharp_JSHandle_JsonValueAsync.md&amp;value=---%0Auid%3A%20PuppeteerSharp.JSHandle.JsonValueAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/docfx-playground-es/blob/master/lib/PuppeteerSharp/JSHandle.cs/#L112">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_JSHandle_JsonValueAsync_" data-uid="PuppeteerSharp.JSHandle.JsonValueAsync*"></a>
+  <h4 id="PuppeteerSharp_JSHandle_JsonValueAsync" data-uid="PuppeteerSharp.JSHandle.JsonValueAsync">JsonValueAsync()</h4>
+  <div class="markdown level1 summary"><p>Returns a JSON representation of the object</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;object&gt; JsonValueAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">System.Object</span>&gt;</td>
+        <td><p>Task</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_JSHandle_JsonValueAsync_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The method will return an empty JSON if the referenced object is not stringifiable. It will throw an error if the object has circular references</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/docfx-playground-es/new/master/apiSpec/new?filename=PuppeteerSharp_JSHandle_JsonValueAsync__1.md&amp;value=---%0Auid%3A%20PuppeteerSharp.JSHandle.JsonValueAsync%60%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/docfx-playground-es/blob/master/lib/PuppeteerSharp/JSHandle.cs/#L122">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_JSHandle_JsonValueAsync_" data-uid="PuppeteerSharp.JSHandle.JsonValueAsync*"></a>
+  <h4 id="PuppeteerSharp_JSHandle_JsonValueAsync__1" data-uid="PuppeteerSharp.JSHandle.JsonValueAsync``1">JsonValueAsync&lt;T&gt;()</h4>
+  <div class="markdown level1 summary"><p>Returns a JSON representation of the object</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;T&gt; JsonValueAsync&lt;T&gt;()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;T&gt;</td>
+        <td><p>Task</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>A strongly typed object to parse to</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_JSHandle_JsonValueAsync__1_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The method will return an empty JSON if the referenced object is not stringifiable. It will throw an error if the object has circular references</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/docfx-playground-es/new/master/apiSpec/new?filename=PuppeteerSharp_JSHandle_ToString.md&amp;value=---%0Auid%3A%20PuppeteerSharp.JSHandle.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/docfx-playground-es/blob/master/lib/PuppeteerSharp/JSHandle.cs/#L157">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_JSHandle_ToString_" data-uid="PuppeteerSharp.JSHandle.ToString*"></a>
+  <h4 id="PuppeteerSharp_JSHandle_ToString" data-uid="PuppeteerSharp.JSHandle.ToString">ToString()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override string ToString()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><span class="xref">System.Object.ToString()</span></div>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="PuppeteerSharp.Extensions.html#PuppeteerSharp_Extensions_EvaluateFunctionAsync__1_PuppeteerSharp_JSHandle_System_String_System_Object___">Extensions.EvaluateFunctionAsync&lt;T&gt;(JSHandle, String, Object[])</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/kblok/docfx-playground-es/new/master/apiSpec/new?filename=PuppeteerSharp_JSHandle.md&amp;value=---%0Auid%3A%20PuppeteerSharp.JSHandle%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/kblok/docfx-playground-es/blob/master/lib/PuppeteerSharp/JSHandle.cs/#L15" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

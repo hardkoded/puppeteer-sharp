@@ -1,0 +1,597 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class ChromiumProcess
+   </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class ChromiumProcess
+   ">
+    <meta name="generator" content="docfx 2.47.0.0">
+    
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="PuppeteerSharp.ChromiumProcess">
+  
+  
+  <h1 id="PuppeteerSharp_ChromiumProcess" data-uid="PuppeteerSharp.ChromiumProcess" class="text-break">Class ChromiumProcess
+  </h1>
+  <div class="markdown level0 summary"><p>Represents a Chromium process and any associated temporary user data directory that have created
+by Puppeteer and therefore must be cleaned up when no longer needed.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><span class="xref">System.Object</span></div>
+    <div class="level1"><span class="xref">ChromiumProcess</span></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><span class="xref">System.IDisposable</span></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object, System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.GetHashCode()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.GetType()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.MemberwiseClone()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.ReferenceEquals(System.Object, System.Object)</span>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="PuppeteerSharp.html">PuppeteerSharp</a></h6>
+  <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
+  <h5 id="PuppeteerSharp_ChromiumProcess_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public class ChromiumProcess : IDisposable</code></pre>
+  </div>
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/docfx-playground-es/new/master/apiSpec/new?filename=PuppeteerSharp_ChromiumProcess__ctor_System_String_PuppeteerSharp_LaunchOptions_Microsoft_Extensions_Logging_ILoggerFactory_.md&amp;value=---%0Auid%3A%20PuppeteerSharp.ChromiumProcess.%23ctor(System.String%2CPuppeteerSharp.LaunchOptions%2CMicrosoft.Extensions.Logging.ILoggerFactory)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/docfx-playground-es/blob/master/lib/PuppeteerSharp/ChromiumProcess.cs/#L78">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_ChromiumProcess__ctor_" data-uid="PuppeteerSharp.ChromiumProcess.#ctor*"></a>
+  <h4 id="PuppeteerSharp_ChromiumProcess__ctor_System_String_PuppeteerSharp_LaunchOptions_Microsoft_Extensions_Logging_ILoggerFactory_" data-uid="PuppeteerSharp.ChromiumProcess.#ctor(System.String,PuppeteerSharp.LaunchOptions,Microsoft.Extensions.Logging.ILoggerFactory)">ChromiumProcess(String, LaunchOptions, ILoggerFactory)</h4>
+  <div class="markdown level1 summary"><p>Creates a new <a class="xref" href="PuppeteerSharp.ChromiumProcess.html">ChromiumProcess</a> instance.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ChromiumProcess(string chromiumExecutable, LaunchOptions options, ILoggerFactory loggerFactory)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">chromiumExecutable</span></td>
+        <td><p>Full path of Chromium executable.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.LaunchOptions.html">LaunchOptions</a></td>
+        <td><span class="parametername">options</span></td>
+        <td><p>Options for launching Chromium.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">Microsoft.Extensions.Logging.ILoggerFactory</span></td>
+        <td><span class="parametername">loggerFactory</span></td>
+        <td><p>Logger factory</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/docfx-playground-es/new/master/apiSpec/new?filename=PuppeteerSharp_ChromiumProcess_EndPoint.md&amp;value=---%0Auid%3A%20PuppeteerSharp.ChromiumProcess.EndPoint%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/docfx-playground-es/blob/master/lib/PuppeteerSharp/ChromiumProcess.cs/#L142">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_ChromiumProcess_EndPoint_" data-uid="PuppeteerSharp.ChromiumProcess.EndPoint*"></a>
+  <h4 id="PuppeteerSharp_ChromiumProcess_EndPoint" data-uid="PuppeteerSharp.ChromiumProcess.EndPoint">EndPoint</h4>
+  <div class="markdown level1 summary"><p>Gets Chromium endpoint.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string EndPoint { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/docfx-playground-es/new/master/apiSpec/new?filename=PuppeteerSharp_ChromiumProcess_HasExited.md&amp;value=---%0Auid%3A%20PuppeteerSharp.ChromiumProcess.HasExited%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/docfx-playground-es/blob/master/lib/PuppeteerSharp/ChromiumProcess.cs/#L154">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_ChromiumProcess_HasExited_" data-uid="PuppeteerSharp.ChromiumProcess.HasExited*"></a>
+  <h4 id="PuppeteerSharp_ChromiumProcess_HasExited" data-uid="PuppeteerSharp.ChromiumProcess.HasExited">HasExited</h4>
+  <div class="markdown level1 summary"><p>Indicates whether Chromium process has exited.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool HasExited { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/docfx-playground-es/new/master/apiSpec/new?filename=PuppeteerSharp_ChromiumProcess_IsExiting.md&amp;value=---%0Auid%3A%20PuppeteerSharp.ChromiumProcess.IsExiting%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/docfx-playground-es/blob/master/lib/PuppeteerSharp/ChromiumProcess.cs/#L149">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_ChromiumProcess_IsExiting_" data-uid="PuppeteerSharp.ChromiumProcess.IsExiting*"></a>
+  <h4 id="PuppeteerSharp_ChromiumProcess_IsExiting" data-uid="PuppeteerSharp.ChromiumProcess.IsExiting">IsExiting</h4>
+  <div class="markdown level1 summary"><p>Indicates whether Chromium process is exiting.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsExiting { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/docfx-playground-es/new/master/apiSpec/new?filename=PuppeteerSharp_ChromiumProcess_Process.md&amp;value=---%0Auid%3A%20PuppeteerSharp.ChromiumProcess.Process%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/docfx-playground-es/blob/master/lib/PuppeteerSharp/ChromiumProcess.cs/#L137">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_ChromiumProcess_Process_" data-uid="PuppeteerSharp.ChromiumProcess.Process*"></a>
+  <h4 id="PuppeteerSharp_ChromiumProcess_Process" data-uid="PuppeteerSharp.ChromiumProcess.Process">Process</h4>
+  <div class="markdown level1 summary"><p>Gets Chromium process details.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Process Process { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Diagnostics.Process</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/docfx-playground-es/new/master/apiSpec/new?filename=PuppeteerSharp_ChromiumProcess_Dispose.md&amp;value=---%0Auid%3A%20PuppeteerSharp.ChromiumProcess.Dispose%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/docfx-playground-es/blob/master/lib/PuppeteerSharp/ChromiumProcess.cs/#L118">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_ChromiumProcess_Dispose_" data-uid="PuppeteerSharp.ChromiumProcess.Dispose*"></a>
+  <h4 id="PuppeteerSharp_ChromiumProcess_Dispose" data-uid="PuppeteerSharp.ChromiumProcess.Dispose">Dispose()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/docfx-playground-es/new/master/apiSpec/new?filename=PuppeteerSharp_ChromiumProcess_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20PuppeteerSharp.ChromiumProcess.Dispose(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/docfx-playground-es/blob/master/lib/PuppeteerSharp/ChromiumProcess.cs/#L128">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_ChromiumProcess_Dispose_" data-uid="PuppeteerSharp.ChromiumProcess.Dispose*"></a>
+  <h4 id="PuppeteerSharp_ChromiumProcess_Dispose_System_Boolean_" data-uid="PuppeteerSharp.ChromiumProcess.Dispose(System.Boolean)">Dispose(Boolean)</h4>
+  <div class="markdown level1 summary"><p>Disposes Chromium process and any temporary user directory.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected virtual void Dispose(bool disposing)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><span class="parametername">disposing</span></td>
+        <td><p>Indicates whether disposal was initiated by <a class="xref" href="PuppeteerSharp.ChromiumProcess.html#PuppeteerSharp_ChromiumProcess_Dispose">Dispose()</a> operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/docfx-playground-es/new/master/apiSpec/new?filename=PuppeteerSharp_ChromiumProcess_EnsureExitAsync_System_Nullable_System_TimeSpan__.md&amp;value=---%0Auid%3A%20PuppeteerSharp.ChromiumProcess.EnsureExitAsync(System.Nullable%7BSystem.TimeSpan%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/docfx-playground-es/blob/master/lib/PuppeteerSharp/ChromiumProcess.cs/#L172">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_ChromiumProcess_EnsureExitAsync_" data-uid="PuppeteerSharp.ChromiumProcess.EnsureExitAsync*"></a>
+  <h4 id="PuppeteerSharp_ChromiumProcess_EnsureExitAsync_System_Nullable_System_TimeSpan__" data-uid="PuppeteerSharp.ChromiumProcess.EnsureExitAsync(System.Nullable{System.TimeSpan})">EnsureExitAsync(Nullable&lt;TimeSpan&gt;)</h4>
+  <div class="markdown level1 summary"><p>Asynchronously waits for graceful Chromium process exit within a given timeout period.
+Kills the Chromium process if it has not exited within this period.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task EnsureExitAsync(TimeSpan? timeout)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Nullable</span>&lt;<span class="xref">System.TimeSpan</span>&gt;</td>
+        <td><span class="parametername">timeout</span></td>
+        <td><p>The maximum waiting time for a graceful process exit.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/docfx-playground-es/new/master/apiSpec/new?filename=PuppeteerSharp_ChromiumProcess_Finalize.md&amp;value=---%0Auid%3A%20PuppeteerSharp.ChromiumProcess.Finalize%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/docfx-playground-es/blob/master/lib/PuppeteerSharp/ChromiumProcess.cs/#L112">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_ChromiumProcess_Finalize_" data-uid="PuppeteerSharp.ChromiumProcess.Finalize*"></a>
+  <h4 id="PuppeteerSharp_ChromiumProcess_Finalize" data-uid="PuppeteerSharp.ChromiumProcess.Finalize">Finalize()</h4>
+  <div class="markdown level1 summary"><p>Finalizer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected void Finalize()</code></pre>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/docfx-playground-es/new/master/apiSpec/new?filename=PuppeteerSharp_ChromiumProcess_KillAsync.md&amp;value=---%0Auid%3A%20PuppeteerSharp.ChromiumProcess.KillAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/docfx-playground-es/blob/master/lib/PuppeteerSharp/ChromiumProcess.cs/#L180">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_ChromiumProcess_KillAsync_" data-uid="PuppeteerSharp.ChromiumProcess.KillAsync*"></a>
+  <h4 id="PuppeteerSharp_ChromiumProcess_KillAsync" data-uid="PuppeteerSharp.ChromiumProcess.KillAsync">KillAsync()</h4>
+  <div class="markdown level1 summary"><p>Asynchronously kills Chromium process.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task KillAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/docfx-playground-es/new/master/apiSpec/new?filename=PuppeteerSharp_ChromiumProcess_StartAsync.md&amp;value=---%0Auid%3A%20PuppeteerSharp.ChromiumProcess.StartAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/docfx-playground-es/blob/master/lib/PuppeteerSharp/ChromiumProcess.cs/#L164">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_ChromiumProcess_StartAsync_" data-uid="PuppeteerSharp.ChromiumProcess.StartAsync*"></a>
+  <h4 id="PuppeteerSharp_ChromiumProcess_StartAsync" data-uid="PuppeteerSharp.ChromiumProcess.StartAsync">StartAsync()</h4>
+  <div class="markdown level1 summary"><p>Asynchronously starts Chromium process.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task StartAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/docfx-playground-es/new/master/apiSpec/new?filename=PuppeteerSharp_ChromiumProcess_ToString.md&amp;value=---%0Auid%3A%20PuppeteerSharp.ChromiumProcess.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/docfx-playground-es/blob/master/lib/PuppeteerSharp/ChromiumProcess.cs/#L205">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_ChromiumProcess_ToString_" data-uid="PuppeteerSharp.ChromiumProcess.ToString*"></a>
+  <h4 id="PuppeteerSharp_ChromiumProcess_ToString" data-uid="PuppeteerSharp.ChromiumProcess.ToString">ToString()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override string ToString()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><span class="xref">System.Object.ToString()</span></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/docfx-playground-es/new/master/apiSpec/new?filename=PuppeteerSharp_ChromiumProcess_WaitForExitAsync_System_Nullable_System_TimeSpan__.md&amp;value=---%0Auid%3A%20PuppeteerSharp.ChromiumProcess.WaitForExitAsync(System.Nullable%7BSystem.TimeSpan%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/docfx-playground-es/blob/master/lib/PuppeteerSharp/ChromiumProcess.cs/#L188">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_ChromiumProcess_WaitForExitAsync_" data-uid="PuppeteerSharp.ChromiumProcess.WaitForExitAsync*"></a>
+  <h4 id="PuppeteerSharp_ChromiumProcess_WaitForExitAsync_System_Nullable_System_TimeSpan__" data-uid="PuppeteerSharp.ChromiumProcess.WaitForExitAsync(System.Nullable{System.TimeSpan})">WaitForExitAsync(Nullable&lt;TimeSpan&gt;)</h4>
+  <div class="markdown level1 summary"><p>Waits for Chromium process exit within a given timeout.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;bool&gt; WaitForExitAsync(TimeSpan? timeout)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Nullable</span>&lt;<span class="xref">System.TimeSpan</span>&gt;</td>
+        <td><span class="parametername">timeout</span></td>
+        <td><p>The maximum wait period.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">System.Boolean</span>&gt;</td>
+        <td><p><code>true</code> if Chromium process has exited within the given <code data-dev-comment-type="paramref" class="paramref">timeout</code>,
+or <code>false</code> otherwise.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <span class="xref">System.IDisposable</span>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/kblok/docfx-playground-es/new/master/apiSpec/new?filename=PuppeteerSharp_ChromiumProcess.md&amp;value=---%0Auid%3A%20PuppeteerSharp.ChromiumProcess%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/kblok/docfx-playground-es/blob/master/lib/PuppeteerSharp/ChromiumProcess.cs/#L19" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>
