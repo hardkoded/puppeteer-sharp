@@ -12,7 +12,7 @@ install:
 - ps: >-
     cd c:\projects\puppeteer-sharp-edge\appveyor\edge
 
-    c.\InstallEdge.ps1
+    .\InstallEdge.ps1
 
     c:\projects\puppeteer-sharp-edge
     
