@@ -15,7 +15,7 @@ install:
     .\InstallEdge.ps1
 
     cd c:\projects\puppeteer-sharp-edge
-    
+
 before_build:
 - ps: >-
     dotnet restore .\lib\PuppeteerSharp.sln
