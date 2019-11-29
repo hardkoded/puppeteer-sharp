@@ -1,0 +1,38 @@
+version: 1.0.{build}
+branches:
+  only:
+  - master
+image: Visual Studio 2017
+configuration: Release
+environment:
+  git_access_token:
+    secure: FxcQ9C8a/NgcQB5dFdZts6ZWEDT4zMhA4qPQAYwWc7huMmhmTIl1sbFEIaAWQMTL
+  PUPPETEER_EXECUTABLE_PATH: C:\Program Files (x86)\Microsoft\Edge Dev\Application\msedge.exe
+install:
+- ps: >-
+    cd c:\projects\puppeteer-sharp-edge\appveyor\edge
+
+    .\InstallEdge.ps1
+
+    cd c:\projects\puppeteer-sharp-edge
+
+before_build:
+- ps: >-
+    dotnet restore .\lib\PuppeteerSharp.sln
+
+    New-SelfSignedCertificate -Subject "localhost" -FriendlyName "Puppeteer" -CertStoreLocation "cert:\CurrentUser\My"
+
+    Get-ChildItem -Path cert:\CurrentUSer\my | where { $_.friendlyname -eq "Puppeteer" } | Export-Certificate -FilePath C:\projects\puppeteer-sharp-edge\lib\PuppeteerSharp.TestServer\testCert.cer
+
+build:
+  project: .\lib\PuppeteerSharp.sln
+  publish_nuget: true
+  include_nuget_references: true
+  verbosity: minimal
+test_script:
+- cmd: >-
+    cd .\lib\PuppeteerSharp.Tests
+
+    dotnet test -f netcoreapp2.2 -s test.runsettings
+cache:
+  - $HOME/.nuget/packages

@@ -166,7 +166,6 @@ namespace PuppeteerSharp
             {
                 throw new FileNotFoundException("Failed to launch chrome! path to executable does not exist", chromeExecutable);
             }
-
             return chromeExecutable;
         }
 
