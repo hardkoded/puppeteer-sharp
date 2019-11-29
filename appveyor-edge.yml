@@ -14,7 +14,7 @@ install:
 
     .\InstallEdge.ps1
 
-    c:\projects\puppeteer-sharp-edge
+    cd c:\projects\puppeteer-sharp-edge
     
 before_build:
 - ps: >-
