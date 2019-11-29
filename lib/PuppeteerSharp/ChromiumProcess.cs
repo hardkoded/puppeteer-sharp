@@ -90,8 +90,6 @@ namespace PuppeteerSharp
                 EnableRaisingEvents = true
             };
             Process.StartInfo.UseShellExecute = false;
-            Console.WriteLine($"Using chromium at {chromiumExecutable}");
-
             Process.StartInfo.FileName = chromiumExecutable;
             Process.StartInfo.Arguments = string.Join(" ", chromiumArgs);
             Process.StartInfo.RedirectStandardError = true;
