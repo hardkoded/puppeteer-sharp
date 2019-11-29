@@ -166,7 +166,7 @@ namespace PuppeteerSharp
             {
                 throw new FileNotFoundException("Failed to launch chrome! path to executable does not exist", chromeExecutable);
             }
-
+            Console.WriteLine($"Using chromium at {chromeExecutable}");
             return chromeExecutable;
         }
 
