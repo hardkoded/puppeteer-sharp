@@ -10,7 +10,9 @@ environment:
   PUPPETEER_EXECUTABLE_PATH: C:\Program Files (x86)\Microsoft\Edge Dev\Application\msedge.exe
 install:
 - ps: >-
-    c:\projects\puppeteer-sharp-edge\appveyor\edge\InstallEdge.ps1
+    cd c:\projects\puppeteer-sharp-edge\appveyor\edge
+    c.\InstallEdge.ps1
+    c:\projects\puppeteer-sharp-edge
 before_build:
 - ps: >-
     dotnet restore .\lib\PuppeteerSharp.sln
