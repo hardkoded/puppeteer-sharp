@@ -165,6 +165,26 @@ namespace PuppeteerSharp
         /// <summary>
         /// Raised when a <see cref="Response"/> is received.
         /// </summary>
+        /// <example>
+        /// An example of handling <see cref="Response"/> event:
+        /// <code>
+        /// <![CDATA[
+        /// var tcs = new TaskCompletionSource<string>();
+        /// page.Response += async(sender, e) =>
+        /// {
+        ///     if (e.Response.Url.Contains("script.js"))
+        ///     {
+        ///         tcs.TrySetResult(await e.Response.TextAsync());
+        ///     }
+        /// };
+        ///
+        /// await Task.WhenAll(
+        ///     page.GoToAsync(TestConstants.ServerUrl + "/grid.html"),
+        ///     tcs.Task);
+        /// Console.WriteLine(await tcs.Task);
+        /// ]]>
+        /// </code>
+        /// </example>
         public event EventHandler<ResponseCreatedEventArgs> Response;
 
         /// <summary>
