@@ -96,7 +96,7 @@ using (var page = await Browser.NewPageAsync())
 using (var page = await Browser.NewPageAsync())
 {
     await page.GoToAsync("http://www.spapage.com");
-    await page.WaitForSelectorAsync("div.main-content")
+    await page.WaitForSelectorAsync("div.main-content");
     await page.PdfAsync(outputFile));
 }
 ```
