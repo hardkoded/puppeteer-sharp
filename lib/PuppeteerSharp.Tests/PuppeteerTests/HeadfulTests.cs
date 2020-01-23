@@ -62,7 +62,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             {
                 var launcher = new Launcher(TestConstants.LoggerFactory);
                 var options = TestConstants.DefaultBrowserOptions();
-                options.Args = options.Args.Concat(new[] { $"--user-data-dir=\"{userDataDir}\"" }).ToArray();
+                options.UserDataDir = userDataDir.Path;
                 options.Headless = false;
                 using (var browser = await launcher.LaunchAsync(options))
                 using (var page = await browser.NewPageAsync())
