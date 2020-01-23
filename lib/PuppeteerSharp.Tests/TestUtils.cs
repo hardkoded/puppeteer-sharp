@@ -70,6 +70,7 @@ namespace PuppeteerSharp.Tests
                 {
                     if (File.Exists(cookiesFile) && File.ReadAllText(cookiesFile).Contains(valueToCheck))
                     {
+                        await Task.Delay(500);
                         return;
                     }
                 }
