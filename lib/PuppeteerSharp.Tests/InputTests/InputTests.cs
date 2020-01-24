@@ -51,6 +51,56 @@ namespace PuppeteerSharp.Tests.InputTests
         }
 
         [Fact]
+        public async Task ShouldUploadTheFileIfResolveFilePathIsFalse()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/fileupload.html");
+            var filePath = TestConstants.FileToUpload;
+            var input = await Page.QuerySelectorAsync("input");
+            await input.UploadFileAsync(false, filePath);
+            Assert.Equal("file-to-upload.txt", await Page.EvaluateFunctionAsync<string>("e => e.files[0].name", input));
+            Assert.Equal("contents of the file", await Page.EvaluateFunctionAsync<string>(@"e => {
+                const reader = new FileReader();
+                const promise = new Promise(fulfill => reader.onload = fulfill);
+                reader.readAsText(e.files[0]);
+                return promise.then(() => reader.result);
+            }", input));
+        }
+
+        [Fact]
+        public async Task ShouldNotUploadTheFileIfPathIsWrong()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/fileupload.html");
+            var filePath = TestConstants.FileToUpload.Replace("file-to-upload.txt", "missing-file.txt");
+            var input = await Page.QuerySelectorAsync("input");
+            await input.UploadFileAsync(filePath);
+            Assert.Equal("missing-file.txt", await Page.EvaluateFunctionAsync<string>("e => e.files[0].name", input));
+            var exception = await Assert.ThrowsAsync<EvaluationFailedException>(() => Page.EvaluateFunctionAsync<string>(@"e => {
+                const reader = new FileReader();
+                const promise = new Promise(fulfill => reader.onload = fulfill);
+                reader.readAsText(e.files[0]);
+                return promise.then(() => reader.result);
+            }", input));
+            Assert.Contains("Promise was collected", exception.Message);
+        }
+
+        [Fact]
+        public async Task ShouldNotUploadTheFileIfPathIsWrongAndResolveFilePathIsFalse()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/fileupload.html");
+            var filePath = TestConstants.FileToUpload.Replace("file-to-upload.txt", "missing-file.txt");
+            var input = await Page.QuerySelectorAsync("input");
+            await input.UploadFileAsync(false, filePath);
+            Assert.Equal("missing-file.txt", await Page.EvaluateFunctionAsync<string>("e => e.files[0].name", input));
+            var exception = await Assert.ThrowsAsync<EvaluationFailedException>(() => Page.EvaluateFunctionAsync<string>(@"e => {
+                const reader = new FileReader();
+                const promise = new Promise(fulfill => reader.onload = fulfill);
+                reader.readAsText(e.files[0]);
+                return promise.then(() => reader.result);
+            }", input));
+            Assert.Contains("Promise was collected", exception.Message);
+        }
+
+        [Fact]
         public async Task ShouldResizeTheTextarea()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
