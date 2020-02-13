@@ -27,7 +27,7 @@ namespace PuppeteerSharp
         /// <param name="validFrom">Valid from</param>
         /// <param name="validTo">Valid to</param>
         /// <param name="protocol">Protocol</param>
-        public SecurityDetails(string subjectName, string issuer, int validFrom, int validTo, string protocol)
+        public SecurityDetails(string subjectName, string issuer, long validFrom, long validTo, string protocol)
         {
             SubjectName = subjectName;
             Issuer = issuer;
@@ -53,13 +53,13 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The valid from.</value>
         [JsonProperty]
-        public int ValidFrom { get; internal set; }
+        public long ValidFrom { get; internal set; }
         /// <summary>
         /// Gets the valid to.
         /// </summary>
         /// <value>The valid to.</value>
         [JsonProperty]
-        public int ValidTo { get; internal set; }
+        public long ValidTo { get; internal set; }
         /// <summary>
         /// Gets the protocol.
         /// </summary>
