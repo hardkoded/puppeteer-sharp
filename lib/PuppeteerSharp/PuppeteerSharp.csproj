@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>2.0.0</PackageVersion>
+    <PackageVersion>2.0.1</PackageVersion>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
@@ -12,21 +12,15 @@
     <Description>Headless Chrome .NET API</Description>
     <PackageId>PuppeteerSharp</PackageId>
     <PackageReleaseNotes><![CDATA[
-# New Features
-
- * Add Page.EmulateTimezoneAsync.
- * Add Page.EmulateMediaTypeAsync and Page.EmulateMediaFeaturesAsync.
 
 # Changelog
- * Roll Chromium to r705776.
- * Fix WaitFor Timeout defaults.
- * Check cancellation on WaitTask.Cleanup.
- * Improve WaitForSelector docs.
- * Add page.screenshot viewport clipping test.
- * Avoid unnecessary zero-delays in input code.
- 
+ * Fix ssl when navigate to site with cert expiring after 2038.
+ * Added ability to skip resolving file paths for UploadFileAsync.
+ * Improve cookies documentation.
+ * Improve response documentation.
+
  ]]></PackageReleaseNotes>
-    <ReleaseVersion>2.0.0</ReleaseVersion>
+    <ReleaseVersion>2.0.1</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>
