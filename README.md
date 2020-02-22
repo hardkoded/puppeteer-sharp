@@ -4,13 +4,13 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/pwfkjb0c4jfdo7lc/branch/master?svg=true&pendingText=master&failingText=master&passingText=master)][BuildUrl]
 [![Demo build status](https://ci.appveyor.com/api/projects/status/10g64a4aa0083wgf/branch/master?svg=true&pendingText=demo&failingText=demo&passingText=demo)][BuildDemoUrl]
 [![CodeFactor](https://www.codefactor.io/repository/github/kblok/puppeteer-sharp/badge)][CodeFactorUrl]
-[![Backers](https://opencollective.com/puppeteer-sharp//backers/badge.svg)][Backers]
+[![Backers](https://opencollective.com/hardkoded-projects/backers/badge.svg)][Backers]
 
 [NugetUrl]: https://www.nuget.org/packages/PuppeteerSharp/
 [BuildUrl]: https://ci.appveyor.com/project/kblok/puppeteer-sharp/branch/master
 [BuildDemoUrl]: https://ci.appveyor.com/project/kblok/puppeteer-sharp-0c8w9/branch/master
 [CodeFactorUrl]: https://www.codefactor.io/repository/github/kblok/puppeteer-sharp
-[Backers]: https://opencollective.com/puppeteer-sharp
+[Backers]: https://opencollective.com/hardkoded-projects
 
 Puppeteer Sharp is a .NET port of the official [Node.JS Puppeteer API](https://github.com/GoogleChrome/puppeteer). 
 
@@ -157,13 +157,13 @@ using (var browser = await PuppeteerSharp.Puppeteer.ConnectAsync(options))
 
 # Backers
 
-Support us with a monthly donation and help us continue our activities. [Become a backer](https://opencollective.com/puppeteer-sharp).
+Support us with a monthly donation and help us continue our activities. [Become a backer](https://opencollective.com/hardkoded-projects).
 
-<a href="https://opencollective.com/puppeteer-sharp/backer/0/website" target="_blank"><img src="https://opencollective.com/puppeteer-sharp/backer/0/avatar.svg"></a>
-<a href="https://opencollective.com/puppeteer-sharp/backer/1/website" target="_blank"><img src="https://opencollective.com/puppeteer-sharp/backer/1/avatar.svg"></a>
-<a href="https://opencollective.com/puppeteer-sharp/backer/2/website" target="_blank"><img src="https://opencollective.com/puppeteer-sharp/backer/2/avatar.svg"></a>
-<a href="https://opencollective.com/puppeteer-sharp/backer/3/website" target="_blank"><img src="https://opencollective.com/puppeteer-sharp/backer/3/avatar.svg"></a>
-<a href="https://opencollective.com/puppeteer-sharp/backer/3/website" target="_blank"><img src="https://opencollective.com/puppeteer-sharp/backer/4/avatar.svg"></a>
+<a href="https://opencollective.com/puppeteer-sharp/backer/0/website" target="_blank"><img src="https://opencollective.com/hardkoded-projects/backer/0/avatar.svg"></a>
+<a href="https://opencollective.com/puppeteer-sharp/backer/1/website" target="_blank"><img src="https://opencollective.com/hardkoded-projects/backer/1/avatar.svg"></a>
+<a href="https://opencollective.com/puppeteer-sharp/backer/2/website" target="_blank"><img src="https://opencollective.com/hardkoded-projects/backer/2/avatar.svg"></a>
+<a href="https://opencollective.com/puppeteer-sharp/backer/3/website" target="_blank"><img src="https://opencollective.com/hardkoded-projects/backer/3/avatar.svg"></a>
+<a href="https://opencollective.com/puppeteer-sharp/backer/3/website" target="_blank"><img src="https://opencollective.com/hardkoded-projects/backer/4/avatar.svg"></a>
 
 # Thanks
 
