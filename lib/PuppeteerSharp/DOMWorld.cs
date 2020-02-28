@@ -16,7 +16,8 @@ namespace PuppeteerSharp
         private TaskCompletionSource<ExecutionContext> _contextResolveTaskWrapper;
         private TaskCompletionSource<ElementHandle> _documentCompletionSource;
 
-        internal List<WaitTask> WaitTasks;
+        internal List<WaitTask> WaitTasks { get; set; }
+
         internal Frame Frame { get; }
 
         public DOMWorld(FrameManager frameManager, Frame frame, TimeoutSettings timeoutSettings)
@@ -316,7 +317,7 @@ namespace PuppeteerSharp
                 throw new SelectorException($"No node found for selector: {selector}", selector);
             }
             var result = await handle.SelectAsync(values).ConfigureAwait(false);
-            await handle.DisposeAsync();
+            await handle.DisposeAsync().ConfigureAwait(false);
             return result;
         }
 
@@ -414,7 +415,7 @@ namespace PuppeteerSharp
                 this,
                 predicate,
                 false,
-                $"{(isXPath ? "XPath" : "selector")} '{selectorOrXPath}'{(options.Hidden ? " to be hidden" : "")}",
+                $"{(isXPath ? "XPath" : "selector")} '{selectorOrXPath}'{(options.Hidden ? " to be hidden" : string.Empty)}",
                 polling,
                 null,
                 timeout,
@@ -428,7 +429,10 @@ namespace PuppeteerSharp
 
             if (!(handle is ElementHandle elementHandle))
             {
-                await handle?.DisposeAsync();
+                if (handle != null)
+                {
+                    await handle.DisposeAsync().ConfigureAwait(false);
+                }
                 return null;
             }
             return elementHandle;

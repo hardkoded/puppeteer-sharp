@@ -76,7 +76,7 @@ namespace PuppeteerSharp
 
         #region Private members
 
-        internal readonly IDictionary<string, Target> TargetsMap;
+        internal IDictionary<string, Target> TargetsMap { get; }
 
         private readonly Dictionary<string, BrowserContext> _contexts;
         private readonly ILogger<Browser> _logger;
@@ -87,7 +87,7 @@ namespace PuppeteerSharp
         #region Properties
 
         /// <summary>
-        /// 
+        /// Raised when the <see cref="Browser"/> gets closed. 
         /// </summary>
         public event EventHandler Closed;
 
@@ -120,7 +120,7 @@ namespace PuppeteerSharp
         /// Browser websocket endpoint which can be used as an argument to <see cref="Puppeteer.ConnectAsync(ConnectOptions, ILoggerFactory)"/>.
         /// The format is <c>ws://${host}:${port}/devtools/browser/[id]</c>
         /// You can find the <c>webSocketDebuggerUrl</c> from <c>http://${host}:${port}/json/version</c>.
-        /// Learn more about the devtools protocol <see href="https://chromedevtools.github.io/devtools-protocol"/> 
+        /// Learn more about the devtools protocol <see href="https://chromedevtools.github.io/devtools-protocol"/>
         /// and the browser endpoint <see href="https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target"/>
         /// </remarks>
         public string WebSocketEndpoint => Connection.Url;
@@ -146,6 +146,7 @@ namespace PuppeteerSharp
                 {
                     return Connection.IsClosed;
                 }
+
                 return _closeTask != null && _closeTask.IsCompleted;
             }
         }
@@ -233,13 +234,13 @@ namespace PuppeteerSharp
         /// Returns a Task which resolves to an array of all open pages.
         /// Non visible pages, such as <c>"background_page"</c>, will not be listed here. You can find them using <see cref="Target.PageAsync"/>
         /// </summary>
-        /// <returns>Task which resolves to an array of all open pages inside the Browser. 
+        /// <returns>Task which resolves to an array of all open pages inside the Browser.
         /// In case of multiple browser contexts, the method will return an array with all the pages in all browser contexts.
         /// </returns>
         public async Task<Page[]> PagesAsync()
             => (await Task.WhenAll(
-                BrowserContexts().Select(t => t.PagesAsync())).ConfigureAwait(false)
-               ).SelectMany(p => p).ToArray();
+                BrowserContexts().Select(t => t.PagesAsync())).ConfigureAwait(false))
+                .SelectMany(p => p).ToArray();
 
         /// <summary>
         /// Gets the browser's version
@@ -358,7 +359,7 @@ namespace PuppeteerSharp
                 }
             }
 
-            // Ensure that remaining targets are always marked closed, so that asynchronous page close 
+            // Ensure that remaining targets are always marked closed, so that asynchronous page close
             // operations on any associated pages don't get blocked.
             foreach (var target in TargetsMap.Values)
             {
@@ -390,6 +391,7 @@ namespace PuppeteerSharp
             {
                 createTargetRequest.BrowserContextId = contextId;
             }
+
             var targetId = (await Connection.SendAsync<TargetCreateTargetResponse>("Target.createTarget", createTargetRequest)
                 .ConfigureAwait(false)).TargetId;
             var target = TargetsMap[targetId];
@@ -410,7 +412,7 @@ namespace PuppeteerSharp
         {
             try
             {
-                await CloseAsync();
+                await CloseAsync().ConfigureAwait(false);
                 Disconnected?.Invoke(this, new EventArgs());
             }
             catch (Exception ex)

@@ -1,6 +1,6 @@
 ﻿using System;
-using PuppeteerSharp.Media;
 using Newtonsoft.Json;
+using PuppeteerSharp.Media;
 
 namespace PuppeteerSharp
 {
@@ -33,7 +33,9 @@ namespace PuppeteerSharp
         /// <summary>
         /// Initializes a new instance of the <see cref="T:PuppeteerSharp.BoundingBox"/> class.
         /// </summary>
-        public BoundingBox() { }
+        public BoundingBox()
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BoundingBox"/> class.

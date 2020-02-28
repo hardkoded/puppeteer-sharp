@@ -51,7 +51,7 @@ namespace PuppeteerSharp.Helpers
         private static object ValueFromUnserializableValue(RemoteObject remoteObject, string unserializableValue)
         {
             if (remoteObject.Type == RemoteObjectType.Bigint &&
-                                decimal.TryParse(remoteObject.UnserializableValue.Replace("n", ""), out var decimalValue))
+                                decimal.TryParse(remoteObject.UnserializableValue.Replace("n", string.Empty), out var decimalValue))
             {
                 return new BigInteger(decimalValue);
             }

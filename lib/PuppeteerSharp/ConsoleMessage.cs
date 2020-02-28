@@ -3,31 +3,10 @@
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// ConsoleMessage is part of <see cref="ConsoleEventArgs"/> used by <see cref="Page.Console"/>
+    /// ConsoleMessage is part of <see cref="ConsoleEventArgs"/> used by <see cref="Page.Console"/>.
     /// </summary>
     public class ConsoleMessage
     {
-        /// <summary>
-        /// Gets the ConsoleMessage type.
-        /// </summary>
-        /// <value>ConsoleMessageType.</value>
-        public ConsoleType Type { get; }
-        /// <summary>
-        /// Gets the console text.
-        /// </summary>
-        /// <value>The text.</value>
-        public string Text { get; }
-        /// <summary>
-        /// Gets the arguments.
-        /// </summary>
-        /// <value>The arguments.</value>
-        public IList<JSHandle> Args { get; }
-
-        /// <summary>
-        /// Gets the location.
-        /// </summary>
-        public ConsoleMessageLocation Location { get; }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ConsoleMessage"/> class.
         /// </summary>
@@ -42,5 +21,28 @@ namespace PuppeteerSharp
             Args = args;
             Location = location;
         }
+
+        /// <summary>
+        /// Gets the ConsoleMessage type.
+        /// </summary>
+        /// <value>ConsoleMessageType.</value>
+        public ConsoleType Type { get; }
+
+        /// <summary>
+        /// Gets the console text.
+        /// </summary>
+        /// <value>The text.</value>
+        public string Text { get; }
+
+        /// <summary>
+        /// Gets the arguments.
+        /// </summary>
+        /// <value>The arguments.</value>
+        public IList<JSHandle> Args { get; }
+
+        /// <summary>
+        /// Gets the location.
+        /// </summary>
+        public ConsoleMessageLocation Location { get; }
     }
 }

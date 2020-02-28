@@ -4,7 +4,7 @@ namespace PuppeteerSharp.Helpers.Linux
 {
     internal static class LinuxSysCall
     {
-        internal static readonly FileAccessPermissions ExecutableFilePermissions =
+        internal const FileAccessPermissions ExecutableFilePermissions =
             FileAccessPermissions.UserRead | FileAccessPermissions.UserWrite | FileAccessPermissions.UserExecute |
             FileAccessPermissions.GroupRead |
             FileAccessPermissions.GroupExecute |

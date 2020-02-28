@@ -40,8 +40,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="timeout">Timeout.</param>
         /// <param name="elementType">Element type.</param>
-        public WaitTaskTimeoutException(int timeout, string elementType) :
-            base($"waiting for {elementType} failed: timeout {timeout} ms exceeded")
+        public WaitTaskTimeoutException(int timeout, string elementType) : base($"waiting for {elementType} failed: timeout {timeout} ms exceeded")
         {
             Timeout = timeout;
             ElementType = elementType;

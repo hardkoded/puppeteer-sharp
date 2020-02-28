@@ -517,34 +517,6 @@ namespace PuppeteerSharp.Mobile
             },
             [DeviceDescriptorName.IPhoneX] = new DeviceDescriptor
             {
-                Name = "iPhone X",
-                UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1",
-                ViewPort = new ViewPortOptions
-                {
-                    Width = 375,
-                    Height = 812,
-                    DeviceScaleFactor = 3,
-                    IsMobile = true,
-                    HasTouch = true,
-                    IsLandscape = false
-                }
-            },
-            [DeviceDescriptorName.IPhoneXLandscape] = new DeviceDescriptor
-            {
-                Name = "iPhone X landscape",
-                UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1",
-                ViewPort = new ViewPortOptions
-                {
-                    Width = 812,
-                    Height = 375,
-                    DeviceScaleFactor = 3,
-                    IsMobile = true,
-                    HasTouch = true,
-                    IsLandscape = true
-                }
-            },
-            [DeviceDescriptorName.IPhoneX] = new DeviceDescriptor
-            {
                 Name = "iPhone XR",
                 UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1",
                 ViewPort = new ViewPortOptions

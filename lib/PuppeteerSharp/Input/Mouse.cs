@@ -134,6 +134,8 @@ namespace PuppeteerSharp.Input
         /// <summary>
         /// Dispatches a <c>wheel</c> event.
         /// </summary>
+        /// <param name="deltaX">Delta X.</param>
+        /// <param name="deltaY">Delta Y.</param>
         /// <returns>Task</returns>
         public Task WheelAsync(decimal deltaX, decimal deltaY)
             => _client.SendAsync(

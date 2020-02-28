@@ -5,7 +5,7 @@ namespace PuppeteerSharp.Helpers
     internal static class StringExtensions
     {
         /// <summary>
-        /// Quotes the specified <see cref="System.String"/>.
+        /// Quotes the specified <see cref="string"/>.
         /// </summary>
         /// <param name="value">The string to quote.</param>
         /// <returns>A quoted string.</returns>
@@ -19,7 +19,7 @@ namespace PuppeteerSharp.Helpers
         }
 
         /// <summary>
-        /// Unquote the specified <see cref="System.String"/>.
+        /// Unquote the specified <see cref="string"/>.
         /// </summary>
         /// <param name="value">The string to unquote.</param>
         /// <returns>An unquoted string.</returns>

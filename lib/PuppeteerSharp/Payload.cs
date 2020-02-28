@@ -13,17 +13,6 @@ namespace PuppeteerSharp
     /// </summary>
     public class Payload
     {
-        private static readonly ISet<string> IgnoredHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-        {
-            "accept",
-            "referer",
-            "x-devtools-emulate-network-conditions-client-id",
-            "cookie",
-            "origin",
-            "content-type",
-            "intervention"
-        };
-
         /// <summary>
         /// Gets or sets the HTTP method.
         /// </summary>
