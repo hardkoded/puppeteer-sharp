@@ -20,8 +20,13 @@ namespace PuppeteerSharp.Helpers
         /// <param name="task">Task to wait for.</param>
         /// <param name="milliseconds">Milliseconds timeout.</param>
         /// <param name="exceptionFactory">Optional timeout exception factory.</param>
-        public static Task WithTimeout(this Task task, int milliseconds = 1_000, Func<TimeSpan, Exception> exceptionFactory = null)
-            => WithTimeout(task, TimeSpan.FromMilliseconds(milliseconds), exceptionFactory);
+        /// <param name="cancellationToken">Cancellation token.</param>
+        public static Task WithTimeout(
+            this Task task,
+            int milliseconds = 1_000,
+            Func<TimeSpan, Exception> exceptionFactory = null,
+            CancellationToken cancellationToken = default)
+            => WithTimeout(task, TimeSpan.FromMilliseconds(milliseconds), exceptionFactory, cancellationToken);
 
         //Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
         /// <summary>
@@ -31,10 +36,16 @@ namespace PuppeteerSharp.Helpers
         /// <param name="task">Task to wait for.</param>
         /// <param name="timeout">The timeout period.</param>
         /// <param name="exceptionFactory">Optional timeout exception factory.</param>
-        public static Task WithTimeout(this Task task, TimeSpan timeout, Func<TimeSpan, Exception> exceptionFactory = null)
+        /// <param name="cancellationToken">Cancellation token.</param>
+        public static Task WithTimeout(
+            this Task task,
+            TimeSpan timeout,
+            Func<TimeSpan, Exception> exceptionFactory = null,
+            CancellationToken cancellationToken = default)
             => task.WithTimeout(
                 () => throw (exceptionFactory ?? DefaultExceptionFactory)(timeout),
-                timeout);
+                timeout,
+                cancellationToken);
 
         //Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
         /// <summary>
@@ -44,8 +55,13 @@ namespace PuppeteerSharp.Helpers
         /// <param name="task">Task to wait for.</param>
         /// <param name="timeoutAction">Action to be executed on Timeout.</param>
         /// <param name="milliseconds">Milliseconds timeout.</param>
-        public static Task WithTimeout(this Task task, Func<Task> timeoutAction, int milliseconds = 1_000)
-            => WithTimeout(task, timeoutAction, TimeSpan.FromMilliseconds(milliseconds));
+        /// <param name="cancellationToken">Cancellation token.</param>
+        public static Task WithTimeout(
+            this Task task,
+            Func<Task> timeoutAction,
+            int milliseconds = 1_000,
+            CancellationToken cancellationToken = default)
+            => WithTimeout(task, timeoutAction, TimeSpan.FromMilliseconds(milliseconds), cancellationToken);
 
         //Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
         /// <summary>
@@ -55,9 +71,10 @@ namespace PuppeteerSharp.Helpers
         /// <param name="task">Task to wait for.</param>
         /// <param name="timeoutAction">Action to be executed on Timeout.</param>
         /// <param name="timeout">The timeout period.</param>
-        public static async Task WithTimeout(this Task task, Func<Task> timeoutAction, TimeSpan timeout)
+        /// <param name="cancellationToken">Cancellation token.</param>
+        public static async Task WithTimeout(this Task task, Func<Task> timeoutAction, TimeSpan timeout, CancellationToken cancellationToken)
         {
-            if (await TimeoutTask(task, timeout).ConfigureAwait(false))
+            if (await TimeoutTask(task, timeout).ConfigureAwait(false) && !cancellationToken.IsCancellationRequested)
             {
                 await timeoutAction().ConfigureAwait(false);
             }

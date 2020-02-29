@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.Diagnostics.Contracts;
 using PuppeteerSharp.Helpers;
+using System.Threading;
 
 namespace PuppeteerSharp
 {
@@ -31,6 +32,7 @@ namespace PuppeteerSharp
         private TaskCompletionSource<bool> _sameDocumentNavigationTaskWrapper;
         private TaskCompletionSource<bool> _lifecycleTaskWrapper;
         private TaskCompletionSource<bool> _terminationTaskWrapper;
+        private CancellationTokenSource _terminationCancellationToken;
 
         public LifecycleWatcher(
             FrameManager frameManager,
@@ -55,6 +57,7 @@ namespace PuppeteerSharp
             _newDocumentNavigationTaskWrapper = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             _lifecycleTaskWrapper = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             _terminationTaskWrapper = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            _terminationCancellationToken = new CancellationTokenSource();
 
             frameManager.LifecycleEvent += FrameManager_LifecycleEvent;
             frameManager.FrameNavigatedWithinDocument += NavigatedWithinDocument;
@@ -70,8 +73,7 @@ namespace PuppeteerSharp
         public Task<bool> SameDocumentNavigationTask => _sameDocumentNavigationTaskWrapper.Task;
         public Task<bool> NewDocumentNavigationTask => _newDocumentNavigationTaskWrapper.Task;
         public Response NavigationResponse => _navigationRequest?.Response;
-        public Task TimeoutOrTerminationTask
-            => _terminationTaskWrapper.Task.WithTimeout(_timeout);
+        public Task TimeoutOrTerminationTask => _terminationTaskWrapper.Task.WithTimeout(_timeout, cancellationToken: _terminationCancellationToken.Token);
         public Task LifecycleTask => _lifecycleTaskWrapper.Task;
 
         #endregion
@@ -168,6 +170,7 @@ namespace PuppeteerSharp
             _frameManager.FrameDetached -= OnFrameDetached;
             _frameManager.NetworkManager.Request -= OnRequest;
             _frameManager.Client.Disconnected -= OnClientDisconnected;
+            _terminationCancellationToken.Cancel();
         }
 
         #endregion

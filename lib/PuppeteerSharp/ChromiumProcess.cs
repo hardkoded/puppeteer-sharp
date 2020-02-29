@@ -609,11 +609,14 @@ namespace PuppeteerSharp
                 public override async Task ExitAsync(ChromiumProcess p, TimeSpan timeout)
                 {
                     var waitForExitTask = WaitForExitAsync(p);
-                    await waitForExitTask.WithTimeout(async () =>
-                    {
-                        await Killing.EnterFromAsync(p, this).ConfigureAwait(false);
-                        await waitForExitTask.ConfigureAwait(false);
-                    }, timeout).ConfigureAwait(false);
+                    await waitForExitTask.WithTimeout(
+                        async () =>
+                        {
+                            await Killing.EnterFromAsync(p, this).ConfigureAwait(false);
+                            await waitForExitTask.ConfigureAwait(false);
+                        },
+                        timeout,
+                        CancellationToken.None).ConfigureAwait(false);
                 }
 
                 public override Task KillAsync(ChromiumProcess p) => Killing.EnterFromAsync(p, this);
