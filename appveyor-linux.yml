@@ -14,9 +14,9 @@ before_build:
 - sh: >-
     sudo apt-get -y install gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget xvfb libgbm-dev apt-transport-https
 
-    dotnet restore lib/PuppeteerSharp.sln
+    sudo dotnet restore lib/PuppeteerSharp.sln
 
-    dotnet dev-certs https -ep lib/PuppeteerSharp.TestServer/testCert.cer
+    sudo dotnet dev-certs https -ep lib/PuppeteerSharp.TestServer/testCert.cer
 
     sudo openssl x509 -inform der -in lib/PuppeteerSharp.TestServer/testCert.cer -out /usr/local/share/ca-certificates/testCert.crt -outform pem
 
@@ -24,13 +24,13 @@ before_build:
 
 build_script:
 - sh: >-
-    dotnet build -f $framework ./lib/PuppeteerSharp.DevicesFetcher/PuppeteerSharp.DevicesFetcher.csproj
+    sudo dotnet build -f $framework ./lib/PuppeteerSharp.DevicesFetcher/PuppeteerSharp.DevicesFetcher.csproj
 
-    dotnet build -f $framework ./lib/PuppeteerSharp.Tests.DumpIO/PuppeteerSharp.Tests.DumpIO.csproj
+    sudo dotnet build -f $framework ./lib/PuppeteerSharp.Tests.DumpIO/PuppeteerSharp.Tests.DumpIO.csproj
 
-    dotnet build ./lib/PuppeteerSharp.TestServer/PuppeteerSharp.TestServer.csproj
+    sudo dotnet build ./lib/PuppeteerSharp.TestServer/PuppeteerSharp.TestServer.csproj
 
-    dotnet build -f $framework ./lib/PuppeteerSharp.Tests/PuppeteerSharp.Tests.csproj
+    sudo dotnet build -f $framework ./lib/PuppeteerSharp.Tests/PuppeteerSharp.Tests.csproj
 
 test_script:
 - sh: >-
@@ -40,7 +40,7 @@ test_script:
 
     cd lib/PuppeteerSharp.Tests
 
-    dotnet test -f $framework -s test.runsettings
+    sudo dotnet test -f $framework -s test.runsettings
 
 cache:
   - $HOME/.nuget/packages
