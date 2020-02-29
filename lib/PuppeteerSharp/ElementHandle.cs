@@ -1,14 +1,14 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Input;
 using PuppeteerSharp.Messaging;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace PuppeteerSharp
 {
@@ -26,8 +26,7 @@ namespace PuppeteerSharp
             CDPSession client,
             RemoteObject remoteObject,
             Page page,
-            FrameManager frameManager) :
-            base(context, client, remoteObject)
+            FrameManager frameManager) : base(context, client, remoteObject)
         {
             Page = page;
             _frameManager = frameManager;
@@ -346,8 +345,8 @@ namespace PuppeteerSharp
                         array.push(item);
                     return array;
                 }",
-                this, expression
-            ).ConfigureAwait(false);
+                this,
+                expression).ConfigureAwait(false);
             var properties = await arrayHandle.GetPropertiesAsync().ConfigureAwait(false);
             await arrayHandle.DisposeAsync().ConfigureAwait(false);
 
@@ -410,7 +409,7 @@ namespace PuppeteerSharp
                 ObjectId = RemoteObject.ObjectId
             }).ConfigureAwait(false);
 
-            return string.IsNullOrEmpty(nodeInfo.Node.FrameId) ? null : await _frameManager.GetFrameAsync(nodeInfo.Node.FrameId);
+            return string.IsNullOrEmpty(nodeInfo.Node.FrameId) ? null : await _frameManager.GetFrameAsync(nodeInfo.Node.FrameId).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -497,6 +496,7 @@ namespace PuppeteerSharp
             {
                 throw new PuppeteerException("Node is either not visible or not an HTMLElement");
             }
+
             // Return the middle point of the first quad.
             var quad = quads.First();
             var x = 0m;
@@ -510,8 +510,7 @@ namespace PuppeteerSharp
 
             return (
                 x: x / 4,
-                y: y / 4
-            );
+                y: y / 4);
         }
 
         private IEnumerable<BoxModelPoint> IntersectQuadWithViewport(IEnumerable<BoxModelPoint> quad, PageGetLayoutMetricsResponse viewport)
@@ -569,10 +568,10 @@ namespace PuppeteerSharp
 
         private BoxModelPoint[] FromProtocolQuad(decimal[] quad) => new[]
         {
-            new BoxModelPoint{ X = quad[0], Y = quad[1] },
-            new BoxModelPoint{ X = quad[2], Y = quad[3] },
-            new BoxModelPoint{ X = quad[4], Y = quad[5] },
-            new BoxModelPoint{ X = quad[6], Y = quad[7] }
+            new BoxModelPoint { X = quad[0], Y = quad[1] },
+            new BoxModelPoint { X = quad[2], Y = quad[3] },
+            new BoxModelPoint { X = quad[4], Y = quad[5] },
+            new BoxModelPoint { X = quad[6], Y = quad[7] }
         };
 
         private decimal ComputeQuadArea(BoxModelPoint[] quad)

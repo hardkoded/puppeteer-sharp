@@ -11,7 +11,6 @@ namespace PuppeteerSharp
         /// <summary>
         /// Dialog data.
         /// </summary>
-        /// <value>Dialog data.</value>
         public Dialog Dialog { get; }
 
         /// <summary>

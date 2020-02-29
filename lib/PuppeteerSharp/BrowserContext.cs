@@ -52,7 +52,7 @@ namespace PuppeteerSharp
         public Browser Browser { get; }
 
         /// <summary>
-        /// Gets an array of all active targets inside the browser context 
+        /// Gets an array of all active targets inside the browser context.
         /// </summary>
         /// <returns>An array of all active targets inside the browser context</returns>
         public Target[] Targets() => Array.FindAll(Browser.Targets(), target => target.BrowserContext == this);
@@ -77,13 +77,13 @@ namespace PuppeteerSharp
         /// <summary>
         /// An array of all pages inside the browser context.
         /// </summary>
-        /// <returns>Task which resolves to an array of all open pages. 
-        /// Non visible pages, such as <c>"background_page"</c>, will not be listed here. 
+        /// <returns>Task which resolves to an array of all open pages.
+        /// Non visible pages, such as <c>"background_page"</c>, will not be listed here.
         /// You can find them using <see cref="Target.PageAsync"/>.</returns>
         public async Task<Page[]> PagesAsync()
         => (await Task.WhenAll(
-            Targets().Where(t => t.Type == TargetType.Page).Select(t => t.PageAsync())).ConfigureAwait(false)
-           ).Where(p => p != null).ToArray();
+            Targets().Where(t => t.Type == TargetType.Page).Select(t => t.PageAsync())).ConfigureAwait(false))
+            .Where(p => p != null).ToArray();
 
         /// <summary>
         /// Creates a new page
@@ -101,6 +101,7 @@ namespace PuppeteerSharp
             {
                 throw new PuppeteerException("Non-incognito profiles cannot be closed!");
             }
+
             return Browser.DisposeContextAsync(_id);
         }
 

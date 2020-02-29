@@ -11,7 +11,7 @@ namespace PuppeteerSharp.PageAccessibility
         /// <summary>
         /// Creates a new serialized node
         /// </summary>
-        public SerializedAXNode() => Children = new SerializedAXNode[] { };
+        public SerializedAXNode() => Children = Array.Empty<SerializedAXNode>();
 
         /// <summary>
         /// The <see fref="https://www.w3.org/TR/wai-aria/#usage_intro">role</see>.

@@ -15,7 +15,8 @@ namespace PuppeteerSharp.Helpers
 
         public TempDirectory()
             : this(PathHelper.Combine(PathHelper.GetTempPath(), PathHelper.GetRandomFileName()))
-        { }
+        {
+        }
 
         public TempDirectory(string path)
         {

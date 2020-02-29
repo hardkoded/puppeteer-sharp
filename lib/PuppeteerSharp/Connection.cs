@@ -93,13 +93,15 @@ namespace PuppeteerSharp
         internal Task RawSendASync(int id, string method, object args, string sessionId = null)
         {
             _logger.LogTrace("Send ► {Id} Method {Method} Params {@Params}", id, method, args);
-            return Transport.SendAsync(JsonConvert.SerializeObject(new ConnectionRequest
-            {
-                Id = id,
-                Method = method,
-                Params = args,
-                SessionId = sessionId
-            }, JsonHelper.DefaultJsonSerializerSettings));
+            return Transport.SendAsync(JsonConvert.SerializeObject(
+                new ConnectionRequest
+                {
+                    Id = id,
+                    Method = method,
+                    Params = args,
+                    SessionId = sessionId
+                },
+                JsonHelper.DefaultJsonSerializerSettings));
         }
 
         internal async Task<JObject> SendAsync(string method, object args = null, bool waitForCallback = true)
@@ -151,6 +153,7 @@ namespace PuppeteerSharp
             {
                 return;
             }
+
             IsClosed = true;
             CloseReason = closeReason;
 
@@ -161,15 +164,16 @@ namespace PuppeteerSharp
             {
                 session.Close(closeReason);
             }
+
             _sessions.Clear();
 
             foreach (var response in _callbacks.Values.ToArray())
             {
                 response.TaskWrapper.TrySetException(new TargetClosedException(
                     $"Protocol error({response.Method}): Target closed.",
-                    closeReason
-                ));
+                    closeReason));
             }
+
             _callbacks.Clear();
         }
 
@@ -179,7 +183,8 @@ namespace PuppeteerSharp
 
         #region Private Methods
 
-        private async void Transport_MessageReceived(object sender, MessageReceivedEventArgs e) => await _callbackQueue.Enqueue(() => ProcessMessage(e));
+        private async void Transport_MessageReceived(object sender, MessageReceivedEventArgs e)
+            => await _callbackQueue.Enqueue(() => ProcessMessage(e)).ConfigureAwait(false);
 
         private async Task ProcessMessage(MessageReceivedEventArgs e)
         {
@@ -241,8 +246,8 @@ namespace PuppeteerSharp
             }
             else if (obj.Id.HasValue)
             {
-                //If we get the object we are waiting for we return if
-                //if not we add this to the list, sooner or later some one will come for it 
+                // If we get the object we are waiting for we return if
+                // if not we add this to the list, sooner or later some one will come for it 
                 if (_callbacks.TryRemove(obj.Id.Value, out var callback))
                 {
                     if (obj.Error != null)
@@ -265,7 +270,7 @@ namespace PuppeteerSharp
             }
         }
 
-        void Transport_Closed(object sender, TransportClosedEventArgs e) => Close(e.CloseReason);
+        private void Transport_Closed(object sender, TransportClosedEventArgs e) => Close(e.CloseReason);
 
         #endregion
 
@@ -285,8 +290,9 @@ namespace PuppeteerSharp
             if (transport == null)
             {
                 var transportFactory = connectionOptions.TransportFactory ?? WebSocketTransport.DefaultTransportFactory;
-                transport = await transportFactory(new Uri(url), connectionOptions, cancellationToken);
+                transport = await transportFactory(new Uri(url), connectionOptions, cancellationToken).ConfigureAwait(false);
             }
+
             return new Connection(url, connectionOptions.SlowMo, transport, loggerFactory);
         }
 

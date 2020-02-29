@@ -24,6 +24,14 @@ namespace PuppeteerSharp
         public int? ColumnNumber { get; set; }
 
         /// <inheritdoc/>
+        public static bool operator ==(ConsoleMessageLocation location1, ConsoleMessageLocation location2)
+            => EqualityComparer<ConsoleMessageLocation>.Default.Equals(location1, location2);
+
+        /// <inheritdoc/>
+        public static bool operator !=(ConsoleMessageLocation location1, ConsoleMessageLocation location2)
+            => !(location1 == location2);
+
+        /// <inheritdoc/>
         public bool Equals(ConsoleMessageLocation other)
             => (URL, LineNumber, ColumnNumber) == (other?.URL, other?.LineNumber, other?.ColumnNumber);
 
@@ -36,13 +44,5 @@ namespace PuppeteerSharp
                 EqualityComparer<string>.Default.GetHashCode(URL) +
                 EqualityComparer<int?>.Default.GetHashCode(LineNumber) +
                 EqualityComparer<int?>.Default.GetHashCode(ColumnNumber);
-
-        /// <inheritdoc/>
-        public static bool operator ==(ConsoleMessageLocation location1, ConsoleMessageLocation location2)
-            => EqualityComparer<ConsoleMessageLocation>.Default.Equals(location1, location2);
-
-        /// <inheritdoc/>
-        public static bool operator !=(ConsoleMessageLocation location1, ConsoleMessageLocation location2)
-            => !(location1 == location2);
     }
 }

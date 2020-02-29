@@ -13,6 +13,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PuppeteerSharp.Tests.DumpIO
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PuppeteerSharp.DevicesFetcher", "PuppeteerSharp.DevicesFetcher\PuppeteerSharp.DevicesFetcher.csproj", "{A500694A-3649-4474-BC71-C835FA19B865}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5993B99D-AC7B-4D6F-832C-6784D7EFE9B3}"
+	ProjectSection(SolutionItems) = preProject
+		PuppeteerSharp.ruleset = PuppeteerSharp.ruleset
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

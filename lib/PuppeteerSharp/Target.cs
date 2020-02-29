@@ -55,7 +55,7 @@ namespace PuppeteerSharp
             });
 
             CloseTaskWrapper = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-            IsInitialized = TargetInfo.Type != TargetType.Page || TargetInfo.Url != string.Empty;
+            IsInitialized = TargetInfo.Type != TargetType.Page || !string.IsNullOrEmpty(TargetInfo.Url);
 
             if (IsInitialized)
             {
@@ -160,7 +160,7 @@ namespace PuppeteerSharp
             var previousUrl = TargetInfo.Url;
             TargetInfo = targetInfo;
 
-            if (!IsInitialized && (TargetInfo.Type != TargetType.Page || TargetInfo.Url != string.Empty))
+            if (!IsInitialized && (TargetInfo.Type != TargetType.Page || !string.IsNullOrEmpty(TargetInfo.Url)))
             {
                 IsInitialized = true;
                 _initializedTaskWrapper.TrySetResult(true);

@@ -27,11 +27,12 @@ namespace PuppeteerSharp
     public class BrowserFetcher
     {
         private const string DefaultDownloadHost = "https://storage.googleapis.com";
-        private static readonly Dictionary<Platform, string> _downloadUrls = new Dictionary<Platform, string> {
-            {Platform.Linux, "{0}/chromium-browser-snapshots/Linux_x64/{1}/{2}.zip"},
-            {Platform.MacOS, "{0}/chromium-browser-snapshots/Mac/{1}/{2}.zip"},
-            {Platform.Win32, "{0}/chromium-browser-snapshots/Win/{1}/{2}.zip"},
-            {Platform.Win64, "{0}/chromium-browser-snapshots/Win_x64/{1}/{2}.zip"}
+        private static readonly Dictionary<Platform, string> _downloadUrls = new Dictionary<Platform, string>
+        {
+            [Platform.Linux] = "{0}/chromium-browser-snapshots/Linux_x64/{1}/{2}.zip",
+            [Platform.MacOS] = "{0}/chromium-browser-snapshots/Mac/{1}/{2}.zip",
+            [Platform.Win32] = "{0}/chromium-browser-snapshots/Win/{1}/{2}.zip",
+            [Platform.Win64] = "{0}/chromium-browser-snapshots/Win_x64/{1}/{2}.zip"
         };
         private readonly WebClient _webClient = new WebClient();
 
@@ -133,7 +134,7 @@ namespace PuppeteerSharp
                 return directoryInfo.GetDirectories().Select(d => GetRevisionFromPath(d.Name)).Where(v => v > 0);
             }
 
-            return new int[] { };
+            return Array.Empty<int>();
         }
 
         /// <summary>
@@ -195,13 +196,14 @@ namespace PuppeteerSharp
             {
                 _webClient.DownloadProgressChanged += DownloadProgressChanged;
             }
+
             await _webClient.DownloadFileTaskAsync(new Uri(url), zipPath).ConfigureAwait(false);
 
             if (Platform == Platform.MacOS)
             {
-                //ZipFile and many others unzip libraries have issues extracting .app files
-                //Until we have a clear solution we'll call the native unzip tool
-                //https://github.com/dotnet/corefx/issues/15516
+                // ZipFile and many others unzip libraries have issues extracting .app files
+                // Until we have a clear solution we'll call the native unzip tool
+                // https://github.com/dotnet/corefx/issues/15516
                 NativeExtractToDirectory(zipPath, folderPath);
             }
             else
@@ -217,6 +219,7 @@ namespace PuppeteerSharp
             {
                 LinuxSysCall.Chmod(revisionInfo.ExecutablePath, LinuxSysCall.ExecutableFilePermissions);
             }
+
             return revisionInfo;
         }
 
@@ -240,8 +243,13 @@ namespace PuppeteerSharp
             switch (platform)
             {
                 case Platform.MacOS:
-                    return Path.Combine(folderPath, GetArchiveName(platform, revision), "Chromium.app", "Contents",
-                                                         "MacOS", "Chromium");
+                    return Path.Combine(
+                        folderPath,
+                        GetArchiveName(platform, revision),
+                        "Chromium.app",
+                        "Contents",
+                        "MacOS",
+                        "Chromium");
                 case Platform.Linux:
                     return Path.Combine(folderPath, GetArchiveName(platform, revision), "chrome");
                 case Platform.Win32:
@@ -262,10 +270,12 @@ namespace PuppeteerSharp
             {
                 return Platform.MacOS;
             }
+
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
                 return Platform.Linux;
             }
+
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 return RuntimeInformation.OSArchitecture == Architecture.X64 ? Platform.Win64 : Platform.Win32;
@@ -273,6 +283,7 @@ namespace PuppeteerSharp
 
             return Platform.Unknown;
         }
+
         private string GetFolderPath(int revision)
             => Path.Combine(DownloadsFolder, $"{Platform.ToString()}-{revision}");
 
@@ -293,14 +304,17 @@ namespace PuppeteerSharp
             {
                 return 0;
             }
+
             if (!Enum.TryParse<Platform>(splits[0], out var platform))
             {
                 platform = Platform.Unknown;
             }
+
             if (!_downloadUrls.Keys.Contains(platform))
             {
                 return 0;
             }
+
             int.TryParse(splits[1], out var revision);
             return revision;
         }

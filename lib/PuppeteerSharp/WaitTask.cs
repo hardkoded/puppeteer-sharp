@@ -134,7 +134,7 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
             _polling = polling;
             _pollingInterval = pollingInterval;
             _timeout = timeout;
-            _args = args ?? new object[] { };
+            _args = args ?? Array.Empty<object>();
             _title = title;
 
             _world.WaitTasks.Add(this);

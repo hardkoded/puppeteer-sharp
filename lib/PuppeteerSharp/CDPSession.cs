@@ -13,9 +13,9 @@ namespace PuppeteerSharp
     /// The CDPSession instances are used to talk raw Chrome Devtools Protocol:
     ///  * Protocol methods can be called with <see cref="CDPSession.SendAsync(string, object, bool)"/> method.
     ///  * Protocol events, using the <see cref="CDPSession.MessageReceived"/> event.
-    /// 
+    ///
     /// Documentation on DevTools Protocol can be found here: <see href="https://chromedevtools.github.io/devtools-protocol/"/>.
-    /// 
+    ///
     /// <code>
     /// <![CDATA[
     /// var client = await Page.Target.CreateCDPSessionAsync();
@@ -100,6 +100,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="method">The method name</param>
         /// <param name="args">The method args</param>
+        /// <typeparam name="T">Return type.</typeparam>
         /// <returns>The task.</returns>
         public async Task<T> SendAsync<T>(string method, object args = null)
         {
@@ -127,6 +128,7 @@ namespace PuppeteerSharp
                     $"Most likely the {TargetType} has been closed." +
                     $"Close reason: {CloseReason}");
             }
+
             var id = Connection.GetMessageID();
             MessageTask callback = null;
             if (waitForCallback)
@@ -163,8 +165,9 @@ namespace PuppeteerSharp
         {
             if (Connection == null)
             {
-                throw new PuppeteerException($"Session already detached.Most likely the { TargetType } has been closed.");
+                throw new PuppeteerException($"Session already detached.Most likely the {TargetType} has been closed.");
             }
+
             return Connection.SendAsync("Target.detachFromTarget", new TargetDetachFromTargetRequest
             {
                 SessionId = SessionId
@@ -211,6 +214,7 @@ namespace PuppeteerSharp
             {
                 return;
             }
+
             CloseReason = closeReason;
             IsClosed = true;
 
@@ -218,9 +222,9 @@ namespace PuppeteerSharp
             {
                 callback.TaskWrapper.TrySetException(new TargetClosedException(
                     $"Protocol error({callback.Method}): Target closed.",
-                    closeReason
-                ));
+                    closeReason));
             }
+
             _callbacks.Clear();
             Disconnected?.Invoke(this, EventArgs.Empty);
             Connection = null;

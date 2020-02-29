@@ -99,7 +99,7 @@ namespace PuppeteerSharp
                     : await GetWSEndpointAsync(options.BrowserURL).ConfigureAwait(false);
 
                 var connection = await Connection.Create(browserWSEndpoint, options, _loggerFactory).ConfigureAwait(false);
-                var response = await connection.SendAsync<GetBrowserContextsResponse>("Target.getBrowserContexts");
+                var response = await connection.SendAsync<GetBrowserContextsResponse>("Target.getBrowserContexts").ConfigureAwait(false);
                 return await Browser
                     .CreateAsync(connection, response.BrowserContextIds, options.IgnoreHTTPSErrors, options.DefaultViewport, null)
                     .ConfigureAwait(false);

@@ -105,14 +105,14 @@ namespace PuppeteerSharp
                         watcher.TimeoutOrTerminationTask,
                         navigateTask).ConfigureAwait(false);
 
-                    await task;
+                    await task.ConfigureAwait(false);
 
                     task = await Task.WhenAny(
                         watcher.TimeoutOrTerminationTask,
-                        _ensureNewDocumentNavigation ? watcher.NewDocumentNavigationTask : watcher.SameDocumentNavigationTask
-                    ).ConfigureAwait(false);
+                        _ensureNewDocumentNavigation ? watcher.NewDocumentNavigationTask : watcher.SameDocumentNavigationTask)
+                        .ConfigureAwait(false);
 
-                    await task;
+                    await task.ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
@@ -151,7 +151,7 @@ namespace PuppeteerSharp
                     watcher.TimeoutOrTerminationTask
                 ).ConfigureAwait(false);
 
-                await raceTask;
+                await raceTask.ConfigureAwait(false);
 
                 return watcher.NavigationResponse;
             }
@@ -188,7 +188,7 @@ namespace PuppeteerSharp
                         break;
 
                     case "Runtime.executionContextCreated":
-                        await OnExecutionContextCreatedAsync(e.MessageData.ToObject<RuntimeExecutionContextCreatedResponse>(true).Context);
+                        await OnExecutionContextCreatedAsync(e.MessageData.ToObject<RuntimeExecutionContextCreatedResponse>(true).Context).ConfigureAwait(false);
                         break;
 
                     case "Runtime.executionContextDestroyed":
@@ -302,7 +302,7 @@ namespace PuppeteerSharp
         private async Task OnFrameNavigatedAsync(FramePayload framePayload)
         {
             var isMainFrame = string.IsNullOrEmpty(framePayload.ParentId);
-            var frame = isMainFrame ? MainFrame : await GetFrameAsync(framePayload.Id);
+            var frame = isMainFrame ? MainFrame : await GetFrameAsync(framePayload.Id).ConfigureAwait(false);
 
             Contract.Assert(isMainFrame || frame != null, "We either navigate top level or have old version of the navigated frame");
 
@@ -388,13 +388,13 @@ namespace PuppeteerSharp
                 OnFrameAttached(frameTree.Frame.Id, frameTree.Frame.ParentId);
             }
 
-            await OnFrameNavigatedAsync(frameTree.Frame);
+            await OnFrameNavigatedAsync(frameTree.Frame).ConfigureAwait(false);
 
             if (frameTree.Childs != null)
             {
                 foreach (var child in frameTree.Childs)
                 {
-                    await HandleFrameTreeAsync(child);
+                    await HandleFrameTreeAsync(child).ConfigureAwait(false);
                 }
             }
         }
@@ -412,7 +412,7 @@ namespace PuppeteerSharp
             {
                 Source = $"//# sourceURL={ExecutionContext.EvaluationScriptUrl}",
                 WorldName = name,
-            });
+            }).ConfigureAwait(false);
 
             try
             {

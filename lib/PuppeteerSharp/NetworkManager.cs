@@ -132,13 +132,13 @@ namespace PuppeteerSharp
                 switch (e.MessageID)
                 {
                     case "Fetch.requestPaused":
-                        await OnRequestPausedAsync(e.MessageData.ToObject<FetchRequestPausedResponse>(true));
+                        await OnRequestPausedAsync(e.MessageData.ToObject<FetchRequestPausedResponse>(true)).ConfigureAwait(false);
                         break;
                     case "Fetch.authRequired":
-                        await OnAuthRequiredAsync(e.MessageData.ToObject<FetchAuthRequiredResponse>(true));
+                        await OnAuthRequiredAsync(e.MessageData.ToObject<FetchAuthRequiredResponse>(true)).ConfigureAwait(false);
                         break;
                     case "Network.requestWillBeSent":
-                        await OnRequestWillBeSentAsync(e.MessageData.ToObject<RequestWillBeSentPayload>(true));
+                        await OnRequestWillBeSentAsync(e.MessageData.ToObject<RequestWillBeSentPayload>(true)).ConfigureAwait(false);
                         break;
                     case "Network.requestServedFromCache":
                         OnRequestServedFromCache(e.MessageData.ToObject<RequestServedFromCacheResponse>(true));
@@ -306,7 +306,7 @@ namespace PuppeteerSharp
             if (!_requestIdToRequest.TryGetValue(e.RequestId, out var currentRequest) ||
               currentRequest.Frame == null)
             {
-                var frame = await FrameManager.GetFrameAsync(e.FrameId);
+                var frame = await FrameManager.GetFrameAsync(e.FrameId).ConfigureAwait(false);
 
                 request = new Request(
                     _client,
@@ -397,7 +397,7 @@ namespace PuppeteerSharp
             if (enabled)
             {
                 await Task.WhenAll(
-                     UpdateProtocolCacheDisabledAsync(),
+                    UpdateProtocolCacheDisabledAsync(),
                     _client.SendAsync("Fetch.enable", new FetchEnableRequest
                     {
                         HandleAuthRequests = true,

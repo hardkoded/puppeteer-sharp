@@ -11,7 +11,9 @@ namespace PuppeteerSharp.Media
         /// <summary>
         /// Initializes a new instance of the <see cref="PuppeteerSharp.Media.MarginOptions"/> class.
         /// </summary>
-        public MarginOptions() { }
+        public MarginOptions()
+        {
+        }
 
         /// <summary>
         /// Top margin, accepts values labeled with units

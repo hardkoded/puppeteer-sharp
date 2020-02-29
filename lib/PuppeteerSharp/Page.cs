@@ -1283,6 +1283,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Closes the page.
         /// </summary>
+        /// <param name="options">Close options.</param>
         /// <returns>Task.</returns>
         public Task CloseAsync(PageCloseOptions options = null)
         {
@@ -1637,9 +1638,9 @@ namespace PuppeteerSharp
 
             if (SessionClosedTask.IsFaulted)
             {
-                await SessionClosedTask;
+                await SessionClosedTask.ConfigureAwait(false);
             }
-            return await requestTcs.Task;
+            return await requestTcs.Task.ConfigureAwait(false);
         }
 
         /// <summary>
@@ -1693,9 +1694,9 @@ namespace PuppeteerSharp
 
             if (SessionClosedTask.IsFaulted)
             {
-                await SessionClosedTask;
+                await SessionClosedTask.ConfigureAwait(false);
             }
-            return await responseTcs.Task;
+            return await responseTcs.Task.ConfigureAwait(false);
         }
 
         /// <summary>
@@ -2172,7 +2173,10 @@ namespace PuppeteerSharp
                     @"function deliverResult(name, seq, result) {
                         window[name]['callbacks'].get(seq).resolve(result);
                         window[name]['callbacks'].delete(seq);
-                    }", e.BindingPayload.Name, e.BindingPayload.Seq, result);
+                    }",
+                    e.BindingPayload.Name,
+                    e.BindingPayload.Seq,
+                    result);
             }
             catch (Exception ex)
             {
@@ -2187,7 +2191,11 @@ namespace PuppeteerSharp
                         error.stack = stack;
                         window[name]['callbacks'].get(seq).reject(error);
                         window[name]['callbacks'].delete(seq);
-                    }", e.BindingPayload.Name, e.BindingPayload.Seq, ex.Message, ex.StackTrace);
+                    }",
+                    e.BindingPayload.Name,
+                    e.BindingPayload.Seq,
+                    ex.Message,
+                    ex.StackTrace);
             }
 
             Client.Send("Runtime.evaluate", new

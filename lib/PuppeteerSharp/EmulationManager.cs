@@ -35,7 +35,7 @@ namespace PuppeteerSharp
                 };
             var hasTouch = viewport.HasTouch;
 
-            await Task.WhenAll(new Task[]{
+            await Task.WhenAll(new Task[] {
                 _client.SendAsync("Emulation.setDeviceMetricsOverride", new EmulationSetDeviceMetricsOverrideRequest
                 {
                     Mobile = mobile,

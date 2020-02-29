@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using PuppeteerSharp.Messaging;
 using PuppeteerSharp.Helpers;
-using System.Numerics;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
@@ -19,7 +19,7 @@ namespace PuppeteerSharp
     {
         internal const string EvaluationScriptUrl = "__puppeteer_evaluation_script__";
 
-        private readonly string EvaluationScriptSuffix = $"//# sourceURL={EvaluationScriptUrl}";
+        private readonly string _evaluationScriptSuffix = $"//# sourceURL={EvaluationScriptUrl}";
         private static readonly Regex _sourceUrlRegex = new Regex(@"^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$", RegexOptions.Multiline);
         private readonly CDPSession _client;
         private readonly int _contextId;
@@ -138,7 +138,7 @@ namespace PuppeteerSharp
         private Task<RemoteObject> EvaluateExpressionInternalAsync(bool returnByValue, string script)
             => ExecuteEvaluationAsync("Runtime.evaluate", new Dictionary<string, object>
             {
-                ["expression"] = _sourceUrlRegex.IsMatch(script) ? script : $"{script}\n{EvaluationScriptSuffix}",
+                ["expression"] = _sourceUrlRegex.IsMatch(script) ? script : $"{script}\n{_evaluationScriptSuffix}",
                 ["contextId"] = _contextId,
                 ["returnByValue"] = returnByValue,
                 ["awaitPromise"] = true,
@@ -148,7 +148,7 @@ namespace PuppeteerSharp
         private Task<RemoteObject> EvaluateFunctionInternalAsync(bool returnByValue, string script, params object[] args)
             => ExecuteEvaluationAsync("Runtime.callFunctionOn", new RuntimeCallFunctionOnRequest
             {
-                FunctionDeclaration = $"{script}\n{EvaluationScriptSuffix}\n",
+                FunctionDeclaration = $"{script}\n{_evaluationScriptSuffix}\n",
                 ExecutionContextId = _contextId,
                 Arguments = args.Select(FormatArgument),
                 ReturnByValue = returnByValue,

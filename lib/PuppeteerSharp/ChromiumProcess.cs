@@ -144,12 +144,12 @@ namespace PuppeteerSharp
             : null;
 
         /// <summary>
-        /// Indicates whether Chromium process is exiting. 
+        /// Indicates whether Chromium process is exiting.
         /// </summary>
         public bool IsExiting => _currentState.IsExiting;
 
         /// <summary>
-        /// Indicates whether Chromium process has exited. 
+        /// Indicates whether Chromium process has exited.
         /// </summary>
         public bool HasExited => _currentState.IsExited;
 
@@ -190,10 +190,11 @@ namespace PuppeteerSharp
             if (timeout.HasValue)
             {
                 var taskCompleted = true;
-                await _exitCompletionSource.Task.WithTimeout(() =>
-                {
-                    taskCompleted = false;
-                }, timeout.Value).ConfigureAwait(false);
+                await _exitCompletionSource.Task.WithTimeout(
+                    () =>
+                    {
+                        taskCompleted = false;
+                    }, timeout.Value).ConfigureAwait(false);
                 return taskCompleted;
             }
 
@@ -251,13 +252,15 @@ namespace PuppeteerSharp
             {
                 chromeArguments.Add($"{UserDataDirArgument}={options.UserDataDir.Quote()}");
             }
+
             if (options.Devtools)
             {
                 chromeArguments.Add("--auto-open-devtools-for-tabs");
             }
+
             if (options.Headless)
             {
-                chromeArguments.AddRange(new[]{
+                chromeArguments.AddRange(new[] {
                     "--headless",
                     "--hide-scrollbars",
                     "--mute-audio"
@@ -388,7 +391,8 @@ namespace PuppeteerSharp
             /// </summary>
             /// <param name="p">The Chromium process</param>
             protected virtual void Leave(ChromiumProcess p)
-            { }
+            {
+            }
 
             /// <summary>
             /// Handles process start request.
@@ -518,6 +522,7 @@ namespace PuppeteerSharp
                             }
                         }
                     }
+
                     void OnProcessExitedWhileStarting(object sender, EventArgs e)
                         => p._startCompletionSource.TrySetException(new ChromiumProcessException($"Failed to launch Chromium! {output}"));
                     void OnProcessExited(object sender, EventArgs e) => Exited.EnterFrom(p, p._currentState);
@@ -570,6 +575,7 @@ namespace PuppeteerSharp
                         // Process has not exited or been killed since transition to this state was initiated
                         LogProcessCount(p, Interlocked.Increment(ref _processCount));
                     }
+
                     return Task.CompletedTask;
                 }
 
