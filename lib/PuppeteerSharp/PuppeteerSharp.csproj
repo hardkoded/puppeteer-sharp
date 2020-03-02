@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>2.0.1</PackageVersion>
+    <PackageVersion>2.0.2</PackageVersion>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
@@ -14,13 +14,10 @@
     <PackageReleaseNotes><![CDATA[
 
 # Changelog
- * Fix ssl when navigate to site with cert expiring after 2038.
- * Added ability to skip resolving file paths for UploadFileAsync.
- * Improve cookies documentation.
- * Improve response documentation.
+ * Fix orphan tasks
 
  ]]></PackageReleaseNotes>
-    <ReleaseVersion>2.0.1</ReleaseVersion>
+    <ReleaseVersion>2.0.2</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
     <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
     <CodeAnalysisRuleSet>../PuppeteerSharp.ruleset</CodeAnalysisRuleSet>
