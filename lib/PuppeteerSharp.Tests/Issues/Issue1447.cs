@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -7,49 +8,44 @@ namespace PuppeteerSharp.Tests.Issues
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class Issue1447 : PuppeteerPageBaseTest
     {
-        public Issue1447(ITestOutputHelper output) : base(output)
-        {
-            
-        }
+        public Issue1447(ITestOutputHelper output) : base(output) { }
 
         [Fact]
-        public void Example()
+        public async Task Example()
         {
-            PuppeteerSharp.LaunchOptions opts = new PuppeteerSharp.LaunchOptions()
+            var opts = new LaunchOptions
             {
                 Headless = false,
-                ExecutablePath = @"C:\Users\user\AppData\Local\Chromium\Application\chrome.exe",
                 DefaultViewport = null,
-                UserDataDir = @"d:\32323"
+                IgnoredDefaultArgs = new[] {"--enable-automation"}
             };
 
-            opts.IgnoredDefaultArgs = new string[] { "--enable-automation" };
-
-            PuppeteerSharp.Launcher launcher = new PuppeteerSharp.Launcher();
-
-            var browser = launcher.LaunchAsync(opts).GetAwaiter().GetResult();
-
-            var pages = browser.PagesAsync().GetAwaiter().GetResult();
-
-            var page = pages.ElementAt(0);
-
-            for (int i = 0; i < 20; i++)
+            using (var browser = await new Launcher().LaunchAsync(opts))
             {
-                Navigate(page, "https://distilnetworks.com");
-                Navigate(page, "https://mail.com");
-                Navigate(page, "https://distilnetworks.com");
-                Navigate(page, "https://vk.com");
-                Navigate(page, "https://distilnetworks.com");
-                Navigate(page, "https://mail.com");
-                Navigate(page, "https://distilnetworks.com");
-                Navigate(page, "https://mail.com");
-                Navigate(page, "about:blank");
+                var pages = await browser.PagesAsync();
+
+                var page = pages.ElementAt(0);
+
+                for (int i = 0; i < 2; i++)
+                {
+                    await Navigate(page, "https://distilnetworks.com");
+                    await Navigate(page, "https://mail.com");
+                    await Navigate(page, "https://distilnetworks.com");
+                    await Navigate(page, "https://vk.com");
+                    await Navigate(page, "https://distilnetworks.com");
+                    await Navigate(page, "https://mail.com");
+                    await Navigate(page, "https://distilnetworks.com");
+                    await Navigate(page, "https://mail.com");
+                    await Navigate(page, "about:blank");
+                }
             }
         }
 
-        public void Navigate(PuppeteerSharp.Page page, string url)
+        public Task<Response> Navigate(Page page, string url)
         {
-            page.MainFrame.GoToAsync(url, new PuppeteerSharp.NavigationOptions() { Timeout = 0, WaitUntil = new PuppeteerSharp.WaitUntilNavigation[] { PuppeteerSharp.WaitUntilNavigation.DOMContentLoaded } }).GetAwaiter().GetResult();
+            return page.MainFrame.GoToAsync(
+                url,
+                new NavigationOptions { Timeout = 0, WaitUntil = new[] { WaitUntilNavigation.DOMContentLoaded } });
         }
     }
 }

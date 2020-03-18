@@ -15,6 +15,9 @@
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0005" />
     <PackageReference Include="Microsoft.AspNetCore.Connections.Abstractions" Version="2.2.0" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Issues\" />
+  </ItemGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net471'">
     <RuntimeIdentifier>win7-x64</RuntimeIdentifier>
   </PropertyGroup>
