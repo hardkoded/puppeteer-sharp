@@ -29,7 +29,21 @@ namespace PuppeteerSharp.Helpers
             }
 
             return await tcs.Task.WithTimeout(new Action(() =>
-                throw new PuppeteerException(string.Format(_timeoutMessage, key)))).ConfigureAwait(false);
+                throw new PuppeteerException(string.Format(_timeoutMessage, key))), 1000).ConfigureAwait(false);
+        }
+
+        internal async Task<TValue> TryGetItemAsync(TKey key)
+        {
+            var tcs = new TaskCompletionSource<TValue>(TaskCreationOptions.RunContinuationsAsynchronously);
+            _pendingRequests.Add(key, tcs);
+
+            if (_dictionary.TryGetValue(key, out var item))
+            {
+                _pendingRequests.Delete(key, tcs);
+                return item;
+            }
+
+            return await tcs.Task.WithTimeout(() => { }, 1000).ConfigureAwait(false);
         }
 
         internal void AddItem(TKey key, TValue value)

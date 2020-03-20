@@ -431,6 +431,8 @@ namespace PuppeteerSharp
 
         internal Task<Frame> GetFrameAsync(string frameId) => _asyncFrames.GetItemAsync(frameId);
 
+        internal Task<Frame> TryGetFrameAsync(string frameId) => _asyncFrames.TryGetItemAsync(frameId);
+
         #endregion
     }
 }
