@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -184,8 +184,10 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             }));
         }
 
-        [Fact]
-        public async Task ChromeShouldBeClosed()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task ChromeShouldBeClosed(bool useDisposeAsync)
         {
             var options = TestConstants.DefaultBrowserOptions();
             var launcher = new Launcher(TestConstants.LoggerFactory);
@@ -196,7 +198,15 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 var response = await page.GoToAsync(TestConstants.EmptyPage);
                 Assert.Equal(HttpStatusCode.OK, response.Status);
 
-                await browser.CloseAsync();
+                if (useDisposeAsync)
+                {
+                    // emulates what would happen in a C#8 await using block
+                    await browser.DisposeAsync();
+                }
+                else
+                {
+                    await browser.CloseAsync();
+                }
 
                 Assert.True(launcher.Process.HasExited);
             }

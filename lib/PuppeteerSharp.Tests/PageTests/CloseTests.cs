@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -24,11 +24,21 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal("Target.detachedFromTarget", exception.CloseReason);
         }
 
-        [Fact]
-        public async Task ShouldNotBeVisibleInBrowserPages()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task ShouldNotBeVisibleInBrowserPages(bool useDisposeAsync)
         {
             Assert.Contains(Page, await Browser.PagesAsync());
-            await Page.CloseAsync();
+            if (useDisposeAsync)
+            {
+                // emulates what would happen in a C#8 await using block
+                await Page.DisposeAsync();
+            }
+            else
+            {
+                await Page.CloseAsync();
+            }
             Assert.DoesNotContain(Page, await Browser.PagesAsync());
         }
 
