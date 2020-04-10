@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -35,7 +35,7 @@ namespace PuppeteerSharp
     /// ]]>
     /// </code>
     /// </example>
-    public class Browser : IDisposable
+    public class Browser : IDisposable, IAsyncDisposable
     {
         /// <summary>
         /// Time in milliseconds for chromium process to exit gracefully.
@@ -535,6 +535,17 @@ namespace PuppeteerSharp
         /// created by Puppeteer.
         /// </summary>
         public void Dispose() => _ = CloseAsync();
+
+        #endregion
+
+        #region IAsyncDisposable
+
+        /// <summary>
+        /// Closes <see cref="Connection"/> and any Chromium <see cref="Process"/> that was
+        /// created by Puppeteer.
+        /// </summary>
+        /// <returns>ValueTask</returns>
+        public ValueTask DisposeAsync() => new ValueTask(CloseAsync());
 
         #endregion
     }

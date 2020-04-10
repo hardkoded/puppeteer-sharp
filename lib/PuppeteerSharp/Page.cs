@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -35,7 +35,7 @@ namespace PuppeteerSharp
     /// </code>
     /// </example>
     [DebuggerDisplay("Page {Url}")]
-    public class Page : IDisposable
+    public class Page : IDisposable, IAsyncDisposable
     {
         private readonly TaskQueue _screenshotTaskQueue;
         private readonly EmulationManager _emulationManager;
@@ -2429,6 +2429,18 @@ namespace PuppeteerSharp
         /// calling <see cref="Dispose"/>, you must release all references to the <see cref="Page"/> so
         /// the garbage collector can reclaim the memory that the <see cref="Page"/> was occupying.</remarks>
         public void Dispose() => CloseAsync();
+        #endregion
+
+        #region IAsyncDisposable
+        /// <summary>
+        /// Releases all resource used by the <see cref="Page"/> object by calling the <see cref="CloseAsync"/> method.
+        /// </summary>
+        /// <remarks>Call <see cref="DisposeAsync"/> when you are finished using the <see cref="Page"/>. The
+        /// <see cref="DisposeAsync"/> method leaves the <see cref="Page"/> in an unusable state. After
+        /// calling <see cref="DisposeAsync"/>, you must release all references to the <see cref="Page"/> so
+        /// the garbage collector can reclaim the memory that the <see cref="Page"/> was occupying.</remarks>
+        /// <returns>ValueTask</returns>
+        public ValueTask DisposeAsync() => new ValueTask(CloseAsync());
         #endregion
     }
 }
