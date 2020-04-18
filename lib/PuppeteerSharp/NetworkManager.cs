@@ -22,10 +22,10 @@ namespace PuppeteerSharp
         private Dictionary<string, string> _extraHTTPHeaders;
         private bool _offine;
         private Credentials _credentials;
-        private List<string> _attemptedAuthentications = new List<string>();
+        private readonly List<string> _attemptedAuthentications = new List<string>();
         private bool _userRequestInterceptionEnabled;
         private bool _protocolRequestInterceptionEnabled;
-        private bool _ignoreHTTPSErrors;
+        private readonly bool _ignoreHTTPSErrors;
         private bool _userCacheDisabled;
         #endregion
 
@@ -306,7 +306,7 @@ namespace PuppeteerSharp
             if (!_requestIdToRequest.TryGetValue(e.RequestId, out var currentRequest) ||
               currentRequest.Frame == null)
             {
-                var frame = await FrameManager.GetFrameAsync(e.FrameId).ConfigureAwait(false);
+                var frame = await FrameManager.TryGetFrameAsync(e.FrameId).ConfigureAwait(false);
 
                 request = new Request(
                     _client,
@@ -371,7 +371,7 @@ namespace PuppeteerSharp
             // Request interception doesn't happen for data URLs with Network Service.
             if (_protocolRequestInterceptionEnabled && !e.Request.Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase))
             {
-                if (_requestIdToInterceptionId.TryRemove(e.RequestId, out var interceptionId))
+                if (_requestIdToInterceptionId.TryRemove(e.RequestId, out string interceptionId))
                 {
                     await OnRequestAsync(e, interceptionId).ConfigureAwait(false);
                 }
