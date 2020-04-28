@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -107,13 +107,15 @@ namespace PuppeteerSharp
         {
             try
             {
-                var url = GetDownloadURL(Platform, DownloadHost, revision);
+                string url = GetDownloadURL(Platform, DownloadHost, revision);
 
                 var client = WebRequest.Create(url);
                 client.Proxy = _webClient.Proxy;
                 client.Method = "HEAD";
-                var response = await client.GetResponseAsync().ConfigureAwait(false) as HttpWebResponse;
-                return response.StatusCode == HttpStatusCode.OK;
+                using (var response = await client.GetResponseAsync().ConfigureAwait(false) as HttpWebResponse)
+                {
+                    return response.StatusCode == HttpStatusCode.OK;
+                }
             }
             catch (WebException)
             {
@@ -177,9 +179,9 @@ namespace PuppeteerSharp
         /// <param name="revision">Revision.</param>
         public async Task<RevisionInfo> DownloadAsync(int revision)
         {
-            var url = GetDownloadURL(Platform, DownloadHost, revision);
-            var zipPath = Path.Combine(DownloadsFolder, $"download-{Platform.ToString()}-{revision}.zip");
-            var folderPath = GetFolderPath(revision);
+            string url = GetDownloadURL(Platform, DownloadHost, revision);
+            string zipPath = Path.Combine(DownloadsFolder, $"download-{Platform.ToString()}-{revision}.zip");
+            string folderPath = GetFolderPath(revision);
 
             if (new DirectoryInfo(folderPath).Exists)
             {
@@ -289,17 +291,18 @@ namespace PuppeteerSharp
 
         private void NativeExtractToDirectory(string zipPath, string folderPath)
         {
-            var process = new Process();
-
-            process.StartInfo.FileName = "unzip";
-            process.StartInfo.Arguments = $"\"{zipPath}\" -d \"{folderPath}\"";
-            process.Start();
-            process.WaitForExit();
+            using (var process = new Process())
+            {
+                process.StartInfo.FileName = "unzip";
+                process.StartInfo.Arguments = $"\"{zipPath}\" -d \"{folderPath}\"";
+                process.Start();
+                process.WaitForExit();
+            }
         }
 
         private int GetRevisionFromPath(string folderName)
         {
-            var splits = folderName.Split('-');
+            string[] splits = folderName.Split('-');
             if (splits.Length != 2)
             {
                 return 0;
@@ -315,7 +318,7 @@ namespace PuppeteerSharp
                 return 0;
             }
 
-            int.TryParse(splits[1], out var revision);
+            int.TryParse(splits[1], out int revision);
             return revision;
         }
 
