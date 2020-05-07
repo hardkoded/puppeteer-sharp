@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
@@ -296,16 +296,24 @@ namespace PuppeteerSharp
             return new Connection(url, connectionOptions.SlowMo, transport, loggerFactory);
         }
 
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
         /// <summary>
         /// Releases all resource used by the <see cref="Connection"/> object.
         /// It will raise the <see cref="Disconnected"/> event and dispose <see cref="Transport"/>.
         /// </summary>
-        /// <remarks>Call <see cref="Dispose"/> when you are finished using the <see cref="Connection"/>. The
-        /// <see cref="Dispose"/> method leaves the <see cref="Connection"/> in an unusable state.
-        /// After calling <see cref="Dispose"/>, you must release all references to the
+        /// <remarks>Call <see cref="Dispose()"/> when you are finished using the <see cref="Connection"/>. The
+        /// <see cref="Dispose()"/> method leaves the <see cref="Connection"/> in an unusable state.
+        /// After calling <see cref="Dispose()"/>, you must release all references to the
         /// <see cref="Connection"/> so the garbage collector can reclaim the memory that the
         /// <see cref="Connection"/> was occupying.</remarks>
-        public void Dispose()
+        /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
+        protected virtual void Dispose(bool disposing)
         {
             Close("Connection disposed");
             Transport.Dispose();

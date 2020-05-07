@@ -2421,14 +2421,23 @@ namespace PuppeteerSharp
         #endregion
 
         #region IDisposable
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
         /// <summary>
         /// Releases all resource used by the <see cref="Page"/> object by calling the <see cref="CloseAsync"/> method.
         /// </summary>
-        /// <remarks>Call <see cref="Dispose"/> when you are finished using the <see cref="Page"/>. The
-        /// <see cref="Dispose"/> method leaves the <see cref="Page"/> in an unusable state. After
-        /// calling <see cref="Dispose"/>, you must release all references to the <see cref="Page"/> so
+        /// <remarks>Call <see cref="Dispose()"/> when you are finished using the <see cref="Page"/>. The
+        /// <see cref="Dispose()"/> method leaves the <see cref="Page"/> in an unusable state. After
+        /// calling <see cref="Dispose()"/>, you must release all references to the <see cref="Page"/> so
         /// the garbage collector can reclaim the memory that the <see cref="Page"/> was occupying.</remarks>
-        public void Dispose() => CloseAsync();
+        /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
+        protected virtual void Dispose(bool disposing) => _ = CloseAsync();
         #endregion
 
         #region IAsyncDisposable
