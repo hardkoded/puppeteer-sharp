@@ -6,11 +6,6 @@
     <LangVersion>8.0</LangVersion>
     <ReleaseVersion>0.0.0</ReleaseVersion>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <DocumentationFile>bin\Debug\netcoreapp3.1\PuppeteerSharp.Tests.xml</DocumentationFile>
-    <NoWarn>1701;1702</NoWarn>
-  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.5.0" /> 
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
