@@ -2,7 +2,7 @@ version: 1.0.{build}
 branches:
   only:
   - master
-image: Visual Studio 2017
+image: Visual Studio 2019
 configuration: Release
 environment:
   git_access_token:
@@ -33,6 +33,6 @@ test_script:
 - cmd: >-
     cd .\lib\PuppeteerSharp.Tests
 
-    dotnet test -f netcoreapp2.2 -s test.runsettings
+    dotnet test -f netcoreapp3.1 -s test.runsettings
 cache:
   - $HOME/.nuget/packages

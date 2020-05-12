@@ -2,14 +2,14 @@ version: 1.0.{build}
 branches:
   only:
   - master
-image: Visual Studio 2017
+image: Visual Studio 2019
 configuration: Release
 clone_folder: C:\projects\puppeteer-sharp
 environment:
   git_access_token:
     secure: FxcQ9C8a/NgcQB5dFdZts6ZWEDT4zMhA4qPQAYwWc7huMmhmTIl1sbFEIaAWQMTL
   matrix:
-    - framework: net471
+    - framework: net48
 only_commits:
   files:
     - lib/PuppeteerSharp.AspNetFramework/
