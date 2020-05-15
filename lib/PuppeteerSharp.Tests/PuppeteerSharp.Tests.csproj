@@ -20,7 +20,7 @@
     <Folder Include="Issues\" />
   </ItemGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net471'">
-    <RuntimeIdentifier>win7-x64</RuntimeIdentifier>
+    <RuntimeIdentifier>win</RuntimeIdentifier>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\PuppeteerSharp.TestServer\PuppeteerSharp.TestServer.csproj" />
