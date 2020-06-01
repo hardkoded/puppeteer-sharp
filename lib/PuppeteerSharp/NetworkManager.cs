@@ -303,8 +303,9 @@ namespace PuppeteerSharp
                     redirectChain = request.RedirectChainList;
                 }
             }
-            if (!_requestIdToRequest.TryGetValue(e.RequestId, out var currentRequest) ||
-              currentRequest.Frame == null)
+            if (interceptionId != null &&
+                (!_requestIdToRequest.TryGetValue(e.RequestId, out var currentRequest) ||
+                currentRequest.Frame == null))
             {
                 var frame = await FrameManager.TryGetFrameAsync(e.FrameId).ConfigureAwait(false);
 
