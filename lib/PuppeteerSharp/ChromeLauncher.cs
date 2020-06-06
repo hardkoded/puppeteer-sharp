@@ -11,7 +11,7 @@ namespace PuppeteerSharp
     /// <summary>
     /// Launcher controls the creation of Chromium processes or the connection remote ones.
     /// </summary>
-    public class Launcher
+    public class ChromeLauncher
     {
         #region Private members
 
@@ -24,7 +24,7 @@ namespace PuppeteerSharp
         /// Initializes a new instance of the <see cref="Launcher"/> class.
         /// </summary>
         /// <param name="loggerFactory">Logger factory.</param>
-        public Launcher(ILoggerFactory loggerFactory = null) => _loggerFactory = loggerFactory ?? new LoggerFactory();
+        public ChromeLauncher(ILoggerFactory loggerFactory = null) => _loggerFactory = loggerFactory ?? new LoggerFactory();
 
         #region Properties
         /// <summary>
