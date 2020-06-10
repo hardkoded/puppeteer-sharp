@@ -27,7 +27,7 @@ namespace PuppeteerSharp
         public static string[] DefaultArgs => ChromiumProcess.DefaultArgs;
 
         /// <summary>
-        /// A path where Puppeteer expects to find bundled Chromium. Chromium might not exist there if the downloader was not used.
+        /// A path where Puppeteer expects to find bundled browser. It might not exist there if the downloader was not used.
         /// </summary>
         /// <param name="product">The browser to be used (Chrome, Firefox)</param>
         /// <returns>The path to chrome.exe</returns>
