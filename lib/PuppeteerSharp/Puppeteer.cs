@@ -29,17 +29,8 @@ namespace PuppeteerSharp
         /// <summary>
         /// A path where Puppeteer expects to find bundled browser. It might not exist there if the downloader was not used.
         /// </summary>
-        /// <param name="product">The browser to be used (Chrome, Firefox)</param>
         /// <returns>The path to chrome.exe</returns>
-        public static string GetExecutablePath(Product product = Product.Chrome)
-        {
-            if (product == Product.Firefox)
-            {
-                return FirefoxLauncher.GetExecutablePath();
-            }
-
-            return ChromeLauncher.GetExecutablePath();
-        }
+        public static string GetExecutablePath() => Launcher.GetExecutablePath();
 
         /// <summary>
         /// Returns an array of argument based on the options provided and the platform where the library is running 
@@ -69,14 +60,7 @@ namespace PuppeteerSharp
         ///   **BEWARE**: Puppeteer is only <see href="https://github.com/GoogleChrome/puppeteer/#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy">guaranteed to work</see> with the bundled Chromium, use at your own risk.
         /// </remarks>
         public static Task<Browser> LaunchAsync(LaunchOptions options, ILoggerFactory loggerFactory = null, Product product = Product.Chrome)
-        {
-            if (product == Product.Firefox)
-            {
-                return new FirefoxLauncher(loggerFactory).LaunchAsync(options);
-            }
-
-            return new ChromeLauncher(loggerFactory).LaunchAsync(options);
-        }
+            => new Launcher(loggerFactory).LaunchAsync(options, product);
             
         /// <summary>
         /// Attaches Puppeteer to an existing Chromium instance. The browser will be closed when the Browser is disposed.
@@ -85,15 +69,8 @@ namespace PuppeteerSharp
         /// <param name="loggerFactory">The logger factory</param>
         /// <param name="product">The browser to be used (Chrome, Firefox)</param>
         /// <returns>A connected browser.</returns>
-        public static Task<Browser> ConnectAsync(ConnectOptions options, ILoggerFactory loggerFactory = null, Product product = Product.Chrome)
-        {
-            if (product == Product.Firefox)
-            {
-                return new FirefoxLauncher(loggerFactory).ConnectAsync(options);
-            }
-
-            return new ChromeLauncher(loggerFactory).ConnectAsync(options);
-        }
+        public static Task<Browser> ConnectAsync(ConnectOptions options, ILoggerFactory loggerFactory = null)
+            => new Launcher(loggerFactory).ConnectAsync(options);
 
         /// <summary>
         /// Creates the browser fetcher.

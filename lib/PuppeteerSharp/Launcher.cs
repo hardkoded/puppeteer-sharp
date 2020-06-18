@@ -11,7 +11,7 @@ namespace PuppeteerSharp
     /// <summary>
     /// Launcher controls the creation of Chromium processes or the connection remote ones.
     /// </summary>
-    public class ChromeLauncher
+    public class Launcher
     {
         #region Private members
 
@@ -24,7 +24,7 @@ namespace PuppeteerSharp
         /// Initializes a new instance of the <see cref="Launcher"/> class.
         /// </summary>
         /// <param name="loggerFactory">Logger factory.</param>
-        public ChromeLauncher(ILoggerFactory loggerFactory = null) => _loggerFactory = loggerFactory ?? new LoggerFactory();
+        public Launcher(ILoggerFactory loggerFactory = null) => _loggerFactory = loggerFactory ?? new LoggerFactory();
 
         #region Properties
         /// <summary>
@@ -37,22 +37,37 @@ namespace PuppeteerSharp
         /// <summary>
         /// The method launches a browser instance with given arguments. The browser will be closed when the Browser is disposed.
         /// </summary>
-        /// <param name="options">Options for launching Chrome</param>
+        /// <param name="options">Options for launching the browser</param>
+        /// <param name="product">The browser to be used (Chrome, Firefox)</param>
         /// <returns>A connected browser.</returns>
         /// <remarks>
         /// See <a href="https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/">this article</a>
         /// for a description of the differences between Chromium and Chrome.
         /// <a href="https://chromium.googlesource.com/chromium/src/+/lkcr/docs/chromium_browser_vs_google_chrome.md">This article</a> describes some differences for Linux users.
         /// </remarks>
-        public async Task<Browser> LaunchAsync(LaunchOptions options)
+        public async Task<Browser> LaunchAsync(LaunchOptions options, Product product = Product.Chrome)
         {
             EnsureSingleLaunchOrConnect();
 
-            var chromiumExecutable = GetOrFetchChromeExecutable(options);
-            Process = new ChromiumProcess(chromiumExecutable, options, _loggerFactory);
+            var chromiumExecutable = GetOrFetchBrowserExecutable(options);
+
+            switch (product)
+            {
+                case Product.Chrome:
+                    Process = new ChromeProcess(chromiumExecutable, options, _loggerFactory);
+                    break;
+                case Product.Firefox:
+                    Process = new FirefoxProcess(chromiumExecutable, options, _loggerFactory);
+                    break;
+                default:
+                    Process = new ChromeProcess(chromiumExecutable, options, _loggerFactory);
+                    break;
+            }   
+
             try
             {
                 await Process.StartAsync().ConfigureAwait(false);
+
                 try
                 {
                     var connection = await Connection
@@ -154,24 +169,26 @@ namespace PuppeteerSharp
             _chromiumLaunched = true;
         }
 
-        private static string GetOrFetchChromeExecutable(LaunchOptions options)
+        private static string GetOrFetchBrowserExecutable(LaunchOptions options)
         {
-            var chromeExecutable = options.ExecutablePath;
-            if (string.IsNullOrEmpty(chromeExecutable))
+            var browserExecutable = options.ExecutablePath;
+
+            if (string.IsNullOrEmpty(browserExecutable))
             {
-                chromeExecutable = ResolveExecutablePath();
+                browserExecutable = ResolveExecutablePath();
             }
 
-            if (!File.Exists(chromeExecutable))
+            if (!File.Exists(browserExecutable))
             {
-                throw new FileNotFoundException("Failed to launch chrome! path to executable does not exist", chromeExecutable);
+                throw new FileNotFoundException("Failed to launch browser! path to executable does not exist", browserExecutable);
             }
-            return chromeExecutable;
+            return browserExecutable;
         }
 
         private static string ResolveExecutablePath()
         {
             var executablePath = Environment.GetEnvironmentVariable("PUPPETEER_EXECUTABLE_PATH");
+
             if (!string.IsNullOrEmpty(executablePath))
             {
                 if (!File.Exists(executablePath))
@@ -184,6 +201,7 @@ namespace PuppeteerSharp
             var browserFetcher = new BrowserFetcher();
             var revision = Environment.GetEnvironmentVariable("PUPPETEER_CHROMIUM_REVISION");
             RevisionInfo revisionInfo;
+
             if (!string.IsNullOrEmpty(revision) && int.TryParse(revision, out var revisionNumber))
             {
                 revisionInfo = browserFetcher.RevisionInfo(revisionNumber);
