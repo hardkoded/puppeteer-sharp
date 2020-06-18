@@ -17,9 +17,7 @@ namespace PuppeteerSharp
     {
         #region Instance fields
 
-        private readonly LaunchOptions _options;
         private readonly TempDirectory _tempUserDataDir;
-        private readonly ILogger _logger;
         private readonly TaskCompletionSource<string> _startCompletionSource = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
         private readonly TaskCompletionSource<bool> _exitCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         private State _currentState = State.Initial;
