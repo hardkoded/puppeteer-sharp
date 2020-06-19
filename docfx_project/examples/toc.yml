@@ -12,6 +12,8 @@
       href: ReuseChrome.md
     - name: How to test a Chrome Extension
       href: ChromeExtension.md
+    - name: How to wait for a javascript expression to be true
+    - href: Page.WaitForFunctionAsync.md
 - name: Advanced
   items:
     - name: How to log CDP communication
