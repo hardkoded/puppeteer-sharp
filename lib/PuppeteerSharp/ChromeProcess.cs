@@ -220,22 +220,6 @@ namespace PuppeteerSharp
             return chromeArguments.ToArray();
         }
 
-        private static void SetEnvVariables(IDictionary<string, string> environment, IDictionary<string, string> customEnv, IDictionary realEnv)
-        {
-            foreach (DictionaryEntry item in realEnv)
-            {
-                environment[item.Key.ToString()] = item.Value.ToString();
-            }
-
-            if (customEnv != null)
-            {
-                foreach (var item in customEnv)
-                {
-                    environment[item.Key] = item.Value;
-                }
-            }
-        }
-
         #endregion
     }
 }

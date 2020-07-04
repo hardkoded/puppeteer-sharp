@@ -276,7 +276,7 @@ namespace PuppeteerSharp
             return chromeArguments.ToArray();
         }
 
-        private static void SetEnvVariables(IDictionary<string, string> environment, IDictionary<string, string> customEnv, IDictionary realEnv)
+        protected static void SetEnvVariables(IDictionary<string, string> environment, IDictionary<string, string> customEnv, IDictionary realEnv)
         {
             foreach (DictionaryEntry item in realEnv)
             {

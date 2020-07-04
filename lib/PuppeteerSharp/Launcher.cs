@@ -38,7 +38,7 @@ namespace PuppeteerSharp
         /// The method launches a browser instance with given arguments. The browser will be closed when the Browser is disposed.
         /// </summary>
         /// <param name="options">Options for launching the browser</param>
-        /// <param name="product">The browser to be used (Chrome, Firefox)</param>
+        /// <param name="product">The browser to launch (Chrome, Firefox)</param>
         /// <returns>A connected browser.</returns>
         /// <remarks>
         /// See <a href="https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/">this article</a>
