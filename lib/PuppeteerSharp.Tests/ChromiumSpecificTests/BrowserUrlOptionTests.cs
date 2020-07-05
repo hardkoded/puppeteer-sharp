@@ -56,7 +56,7 @@ namespace PuppeteerSharp.Tests.ChromiumSpecificTests
             var originalBrowser = await Puppeteer.LaunchAsync(options);
             var browserURL = "http://127.0.0.1:2122";
 
-            await Assert.ThrowsAsync<ChromiumProcessException>(() => Puppeteer.ConnectAsync(new ConnectOptions
+            await Assert.ThrowsAsync<ProcessException>(() => Puppeteer.ConnectAsync(new ConnectOptions
             {
                 BrowserURL = browserURL
             }));

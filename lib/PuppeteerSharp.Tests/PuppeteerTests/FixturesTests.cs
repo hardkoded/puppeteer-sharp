@@ -74,7 +74,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 browserClosedTaskWrapper.SetResult(true);
             };
 
-            KillProcess(browser.ChromiumProcess.Process.Id);
+            KillProcess(browser.ProcessBase.Process.Id);
 
             await browserClosedTaskWrapper.Task;
             Assert.True(browser.IsClosed);
