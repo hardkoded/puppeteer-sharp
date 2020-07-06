@@ -8,7 +8,7 @@ environment:
   git_access_token:
     secure: FxcQ9C8a/NgcQB5dFdZts6ZWEDT4zMhA4qPQAYwWc7huMmhmTIl1sbFEIaAWQMTL
   matrix:
-    - framework: net471
+    - framework: net48
     - framework: netcoreapp2.2
 install:
 - ps: >-
