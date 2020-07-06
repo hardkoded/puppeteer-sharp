@@ -30,7 +30,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets the process, if any was created by this launcher.
         /// </summary>
-        public ProcessBase Process { get; private set; }
+        public LauncherBase Process { get; private set; }
         #endregion
 
         #region Public methods
@@ -53,8 +53,8 @@ namespace PuppeteerSharp
 
             Process = product switch
             {
-                Product.Chrome => new ChromiumProcess(executable, options, _loggerFactory),
-                Product.Firefox => new FirefoxProcess(executable, options, _loggerFactory),
+                Product.Chrome => new ChromiumLauncher(executable, options, _loggerFactory),
+                Product.Firefox => new FirefoxLauncher(executable, options, _loggerFactory),
                 _ => throw new ArgumentException("Invalid product", nameof(product))
             };
 

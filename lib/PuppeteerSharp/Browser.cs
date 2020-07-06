@@ -49,13 +49,13 @@ namespace PuppeteerSharp
         /// <param name="contextIds">The context ids></param>
         /// <param name="ignoreHTTPSErrors">The option to ignoreHTTPSErrors</param>
         /// <param name="defaultViewport">Default viewport</param>
-        /// <param name="process">The process</param>
+        /// <param name="launcher">The launcher</param>
         public Browser(
             Connection connection,
             string[] contextIds,
             bool ignoreHTTPSErrors,
             ViewPortOptions defaultViewport,
-            ProcessBase process)
+            LauncherBase launcher)
         {
             Connection = connection;
             IgnoreHTTPSErrors = ignoreHTTPSErrors;
@@ -70,7 +70,7 @@ namespace PuppeteerSharp
             Connection.Disconnected += Connection_Disconnected;
             Connection.MessageReceived += Connect_MessageReceived;
 
-            ProcessBase = process;
+            Launcher = launcher;
             _logger = Connection.LoggerFactory.CreateLogger<Browser>();
         }
 
@@ -128,7 +128,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets the spawned browser process. Returns <c>null</c> if the browser instance was created with <see cref="Puppeteer.ConnectAsync(ConnectOptions, ILoggerFactory)"/> method.
         /// </summary>
-        public Process Process => ProcessBase?.Process;
+        public Process Process => Launcher?.Process;
 
         /// <summary>
         /// Gets or Sets whether to ignore HTTPS errors during navigation
@@ -142,7 +142,7 @@ namespace PuppeteerSharp
         {
             get
             {
-                if (ProcessBase == null)
+                if (Launcher == null)
                 {
                     return Connection.IsClosed;
                 }
@@ -160,7 +160,7 @@ namespace PuppeteerSharp
         internal TaskQueue ScreenshotTaskQueue { get; set; }
         internal Connection Connection { get; }
         internal ViewPortOptions DefaultViewport { get; }
-        internal ProcessBase ProcessBase { get; set; }
+        internal LauncherBase Launcher { get; set; }
 
         /// <summary>
         /// Dafault wait time in milliseconds. Defaults to 30 seconds.
@@ -332,12 +332,12 @@ namespace PuppeteerSharp
                         ? Task.CompletedTask
                         : Connection.SendAsync("Browser.close", null);
 
-                    if (ProcessBase != null)
+                    if (Launcher != null)
                     {
                         // Notify chromium process that exit is expected, but should be enforced if it
                         // doesn't occur withing the close timeout.
                         var closeTimeout = TimeSpan.FromMilliseconds(CloseTimeout);
-                        await ProcessBase.EnsureExitAsync(closeTimeout).ConfigureAwait(false);
+                        await Launcher.EnsureExitAsync(closeTimeout).ConfigureAwait(false);
                     }
 
                     // Now we can safely await the browser close operation without risking keeping chromium
@@ -353,9 +353,9 @@ namespace PuppeteerSharp
             {
                 _logger.LogError(ex, ex.Message);
 
-                if (ProcessBase != null)
+                if (Launcher != null)
                 {
-                    await ProcessBase.KillAsync().ConfigureAwait(false);
+                    await Launcher.KillAsync().ConfigureAwait(false);
                 }
             }
 
@@ -516,9 +516,9 @@ namespace PuppeteerSharp
             string[] contextIds,
             bool ignoreHTTPSErrors,
             ViewPortOptions defaultViewPort,
-            ProcessBase process)
+            LauncherBase launcher)
         {
-            var browser = new Browser(connection, contextIds, ignoreHTTPSErrors, defaultViewPort, process);
+            var browser = new Browser(connection, contextIds, ignoreHTTPSErrors, defaultViewPort, launcher);
             await connection.SendAsync("Target.setDiscoverTargets", new TargetSetDiscoverTargetsRequest
             {
                 Discover = true

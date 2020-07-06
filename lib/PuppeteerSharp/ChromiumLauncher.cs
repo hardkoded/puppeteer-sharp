@@ -11,7 +11,7 @@ namespace PuppeteerSharp
     /// Represents a Chromium process and any associated temporary user data directory that have created
     /// by Puppeteer and therefore must be cleaned up when no longer needed.
     /// </summary>
-    public class ChromiumProcess : ProcessBase
+    public class ChromiumLauncher : LauncherBase
     {
         #region Constants
 
@@ -48,12 +48,12 @@ namespace PuppeteerSharp
         #region Constructor
 
         /// <summary>
-        /// Creates a new <see cref="ChromiumProcess"/> instance.
+        /// Creates a new <see cref="ChromiumLauncher"/> instance.
         /// </summary>
         /// <param name="executable">Full path of executable.</param>
         /// <param name="options">Options for launching Chromium.</param>
         /// <param name="loggerFactory">Logger factory</param>
-        public ChromiumProcess(string executable, LaunchOptions options, ILoggerFactory loggerFactory)
+        public ChromiumLauncher(string executable, LaunchOptions options, ILoggerFactory loggerFactory)
             : base(executable, options, loggerFactory)
         {
             List<string> chromiumArgs;

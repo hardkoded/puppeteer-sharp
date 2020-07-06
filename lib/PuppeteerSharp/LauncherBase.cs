@@ -16,7 +16,7 @@ namespace PuppeteerSharp
     /// Represents a Base process and any associated temporary user data directory that have created
     /// by Puppeteer and therefore must be cleaned up when no longer needed.
     /// </summary>
-    public class ProcessBase : IDisposable
+    public class LauncherBase : IDisposable
     {
         #region Static fields
 
@@ -37,16 +37,16 @@ namespace PuppeteerSharp
         #region Constructor
 
         /// <summary>
-        /// Creates a new <see cref="ProcessBase"/> instance.
+        /// Creates a new <see cref="LauncherBase"/> instance.
         /// </summary>
         /// <param name="executable">Full path of executable.</param>
         /// <param name="options">Options for launching Base.</param>
         /// <param name="loggerFactory">Logger factory</param>
-        public ProcessBase(string executable, LaunchOptions options, ILoggerFactory loggerFactory)
+        public LauncherBase(string executable, LaunchOptions options, ILoggerFactory loggerFactory)
         {
             _options = options;
             _logger = options.LogProcess
-                ? loggerFactory.CreateLogger<ProcessBase>()
+                ? loggerFactory.CreateLogger<LauncherBase>()
                 : null;
 
             Process = new Process
@@ -72,7 +72,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Finalizer.
         /// </summary>
-        ~ProcessBase()
+        ~LauncherBase()
         {
             Dispose(false);
         }
@@ -290,7 +290,7 @@ namespace PuppeteerSharp
             /// <param name="fromState">The state from which state transition takes place</param>
             /// <returns>Returns <c>true</c> if transition is successful, or <c>false</c> if transition
             /// cannot be made because current state does not equal <paramref name="fromState"/>.</returns>
-            protected bool TryEnter(ProcessBase p, State fromState)
+            protected bool TryEnter(LauncherBase p, State fromState)
             {
                 if (Interlocked.CompareExchange(ref p._currentState, this, fromState) == fromState)
                 {
@@ -305,7 +305,7 @@ namespace PuppeteerSharp
             /// Notifies that state machine is about to transition to another state.
             /// </summary>
             /// <param name="p">The Base process</param>
-            protected virtual void Leave(ProcessBase p)
+            protected virtual void Leave(LauncherBase p)
             {
             }
 
@@ -314,7 +314,7 @@ namespace PuppeteerSharp
             /// </summary>
             /// <param name="p">The Base process</param>
             /// <returns></returns>
-            public virtual Task StartAsync(ProcessBase p) => Task.FromException(InvalidOperation("start"));
+            public virtual Task StartAsync(LauncherBase p) => Task.FromException(InvalidOperation("start"));
 
             /// <summary>
             /// Handles process exit request.
@@ -322,27 +322,27 @@ namespace PuppeteerSharp
             /// <param name="p">The Base process</param>
             /// <param name="timeout">The maximum waiting time for a graceful process exit.</param>
             /// <returns></returns>
-            public virtual Task ExitAsync(ProcessBase p, TimeSpan timeout) => Task.FromException(InvalidOperation("exit"));
+            public virtual Task ExitAsync(LauncherBase p, TimeSpan timeout) => Task.FromException(InvalidOperation("exit"));
 
             /// <summary>
             /// Handles process kill request.
             /// </summary>
             /// <param name="p">The Base process</param>
             /// <returns></returns>
-            public virtual Task KillAsync(ProcessBase p) => Task.FromException(InvalidOperation("kill"));
+            public virtual Task KillAsync(LauncherBase p) => Task.FromException(InvalidOperation("kill"));
 
             /// <summary>
             /// Handles wait for process exit request.
             /// </summary>
             /// <param name="p">The Base process</param>
             /// <returns></returns>
-            public virtual Task WaitForExitAsync(ProcessBase p) => p._exitCompletionSource.Task;
+            public virtual Task WaitForExitAsync(LauncherBase p) => p._exitCompletionSource.Task;
 
             /// <summary>
             /// Handles disposal of process and temporary user directory
             /// </summary>
             /// <param name="p"></param>
-            public virtual void Dispose(ProcessBase p) => Disposed.EnterFrom(p, this);
+            public virtual void Dispose(LauncherBase p) => Disposed.EnterFrom(p, this);
 
             /// <inheritdoc />
             public override string ToString()
@@ -358,7 +358,7 @@ namespace PuppeteerSharp
             /// Kills process if it is still alive.
             /// </summary>
             /// <param name="p"></param>
-            private static void Kill(ProcessBase p)
+            private static void Kill(LauncherBase p)
             {
                 try
                 {
@@ -379,26 +379,26 @@ namespace PuppeteerSharp
 
             private class InitialState : State
             {
-                public override Task StartAsync(ProcessBase p) => Starting.EnterFromAsync(p, this);
+                public override Task StartAsync(LauncherBase p) => Starting.EnterFromAsync(p, this);
 
-                public override Task ExitAsync(ProcessBase p, TimeSpan timeout)
+                public override Task ExitAsync(LauncherBase p, TimeSpan timeout)
                 {
                     Exited.EnterFrom(p, this);
                     return Task.CompletedTask;
                 }
 
-                public override Task KillAsync(ProcessBase p)
+                public override Task KillAsync(LauncherBase p)
                 {
                     Exited.EnterFrom(p, this);
                     return Task.CompletedTask;
                 }
 
-                public override Task WaitForExitAsync(ProcessBase p) => Task.FromException(InvalidOperation("wait for exit"));
+                public override Task WaitForExitAsync(LauncherBase p) => Task.FromException(InvalidOperation("wait for exit"));
             }
 
             private class StartingState : State
             {
-                public Task EnterFromAsync(ProcessBase p, State fromState)
+                public Task EnterFromAsync(LauncherBase p, State fromState)
                 {
                     if (!TryEnter(p, fromState))
                     {
@@ -410,19 +410,19 @@ namespace PuppeteerSharp
                     return StartCoreAsync(p);
                 }
 
-                public override Task StartAsync(ProcessBase p) => p._startCompletionSource.Task;
+                public override Task StartAsync(LauncherBase p) => p._startCompletionSource.Task;
 
-                public override Task ExitAsync(ProcessBase p, TimeSpan timeout) => Exiting.EnterFromAsync(p, this, timeout);
+                public override Task ExitAsync(LauncherBase p, TimeSpan timeout) => Exiting.EnterFromAsync(p, this, timeout);
 
-                public override Task KillAsync(ProcessBase p) => Killing.EnterFromAsync(p, this);
+                public override Task KillAsync(LauncherBase p) => Killing.EnterFromAsync(p, this);
 
-                public override void Dispose(ProcessBase p)
+                public override void Dispose(LauncherBase p)
                 {
                     p._startCompletionSource.TrySetException(new ObjectDisposedException(p.ToString()));
                     base.Dispose(p);
                 }
 
-                private async Task StartCoreAsync(ProcessBase p)
+                private async Task StartCoreAsync(LauncherBase p)
                 {
                     var output = new StringBuilder();
 
@@ -484,7 +484,7 @@ namespace PuppeteerSharp
 
             private class StartedState : State
             {
-                public Task EnterFromAsync(ProcessBase p, State fromState)
+                public Task EnterFromAsync(LauncherBase p, State fromState)
                 {
                     if (TryEnter(p, fromState))
                     {
@@ -495,16 +495,16 @@ namespace PuppeteerSharp
                     return Task.CompletedTask;
                 }
 
-                protected override void Leave(ProcessBase p)
+                protected override void Leave(LauncherBase p)
                     => LogProcessCount(p, Interlocked.Decrement(ref _processCount));
 
-                public override Task StartAsync(ProcessBase p) => Task.CompletedTask;
+                public override Task StartAsync(LauncherBase p) => Task.CompletedTask;
 
-                public override Task ExitAsync(ProcessBase p, TimeSpan timeout) => Exiting.EnterFromAsync(p, this, timeout);
+                public override Task ExitAsync(LauncherBase p, TimeSpan timeout) => Exiting.EnterFromAsync(p, this, timeout);
 
-                public override Task KillAsync(ProcessBase p) => Killing.EnterFromAsync(p, this);
+                public override Task KillAsync(LauncherBase p) => Killing.EnterFromAsync(p, this);
 
-                private static void LogProcessCount(ProcessBase p, int processCount)
+                private static void LogProcessCount(LauncherBase p, int processCount)
                 {
                     try
                     {
@@ -519,10 +519,10 @@ namespace PuppeteerSharp
 
             private class ExitingState : State
             {
-                public Task EnterFromAsync(ProcessBase p, State fromState, TimeSpan timeout)
+                public Task EnterFromAsync(LauncherBase p, State fromState, TimeSpan timeout)
                     => !TryEnter(p, fromState) ? p._currentState.ExitAsync(p, timeout) : ExitAsync(p, timeout);
 
-                public override async Task ExitAsync(ProcessBase p, TimeSpan timeout)
+                public override async Task ExitAsync(LauncherBase p, TimeSpan timeout)
                 {
                     var waitForExitTask = WaitForExitAsync(p);
                     await waitForExitTask.WithTimeout(
@@ -535,12 +535,12 @@ namespace PuppeteerSharp
                         CancellationToken.None).ConfigureAwait(false);
                 }
 
-                public override Task KillAsync(ProcessBase p) => Killing.EnterFromAsync(p, this);
+                public override Task KillAsync(LauncherBase p) => Killing.EnterFromAsync(p, this);
             }
 
             private class KillingState : State
             {
-                public async Task EnterFromAsync(ProcessBase p, State fromState)
+                public async Task EnterFromAsync(LauncherBase p, State fromState)
                 {
                     if (!TryEnter(p, fromState))
                     {
@@ -565,14 +565,14 @@ namespace PuppeteerSharp
                     await WaitForExitAsync(p).ConfigureAwait(false);
                 }
 
-                public override Task ExitAsync(ProcessBase p, TimeSpan timeout) => WaitForExitAsync(p);
+                public override Task ExitAsync(LauncherBase p, TimeSpan timeout) => WaitForExitAsync(p);
 
-                public override Task KillAsync(ProcessBase p) => WaitForExitAsync(p);
+                public override Task KillAsync(LauncherBase p) => WaitForExitAsync(p);
             }
 
             private class ExitedState : State
             {
-                public void EnterFrom(ProcessBase p, State fromState)
+                public void EnterFrom(LauncherBase p, State fromState)
                 {
                     while (!TryEnter(p, fromState))
                     {
@@ -590,16 +590,16 @@ namespace PuppeteerSharp
                     p.TempUserDataDir?.Dispose();
                 }
 
-                public override Task ExitAsync(ProcessBase p, TimeSpan timeout) => Task.CompletedTask;
+                public override Task ExitAsync(LauncherBase p, TimeSpan timeout) => Task.CompletedTask;
 
-                public override Task KillAsync(ProcessBase p) => Task.CompletedTask;
+                public override Task KillAsync(LauncherBase p) => Task.CompletedTask;
 
-                public override Task WaitForExitAsync(ProcessBase p) => Task.CompletedTask;
+                public override Task WaitForExitAsync(LauncherBase p) => Task.CompletedTask;
             }
 
             private class DisposedState : State
             {
-                public void EnterFrom(ProcessBase p, State fromState)
+                public void EnterFrom(LauncherBase p, State fromState)
                 {
                     if (!TryEnter(p, fromState))
                     {
@@ -616,13 +616,13 @@ namespace PuppeteerSharp
                     }
                 }
 
-                public override Task StartAsync(ProcessBase p) => throw new ObjectDisposedException(p.ToString());
+                public override Task StartAsync(LauncherBase p) => throw new ObjectDisposedException(p.ToString());
 
-                public override Task ExitAsync(ProcessBase p, TimeSpan timeout) => throw new ObjectDisposedException(p.ToString());
+                public override Task ExitAsync(LauncherBase p, TimeSpan timeout) => throw new ObjectDisposedException(p.ToString());
 
-                public override Task KillAsync(ProcessBase p) => throw new ObjectDisposedException(p.ToString());
+                public override Task KillAsync(LauncherBase p) => throw new ObjectDisposedException(p.ToString());
 
-                public override void Dispose(ProcessBase p)
+                public override void Dispose(LauncherBase p)
                 {
                     // Nothing to do
                 }

@@ -11,7 +11,7 @@ namespace PuppeteerSharp
     /// Represents a Firefox process and any associated temporary user data directory that have created
     /// by Puppeteer and therefore must be cleaned up when no longer needed.
     /// </summary>
-    public class FirefoxProcess : ProcessBase
+    public class FirefoxLauncher : LauncherBase
     {
         #region Constants
 
@@ -26,12 +26,12 @@ namespace PuppeteerSharp
         #region Constructor
 
         /// <summary>
-        /// Creates a new <see cref="FirefoxProcess"/> instance.
+        /// Creates a new <see cref="FirefoxLauncher"/> instance.
         /// </summary>
         /// <param name="executable">Full path of executable.</param>
         /// <param name="options">Options for launching Firefox.</param>
         /// <param name="loggerFactory">Logger factory</param>
-        public FirefoxProcess(string executable, LaunchOptions options, ILoggerFactory loggerFactory)
+        public FirefoxLauncher(string executable, LaunchOptions options, ILoggerFactory loggerFactory)
             : base(executable, options, loggerFactory)
         {
             List<string> firefoxArgs;
