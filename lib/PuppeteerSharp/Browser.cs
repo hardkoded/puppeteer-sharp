@@ -38,7 +38,7 @@ namespace PuppeteerSharp
     public class Browser : IDisposable, IAsyncDisposable
     {
         /// <summary>
-        /// Time in milliseconds for chromium process to exit gracefully.
+        /// Time in milliseconds for process to exit gracefully.
         /// </summary>
         private const int CloseTimeout = 5000;
 
@@ -263,7 +263,7 @@ namespace PuppeteerSharp
             => (await Connection.SendAsync<BrowserGetVersionResponse>("Browser.getVersion").ConfigureAwait(false)).UserAgent;
 
         /// <summary>
-        /// Disconnects Puppeteer from the browser, but leaves the Chromium process running. After calling <see cref="Disconnect"/>, the browser object is considered disposed and cannot be used anymore
+        /// Disconnects Puppeteer from the browser, but leaves the process running. After calling <see cref="Disconnect"/>, the browser object is considered disposed and cannot be used anymore
         /// </summary>
         public void Disconnect() => Connection.Dispose();
 
@@ -327,14 +327,14 @@ namespace PuppeteerSharp
                 try
                 {
                     // Initiate graceful browser close operation but don't await it just yet,
-                    // because we want to ensure chromium process shutdown first.
+                    // because we want to ensure process shutdown first.
                     var browserCloseTask = Connection.IsClosed
                         ? Task.CompletedTask
                         : Connection.SendAsync("Browser.close", null);
 
                     if (Launcher != null)
                     {
-                        // Notify chromium process that exit is expected, but should be enforced if it
+                        // Notify process that exit is expected, but should be enforced if it
                         // doesn't occur withing the close timeout.
                         var closeTimeout = TimeSpan.FromMilliseconds(CloseTimeout);
                         await Launcher.EnsureExitAsync(closeTimeout).ConfigureAwait(false);

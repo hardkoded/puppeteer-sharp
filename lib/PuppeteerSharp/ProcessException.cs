@@ -3,7 +3,7 @@
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// Chromium process exception thrown by <see cref="Launcher"/>.
+    /// process exception thrown by <see cref="Launcher"/>.
     /// </summary>
     #pragma warning disable 612, 618
     public class ProcessException : ChromiumProcessException
