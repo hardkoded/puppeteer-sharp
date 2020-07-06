@@ -5,6 +5,7 @@ namespace PuppeteerSharp
     /// <summary>
     /// Chromium process exception thrown by <see cref="Launcher"/>.
     /// </summary>
+    [Obsolete("ProcessException will be thrown")]
     public class ChromiumProcessException : PuppeteerException
     {
         /// <summary>
