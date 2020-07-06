@@ -5,7 +5,9 @@ namespace PuppeteerSharp
     /// <summary>
     /// Chromium process exception thrown by <see cref="Launcher"/>.
     /// </summary>
+    #pragma warning disable 612, 618
     public class ProcessException : ChromiumProcessException
+    #pragma warning restore 612, 618
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ProcessException"/> class.
