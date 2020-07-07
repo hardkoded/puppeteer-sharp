@@ -13,43 +13,11 @@ using PuppeteerSharp.Helpers;
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// Represents a Chromium process and any associated temporary user data directory that have created
+    /// Represents a Base process and any associated temporary user data directory that have created
     /// by Puppeteer and therefore must be cleaned up when no longer needed.
     /// </summary>
-    public class ChromiumProcess : IDisposable
+    public class LauncherBase : IDisposable
     {
-        #region Constants
-
-        internal static readonly string[] DefaultArgs = {
-            "--disable-background-networking",
-            "--enable-features=NetworkService,NetworkServiceInProcess",
-            "--disable-background-timer-throttling",
-            "--disable-backgrounding-occluded-windows",
-            "--disable-breakpad",
-            "--disable-client-side-phishing-detection",
-            "--disable-component-extensions-with-background-pages",
-            "--disable-default-apps",
-            "--disable-dev-shm-usage",
-            "--disable-extensions",
-            "--disable-features=TranslateUI",
-            "--disable-hang-monitor",
-            "--disable-ipc-flooding-protection",
-            "--disable-popup-blocking",
-            "--disable-prompt-on-repost",
-            "--disable-renderer-backgrounding",
-            "--disable-sync",
-            "--force-color-profile=srgb",
-            "--metrics-recording-only",
-            "--no-first-run",
-            "--enable-automation",
-            "--password-store=basic",
-            "--use-mock-keychain"
-        };
-
-        private const string UserDataDirArgument = "--user-data-dir";
-
-        #endregion
-
         #region Static fields
 
         private static int _processCount;
@@ -59,7 +27,6 @@ namespace PuppeteerSharp
         #region Instance fields
 
         private readonly LaunchOptions _options;
-        private readonly TempDirectory _tempUserDataDir;
         private readonly ILogger _logger;
         private readonly TaskCompletionSource<string> _startCompletionSource = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
         private readonly TaskCompletionSource<bool> _exitCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -70,28 +37,24 @@ namespace PuppeteerSharp
         #region Constructor
 
         /// <summary>
-        /// Creates a new <see cref="ChromiumProcess"/> instance.
+        /// Creates a new <see cref="LauncherBase"/> instance.
         /// </summary>
-        /// <param name="chromiumExecutable">Full path of Chromium executable.</param>
-        /// <param name="options">Options for launching Chromium.</param>
+        /// <param name="executable">Full path of executable.</param>
+        /// <param name="options">Options for launching Base.</param>
         /// <param name="loggerFactory">Logger factory</param>
-        public ChromiumProcess(string chromiumExecutable, LaunchOptions options, ILoggerFactory loggerFactory)
+        public LauncherBase(string executable, LaunchOptions options, ILoggerFactory loggerFactory)
         {
             _options = options;
             _logger = options.LogProcess
-                ? loggerFactory.CreateLogger<ChromiumProcess>()
+                ? loggerFactory.CreateLogger<LauncherBase>()
                 : null;
-
-            List<string> chromiumArgs;
-            (chromiumArgs, _tempUserDataDir) = PrepareChromiumArgs(options);
 
             Process = new Process
             {
                 EnableRaisingEvents = true
             };
             Process.StartInfo.UseShellExecute = false;
-            Process.StartInfo.FileName = chromiumExecutable;
-            Process.StartInfo.Arguments = string.Join(" ", chromiumArgs);
+            Process.StartInfo.FileName = executable;
             Process.StartInfo.RedirectStandardError = true;
 
             SetEnvVariables(Process.StartInfo.Environment, options.Env, Environment.GetEnvironmentVariables());
@@ -109,7 +72,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Finalizer.
         /// </summary>
-        ~ChromiumProcess()
+        ~LauncherBase()
         {
             Dispose(false);
         }
@@ -122,7 +85,7 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Disposes Chromium process and any temporary user directory.
+        /// Disposes Base process and any temporary user directory.
         /// </summary>
         /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
         protected virtual void Dispose(bool disposing) => _currentState.Dispose(this);
@@ -132,40 +95,47 @@ namespace PuppeteerSharp
         #region Properties
 
         /// <summary>
-        /// Gets Chromium process details.
+        /// Gets Base process details.
         /// </summary>
         public Process Process { get; }
 
         /// <summary>
-        /// Gets Chromium endpoint.
+        /// Gets Base endpoint.
         /// </summary>
         public string EndPoint => _startCompletionSource.Task.IsCompleted
             ? _startCompletionSource.Task.Result
             : null;
 
         /// <summary>
-        /// Indicates whether Chromium process is exiting.
+        /// Indicates whether Base process is exiting.
         /// </summary>
         public bool IsExiting => _currentState.IsExiting;
 
         /// <summary>
-        /// Indicates whether Chromium process has exited.
+        /// Indicates whether Base process has exited.
         /// </summary>
         public bool HasExited => _currentState.IsExited;
+
+        internal TempDirectory TempUserDataDir { get; set; }
+
+        /// <summary>
+        /// Gets Base process current state.
+        /// </summary>
+        protected State CurrentState { get => _currentState; }
 
         #endregion
 
         #region Public methods
 
         /// <summary>
-        /// Asynchronously starts Chromium process.
+        /// Asynchronously starts Base process.
         /// </summary>
         /// <returns></returns>
         public Task StartAsync() => _currentState.StartAsync(this);
 
         /// <summary>
-        /// Asynchronously waits for graceful Chromium process exit within a given timeout period.
-        /// Kills the Chromium process if it has not exited within this period.
+        /// Asynchronously waits for graceful Base process exit within a given timeout period.
+        /// Kills the Base process if it has not exited within this period.
         /// </summary>
         /// <param name="timeout">The maximum waiting time for a graceful process exit.</param>
         /// <returns></returns>
@@ -174,22 +144,22 @@ namespace PuppeteerSharp
             : _currentState.KillAsync(this);
 
         /// <summary>
-        /// Asynchronously kills Chromium process.
+        /// Asynchronously kills Base process.
         /// </summary>
         /// <returns></returns>
         public Task KillAsync() => _currentState.KillAsync(this);
 
         /// <summary>
-        /// Waits for Chromium process exit within a given timeout.
+        /// Waits for Base process exit within a given timeout.
         /// </summary>
         /// <param name="timeout">The maximum wait period.</param>
-        /// <returns><c>true</c> if Chromium process has exited within the given <paramref name="timeout"/>,
+        /// <returns><c>true</c> if Base process has exited within the given <paramref name="timeout"/>,
         /// or <c>false</c> otherwise.</returns>
         public async Task<bool> WaitForExitAsync(TimeSpan? timeout)
         {
             if (timeout.HasValue)
             {
-                var taskCompleted = true;
+                bool taskCompleted = true;
                 await _exitCompletionSource.Task.WithTimeout(
                     () =>
                     {
@@ -202,81 +172,17 @@ namespace PuppeteerSharp
             return true;
         }
 
-        /// <inheritdoc />
-        public override string ToString() => $"Chromium process; EndPoint={EndPoint}; State={_currentState}";
-
         #endregion
 
         #region Private methods
 
-        private static (List<string> chromiumArgs, TempDirectory tempUserDataDir) PrepareChromiumArgs(LaunchOptions options)
-        {
-
-            var chromiumArgs = new List<string>();
-
-            if (!options.IgnoreDefaultArgs)
-            {
-                chromiumArgs.AddRange(GetDefaultArgs(options));
-            }
-            else if (options.IgnoredDefaultArgs?.Length > 0)
-            {
-                chromiumArgs.AddRange(GetDefaultArgs(options).Except(options.IgnoredDefaultArgs));
-            }
-            else
-            {
-                chromiumArgs.AddRange(options.Args);
-            }
-
-            TempDirectory tempUserDataDir = null;
-
-            if (!chromiumArgs.Any(argument => argument.StartsWith("--remote-debugging-", StringComparison.Ordinal)))
-            {
-                chromiumArgs.Add("--remote-debugging-port=0");
-            }
-
-            var userDataDirOption = chromiumArgs.FirstOrDefault(i => i.StartsWith(UserDataDirArgument, StringComparison.Ordinal));
-            if (string.IsNullOrEmpty(userDataDirOption))
-            {
-                tempUserDataDir = new TempDirectory();
-                chromiumArgs.Add($"{UserDataDirArgument}={tempUserDataDir.Path.Quote()}");
-            }
-
-            return (chromiumArgs, tempUserDataDir);
-        }
-
-        internal static string[] GetDefaultArgs(LaunchOptions options)
-        {
-            var chromeArguments = new List<string>(DefaultArgs);
-
-            if (!string.IsNullOrEmpty(options.UserDataDir))
-            {
-                chromeArguments.Add($"{UserDataDirArgument}={options.UserDataDir.Quote()}");
-            }
-
-            if (options.Devtools)
-            {
-                chromeArguments.Add("--auto-open-devtools-for-tabs");
-            }
-
-            if (options.Headless)
-            {
-                chromeArguments.AddRange(new[] {
-                    "--headless",
-                    "--hide-scrollbars",
-                    "--mute-audio"
-                });
-            }
-
-            if (options.Args.All(arg => arg.StartsWith("-", StringComparison.Ordinal)))
-            {
-                chromeArguments.Add("about:blank");
-            }
-
-            chromeArguments.AddRange(options.Args);
-            return chromeArguments.ToArray();
-        }
-
-        private static void SetEnvVariables(IDictionary<string, string> environment, IDictionary<string, string> customEnv, IDictionary realEnv)
+        /// <summary>
+        /// Set Env Variables
+        /// </summary>
+        /// <param name="environment">The environment.</param>
+        /// <param name="customEnv">The customEnv.</param>
+        /// <param name="realEnv">The realEnv.</param>
+        protected static void SetEnvVariables(IDictionary<string, string> environment, IDictionary<string, string> customEnv, IDictionary realEnv)
         {
             foreach (DictionaryEntry item in realEnv)
             {
@@ -297,7 +203,7 @@ namespace PuppeteerSharp
         #region State machine
 
         /// <summary>
-        /// Represents state machine for Chromium process instances. The happy path runs along the
+        /// Represents state machine for Base process instances. The happy path runs along the
         /// following state transitions: <see cref="Initial"/>
         /// -> <see cref="Starting"/>
         /// -> <see cref="Started"/>
@@ -345,10 +251,13 @@ namespace PuppeteerSharp
         /// </code>
         /// </para>
         /// </remarks>
-        private abstract class State
+        protected abstract class State
         {
             #region Predefined states
 
+            /// <summary>
+            /// Set initial state.
+            /// </summary>
             public static readonly State Initial = new InitialState();
             private static readonly StartingState Starting = new StartingState();
             private static readonly StartedState Started = new StartedState();
@@ -361,7 +270,13 @@ namespace PuppeteerSharp
 
             #region Properties
 
+            /// <summary>
+            /// Get If process exists.
+            /// </summary>
             public bool IsExiting => this == Killing || this == Exiting;
+            /// <summary>
+            /// Get If process is exited.
+            /// </summary>
             public bool IsExited => this == Exited || this == Disposed;
 
             #endregion
@@ -371,11 +286,11 @@ namespace PuppeteerSharp
             /// <summary>
             /// Attempts thread-safe transitions from a given state to this state.
             /// </summary>
-            /// <param name="p">The Chromium process</param>
+            /// <param name="p">The Base process</param>
             /// <param name="fromState">The state from which state transition takes place</param>
             /// <returns>Returns <c>true</c> if transition is successful, or <c>false</c> if transition
             /// cannot be made because current state does not equal <paramref name="fromState"/>.</returns>
-            protected bool TryEnter(ChromiumProcess p, State fromState)
+            protected bool TryEnter(LauncherBase p, State fromState)
             {
                 if (Interlocked.CompareExchange(ref p._currentState, this, fromState) == fromState)
                 {
@@ -389,49 +304,50 @@ namespace PuppeteerSharp
             /// <summary>
             /// Notifies that state machine is about to transition to another state.
             /// </summary>
-            /// <param name="p">The Chromium process</param>
-            protected virtual void Leave(ChromiumProcess p)
+            /// <param name="p">The Base process</param>
+            protected virtual void Leave(LauncherBase p)
             {
             }
 
             /// <summary>
             /// Handles process start request.
             /// </summary>
-            /// <param name="p">The Chromium process</param>
+            /// <param name="p">The Base process</param>
             /// <returns></returns>
-            public virtual Task StartAsync(ChromiumProcess p) => Task.FromException(InvalidOperation("start"));
+            public virtual Task StartAsync(LauncherBase p) => Task.FromException(InvalidOperation("start"));
 
             /// <summary>
             /// Handles process exit request.
             /// </summary>
-            /// <param name="p">The Chromium process</param>
+            /// <param name="p">The Base process</param>
             /// <param name="timeout">The maximum waiting time for a graceful process exit.</param>
             /// <returns></returns>
-            public virtual Task ExitAsync(ChromiumProcess p, TimeSpan timeout) => Task.FromException(InvalidOperation("exit"));
+            public virtual Task ExitAsync(LauncherBase p, TimeSpan timeout) => Task.FromException(InvalidOperation("exit"));
 
             /// <summary>
             /// Handles process kill request.
             /// </summary>
-            /// <param name="p">The Chromium process</param>
+            /// <param name="p">The Base process</param>
             /// <returns></returns>
-            public virtual Task KillAsync(ChromiumProcess p) => Task.FromException(InvalidOperation("kill"));
+            public virtual Task KillAsync(LauncherBase p) => Task.FromException(InvalidOperation("kill"));
 
             /// <summary>
             /// Handles wait for process exit request.
             /// </summary>
-            /// <param name="p">The Chromium process</param>
+            /// <param name="p">The Base process</param>
             /// <returns></returns>
-            public virtual Task WaitForExitAsync(ChromiumProcess p) => p._exitCompletionSource.Task;
+            public virtual Task WaitForExitAsync(LauncherBase p) => p._exitCompletionSource.Task;
 
             /// <summary>
             /// Handles disposal of process and temporary user directory
             /// </summary>
             /// <param name="p"></param>
-            public virtual void Dispose(ChromiumProcess p) => Disposed.EnterFrom(p, this);
+            public virtual void Dispose(LauncherBase p) => Disposed.EnterFrom(p, this);
 
+            /// <inheritdoc />
             public override string ToString()
             {
-                var name = GetType().Name;
+                string name = GetType().Name;
                 return name.Substring(0, name.Length - "State".Length);
             }
 
@@ -442,7 +358,7 @@ namespace PuppeteerSharp
             /// Kills process if it is still alive.
             /// </summary>
             /// <param name="p"></param>
-            private static void Kill(ChromiumProcess p)
+            private static void Kill(LauncherBase p)
             {
                 try
                 {
@@ -463,26 +379,26 @@ namespace PuppeteerSharp
 
             private class InitialState : State
             {
-                public override Task StartAsync(ChromiumProcess p) => Starting.EnterFromAsync(p, this);
+                public override Task StartAsync(LauncherBase p) => Starting.EnterFromAsync(p, this);
 
-                public override Task ExitAsync(ChromiumProcess p, TimeSpan timeout)
+                public override Task ExitAsync(LauncherBase p, TimeSpan timeout)
                 {
                     Exited.EnterFrom(p, this);
                     return Task.CompletedTask;
                 }
 
-                public override Task KillAsync(ChromiumProcess p)
+                public override Task KillAsync(LauncherBase p)
                 {
                     Exited.EnterFrom(p, this);
                     return Task.CompletedTask;
                 }
 
-                public override Task WaitForExitAsync(ChromiumProcess p) => Task.FromException(InvalidOperation("wait for exit"));
+                public override Task WaitForExitAsync(LauncherBase p) => Task.FromException(InvalidOperation("wait for exit"));
             }
 
             private class StartingState : State
             {
-                public Task EnterFromAsync(ChromiumProcess p, State fromState)
+                public Task EnterFromAsync(LauncherBase p, State fromState)
                 {
                     if (!TryEnter(p, fromState))
                     {
@@ -494,19 +410,19 @@ namespace PuppeteerSharp
                     return StartCoreAsync(p);
                 }
 
-                public override Task StartAsync(ChromiumProcess p) => p._startCompletionSource.Task;
+                public override Task StartAsync(LauncherBase p) => p._startCompletionSource.Task;
 
-                public override Task ExitAsync(ChromiumProcess p, TimeSpan timeout) => Exiting.EnterFromAsync(p, this, timeout);
+                public override Task ExitAsync(LauncherBase p, TimeSpan timeout) => Exiting.EnterFromAsync(p, this, timeout);
 
-                public override Task KillAsync(ChromiumProcess p) => Killing.EnterFromAsync(p, this);
+                public override Task KillAsync(LauncherBase p) => Killing.EnterFromAsync(p, this);
 
-                public override void Dispose(ChromiumProcess p)
+                public override void Dispose(LauncherBase p)
                 {
                     p._startCompletionSource.TrySetException(new ObjectDisposedException(p.ToString()));
                     base.Dispose(p);
                 }
 
-                private async Task StartCoreAsync(ChromiumProcess p)
+                private async Task StartCoreAsync(LauncherBase p)
                 {
                     var output = new StringBuilder();
 
@@ -524,7 +440,7 @@ namespace PuppeteerSharp
                     }
 
                     void OnProcessExitedWhileStarting(object sender, EventArgs e)
-                        => p._startCompletionSource.TrySetException(new ChromiumProcessException($"Failed to launch Chromium! {output}"));
+                        => p._startCompletionSource.TrySetException(new ProcessException($"Failed to launch Base! {output}"));
                     void OnProcessExited(object sender, EventArgs e) => Exited.EnterFrom(p, p._currentState);
 
                     p.Process.ErrorDataReceived += OnProcessDataReceivedWhileStarting;
@@ -538,12 +454,12 @@ namespace PuppeteerSharp
 
                         p.Process.BeginErrorReadLine();
 
-                        var timeout = p._options.Timeout;
+                        int timeout = p._options.Timeout;
                         if (timeout > 0)
                         {
                             cts = new CancellationTokenSource(timeout);
                             cts.Token.Register(() => p._startCompletionSource.TrySetException(
-                                new ChromiumProcessException($"Timed out after {timeout} ms while trying to connect to Chromium!")));
+                                new ProcessException($"Timed out after {timeout} ms while trying to connect to Base!")));
                         }
 
                         try
@@ -568,7 +484,7 @@ namespace PuppeteerSharp
 
             private class StartedState : State
             {
-                public Task EnterFromAsync(ChromiumProcess p, State fromState)
+                public Task EnterFromAsync(LauncherBase p, State fromState)
                 {
                     if (TryEnter(p, fromState))
                     {
@@ -579,16 +495,16 @@ namespace PuppeteerSharp
                     return Task.CompletedTask;
                 }
 
-                protected override void Leave(ChromiumProcess p)
+                protected override void Leave(LauncherBase p)
                     => LogProcessCount(p, Interlocked.Decrement(ref _processCount));
 
-                public override Task StartAsync(ChromiumProcess p) => Task.CompletedTask;
+                public override Task StartAsync(LauncherBase p) => Task.CompletedTask;
 
-                public override Task ExitAsync(ChromiumProcess p, TimeSpan timeout) => Exiting.EnterFromAsync(p, this, timeout);
+                public override Task ExitAsync(LauncherBase p, TimeSpan timeout) => Exiting.EnterFromAsync(p, this, timeout);
 
-                public override Task KillAsync(ChromiumProcess p) => Killing.EnterFromAsync(p, this);
+                public override Task KillAsync(LauncherBase p) => Killing.EnterFromAsync(p, this);
 
-                private static void LogProcessCount(ChromiumProcess p, int processCount)
+                private static void LogProcessCount(LauncherBase p, int processCount)
                 {
                     try
                     {
@@ -603,10 +519,10 @@ namespace PuppeteerSharp
 
             private class ExitingState : State
             {
-                public Task EnterFromAsync(ChromiumProcess p, State fromState, TimeSpan timeout)
+                public Task EnterFromAsync(LauncherBase p, State fromState, TimeSpan timeout)
                     => !TryEnter(p, fromState) ? p._currentState.ExitAsync(p, timeout) : ExitAsync(p, timeout);
 
-                public override async Task ExitAsync(ChromiumProcess p, TimeSpan timeout)
+                public override async Task ExitAsync(LauncherBase p, TimeSpan timeout)
                 {
                     var waitForExitTask = WaitForExitAsync(p);
                     await waitForExitTask.WithTimeout(
@@ -619,12 +535,12 @@ namespace PuppeteerSharp
                         CancellationToken.None).ConfigureAwait(false);
                 }
 
-                public override Task KillAsync(ChromiumProcess p) => Killing.EnterFromAsync(p, this);
+                public override Task KillAsync(LauncherBase p) => Killing.EnterFromAsync(p, this);
             }
 
             private class KillingState : State
             {
-                public async Task EnterFromAsync(ChromiumProcess p, State fromState)
+                public async Task EnterFromAsync(LauncherBase p, State fromState)
                 {
                     if (!TryEnter(p, fromState))
                     {
@@ -649,14 +565,14 @@ namespace PuppeteerSharp
                     await WaitForExitAsync(p).ConfigureAwait(false);
                 }
 
-                public override Task ExitAsync(ChromiumProcess p, TimeSpan timeout) => WaitForExitAsync(p);
+                public override Task ExitAsync(LauncherBase p, TimeSpan timeout) => WaitForExitAsync(p);
 
-                public override Task KillAsync(ChromiumProcess p) => WaitForExitAsync(p);
+                public override Task KillAsync(LauncherBase p) => WaitForExitAsync(p);
             }
 
             private class ExitedState : State
             {
-                public void EnterFrom(ChromiumProcess p, State fromState)
+                public void EnterFrom(LauncherBase p, State fromState)
                 {
                     while (!TryEnter(p, fromState))
                     {
@@ -671,19 +587,19 @@ namespace PuppeteerSharp
                     }
 
                     p._exitCompletionSource.TrySetResult(true);
-                    p._tempUserDataDir?.Dispose();
+                    p.TempUserDataDir?.Dispose();
                 }
 
-                public override Task ExitAsync(ChromiumProcess p, TimeSpan timeout) => Task.CompletedTask;
+                public override Task ExitAsync(LauncherBase p, TimeSpan timeout) => Task.CompletedTask;
 
-                public override Task KillAsync(ChromiumProcess p) => Task.CompletedTask;
+                public override Task KillAsync(LauncherBase p) => Task.CompletedTask;
 
-                public override Task WaitForExitAsync(ChromiumProcess p) => Task.CompletedTask;
+                public override Task WaitForExitAsync(LauncherBase p) => Task.CompletedTask;
             }
 
             private class DisposedState : State
             {
-                public void EnterFrom(ChromiumProcess p, State fromState)
+                public void EnterFrom(LauncherBase p, State fromState)
                 {
                     if (!TryEnter(p, fromState))
                     {
@@ -696,17 +612,17 @@ namespace PuppeteerSharp
                         Kill(p);
 
                         p._exitCompletionSource.TrySetException(new ObjectDisposedException(p.ToString()));
-                        p._tempUserDataDir?.Dispose();
+                        p.TempUserDataDir?.Dispose();
                     }
                 }
 
-                public override Task StartAsync(ChromiumProcess p) => throw new ObjectDisposedException(p.ToString());
+                public override Task StartAsync(LauncherBase p) => throw new ObjectDisposedException(p.ToString());
 
-                public override Task ExitAsync(ChromiumProcess p, TimeSpan timeout) => throw new ObjectDisposedException(p.ToString());
+                public override Task ExitAsync(LauncherBase p, TimeSpan timeout) => throw new ObjectDisposedException(p.ToString());
 
-                public override Task KillAsync(ChromiumProcess p) => throw new ObjectDisposedException(p.ToString());
+                public override Task KillAsync(LauncherBase p) => throw new ObjectDisposedException(p.ToString());
 
-                public override void Dispose(ChromiumProcess p)
+                public override void Dispose(LauncherBase p)
                 {
                     // Nothing to do
                 }

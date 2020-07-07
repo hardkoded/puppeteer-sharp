@@ -239,7 +239,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 {
                     return launcher.LaunchAsync(TestConstants.DefaultBrowserOptions());
                 });
-                Assert.Equal("Unable to create or connect to another chromium process", exception.Message);
+                Assert.Equal("Unable to create or connect to another process", exception.Message);
             }
         }
 

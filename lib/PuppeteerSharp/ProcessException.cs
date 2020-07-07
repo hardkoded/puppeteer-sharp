@@ -3,16 +3,17 @@
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// Chromium process exception thrown by <see cref="Launcher"/>.
+    /// process exception thrown by <see cref="Launcher"/>.
     /// </summary>
-    [Obsolete("ProcessException will be thrown")]
-    public class ChromiumProcessException : PuppeteerException
+    #pragma warning disable 612, 618
+    public class ProcessException : ChromiumProcessException
+    #pragma warning restore 612, 618
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ProcessException"/> class.
         /// </summary>
         /// <param name="message">Message.</param>
-        public ChromiumProcessException(string message) : base(message)
+        public ProcessException(string message) : base(message)
         {
         }
 
@@ -21,7 +22,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="message">Message.</param>
         /// <param name="innerException">Inner exception.</param>
-        public ChromiumProcessException(string message, Exception innerException) : base(message, innerException)
+        public ProcessException(string message, Exception innerException) : base(message, innerException)
         {
         }
     }

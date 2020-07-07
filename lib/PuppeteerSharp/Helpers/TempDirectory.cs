@@ -26,7 +26,7 @@ namespace PuppeteerSharp.Helpers
             }
 
             Directory.CreateDirectory(path);
-            this.Path = path;
+            Path = path;
         }
 
         ~TempDirectory()
@@ -60,7 +60,7 @@ namespace PuppeteerSharp.Helpers
             const int minDelayInMsec = 200;
             const int maxDelayInMsec = 8000;
 
-            var retryDelay = minDelayInMsec;
+            int retryDelay = minDelayInMsec;
             while (true)
             {
                 if (!Directory.Exists(path))

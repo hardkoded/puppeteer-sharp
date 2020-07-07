@@ -20,7 +20,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         [Fact]
         public void ShouldDumpBrowserProcessStderr()
         {
-            var success = false;
+            bool success = false;
             var process = GetTestAppProcess(
                 "PuppeteerSharp.Tests.DumpIO",
                 $"\"{new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath}\"");
@@ -40,16 +40,16 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         public async Task ShouldCloseTheBrowserWhenTheConnectedProcessCloses()
         {
             var browserClosedTaskWrapper = new TaskCompletionSource<bool>();
-            var chromiumProcess = new ChromiumProcess(
+            var ChromiumLauncher = new ChromiumLauncher(
                 new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath,
                 new LaunchOptions { Headless = true },
                 TestConstants.LoggerFactory);
 
-            await chromiumProcess.StartAsync().ConfigureAwait(false);
+            await ChromiumLauncher.StartAsync().ConfigureAwait(false);
 
             var browser = await Puppeteer.ConnectAsync(new ConnectOptions
             {
-                BrowserWSEndpoint = chromiumProcess.EndPoint
+                BrowserWSEndpoint = ChromiumLauncher.EndPoint
             });
 
             browser.Disconnected += (sender, e) =>
@@ -57,7 +57,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 browserClosedTaskWrapper.SetResult(true);
             };
 
-            KillProcess(chromiumProcess.Process.Id);
+            KillProcess(ChromiumLauncher.Process.Id);
 
             await browserClosedTaskWrapper.Task;
             Assert.True(browser.IsClosed);
@@ -74,7 +74,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 browserClosedTaskWrapper.SetResult(true);
             };
 
-            KillProcess(browser.ChromiumProcess.Process.Id);
+            KillProcess(browser.Launcher.Process.Id);
 
             await browserClosedTaskWrapper.Task;
             Assert.True(browser.IsClosed);
@@ -121,7 +121,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         private string GetSubprocessWorkingDir(string dir)
         {
 #if DEBUG
-            var build = "Debug";
+            string build = "Debug";
 #else
             
             var build = "Release";

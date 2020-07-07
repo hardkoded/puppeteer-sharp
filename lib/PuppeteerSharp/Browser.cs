@@ -38,7 +38,7 @@ namespace PuppeteerSharp
     public class Browser : IDisposable, IAsyncDisposable
     {
         /// <summary>
-        /// Time in milliseconds for chromium process to exit gracefully.
+        /// Time in milliseconds for process to exit gracefully.
         /// </summary>
         private const int CloseTimeout = 5000;
 
@@ -49,13 +49,13 @@ namespace PuppeteerSharp
         /// <param name="contextIds">The context ids></param>
         /// <param name="ignoreHTTPSErrors">The option to ignoreHTTPSErrors</param>
         /// <param name="defaultViewport">Default viewport</param>
-        /// <param name="chromiumProcess">The Chromium process</param>
+        /// <param name="launcher">The launcher</param>
         public Browser(
             Connection connection,
             string[] contextIds,
             bool ignoreHTTPSErrors,
             ViewPortOptions defaultViewport,
-            ChromiumProcess chromiumProcess)
+            LauncherBase launcher)
         {
             Connection = connection;
             IgnoreHTTPSErrors = ignoreHTTPSErrors;
@@ -70,7 +70,7 @@ namespace PuppeteerSharp
             Connection.Disconnected += Connection_Disconnected;
             Connection.MessageReceived += Connect_MessageReceived;
 
-            ChromiumProcess = chromiumProcess;
+            Launcher = launcher;
             _logger = Connection.LoggerFactory.CreateLogger<Browser>();
         }
 
@@ -128,7 +128,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets the spawned browser process. Returns <c>null</c> if the browser instance was created with <see cref="Puppeteer.ConnectAsync(ConnectOptions, ILoggerFactory)"/> method.
         /// </summary>
-        public Process Process => ChromiumProcess?.Process;
+        public Process Process => Launcher?.Process;
 
         /// <summary>
         /// Gets or Sets whether to ignore HTTPS errors during navigation
@@ -142,7 +142,7 @@ namespace PuppeteerSharp
         {
             get
             {
-                if (ChromiumProcess == null)
+                if (Launcher == null)
                 {
                     return Connection.IsClosed;
                 }
@@ -160,7 +160,7 @@ namespace PuppeteerSharp
         internal TaskQueue ScreenshotTaskQueue { get; set; }
         internal Connection Connection { get; }
         internal ViewPortOptions DefaultViewport { get; }
-        internal ChromiumProcess ChromiumProcess { get; set; }
+        internal LauncherBase Launcher { get; set; }
 
         /// <summary>
         /// Dafault wait time in milliseconds. Defaults to 30 seconds.
@@ -263,7 +263,7 @@ namespace PuppeteerSharp
             => (await Connection.SendAsync<BrowserGetVersionResponse>("Browser.getVersion").ConfigureAwait(false)).UserAgent;
 
         /// <summary>
-        /// Disconnects Puppeteer from the browser, but leaves the Chromium process running. After calling <see cref="Disconnect"/>, the browser object is considered disposed and cannot be used anymore
+        /// Disconnects Puppeteer from the browser, but leaves the process running. After calling <see cref="Disconnect"/>, the browser object is considered disposed and cannot be used anymore
         /// </summary>
         public void Disconnect() => Connection.Dispose();
 
@@ -289,7 +289,7 @@ namespace PuppeteerSharp
         /// <returns>Resolves to the first target found that matches the predicate function.</returns>
         public async Task<Target> WaitForTargetAsync(Func<Target, bool> predicate, WaitForOptions options = null)
         {
-            var timeout = options?.Timeout ?? DefaultWaitForTimeout;
+            int timeout = options?.Timeout ?? DefaultWaitForTimeout;
             var existingTarget = Targets().FirstOrDefault(predicate);
             if (existingTarget != null)
             {
@@ -327,17 +327,17 @@ namespace PuppeteerSharp
                 try
                 {
                     // Initiate graceful browser close operation but don't await it just yet,
-                    // because we want to ensure chromium process shutdown first.
+                    // because we want to ensure process shutdown first.
                     var browserCloseTask = Connection.IsClosed
                         ? Task.CompletedTask
                         : Connection.SendAsync("Browser.close", null);
 
-                    if (ChromiumProcess != null)
+                    if (Launcher != null)
                     {
-                        // Notify chromium process that exit is expected, but should be enforced if it
+                        // Notify process that exit is expected, but should be enforced if it
                         // doesn't occur withing the close timeout.
                         var closeTimeout = TimeSpan.FromMilliseconds(CloseTimeout);
-                        await ChromiumProcess.EnsureExitAsync(closeTimeout).ConfigureAwait(false);
+                        await Launcher.EnsureExitAsync(closeTimeout).ConfigureAwait(false);
                     }
 
                     // Now we can safely await the browser close operation without risking keeping chromium
@@ -353,9 +353,9 @@ namespace PuppeteerSharp
             {
                 _logger.LogError(ex, ex.Message);
 
-                if (ChromiumProcess != null)
+                if (Launcher != null)
                 {
-                    await ChromiumProcess.KillAsync().ConfigureAwait(false);
+                    await Launcher.KillAsync().ConfigureAwait(false);
                 }
             }
 
@@ -392,7 +392,7 @@ namespace PuppeteerSharp
                 createTargetRequest.BrowserContextId = contextId;
             }
 
-            var targetId = (await Connection.SendAsync<TargetCreateTargetResponse>("Target.createTarget", createTargetRequest)
+            string targetId = (await Connection.SendAsync<TargetCreateTargetResponse>("Target.createTarget", createTargetRequest)
                 .ConfigureAwait(false)).TargetId;
             var target = TargetsMap[targetId];
             await target.InitializedTask.ConfigureAwait(false);
@@ -417,7 +417,7 @@ namespace PuppeteerSharp
             }
             catch (Exception ex)
             {
-                var message = $"Browser failed to process Connection Close. {ex.Message}. {ex.StackTrace}";
+                string message = $"Browser failed to process Connection Close. {ex.Message}. {ex.StackTrace}";
                 _logger.LogError(ex, message);
                 Connection.Close(message);
             }
@@ -444,7 +444,7 @@ namespace PuppeteerSharp
             }
             catch (Exception ex)
             {
-                var message = $"Browser failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
+                string message = $"Browser failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
                 _logger.LogError(ex, message);
                 Connection.Close(message);
             }
@@ -484,7 +484,7 @@ namespace PuppeteerSharp
         private async Task CreateTargetAsync(TargetCreatedResponse e)
         {
             var targetInfo = e.TargetInfo;
-            var browserContextId = targetInfo.BrowserContextId;
+            string browserContextId = targetInfo.BrowserContextId;
 
             if (!(browserContextId != null && _contexts.TryGetValue(browserContextId, out var context)))
             {
@@ -516,9 +516,9 @@ namespace PuppeteerSharp
             string[] contextIds,
             bool ignoreHTTPSErrors,
             ViewPortOptions defaultViewPort,
-            ChromiumProcess chromiumProcess)
+            LauncherBase launcher)
         {
-            var browser = new Browser(connection, contextIds, ignoreHTTPSErrors, defaultViewPort, chromiumProcess);
+            var browser = new Browser(connection, contextIds, ignoreHTTPSErrors, defaultViewPort, launcher);
             await connection.SendAsync("Target.setDiscoverTargets", new TargetSetDiscoverTargetsRequest
             {
                 Discover = true

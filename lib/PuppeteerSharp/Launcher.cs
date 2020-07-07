@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using System.IO;
 using Microsoft.Extensions.Logging;
@@ -9,14 +9,14 @@ using Newtonsoft.Json;
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// Launcher controls the creation of Chromium processes or the connection remote ones.
+    /// Launcher controls the creation of processes or the connection remote ones.
     /// </summary>
     public class Launcher
     {
         #region Private members
 
         private readonly ILoggerFactory _loggerFactory;
-        private bool _chromiumLaunched;
+        private bool _processLaunched;
 
         #endregion
 
@@ -28,31 +28,40 @@ namespace PuppeteerSharp
 
         #region Properties
         /// <summary>
-        /// Gets Chromium process, if any was created by this launcher.
+        /// Gets the process, if any was created by this launcher.
         /// </summary>
-        public ChromiumProcess Process { get; private set; }
+        public LauncherBase Process { get; private set; }
         #endregion
 
         #region Public methods
         /// <summary>
         /// The method launches a browser instance with given arguments. The browser will be closed when the Browser is disposed.
         /// </summary>
-        /// <param name="options">Options for launching Chrome</param>
+        /// <param name="options">Options for launching the browser</param>
+        /// <param name="product">The browser to launch (Chrome, Firefox)</param>
         /// <returns>A connected browser.</returns>
         /// <remarks>
         /// See <a href="https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/">this article</a>
         /// for a description of the differences between Chromium and Chrome.
         /// <a href="https://chromium.googlesource.com/chromium/src/+/lkcr/docs/chromium_browser_vs_google_chrome.md">This article</a> describes some differences for Linux users.
         /// </remarks>
-        public async Task<Browser> LaunchAsync(LaunchOptions options)
+        public async Task<Browser> LaunchAsync(LaunchOptions options, Product product = Product.Chrome)
         {
             EnsureSingleLaunchOrConnect();
 
-            var chromiumExecutable = GetOrFetchChromeExecutable(options);
-            Process = new ChromiumProcess(chromiumExecutable, options, _loggerFactory);
+            string executable = GetOrFetchBrowserExecutable(options);
+
+            Process = product switch
+            {
+                Product.Chrome => new ChromiumLauncher(executable, options, _loggerFactory),
+                Product.Firefox => new FirefoxLauncher(executable, options, _loggerFactory),
+                _ => throw new ArgumentException("Invalid product", nameof(product))
+            };
+
             try
             {
                 await Process.StartAsync().ConfigureAwait(false);
+
                 try
                 {
                     var connection = await Connection
@@ -68,7 +77,7 @@ namespace PuppeteerSharp
                 }
                 catch (Exception ex)
                 {
-                    throw new ChromiumProcessException("Failed to create connection", ex);
+                    throw new ProcessException("Failed to create connection", ex);
                 }
             }
             catch
@@ -79,7 +88,7 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Attaches Puppeteer to an existing Chromium instance. The browser will be closed when the Browser is disposed.
+        /// Attaches Puppeteer to an existing process instance. The browser will be closed when the Browser is disposed.
         /// </summary>
         /// <param name="options">Options for connecting.</param>
         /// <returns>A connected browser.</returns>
@@ -94,7 +103,7 @@ namespace PuppeteerSharp
 
             try
             {
-                var browserWSEndpoint = string.IsNullOrEmpty(options.BrowserURL)
+                string browserWSEndpoint = string.IsNullOrEmpty(options.BrowserURL)
                     ? options.BrowserWSEndpoint
                     : await GetWSEndpointAsync(options.BrowserURL).ConfigureAwait(false);
 
@@ -106,7 +115,7 @@ namespace PuppeteerSharp
             }
             catch (Exception ex)
             {
-                throw new ChromiumProcessException("Failed to create connection", ex);
+                throw new ProcessException("Failed to create connection", ex);
             }
         }
 
@@ -146,32 +155,34 @@ namespace PuppeteerSharp
 
         private void EnsureSingleLaunchOrConnect()
         {
-            if (_chromiumLaunched)
+            if (_processLaunched)
             {
-                throw new InvalidOperationException("Unable to create or connect to another chromium process");
+                throw new InvalidOperationException("Unable to create or connect to another process");
             }
 
-            _chromiumLaunched = true;
+            _processLaunched = true;
         }
 
-        private static string GetOrFetchChromeExecutable(LaunchOptions options)
+        private static string GetOrFetchBrowserExecutable(LaunchOptions options)
         {
-            var chromeExecutable = options.ExecutablePath;
-            if (string.IsNullOrEmpty(chromeExecutable))
+            string browserExecutable = options.ExecutablePath;
+
+            if (string.IsNullOrEmpty(browserExecutable))
             {
-                chromeExecutable = ResolveExecutablePath();
+                browserExecutable = ResolveExecutablePath();
             }
 
-            if (!File.Exists(chromeExecutable))
+            if (!File.Exists(browserExecutable))
             {
-                throw new FileNotFoundException("Failed to launch chrome! path to executable does not exist", chromeExecutable);
+                throw new FileNotFoundException("Failed to launch browser! path to executable does not exist", browserExecutable);
             }
-            return chromeExecutable;
+            return browserExecutable;
         }
 
         private static string ResolveExecutablePath()
         {
-            var executablePath = Environment.GetEnvironmentVariable("PUPPETEER_EXECUTABLE_PATH");
+            string executablePath = Environment.GetEnvironmentVariable("PUPPETEER_EXECUTABLE_PATH");
+
             if (!string.IsNullOrEmpty(executablePath))
             {
                 if (!File.Exists(executablePath))
@@ -182,9 +193,10 @@ namespace PuppeteerSharp
             }
 
             var browserFetcher = new BrowserFetcher();
-            var revision = Environment.GetEnvironmentVariable("PUPPETEER_CHROMIUM_REVISION");
+            string revision = Environment.GetEnvironmentVariable("PUPPETEER_CHROMIUM_REVISION");
             RevisionInfo revisionInfo;
-            if (!string.IsNullOrEmpty(revision) && int.TryParse(revision, out var revisionNumber))
+
+            if (!string.IsNullOrEmpty(revision) && int.TryParse(revision, out int revisionNumber))
             {
                 revisionInfo = browserFetcher.RevisionInfo(revisionNumber);
                 if (!revisionInfo.Local)
@@ -196,7 +208,7 @@ namespace PuppeteerSharp
             revisionInfo = browserFetcher.RevisionInfo(BrowserFetcher.DefaultRevision);
             if (!revisionInfo.Local)
             {
-                throw new FileNotFoundException("Chromium revision is not downloaded. Run BrowserFetcher.DownloadAsync or download Chromium manually", revisionInfo.ExecutablePath);
+                throw new FileNotFoundException("Process revision is not downloaded. Run BrowserFetcher.DownloadAsync or download the process manually", revisionInfo.ExecutablePath);
             }
             return revisionInfo.ExecutablePath;
         }
