@@ -104,7 +104,15 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             {
                 var launcher = new Launcher(TestConstants.LoggerFactory);
                 var options = TestConstants.DefaultBrowserOptions();
-                options.Args = options.Args.Concat(new[] { $"--user-data-dir=\"{userDataDir}\"" }).ToArray();
+
+                if (TestConstants.IsChrome)
+                {
+                    options.Args = options.Args.Concat(new[] { $"--user-data-dir=\"{userDataDir}\"" }).ToArray();
+                }
+                else
+                {
+                    options.Args = options.Args.Concat(new string[] { "-profile", userDataDir.ToString() }).ToArray();
+                }
 
                 using (var browser = await launcher.LaunchAsync(options))
                 {
@@ -170,18 +178,35 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         }
 
         [Fact]
-        public void ShouldReturnTheDefaultChromeArguments()
+        public void ShouldReturnTheDefaultArguments()
         {
-            Assert.Contains("--no-first-run", Puppeteer.GetDefaultArgs());
             Assert.Contains("--headless", Puppeteer.GetDefaultArgs());
             Assert.DoesNotContain("--headless", Puppeteer.GetDefaultArgs(new LaunchOptions
             {
                 Headless = false
             }));
-            Assert.Contains("--user-data-dir=\"foo\"", Puppeteer.GetDefaultArgs(new LaunchOptions
+
+            if (TestConstants.IsChrome)
             {
-                UserDataDir = "foo"
-            }));
+                Assert.Contains("--no-first-run", Puppeteer.GetDefaultArgs());
+                Assert.Contains("--user-data-dir=\"foo\"", Puppeteer.GetDefaultArgs(new LaunchOptions
+                {
+                    UserDataDir = "foo"
+                }));
+            }
+            else
+            {
+                Assert.Contains("--no-remote", Puppeteer.GetDefaultArgs());
+                Assert.Contains("--foreground", Puppeteer.GetDefaultArgs());
+                Assert.Contains("--profile", Puppeteer.GetDefaultArgs(new LaunchOptions
+                {
+                    UserDataDir = "foo"
+                }));
+                Assert.Contains("foo", Puppeteer.GetDefaultArgs(new LaunchOptions
+                {
+                    UserDataDir = "foo"
+                }));
+            }
         }
 
         [Theory]

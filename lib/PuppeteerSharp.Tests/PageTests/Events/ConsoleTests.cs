@@ -116,7 +116,15 @@ namespace PuppeteerSharp.Tests.PageTests.Events
             await Page.EvaluateFunctionAsync("async url => fetch(url).catch(e => {})", TestConstants.EmptyPage);
             var message = await messageTask.Task;
             Assert.Contains("No 'Access-Control-Allow-Origin'", message.Text);
-            Assert.Equal(ConsoleType.Error, message.Type);
+
+            if (TestConstants.IsChrome)
+            {
+                Assert.Equal(ConsoleType.Error, message.Type);
+            }
+            else
+            {
+                Assert.Equal(ConsoleType.Warning, message.Type);
+            }
         }
 
         [Fact]

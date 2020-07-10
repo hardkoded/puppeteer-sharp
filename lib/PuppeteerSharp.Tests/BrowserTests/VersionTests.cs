@@ -14,9 +14,17 @@ namespace PuppeteerSharp.Tests.BrowserTests
         [Fact]
         public async Task ShouldReturnWhetherWeAreInHeadless()
         {
-            var version = await Browser.GetVersionAsync();
+            string version = await Browser.GetVersionAsync();
             Assert.NotEmpty(version);
-            Assert.Equal(TestConstants.DefaultBrowserOptions().Headless, version.StartsWith("Headless"));
+
+            if (TestConstants.IsChrome)
+            {
+                Assert.Equal(TestConstants.DefaultBrowserOptions().Headless, version.StartsWith("Headless"));
+            }
+            else
+            {
+                Assert.StartsWith("Firefox/", version);
+            }
         }
     }
 }
