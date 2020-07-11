@@ -34,7 +34,8 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             var windowHandle = await Page.EvaluateExpressionHandleAsync("window");
             var exception = await Assert.ThrowsAsync<MessageException>(()
                 => windowHandle.JsonValueAsync());
-            Assert.Contains("Object reference chain is too long", exception.Message);
+
+            Assert.Contains(TestConstants.IsChrome ? "Object reference chain is too long" : "Object is not serializable", exception.Message);
         }
     }
 }

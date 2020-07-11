@@ -276,7 +276,15 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Page.Request += async (sender, e) => await e.Request.AbortAsync();
             var exception = await Assert.ThrowsAsync<NavigationException>(
                 () => Page.GoToAsync(TestConstants.EmptyPage));
-            Assert.Contains("net::ERR_FAILED", exception.Message);
+
+            if (TestConstants.IsChrome)
+            {
+                Assert.Contains("net::ERR_FAILED", exception.Message);
+            }
+            else
+            {
+                Assert.Contains("NS_ERROR_FAILURE", exception.Message);
+            }
         }
 
         [Fact]
@@ -379,7 +387,15 @@ namespace PuppeteerSharp.Tests.NetworkTests
                     return e.message;
                 }
             }");
-            Assert.Contains("Failed to fetch", result);
+
+            if (TestConstants.IsChrome)
+            {
+                Assert.Contains("Failed to fetch", result);
+            }
+            else
+            {
+                Assert.Contains("NetworkError", result);
+            }
         }
 
         [Fact]

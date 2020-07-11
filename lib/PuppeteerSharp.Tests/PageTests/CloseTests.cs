@@ -51,8 +51,16 @@ namespace PuppeteerSharp.Tests.PageTests
             Page.Dialog += async (sender, e) =>
             {
                 Assert.Equal(DialogType.BeforeUnload, e.Dialog.DialogType);
-                Assert.Equal(string.Empty, e.Dialog.Message);
                 Assert.Equal(string.Empty, e.Dialog.DefaultValue);
+
+                if (TestConstants.IsChrome)
+                {
+                    Assert.Equal(string.Empty, e.Dialog.Message);
+                }
+                else
+                {
+                    Assert.Equal("This page is asking you to confirm that you want to leave - data you have entered may not be saved.", e.Dialog.Message);
+                }
 
                 await e.Dialog.Accept();
                 dialogTask.TrySetResult(true);

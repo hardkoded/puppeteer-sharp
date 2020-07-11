@@ -39,7 +39,15 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             var nestedFrame = childFrame.ChildFrames.Last();
             var elementHandle = await nestedFrame.QuerySelectorAsync("div");
             var box = await elementHandle.BoundingBoxAsync();
-            Assert.Equal(new BoundingBox(28, 260, 264, 18), box);
+
+            if (TestConstants.IsChrome)
+            {
+                Assert.Equal(new BoundingBox(28, 260, 264, 18), box);
+            }
+            else
+            {
+                Assert.Equal(new BoundingBox(28, 182, 254, 18), box);
+            }
         }
 
         [Fact]

@@ -75,7 +75,16 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Contains("one-style.css", failedRequests[0].Url);
             Assert.Null(failedRequests[0].Response);
             Assert.Equal(ResourceType.StyleSheet, failedRequests[0].ResourceType);
-            Assert.Equal("net::ERR_FAILED", failedRequests[0].Failure);
+
+            if (TestConstants.IsChrome)
+            {
+                Assert.Equal("net::ERR_FAILED", failedRequests[0].Failure);
+            }
+            else
+            {
+                Assert.Equal("NS_ERROR_FAILURE", failedRequests[0].Failure);
+            }
+
             Assert.NotNull(failedRequests[0].Frame);
         }
 
