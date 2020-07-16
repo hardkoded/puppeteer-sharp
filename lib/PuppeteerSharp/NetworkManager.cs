@@ -306,7 +306,7 @@ namespace PuppeteerSharp
             if (!_requestIdToRequest.TryGetValue(e.RequestId, out var currentRequest) ||
               currentRequest.Frame == null)
             {
-                var frame = await FrameManager.TryGetFrameAsync(e.FrameId).ConfigureAwait(false);
+                var frame = !string.IsNullOrEmpty(e.FrameId) ? await FrameManager.TryGetFrameAsync(e.FrameId).ConfigureAwait(false) : null;
 
                 request = new Request(
                     _client,
