@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>2.0.3</PackageVersion>
+    <PackageVersion>2.0.4</PackageVersion>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
@@ -13,11 +13,27 @@
     <PackageId>PuppeteerSharp</PackageId>
     <PackageReleaseNotes><![CDATA[
 
+# Experimental
+ * We are laying the ground to support Firefox. Although we are exposing the "Product" property in many methods, these are not ready to be used.
+
+# Fixes
+
+ * Optional frame in requests.
+ * Update the OnRequestAsync in the NetworkManager.cs to support null.
+
 # Changelog
- * IDisposableAsync support
+
+ * Add x-server pre-requisite  to docs
+ * Corrects CA2000 and IDE0008.
+ * fix CA1063.
+ * Don’t disable BlinkGenPropertyTrees anymore.
+ * Add reference Microsoft.NETFramework.ReferenceAssemblies.
+ * Add WaitForFunctionAsync doc.
+ * Update demo versions.
+ * Tests: Implement the Chrome bit.
 
  ]]></PackageReleaseNotes>
-    <ReleaseVersion>2.0.3</ReleaseVersion>
+    <ReleaseVersion>2.0.4</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
     <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
     <CodeAnalysisRuleSet>../PuppeteerSharp.ruleset</CodeAnalysisRuleSet>
