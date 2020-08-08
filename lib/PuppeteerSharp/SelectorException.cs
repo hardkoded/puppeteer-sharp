@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Runtime.Serialization;
 
 namespace PuppeteerSharp
 {
@@ -36,6 +37,15 @@ namespace PuppeteerSharp
         public SelectorException(string message, string selector) : base(message)
         {
             Selector = selector;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SelectorException"/> class.
+        /// </summary>
+        /// <param name="info">Serialization Info.</param>
+        /// <param name="context">Streaming Context.</param>
+        protected SelectorException(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
         }
     }
 }
