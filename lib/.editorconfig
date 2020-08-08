@@ -149,7 +149,6 @@ csharp_space_between_square_brackets = false
 dotnet_code_quality.ca1802.api_surface = private, internal
 
 # C++ Files
-
 [*.{cpp,h,in}]
 curly_bracket_next_line = true
 indent_brace_style = Allman
