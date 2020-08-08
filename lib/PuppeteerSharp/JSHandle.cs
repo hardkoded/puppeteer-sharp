@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -161,7 +161,7 @@ namespace PuppeteerSharp
                 var type = RemoteObject.Subtype != RemoteObjectSubtype.Other
                     ? RemoteObject.Subtype.ToString()
                     : RemoteObject.Type.ToString();
-                return "JSHandle@" + type.ToLower();
+                return "JSHandle@" + type.ToLower(System.Globalization.CultureInfo.CurrentCulture);
             }
 
             return "JSHandle:" + RemoteObjectHelper.ValueFromRemoteObject<object>(RemoteObject)?.ToString();
