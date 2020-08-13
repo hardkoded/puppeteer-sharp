@@ -9,7 +9,7 @@
     <Summary>Headless Browser .NET API</Summary>
     <PackageTags>headless,chrome,puppeteer</PackageTags>
     <Title>PuppeteerSharp</Title>
-    <Description>Headless Chrome .NET API</Description>
+    <Description>Headless Browser .NET API</Description>
     <PackageId>PuppeteerSharp</PackageId>
     <PackageReleaseNotes><![CDATA[
 
