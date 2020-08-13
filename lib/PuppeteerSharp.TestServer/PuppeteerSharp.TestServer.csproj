@@ -2,11 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1;net48</TargetFrameworks>
     <OutputType>Library</OutputType>
-    <LangVersion>8</LangVersion>
   </PropertyGroup>
-  <ItemGroup>
-    <None Remove="testCert.cer" />
-  </ItemGroup>
   <ItemGroup>
     <Content Include="testCert.cer">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
