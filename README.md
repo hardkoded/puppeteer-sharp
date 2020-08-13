@@ -6,11 +6,11 @@
 [![CodeFactor](https://www.codefactor.io/repository/github/hardkoded/puppeteer-sharp/badge)][CodeFactorUrl]
 [![Backers](https://opencollective.com/hardkoded-projects/backers/badge.svg)][Backers]
 
-[NugetUrl](https://www.nuget.org/packages/PuppeteerSharp/)
-[BuildUrl](https://ci.appveyor.com/project/kblok/puppeteer-sharp/branch/master)
-[BuildDemoUrl](https://ci.appveyor.com/project/kblok/puppeteer-sharp-0c8w9/branch/master)
-[CodeFactorUrl](https://www.codefactor.io/repository/github/kblok/puppeteer-sharp)
-[Backers](https://opencollective.com/hardkoded-projects)
+[NugetUrl]: https://www.nuget.org/packages/PuppeteerSharp/
+[BuildUrl]: https://ci.appveyor.com/project/kblok/puppeteer-sharp/branch/master
+[BuildDemoUrl]: https://ci.appveyor.com/project/kblok/puppeteer-sharp-0c8w9/branch/master
+[CodeFactorUrl]: https://www.codefactor.io/repository/github/hardkoded/puppeteer-sharp
+[Backers]: https://opencollective.com/hardkoded-projects
 
 Puppeteer Sharp is a .NET port of the official [Node.JS Puppeteer API](https://github.com/GoogleChrome/puppeteer). 
 
