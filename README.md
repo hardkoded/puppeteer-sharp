@@ -3,14 +3,14 @@
 [![NuGet](https://buildstats.info/nuget/PuppeteerSharp)][NugetUrl]
 [![Build status](https://ci.appveyor.com/api/projects/status/pwfkjb0c4jfdo7lc/branch/master?svg=true&pendingText=master&failingText=master&passingText=master)][BuildUrl]
 [![Demo build status](https://ci.appveyor.com/api/projects/status/10g64a4aa0083wgf/branch/master?svg=true&pendingText=demo&failingText=demo&passingText=demo)][BuildDemoUrl]
-[![CodeFactor](https://www.codefactor.io/repository/github/kblok/puppeteer-sharp/badge)][CodeFactorUrl]
+[![CodeFactor](https://www.codefactor.io/repository/github/hardkoded/puppeteer-sharp/badge)][CodeFactorUrl]
 [![Backers](https://opencollective.com/hardkoded-projects/backers/badge.svg)][Backers]
 
-[NugetUrl]: https://www.nuget.org/packages/PuppeteerSharp/
-[BuildUrl]: https://ci.appveyor.com/project/kblok/puppeteer-sharp/branch/master
-[BuildDemoUrl]: https://ci.appveyor.com/project/kblok/puppeteer-sharp-0c8w9/branch/master
-[CodeFactorUrl]: https://www.codefactor.io/repository/github/kblok/puppeteer-sharp
-[Backers]: https://opencollective.com/hardkoded-projects
+[NugetUrl](https://www.nuget.org/packages/PuppeteerSharp/)
+[BuildUrl](https://ci.appveyor.com/project/kblok/puppeteer-sharp/branch/master)
+[BuildDemoUrl](https://ci.appveyor.com/project/kblok/puppeteer-sharp-0c8w9/branch/master)
+[CodeFactorUrl](https://www.codefactor.io/repository/github/kblok/puppeteer-sharp)
+[Backers](https://opencollective.com/hardkoded-projects)
 
 Puppeteer Sharp is a .NET port of the official [Node.JS Puppeteer API](https://github.com/GoogleChrome/puppeteer). 
 
@@ -19,7 +19,7 @@ Puppeteer Sharp is a .NET port of the official [Node.JS Puppeteer API](https://g
 * [API Documentation](http://www.puppeteersharp.com/api/index.html)
 * Slack channel [#puppeteer-sharp](https://puppeteer.slack.com/join/shared_invite/enQtMzU4MjIyMDA5NTM4LWI0YTE0MjM0NWQzYmE2MTRmNjM1ZTBkN2MxNmJmNTIwNTJjMmFhOWFjMGExMDViYjk2YjU2ZmYzMmE1NmExYzc)
 * [StackOverflow](https://stackoverflow.com/search?q=puppeteer-sharp)
-* [Issues](https://github.com/kblok/puppeteer-sharp/issues?utf8=%E2%9C%93&q=is%3Aissue)
+* [Issues](https://github.com/hardkoded/puppeteer-sharp/issues?utf8=%E2%9C%93&q=is%3Aissue)
 
 # Prerequisites
 
@@ -35,11 +35,11 @@ Some of the best ways to contribute are to try things out file bugs and fix issu
 If you have an issue or a question:
 
 * Ask a question on [Stack Overflow](https://stackoverflow.com/search?q=puppeteer-sharp).
-* File a [new issue](https://github.com/kblok/puppeteer-sharp/issues/new).
+* File a [new issue](https://github.com/hardkoded/puppeteer-sharp/issues/new).
 
 ## Contributing Guide
 
-See [this document](https://github.com/kblok/puppeteer-sharp/blob/master/CONTRIBUTING.md) for information on how to contribute.
+See [this document](https://github.com/hardkoded/puppeteer-sharp/blob/master/CONTRIBUTING.md) for information on how to contribute.
 
 # Usage
 
