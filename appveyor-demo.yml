@@ -6,7 +6,7 @@ image: Visual Studio 2019
 configuration: Release
 environment:
   matrix:
-    - framework: net471
+    - framework: net48
     - framework: netcoreapp3.1
 before_build:
 - ps: >-
