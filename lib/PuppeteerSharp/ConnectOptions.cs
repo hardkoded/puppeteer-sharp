@@ -13,7 +13,13 @@ namespace PuppeteerSharp
         /// Whether to ignore HTTPS errors during navigation. Defaults to false.
         /// </summary>
         public bool IgnoreHTTPSErrors { get; set; }
-        
+
+        /// <summary>
+        /// If set to true, sets Headless = false, otherwise, enables automation.
+        /// </summary>
+        [Obsolete("No longer required and usages should be removed")]
+        public bool AppMode { get; set; }
+
         /// <summary>
         /// A browser websocket endpoint to connect to.
         /// </summary>
