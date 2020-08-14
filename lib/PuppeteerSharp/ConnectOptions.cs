@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net.WebSockets;
 using PuppeteerSharp.Transport;
 
@@ -13,12 +13,7 @@ namespace PuppeteerSharp
         /// Whether to ignore HTTPS errors during navigation. Defaults to false.
         /// </summary>
         public bool IgnoreHTTPSErrors { get; set; }
-
-        /// <summary>
-        /// If set to true, sets Headless = false, otherwise, enables automation.
-        /// </summary>
-        public bool AppMode { get; set; }
-
+        
         /// <summary>
         /// A browser websocket endpoint to connect to.
         /// </summary>

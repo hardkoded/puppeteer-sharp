@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,15 +9,15 @@ namespace PuppeteerSharp.Helpers
     /// </summary>
     internal static class AsyncFileHelper
     {
-        /// <inheritdoc cref="System.IO.FileStream.FileStream(string, FileMode)" />
+        /// <inheritdoc cref="System.IO.FileStream(string, FileMode)" />
         public static FileStream CreateStream(string path, FileMode mode)
             => CreateStream(path, mode, mode == FileMode.Append ? FileAccess.Write : FileAccess.ReadWrite);
 
-        /// <inheritdoc cref="System.IO.FileStream.FileStream(string, FileMode, FileAccess)" />
+        /// <inheritdoc cref="System.IO.FileStream(string, FileMode, FileAccess)" />
         public static FileStream CreateStream(string path, FileMode mode, FileAccess access)
             => CreateStream(path, mode, access, FileShare.Read);
 
-        /// <inheritdoc cref="System.IO.FileStream.FileStream(string, FileMode, FileAccess, FileShare)" />
+        /// <inheritdoc cref="System.IO.FileStream(string, FileMode, FileAccess, FileShare)" />
         public static FileStream CreateStream(string path, FileMode mode, FileAccess access, FileShare share)
             => new FileStream(path, mode, access, share, 4096, true);
 
@@ -34,17 +34,9 @@ namespace PuppeteerSharp.Helpers
             }
         }
 
-        /// <inheritdoc cref="System.IO.File.OpenWrite(string)" />
-        public static FileStream OpenWrite(string path)
-            => CreateStream(path, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
-
         /// <inheritdoc cref="System.IO.File.OpenRead(string)" />
         public static FileStream OpenRead(string path)
             => CreateStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
-
-        /// <inheritdoc cref="System.IO.File.OpenText(string)" />
-        public static StreamReader OpenText(string path)
-            => OpenText(path, Encoding.UTF8);
 
         /// <inheritdoc cref="System.IO.File.OpenText(string)" />
         /// <param name="path">File path.</param>

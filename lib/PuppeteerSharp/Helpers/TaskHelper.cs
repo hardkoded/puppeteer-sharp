@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -46,22 +46,6 @@ namespace PuppeteerSharp.Helpers
                 () => throw (exceptionFactory ?? DefaultExceptionFactory)(timeout),
                 timeout,
                 cancellationToken);
-
-        //Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
-        /// <summary>
-        /// Cancels the <paramref name="task"/> after <paramref name="milliseconds"/> milliseconds
-        /// </summary>
-        /// <returns>The task result.</returns>
-        /// <param name="task">Task to wait for.</param>
-        /// <param name="timeoutAction">Action to be executed on Timeout.</param>
-        /// <param name="milliseconds">Milliseconds timeout.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        public static Task WithTimeout(
-            this Task task,
-            Func<Task> timeoutAction,
-            int milliseconds = 1_000,
-            CancellationToken cancellationToken = default)
-            => WithTimeout(task, timeoutAction, TimeSpan.FromMilliseconds(milliseconds), cancellationToken);
 
         //Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
         /// <summary>
