@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -96,7 +96,7 @@ namespace PuppeteerSharp.Tests.TracingTests
                 Path = _file
             });
             var newPage = await Browser.NewPageAsync();
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            await Assert.ThrowsAsync<InvalidOperationException>(async () =>
             {
                 await Page.Tracing.StartAsync(new TracingOptions
                 {

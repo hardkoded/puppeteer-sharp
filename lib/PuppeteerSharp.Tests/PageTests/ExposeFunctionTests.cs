@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Xunit;
@@ -126,7 +126,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldKeepTheCallbackClean()
         {
             await Page.ExposeFunctionAsync("compute", (int a, int b) => a * b);
-            var result = await Page.EvaluateExpressionAsync<int>("compute(9, 4)");
+            await Page.EvaluateExpressionAsync<int>("compute(9, 4)");
             Assert.False(Page.Client.HasPendingCallbacks());
         }
     }

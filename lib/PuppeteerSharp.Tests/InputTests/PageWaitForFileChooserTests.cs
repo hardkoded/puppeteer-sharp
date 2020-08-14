@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using PuppeteerSharp.Mobile;
 using Xunit;
@@ -44,26 +44,26 @@ namespace PuppeteerSharp.Tests.InputTests
         }
 
         [Fact]
-        public async Task ShouldRespectTimeout()
+        public Task ShouldRespectTimeout()
         {
-            var ex = await Assert.ThrowsAsync<TimeoutException>(() => Page.WaitForFileChooserAsync(new WaitForFileChooserOptions
+            return Assert.ThrowsAsync<TimeoutException>(() => Page.WaitForFileChooserAsync(new WaitForFileChooserOptions
             {
                 Timeout = 1
             }));
         }
 
         [Fact]
-        public async Task ShouldRespectTimeoutWhenThereIsNoCustomTimeout()
+        public Task ShouldRespectTimeoutWhenThereIsNoCustomTimeout()
         {
             Page.DefaultTimeout = 1;
-            var ex = await Assert.ThrowsAsync<TimeoutException>(() => Page.WaitForFileChooserAsync());
+            return Assert.ThrowsAsync<TimeoutException>(() => Page.WaitForFileChooserAsync());
         }
 
         [Fact]
-        public async Task ShouldPrioritizeExactTimeoutOverDefaultTimeout()
+        public Task ShouldPrioritizeExactTimeoutOverDefaultTimeout()
         {
             Page.DefaultTimeout = 0;
-            var ex = await Assert.ThrowsAsync<TimeoutException>(() => Page.WaitForFileChooserAsync(new WaitForFileChooserOptions
+            return Assert.ThrowsAsync<TimeoutException>(() => Page.WaitForFileChooserAsync(new WaitForFileChooserOptions
             {
                 Timeout = 1
             }));

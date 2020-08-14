@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
@@ -198,7 +198,6 @@ namespace PuppeteerSharp
             else
             {
                 var method = obj.Method;
-                var param = obj.Params?.ToObject<ConnectionResponseParams>();
 
                 MessageReceived?.Invoke(this, new MessageEventArgs
                 {

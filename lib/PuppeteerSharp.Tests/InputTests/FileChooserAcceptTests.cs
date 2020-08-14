@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using PuppeteerSharp.Mobile;
 using Xunit;
@@ -105,7 +105,7 @@ namespace PuppeteerSharp.Tests.InputTests
                 waitForTask,
                 Page.ClickAsync("input"));
 
-            var ex = await Assert.ThrowsAsync<MessageException>(() => waitForTask.Result.AcceptAsync(
+           await Assert.ThrowsAsync<MessageException>(() => waitForTask.Result.AcceptAsync(
                 "./assets/file-to-upload.txt",
                 "./assets/pptr.png"));
         }

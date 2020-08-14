@@ -258,7 +258,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         public async Task ShouldNotOpenTwoChromesUsingTheSameLauncher()
         {
             var launcher = new Launcher(TestConstants.LoggerFactory);
-            using (var browser = await launcher.LaunchAsync(TestConstants.DefaultBrowserOptions()))
+            using (await launcher.LaunchAsync(TestConstants.DefaultBrowserOptions()))
             {
                 var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
                 {

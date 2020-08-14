@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Connections.Features;
@@ -111,7 +111,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         public async Task ShouldBeAbleToConnectToTheSamePageSimultaneously()
         {
             var browserOne = await Puppeteer.LaunchAsync(new LaunchOptions());
-            var browserTwo = await Puppeteer.ConnectAsync(new ConnectOptions
+            await Puppeteer.ConnectAsync(new ConnectOptions
             {
                 BrowserWSEndpoint = browserOne.WebSocketEndpoint
             });

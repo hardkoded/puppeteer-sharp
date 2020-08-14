@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -19,7 +19,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
         {
             string error = null;
             Page.Error += (sender, e) => error = e.Error;
-            var gotoTask = Page.GoToAsync("chrome://crash");
+            await Page.GoToAsync("chrome://crash");
 
             await WaitForError();
             Assert.Equal("Page crashed!", error);
