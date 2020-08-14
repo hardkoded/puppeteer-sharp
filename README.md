@@ -170,4 +170,4 @@ Support us with a monthly donation and help us continue our activities. [Become 
 
 Thanks to [JetBrains](https://www.jetbrains.com/?from=PuppeteerSharp) for a community Resharper license to use on this project.
 
-
+[Puppet](https://thenounproject.com/term/puppet/999438/) icon designed by [Yusuf Kara](https://thenounproject.com/yusufkara) from [The Noun Project](https://thenounproject.com).
