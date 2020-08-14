@@ -15,13 +15,13 @@
         <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0005" />
         <PackageReference Include="Microsoft.AspNetCore.Connections.Abstractions" Version="2.2.0" />
     </ItemGroup>
-    <ItemGroup Condition="'$(TargetFramework)'=='net471'">
+    <ItemGroup Condition="'$(TargetFramework)'=='net48'">
         <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0" PrivateAssets="All" />
     </ItemGroup>
     <ItemGroup>
         <Folder Include="Issues\" />
     </ItemGroup>
-    <PropertyGroup Condition="'$(TargetFramework)'=='net471'">
+    <PropertyGroup Condition="'$(TargetFramework)'=='net48'">
         <RuntimeIdentifier>win10-x64</RuntimeIdentifier>
     </PropertyGroup>
     <ItemGroup>
