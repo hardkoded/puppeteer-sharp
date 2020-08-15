@@ -69,7 +69,6 @@ namespace PuppeteerSharp
         }
 
         #region Properties
-        public Task<Task> NavigationTask { get; internal set; }
         public Task<bool> SameDocumentNavigationTask => _sameDocumentNavigationTaskWrapper.Task;
         public Task<bool> NewDocumentNavigationTask => _newDocumentNavigationTaskWrapper.Task;
         public Response NavigationResponse => _navigationRequest?.Response;
