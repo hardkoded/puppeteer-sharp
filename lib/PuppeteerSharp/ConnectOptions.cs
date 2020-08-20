@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net.WebSockets;
 using PuppeteerSharp.Transport;
 
@@ -17,6 +17,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// If set to true, sets Headless = false, otherwise, enables automation.
         /// </summary>
+        [Obsolete("No longer required and usages should be removed")]
         public bool AppMode { get; set; }
 
         /// <summary>
