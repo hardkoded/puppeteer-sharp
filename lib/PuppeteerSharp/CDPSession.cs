@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
@@ -184,15 +184,24 @@ namespace PuppeteerSharp
         {
             var id = obj.Id;
 
-            if (id.HasValue && _callbacks.TryRemove(id.Value, out var callback))
+            if (id.HasValue)
             {
-                if (obj.Error != null)
+                if (_callbacks.TryRemove(id.Value, out var callback))
                 {
-                    callback.TaskWrapper.TrySetException(new MessageException(callback, obj.Error));
-                }
-                else
-                {
-                    callback.TaskWrapper.TrySetResult(obj.Result);
+                    // This is a response to a SendAsync. Handle the callback async, since (a) we can, and (b)
+                    // to avoid a situation where the continuation tries to call SendAsync again thus creating
+                    // a deadlock.
+                    Task.Run(() =>
+                    {
+                        if (obj.Error != null)
+                        {
+                            callback.TaskWrapper.TrySetException(new MessageException(callback, obj.Error));
+                        }
+                        else
+                        {
+                            callback.TaskWrapper.TrySetResult(obj.Result);
+                        }
+                    });
                 }
             }
             else
@@ -200,6 +209,7 @@ namespace PuppeteerSharp
                 var method = obj.Method;
                 var param = obj.Params?.ToObject<ConnectionResponseParams>();
 
+                // Always call sync, since we need message (event) order to be determinate.
                 MessageReceived?.Invoke(this, new MessageEventArgs
                 {
                     MessageID = method,

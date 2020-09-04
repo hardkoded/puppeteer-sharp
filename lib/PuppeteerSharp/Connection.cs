@@ -19,7 +19,6 @@ namespace PuppeteerSharp
     public class Connection : IDisposable
     {
         private readonly ILogger _logger;
-        private TaskQueue _callbackQueue = new TaskQueue();
 
         internal Connection(string url, int delay, IConnectionTransport transport, ILoggerFactory loggerFactory = null)
         {
@@ -184,7 +183,9 @@ namespace PuppeteerSharp
         #region Private Methods
 
         private async void Transport_MessageReceived(object sender, MessageReceivedEventArgs e)
-            => await _callbackQueue.Enqueue(() => ProcessMessage(e)).ConfigureAwait(false);
+        {
+            await ProcessMessage(e).ConfigureAwait(false);
+        }
 
         private async Task ProcessMessage(MessageReceivedEventArgs e)
         {
@@ -250,18 +251,25 @@ namespace PuppeteerSharp
                 // if not we add this to the list, sooner or later some one will come for it 
                 if (_callbacks.TryRemove(obj.Id.Value, out var callback))
                 {
-                    if (obj.Error != null)
+                    // This is a response to a SendAsync. Handle the callback async, since (a) we can, and (b)
+                    // to avoid a situation where the continuation tries to call SendAsync again thus creating
+                    // a deadlock.
+                    Task.Run(() =>
                     {
-                        callback.TaskWrapper.TrySetException(new MessageException(callback, obj.Error));
-                    }
-                    else
-                    {
-                        callback.TaskWrapper.TrySetResult(obj.Result);
-                    }
+                        if (obj.Error != null)
+                        {
+                            callback.TaskWrapper.TrySetException(new MessageException(callback, obj.Error));
+                        }
+                        else
+                        {
+                            callback.TaskWrapper.TrySetResult(obj.Result);
+                        }
+                    });
                 }
             }
             else
             {
+                // Always call sync, since we need message (event) order to be determinate.
                 MessageReceived?.Invoke(this, new MessageEventArgs
                 {
                     MessageID = method,
