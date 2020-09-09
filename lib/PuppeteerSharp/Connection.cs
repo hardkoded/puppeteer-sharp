@@ -183,9 +183,7 @@ namespace PuppeteerSharp
         #region Private Methods
 
         private async void Transport_MessageReceived(object sender, MessageReceivedEventArgs e)
-        {
-            await ProcessMessage(e).ConfigureAwait(false);
-        }
+            => await ProcessMessage(e).ConfigureAwait(false);
 
         private async Task ProcessMessage(MessageReceivedEventArgs e)
         {
