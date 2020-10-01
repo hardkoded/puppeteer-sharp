@@ -170,6 +170,7 @@ namespace PuppeteerSharp
             _frameManager.NetworkManager.Request -= OnRequest;
             _frameManager.Client.Disconnected -= OnClientDisconnected;
             _terminationCancellationToken.Cancel();
+            _terminationCancellationToken.Dispose();
         }
 
         #endregion
