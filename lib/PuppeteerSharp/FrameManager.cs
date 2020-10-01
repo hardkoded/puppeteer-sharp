@@ -148,8 +148,8 @@ namespace PuppeteerSharp
                 var raceTask = await Task.WhenAny(
                     watcher.NewDocumentNavigationTask,
                     watcher.SameDocumentNavigationTask,
-                    watcher.TimeoutOrTerminationTask
-                ).ConfigureAwait(false);
+                    watcher.TimeoutOrTerminationTask)
+                    .ConfigureAwait(false);
 
                 await raceTask.ConfigureAwait(false);
 

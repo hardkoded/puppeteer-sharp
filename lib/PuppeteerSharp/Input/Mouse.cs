@@ -71,8 +71,8 @@ namespace PuppeteerSharp.Input
             {
                 await Task.WhenAll(
                     MoveAsync(x, y),
-                    DownAsync(options)
-                ).ConfigureAwait(false);
+                    DownAsync(options))
+                    .ConfigureAwait(false);
 
                 await Task.Delay(options.Delay).ConfigureAwait(false);
                 await UpAsync(options).ConfigureAwait(false);
@@ -82,8 +82,8 @@ namespace PuppeteerSharp.Input
                 await Task.WhenAll(
                    MoveAsync(x, y),
                    DownAsync(options),
-                   UpAsync(options)
-               ).ConfigureAwait(false);
+                   UpAsync(options))
+                    .ConfigureAwait(false);
             }
         }
 
