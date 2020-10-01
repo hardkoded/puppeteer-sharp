@@ -7,12 +7,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-
 using Microsoft.Extensions.Logging;
-
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Input;
@@ -1453,8 +1450,7 @@ namespace PuppeteerSharp
 
             await Task.WhenAll(
               navigationTask,
-              Client.SendAsync("Page.reload"))
-                .ConfigureAwait(false);
+              Client.SendAsync("Page.reload")).ConfigureAwait(false);
 
             return navigationTask.Result;
         }
@@ -1854,8 +1850,7 @@ namespace PuppeteerSharp
                    Flatten = true
                }),
                Client.SendAsync("Performance.enable", null),
-               Client.SendAsync("Log.enable", null))
-                .ConfigureAwait(false);
+               Client.SendAsync("Log.enable", null)).ConfigureAwait(false);
 
             try
             {
@@ -1886,8 +1881,7 @@ namespace PuppeteerSharp
                 Client.SendAsync("Page.navigateToHistoryEntry", new PageNavigateToHistoryEntryRequest
                 {
                     EntryId = entry.Id
-                }))
-                .ConfigureAwait(false);
+                })).ConfigureAwait(false);
 
             return waitTask.Result;
         }

@@ -402,8 +402,7 @@ namespace PuppeteerSharp
                     {
                         HandleAuthRequests = true,
                         Patterns = new[] { new FetchEnableRequest.Pattern { UrlPattern = "*" } }
-                    }))
-                    .ConfigureAwait(false);
+                    })).ConfigureAwait(false);
             }
             else
             {

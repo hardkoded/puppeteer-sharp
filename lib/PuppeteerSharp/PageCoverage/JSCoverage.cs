@@ -69,8 +69,7 @@ namespace PuppeteerSharp.PageCoverage
                profileResponseTask,
                _client.SendAsync("Profiler.stopPreciseCoverage"),
                _client.SendAsync("Profiler.disable"),
-               _client.SendAsync("Debugger.disable"))
-                .ConfigureAwait(false);
+               _client.SendAsync("Debugger.disable")).ConfigureAwait(false);
             _client.MessageReceived -= Client_MessageReceived;
 
             var coverage = new List<CoverageEntry>();

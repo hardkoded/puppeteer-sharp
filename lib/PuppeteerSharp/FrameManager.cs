@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
@@ -109,8 +109,7 @@ namespace PuppeteerSharp
 
                     task = await Task.WhenAny(
                         watcher.TimeoutOrTerminationTask,
-                        _ensureNewDocumentNavigation ? watcher.NewDocumentNavigationTask : watcher.SameDocumentNavigationTask)
-                        .ConfigureAwait(false);
+                        _ensureNewDocumentNavigation ? watcher.NewDocumentNavigationTask : watcher.SameDocumentNavigationTask).ConfigureAwait(false);
 
                     await task.ConfigureAwait(false);
                 }
