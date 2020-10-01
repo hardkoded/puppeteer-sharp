@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
+
 using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp.Input
@@ -37,11 +38,11 @@ namespace PuppeteerSharp.Input
         {
             options = options ?? new MoveOptions();
 
-            decimal fromX = _x;
-            decimal fromY = _y;
+            var fromX = _x;
+            var fromY = _y;
             _x = x;
             _y = y;
-            int steps = options.Steps;
+            var steps = options.Steps;
 
             for (var i = 1; i <= steps; i++)
             {

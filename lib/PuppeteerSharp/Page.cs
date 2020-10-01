@@ -7,9 +7,12 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+
 using Microsoft.Extensions.Logging;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Input;
@@ -49,7 +52,7 @@ namespace PuppeteerSharp
         private TaskCompletionSource<bool> _sessionClosedTcs;
         private readonly TimeoutSettings _timeoutSettings;
         private bool _fileChooserInterceptionIsDisabled;
-        private ConcurrentDictionary<Guid, TaskCompletionSource<FileChooser>> _fileChooserInterceptors;
+        private readonly ConcurrentDictionary<Guid, TaskCompletionSource<FileChooser>> _fileChooserInterceptors;
 
         private static readonly Dictionary<string, decimal> _unitToPixels = new Dictionary<string, decimal> {
             {"px", 1},

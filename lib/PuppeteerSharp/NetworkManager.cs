@@ -371,7 +371,7 @@ namespace PuppeteerSharp
             // Request interception doesn't happen for data URLs with Network Service.
             if (_protocolRequestInterceptionEnabled && !e.Request.Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase))
             {
-                if (_requestIdToInterceptionId.TryRemove(e.RequestId, out string interceptionId))
+                if (_requestIdToInterceptionId.TryRemove(e.RequestId, out var interceptionId))
                 {
                     await OnRequestAsync(e, interceptionId).ConfigureAwait(false);
                 }

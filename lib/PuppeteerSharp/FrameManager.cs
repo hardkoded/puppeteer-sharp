@@ -13,7 +13,7 @@ namespace PuppeteerSharp
 {
     internal class FrameManager
     {
-        private Dictionary<int, ExecutionContext> _contextIdToContext;
+        private readonly Dictionary<int, ExecutionContext> _contextIdToContext;
         private bool _ensureNewDocumentNavigation;
         private readonly ILogger _logger;
         private readonly ConcurrentDictionary<string, Frame> _frames;
