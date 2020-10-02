@@ -6,7 +6,7 @@
     public class NavigationOptions
     {
         /// <summary>
-        /// Maximum navigation time in milliseconds, defaults to 30 seconds, pass <c>0</c> to disable timeout. 
+        /// Maximum navigation time in milliseconds, defaults to 30 seconds, pass <c>0</c> to disable timeout.
         /// </summary>
         /// <remarks>
         /// The default value can be changed by setting the <see cref="Page.DefaultNavigationTimeout"/> or <see cref="Page.DefaultTimeout"/> property.

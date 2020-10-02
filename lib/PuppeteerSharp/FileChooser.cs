@@ -17,7 +17,7 @@ namespace PuppeteerSharp
     /// await Task.WhenAll(
     ///     waitTask,
     ///     page.ClickAsync("#upload-file-button")); // some button that triggers file selection
-    /// 
+    ///
     /// await waitTask.Result.AcceptAsync('/tmp/myfile.pdf');
     /// ]]>
     /// </code>
@@ -44,7 +44,7 @@ namespace PuppeteerSharp
         public bool IsMultiple { get; }
 
         /// <summary>
-        /// Accept the file chooser request with given paths. 
+        /// Accept the file chooser request with given paths.
         /// If some of the filePaths are relative paths, then they are resolved relative to the current working directory.
         /// </summary>
         /// <param name="filePaths">File paths to send to the file chooser</param>
