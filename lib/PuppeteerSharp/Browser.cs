@@ -87,7 +87,7 @@ namespace PuppeteerSharp
         #region Properties
 
         /// <summary>
-        /// Raised when the <see cref="Browser"/> gets closed. 
+        /// Raised when the <see cref="Browser"/> gets closed.
         /// </summary>
         public event EventHandler Closed;
 

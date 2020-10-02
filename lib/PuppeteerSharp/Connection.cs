@@ -247,7 +247,7 @@ namespace PuppeteerSharp
             else if (obj.Id.HasValue)
             {
                 // If we get the object we are waiting for we return if
-                // if not we add this to the list, sooner or later some one will come for it 
+                // if not we add this to the list, sooner or later some one will come for it
                 if (_callbacks.TryRemove(obj.Id.Value, out var callback))
                 {
                     if (obj.Error != null)

@@ -13,9 +13,9 @@ namespace PuppeteerSharp
     /// <see cref="Page.Request"/> emitted when the request is issued by the page.
     /// <see cref="Page.Response"/> emitted when/if the response is received for the request.
     /// <see cref="Page.RequestFinished"/> emitted when the response body is downloaded and the request is complete.
-    /// 
+    ///
     /// If request fails at some point, then instead of <see cref="Page.RequestFinished"/> event (and possibly instead of <see cref="Page.Response"/> event), the <see cref="Page.RequestFailed"/> event is emitted.
-    /// 
+    ///
     /// If request gets a 'redirect' response, the request is successfully finished with the <see cref="Page.RequestFinished"/> event, and a new request is issued to a redirected url.
     /// </summary>
     public class Request

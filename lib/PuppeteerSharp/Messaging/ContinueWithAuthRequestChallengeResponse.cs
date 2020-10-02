@@ -1,5 +1,5 @@
 ﻿namespace PuppeteerSharp.Messaging
-{    
+{
     internal class ContinueWithAuthRequestChallengeResponse
     {
         public string Response { get; set; }
