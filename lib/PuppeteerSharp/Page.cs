@@ -365,7 +365,9 @@ namespace PuppeteerSharp
         public Accessibility Accessibility { get; }
 
         internal bool JavascriptEnabled { get; set; } = true;
+
         internal bool HasPopupEventListeners => Popup?.GetInvocationList().Any() == true;
+
         internal FrameManager FrameManager { get; private set; }
 
         private Task SessionClosedTask

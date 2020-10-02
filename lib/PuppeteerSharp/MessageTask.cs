@@ -12,6 +12,7 @@ namespace PuppeteerSharp
 
         #region public Properties
         internal TaskCompletionSource<JObject> TaskWrapper { get; set; }
+
         internal string Method { get; set; }
         #endregion
     }

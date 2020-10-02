@@ -17,6 +17,7 @@ namespace PuppeteerSharp
         private readonly ConcurrentDictionary<string, Request> _requestIdToRequest = new ConcurrentDictionary<string, Request>();
         private readonly ConcurrentDictionary<string, RequestWillBeSentPayload> _requestIdToRequestWillBeSentEvent =
             new ConcurrentDictionary<string, RequestWillBeSentPayload>();
+
         private readonly ConcurrentDictionary<string, string> _requestIdToInterceptionId = new ConcurrentDictionary<string, string>();
         private readonly ILogger _logger;
         private Dictionary<string, string> _extraHTTPHeaders;
@@ -40,10 +41,15 @@ namespace PuppeteerSharp
 
         #region Public Properties
         internal Dictionary<string, string> ExtraHTTPHeaders => _extraHTTPHeaders?.Clone();
+
         internal event EventHandler<ResponseCreatedEventArgs> Response;
+
         internal event EventHandler<RequestEventArgs> Request;
+
         internal event EventHandler<RequestEventArgs> RequestFinished;
+
         internal event EventHandler<RequestEventArgs> RequestFailed;
+
         internal FrameManager FrameManager { get; set; }
         #endregion
 

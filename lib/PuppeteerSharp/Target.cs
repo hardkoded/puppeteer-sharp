@@ -20,6 +20,7 @@ namespace PuppeteerSharp
         #endregion
 
         internal bool IsInitialized { get; set; }
+
         internal TargetInfo TargetInfo { get; set; }
 
         internal Target(
@@ -102,8 +103,11 @@ namespace PuppeteerSharp
         public BrowserContext BrowserContext { get; }
 
         internal Task<bool> InitializedTask => _initializedTaskWrapper.Task;
+
         internal Task CloseTask => CloseTaskWrapper.Task;
+
         internal TaskCompletionSource<bool> CloseTaskWrapper { get; }
+
         internal Task<Page> PageTask { get; set; }
         #endregion
 

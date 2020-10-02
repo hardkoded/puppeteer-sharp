@@ -41,11 +41,17 @@ namespace PuppeteerSharp
         private readonly CDPSession _client;
 
         internal List<WaitTask> WaitTasks { get; }
+
         internal string Id { get; set; }
+
         internal string LoaderId { get; set; }
+
         internal List<string> LifecycleEvents { get; }
+
         internal string NavigationURL { get; private set; }
+
         internal DOMWorld MainWorld { get; }
+
         internal DOMWorld SecondaryWorld { get; }
 
         internal Frame(FrameManager frameManager, CDPSession client, Frame parentFrame, string frameId)

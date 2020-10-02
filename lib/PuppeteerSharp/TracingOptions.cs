@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+
 namespace PuppeteerSharp
 {
     /// <summary>

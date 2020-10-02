@@ -39,15 +39,23 @@ namespace PuppeteerSharp
         #region Properties
 
         internal event EventHandler<FrameEventArgs> FrameAttached;
+
         internal event EventHandler<FrameEventArgs> FrameDetached;
+
         internal event EventHandler<FrameEventArgs> FrameNavigated;
+
         internal event EventHandler<FrameEventArgs> FrameNavigatedWithinDocument;
+
         internal event EventHandler<FrameEventArgs> LifecycleEvent;
 
         internal CDPSession Client { get; }
+
         internal NetworkManager NetworkManager { get; }
+
         internal Frame MainFrame { get; set; }
+
         internal Page Page { get; }
+
         internal TimeoutSettings TimeoutSettings { get; }
         #endregion
 
