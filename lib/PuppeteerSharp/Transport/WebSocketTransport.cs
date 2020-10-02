@@ -59,7 +59,6 @@ namespace PuppeteerSharp.Transport
         private readonly WebSocket _client;
         private readonly bool _queueRequests;
         private readonly TaskQueue _socketQueue = new TaskQueue();
-        
         [SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", Justification = "False positive, as it is disposed in StopReading() method.")]
         private CancellationTokenSource _readerCancellationSource = new CancellationTokenSource();
 
