@@ -90,6 +90,7 @@ namespace PuppeteerSharp
         #region Public Methods
 
         internal int GetMessageID() => Interlocked.Increment(ref _lastId);
+
         internal Task RawSendASync(int id, string method, object args, string sessionId = null)
         {
             _logger.LogTrace("Send ► {Id} Method {Method} Params {@Params}", id, method, args);
@@ -178,7 +179,9 @@ namespace PuppeteerSharp
         }
 
         internal static Connection FromSession(CDPSession session) => session.Connection;
+
         internal CDPSession GetSession(string sessionId) => _sessions.GetValueOrDefault(sessionId);
+
         internal Task<CDPSession> GetSessionAsync(string sessionId) => _asyncSessions.GetItemAsync(sessionId);
 
         #region Private Methods

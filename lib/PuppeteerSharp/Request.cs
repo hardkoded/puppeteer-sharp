@@ -140,6 +140,7 @@ namespace PuppeteerSharp
         public Request[] RedirectChain => RedirectChainList.ToArray();
 
         internal bool FromMemoryCache { get; set; }
+
         internal List<Request> RedirectChainList { get; }
         #endregion
 

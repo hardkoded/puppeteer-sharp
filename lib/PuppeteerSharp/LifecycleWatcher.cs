@@ -70,9 +70,13 @@ namespace PuppeteerSharp
 
         #region Properties
         public Task<bool> SameDocumentNavigationTask => _sameDocumentNavigationTaskWrapper.Task;
+
         public Task<bool> NewDocumentNavigationTask => _newDocumentNavigationTaskWrapper.Task;
+
         public Response NavigationResponse => _navigationRequest?.Response;
+
         public Task TimeoutOrTerminationTask => _terminationTaskWrapper.Task.WithTimeout(_timeout, cancellationToken: _terminationCancellationToken.Token);
+
         public Task LifecycleTask => _lifecycleTaskWrapper.Task;
 
         #endregion
