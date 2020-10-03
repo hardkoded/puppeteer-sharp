@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -371,7 +371,7 @@ namespace PuppeteerSharp
             // Request interception doesn't happen for data URLs with Network Service.
             if (_protocolRequestInterceptionEnabled && !e.Request.Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase))
             {
-                if (_requestIdToInterceptionId.TryRemove(e.RequestId, out string interceptionId))
+                if (_requestIdToInterceptionId.TryRemove(e.RequestId, out var interceptionId))
                 {
                     await OnRequestAsync(e, interceptionId).ConfigureAwait(false);
                 }
@@ -402,15 +402,13 @@ namespace PuppeteerSharp
                     {
                         HandleAuthRequests = true,
                         Patterns = new[] { new FetchEnableRequest.Pattern { UrlPattern = "*" } }
-                    })
-                ).ConfigureAwait(false);
+                    })).ConfigureAwait(false);
             }
             else
             {
                 await Task.WhenAll(
                     UpdateProtocolCacheDisabledAsync(),
-                    _client.SendAsync("Fetch.disable")
-                ).ConfigureAwait(false);
+                    _client.SendAsync("Fetch.disable")).ConfigureAwait(false);
             }
         }
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
@@ -13,7 +13,7 @@ namespace PuppeteerSharp
 {
     internal class FrameManager
     {
-        private Dictionary<int, ExecutionContext> _contextIdToContext;
+        private readonly Dictionary<int, ExecutionContext> _contextIdToContext;
         private bool _ensureNewDocumentNavigation;
         private readonly ILogger _logger;
         private readonly ConcurrentDictionary<string, Frame> _frames;
@@ -109,8 +109,7 @@ namespace PuppeteerSharp
 
                     task = await Task.WhenAny(
                         watcher.TimeoutOrTerminationTask,
-                        _ensureNewDocumentNavigation ? watcher.NewDocumentNavigationTask : watcher.SameDocumentNavigationTask)
-                        .ConfigureAwait(false);
+                        _ensureNewDocumentNavigation ? watcher.NewDocumentNavigationTask : watcher.SameDocumentNavigationTask).ConfigureAwait(false);
 
                     await task.ConfigureAwait(false);
                 }
@@ -148,8 +147,7 @@ namespace PuppeteerSharp
                 var raceTask = await Task.WhenAny(
                     watcher.NewDocumentNavigationTask,
                     watcher.SameDocumentNavigationTask,
-                    watcher.TimeoutOrTerminationTask
-                ).ConfigureAwait(false);
+                    watcher.TimeoutOrTerminationTask).ConfigureAwait(false);
 
                 await raceTask.ConfigureAwait(false);
 

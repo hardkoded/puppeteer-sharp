@@ -49,7 +49,7 @@ namespace PuppeteerSharp
         private TaskCompletionSource<bool> _sessionClosedTcs;
         private readonly TimeoutSettings _timeoutSettings;
         private bool _fileChooserInterceptionIsDisabled;
-        private ConcurrentDictionary<Guid, TaskCompletionSource<FileChooser>> _fileChooserInterceptors;
+        private readonly ConcurrentDictionary<Guid, TaskCompletionSource<FileChooser>> _fileChooserInterceptors;
 
         private static readonly Dictionary<string, decimal> _unitToPixels = new Dictionary<string, decimal> {
             {"px", 1},
@@ -1157,8 +1157,7 @@ namespace PuppeteerSharp
         /// <param name="options">Emulation options.</param>
         public Task EmulateAsync(DeviceDescriptor options) => Task.WhenAll(
             SetViewportAsync(options.ViewPort),
-            SetUserAgentAsync(options.UserAgent)
-        );
+            SetUserAgentAsync(options.UserAgent));
 
         /// <summary>
         /// Takes a screenshot of the page
@@ -1451,8 +1450,7 @@ namespace PuppeteerSharp
 
             await Task.WhenAll(
               navigationTask,
-              Client.SendAsync("Page.reload")
-            ).ConfigureAwait(false);
+              Client.SendAsync("Page.reload")).ConfigureAwait(false);
 
             return navigationTask.Result;
         }
@@ -1852,8 +1850,7 @@ namespace PuppeteerSharp
                    Flatten = true
                }),
                Client.SendAsync("Performance.enable", null),
-               Client.SendAsync("Log.enable", null)
-           ).ConfigureAwait(false);
+               Client.SendAsync("Log.enable", null)).ConfigureAwait(false);
 
             try
             {
@@ -1884,8 +1881,7 @@ namespace PuppeteerSharp
                 Client.SendAsync("Page.navigateToHistoryEntry", new PageNavigateToHistoryEntryRequest
                 {
                     EntryId = entry.Id
-                })
-            ).ConfigureAwait(false);
+                })).ConfigureAwait(false);
 
             return waitTask.Result;
         }
