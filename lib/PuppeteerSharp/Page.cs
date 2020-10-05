@@ -1871,7 +1871,7 @@ namespace PuppeteerSharp
         {
             var history = await Client.SendAsync<PageGetNavigationHistoryResponse>("Page.getNavigationHistory").ConfigureAwait(false);
 
-            if (history.Entries.Count <= history.CurrentIndex + delta)
+            if (history.Entries.Count <= history.CurrentIndex + delta || history.CurrentIndex + delta < 0)
             {
                 return null;
             }
