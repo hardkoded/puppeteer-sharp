@@ -90,6 +90,7 @@ namespace PuppeteerSharp
         #region Public Methods
 
         internal int GetMessageID() => Interlocked.Increment(ref _lastId);
+
         internal Task RawSendASync(int id, string method, object args, string sessionId = null)
         {
             _logger.LogTrace("Send ► {Id} Method {Method} Params {@Params}", id, method, args);
@@ -178,7 +179,9 @@ namespace PuppeteerSharp
         }
 
         internal static Connection FromSession(CDPSession session) => session.Connection;
+
         internal CDPSession GetSession(string sessionId) => _sessions.GetValueOrDefault(sessionId);
+
         internal Task<CDPSession> GetSessionAsync(string sessionId) => _asyncSessions.GetItemAsync(sessionId);
 
         #region Private Methods
@@ -247,7 +250,7 @@ namespace PuppeteerSharp
             else if (obj.Id.HasValue)
             {
                 // If we get the object we are waiting for we return if
-                // if not we add this to the list, sooner or later some one will come for it 
+                // if not we add this to the list, sooner or later some one will come for it
                 if (_callbacks.TryRemove(obj.Id.Value, out var callback))
                 {
                     // This is a response to a SendAsync. Handle the callback async, since (a) we can, and (b)

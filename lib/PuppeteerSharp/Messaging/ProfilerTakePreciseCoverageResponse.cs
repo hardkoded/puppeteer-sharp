@@ -7,6 +7,7 @@
         internal class ProfilerTakePreciseCoverageResponseItem
         {
             public string ScriptId { get; set; }
+
             public ProfilerTakePreciseCoverageResponseFunction[] Functions { get; set; }
         }
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net.WebSockets;
 using PuppeteerSharp.Transport;
 
@@ -17,6 +17,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// If set to true, sets Headless = false, otherwise, enables automation.
         /// </summary>
+        [Obsolete("No longer required and usages should be removed")]
         public bool AppMode { get; set; }
 
         /// <summary>
@@ -29,7 +30,7 @@ namespace PuppeteerSharp
         /// Use interchangeably with `browserWSEndpoint` to let Puppeteer fetch it from <see href="https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target">metadata endpoin</see>.
         /// </summary>
         public string BrowserURL { get; set; }
-        
+
         /// <summary>
         /// Slows down Puppeteer operations by the specified amount of milliseconds. Useful so that you can see what is going on.
         /// </summary>

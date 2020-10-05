@@ -5,6 +5,7 @@ using System.Linq;
 using System.Diagnostics.Contracts;
 using PuppeteerSharp.Helpers;
 using System.Threading;
+using System.Diagnostics.CodeAnalysis;
 
 namespace PuppeteerSharp
 {
@@ -32,6 +33,7 @@ namespace PuppeteerSharp
         private TaskCompletionSource<bool> _sameDocumentNavigationTaskWrapper;
         private TaskCompletionSource<bool> _lifecycleTaskWrapper;
         private TaskCompletionSource<bool> _terminationTaskWrapper;
+        [SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", Justification = "False positive, as it is disposed.")]
         private CancellationTokenSource _terminationCancellationToken;
 
         public LifecycleWatcher(
@@ -69,11 +71,14 @@ namespace PuppeteerSharp
         }
 
         #region Properties
-        public Task<Task> NavigationTask { get; internal set; }
         public Task<bool> SameDocumentNavigationTask => _sameDocumentNavigationTaskWrapper.Task;
+
         public Task<bool> NewDocumentNavigationTask => _newDocumentNavigationTaskWrapper.Task;
+
         public Response NavigationResponse => _navigationRequest?.Response;
+
         public Task TimeoutOrTerminationTask => _terminationTaskWrapper.Task.WithTimeout(_timeout, cancellationToken: _terminationCancellationToken.Token);
+
         public Task LifecycleTask => _lifecycleTaskWrapper.Task;
 
         #endregion

@@ -75,7 +75,6 @@ namespace PuppeteerSharp
 
         private static (List<string> chromiumArgs, TempDirectory tempUserDataDirectory) PrepareChromiumArgs(LaunchOptions options)
         {
-
             var chromiumArgs = new List<string>();
 
             if (!options.IgnoreDefaultArgs)
