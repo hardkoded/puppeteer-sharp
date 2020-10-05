@@ -9,9 +9,9 @@
     <Rule Id="SX1309" Action="Error" />
 
     <Rule Id="SA1624" Action="None" /> <!-- Error SA1624: Because the property only contains a visible get accessor, the documentation summary text should begin with 'Gets'. (SA1624)-->
-    <Rule Id="SA1028" Action="None" /> <!-- Error SA1028: Code should not contain trailing whitespace (SA1028)-->
+    <Rule Id="SA1028" Action="Error" /> <!-- Error SA1028: Code should not contain trailing whitespace (SA1028)-->
     <Rule Id="SA1600" Action="None" /> <!-- Error SA1600: Elements should be documented (SA1600)-->
-    <Rule Id="SA1516" Action="None" /> <!-- Error SA1516: Elements should be separated by blank line (SA1516)-->
+    <Rule Id="SA1516" Action="Error" /> <!-- Error SA1516: Elements should be separated by blank line (SA1516)-->
     <Rule Id="SA1629" Action="None" /> <!-- Error SA1629: Documentation text should end with a period (SA1629)-->
     <Rule Id="SA1514" Action="None" /> <!-- Error SA1514: Element documentation header should be preceded by blank line (SA1514)-->
     <Rule Id="SA1201" Action="None" /> <!-- Error SA1201: A constructor should not follow a property (SA1201)-->
@@ -25,7 +25,7 @@
     <Rule Id="SA1009" Action="Error" /> <!-- Error SA1009: Closing parenthesis should not be preceded by a space. (SA1009)-->
     <Rule Id="SA1413" Action="None" /> <!-- Error SA1413: Use trailing comma in multi-line initializers (SA1413)-->
     <Rule Id="SA1602" Action="None" /> <!-- Error SA1602: Enumeration items should be documented (SA1602)-->
-    <Rule Id="SA1005" Action="None" /> <!-- Error SA1005: Single line comment should begin with a space. (SA1005)-->
+    <Rule Id="SA1005" Action="Error" /> <!-- Error SA1005: Single line comment should begin with a space. (SA1005)-->
     <Rule Id="SA1203" Action="None" /> <!-- Error SA1203: Constant fields should appear before non-constant fields (SA1203)-->
     <Rule Id="SA1720" Action="None" /> <!-- Error SA1720: Name contains type-->
     <Rule Id="SA1300" Action="None" /> <!-- Error SA1300: Element 'iFrame' should begin with an uppercase letter (SA1300)-->
@@ -43,8 +43,8 @@
     <Rule Id="SA1627" Action="None" /> <!-- Error SA1627: The documentation text within the \'exception\' tag should not be empty. (SA1627)-->
     <Rule Id="SA1622" Action="None" /> <!-- Error SA1622: Generic type parameter documentation should have text. (SA1622)-->
     <Rule Id="SA1116" Action="None" /> <!-- Error SA1116: The parameters should begin on the line after the declaration, whenever the parameter span across multiple lines (SA1116)-->
-    <Rule Id="SA1111" Action="None" /> <!-- Error SA1111: Closing parenthesis should be on line of last parameter (SA1111)-->
-    <Rule Id="SA1505" Action="None" /> <!-- Error SA1505: An opening brace should not be followed by a blank line. (SA1505) -->
+    <Rule Id="SA1111" Action="Error" /> <!-- Error SA1111: Closing parenthesis should be on line of last parameter (SA1111)-->
+    <Rule Id="SA1505" Action="Error" /> <!-- Error SA1505: An opening brace should not be followed by a blank line. (SA1505) -->
     <Rule Id="SA1612" Action="None" /> <!-- Error SA1612: The parameter documentation for 'filePaths' should be at position 2. (SA1612) -->
     <Rule Id="SA1620" Action="None" /> <!-- Error SA1620: The type parameter documentation for 'T4' should be at position 4. (SA1620) -->
     <Rule Id="SA1118" Action="None" /> <!-- Error SA1118: The parameter spans multiple lines (SA1118) -->
@@ -79,7 +79,7 @@
     <Rule Id="CA2000" Action="Error" /> <!-- Error CA2000: Call System.IDisposable.Dispose on object created by 'new Process()' before all references to it are out of scope. (CA2000) -->
     <Rule Id="CA2008" Action="None" /> <!-- Error ca2008: Pass TaskScheduler-->
     <Rule Id="CA2200" Action="None" /> <!-- Error CA2200: Re-throwing caught exception changes stack information. (CA2200)  -->
-    <Rule Id="CA2213" Action="None" /> <!-- Error CA2213: 'WebSocketTransport' contains field '_readerCancellationSource' that is of IDisposable type 'CancellationTokenSource', but it is never disposed. Change the Dispose method on 'WebSocketTransport' to call Close or Dispose on this field. (CA2213) -->
+    <Rule Id="CA2213" Action="Error" /> <!-- Error CA2213: 'WebSocketTransport' contains field '_readerCancellationSource' that is of IDisposable type 'CancellationTokenSource', but it is never disposed. Change the Dispose method on 'WebSocketTransport' to call Close or Dispose on this field. (CA2213) -->
     <Rule Id="CA2220" Action="None" /> <!-- Error CA2229: Add a constructor to SelectorException with the following signature: 'protected SelectorException(SerializationInfo info, StreamingContext context)'. (CA2229) (PuppeteerSharp)-->
     <Rule Id="CA2229" Action="Error" /> <!-- Error CA2229: Add a constructor to SelectorException with the following signature: 'protected SelectorException(SerializationInfo info, StreamingContext context)'. (CA2229)-->
     <Rule Id="CA2237" Action="None" /> <!-- Error CA2237: Add [Serializable] to TargetClosedException as this type implements ISerializable (CA2237)-->

@@ -26,7 +26,7 @@
         BlockedByClient,
 
         /// <summary>
-        /// The request failed because the response was delivered along with requirements which are not met 
+        /// The request failed because the response was delivered along with requirements which are not met
         /// ('X-Frame-Options' and 'Content-Security-Policy' ancestor checks, for instance).
         /// </summary>
         BlockedByResponse,

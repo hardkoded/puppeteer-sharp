@@ -27,6 +27,7 @@ namespace PuppeteerSharp
 
         #region Properties
         internal FramePayload Frame { get; set; }
+
         internal List<FrameTree> Childs { get; set; }
         #endregion
 

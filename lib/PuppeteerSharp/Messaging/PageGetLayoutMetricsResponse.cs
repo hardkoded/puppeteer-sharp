@@ -7,6 +7,7 @@
         public class LayourContentSize
         {
             public decimal Width { get; set; }
+
             public decimal Height { get; set; }
         }
     }

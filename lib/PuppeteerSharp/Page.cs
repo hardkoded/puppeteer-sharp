@@ -49,7 +49,7 @@ namespace PuppeteerSharp
         private TaskCompletionSource<bool> _sessionClosedTcs;
         private readonly TimeoutSettings _timeoutSettings;
         private bool _fileChooserInterceptionIsDisabled;
-        private ConcurrentDictionary<Guid, TaskCompletionSource<FileChooser>> _fileChooserInterceptors;
+        private readonly ConcurrentDictionary<Guid, TaskCompletionSource<FileChooser>> _fileChooserInterceptors;
 
         private static readonly Dictionary<string, decimal> _unitToPixels = new Dictionary<string, decimal> {
             {"px", 1},
@@ -365,7 +365,9 @@ namespace PuppeteerSharp
         public Accessibility Accessibility { get; }
 
         internal bool JavascriptEnabled { get; set; } = true;
+
         internal bool HasPopupEventListeners => Popup?.GetInvocationList().Any() == true;
+
         internal FrameManager FrameManager { get; private set; }
 
         private Task SessionClosedTask
@@ -1450,8 +1452,7 @@ namespace PuppeteerSharp
 
             await Task.WhenAll(
               navigationTask,
-              Client.SendAsync("Page.reload")).
-                ConfigureAwait(false);
+              Client.SendAsync("Page.reload")).ConfigureAwait(false);
 
             return navigationTask.Result;
         }
@@ -1851,8 +1852,7 @@ namespace PuppeteerSharp
                    Flatten = true
                }),
                Client.SendAsync("Performance.enable", null),
-               Client.SendAsync("Log.enable", null)).
-                ConfigureAwait(false);
+               Client.SendAsync("Log.enable", null)).ConfigureAwait(false);
 
             try
             {

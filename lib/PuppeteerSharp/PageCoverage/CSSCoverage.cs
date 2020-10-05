@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -59,8 +59,7 @@ namespace PuppeteerSharp.PageCoverage
             var trackingResponse = await _client.SendAsync<CSSStopRuleUsageTrackingResponse>("CSS.stopRuleUsageTracking").ConfigureAwait(false);
             await Task.WhenAll(
                 _client.SendAsync("CSS.disable"),
-                _client.SendAsync("DOM.disable"))
-            .ConfigureAwait(false);
+                _client.SendAsync("DOM.disable")).ConfigureAwait(false);
             _client.MessageReceived -= Client_MessageReceived;
 
             var styleSheetIdToCoverage = new Dictionary<string, List<CoverageResponseRange>>();

@@ -10,7 +10,9 @@ namespace PuppeteerSharp.PageAccessibility
     internal class AXNode
     {
         internal AccessibilityGetFullAXTreeResponse.AXTreeNode Payload { get; }
+
         public List<AXNode> Children { get; }
+
         public bool Focusable { get; set; }
 
         private readonly string _name;

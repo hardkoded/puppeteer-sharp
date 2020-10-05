@@ -17,6 +17,7 @@ namespace PuppeteerSharp
         private readonly ConcurrentDictionary<string, Request> _requestIdToRequest = new ConcurrentDictionary<string, Request>();
         private readonly ConcurrentDictionary<string, RequestWillBeSentPayload> _requestIdToRequestWillBeSentEvent =
             new ConcurrentDictionary<string, RequestWillBeSentPayload>();
+
         private readonly ConcurrentDictionary<string, string> _requestIdToInterceptionId = new ConcurrentDictionary<string, string>();
         private readonly ILogger _logger;
         private Dictionary<string, string> _extraHTTPHeaders;
@@ -40,10 +41,15 @@ namespace PuppeteerSharp
 
         #region Public Properties
         internal Dictionary<string, string> ExtraHTTPHeaders => _extraHTTPHeaders?.Clone();
+
         internal event EventHandler<ResponseCreatedEventArgs> Response;
+
         internal event EventHandler<RequestEventArgs> Request;
+
         internal event EventHandler<RequestEventArgs> RequestFinished;
+
         internal event EventHandler<RequestEventArgs> RequestFailed;
+
         internal FrameManager FrameManager { get; set; }
         #endregion
 
@@ -371,7 +377,7 @@ namespace PuppeteerSharp
             // Request interception doesn't happen for data URLs with Network Service.
             if (_protocolRequestInterceptionEnabled && !e.Request.Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase))
             {
-                if (_requestIdToInterceptionId.TryRemove(e.RequestId, out string interceptionId))
+                if (_requestIdToInterceptionId.TryRemove(e.RequestId, out var interceptionId))
                 {
                     await OnRequestAsync(e, interceptionId).ConfigureAwait(false);
                 }
@@ -402,15 +408,13 @@ namespace PuppeteerSharp
                     {
                         HandleAuthRequests = true,
                         Patterns = new[] { new FetchEnableRequest.Pattern { UrlPattern = "*" } }
-                    }))
-                .ConfigureAwait(false);
+                    })).ConfigureAwait(false);
             }
             else
             {
                 await Task.WhenAll(
                     UpdateProtocolCacheDisabledAsync(),
-                    _client.SendAsync("Fetch.disable"))
-                .ConfigureAwait(false);
+                    _client.SendAsync("Fetch.disable")).ConfigureAwait(false);
             }
         }
 

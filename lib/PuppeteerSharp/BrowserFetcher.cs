@@ -34,6 +34,7 @@ namespace PuppeteerSharp
             [Platform.Win32] = "{0}/chromium-browser-snapshots/Win/{1}/{2}.zip",
             [Platform.Win64] = "{0}/chromium-browser-snapshots/Win_x64/{1}/{2}.zip"
         };
+
         private readonly WebClient _webClient = new WebClient();
 
         /// <summary>
