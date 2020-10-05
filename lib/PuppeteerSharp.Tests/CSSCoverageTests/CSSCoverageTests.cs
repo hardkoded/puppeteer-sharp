@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -63,11 +62,6 @@ namespace PuppeteerSharp.Tests.CSSCoverageTests
         {
             await Page.Coverage.StartCSSCoverageAsync();
             await Page.GoToAsync(TestConstants.ServerUrl + "/csscoverage/unused.html");
-
-            // Wait until the <style> is actually present before we stop coverage, to avoid a race
-            // between the page loading and stopping coverage.
-            await Page.WaitForSelectorAsync("style");
-
             var coverage = await Page.Coverage.StopCSSCoverageAsync();
             Assert.Single(coverage);
             var entry = coverage[0];
