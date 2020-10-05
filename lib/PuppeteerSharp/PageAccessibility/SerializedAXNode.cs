@@ -146,8 +146,7 @@ namespace PuppeteerSharp.PageAccessibility
                     Level == other.Level &&
                     ValueMin == other.ValueMin &&
                     ValueMax == other.ValueMax &&
-                    (Children == other.Children || Children.SequenceEqual(other.Children))
-                );
+                    (Children == other.Children || Children.SequenceEqual(other.Children)));
 
         /// <inheritdoc/>
         public override bool Equals(object obj) => obj is SerializedAXNode s && Equals(s);
