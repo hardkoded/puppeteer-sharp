@@ -754,8 +754,8 @@ namespace PuppeteerSharp
         /// Adds a function called <c>name</c> on the page's <c>window</c> object.
         /// When called, the function executes <paramref name="puppeteerFunction"/> in C# and returns a <see cref="Task"/> which resolves to the return value of <paramref name="puppeteerFunction"/>.
         /// </summary>
-        /// <typeparam name="TResult">The result of <paramref name="puppeteerFunction"/></typeparam>
         /// <typeparam name="T">The parameter of <paramref name="puppeteerFunction"/></typeparam>
+        /// <typeparam name="TResult">The result of <paramref name="puppeteerFunction"/></typeparam>
         /// <param name="name">Name of the function on the window object</param>
         /// <param name="puppeteerFunction">Callback function which will be called in Puppeteer's context.</param>
         /// <remarks>
@@ -770,9 +770,9 @@ namespace PuppeteerSharp
         /// Adds a function called <c>name</c> on the page's <c>window</c> object.
         /// When called, the function executes <paramref name="puppeteerFunction"/> in C# and returns a <see cref="Task"/> which resolves to the return value of <paramref name="puppeteerFunction"/>.
         /// </summary>
-        /// <typeparam name="TResult">The result of <paramref name="puppeteerFunction"/></typeparam>
         /// <typeparam name="T1">The first parameter of <paramref name="puppeteerFunction"/></typeparam>
         /// <typeparam name="T2">The second parameter of <paramref name="puppeteerFunction"/></typeparam>
+        /// <typeparam name="TResult">The result of <paramref name="puppeteerFunction"/></typeparam>
         /// <param name="name">Name of the function on the window object</param>
         /// <param name="puppeteerFunction">Callback function which will be called in Puppeteer's context.</param>
         /// <remarks>
@@ -787,10 +787,10 @@ namespace PuppeteerSharp
         /// Adds a function called <c>name</c> on the page's <c>window</c> object.
         /// When called, the function executes <paramref name="puppeteerFunction"/> in C# and returns a <see cref="Task"/> which resolves to the return value of <paramref name="puppeteerFunction"/>.
         /// </summary>
-        /// <typeparam name="TResult">The result of <paramref name="puppeteerFunction"/></typeparam>
         /// <typeparam name="T1">The first parameter of <paramref name="puppeteerFunction"/></typeparam>
         /// <typeparam name="T2">The second parameter of <paramref name="puppeteerFunction"/></typeparam>
         /// <typeparam name="T3">The third parameter of <paramref name="puppeteerFunction"/></typeparam>
+        /// <typeparam name="TResult">The result of <paramref name="puppeteerFunction"/></typeparam>
         /// <param name="name">Name of the function on the window object</param>
         /// <param name="puppeteerFunction">Callback function which will be called in Puppeteer's context.</param>
         /// <remarks>
@@ -805,11 +805,11 @@ namespace PuppeteerSharp
         /// Adds a function called <c>name</c> on the page's <c>window</c> object.
         /// When called, the function executes <paramref name="puppeteerFunction"/> in C# and returns a <see cref="Task"/> which resolves to the return value of <paramref name="puppeteerFunction"/>.
         /// </summary>
-        /// <typeparam name="TResult">The result of <paramref name="puppeteerFunction"/></typeparam>
         /// <typeparam name="T1">The first parameter of <paramref name="puppeteerFunction"/></typeparam>
         /// <typeparam name="T2">The second parameter of <paramref name="puppeteerFunction"/></typeparam>
         /// <typeparam name="T3">The third parameter of <paramref name="puppeteerFunction"/></typeparam>
         /// <typeparam name="T4">The fourth parameter of <paramref name="puppeteerFunction"/></typeparam>
+        /// <typeparam name="TResult">The result of <paramref name="puppeteerFunction"/></typeparam>
         /// <param name="name">Name of the function on the window object</param>
         /// <param name="puppeteerFunction">Callback function which will be called in Puppeteer's context.</param>
         /// <remarks>
