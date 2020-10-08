@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -421,13 +421,7 @@ namespace PuppeteerSharp
                 polling,
                 null,
                 timeout,
-                new object[]
-                {
-                    selectorOrXPath,
-                    isXPath,
-                    options.Visible,
-                    options.Hidden
-                }).Task.ConfigureAwait(false);
+                new object[] { selectorOrXPath, isXPath, options.Visible, options.Hidden }).Task.ConfigureAwait(false);
 
             if (!(handle is ElementHandle elementHandle))
             {
