@@ -45,7 +45,7 @@
     <Rule Id="SA1116" Action="None" /> <!-- Error SA1116: The parameters should begin on the line after the declaration, whenever the parameter span across multiple lines (SA1116)-->
     <Rule Id="SA1111" Action="Error" /> <!-- Error SA1111: Closing parenthesis should be on line of last parameter (SA1111)-->
     <Rule Id="SA1505" Action="Error" /> <!-- Error SA1505: An opening brace should not be followed by a blank line. (SA1505) -->
-    <Rule Id="SA1612" Action="None" /> <!-- Error SA1612: The parameter documentation for 'filePaths' should be at position 2. (SA1612) -->
+    <Rule Id="SA1612" Action="Error" /> <!-- Error SA1612: The parameter documentation for 'filePaths' should be at position 2. (SA1612) -->
     <Rule Id="SA1620" Action="Error" /> <!-- Error SA1620: The type parameter documentation for 'T4' should be at position 4. (SA1620) -->
     <Rule Id="SA1118" Action="Error" /> <!-- Error SA1118: The parameter spans multiple lines (SA1118) -->
   </Rules>
