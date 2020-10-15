@@ -1740,10 +1740,10 @@ namespace PuppeteerSharp
             {
                 return await tcs.Task.WithTimeout(timeout).ConfigureAwait(false);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 _fileChooserInterceptors.TryRemove(guid, out _);
-                throw ex;
+                throw;
             }
         }
 
