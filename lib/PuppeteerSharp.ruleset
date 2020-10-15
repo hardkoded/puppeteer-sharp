@@ -78,7 +78,7 @@
     <Rule Id="CA1816" Action="None" /> <!-- Error CA1816: Change Connection.Dispose() to call GC.SuppressFinalize(object). This will prevent derived types that introduce a finalizer from needing to re-implement 'IDisposable' to call it. (CA1816) -->
     <Rule Id="CA2000" Action="Error" /> <!-- Error CA2000: Call System.IDisposable.Dispose on object created by 'new Process()' before all references to it are out of scope. (CA2000) -->
     <Rule Id="CA2008" Action="None" /> <!-- Error ca2008: Pass TaskScheduler-->
-    <Rule Id="CA2200" Action="None" /> <!-- Error CA2200: Re-throwing caught exception changes stack information. (CA2200)  -->
+    <Rule Id="CA2200" Action="Error" /> <!-- Error CA2200: Re-throwing caught exception changes stack information. (CA2200)  -->
     <Rule Id="CA2213" Action="Error" /> <!-- Error CA2213: 'WebSocketTransport' contains field '_readerCancellationSource' that is of IDisposable type 'CancellationTokenSource', but it is never disposed. Change the Dispose method on 'WebSocketTransport' to call Close or Dispose on this field. (CA2213) -->
     <Rule Id="CA2220" Action="None" /> <!-- Error CA2229: Add a constructor to SelectorException with the following signature: 'protected SelectorException(SerializationInfo info, StreamingContext context)'. (CA2229) (PuppeteerSharp)-->
     <Rule Id="CA2229" Action="Error" /> <!-- Error CA2229: Add a constructor to SelectorException with the following signature: 'protected SelectorException(SerializationInfo info, StreamingContext context)'. (CA2229)-->
