@@ -166,14 +166,6 @@ namespace PuppeteerSharp
 
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        ~LifecycleWatcher() => Dispose(false);
-
-        public void Dispose(bool disposing)
-        {
             _frameManager.LifecycleEvent -= FrameManager_LifecycleEvent;
             _frameManager.FrameNavigatedWithinDocument -= NavigatedWithinDocument;
             _frameManager.FrameDetached -= OnFrameDetached;
