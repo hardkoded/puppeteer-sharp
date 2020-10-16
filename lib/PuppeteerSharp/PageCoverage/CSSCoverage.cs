@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Messaging;
 
@@ -12,7 +13,9 @@ namespace PuppeteerSharp.PageCoverage
         private readonly CDPSession _client;
         private readonly Dictionary<string, string> _stylesheetURLs;
         private readonly Dictionary<string, string> _stylesheetSources;
+        private TaskQueue2 _callbackQueue;
         private readonly ILogger _logger;
+        private readonly object _stylesheetsLock;
 
         private bool _enabled;
         private bool _resetOnNavigation;
@@ -24,6 +27,7 @@ namespace PuppeteerSharp.PageCoverage
             _stylesheetURLs = new Dictionary<string, string>();
             _stylesheetSources = new Dictionary<string, string>();
             _logger = _client.Connection.LoggerFactory.CreateLogger<CSSCoverage>();
+            _stylesheetsLock = _stylesheetURLs;
 
             _resetOnNavigation = false;
         }
@@ -37,9 +41,13 @@ namespace PuppeteerSharp.PageCoverage
 
             _resetOnNavigation = options.ResetOnNavigation;
             _enabled = true;
-            _stylesheetURLs.Clear();
-            _stylesheetSources.Clear();
+            lock (_stylesheetsLock)
+            {
+                _stylesheetURLs.Clear();
+                _stylesheetSources.Clear();
+            }
 
+            _callbackQueue = new TaskQueue2(_logger);
             _client.MessageReceived += Client_MessageReceived;
 
             return Task.WhenAll(
@@ -57,10 +65,16 @@ namespace PuppeteerSharp.PageCoverage
             _enabled = false;
 
             var trackingResponse = await _client.SendAsync<CSSStopRuleUsageTrackingResponse>("CSS.stopRuleUsageTracking").ConfigureAwait(false);
+
+            // Wait until we've stopped CSS tracking before stopping listening for messages and finishing up, so that
+            // any pending OnStyleSheetAddedAsync tasks can collect the remaining style sheet coverage.
+            _client.MessageReceived -= Client_MessageReceived;
+            await _callbackQueue.FlushAsync().ConfigureAwait(false);
+            _callbackQueue.Dispose();
+
             await Task.WhenAll(
                 _client.SendAsync("CSS.disable"),
                 _client.SendAsync("DOM.disable")).ConfigureAwait(false);
-            _client.MessageReceived -= Client_MessageReceived;
 
             var styleSheetIdToCoverage = new Dictionary<string, List<CoverageResponseRange>>();
             foreach (var entry in trackingResponse.RuleUsage)
@@ -80,30 +94,33 @@ namespace PuppeteerSharp.PageCoverage
             }
 
             var coverage = new List<CoverageEntry>();
-            foreach (var styleSheetId in _stylesheetURLs.Keys)
+            lock (_stylesheetsLock)
             {
-                var url = _stylesheetURLs[styleSheetId];
-                var text = _stylesheetSources[styleSheetId];
-                styleSheetIdToCoverage.TryGetValue(styleSheetId, out var responseRanges);
-                var ranges = Coverage.ConvertToDisjointRanges(responseRanges ?? new List<CoverageResponseRange>());
-                coverage.Add(new CoverageEntry
+                foreach (var styleSheetId in _stylesheetURLs.Keys)
                 {
-                    Url = url,
-                    Ranges = ranges,
-                    Text = text
-                });
+                    var url = _stylesheetURLs[styleSheetId];
+                    var text = _stylesheetSources[styleSheetId];
+                    styleSheetIdToCoverage.TryGetValue(styleSheetId, out var responseRanges);
+                    var ranges = Coverage.ConvertToDisjointRanges(responseRanges ?? new List<CoverageResponseRange>());
+                    coverage.Add(new CoverageEntry
+                    {
+                        Url = url,
+                        Ranges = ranges,
+                        Text = text
+                    });
+                }
             }
             return coverage.ToArray();
         }
 
-        private async void Client_MessageReceived(object sender, MessageEventArgs e)
+        private void Client_MessageReceived(object sender, MessageEventArgs e)
         {
             try
             {
                 switch (e.MessageID)
                 {
                     case "CSS.styleSheetAdded":
-                        await OnStyleSheetAddedAsync(e.MessageData.ToObject<CSSStyleSheetAddedResponse>(true)).ConfigureAwait(false);
+                        _callbackQueue.Enqueue(() => OnStyleSheetAddedAsync(e.MessageData.ToObject<CSSStyleSheetAddedResponse>(true)));
                         break;
                     case "Runtime.executionContextsCleared":
                         OnExecutionContextsCleared();
@@ -132,8 +149,11 @@ namespace PuppeteerSharp.PageCoverage
                     StyleSheetId = styleSheetAddedResponse.Header.StyleSheetId
                 }).ConfigureAwait(false);
 
-                _stylesheetURLs.Add(styleSheetAddedResponse.Header.StyleSheetId, styleSheetAddedResponse.Header.SourceURL);
-                _stylesheetSources.Add(styleSheetAddedResponse.Header.StyleSheetId, response.Text);
+                lock (_stylesheetsLock)
+                {
+                    _stylesheetURLs.Add(styleSheetAddedResponse.Header.StyleSheetId, styleSheetAddedResponse.Header.SourceURL);
+                    _stylesheetSources.Add(styleSheetAddedResponse.Header.StyleSheetId, response.Text);
+                }
             }
             catch (Exception ex)
             {
@@ -148,8 +168,11 @@ namespace PuppeteerSharp.PageCoverage
                 return;
             }
 
-            _stylesheetURLs.Clear();
-            _stylesheetSources.Clear();
+            lock (_stylesheetsLock)
+            {
+                _stylesheetURLs.Clear();
+                _stylesheetSources.Clear();
+            }
         }
     }
 }

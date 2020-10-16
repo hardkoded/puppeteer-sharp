@@ -16,7 +16,7 @@ namespace PuppeteerSharp.Helpers
     /// </remarks>
     internal class SendAsyncResponseQueue : IDisposable
     {
-        private readonly CancellationTokenSource _disposing;
+        private CancellationTokenSource _disposing;
         private readonly ILogger _logger;
 
         public SendAsyncResponseQueue(ILogger logger = null)
@@ -40,7 +40,12 @@ namespace PuppeteerSharp.Helpers
 
         public void Dispose()
         {
-            _disposing.Cancel();
+            var cts = Interlocked.CompareExchange(ref _disposing, null, _disposing);
+            if (cts != null)
+            {
+                cts.Cancel();
+                cts.Dispose();
+            }
         }
 
         private static void HandleAsyncMessage(MessageTask callback, ConnectionResponse obj)
