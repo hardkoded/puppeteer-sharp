@@ -22,7 +22,7 @@ namespace PuppeteerSharp.Helpers
 
         private readonly ILogger _logger;
 
-        public SendAsyncResponseQueue(ILogger logger = null)
+        public SendAsyncResponseQueue(bool enqueueSendAsyncResponses, ILogger logger = null)
         {
             _logger = logger ?? NullLogger.Instance;
             _disposing = new CancellationTokenSource();

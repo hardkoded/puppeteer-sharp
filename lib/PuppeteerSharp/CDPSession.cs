@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
-using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Messaging;
 
@@ -45,12 +44,9 @@ namespace PuppeteerSharp
             SessionId = sessionId;
 
             _callbacks = new ConcurrentDictionary<int, MessageTask>();
-            _asyncResponses = new SendAsyncResponseQueue(LoggerFactory.CreateLogger<CDPSession>());
         }
 
         #region Private Members
-
-        private readonly SendAsyncResponseQueue _asyncResponses;
         private readonly ConcurrentDictionary<int, MessageTask> _callbacks;
         #endregion
 
@@ -193,7 +189,7 @@ namespace PuppeteerSharp
                 // This is a response to a SendAsync. Handle the callback async, since (a) we can, and (b)
                 // to avoid a situation where the continuation tries to call SendAsync again thus creating
                 // a deadlock.
-                _asyncResponses.Enqueue(callback, obj);
+                Connection.PendingSendAsyncResponses.Enqueue(callback, obj);
             }
             else
             {
@@ -227,7 +223,6 @@ namespace PuppeteerSharp
             }
 
             _callbacks.Clear();
-            _asyncResponses.Dispose();
 
             Disconnected?.Invoke(this, EventArgs.Empty);
             Connection = null;

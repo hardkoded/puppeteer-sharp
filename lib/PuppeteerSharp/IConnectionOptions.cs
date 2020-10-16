@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net.WebSockets;
 using PuppeteerSharp.Transport;
 
@@ -41,5 +41,10 @@ namespace PuppeteerSharp
         /// If not <see cref="Transport"/> is set this will be use to determine is the default <see cref="WebSocketTransport"/> will enqueue messages.
         /// </summary>
         bool EnqueueTransportMessages { get; set; }
+
+        /// <summary>
+        /// Affects how responses to <see cref="CDPSession.SendAsync"/> are returned to the caller.
+        /// </summary>
+        bool EnqueueSendAsyncResponses { get; set; }
     }
 }

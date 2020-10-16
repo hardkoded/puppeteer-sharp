@@ -21,7 +21,7 @@ namespace PuppeteerSharp
         private readonly ILogger _logger;
         private TaskQueue _callbackQueue = new TaskQueue();
 
-        internal Connection(string url, int delay, IConnectionTransport transport, ILoggerFactory loggerFactory = null)
+        internal Connection(string url, int delay, bool enqueueSendAsyncResponses, IConnectionTransport transport, ILoggerFactory loggerFactory = null)
         {
             LoggerFactory = loggerFactory ?? new LoggerFactory();
             Url = url;
@@ -32,7 +32,7 @@ namespace PuppeteerSharp
 
             _callbacks = new ConcurrentDictionary<int, MessageTask>();
             _sessions = new ConcurrentDictionary<string, CDPSession>();
-            _asyncResponses = new SendAsyncResponseQueue(_logger);
+            PendingSendAsyncResponses = new SendAsyncResponseQueue(enqueueSendAsyncResponses, _logger);
             _asyncSessions = new AsyncDictionaryHelper<string, CDPSession>(_sessions, "Session {0} not found");
 
             Transport.MessageReceived += Transport_MessageReceived;
@@ -41,7 +41,6 @@ namespace PuppeteerSharp
 
         #region Private Members
         private int _lastId;
-        private readonly SendAsyncResponseQueue _asyncResponses;
         private readonly ConcurrentDictionary<int, MessageTask> _callbacks;
         private readonly ConcurrentDictionary<string, CDPSession> _sessions;
         private readonly AsyncDictionaryHelper<string, CDPSession> _asyncSessions;
@@ -87,6 +86,8 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The logger factory.</value>
         public ILoggerFactory LoggerFactory { get; }
+
+        internal SendAsyncResponseQueue PendingSendAsyncResponses { get; }
 
         #endregion
 
@@ -179,7 +180,7 @@ namespace PuppeteerSharp
             }
 
             _callbacks.Clear();
-            _asyncResponses.Dispose();
+            PendingSendAsyncResponses.Dispose();
         }
 
         internal static Connection FromSession(CDPSession session) => session.Connection;
@@ -260,7 +261,7 @@ namespace PuppeteerSharp
                     // This is a response to a SendAsync. Handle the callback async, since (a) we can, and (b)
                     // to avoid a situation where the continuation tries to call SendAsync again thus creating
                     // a deadlock.
-                    _asyncResponses.Enqueue(callback, obj);
+                    PendingSendAsyncResponses.Enqueue(callback, obj);
                 }
             }
             else
@@ -297,7 +298,7 @@ namespace PuppeteerSharp
                 transport = await transportFactory(new Uri(url), connectionOptions, cancellationToken).ConfigureAwait(false);
             }
 
-            return new Connection(url, connectionOptions.SlowMo, transport, loggerFactory);
+            return new Connection(url, connectionOptions.SlowMo, connectionOptions.EnqueueSendAsyncResponses, transport, loggerFactory);
         }
 
         /// <inheritdoc />
