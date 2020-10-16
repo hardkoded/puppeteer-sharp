@@ -30,15 +30,18 @@ namespace PuppeteerSharp
 
             _logger = LoggerFactory.CreateLogger<Connection>();
 
-            Transport.MessageReceived += Transport_MessageReceived;
-            Transport.Closed += Transport_Closed;
             _callbacks = new ConcurrentDictionary<int, MessageTask>();
             _sessions = new ConcurrentDictionary<string, CDPSession>();
+            _asyncResponses = new SendAsyncResponseQueue(_logger);
             _asyncSessions = new AsyncDictionaryHelper<string, CDPSession>(_sessions, "Session {0} not found");
+
+            Transport.MessageReceived += Transport_MessageReceived;
+            Transport.Closed += Transport_Closed;
         }
 
         #region Private Members
         private int _lastId;
+        private readonly SendAsyncResponseQueue _asyncResponses;
         private readonly ConcurrentDictionary<int, MessageTask> _callbacks;
         private readonly ConcurrentDictionary<string, CDPSession> _sessions;
         private readonly AsyncDictionaryHelper<string, CDPSession> _asyncSessions;
@@ -176,6 +179,7 @@ namespace PuppeteerSharp
             }
 
             _callbacks.Clear();
+            _asyncResponses.Dispose();
         }
 
         internal static Connection FromSession(CDPSession session) => session.Connection;
@@ -256,17 +260,7 @@ namespace PuppeteerSharp
                     // This is a response to a SendAsync. Handle the callback async, since (a) we can, and (b)
                     // to avoid a situation where the continuation tries to call SendAsync again thus creating
                     // a deadlock.
-                    Task.Run(() =>
-                    {
-                        if (obj.Error != null)
-                        {
-                            callback.TaskWrapper.TrySetException(new MessageException(callback, obj.Error));
-                        }
-                        else
-                        {
-                            callback.TaskWrapper.TrySetResult(obj.Result);
-                        }
-                    });
+                    _asyncResponses.Enqueue(callback, obj);
                 }
             }
             else
