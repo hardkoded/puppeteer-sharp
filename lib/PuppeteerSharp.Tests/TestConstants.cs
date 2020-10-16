@@ -43,7 +43,7 @@ namespace PuppeteerSharp.Tests
         {
             SlowMo = Convert.ToInt32(Environment.GetEnvironmentVariable("SLOW_MO")),
             Headless = Convert.ToBoolean(Environment.GetEnvironmentVariable("HEADLESS") ?? "true"),
-            EnqueueSendAsyncResponses = false, //Convert.ToBoolean(Environment.GetEnvironmentVariable("ENQUEUE_SENDASYNC_RESPONSES") ?? "true"),
+            EnqueueSendAsyncResponses = Convert.ToBoolean(Environment.GetEnvironmentVariable("ENQUEUE_SENDASYNC_RESPONSES") ?? "true"),
             Timeout = 0,
             LogProcess = true,
 #if NETCOREAPP
