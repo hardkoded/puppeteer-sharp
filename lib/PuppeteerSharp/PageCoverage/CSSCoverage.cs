@@ -13,7 +13,7 @@ namespace PuppeteerSharp.PageCoverage
         private readonly CDPSession _client;
         private readonly Dictionary<string, string> _stylesheetURLs;
         private readonly Dictionary<string, string> _stylesheetSources;
-        private TaskQueue2 _callbackQueue;
+        private readonly DeferredTaskQueue _callbackQueue;
         private readonly ILogger _logger;
         private readonly object _stylesheetsLock;
 
@@ -28,6 +28,7 @@ namespace PuppeteerSharp.PageCoverage
             _stylesheetSources = new Dictionary<string, string>();
             _logger = _client.Connection.LoggerFactory.CreateLogger<CSSCoverage>();
             _stylesheetsLock = _stylesheetURLs;
+            _callbackQueue = new DeferredTaskQueue();
 
             _resetOnNavigation = false;
         }
@@ -47,7 +48,6 @@ namespace PuppeteerSharp.PageCoverage
                 _stylesheetSources.Clear();
             }
 
-            _callbackQueue = new TaskQueue2(_logger);
             _client.MessageReceived += Client_MessageReceived;
 
             return Task.WhenAll(
@@ -69,8 +69,7 @@ namespace PuppeteerSharp.PageCoverage
             // Wait until we've stopped CSS tracking before stopping listening for messages and finishing up, so that
             // any pending OnStyleSheetAddedAsync tasks can collect the remaining style sheet coverage.
             _client.MessageReceived -= Client_MessageReceived;
-            await _callbackQueue.FlushAsync().ConfigureAwait(false);
-            _callbackQueue.Dispose();
+            await _callbackQueue.DrainAsync().ConfigureAwait(false);
 
             await Task.WhenAll(
                 _client.SendAsync("CSS.disable"),
@@ -113,14 +112,14 @@ namespace PuppeteerSharp.PageCoverage
             return coverage.ToArray();
         }
 
-        private void Client_MessageReceived(object sender, MessageEventArgs e)
+        private async void Client_MessageReceived(object sender, MessageEventArgs e)
         {
             try
             {
                 switch (e.MessageID)
                 {
                     case "CSS.styleSheetAdded":
-                        _callbackQueue.Enqueue(() => OnStyleSheetAddedAsync(e.MessageData.ToObject<CSSStyleSheetAddedResponse>(true)));
+                        await _callbackQueue.Enqueue(() => OnStyleSheetAddedAsync(e.MessageData.ToObject<CSSStyleSheetAddedResponse>(true))).ConfigureAwait(false);
                         break;
                     case "Runtime.executionContextsCleared":
                         OnExecutionContextsCleared();
