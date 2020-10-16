@@ -250,7 +250,7 @@ namespace PuppeteerSharp
             if (!string.IsNullOrEmpty(obj.SessionId))
             {
                 var session = GetSession(obj.SessionId);
-                session.OnMessage(obj);
+                session?.OnMessage(obj);
             }
             else if (obj.Id.HasValue)
             {
