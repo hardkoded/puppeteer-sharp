@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -16,7 +17,9 @@ namespace PuppeteerSharp.Helpers
     /// </remarks>
     internal class SendAsyncResponseQueue : IDisposable
     {
+        [SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", Justification = "False positive, as it is disposed in Dispose() but after copying to local variable.")]
         private CancellationTokenSource _disposing;
+
         private readonly ILogger _logger;
 
         public SendAsyncResponseQueue(ILogger logger = null)
