@@ -20,21 +20,27 @@ namespace PuppeteerSharp.Helpers
         [SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", Justification = "False positive, as it is disposed in Dispose() but after copying to local variable.")]
         private CancellationTokenSource _disposing;
 
+        private readonly bool _enqueueSendAsyncResponses;
         private readonly ILogger _logger;
 
         public SendAsyncResponseQueue(bool enqueueSendAsyncResponses, ILogger logger = null)
         {
+            _enqueueSendAsyncResponses = enqueueSendAsyncResponses;
             _logger = logger ?? NullLogger.Instance;
             _disposing = new CancellationTokenSource();
-
-            // TODO: make this async behavior optional, to avoid introducing races into unknown message handling scenarios
         }
 
         public void Enqueue(MessageTask callback, ConnectionResponse obj)
         {
-            if (_disposing.IsCancellationRequested)
+            if (_disposing == null)
             {
                 throw new ObjectDisposedException(GetType().FullName);
+            }
+
+            if (!_enqueueSendAsyncResponses)
+            {
+                HandleAsyncMessage(callback, obj);
+                return;
             }
 
             Task.Run(() => HandleAsyncMessage(callback, obj), _disposing.Token)
