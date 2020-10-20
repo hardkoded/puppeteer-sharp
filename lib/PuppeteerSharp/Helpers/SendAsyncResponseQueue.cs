@@ -32,7 +32,8 @@ namespace PuppeteerSharp.Helpers
 
         public void Enqueue(MessageTask callback, ConnectionResponse obj)
         {
-            if (_disposing == null)
+            var disposing = _disposing;
+            if (disposing == null)
             {
                 throw new ObjectDisposedException(GetType().FullName);
             }
@@ -43,19 +44,21 @@ namespace PuppeteerSharp.Helpers
                 return;
             }
 
-            Task.Run(() => HandleAsyncMessage(callback, obj));
+            Task.Run(() => HandleAsyncMessage(callback, obj), disposing.Token)
+                .ContinueWith(t =>
+                {
+                    _logger.LogError(t.Exception, "Failed to complete async handling of SendAsync for {callback}", callback.Method);
+                }, TaskContinuationOptions.OnlyOnFaulted);
         }
 
         public void Dispose()
         {
-            /*
             var cts = Interlocked.CompareExchange(ref _disposing, null, _disposing);
             if (cts != null)
             {
                 cts.Cancel();
                 cts.Dispose();
             }
-        */
         }
 
         private static void HandleAsyncMessage(MessageTask callback, ConnectionResponse obj)
