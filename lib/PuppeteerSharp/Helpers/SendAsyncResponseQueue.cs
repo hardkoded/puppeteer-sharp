@@ -44,10 +44,11 @@ namespace PuppeteerSharp.Helpers
                 return;
             }
 
-            Task.Run(() => HandleAsyncMessage(callback, obj), disposing.Token)
+            Task.Run(() => HandleAsyncMessage(callback, obj))
                 .ContinueWith(t =>
                 {
                     _logger.LogError(t.Exception, "Failed to complete async handling of SendAsync for {callback}", callback.Method);
+                    callback.TaskWrapper.TrySetException(t.Exception!); // t.Exception is available since this runs only on faulted
                 }, TaskContinuationOptions.OnlyOnFaulted);
         }
 
