@@ -10,6 +10,8 @@ environment:
   matrix:
     - framework: net48
     - framework: netcoreapp2.2
+    - ENQUEUE_ASYNC_MESSAGES: false
+    - ENQUEUE_ASYNC_MESSAGES: true
 install:
 - ps: >-
     if($env:APPVEYOR_REPO_TAG -eq 'True' -And $env:framework -eq 'netcoreapp2.0') {
