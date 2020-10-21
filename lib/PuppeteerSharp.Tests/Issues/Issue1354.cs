@@ -16,9 +16,10 @@ namespace PuppeteerSharp.Tests.Issues
         {
             var options = TestConstants.DefaultBrowserOptions();
 
-            using (var browser = await Puppeteer.LaunchAsync(options))
+            using (var browser = await Puppeteer.LaunchAsync(options).ConfigureAwait(false))
             {
-                browser.CloseAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+                // In issue #1354, this line hangs forever
+                browser.CloseAsync().Wait();
             }
         }
 
