@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -11,11 +12,9 @@ namespace PuppeteerSharp.PageCoverage
     internal class CSSCoverage
     {
         private readonly CDPSession _client;
-        private readonly Dictionary<string, string> _stylesheetURLs;
-        private readonly Dictionary<string, string> _stylesheetSources;
+        private readonly ConcurrentDictionary<string, (string Url, string Source)> _stylesheets;
         private readonly DeferredTaskQueue _callbackQueue;
         private readonly ILogger _logger;
-        private readonly object _stylesheetsLock;
 
         private bool _enabled;
         private bool _resetOnNavigation;
@@ -24,10 +23,8 @@ namespace PuppeteerSharp.PageCoverage
         {
             _client = client;
             _enabled = false;
-            _stylesheetURLs = new Dictionary<string, string>();
-            _stylesheetSources = new Dictionary<string, string>();
+            _stylesheets = new ConcurrentDictionary<string, (string Url, string Source)>();
             _logger = _client.Connection.LoggerFactory.CreateLogger<CSSCoverage>();
-            _stylesheetsLock = _stylesheetURLs;
             _callbackQueue = new DeferredTaskQueue();
 
             _resetOnNavigation = false;
@@ -42,11 +39,7 @@ namespace PuppeteerSharp.PageCoverage
 
             _resetOnNavigation = options.ResetOnNavigation;
             _enabled = true;
-            lock (_stylesheetsLock)
-            {
-                _stylesheetURLs.Clear();
-                _stylesheetSources.Clear();
-            }
+            _stylesheets.Clear();
 
             _client.MessageReceived += Client_MessageReceived;
 
@@ -93,21 +86,19 @@ namespace PuppeteerSharp.PageCoverage
             }
 
             var coverage = new List<CoverageEntry>();
-            lock (_stylesheetsLock)
+            foreach (var kv in _stylesheets.ToArray())
             {
-                foreach (var styleSheetId in _stylesheetURLs.Keys)
+                var styleSheetId = kv.Key;
+                var url = kv.Value.Url;
+                var text = kv.Value.Source;
+                styleSheetIdToCoverage.TryGetValue(styleSheetId, out var responseRanges);
+                var ranges = Coverage.ConvertToDisjointRanges(responseRanges ?? new List<CoverageResponseRange>());
+                coverage.Add(new CoverageEntry
                 {
-                    var url = _stylesheetURLs[styleSheetId];
-                    var text = _stylesheetSources[styleSheetId];
-                    styleSheetIdToCoverage.TryGetValue(styleSheetId, out var responseRanges);
-                    var ranges = Coverage.ConvertToDisjointRanges(responseRanges ?? new List<CoverageResponseRange>());
-                    coverage.Add(new CoverageEntry
-                    {
-                        Url = url,
-                        Ranges = ranges,
-                        Text = text
-                    });
-                }
+                    Url = url,
+                    Ranges = ranges,
+                    Text = text
+                });
             }
             return coverage.ToArray();
         }
@@ -148,11 +139,7 @@ namespace PuppeteerSharp.PageCoverage
                     StyleSheetId = styleSheetAddedResponse.Header.StyleSheetId
                 }).ConfigureAwait(false);
 
-                lock (_stylesheetsLock)
-                {
-                    _stylesheetURLs.Add(styleSheetAddedResponse.Header.StyleSheetId, styleSheetAddedResponse.Header.SourceURL);
-                    _stylesheetSources.Add(styleSheetAddedResponse.Header.StyleSheetId, response.Text);
-                }
+                _stylesheets.TryAdd(styleSheetAddedResponse.Header.StyleSheetId, (styleSheetAddedResponse.Header.SourceURL, response.Text));
             }
             catch (Exception ex)
             {
@@ -167,11 +154,7 @@ namespace PuppeteerSharp.PageCoverage
                 return;
             }
 
-            lock (_stylesheetsLock)
-            {
-                _stylesheetURLs.Clear();
-                _stylesheetSources.Clear();
-            }
+            _stylesheets.Clear();
         }
     }
 }
