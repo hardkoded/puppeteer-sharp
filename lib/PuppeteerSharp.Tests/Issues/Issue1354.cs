@@ -15,6 +15,11 @@ namespace PuppeteerSharp.Tests.Issues
         public async Task ShouldAllowSyncClose()
         {
             var options = TestConstants.DefaultBrowserOptions();
+            if (!options.EnqueueAsyncMessages)
+            {
+                // This test won't pass unless this option is set to true.
+                return;
+            }
 
             using (var browser = await Puppeteer.LaunchAsync(options).ConfigureAwait(false))
             {
@@ -27,6 +32,10 @@ namespace PuppeteerSharp.Tests.Issues
         public async Task ShouldAllowSyncPageMethod()
         {
             var options = TestConstants.DefaultBrowserOptions();
+            if (!options.EnqueueAsyncMessages)
+            {
+                return;
+            }
 
             using (var browser = await Puppeteer.LaunchAsync(options))
             {
