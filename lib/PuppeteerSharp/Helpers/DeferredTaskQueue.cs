@@ -59,7 +59,6 @@ namespace PuppeteerSharp.Helpers
                     task = _pendingTasks[0];
                 }
 
-                // TODO: try/catch?
                 try
                 {
                     await task.ConfigureAwait(false);

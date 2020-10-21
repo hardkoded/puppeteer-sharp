@@ -11,19 +11,16 @@ namespace PuppeteerSharp.Helpers
     /// Provides an async queue for responses for <see cref="CDPSession.SendAsync"/>, so that responses can be handled
     /// async without risk callers causing a deadlock.
     /// </summary>
-    /// <remarks>
-    /// See https://github.com/hardkoded/puppeteer-sharp/issues/1354
-    /// </remarks>
-    internal class SendAsyncResponseQueue : IDisposable
+    internal class AsyncMessageQueue : IDisposable
     {
         private bool _disposed;
         private readonly List<MessageTask> _pendingTasks;
-        private readonly bool _enqueueSendAsyncResponses;
+        private readonly bool _enqueueAsyncMessages;
         private readonly ILogger _logger;
 
-        public SendAsyncResponseQueue(bool enqueueSendAsyncResponses, ILogger logger = null)
+        public AsyncMessageQueue(bool enqueueAsyncMessages, ILogger logger = null)
         {
-            _enqueueSendAsyncResponses = enqueueSendAsyncResponses;
+            _enqueueAsyncMessages = enqueueAsyncMessages;
             _logger = logger ?? NullLogger.Instance;
             _pendingTasks = new List<MessageTask>();
         }
@@ -35,7 +32,7 @@ namespace PuppeteerSharp.Helpers
                 throw new ObjectDisposedException(GetType().FullName);
             }
 
-            if (!_enqueueSendAsyncResponses)
+            if (!_enqueueAsyncMessages)
             {
                 HandleAsyncMessage(callback, obj);
                 return;

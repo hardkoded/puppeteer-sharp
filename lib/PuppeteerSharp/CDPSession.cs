@@ -186,17 +186,13 @@ namespace PuppeteerSharp
 
             if (id.HasValue && _callbacks.TryRemove(id.Value, out var callback))
             {
-                // This is a response to a SendAsync. Handle the callback async, since (a) we can, and (b)
-                // to avoid a situation where the continuation tries to call SendAsync again thus creating
-                // a deadlock.
-                Connection.PendingSendAsyncResponses.Enqueue(callback, obj);
+                Connection.MessageQueue.Enqueue(callback, obj);
             }
             else
             {
                 var method = obj.Method;
                 var param = obj.Params?.ToObject<ConnectionResponseParams>();
 
-                // Always call sync, since we need message (event) order to be determinate.
                 MessageReceived?.Invoke(this, new MessageEventArgs
                 {
                     MessageID = method,

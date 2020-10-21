@@ -45,6 +45,6 @@ namespace PuppeteerSharp
         /// <summary>
         /// Affects how responses to <see cref="CDPSession.SendAsync"/> are returned to the caller.
         /// </summary>
-        bool EnqueueSendAsyncResponses { get; set; }
+        bool EnqueueAsyncMessages { get; set; }
     }
 }

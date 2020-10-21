@@ -21,7 +21,7 @@ namespace PuppeteerSharp
         private readonly ILogger _logger;
         private TaskQueue _callbackQueue = new TaskQueue();
 
-        internal Connection(string url, int delay, bool enqueueSendAsyncResponses, IConnectionTransport transport, ILoggerFactory loggerFactory = null)
+        internal Connection(string url, int delay, bool enqueueAsyncMessages, IConnectionTransport transport, ILoggerFactory loggerFactory = null)
         {
             LoggerFactory = loggerFactory ?? new LoggerFactory();
             Url = url;
@@ -34,7 +34,7 @@ namespace PuppeteerSharp
             Transport.Closed += Transport_Closed;
             _callbacks = new ConcurrentDictionary<int, MessageTask>();
             _sessions = new ConcurrentDictionary<string, CDPSession>();
-            PendingSendAsyncResponses = new SendAsyncResponseQueue(enqueueSendAsyncResponses, _logger);
+            MessageQueue = new AsyncMessageQueue(enqueueAsyncMessages, _logger);
             _asyncSessions = new AsyncDictionaryHelper<string, CDPSession>(_sessions, "Session {0} not found");
         }
 
@@ -86,7 +86,7 @@ namespace PuppeteerSharp
         /// <value>The logger factory.</value>
         public ILoggerFactory LoggerFactory { get; }
 
-        internal SendAsyncResponseQueue PendingSendAsyncResponses { get; }
+        internal AsyncMessageQueue MessageQueue { get; }
 
         #endregion
 
@@ -179,7 +179,7 @@ namespace PuppeteerSharp
             }
 
             _callbacks.Clear();
-            PendingSendAsyncResponses.Dispose();
+            MessageQueue.Dispose();
         }
 
         internal static Connection FromSession(CDPSession session) => session.Connection;
@@ -257,15 +257,11 @@ namespace PuppeteerSharp
                 // if not we add this to the list, sooner or later some one will come for it
                 if (_callbacks.TryRemove(obj.Id.Value, out var callback))
                 {
-                    // This is a response to a SendAsync. Handle the callback async, since (a) we can, and (b)
-                    // to avoid a situation where the continuation tries to call SendAsync again thus creating
-                    // a deadlock.
-                    PendingSendAsyncResponses.Enqueue(callback, obj);
+                    MessageQueue.Enqueue(callback, obj);
                 }
             }
             else
             {
-                // Always call sync, since we need message (event) order to be determinate.
                 MessageReceived?.Invoke(this, new MessageEventArgs
                 {
                     MessageID = method,
@@ -297,7 +293,7 @@ namespace PuppeteerSharp
                 transport = await transportFactory(new Uri(url), connectionOptions, cancellationToken).ConfigureAwait(false);
             }
 
-            return new Connection(url, connectionOptions.SlowMo, connectionOptions.EnqueueSendAsyncResponses, transport, loggerFactory);
+            return new Connection(url, connectionOptions.SlowMo, connectionOptions.EnqueueAsyncMessages, transport, loggerFactory);
         }
 
         /// <inheritdoc />

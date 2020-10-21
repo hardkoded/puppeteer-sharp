@@ -166,10 +166,10 @@ namespace PuppeteerSharp
         /// events are raised.
         /// </summary>
         /// <remarks>
-        /// This should normally be set to <c>true</c> (default) to support usage by applications that aren't <c>async</c> "all the way up"; i.e., the application
+        /// This should normally be set to <c>true</c> to support applications that aren't <c>async</c> "all the way up"; i.e., the application
         /// has legacy code that is not async which makes calls into PuppeteerSharp. If you experience issues, or your application is not mixed sync/async use, you
-        /// can set this to <c>false</c>.
+        /// can set this to <c>false</c> (default).
         /// </remarks>
-        public bool EnqueueSendAsyncResponses { get; set; } = true;
+        public bool EnqueueAsyncMessages { get; set; }
     }
 }
