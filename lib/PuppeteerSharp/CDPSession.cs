@@ -219,7 +219,6 @@ namespace PuppeteerSharp
             }
 
             _callbacks.Clear();
-
             Disconnected?.Invoke(this, EventArgs.Empty);
             Connection = null;
         }
