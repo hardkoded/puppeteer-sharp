@@ -64,7 +64,7 @@
     <Rule Id="CA1823" Action="Error" /><!-- avoid unused fields-->
 
     <Rule Id="CA1031" Action="None" /> <!-- Error CA1031: Modify 'SendAsync' to catch a more specific allowed exception type, or rethrow the exception. (CA1031)-->
-    <Rule Id="CA1032" Action="None" /> <!-- Error CA1032: Add the following constructor to SelectorException: public SelectorException(). (CA1032) -->
+    <Rule Id="CA1032" Action="Error" /> <!-- Error CA1032: Add the following constructor to SelectorException: public SelectorException(). (CA1032) -->
     <Rule Id="CA1062" Action="None" /> <!-- Error CA1031: Modify 'DeleteAsync' to catch a more specific allowed exception type, or rethrow the exception. (CA1031)-->
     <Rule Id="CA1063" Action="Error" /> <!-- Error CA1063: Provide an overridable implementation of Dispose(bool) -->
     <Rule Id="CA1064" Action="None" /> <!-- Error CA1064: Exceptions should be public (CA1064)-->
