@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace PuppeteerSharp
 {
@@ -8,6 +8,13 @@ namespace PuppeteerSharp
     [Obsolete("ProcessException will be thrown")]
     public class ChromiumProcessException : PuppeteerException
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ChromiumProcessException"/> class.
+        /// </summary>
+        public ChromiumProcessException()
+        {
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ProcessException"/> class.
         /// </summary>
