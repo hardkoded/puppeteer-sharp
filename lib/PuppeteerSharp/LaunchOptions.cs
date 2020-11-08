@@ -159,5 +159,17 @@ namespace PuppeteerSharp
         /// Setting this to <c>false</c> proved to work in .NET Core but it tends to fail on .NET Framework.
         /// </remarks>
         public bool EnqueueTransportMessages { get; set; } = true;
+
+        /// <summary>
+        /// Affects how responses to <see cref="CDPSession.SendAsync"/> are returned to the caller. If <c>true</c> (default), the
+        /// response is delivered to the caller on its own thread; otherwise, the response is delivered the same way <see cref="CDPSession.MessageReceived"/>
+        /// events are raised.
+        /// </summary>
+        /// <remarks>
+        /// This should normally be set to <c>true</c> to support applications that aren't <c>async</c> "all the way up"; i.e., the application
+        /// has legacy code that is not async which makes calls into PuppeteerSharp. If you experience issues, or your application is not mixed sync/async use, you
+        /// can set this to <c>false</c> (default).
+        /// </remarks>
+        public bool EnqueueAsyncMessages { get; set; }
     }
 }
