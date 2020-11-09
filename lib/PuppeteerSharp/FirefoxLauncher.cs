@@ -13,17 +13,11 @@ namespace PuppeteerSharp
     /// </summary>
     public class FirefoxLauncher : LauncherBase
     {
-        #region Constants
-
         internal static readonly string[] DefaultArgs = {
           "--remote-debugging-port=0",
           "--no-remote",
           "--foreground"
         };
-
-        #endregion
-
-        #region Constructor
 
         /// <summary>
         /// Creates a new <see cref="FirefoxLauncher"/> instance.
@@ -40,16 +34,8 @@ namespace PuppeteerSharp
             Process.StartInfo.Arguments = string.Join(" ", firefoxArgs);
         }
 
-        #endregion
-
-        #region Public methods
-
         /// <inheritdoc />
         public override string ToString() => $"Firefox process; EndPoint={EndPoint}; State={CurrentState}";
-
-        #endregion
-
-        #region Private methods
 
         private static (List<string> firefoxArgs, TempDirectory tempUserDataDirectory) PrepareFirefoxArgs(LaunchOptions options)
         {
@@ -108,7 +94,5 @@ namespace PuppeteerSharp
             firefoxArguments.AddRange(options.Args);
             return firefoxArguments.ToArray();
         }
-
-        #endregion
     }
 }

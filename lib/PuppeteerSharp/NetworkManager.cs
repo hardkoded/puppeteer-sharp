@@ -79,7 +79,7 @@ namespace PuppeteerSharp
 
             foreach (var item in extraHTTPHeaders)
             {
-                _extraHTTPHeaders[item.Key.ToLower()] = item.Value;
+                _extraHTTPHeaders[item.Key] = item.Value;
             }
             return _client.SendAsync("Network.setExtraHTTPHeaders", new NetworkSetExtraHTTPHeadersRequest
             {

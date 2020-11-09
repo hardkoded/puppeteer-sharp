@@ -27,12 +27,6 @@ namespace PuppeteerSharp
         public static string[] DefaultArgs => ChromiumLauncher.DefaultArgs;
 
         /// <summary>
-        /// A path where Puppeteer expects to find bundled browser. It might not exist there if the downloader was not used.
-        /// </summary>
-        /// <returns>The path to chrome.exe</returns>
-        public static string GetExecutablePath() => Launcher.GetExecutablePath();
-
-        /// <summary>
         /// Returns an array of argument based on the options provided and the platform where the library is running
         /// </summary>
         /// <returns>Chromium arguments.</returns>

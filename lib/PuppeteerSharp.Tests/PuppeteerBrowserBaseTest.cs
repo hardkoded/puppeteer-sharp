@@ -24,7 +24,8 @@ namespace PuppeteerSharp.Tests
         public virtual async Task InitializeAsync()
             => Browser = await Puppeteer.LaunchAsync(
                 DefaultOptions ?? TestConstants.DefaultBrowserOptions(),
-                TestConstants.LoggerFactory);
+                TestConstants.LoggerFactory,
+                TestConstants.IsChrome ? Product.Chrome : Product.Firefox);
 
         public virtual async Task DisposeAsync() => await Browser.CloseAsync();
     }

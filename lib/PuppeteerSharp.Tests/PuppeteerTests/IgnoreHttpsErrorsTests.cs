@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Connections.Features;
 using Microsoft.AspNetCore.Http;
 using Xunit;
 using Xunit.Abstractions;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Tests.PuppeteerTests
 {
@@ -23,12 +24,12 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         {
             var requestTask = HttpsServer.WaitForRequest(
                 "/empty.html",
-                request => request.HttpContext.Features.Get<ITlsHandshakeFeature>().Protocol);
+                request => request?.HttpContext?.Features?.Get<ITlsHandshakeFeature>()?.Protocol);
             var responseTask = Page.GoToAsync(TestConstants.HttpsPrefix + "/empty.html");
 
             await Task.WhenAll(
                 requestTask,
-                responseTask);
+                responseTask).WithTimeout();
 
             var response = responseTask.Result;
             Assert.Equal(HttpStatusCode.OK, response.Status);
@@ -48,12 +49,12 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
 
             var requestTask = HttpsServer.WaitForRequest(
                 "/empty.html",
-                request => request.HttpContext.Features.Get<ITlsHandshakeFeature>().Protocol);
+                request => request?.HttpContext?.Features?.Get<ITlsHandshakeFeature>()?.Protocol);
             var responseTask = Page.GoToAsync(TestConstants.HttpsPrefix + "/plzredirect");
 
             await Task.WhenAll(
                 requestTask,
-                responseTask);
+                responseTask).WithTimeout();
 
             var response = responseTask.Result;
 

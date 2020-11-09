@@ -17,6 +17,7 @@ namespace PuppeteerSharp
 
         private readonly ILoggerFactory _loggerFactory;
         private bool _processLaunched;
+        private Product _product;
 
         #endregion
 
@@ -48,8 +49,8 @@ namespace PuppeteerSharp
         public async Task<Browser> LaunchAsync(LaunchOptions options, Product product = Product.Chrome)
         {
             EnsureSingleLaunchOrConnect();
-
-            string executable = GetOrFetchBrowserExecutable(options);
+            _product = product;
+            var executable = GetOrFetchBrowserExecutable(options);
 
             Process = product switch
             {
@@ -103,7 +104,7 @@ namespace PuppeteerSharp
 
             try
             {
-                string browserWSEndpoint = string.IsNullOrEmpty(options.BrowserURL)
+                var browserWSEndpoint = string.IsNullOrEmpty(options.BrowserURL)
                     ? options.BrowserWSEndpoint
                     : await GetWSEndpointAsync(options.BrowserURL).ConfigureAwait(false);
 
@@ -146,8 +147,7 @@ namespace PuppeteerSharp
         /// Gets the executable path.
         /// </summary>
         /// <returns>The executable path.</returns>
-        public static string GetExecutablePath()
-            => ResolveExecutablePath();
+        public string GetExecutablePath() => ResolveExecutablePath();
 
         #endregion
 
@@ -163,9 +163,9 @@ namespace PuppeteerSharp
             _processLaunched = true;
         }
 
-        private static string GetOrFetchBrowserExecutable(LaunchOptions options)
+        private string GetOrFetchBrowserExecutable(LaunchOptions options)
         {
-            string browserExecutable = options.ExecutablePath;
+            var browserExecutable = options.ExecutablePath;
 
             if (string.IsNullOrEmpty(browserExecutable))
             {
@@ -179,9 +179,9 @@ namespace PuppeteerSharp
             return browserExecutable;
         }
 
-        private static string ResolveExecutablePath()
+        private string ResolveExecutablePath()
         {
-            string executablePath = Environment.GetEnvironmentVariable("PUPPETEER_EXECUTABLE_PATH");
+            var executablePath = Environment.GetEnvironmentVariable("PUPPETEER_EXECUTABLE_PATH");
 
             if (!string.IsNullOrEmpty(executablePath))
             {
@@ -192,20 +192,20 @@ namespace PuppeteerSharp
                 return executablePath;
             }
 
-            var browserFetcher = new BrowserFetcher();
-            string revision = Environment.GetEnvironmentVariable("PUPPETEER_CHROMIUM_REVISION");
+            var revision = Environment.GetEnvironmentVariable("PUPPETEER_CHROMIUM_REVISION");
+            var browserFetcher = new BrowserFetcher(_product);
             RevisionInfo revisionInfo;
 
-            if (!string.IsNullOrEmpty(revision) && int.TryParse(revision, out int revisionNumber))
+            if (!string.IsNullOrEmpty(revision))
             {
-                revisionInfo = browserFetcher.RevisionInfo(revisionNumber);
+                revisionInfo = browserFetcher.RevisionInfo(revision);
                 if (!revisionInfo.Local)
                 {
                     throw new FileNotFoundException("Tried to use PUPPETEER_CHROMIUM_REVISION env variable to launch browser but did not find executable", revisionInfo.ExecutablePath);
                 }
                 return revisionInfo.ExecutablePath;
             }
-            revisionInfo = browserFetcher.RevisionInfo(BrowserFetcher.DefaultRevision);
+            revisionInfo = browserFetcher.RevisionInfo();
             if (!revisionInfo.Local)
             {
                 throw new FileNotFoundException("Process revision is not downloaded. Run BrowserFetcher.DownloadAsync or download the process manually", revisionInfo.ExecutablePath);

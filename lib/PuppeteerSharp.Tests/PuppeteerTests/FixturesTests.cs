@@ -20,10 +20,10 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         [Fact]
         public void ShouldDumpBrowserProcessStderr()
         {
-            bool success = false;
+            var success = false;
             var process = GetTestAppProcess(
                 "PuppeteerSharp.Tests.DumpIO",
-                $"\"{new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath}\"");
+                $"\"{new BrowserFetcher(Product.Chrome).RevisionInfo().ExecutablePath}\"");
 
             process.ErrorDataReceived += (sender, e) =>
             {
@@ -41,7 +41,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         {
             var browserClosedTaskWrapper = new TaskCompletionSource<bool>();
             var ChromiumLauncher = new ChromiumLauncher(
-                new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath,
+                new BrowserFetcher(Product.Chrome).RevisionInfo().ExecutablePath,
                 new LaunchOptions { Headless = true },
                 TestConstants.LoggerFactory);
 
@@ -121,7 +121,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         private string GetSubprocessWorkingDir(string dir)
         {
 #if DEBUG
-            string build = "Debug";
+            var build = "Debug";
 #else
             
             var build = "Release";
