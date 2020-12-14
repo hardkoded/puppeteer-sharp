@@ -1,4 +1,4 @@
-<RuleSet Name="Rules for PlaywrightSharp" Description="Rules for PlaywrightSharp" ToolsVersion="10.0">
+﻿<RuleSet Name="Rules for PlaywrightSharp" Description="Rules for PlaywrightSharp" ToolsVersion="10.0">
  <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
     <Rule Id="SA1633" Action="None" />
     <Rule Id="SA1200" Action="None" />
@@ -69,7 +69,7 @@
     <Rule Id="CA1063" Action="Error" /> <!-- Error CA1063: Provide an overridable implementation of Dispose(bool) -->
     <Rule Id="CA1064" Action="Error" /> <!-- Error CA1064: Exceptions should be public (CA1064)-->
     <Rule Id="CA1001" Action="None" /> <!-- Error CA1001: A class owns a disposable -->
-    <Rule Id="CA1304" Action="None" /> <!-- Error CA1304: The behavior of 'string.ToLower()' could vary based on the current user's locale settings. Replace this call in 'JSHandle.ToString()' with a call to 'string.ToLower(CultureInfo)'. (CA1304) -->
+    <Rule Id="CA1304" Action="Error" /> <!-- Error CA1304: The behavior of 'string.ToLower()' could vary based on the current user's locale settings. Replace this call in 'JSHandle.ToString()' with a call to 'string.ToLower(CultureInfo)'. (CA1304) -->
     <Rule Id="CA1305" Action="None" /> <!-- String.Format with culture-->
     <Rule Id="CA1720" Action="None" /> <!-- Error SA1720: Name contains type-->
     <Rule Id="CA1721" Action="None" /> <!-- Error CA1721: The property name 'DefaultArgs' is confusing given the existence of method 'GetDefaultArgs'. Rename or remove one of these members. (CA1721)-->

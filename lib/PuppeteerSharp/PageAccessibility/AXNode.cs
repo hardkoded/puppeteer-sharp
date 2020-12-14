@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using PuppeteerSharp.Messaging;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
+using System.Globalization;
 
 namespace PuppeteerSharp.PageAccessibility
 {
@@ -197,7 +198,7 @@ namespace PuppeteerSharp.PageAccessibility
             var properties = new Dictionary<string, JToken>();
             foreach (var property in Payload.Properties)
             {
-                properties[property.Name.ToLower()] = property.Value.Value;
+                properties[property.Name.ToLower(CultureInfo.CurrentCulture)] = property.Value.Value;
             }
 
             if (Payload.Name != null)
