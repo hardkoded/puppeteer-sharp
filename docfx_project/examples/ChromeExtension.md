@@ -18,8 +18,8 @@ var launhcOptions = new LaunhcOptions()
     Headless = false,
     Args = new []
     {
-        $"--disable-extensions-except={pathToExtension}",
-        $"--load-extension=${pathToExtension}"
+        $@"--disable-extensions-except=""{pathToExtension}""",
+        $@"--load-extension=""{pathToExtension}"""
     }
 };
 
