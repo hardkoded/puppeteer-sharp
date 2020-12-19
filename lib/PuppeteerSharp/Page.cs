@@ -1985,7 +1985,7 @@ namespace PuppeteerSharp
 
             var screenMessage = new PageCaptureScreenshotRequest
             {
-                Format = type.ToString().ToLower()
+                Format = type.ToString().ToLower(CultureInfo.CurrentCulture)
             };
 
             if (options.Quality.HasValue)
@@ -2046,12 +2046,12 @@ namespace PuppeteerSharp
             decimal pixels;
             if (parameter is decimal || parameter is int)
             {
-                pixels = Convert.ToDecimal(parameter);
+                pixels = Convert.ToDecimal(parameter, CultureInfo.CurrentCulture);
             }
             else
             {
                 var text = parameter.ToString();
-                var unit = text.Substring(text.Length - 2).ToLower();
+                var unit = text.Substring(text.Length - 2).ToLower(CultureInfo.CurrentCulture);
                 string valueText;
                 if (_unitToPixels.ContainsKey(unit))
                 {

@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp.Messaging
@@ -16,7 +16,7 @@ namespace PuppeteerSharp.Messaging
         /// <summary>
         /// Object.
         /// </summary>
-        Object,
+        ObjectType,
         /// <summary>
         /// Function.
         /// </summary>
@@ -28,7 +28,7 @@ namespace PuppeteerSharp.Messaging
         /// <summary>
         /// String.
         /// </summary>
-        String,
+        StringType,
         /// <summary>
         /// Number.
         /// </summary>

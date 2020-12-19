@@ -1,4 +1,4 @@
-<RuleSet Name="Rules for PlaywrightSharp" Description="Rules for PlaywrightSharp" ToolsVersion="10.0">
+﻿<RuleSet Name="Rules for PlaywrightSharp" Description="Rules for PlaywrightSharp" ToolsVersion="10.0">
  <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
     <Rule Id="SA1633" Action="None" />
     <Rule Id="SA1200" Action="None" />
@@ -69,12 +69,12 @@
     <Rule Id="CA1063" Action="Error" /> <!-- Error CA1063: Provide an overridable implementation of Dispose(bool) -->
     <Rule Id="CA1064" Action="Error" /> <!-- Error CA1064: Exceptions should be public (CA1064)-->
     <Rule Id="CA1001" Action="None" /> <!-- Error CA1001: A class owns a disposable -->
-    <Rule Id="CA1304" Action="None" /> <!-- Error CA1304: The behavior of 'string.ToLower()' could vary based on the current user's locale settings. Replace this call in 'JSHandle.ToString()' with a call to 'string.ToLower(CultureInfo)'. (CA1304) -->
-    <Rule Id="CA1305" Action="None" /> <!-- String.Format with culture-->
-    <Rule Id="CA1720" Action="None" /> <!-- Error SA1720: Name contains type-->
-    <Rule Id="CA1721" Action="None" /> <!-- Error CA1721: The property name 'DefaultArgs' is confusing given the existence of method 'GetDefaultArgs'. Rename or remove one of these members. (CA1721)-->
+    <Rule Id="CA1304" Action="Error" /> <!-- Error CA1304: The behavior of 'string.ToLower()' could vary based on the current user's locale settings. Replace this call in 'JSHandle.ToString()' with a call to 'string.ToLower(CultureInfo)'. (CA1304) -->
+    <Rule Id="CA1305" Action="Error" /> <!-- String.Format with culture-->
+    <Rule Id="CA1720" Action="Error" /> <!-- Error SA1720: Name contains type-->
+    <Rule Id="CA1721" Action="Error" /> <!-- Error CA1721: The property name 'DefaultArgs' is confusing given the existence of method 'GetDefaultArgs'. Rename or remove one of these members. (CA1721)-->
     <Rule Id="CA1724" Action="None" /> <!-- Error CA1724: The type name Extensions conflicts in whole or in part with the namespace name 'Microsoft.Extensions'. Change either name to eliminate the conflict. (CA1724) -->
-    <Rule Id="CA1806" Action="None" /> <!-- Error CA1806: DownloadAsync calls Chmod but does not use the HRESULT or error code that the method returns. This could lead to unexpected behavior in error conditions or low-resource situations. Use the result in a conditional statement, assign the result to a variable, or pass it as an argument to another method. (CA1806)-->
+    <Rule Id="CA1806" Action="Error" /> <!-- Error CA1806: DownloadAsync calls Chmod but does not use the HRESULT or error code that the method returns. This could lead to unexpected behavior in error conditions or low-resource situations. Use the result in a conditional statement, assign the result to a variable, or pass it as an argument to another method. (CA1806)-->
     <Rule Id="CA1816" Action="Error" /> <!-- Error CA1816: Change Connection.Dispose() to call GC.SuppressFinalize(object). This will prevent derived types that introduce a finalizer from needing to re-implement 'IDisposable' to call it. (CA1816) -->
     <Rule Id="CA2000" Action="Error" /> <!-- Error CA2000: Call System.IDisposable.Dispose on object created by 'new Process()' before all references to it are out of scope. (CA2000) -->
     <Rule Id="CA2008" Action="None" /> <!-- Error ca2008: Pass TaskScheduler-->
