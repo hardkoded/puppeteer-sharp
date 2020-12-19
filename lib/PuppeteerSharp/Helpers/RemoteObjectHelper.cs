@@ -33,7 +33,7 @@ namespace PuppeteerSharp.Helpers
         {
             switch (objectType)
             {
-                case RemoteObjectType.Object:
+                case RemoteObjectType.ObjectType:
                     return value.ToObject<T>(true);
                 case RemoteObjectType.Undefined:
                     return null;

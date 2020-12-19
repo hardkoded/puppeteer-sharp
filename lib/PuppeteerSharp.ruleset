@@ -1,93 +1,90 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<RuleSet Name="Rules for PlaywrightSharp" Description="Rules for PlaywrightSharp" ToolsVersion="16.0">
-  <Rules AnalyzerId="Microsoft.Analyzers.ManagedCodeAnalysis" RuleNamespace="Microsoft.Rules.Managed">
-    <Rule Id="CA1304" Action="Error" />
+﻿<RuleSet Name="Rules for PlaywrightSharp" Description="Rules for PlaywrightSharp" ToolsVersion="10.0">
+ <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
+    <Rule Id="SA1633" Action="None" />
+    <Rule Id="SA1200" Action="None" />
+    <Rule Id="SA1623" Action="None" />
+    <Rule Id="SA1101" Action="None" />
+    <Rule Id="SA1128" Action="None" />
+    <Rule Id="SA1309" Action="None" />
+    <Rule Id="SX1309" Action="Error" />
+
+    <Rule Id="SA1624" Action="None" /> <!-- Error SA1624: Because the property only contains a visible get accessor, the documentation summary text should begin with 'Gets'. (SA1624)-->
+    <Rule Id="SA1028" Action="Error" /> <!-- Error SA1028: Code should not contain trailing whitespace (SA1028)-->
+    <Rule Id="SA1600" Action="None" /> <!-- Error SA1600: Elements should be documented (SA1600)-->
+    <Rule Id="SA1516" Action="Error" /> <!-- Error SA1516: Elements should be separated by blank line (SA1516)-->
+    <Rule Id="SA1629" Action="None" /> <!-- Error SA1629: Documentation text should end with a period (SA1629)-->
+    <Rule Id="SA1514" Action="None" /> <!-- Error SA1514: Element documentation header should be preceded by blank line (SA1514)-->
+    <Rule Id="SA1201" Action="None" /> <!-- Error SA1201: A constructor should not follow a property (SA1201)-->
+    <Rule Id="SA1202" Action="None" /> <!-- Error SA1202: 'public' members should come before 'internal' members (SA1202)-->
+    <Rule Id="SA1210" Action="None" /> <!-- Error SA1210: Using directives should be ordered alphabetically by the namespaces. (SA1210)-->
+    <Rule Id="SA1208" Action="None" /> <!-- Error SA1208: Order usings-->
+    <Rule Id="SA1204" Action="None" /> <!-- Error SA1204: Static members should appear before non-static members (SA1204)-->
+    <Rule Id="SA1004" Action="None" /> <!-- Error SA1004: Documentation line should begin with a space. (SA1004)-->
+    <Rule Id="SA1513" Action="None" /> <!-- Error SA1513: Closing brace should be followed by blank line (SA1513)-->
+    <Rule Id="SA1124" Action="None" /> <!-- Error SA1124: Don't use regions-->
+    <Rule Id="SA1009" Action="Error" /> <!-- Error SA1009: Closing parenthesis should not be preceded by a space. (SA1009)-->
+    <Rule Id="SA1413" Action="None" /> <!-- Error SA1413: Use trailing comma in multi-line initializers (SA1413)-->
+    <Rule Id="SA1602" Action="None" /> <!-- Error SA1602: Enumeration items should be documented (SA1602)-->
+    <Rule Id="SA1005" Action="Error" /> <!-- Error SA1005: Single line comment should begin with a space. (SA1005)-->
+    <Rule Id="SA1203" Action="None" /> <!-- Error SA1203: Constant fields should appear before non-constant fields (SA1203)-->
+    <Rule Id="SA1720" Action="None" /> <!-- Error SA1720: Name contains type-->
+    <Rule Id="SA1300" Action="None" /> <!-- Error SA1300: Element 'iFrame' should begin with an uppercase letter (SA1300)-->
+    <Rule Id="SA1500" Action="None" /> <!-- Error SA1500: Braces for multi-line statements should not share line (SA1500)-->
+    <Rule Id="SA1214" Action="None" /> <!-- Error SA1214: Readonly fields should appear before non-readonly fields (SA1214)-->
+    <Rule Id="SA1642" Action="None" /> <!-- Error SA1642: Constructor summary documentation should begin with standard text (SA1642) (PuppeteerSharp)-->
+    <Rule Id="SA1013" Action="None" /> <!-- Error SA1013: Closing brace should be preceded by a space. (SA1013) -->
+    <Rule Id="SA1515" Action="None" /> <!-- Error SA1515: Single-line comment should be preceded by blank line (SA1515) -->
+    <Rule Id="SA1012" Action="None" /> <!-- Error SA1012: Opening brace should be followed by a space. (SA1012) -->
+    <Rule Id="SA1512" Action="None" /> <!-- Error SA1502: Element should not be on a single line (SA1502) -->
+    <Rule Id="SA1648" Action="None" /> <!-- Error SA1648: inheritdoc should be used with inheriting class (SA1648) -->
+    <Rule Id="SA1616" Action="None" /> <!-- Error SA1616: Element return value documentation should have text (SA1616)-->
+    <Rule Id="SA1643" Action="None" /> <!-- Error SA1643: Destructor summary documentation should begin with standard text (SA1643) -->
+    <Rule Id="SA1614" Action="None" /> <!-- Error SA1614: Element parameter documentation should have text (SA1614)-->
+    <Rule Id="SA1627" Action="None" /> <!-- Error SA1627: The documentation text within the \'exception\' tag should not be empty. (SA1627)-->
+    <Rule Id="SA1622" Action="None" /> <!-- Error SA1622: Generic type parameter documentation should have text. (SA1622)-->
+    <Rule Id="SA1116" Action="None" /> <!-- Error SA1116: The parameters should begin on the line after the declaration, whenever the parameter span across multiple lines (SA1116)-->
+    <Rule Id="SA1111" Action="Error" /> <!-- Error SA1111: Closing parenthesis should be on line of last parameter (SA1111)-->
+    <Rule Id="SA1505" Action="Error" /> <!-- Error SA1505: An opening brace should not be followed by a blank line. (SA1505) -->
+    <Rule Id="SA1612" Action="Error" /> <!-- Error SA1612: The parameter documentation for 'filePaths' should be at position 2. (SA1612) -->
+    <Rule Id="SA1620" Action="Error" /> <!-- Error SA1620: The type parameter documentation for 'T4' should be at position 4. (SA1620) -->
+    <Rule Id="SA1118" Action="Error" /> <!-- Error SA1118: The parameter spans multiple lines (SA1118) -->
   </Rules>
   <Rules AnalyzerId="Microsoft.CodeQuality.Analyzers" RuleNamespace="Microsoft.CodeQuality.Analyzers">
-    <Rule Id="CA1001" Action="None" />
-    <Rule Id="CA1031" Action="None" />
-    <Rule Id="CA1032" Action="Error" />
-    <Rule Id="CA1040" Action="None" />
-    <Rule Id="CA1054" Action="None" />
-    <Rule Id="CA1056" Action="None" />
-    <Rule Id="CA1062" Action="None" />
-    <Rule Id="CA1063" Action="Error" />
-    <Rule Id="CA1064" Action="Error" />
-    <Rule Id="CA1200" Action="Info" />
-    <Rule Id="CA1304" Action="Error" />
-    <Rule Id="CA1305" Action="None" />
-    <Rule Id="CA1720" Action="None" />
-    <Rule Id="CA1721" Action="None" />
-    <Rule Id="CA1724" Action="None" />
-    <Rule Id="CA1801" Action="Info" />
-    <Rule Id="CA1806" Action="None" />
-    <Rule Id="CA1815" Action="Info" />
-    <Rule Id="CA1816" Action="Error" />
-    <Rule Id="CA1819" Action="Info" />
-    <Rule Id="CA1822" Action="None" />
-    <Rule Id="CA1823" Action="Error" />
-    <Rule Id="CA2000" Action="Error" />
-    <Rule Id="CA2007" Action="Error" />
-    <Rule Id="CA2008" Action="None" />
-    <Rule Id="CA2101" Action="None" />
-    <Rule Id="CA2200" Action="Error" />
-    <Rule Id="CA2213" Action="Error" />
-    <Rule Id="CA2220" Action="None" />
-    <Rule Id="CA2227" Action="Info" />
-    <Rule Id="CA2229" Action="Error" />
-    <Rule Id="CA2237" Action="None" />
+    <Rule Id="CA1054" Action="None" /> <!-- Overloads to System.Uri-->
+    <Rule Id="CA1056" Action="None" /> <!-- Change string to System.Uri-->
+    <Rule Id="CA1040" Action="None" /> <!-- Avoid empty interfaces-->
+    <Rule Id="CA2007" Action="Error" /> <!-- Use ConfigureAwait -->
+    <Rule Id="CA1819" Action="Info" /> <!-- Properties should not return arrays. -->
+    <Rule Id="CA1815" Action="Info" /> <!-- should override equality and inequality. -->
+    <Rule Id="CA2227" Action="Info" /> <!-- Change '...' to be read-only by removing the property setter. -->
+    <Rule Id="CA1200" Action="Info" /> <!-- Avoid using cref tags with a prefix -->
+    <Rule Id="CA2101" Action="None" /> <!-- Marshaling for P/Invoke-->
+    <Rule Id="CA1801" Action="Info" /><!-- Unused parameter-->
+    <Rule Id="CA1822" Action="None" /><!-- Method can be marked as static-->
+    <Rule Id="CA1823" Action="Error" /><!-- avoid unused fields-->
+
+    <Rule Id="CA1031" Action="None" /> <!-- Error CA1031: Modify 'SendAsync' to catch a more specific allowed exception type, or rethrow the exception. (CA1031)-->
+    <Rule Id="CA1032" Action="Error" /> <!-- Error CA1032: Add the following constructor to SelectorException: public SelectorException(). (CA1032) -->
+    <Rule Id="CA1062" Action="None" /> <!-- Error CA1031: Modify 'DeleteAsync' to catch a more specific allowed exception type, or rethrow the exception. (CA1031)-->
+    <Rule Id="CA1063" Action="Error" /> <!-- Error CA1063: Provide an overridable implementation of Dispose(bool) -->
+    <Rule Id="CA1064" Action="Error" /> <!-- Error CA1064: Exceptions should be public (CA1064)-->
+    <Rule Id="CA1001" Action="None" /> <!-- Error CA1001: A class owns a disposable -->
+    <Rule Id="CA1304" Action="Error" /> <!-- Error CA1304: The behavior of 'string.ToLower()' could vary based on the current user's locale settings. Replace this call in 'JSHandle.ToString()' with a call to 'string.ToLower(CultureInfo)'. (CA1304) -->
+    <Rule Id="CA1305" Action="Error" /> <!-- String.Format with culture-->
+    <Rule Id="CA1720" Action="Error" /> <!-- Error SA1720: Name contains type-->
+    <Rule Id="CA1721" Action="Error" /> <!-- Error CA1721: The property name 'DefaultArgs' is confusing given the existence of method 'GetDefaultArgs'. Rename or remove one of these members. (CA1721)-->
+    <Rule Id="CA1724" Action="None" /> <!-- Error CA1724: The type name Extensions conflicts in whole or in part with the namespace name 'Microsoft.Extensions'. Change either name to eliminate the conflict. (CA1724) -->
+    <Rule Id="CA1806" Action="Error" /> <!-- Error CA1806: DownloadAsync calls Chmod but does not use the HRESULT or error code that the method returns. This could lead to unexpected behavior in error conditions or low-resource situations. Use the result in a conditional statement, assign the result to a variable, or pass it as an argument to another method. (CA1806)-->
+    <Rule Id="CA1816" Action="Error" /> <!-- Error CA1816: Change Connection.Dispose() to call GC.SuppressFinalize(object). This will prevent derived types that introduce a finalizer from needing to re-implement 'IDisposable' to call it. (CA1816) -->
+    <Rule Id="CA2000" Action="Error" /> <!-- Error CA2000: Call System.IDisposable.Dispose on object created by 'new Process()' before all references to it are out of scope. (CA2000) -->
+    <Rule Id="CA2008" Action="None" /> <!-- Error ca2008: Pass TaskScheduler-->
+    <Rule Id="CA2200" Action="Error" /> <!-- Error CA2200: Re-throwing caught exception changes stack information. (CA2200)  -->
+    <Rule Id="CA2213" Action="Error" /> <!-- Error CA2213: 'WebSocketTransport' contains field '_readerCancellationSource' that is of IDisposable type 'CancellationTokenSource', but it is never disposed. Change the Dispose method on 'WebSocketTransport' to call Close or Dispose on this field. (CA2213) -->
+    <Rule Id="CA2220" Action="None" /> <!-- Error CA2229: Add a constructor to SelectorException with the following signature: 'protected SelectorException(SerializationInfo info, StreamingContext context)'. (CA2229) (PuppeteerSharp)-->
+    <Rule Id="CA2229" Action="Error" /> <!-- Error CA2229: Add a constructor to SelectorException with the following signature: 'protected SelectorException(SerializationInfo info, StreamingContext context)'. (CA2229)-->
+    <Rule Id="CA2237" Action="None" /> <!-- Error CA2237: Add [Serializable] to TargetClosedException as this type implements ISerializable (CA2237)-->
   </Rules>
-  <Rules AnalyzerId="Microsoft.NetCore.Analyzers" RuleNamespace="Microsoft.NetCore.Analyzers">
+  <Rules AnalyzerId="Microsoft.Analyzers.ManagedCodeAnalysis" RuleNamespace="Microsoft.Rules.Managed">
     <Rule Id="CA1303" Action="None" />
-    <Rule Id="CA1304" Action="Error" />
-  </Rules>
-  <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
-    <Rule Id="SA1004" Action="None" />
-    <Rule Id="SA1005" Action="Error" />
-    <Rule Id="SA1009" Action="Error" />
-    <Rule Id="SA1012" Action="None" />
-    <Rule Id="SA1013" Action="None" />
-    <Rule Id="SA1028" Action="Error" />
-    <Rule Id="SA1101" Action="None" />
-    <Rule Id="SA1111" Action="Error" />
-    <Rule Id="SA1116" Action="None" />
-    <Rule Id="SA1118" Action="Error" />
-    <Rule Id="SA1124" Action="None" />
-    <Rule Id="SA1128" Action="None" />
-    <Rule Id="SA1200" Action="None" />
-    <Rule Id="SA1201" Action="None" />
-    <Rule Id="SA1202" Action="None" />
-    <Rule Id="SA1203" Action="None" />
-    <Rule Id="SA1204" Action="None" />
-    <Rule Id="SA1208" Action="None" />
-    <Rule Id="SA1210" Action="None" />
-    <Rule Id="SA1214" Action="None" />
-    <Rule Id="SA1300" Action="None" />
-    <Rule Id="SA1309" Action="None" />
-    <Rule Id="SA1413" Action="None" />
-    <Rule Id="SA1500" Action="None" />
-    <Rule Id="SA1505" Action="Error" />
-    <Rule Id="SA1512" Action="None" />
-    <Rule Id="SA1513" Action="None" />
-    <Rule Id="SA1514" Action="None" />
-    <Rule Id="SA1515" Action="None" />
-    <Rule Id="SA1516" Action="Error" />
-    <Rule Id="SA1600" Action="None" />
-    <Rule Id="SA1602" Action="None" />
-    <Rule Id="SA1612" Action="Error" />
-    <Rule Id="SA1614" Action="None" />
-    <Rule Id="SA1616" Action="None" />
-    <Rule Id="SA1620" Action="Error" />
-    <Rule Id="SA1622" Action="None" />
-    <Rule Id="SA1623" Action="None" />
-    <Rule Id="SA1624" Action="None" />
-    <Rule Id="SA1627" Action="None" />
-    <Rule Id="SA1629" Action="None" />
-    <Rule Id="SA1633" Action="None" />
-    <Rule Id="SA1642" Action="None" />
-    <Rule Id="SA1643" Action="None" />
-    <Rule Id="SA1648" Action="None" />
-    <Rule Id="SA1720" Action="None" />
-    <Rule Id="SX1309" Action="Error" />
   </Rules>
 </RuleSet>

@@ -2046,7 +2046,7 @@ namespace PuppeteerSharp
             decimal pixels;
             if (parameter is decimal || parameter is int)
             {
-                pixels = Convert.ToDecimal(parameter);
+                pixels = Convert.ToDecimal(parameter, CultureInfo.CurrentCulture);
             }
             else
             {
