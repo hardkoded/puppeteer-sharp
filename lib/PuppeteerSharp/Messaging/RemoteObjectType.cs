@@ -16,7 +16,9 @@ namespace PuppeteerSharp.Messaging
         /// <summary>
         /// Object.
         /// </summary>
-        ObjectType,
+#pragma warning disable CA1720 // Identifier contains type name
+        Object,
+#pragma warning restore CA1720 // Identifier contains type name
         /// <summary>
         /// Function.
         /// </summary>
