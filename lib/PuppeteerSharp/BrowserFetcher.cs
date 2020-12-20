@@ -221,7 +221,6 @@ namespace PuppeteerSharp
 
             if (revisionInfo != null && GetCurrentPlatform() == Platform.Linux)
             {
-                // As per man 2 chmod docs: Chmod On success, zero is returned.  On error, -1 is returned, and errno is set appropriately.
                 int code = LinuxSysCall.Chmod(revisionInfo.ExecutablePath, LinuxSysCall.ExecutableFilePermissions);
                 if (code == -1)
                 {
