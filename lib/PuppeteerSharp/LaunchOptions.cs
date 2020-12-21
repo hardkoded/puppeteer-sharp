@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net.WebSockets;
 using PuppeteerSharp.Transport;
@@ -86,13 +86,13 @@ namespace PuppeteerSharp
         public bool LogProcess { get; set; }
 
         /// <summary>
-        /// If <c>true</c>, then do not use <see cref="Puppeteer.DefaultFlags"/>.
+        /// If <c>true</c>, then do not use <see cref="Puppeteer.DefaultArgs"/>.
         /// Dangerous option; use with care. Defaults to <c>false</c>.
         /// </summary>
         public bool IgnoreDefaultArgs { get; set; }
 
         /// <summary>
-        /// if <see cref="IgnoreDefaultArgs"/> is set to <c>false</c> this list will be used to filter <see cref="Puppeteer.DefaultFlags"/>
+        /// if <see cref="IgnoreDefaultArgs"/> is set to <c>false</c> this list will be used to filter <see cref="Puppeteer.DefaultArgs"/>
         /// </summary>
         public string[] IgnoredDefaultArgs
         {
