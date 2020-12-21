@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -220,7 +221,11 @@ namespace PuppeteerSharp
 
             if (revisionInfo != null && GetCurrentPlatform() == Platform.Linux)
             {
-                LinuxSysCall.Chmod(revisionInfo.ExecutablePath, LinuxSysCall.ExecutableFilePermissions);
+                int code = LinuxSysCall.Chmod(revisionInfo.ExecutablePath, LinuxSysCall.ExecutableFilePermissions);
+                if (code == -1)
+                {
+                    throw new Exception("Chmod operation failed");
+                }
             }
 
             return revisionInfo;
@@ -318,9 +323,7 @@ namespace PuppeteerSharp
             {
                 return 0;
             }
-
-            int.TryParse(splits[1], out int revision);
-            return revision;
+            return int.Parse(splits[1], CultureInfo.CurrentCulture);
         }
 
         private static string GetArchiveName(Platform platform, int revision)
@@ -340,7 +343,7 @@ namespace PuppeteerSharp
         }
 
         private static string GetDownloadURL(Platform platform, string host, int revision)
-            => string.Format(_downloadUrls[platform], host, revision, GetArchiveName(platform, revision));
+            => string.Format(CultureInfo.CurrentCulture, _downloadUrls[platform], host, revision, GetArchiveName(platform, revision));
 
         #endregion
     }

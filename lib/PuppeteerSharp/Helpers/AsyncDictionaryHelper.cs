@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
+using System.Globalization;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp.Helpers
@@ -29,7 +30,7 @@ namespace PuppeteerSharp.Helpers
             }
 
             return await tcs.Task.WithTimeout(new Action(() =>
-                throw new PuppeteerException(string.Format(_timeoutMessage, key))), 1000).ConfigureAwait(false);
+                throw new PuppeteerException(string.Format(CultureInfo.CurrentCulture, _timeoutMessage, key))), 1000).ConfigureAwait(false);
         }
 
         internal async Task<TValue> TryGetItemAsync(TKey key)

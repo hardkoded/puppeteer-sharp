@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Mobile;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -24,7 +24,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// The default flags that Chromium will be launched with.
         /// </summary>
-        public static string[] DefaultArgs => ChromiumLauncher.DefaultArgs;
+        internal static string[] DefaultArgs => ChromiumLauncher.DefaultArgs;
 
         /// <summary>
         /// A path where Puppeteer expects to find bundled browser. It might not exist there if the downloader was not used.
