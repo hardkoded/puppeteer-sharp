@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using PuppeteerSharp.Media;
 using PuppeteerSharp.Messaging;
 
@@ -7,15 +6,24 @@ namespace PuppeteerSharp
 {
     internal class EmulationManager
     {
+        #region Members
         private readonly CDPSession _client;
         private bool _hasTouch;
         private bool _emulatingMobile;
+        #endregion Members
 
+        #region Constructors
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EmulationManager"/> class.
+        /// </summary>
+        /// <param name="client">The cdp session object.</param>
         public EmulationManager(CDPSession client)
         {
             _client = client;
         }
+        #endregion Constructors
 
+        #region Methods
         internal async Task<bool> EmulateViewport(ViewPortOptions viewport)
         {
             var mobile = viewport.IsMobile;
@@ -56,5 +64,6 @@ namespace PuppeteerSharp
             _hasTouch = hasTouch;
             return reloadNeeded;
         }
+        #endregion Methods
     }
 }
