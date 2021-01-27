@@ -87,7 +87,7 @@ namespace PuppeteerSharp
         #region Properties
 
         /// <summary>
-        /// Raised when the <see cref="Browser"/> gets closed. 
+        /// Raised when the <see cref="Browser"/> gets closed.
         /// </summary>
         public event EventHandler Closed;
 
@@ -158,8 +158,11 @@ namespace PuppeteerSharp
         public BrowserContext DefaultContext { get; }
 
         internal TaskQueue ScreenshotTaskQueue { get; set; }
+
         internal Connection Connection { get; }
+
         internal ViewPortOptions DefaultViewport { get; }
+
         internal LauncherBase Launcher { get; set; }
 
         /// <summary>

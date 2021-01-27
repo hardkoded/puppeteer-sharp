@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace PuppeteerSharp.Helpers
 {
@@ -14,20 +14,6 @@ namespace PuppeteerSharp.Helpers
             if (!IsQuoted(value))
             {
                 value = string.Concat("\"", value, "\"");
-            }
-            return value;
-        }
-
-        /// <summary>
-        /// Unquote the specified <see cref="string"/>.
-        /// </summary>
-        /// <param name="value">The string to unquote.</param>
-        /// <returns>An unquoted string.</returns>
-        public static string UnQuote(this string value)
-        {
-            if (IsQuoted(value))
-            {
-                value = value.Trim('"');
             }
             return value;
         }

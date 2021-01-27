@@ -1,22 +1,23 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27703.2035
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30404.54
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PuppeteerSharp", "PuppeteerSharp\PuppeteerSharp.csproj", "{19B9B1ED-AF6C-4DAF-8B73-401570111F88}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PuppeteerSharp", "PuppeteerSharp\PuppeteerSharp.csproj", "{19B9B1ED-AF6C-4DAF-8B73-401570111F88}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PuppeteerSharp.Tests", "PuppeteerSharp.Tests\PuppeteerSharp.Tests.csproj", "{1682289E-5ED3-405F-8ABC-01A3ED58CBC6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PuppeteerSharp.Tests", "PuppeteerSharp.Tests\PuppeteerSharp.Tests.csproj", "{1682289E-5ED3-405F-8ABC-01A3ED58CBC6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PuppeteerSharp.TestServer", "PuppeteerSharp.TestServer\PuppeteerSharp.TestServer.csproj", "{0CC393AB-10C2-4CDB-8353-78924D3DD5D3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PuppeteerSharp.TestServer", "PuppeteerSharp.TestServer\PuppeteerSharp.TestServer.csproj", "{0CC393AB-10C2-4CDB-8353-78924D3DD5D3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PuppeteerSharp.Tests.DumpIO", "PuppeteerSharp.Tests.DumpIO\PuppeteerSharp.Tests.DumpIO.csproj", "{B1892212-CEE3-4DC3-ADB8-04A2D9A081A0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PuppeteerSharp.Tests.DumpIO", "PuppeteerSharp.Tests.DumpIO\PuppeteerSharp.Tests.DumpIO.csproj", "{B1892212-CEE3-4DC3-ADB8-04A2D9A081A0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PuppeteerSharp.DevicesFetcher", "PuppeteerSharp.DevicesFetcher\PuppeteerSharp.DevicesFetcher.csproj", "{A500694A-3649-4474-BC71-C835FA19B865}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5993B99D-AC7B-4D6F-832C-6784D7EFE9B3}"
 	ProjectSection(SolutionItems) = preProject
-		PuppeteerSharp.ruleset = PuppeteerSharp.ruleset
 		.editorconfig = .editorconfig
+		..\Directory.Build.props = ..\Directory.Build.props
+		PuppeteerSharp.ruleset = PuppeteerSharp.ruleset
 	EndProjectSection
 EndProject
 Global

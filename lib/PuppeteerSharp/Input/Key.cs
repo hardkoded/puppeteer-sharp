@@ -6,6 +6,7 @@
     public class Key
     {
         private readonly string _value;
+
         private Key(string value) => _value = value;
         /// <summary>
         /// Cancel key.

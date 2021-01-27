@@ -49,7 +49,7 @@ namespace PuppeteerSharp
         private TaskCompletionSource<bool> _sessionClosedTcs;
         private readonly TimeoutSettings _timeoutSettings;
         private bool _fileChooserInterceptionIsDisabled;
-        private ConcurrentDictionary<Guid, TaskCompletionSource<FileChooser>> _fileChooserInterceptors;
+        private readonly ConcurrentDictionary<Guid, TaskCompletionSource<FileChooser>> _fileChooserInterceptors;
 
         private static readonly Dictionary<string, decimal> _unitToPixels = new Dictionary<string, decimal> {
             {"px", 1},
@@ -135,7 +135,7 @@ namespace PuppeteerSharp
         /// An example of handling <see cref="Console"/> event:
         /// <code>
         /// <![CDATA[
-        /// page.Console += (sender, e) => 
+        /// page.Console += (sender, e) =>
         /// {
         ///     for (var i = 0; i < e.Message.Args.Count; ++i)
         ///     {
@@ -365,7 +365,9 @@ namespace PuppeteerSharp
         public Accessibility Accessibility { get; }
 
         internal bool JavascriptEnabled { get; set; } = true;
+
         internal bool HasPopupEventListeners => Popup?.GetInvocationList().Any() == true;
+
         internal FrameManager FrameManager { get; private set; }
 
         private Task SessionClosedTask
@@ -599,7 +601,7 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Activating request interception enables <see cref="Request.AbortAsync(RequestAbortErrorCode)">request.AbortAsync</see>, 
+        /// Activating request interception enables <see cref="Request.AbortAsync(RequestAbortErrorCode)">request.AbortAsync</see>,
         /// <see cref="Request.ContinueAsync(Payload)">request.ContinueAsync</see> and <see cref="Request.RespondAsync(ResponseData)">request.RespondAsync</see> methods.
         /// </summary>
         /// <returns>The request interception task.</returns>
@@ -752,8 +754,8 @@ namespace PuppeteerSharp
         /// Adds a function called <c>name</c> on the page's <c>window</c> object.
         /// When called, the function executes <paramref name="puppeteerFunction"/> in C# and returns a <see cref="Task"/> which resolves to the return value of <paramref name="puppeteerFunction"/>.
         /// </summary>
-        /// <typeparam name="TResult">The result of <paramref name="puppeteerFunction"/></typeparam>
         /// <typeparam name="T">The parameter of <paramref name="puppeteerFunction"/></typeparam>
+        /// <typeparam name="TResult">The result of <paramref name="puppeteerFunction"/></typeparam>
         /// <param name="name">Name of the function on the window object</param>
         /// <param name="puppeteerFunction">Callback function which will be called in Puppeteer's context.</param>
         /// <remarks>
@@ -768,9 +770,9 @@ namespace PuppeteerSharp
         /// Adds a function called <c>name</c> on the page's <c>window</c> object.
         /// When called, the function executes <paramref name="puppeteerFunction"/> in C# and returns a <see cref="Task"/> which resolves to the return value of <paramref name="puppeteerFunction"/>.
         /// </summary>
-        /// <typeparam name="TResult">The result of <paramref name="puppeteerFunction"/></typeparam>
         /// <typeparam name="T1">The first parameter of <paramref name="puppeteerFunction"/></typeparam>
         /// <typeparam name="T2">The second parameter of <paramref name="puppeteerFunction"/></typeparam>
+        /// <typeparam name="TResult">The result of <paramref name="puppeteerFunction"/></typeparam>
         /// <param name="name">Name of the function on the window object</param>
         /// <param name="puppeteerFunction">Callback function which will be called in Puppeteer's context.</param>
         /// <remarks>
@@ -785,10 +787,10 @@ namespace PuppeteerSharp
         /// Adds a function called <c>name</c> on the page's <c>window</c> object.
         /// When called, the function executes <paramref name="puppeteerFunction"/> in C# and returns a <see cref="Task"/> which resolves to the return value of <paramref name="puppeteerFunction"/>.
         /// </summary>
-        /// <typeparam name="TResult">The result of <paramref name="puppeteerFunction"/></typeparam>
         /// <typeparam name="T1">The first parameter of <paramref name="puppeteerFunction"/></typeparam>
         /// <typeparam name="T2">The second parameter of <paramref name="puppeteerFunction"/></typeparam>
         /// <typeparam name="T3">The third parameter of <paramref name="puppeteerFunction"/></typeparam>
+        /// <typeparam name="TResult">The result of <paramref name="puppeteerFunction"/></typeparam>
         /// <param name="name">Name of the function on the window object</param>
         /// <param name="puppeteerFunction">Callback function which will be called in Puppeteer's context.</param>
         /// <remarks>
@@ -803,11 +805,11 @@ namespace PuppeteerSharp
         /// Adds a function called <c>name</c> on the page's <c>window</c> object.
         /// When called, the function executes <paramref name="puppeteerFunction"/> in C# and returns a <see cref="Task"/> which resolves to the return value of <paramref name="puppeteerFunction"/>.
         /// </summary>
-        /// <typeparam name="TResult">The result of <paramref name="puppeteerFunction"/></typeparam>
         /// <typeparam name="T1">The first parameter of <paramref name="puppeteerFunction"/></typeparam>
         /// <typeparam name="T2">The second parameter of <paramref name="puppeteerFunction"/></typeparam>
         /// <typeparam name="T3">The third parameter of <paramref name="puppeteerFunction"/></typeparam>
         /// <typeparam name="T4">The fourth parameter of <paramref name="puppeteerFunction"/></typeparam>
+        /// <typeparam name="TResult">The result of <paramref name="puppeteerFunction"/></typeparam>
         /// <param name="name">Name of the function on the window object</param>
         /// <param name="puppeteerFunction">Callback function which will be called in Puppeteer's context.</param>
         /// <remarks>
@@ -844,15 +846,15 @@ namespace PuppeteerSharp
         /// - the `timeout` is exceeded during navigation.
         /// - the remote server does not respond or is unreachable.
         /// - the main resource failed to load.
-        /// 
-        /// <see cref="GoToAsync(string, int?, WaitUntilNavigation[])"/> will not throw an error when any valid HTTP status code is returned by the remote server, 
+        ///
+        /// <see cref="GoToAsync(string, int?, WaitUntilNavigation[])"/> will not throw an error when any valid HTTP status code is returned by the remote server,
         /// including 404 "Not Found" and 500 "Internal Server Error".  The status code for such responses can be retrieved by calling <see cref="Response.Status"/>
-        /// 
-        /// > **NOTE** <see cref="GoToAsync(string, int?, WaitUntilNavigation[])"/> either throws an error or returns a main resource response. 
+        ///
+        /// > **NOTE** <see cref="GoToAsync(string, int?, WaitUntilNavigation[])"/> either throws an error or returns a main resource response.
         /// The only exceptions are navigation to `about:blank` or navigation to the same URL with a different hash, which would succeed and return `null`.
-        /// 
+        ///
         /// > **NOTE** Headless mode doesn't support navigation to a PDF document. See the <see fref="https://bugs.chromium.org/p/chromium/issues/detail?id=761295">upstream issue</see>.
-        /// 
+        ///
         /// Shortcut for <seealso cref="Frame.GoToAsync(string, int?, WaitUntilNavigation[])"/>
         /// </remarks>
         /// <param name="url">URL to navigate page to. The url should include scheme, e.g. https://.</param>
@@ -1080,7 +1082,7 @@ namespace PuppeteerSharp
         /// await page.EvaluateFunctionAsync<bool>("() => matchMedia('(prefers-color-scheme: no-preference)').matches)");
         /// // → false
         /// await page.EmulateMediaFeaturesAsync(new MediaFeature[]
-        /// { 
+        /// {
         ///   new MediaFeature { MediaFeature = MediaFeature.PrefersColorScheme, Value = "dark" },
         ///   new MediaFeature { MediaFeature = MediaFeature.PrefersReducedMotion, Value = "reduce" },
         /// });
@@ -1112,8 +1114,8 @@ namespace PuppeteerSharp
         /// {
         ///     await page.SetViewPortAsync(new ViewPortOptions
         ///     {
-        ///         Width = 640, 
-        ///         Height = 480, 
+        ///         Width = 640,
+        ///         Height = 480,
         ///         DeviceScaleFactor = 1
         ///     });
         ///     await page.goto('https://www.example.com');
@@ -1134,7 +1136,7 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Emulates given device metrics and user agent. 
+        /// Emulates given device metrics and user agent.
         /// </summary>
         /// <remarks>
         /// This method is a shortcut for calling two methods:
@@ -1157,15 +1159,14 @@ namespace PuppeteerSharp
         /// <param name="options">Emulation options.</param>
         public Task EmulateAsync(DeviceDescriptor options) => Task.WhenAll(
             SetViewportAsync(options.ViewPort),
-            SetUserAgentAsync(options.UserAgent)
-        );
+            SetUserAgentAsync(options.UserAgent));
 
         /// <summary>
         /// Takes a screenshot of the page
         /// </summary>
         /// <returns>The screenshot task.</returns>
-        /// <param name="file">The file path to save the image to. The screenshot type will be inferred from file extension. 
-        /// If path is a relative path, then it is resolved relative to current working directory. If no path is provided, 
+        /// <param name="file">The file path to save the image to. The screenshot type will be inferred from file extension.
+        /// If path is a relative path, then it is resolved relative to current working directory. If no path is provided,
         /// the image won't be saved to the disk.</param>
         public Task ScreenshotAsync(string file) => ScreenshotAsync(file, new ScreenshotOptions());
 
@@ -1173,8 +1174,8 @@ namespace PuppeteerSharp
         /// Takes a screenshot of the page
         /// </summary>
         /// <returns>The screenshot task.</returns>
-        /// <param name="file">The file path to save the image to. The screenshot type will be inferred from file extension. 
-        /// If path is a relative path, then it is resolved relative to current working directory. If no path is provided, 
+        /// <param name="file">The file path to save the image to. The screenshot type will be inferred from file extension.
+        /// If path is a relative path, then it is resolved relative to current working directory. If no path is provided,
         /// the image won't be saved to the disk.</param>
         /// <param name="options">Screenshot options.</param>
         public async Task ScreenshotAsync(string file, ScreenshotOptions options)
@@ -1451,8 +1452,7 @@ namespace PuppeteerSharp
 
             await Task.WhenAll(
               navigationTask,
-              Client.SendAsync("Page.reload")
-            ).ConfigureAwait(false);
+              Client.SendAsync("Page.reload")).ConfigureAwait(false);
 
             return navigationTask.Result;
         }
@@ -1468,12 +1468,12 @@ namespace PuppeteerSharp
             => ReloadAsync(new NavigationOptions { Timeout = timeout, WaitUntil = waitUntil });
 
         /// <summary>
-        /// Triggers a change and input event once all the provided options have been selected. 
+        /// Triggers a change and input event once all the provided options have been selected.
         /// If there's no <![CDATA[<select>]]> element matching selector, the method throws an error.
         /// </summary>
         /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
         /// <param name="selector">A selector to query page for</param>
-        /// <param name="values">Values of options to select. If the <![CDATA[<select>]]> has the multiple attribute, 
+        /// <param name="values">Values of options to select. If the <![CDATA[<select>]]> has the multiple attribute,
         /// all values are considered, otherwise only the first one is taken into account.</param>
         /// <returns>Returns an array of option values that have been successfully selected.</returns>
         /// <seealso cref="Frame.SelectAsync(string, string[])"/>
@@ -1535,7 +1535,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="xpath">A xpath selector of an element to wait for</param>
         /// <param name="options">Optional waiting parameters</param>
-        /// <returns>A task which resolves when element specified by xpath string is added to DOM. 
+        /// <returns>A task which resolves when element specified by xpath string is added to DOM.
         /// Resolves to `null` if waiting for `hidden: true` and xpath is not found in DOM.</returns>
         /// <example>
         /// <code>
@@ -1565,7 +1565,7 @@ namespace PuppeteerSharp
         /// It is useful for when you run code which will indirectly cause the page to navigate.
         /// </summary>
         /// <param name="options">navigation options</param>
-        /// <returns>Task which resolves to the main resource response. 
+        /// <returns>Task which resolves to the main resource response.
         /// In case of multiple redirects, the navigation will resolve with the response of the last redirect.
         /// In case of navigation to a different anchor or navigation due to History API usage, the navigation will resolve with `null`.
         /// </returns>
@@ -1715,11 +1715,11 @@ namespace PuppeteerSharp
         /// await Task.WhenAll(
         ///     waitTask,
         ///     page.ClickAsync("#upload-file-button")); // some button that triggers file selection
-        /// 
+        ///
         /// await waitTask.Result.AcceptAsync('/tmp/myfile.pdf');
         /// ]]>
         /// </code>
-        /// 
+        ///
         /// This must be called *before* the file chooser is launched. It will not return a currently active file chooser.
         /// </example>
         /// <param name="options">Optional waiting parameters.</param>
@@ -1740,17 +1740,17 @@ namespace PuppeteerSharp
             {
                 return await tcs.Task.WithTimeout(timeout).ConfigureAwait(false);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 _fileChooserInterceptors.TryRemove(guid, out _);
-                throw ex;
+                throw;
             }
         }
 
         /// <summary>
         /// Navigate to the previous page in history.
         /// </summary>
-        /// <returns>Task that resolves to the main resource response. In case of multiple redirects, 
+        /// <returns>Task that resolves to the main resource response. In case of multiple redirects,
         /// the navigation will resolve with the response of the last redirect. If can not go back, resolves to null.</returns>
         /// <param name="options">Navigation parameters.</param>
         public Task<Response> GoBackAsync(NavigationOptions options = null) => GoAsync(-1, options);
@@ -1758,7 +1758,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Navigate to the next page in history.
         /// </summary>
-        /// <returns>Task that resolves to the main resource response. In case of multiple redirects, 
+        /// <returns>Task that resolves to the main resource response. In case of multiple redirects,
         /// the navigation will resolve with the response of the last redirect. If can not go forward, resolves to null.</returns>
         /// <param name="options">Navigation parameters.</param>
         public Task<Response> GoForwardAsync(NavigationOptions options = null) => GoAsync(1, options);
@@ -1852,8 +1852,7 @@ namespace PuppeteerSharp
                    Flatten = true
                }),
                Client.SendAsync("Performance.enable", null),
-               Client.SendAsync("Log.enable", null)
-           ).ConfigureAwait(false);
+               Client.SendAsync("Log.enable", null)).ConfigureAwait(false);
 
             try
             {
@@ -1872,7 +1871,7 @@ namespace PuppeteerSharp
         {
             var history = await Client.SendAsync<PageGetNavigationHistoryResponse>("Page.getNavigationHistory").ConfigureAwait(false);
 
-            if (history.Entries.Count <= history.CurrentIndex + delta)
+            if (history.Entries.Count <= history.CurrentIndex + delta || history.CurrentIndex + delta < 0)
             {
                 return null;
             }
@@ -1884,8 +1883,7 @@ namespace PuppeteerSharp
                 Client.SendAsync("Page.navigateToHistoryEntry", new PageNavigateToHistoryEntryRequest
                 {
                     EntryId = entry.Id
-                })
-            ).ConfigureAwait(false);
+                })).ConfigureAwait(false);
 
             return waitTask.Result;
         }
@@ -1987,7 +1985,7 @@ namespace PuppeteerSharp
 
             var screenMessage = new PageCaptureScreenshotRequest
             {
-                Format = type.ToString().ToLower()
+                Format = type.ToString().ToLower(CultureInfo.CurrentCulture)
             };
 
             if (options.Quality.HasValue)
@@ -2048,12 +2046,12 @@ namespace PuppeteerSharp
             decimal pixels;
             if (parameter is decimal || parameter is int)
             {
-                pixels = Convert.ToDecimal(parameter);
+                pixels = Convert.ToDecimal(parameter, CultureInfo.CurrentCulture);
             }
             else
             {
                 var text = parameter.ToString();
-                var unit = text.Substring(text.Length - 2).ToLower();
+                var unit = text.Substring(text.Length - 2).ToLower(CultureInfo.CurrentCulture);
                 string valueText;
                 if (_unitToPixels.ContainsKey(unit))
                 {

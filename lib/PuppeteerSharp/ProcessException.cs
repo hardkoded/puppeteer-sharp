@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace PuppeteerSharp
 {
@@ -9,6 +9,13 @@ namespace PuppeteerSharp
     public class ProcessException : ChromiumProcessException
     #pragma warning restore 612, 618
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ProcessException"/> class.
+        /// </summary>
+        public ProcessException()
+        {
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ProcessException"/> class.
         /// </summary>

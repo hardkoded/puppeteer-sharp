@@ -3,6 +3,7 @@
     internal class FetchEnableRequest
     {
         public bool HandleAuthRequests { get; set; }
+
         public Pattern[] Patterns { get; set; }
 
         internal class Pattern

@@ -193,14 +193,7 @@ namespace PuppeteerSharp
 
             if (id.HasValue && _callbacks.TryRemove(id.Value, out var callback))
             {
-                if (obj.Error != null)
-                {
-                    callback.TaskWrapper.TrySetException(new MessageException(callback, obj.Error));
-                }
-                else
-                {
-                    callback.TaskWrapper.TrySetResult(obj.Result);
-                }
+                Connection.MessageQueue.Enqueue(callback, obj);
             }
             else
             {

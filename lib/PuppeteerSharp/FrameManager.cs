@@ -13,7 +13,7 @@ namespace PuppeteerSharp
 {
     internal class FrameManager
     {
-        private Dictionary<int, ExecutionContext> _contextIdToContext;
+        private readonly ConcurrentDictionary<int, ExecutionContext> _contextIdToContext;
         private bool _ensureNewDocumentNavigation;
         private readonly ILogger _logger;
         private readonly ConcurrentDictionary<string, Frame> _frames;
@@ -27,7 +27,7 @@ namespace PuppeteerSharp
             Client = client;
             Page = page;
             _frames = new ConcurrentDictionary<string, Frame>();
-            _contextIdToContext = new Dictionary<int, ExecutionContext>();
+            _contextIdToContext = new ConcurrentDictionary<int, ExecutionContext>();
             _logger = Client.Connection.LoggerFactory.CreateLogger<FrameManager>();
             NetworkManager = new NetworkManager(client, ignoreHTTPSErrors, this);
             TimeoutSettings = timeoutSettings;
@@ -39,15 +39,23 @@ namespace PuppeteerSharp
         #region Properties
 
         internal event EventHandler<FrameEventArgs> FrameAttached;
+
         internal event EventHandler<FrameEventArgs> FrameDetached;
+
         internal event EventHandler<FrameEventArgs> FrameNavigated;
+
         internal event EventHandler<FrameEventArgs> FrameNavigatedWithinDocument;
+
         internal event EventHandler<FrameEventArgs> LifecycleEvent;
 
         internal CDPSession Client { get; }
+
         internal NetworkManager NetworkManager { get; }
+
         internal Frame MainFrame { get; set; }
+
         internal Page Page { get; }
+
         internal TimeoutSettings TimeoutSettings { get; }
         #endregion
 
@@ -109,8 +117,7 @@ namespace PuppeteerSharp
 
                     task = await Task.WhenAny(
                         watcher.TimeoutOrTerminationTask,
-                        _ensureNewDocumentNavigation ? watcher.NewDocumentNavigationTask : watcher.SameDocumentNavigationTask)
-                        .ConfigureAwait(false);
+                        _ensureNewDocumentNavigation ? watcher.NewDocumentNavigationTask : watcher.SameDocumentNavigationTask).ConfigureAwait(false);
 
                     await task.ConfigureAwait(false);
                 }
@@ -148,8 +155,7 @@ namespace PuppeteerSharp
                 var raceTask = await Task.WhenAny(
                     watcher.NewDocumentNavigationTask,
                     watcher.SameDocumentNavigationTask,
-                    watcher.TimeoutOrTerminationTask
-                ).ConfigureAwait(false);
+                    watcher.TimeoutOrTerminationTask).ConfigureAwait(false);
 
                 await raceTask.ConfigureAwait(false);
 
@@ -234,24 +240,21 @@ namespace PuppeteerSharp
         {
             while (_contextIdToContext.Count > 0)
             {
-                var contextItem = _contextIdToContext.ElementAt(0);
-                _contextIdToContext.Remove(contextItem.Key);
-
-                if (contextItem.Value.World != null)
+                int key0 = _contextIdToContext.Keys.ElementAtOrDefault(0);
+                if (_contextIdToContext.TryRemove(key0, out var context))
                 {
-                    contextItem.Value.World.SetContext(null);
+                    if (context.World != null)
+                    {
+                        context.World.SetContext(null);
+                    }
                 }
             }
         }
 
         private void OnExecutionContextDestroyed(int executionContextId)
         {
-            _contextIdToContext.TryGetValue(executionContextId, out var context);
-
-            if (context != null)
+            if (_contextIdToContext.TryRemove(executionContextId, out var context))
             {
-                _contextIdToContext.Remove(executionContextId);
-
                 if (context.World != null)
                 {
                     context.World.SetContext(null);

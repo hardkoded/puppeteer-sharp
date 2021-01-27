@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -86,6 +86,7 @@ namespace PuppeteerSharp
             var context = await GetExecutionContextAsync().ConfigureAwait(false);
             return await context.EvaluateExpressionAsync<T>(script).ConfigureAwait(false);
         }
+
         internal async Task<JToken> EvaluateExpressionAsync(string script)
         {
             var context = await GetExecutionContextAsync().ConfigureAwait(false);
@@ -97,6 +98,7 @@ namespace PuppeteerSharp
             var context = await GetExecutionContextAsync().ConfigureAwait(false);
             return await context.EvaluateFunctionAsync<T>(script, args).ConfigureAwait(false);
         }
+
         internal async Task<JToken> EvaluateFunctionAsync(string script, params object[] args)
         {
             var context = await GetExecutionContextAsync().ConfigureAwait(false);
@@ -419,13 +421,7 @@ namespace PuppeteerSharp
                 polling,
                 null,
                 timeout,
-                new object[]
-                {
-                    selectorOrXPath,
-                    isXPath,
-                    options.Visible,
-                    options.Hidden
-                }).Task.ConfigureAwait(false);
+                new object[] { selectorOrXPath, isXPath, options.Visible, options.Hidden }).Task.ConfigureAwait(false);
 
             if (!(handle is ElementHandle elementHandle))
             {
