@@ -20,7 +20,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             using (var browserWithExtension = await Puppeteer.LaunchAsync(
                 TestConstants.BrowserWithExtensionOptions(),
                 TestConstants.LoggerFactory))
-            using (var page = await browserWithExtension.NewPageAsync())
+            using (await browserWithExtension.NewPageAsync())
             {
                 var backgroundPageTarget = await browserWithExtension.WaitForTargetAsync(t => t.Type == TargetType.BackgroundPage);
                 Assert.NotNull(backgroundPageTarget);

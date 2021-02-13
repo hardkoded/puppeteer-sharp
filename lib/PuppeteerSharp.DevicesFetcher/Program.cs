@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -151,7 +151,6 @@ namespace PuppeteerSharp.Mobile
 
         static string GenerateCsharpFromDevice(OutputDevice device)
         {
-            var w = string.Empty;
             return $@"            [DeviceDescriptorName.{DeviceNameToEnumValue(device)}] = new DeviceDescriptor
             {{
                 Name = ""{device.Name}"",
@@ -167,6 +166,7 @@ namespace PuppeteerSharp.Mobile
                 }}
             }}";
         }
+
         static string DeviceNameToEnumValue(OutputDevice device)
         {
             var output = new StringBuilder();

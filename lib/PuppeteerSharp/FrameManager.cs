@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
@@ -101,7 +101,6 @@ namespace PuppeteerSharp
             var referrer = string.IsNullOrEmpty(options.Referer)
                ? NetworkManager.ExtraHTTPHeaders?.GetValueOrDefault(RefererHeaderName)
                : options.Referer;
-            var requests = new Dictionary<string, Request>();
             var timeout = options?.Timeout ?? TimeoutSettings.NavigationTimeout;
 
             using (var watcher = new LifecycleWatcher(this, frame, options?.WaitUntil, timeout))

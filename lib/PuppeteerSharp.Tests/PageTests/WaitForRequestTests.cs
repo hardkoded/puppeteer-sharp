@@ -77,7 +77,7 @@ namespace PuppeteerSharp.Tests.PageTests
             var tcs = new TaskCompletionSource<bool>();
             await Page.GoToAsync(TestConstants.EmptyPage);
             Page.DefaultTimeout = 1;
-            var exception = await Assert.ThrowsAnyAsync<TimeoutException>(async () =>
+            await Assert.ThrowsAnyAsync<TimeoutException>(async () =>
                 await Page.WaitForRequestAsync(request =>
                 {
                     if (request.Url.Contains("/digits/1.png"))
