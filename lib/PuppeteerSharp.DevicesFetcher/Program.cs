@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -44,6 +44,7 @@ namespace PuppeteerSharp.DevicesFetcher
             catch (Exception ex)
             {
                 Console.WriteLine($"FAILED: error parsing response - {ex.Message}");
+                return;
             }
             var devicePayloads = json.Extensions
                 .Where(extension => extension.Type == "emulated-device")
