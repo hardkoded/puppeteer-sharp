@@ -122,14 +122,14 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 browserOne.TargetCreated -= TargetCreated;
             }
             browserOne.TargetCreated += TargetCreated;
-            var page2Task = browserOne.NewPageAsync();
+            var page2Task = browserTwo.NewPageAsync();
 
             await Task.WhenAll(tcs.Task, page2Task);
             var page1 = tcs.Task.Result;
             var page2 = page2Task.Result;
 
             Assert.Equal(56, await page1.EvaluateExpressionAsync<int>("7 * 8"));
-            Assert.Equal(42, await page1.EvaluateExpressionAsync<int>("7 * 6"));
+            Assert.Equal(42, await page2.EvaluateExpressionAsync<int>("7 * 6"));
             await browserOne.CloseAsync();
         }
         [Fact]
