@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -53,7 +53,7 @@ namespace PuppeteerSharp.Tests.BrowserTests.Events
         {
             Server.SetRoute("/one-style.css", context => Task.Delay(10000));
 
-            using (var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions()))
+            await using (var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions()))
             {
                 var remote = await Puppeteer.ConnectAsync(new ConnectOptions
                 {
@@ -76,7 +76,7 @@ namespace PuppeteerSharp.Tests.BrowserTests.Events
         {
             Server.SetRoute("/empty.html", context => Task.Delay(10000));
 
-            using (var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions()))
+            await using (var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions()))
             {
                 var remote = await Puppeteer.ConnectAsync(new ConnectOptions
                 {
