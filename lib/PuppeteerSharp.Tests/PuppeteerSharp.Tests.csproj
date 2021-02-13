@@ -1,10 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFrameworks>net48;netcoreapp2.2</TargetFrameworks>
         <IsTestProject>true</IsTestProject>
     </PropertyGroup>
     <ItemGroup>
+        <PackageReference Include="MarkdownSnippets.MsBuild" Version="23.0.2" />
         <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
         <PackageReference Include="MicrosoftExtensions.Logging.Xunit" Version="1.0.0" />

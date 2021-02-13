@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -50,15 +50,38 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Fact]
+        public async Task Usage()
+        {
+            var outputFile = Path.Combine(BaseDirectory, "Usage.png");
+            var fileInfo = new FileInfo(outputFile);
+            if (fileInfo.Exists)
+            {
+                fileInfo.Delete();
+            }
+            #region ScreenshotAsync
+            var browserFetcher = new BrowserFetcher();
+            await browserFetcher.DownloadAsync(BrowserFetcher.DefaultRevision);
+            await using var browser = await Puppeteer.LaunchAsync(
+                new LaunchOptions {Headless = true});
+            await using var page = await browser.NewPageAsync();
+            await page.GoToAsync("http://www.google.com");
+            await page.ScreenshotAsync(outputFile);
+            #endregion
+            Assert.True(File.Exists(outputFile));
+        }
+
+        [Fact]
         public async Task ShouldWork()
         {
             using (var page = await Context.NewPageAsync())
             {
+                #region SetViewportAsync
                 await page.SetViewportAsync(new ViewPortOptions
                 {
                     Width = 500,
                     Height = 500
                 });
+                #endregion
                 await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
                 var screenshot = await page.ScreenshotDataAsync();
                 Assert.True(ScreenshotHelper.PixelMatch("screenshot-sanity.png", screenshot));

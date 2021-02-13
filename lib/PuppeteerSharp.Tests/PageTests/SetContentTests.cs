@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -12,6 +12,17 @@ namespace PuppeteerSharp.Tests.PageTests
 
         public SetContentTests(ITestOutputHelper output) : base(output)
         {
+        }
+
+        async Task Usage(Browser browser)
+        {
+            #region SetContentAsync
+
+            await using var page = await browser.NewPageAsync();
+            await page.SetContentAsync("<div>My Receipt</div>");
+            var result = await page.GetContentAsync();
+
+            #endregion
         }
 
         [Fact]

@@ -20,11 +20,10 @@ You can run this PowerShell script on Windows
 ```
 New-SelfSignedCertificate -Subject "localhost" -FriendlyName "Puppeteer" -CertStoreLocation "cert:\CurrentUser\My"
 
-Get-ChildItem -Path cert:\CurrentUSer\my | where { $_.friendlyname -eq "Puppeteer" } | Export-Certificate -FilePath C:\projects\puppeteer-sharp\lib\PuppeteerSharp.TestServer\testCert.cer
-
+Get-ChildItem -Path cert:\CurrentUser\my | where { $_.friendlyname -eq "Puppeteer" } | Export-Certificate -FilePath C:\projects\puppeteer-sharp\lib\PuppeteerSharp.TestServer\testCert.cer
 ```
 
-On MacOS, you can create an “SSL Server” certificate using the Keychain Access app and then export it to `.\lib\PuppeteerSharp.TestServer\testCert.cer`
+On MacOS, you can create an "SSL Server" certificate using the Keychain Access app and then export it to `.\lib\PuppeteerSharp.TestServer\testCert.cer`
 
 
 ## Code reviews

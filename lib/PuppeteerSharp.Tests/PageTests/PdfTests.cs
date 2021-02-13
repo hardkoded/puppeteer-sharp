@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using PuppeteerSharp.Media;
@@ -12,6 +12,30 @@ namespace PuppeteerSharp.Tests.PageTests
     {
         public PdfTests(ITestOutputHelper output) : base(output)
         {
+        }
+
+        [Fact]
+        public async Task Usage()
+        {
+            var outputFile = Path.Combine(BaseDirectory, "Usage.pdf");
+            var fileInfo = new FileInfo(outputFile);
+            if (fileInfo.Exists)
+            {
+                fileInfo.Delete();
+            }
+
+            #region PdfAsync
+
+            var browserFetcher = new BrowserFetcher();
+            await browserFetcher.DownloadAsync(BrowserFetcher.DefaultRevision);
+            await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions {Headless = true});
+            await using var page = await browser.NewPageAsync();
+            await page.GoToAsync("http://www.google.com");
+            await page.PdfAsync(outputFile);
+
+            #endregion
+
+            Assert.True(File.Exists(outputFile));
         }
 
         [Fact]
