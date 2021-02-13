@@ -118,7 +118,7 @@ namespace PuppeteerSharp
         public event EventHandler<MetricEventArgs> Metrics;
 
         /// <summary>
-        /// Raised when a JavaScript dialog appears, such as <c>alert</c>, <c>prompt</c>, <c>confirm</c> or <c>beforeunload</c>. Puppeteer can respond to the dialog via <see cref="Dialog"/>'s <see cref="Dialog.Accept(string)"/> or <see cref="Dialog.Dismiss"/> methods.
+        /// Raised when a JavaScript dialog appears, such as <c>alert</c>, <c>prompt</c>, <c>confirm</c> or <c>beforeunload</c>. Puppeteer can respond to the dialog via <see cref="Dialog"/>'s <see cref="PuppeteerSharp.Dialog.Accept(string)"/> or <see cref="PuppeteerSharp.Dialog.Dismiss"/> methods.
         /// </summary>
         public event EventHandler<DialogEventArgs> Dialog;
 
@@ -399,7 +399,7 @@ namespace PuppeteerSharp
         /// <returns>The task.</returns>
         /// <param name="options">Geolocation options.</param>
         /// <remarks>
-        /// Consider using <seealso cref="BrowserContext.OverridePermissionsAsync(string, IEnumerable{OverridePermission})"/> to grant permissions for the page to read its geolocation.
+        /// Consider using <seealso cref="PuppeteerSharp.BrowserContext.OverridePermissionsAsync(string, IEnumerable{OverridePermission})"/> to grant permissions for the page to read its geolocation.
         /// </remarks>
         public Task SetGeolocationAsync(GeolocationOption options)
         {
@@ -601,8 +601,8 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Activating request interception enables <see cref="Request.AbortAsync(RequestAbortErrorCode)">request.AbortAsync</see>,
-        /// <see cref="Request.ContinueAsync(Payload)">request.ContinueAsync</see> and <see cref="Request.RespondAsync(ResponseData)">request.RespondAsync</see> methods.
+        /// Activating request interception enables <see cref="PuppeteerSharp.Request.AbortAsync(RequestAbortErrorCode)">request.AbortAsync</see>,
+        /// <see cref="PuppeteerSharp.Request.ContinueAsync(Payload)">request.ContinueAsync</see> and <see cref="PuppeteerSharp.Request.RespondAsync(ResponseData)">request.RespondAsync</see> methods.
         /// </summary>
         /// <returns>The request interception task.</returns>
         /// <param name="value">Whether to enable request interception..</param>
@@ -848,7 +848,7 @@ namespace PuppeteerSharp
         /// - the main resource failed to load.
         ///
         /// <see cref="GoToAsync(string, int?, WaitUntilNavigation[])"/> will not throw an error when any valid HTTP status code is returned by the remote server,
-        /// including 404 "Not Found" and 500 "Internal Server Error".  The status code for such responses can be retrieved by calling <see cref="Response.Status"/>
+        /// including 404 "Not Found" and 500 "Internal Server Error".  The status code for such responses can be retrieved by calling <see cref="PuppeteerSharp.Response.Status"/>
         ///
         /// > **NOTE** <see cref="GoToAsync(string, int?, WaitUntilNavigation[])"/> either throws an error or returns a main resource response.
         /// The only exceptions are navigation to `about:blank` or navigation to the same URL with a different hash, which would succeed and return `null`.
@@ -1348,7 +1348,7 @@ namespace PuppeteerSharp
         /// <param name="options"></param>
         /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
         /// <remarks>
-        /// To press a special key, like <c>Control</c> or <c>ArrowDown</c> use <see cref="Keyboard.PressAsync(string, PressOptions)"/>
+        /// To press a special key, like <c>Control</c> or <c>ArrowDown</c> use <see cref="PuppeteerSharp.Keyboard.PressAsync(string, PressOptions)"/>
         /// </remarks>
         /// <example>
         /// <code>
