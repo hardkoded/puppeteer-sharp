@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,7 +8,7 @@ namespace PuppeteerSharp
 {
     /// <summary>
     /// BrowserContexts provide a way to operate multiple independent browser sessions. When a browser is launched, it has
-    /// a single <see cref="BrowserContext"/> used by default. The method <see cref="Browser.NewPageAsync"/> creates a <see cref="Page"/> in the default <see cref="BrowserContext"/>
+    /// a single <see cref="BrowserContext"/> used by default. The method <see cref="PuppeteerSharp.Browser.NewPageAsync"/> creates a <see cref="Page"/> in the default <see cref="BrowserContext"/>
     /// </summary>
     public class BrowserContext
     {
