@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -61,13 +61,13 @@ namespace PuppeteerSharp.Tests.NetworkTests
             // Setup page to trap response.
             Response pageResponse = null;
             var requestFinished = false;
-            Page.Response += (sender, e) => pageResponse = e.Response;
-            Page.RequestFinished += (sender, e) => requestFinished = true;
+            Page.Response += (_, e) => pageResponse = e.Response;
+            Page.RequestFinished += (_, _) => requestFinished = true;
             // send request and wait for server response
             Task WaitForPageResponseEvent()
             {
                 var completion = new TaskCompletionSource<bool>();
-                Page.Response += (sender, e) =>
+                Page.Response += (_, e) =>
                 {
                     if (!TestUtils.IsFavicon(e.Response.Request))
                     {

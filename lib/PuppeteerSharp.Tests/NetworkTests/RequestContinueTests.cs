@@ -24,7 +24,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldWork()
         {
             await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (sender, e) => await e.Request.ContinueAsync();
+            Page.Request += async (_, e) => await e.Request.ContinueAsync();
             await Page.GoToAsync(TestConstants.EmptyPage);
         }
 
@@ -32,7 +32,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldAmendHTTPHeaders()
         {
             await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (sender, e) =>
+            Page.Request += async (_, e) =>
             {
                 var headers = new Dictionary<string, string>(e.Request.Headers)
                 {
@@ -53,7 +53,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldRedirectInAWayNonObservableToPage()
         {
             await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (sender, e) =>
+            Page.Request += async (_, e) =>
             {
                 var redirectURL = e.Request.Url.Contains("/empty.html")
                     ? TestConstants.ServerUrl + "/consolelog.html" :
@@ -61,7 +61,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
                 await e.Request.ContinueAsync(new Payload { Url = redirectURL });
             };
             string consoleMessage = null;
-            Page.Console += (sender, e) => consoleMessage = e.Message.Text;
+            Page.Console += (_, e) => consoleMessage = e.Message.Text;
             await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.Equal(TestConstants.EmptyPage, Page.Url);
             Assert.Equal("yellow", consoleMessage);
@@ -72,7 +72,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (sender, e) =>
+            Page.Request += async (_, e) =>
             {
                 await e.Request.ContinueAsync(new Payload { Method = HttpMethod.Post });
             };
@@ -91,7 +91,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldAmendPostData()
         {
             await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (sender, e) =>
+            Page.Request += async (_, e) =>
             {
                 await e.Request.ContinueAsync(new Payload
                 {
@@ -119,7 +119,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldAmendBothPostDataAndMethodOnNavigation()
         {
             await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (sender, e) => await e.Request.ContinueAsync(new Payload
+            Page.Request += async (_, e) => await e.Request.ContinueAsync(new Payload
             {
                 Method = HttpMethod.Post,
                 PostData = "doggo"

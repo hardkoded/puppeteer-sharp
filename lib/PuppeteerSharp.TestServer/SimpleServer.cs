@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -132,7 +132,7 @@ namespace PuppeteerSharp.TestServer
             return request;
         }
 
-        public Task WaitForRequest(string path) => WaitForRequest<bool>(path, request => true);
+        public Task WaitForRequest(string path) => WaitForRequest<bool>(path, _ => true);
 
         private static bool Authenticate(string username, string password, HttpContext context)
         {

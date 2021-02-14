@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -25,7 +25,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 "PuppeteerSharp.Tests.DumpIO",
                 $"\"{new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath}\"");
 
-            process.ErrorDataReceived += (sender, e) =>
+            process.ErrorDataReceived += (_, e) =>
             {
                 success |= e.Data != null && e.Data.Contains("DevTools listening on ws://");
             };
@@ -52,7 +52,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 BrowserWSEndpoint = ChromiumLauncher.EndPoint
             });
 
-            browser.Disconnected += (sender, e) =>
+            browser.Disconnected += (_, _) =>
             {
                 browserClosedTaskWrapper.SetResult(true);
             };
@@ -69,7 +69,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             var browserClosedTaskWrapper = new TaskCompletionSource<bool>();
             var browser = await Puppeteer.LaunchAsync(new LaunchOptions { Headless = true }, TestConstants.LoggerFactory);
 
-            browser.Disconnected += (sender, e) =>
+            browser.Disconnected += (_, _) =>
             {
                 browserClosedTaskWrapper.SetResult(true);
             };

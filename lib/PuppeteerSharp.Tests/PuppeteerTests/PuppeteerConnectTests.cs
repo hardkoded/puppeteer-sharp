@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Connections.Features;
@@ -46,7 +46,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             });
             var tcsDisconnected = new TaskCompletionSource<bool>();
 
-            originalBrowser.Disconnected += (sender, e) => tcsDisconnected.TrySetResult(true);
+            originalBrowser.Disconnected += (_, _) => tcsDisconnected.TrySetResult(true);
             await Task.WhenAll(
               tcsDisconnected.Task,
               remoteBrowser.CloseAsync());
