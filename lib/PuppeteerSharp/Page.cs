@@ -1348,7 +1348,7 @@ namespace PuppeteerSharp
         /// <param name="options"></param>
         /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
         /// <remarks>
-        /// To press a special key, like <c>Control</c> or <c>ArrowDown</c> use <see cref="PuppeteerSharp.Keyboard.PressAsync(string, PressOptions)"/>
+        /// To press a special key, like <c>Control</c> or <c>ArrowDown</c> use <see cref="PuppeteerSharp.Input.Keyboard.PressAsync(string, PressOptions)"/>
         /// </remarks>
         /// <example>
         /// <code>
