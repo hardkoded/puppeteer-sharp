@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
@@ -333,7 +333,7 @@ namespace PuppeteerSharp
                 else
                 {
                     // Initial main frame navigation.
-                    frame = new Frame(this, Client, null, framePayload.Id);
+                    frame = new Frame(this, null, framePayload.Id);
                 }
                 _asyncFrames.AddItem(framePayload.Id, frame);
                 MainFrame = frame;
@@ -378,7 +378,7 @@ namespace PuppeteerSharp
             if (!_frames.ContainsKey(frameId) && _frames.ContainsKey(parentFrameId))
             {
                 var parentFrame = _frames[parentFrameId];
-                var frame = new Frame(this, Client, parentFrame, frameId);
+                var frame = new Frame(this, parentFrame, frameId);
                 _frames[frame.Id] = frame;
                 FrameAttached?.Invoke(this, new FrameEventArgs(frame));
             }
