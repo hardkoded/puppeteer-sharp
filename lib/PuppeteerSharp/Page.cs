@@ -2409,7 +2409,7 @@ namespace PuppeteerSharp
         {
             return $"({fun})({string.Join(",", args.Select(SerializeArgument))})";
 
-            string SerializeArgument(object arg)
+            static string SerializeArgument(object arg)
             {
                 return arg == null
                     ? "undefined"
