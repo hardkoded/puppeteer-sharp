@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -140,9 +140,9 @@ namespace PuppeteerSharp.Tests.PageTests
         [Fact]
         public async Task ShouldFailWhenNavigatingToBadSSL()
         {
-            Page.Request += (sender, e) => Assert.NotNull(e.Request);
-            Page.RequestFinished += (sender, e) => Assert.NotNull(e.Request);
-            Page.RequestFailed += (sender, e) => Assert.NotNull(e.Request);
+            Page.Request += (_, e) => Assert.NotNull(e.Request);
+            Page.RequestFinished += (_, e) => Assert.NotNull(e.Request);
+            Page.RequestFailed += (_, e) => Assert.NotNull(e.Request);
 
             var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await Page.GoToAsync(TestConstants.HttpsPrefix + "/empty.html"));
 
@@ -189,7 +189,7 @@ namespace PuppeteerSharp.Tests.PageTests
         [Fact]
         public async Task ShouldFailWhenExceedingMaximumNavigationTimeout()
         {
-            Server.SetRoute("/empty.html", context => Task.Delay(-1));
+            Server.SetRoute("/empty.html", _ => Task.Delay(-1));
 
             var exception = await Assert.ThrowsAnyAsync<Exception>(async ()
                 => await Page.GoToAsync(TestConstants.EmptyPage, new NavigationOptions { Timeout = 1 }));
@@ -199,7 +199,7 @@ namespace PuppeteerSharp.Tests.PageTests
         [Fact]
         public async Task ShouldFailWhenExceedingDefaultMaximumNavigationTimeout()
         {
-            Server.SetRoute("/empty.html", context => Task.Delay(-1));
+            Server.SetRoute("/empty.html", _ => Task.Delay(-1));
 
             Page.DefaultNavigationTimeout = 1;
             var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await Page.GoToAsync(TestConstants.EmptyPage));
@@ -210,7 +210,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldFailWhenExceedingDefaultMaximumTimeout()
         {
             // Hang for request to the empty.html
-            Server.SetRoute("/empty.html", context => Task.Delay(-1));
+            Server.SetRoute("/empty.html", _ => Task.Delay(-1));
             Page.DefaultTimeout = 1;
             var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await Page.GoToAsync(TestConstants.EmptyPage));
             Assert.Contains("Timeout of 1 ms exceeded", exception.Message);
@@ -220,7 +220,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldPrioritizeDefaultNavigationTimeoutOverDefaultTimeout()
         {
             // Hang for request to the empty.html
-            Server.SetRoute("/empty.html", context => Task.Delay(-1));
+            Server.SetRoute("/empty.html", _ => Task.Delay(-1));
             Page.DefaultTimeout = 0;
             Page.DefaultNavigationTimeout = 1;
             var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await Page.GoToAsync(TestConstants.EmptyPage));
@@ -368,7 +368,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldNavigateToDataURLAndFireDataURLRequests()
         {
             var requests = new List<Request>();
-            Page.Request += (sender, e) =>
+            Page.Request += (_, e) =>
             {
                 if (!TestUtils.IsFavicon(e.Request))
                 {
@@ -386,7 +386,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldNavigateToURLWithHashAndFireRequestsWithoutHash()
         {
             var requests = new List<Request>();
-            Page.Request += (sender, e) =>
+            Page.Request += (_, e) =>
             {
                 if (!TestUtils.IsFavicon(e.Request))
                 {
@@ -431,7 +431,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldSendReferer()
         {
             await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (sender, e) => await e.Request.ContinueAsync();
+            Page.Request += async (_, e) => await e.Request.ContinueAsync();
             string referer1 = null;
             string referer2 = null;
 

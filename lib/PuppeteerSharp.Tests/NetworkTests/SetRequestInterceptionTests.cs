@@ -24,7 +24,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldIntercept()
         {
             await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (sender, e) =>
+            Page.Request += async (_, e) =>
             {
                 if (TestUtils.IsFavicon(e.Request))
                 {
@@ -53,7 +53,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Server.SetRedirect("/rredirect", "/empty.html");
             await Page.GoToAsync(TestConstants.EmptyPage);
             await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (sender, e) => await e.Request.ContinueAsync();
+            Page.Request += async (_, e) => await e.Request.ContinueAsync();
 
             await Page.SetContentAsync(@"
                 <form action='/rredirect' method='post'>
@@ -72,7 +72,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Server.SetRedirect("/rredirect", "/empty.html");
             await Page.SetRequestInterceptionAsync(true);
 
-            Page.Request += async (sender, e) =>
+            Page.Request += async (_, e) =>
             {
                 var headers = e.Request.Headers.Clone();
                 headers["foo"] = "bar";
@@ -86,7 +86,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldBeAbleToRemoveHeaders()
         {
             await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (sender, e) =>
+            Page.Request += async (_, e) =>
             {
                 var headers = e.Request.Headers.Clone();
                 headers["foo"] = "bar";
@@ -109,7 +109,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             var requests = new List<Request>();
             var requestsReadyTcs = new TaskCompletionSource<bool>();
 
-            Page.Request += async (sender, e) =>
+            Page.Request += async (_, e) =>
             {
                 if (!TestUtils.IsFavicon(e.Request))
                 {
@@ -170,7 +170,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
                 ["foo"] = "bar"
             });
             await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (sender, e) =>
+            Page.Request += async (_, e) =>
             {
                 Assert.Equal("bar", e.Request.Headers["foo"]);
                 await e.Request.ContinueAsync();
@@ -185,7 +185,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             await Page.GoToAsync(TestConstants.EmptyPage);
             Server.SetRedirect("/logo.png", "/pptr.png");
             await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (sender, e) => await e.Request.ContinueAsync();
+            Page.Request += async (_, e) => await e.Request.ContinueAsync();
 
             var status = await Page.EvaluateFunctionAsync<int>(@"async () =>
             {
@@ -205,7 +205,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
                 ["referer"] = TestConstants.EmptyPage
             });
             await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (sender, e) =>
+            Page.Request += async (_, e) =>
             {
                 Assert.Equal(TestConstants.EmptyPage, e.Request.Headers["referer"]);
                 await e.Request.ContinueAsync();
@@ -218,7 +218,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldBeAbortable()
         {
             await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (sender, e) =>
+            Page.Request += async (_, e) =>
             {
                 if (e.Request.Url.EndsWith(".css"))
                 {
@@ -230,7 +230,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
                 }
             };
             var failedRequests = 0;
-            Page.RequestFailed += (sender, e) => failedRequests++;
+            Page.RequestFailed += (_, _) => failedRequests++;
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
             Assert.True(response.Ok);
             Assert.Null(response.Request.Failure);
@@ -241,13 +241,13 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldBeAbortableWithCustomErrorCodes()
         {
             await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (sender, e) =>
+            Page.Request += async (_, e) =>
             {
                 await e.Request.AbortAsync(RequestAbortErrorCode.InternetDisconnected);
             };
             Request failedRequest = null;
-            Page.RequestFailed += (sender, e) => failedRequest = e.Request;
-            await Page.GoToAsync(TestConstants.EmptyPage).ContinueWith(e => { });
+            Page.RequestFailed += (_, e) => failedRequest = e.Request;
+            await Page.GoToAsync(TestConstants.EmptyPage).ContinueWith(_ => { });
             Assert.NotNull(failedRequest);
             Assert.Equal("net::ERR_INTERNET_DISCONNECTED", failedRequest.Failure);
         }
@@ -260,7 +260,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
                 ["referer"] = "http://google.com/"
             });
             await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (sender, e) => await e.Request.ContinueAsync();
+            Page.Request += async (_, e) => await e.Request.ContinueAsync();
             var requestTask = Server.WaitForRequest("/grid.html", request => request.Headers["referer"].ToString());
             await Task.WhenAll(
                 requestTask,
@@ -273,7 +273,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldFailNavigationWhenAbortingMainResource()
         {
             await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (sender, e) => await e.Request.AbortAsync();
+            Page.Request += async (_, e) => await e.Request.AbortAsync();
             var exception = await Assert.ThrowsAsync<NavigationException>(
                 () => Page.GoToAsync(TestConstants.EmptyPage));
 
@@ -292,7 +292,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
             await Page.SetRequestInterceptionAsync(true);
             var requests = new List<Request>();
-            Page.Request += async (sender, e) =>
+            Page.Request += async (_, e) =>
             {
                 await e.Request.ContinueAsync();
                 requests.Add(e.Request);
@@ -327,7 +327,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
             await Page.SetRequestInterceptionAsync(true);
             var requests = new List<Request>();
-            Page.Request += async (sender, e) =>
+            Page.Request += async (_, e) =>
             {
                 if (!TestUtils.IsFavicon(e.Request))
                 {
@@ -365,7 +365,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             await Page.SetRequestInterceptionAsync(true);
             Server.SetRedirect("/non-existing.json", "/non-existing-2.json");
             Server.SetRedirect("/non-existing-2.json", "/simple.html");
-            Page.Request += async (sender, e) =>
+            Page.Request += async (_, e) =>
             {
                 if (e.Request.Url.Contains("non-existing-2"))
                 {
@@ -408,7 +408,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
 
             var spinner = false;
             // Cancel 2nd request.
-            Page.Request += async (sender, e) =>
+            Page.Request += async (_, e) =>
             {
                 if (TestUtils.IsFavicon(e.Request))
                 {
@@ -440,7 +440,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
             await Page.SetRequestInterceptionAsync(true);
             var requests = new List<Request>();
-            Page.Request += async (sender, e) =>
+            Page.Request += async (_, e) =>
             {
                 requests.Add(e.Request);
                 await e.Request.ContinueAsync();
@@ -458,7 +458,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             await Page.GoToAsync(TestConstants.EmptyPage);
             await Page.SetRequestInterceptionAsync(true);
             var requests = new List<Request>();
-            Page.Request += async (sender, e) =>
+            Page.Request += async (_, e) =>
             {
                 requests.Add(e.Request);
                 await e.Request.ContinueAsync();
@@ -476,7 +476,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
             await Page.SetRequestInterceptionAsync(true);
             var requests = new List<Request>();
-            Page.Request += async (sender, e) =>
+            Page.Request += async (_, e) =>
             {
                 requests.Add(e.Request);
                 await e.Request.ContinueAsync();
@@ -494,7 +494,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             // The requestWillBeSent will report encoded URL, whereas interception will
             // report URL as-is. @see crbug.com/759388
             await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (sender, e) => await e.Request.ContinueAsync();
+            Page.Request += async (_, e) => await e.Request.ContinueAsync();
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/some nonexisting page");
             Assert.Equal(HttpStatusCode.NotFound, response.Status);
         }
@@ -503,8 +503,8 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldWorkWithBadlyEncodedServer()
         {
             await Page.SetRequestInterceptionAsync(true);
-            Server.SetRoute("/malformed?rnd=%911", context => Task.CompletedTask);
-            Page.Request += async (sender, e) => await e.Request.ContinueAsync();
+            Server.SetRoute("/malformed?rnd=%911", _ => Task.CompletedTask);
+            Page.Request += async (_, e) => await e.Request.ContinueAsync();
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/malformed?rnd=%911");
             Assert.Equal(HttpStatusCode.OK, response.Status);
         }
@@ -516,7 +516,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             // report encoded URL for stylesheet. @see crbug.com/759388
             await Page.SetRequestInterceptionAsync(true);
             var requests = new List<Request>();
-            Page.Request += async (sender, e) =>
+            Page.Request += async (_, e) =>
             {
                 requests.Add(e.Request);
                 await e.Request.ContinueAsync();
@@ -534,7 +534,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             await Page.SetRequestInterceptionAsync(true);
             Request request = null;
             var requestIntercepted = new TaskCompletionSource<bool>();
-            Page.Request += (sender, e) =>
+            Page.Request += (_, e) =>
             {
                 request = e.Request;
                 requestIntercepted.SetResult(true);
@@ -552,7 +552,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldThrowIfInterceptionIsNotEnabled()
         {
             Exception exception = null;
-            Page.Request += async (sender, e) =>
+            Page.Request += async (_, e) =>
             {
                 try
                 {
@@ -572,7 +572,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
             await Page.SetRequestInterceptionAsync(true);
             var urls = new List<string>();
-            Page.Request += async (sender, e) =>
+            Page.Request += async (_, e) =>
             {
                 urls.Add(e.Request.Url.Split('/').Last());
                 await e.Request.ContinueAsync();

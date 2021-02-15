@@ -61,7 +61,7 @@ namespace PuppeteerSharp
 
             if (options.DumpIO)
             {
-                Process.ErrorDataReceived += (sender, e) => Console.Error.WriteLine(e.Data);
+                Process.ErrorDataReceived += (_, e) => Console.Error.WriteLine(e.Data);
             }
         }
 

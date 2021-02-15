@@ -21,7 +21,7 @@ namespace PuppeteerSharp.Tests.Issues
                 return;
             }
 
-            using (var browser = await Puppeteer.LaunchAsync(options).ConfigureAwait(false))
+            await using (var browser = await Puppeteer.LaunchAsync(options).ConfigureAwait(false))
             {
                 // In issue #1354, this line hangs forever
                 browser.CloseAsync().Wait();
@@ -37,7 +37,7 @@ namespace PuppeteerSharp.Tests.Issues
                 return;
             }
 
-            using (var browser = await Puppeteer.LaunchAsync(options))
+            await using (var browser = await Puppeteer.LaunchAsync(options))
             {
                 // Async low-level use
                 await using var page = await browser.NewPageAsync().ConfigureAwait(false);
