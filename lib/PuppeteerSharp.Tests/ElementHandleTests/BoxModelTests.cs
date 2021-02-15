@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -29,7 +29,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
 
             // Step 2: Add div and position it absolutely inside frame.
             var frame = Page.FirstChildFrame();
-            var divHandle = (await frame.EvaluateFunctionHandleAsync(@"() => {
+            var divHandle = (ElementHandle)await frame.EvaluateFunctionHandleAsync(@"() => {
               const div = document.createElement('div');
               document.body.appendChild(div);
               div.style = `
@@ -44,7 +44,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
                 height: 7px;
               `;
               return div;
-            }")) as ElementHandle;
+            }");
 
             // Step 3: query div's boxModel and assert box values.
             var box = await divHandle.BoxModelAsync();

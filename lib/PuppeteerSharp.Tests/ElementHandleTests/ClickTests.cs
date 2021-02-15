@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -25,7 +25,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         public async Task ShouldWorkForShadowDomV1()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/shadow.html");
-            var buttonHandle = (await Page.EvaluateExpressionHandleAsync("button")) as ElementHandle;
+            var buttonHandle = (ElementHandle) await Page.EvaluateExpressionHandleAsync("button");
             await buttonHandle.ClickAsync();
             Assert.True(await Page.EvaluateExpressionAsync<bool>("clicked"));
         }
@@ -34,8 +34,8 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         public async Task ShouldWorkForTextNodes()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
-            var buttonTextNode = (await Page.EvaluateExpressionHandleAsync(
-                "document.querySelector('button').firstChild")) as ElementHandle;
+            var buttonTextNode = (ElementHandle) await Page.EvaluateExpressionHandleAsync(
+                "document.querySelector('button').firstChild");
             var exception = await Assert.ThrowsAsync<PuppeteerException>(async () => await buttonTextNode.ClickAsync());
             Assert.Equal("Node is not of type HTMLElement", exception.Message);
         }

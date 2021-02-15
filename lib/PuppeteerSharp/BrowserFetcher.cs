@@ -114,7 +114,7 @@ namespace PuppeteerSharp
                 var client = WebRequest.Create(url);
                 client.Proxy = _webClient.Proxy;
                 client.Method = "HEAD";
-                using (var response = await client.GetResponseAsync().ConfigureAwait(false) as HttpWebResponse)
+                using (var response = (HttpWebResponse)await client.GetResponseAsync().ConfigureAwait(false))
                 {
                     return response.StatusCode == HttpStatusCode.OK;
                 }
