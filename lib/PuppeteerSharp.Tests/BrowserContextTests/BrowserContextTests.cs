@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -58,7 +58,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             var page = await context.NewPageAsync();
             await page.GoToAsync(TestConstants.EmptyPage);
             var popupTargetCompletion = new TaskCompletionSource<Target>();
-            Browser.TargetCreated += (sender, e) => popupTargetCompletion.SetResult(e.Target);
+            Browser.TargetCreated += (_, e) => popupTargetCompletion.SetResult(e.Target);
 
             await Task.WhenAll(
                 popupTargetCompletion.Task,
@@ -75,9 +75,9 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         {
             var context = await Browser.CreateIncognitoBrowserContextAsync();
             var events = new List<string>();
-            context.TargetCreated += (sender, e) => events.Add("CREATED: " + e.Target.Url);
-            context.TargetChanged += (sender, e) => events.Add("CHANGED: " + e.Target.Url);
-            context.TargetDestroyed += (sender, e) => events.Add("DESTROYED: " + e.Target.Url);
+            context.TargetCreated += (_, e) => events.Add("CREATED: " + e.Target.Url);
+            context.TargetChanged += (_, e) => events.Add("CHANGED: " + e.Target.Url);
+            context.TargetDestroyed += (_, e) => events.Add("DESTROYED: " + e.Target.Url);
             var page = await context.NewPageAsync();
             await page.GoToAsync(TestConstants.EmptyPage);
             await page.CloseAsync();

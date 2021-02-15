@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Linq;
 using PuppeteerSharp.TestServer;
 using System.IO;
 using System.Threading.Tasks;
@@ -54,7 +54,7 @@ namespace PuppeteerSharp.Tests
         protected static Task WaitForBrowserDisconnect(Browser browser)
         {
             var disconnectedTask = new TaskCompletionSource<bool>();
-            browser.Disconnected += (sender, e) => disconnectedTask.TrySetResult(true);
+            browser.Disconnected += (_, _) => disconnectedTask.TrySetResult(true);
             return disconnectedTask.Task;
         }
     }

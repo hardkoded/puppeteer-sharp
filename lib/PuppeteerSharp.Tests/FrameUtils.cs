@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -8,14 +8,14 @@ namespace PuppeteerSharp.Tests
     {
         public static async Task<Frame> AttachFrameAsync(Page page, string frameId, string url)
         {
-            var handle = await page.EvaluateFunctionHandleAsync(@" async (frameId, url) => {
+            var handle = (ElementHandle)await page.EvaluateFunctionHandleAsync(@" async (frameId, url) => {
               const frame = document.createElement('iframe');
               frame.src = url;
               frame.id = frameId;
               document.body.appendChild(frame);
               await new Promise(x => frame.onload = x);
               return frame
-            }", frameId, url) as ElementHandle;
+            }", frameId, url);
             return await handle.ContentFrameAsync();
         }
 

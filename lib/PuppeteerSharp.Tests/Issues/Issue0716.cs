@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -18,8 +18,8 @@ namespace PuppeteerSharp.Tests.Issues
             options.SlowMo = 100;
             options.Headless = false;
 
-            using (var browser = await Puppeteer.LaunchAsync(options))
-            using (var page = await browser.NewPageAsync())
+            await using (var browser = await Puppeteer.LaunchAsync(options))
+            await using (var page = await browser.NewPageAsync())
             {
                 await page.GoToAsync("https://duckduckgo.com/");
                 var input = await page.WaitForSelectorAsync("#search_form_input_homepage");

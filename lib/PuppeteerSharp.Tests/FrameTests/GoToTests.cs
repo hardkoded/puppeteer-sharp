@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         public async Task ShouldRejectWhenFrameDetaches()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
-            Server.SetRoute("/empty.html", context => Task.Delay(10000));
+            Server.SetRoute("/empty.html", _ => Task.Delay(10000));
             var waitForRequestTask = Server.WaitForRequest("/empty.html");
             var navigationTask = Page.FirstChildFrame().GoToAsync(TestConstants.EmptyPage);
             await waitForRequestTask;

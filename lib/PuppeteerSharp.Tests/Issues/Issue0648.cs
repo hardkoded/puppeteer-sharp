@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Tests.Issues
         public async Task ShouldWork()
         {
             await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (sender, e) => await e.Request.ContinueAsync();
+            Page.Request += async (_, e) => await e.Request.ContinueAsync();
             await Page.GoToAsync("https://www.google.com/search?q=firewall&oq=firewall&ie=UTF-8");
         }
     }

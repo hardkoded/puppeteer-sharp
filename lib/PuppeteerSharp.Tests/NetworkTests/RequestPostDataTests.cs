@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -18,9 +18,9 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            Server.SetRoute("/post", context => Task.CompletedTask);
+            Server.SetRoute("/post", _ => Task.CompletedTask);
             Request request = null;
-            Page.Request += (sender, e) => request = e.Request;
+            Page.Request += (_, e) => request = e.Request;
             await Page.EvaluateExpressionHandleAsync("fetch('./post', { method: 'POST', body: JSON.stringify({ foo: 'bar'})})");
             Assert.NotNull(request);
             Assert.Equal("{\"foo\":\"bar\"}", request.PostData);
