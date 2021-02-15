@@ -20,7 +20,7 @@ namespace PuppeteerSharp.Tests.Issues
                 IgnoredDefaultArgs = new[] { "--enable-automation" }
             };
 
-            using (var browser = await new Launcher().LaunchAsync(opts))
+            await using (var browser = await new Launcher().LaunchAsync(opts))
             {
                 var pages = await browser.PagesAsync();
 

@@ -22,8 +22,8 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         {
             var options = TestConstants.DefaultBrowserOptions();
 
-            using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
-            using (var page = await browser.NewPageAsync())
+            await using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
+            await using (var page = await browser.NewPageAsync())
             {
                 var response = await page.GoToAsync("https://www.google.com");
                 Assert.Equal(HttpStatusCode.OK, response.Status);
@@ -35,8 +35,8 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         {
             var options = TestConstants.DefaultBrowserOptions();
 
-            using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
-            using (var page = await browser.NewPageAsync())
+            await using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
+            await using (var page = await browser.NewPageAsync())
             {
                 var response = await page.GoToAsync(
                     "https://www.google.com",
@@ -52,10 +52,10 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         [Fact]
         public async Task ShouldRejectAllPromisesWhenBrowserIsClosed()
         {
-            using (var browser = await Puppeteer.LaunchAsync(
+            await using (var browser = await Puppeteer.LaunchAsync(
                 TestConstants.DefaultBrowserOptions(),
                 TestConstants.LoggerFactory))
-            using (var page = await browser.NewPageAsync())
+            await using (var page = await browser.NewPageAsync())
             {
                 var neverResolves = page.EvaluateFunctionHandleAsync("() => new Promise(r => {})");
                 await browser.CloseAsync();
@@ -88,7 +88,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 options.UserDataDir = userDataDir.Path;
 
                 var launcher = new Launcher(TestConstants.LoggerFactory);
-                using (var browser = await launcher.LaunchAsync(options))
+                await using (var browser = await launcher.LaunchAsync(options))
                 {
                     Assert.True(Directory.GetFiles(userDataDir.Path).Length > 0);
                     await browser.CloseAsync();
@@ -114,7 +114,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                     options.Args = options.Args.Concat(new string[] { "-profile", userDataDir.ToString() }).ToArray();
                 }
 
-                using (var browser = await launcher.LaunchAsync(options))
+                await using (var browser = await launcher.LaunchAsync(options))
                 {
                     // Open a page to make sure its functional.
                     await browser.NewPageAsync();
@@ -134,14 +134,14 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 var options = TestConstants.DefaultBrowserOptions();
                 options.Args = options.Args.Concat(new[] { $"--user-data-dir=\"{userDataDir}\"" }).ToArray();
 
-                using (var browser = await launcher.LaunchAsync(options))
+                await using (var browser = await launcher.LaunchAsync(options))
                 {
                     var page = await browser.NewPageAsync();
                     await page.GoToAsync(TestConstants.EmptyPage);
                     await page.EvaluateExpressionAsync("localStorage.hey = 'hello'");
                 }
 
-                using (var browser2 = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
+                await using (var browser2 = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
                 {
                     var page2 = await browser2.NewPageAsync();
                     await page2.GoToAsync(TestConstants.EmptyPage);
@@ -159,7 +159,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 var options = TestConstants.DefaultBrowserOptions();
                 options.Args = options.Args.Concat(new[] { $"--user-data-dir=\"{userDataDir}\"" }).ToArray();
 
-                using (var browser = await launcher.LaunchAsync(options))
+                await using (var browser = await launcher.LaunchAsync(options))
                 {
                     var page = await browser.NewPageAsync();
                     await page.GoToAsync(TestConstants.EmptyPage);
@@ -168,7 +168,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 }
                 await TestUtils.WaitForCookieInChromiumFileAsync(userDataDir.Path, "doSomethingOnlyOnce");
 
-                using (var browser2 = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
+                await using (var browser2 = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
                 {
                     var page2 = await browser2.NewPageAsync();
                     await page2.GoToAsync(TestConstants.EmptyPage);
@@ -217,8 +217,8 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             var options = TestConstants.DefaultBrowserOptions();
             var launcher = new Launcher(TestConstants.LoggerFactory);
 
-            using (var browser = await launcher.LaunchAsync(options))
-            using (var page = await browser.NewPageAsync())
+            await using (var browser = await launcher.LaunchAsync(options))
+            await using (var page = await browser.NewPageAsync())
             {
                 var response = await page.GoToAsync(TestConstants.EmptyPage);
                 Assert.Equal(HttpStatusCode.OK, response.Status);
@@ -243,8 +243,8 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             var options = TestConstants.DefaultBrowserOptions();
             var launcher = new Launcher(TestConstants.LoggerFactory);
 
-            using (var browser = await launcher.LaunchAsync(options))
-            using (var page = await browser.NewPageAsync())
+            await using (var browser = await launcher.LaunchAsync(options))
+            await using (var page = await browser.NewPageAsync())
             {
                 var response = await page.GoToAsync(TestConstants.EmptyPage);
                 Assert.Equal(HttpStatusCode.OK, response.Status);
@@ -258,7 +258,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         public async Task ShouldNotOpenTwoChromesUsingTheSameLauncher()
         {
             var launcher = new Launcher(TestConstants.LoggerFactory);
-            using (var browser = await launcher.LaunchAsync(TestConstants.DefaultBrowserOptions()))
+            await using (var browser = await launcher.LaunchAsync(TestConstants.DefaultBrowserOptions()))
             {
                 var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
                 {
@@ -273,8 +273,8 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         {
             var options = TestConstants.DefaultBrowserOptions();
             options.IgnoreDefaultArgs = true;
-            using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
-            using (var page = await browser.NewPageAsync())
+            await using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
+            await using (var page = await browser.NewPageAsync())
             {
                 Assert.Equal(121, await page.EvaluateExpressionAsync<int>("11 * 11"));
             }
@@ -286,7 +286,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             var defaultArgs = Puppeteer.GetDefaultArgs();
             var options = TestConstants.DefaultBrowserOptions();
             options.IgnoredDefaultArgs = new[] { defaultArgs[0], defaultArgs[2] };
-            using (var browser = await Puppeteer.LaunchAsync(options))
+            await using (var browser = await Puppeteer.LaunchAsync(options))
             {
                 var spawnargs = browser.Process.StartInfo.Arguments;
                 Assert.DoesNotContain(defaultArgs[0], spawnargs);
@@ -298,7 +298,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         [Fact]
         public async Task ShouldHaveDefaultUrlWhenLaunchingBrowser()
         {
-            using (var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.LoggerFactory))
+            await using (var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.LoggerFactory))
             {
                 var pages = (await browser.PagesAsync()).Select(page => page.Url);
                 Assert.Equal(new[] { TestConstants.AboutBlank }, pages);
@@ -310,7 +310,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         {
             var options = TestConstants.DefaultBrowserOptions();
             options.Args = options.Args.Prepend(TestConstants.EmptyPage).ToArray();
-            using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
+            await using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
             {
                 var pages = await browser.PagesAsync();
                 Assert.Single(pages);
@@ -332,8 +332,8 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 Height = 789
             };
 
-            using (var browser = await Puppeteer.LaunchAsync(options))
-            using (var page = await browser.NewPageAsync())
+            await using (var browser = await Puppeteer.LaunchAsync(options))
+            await using (var page = await browser.NewPageAsync())
             {
                 Assert.Equal(456, await page.EvaluateExpressionAsync<int>("window.innerWidth"));
                 Assert.Equal(789, await page.EvaluateExpressionAsync<int>("window.innerHeight"));
@@ -346,8 +346,8 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             var options = TestConstants.DefaultBrowserOptions();
             options.DefaultViewport = null;
 
-            using (var browser = await Puppeteer.LaunchAsync(options))
-            using (var page = await browser.NewPageAsync())
+            await using (var browser = await Puppeteer.LaunchAsync(options))
+            await using (var page = await browser.NewPageAsync())
             {
                 Assert.Null(page.Viewport);
             }
@@ -359,8 +359,8 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             var options = TestConstants.DefaultBrowserOptions();
             options.DefaultViewport = null;
 
-            using (var browser = await Puppeteer.LaunchAsync(options))
-            using (var page = await browser.NewPageAsync())
+            await using (var browser = await Puppeteer.LaunchAsync(options))
+            await using (var page = await browser.NewPageAsync())
             {
                 await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
                 Assert.NotEmpty(await page.ScreenshotDataAsync(new ScreenshotOptions { FullPage = true }));
@@ -378,7 +378,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 return WebSocketTransport.DefaultWebSocketFactory(uri, socketOptions, cancellationToken);
             };
 
-            using (await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
+            await using (await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
             {
                 Assert.True(customSocketCreated);
             }
@@ -395,7 +395,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 return WebSocketTransport.DefaultTransportFactory(url, opt, cancellationToken);
             };
 
-            using (await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
+            await using (await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
             {
                 Assert.True(customTransportCreated);
             }

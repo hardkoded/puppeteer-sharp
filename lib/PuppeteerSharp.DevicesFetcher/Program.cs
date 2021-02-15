@@ -29,7 +29,7 @@ namespace PuppeteerSharp.DevicesFetcher
             string chromeVersion = null;
             var fetcher = new BrowserFetcher();
             await fetcher.DownloadAsync(BrowserFetcher.DefaultRevision);
-            using (var browser = await Puppeteer.LaunchAsync(new LaunchOptions()))
+            await using (var browser = await Puppeteer.LaunchAsync(new LaunchOptions()))
             {
                 chromeVersion = (await browser.GetVersionAsync()).Split('/').Last();
             }

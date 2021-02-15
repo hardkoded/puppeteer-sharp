@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Connections.Features;
@@ -23,13 +23,13 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 BrowserWSEndpoint = Browser.WebSocketEndpoint
             };
             var browser = await Puppeteer.ConnectAsync(options, TestConstants.LoggerFactory);
-            using (var page = await browser.NewPageAsync())
+            await using (var page = await browser.NewPageAsync())
             {
                 var response = await page.EvaluateExpressionAsync<int>("7 * 8");
                 Assert.Equal(56, response);
             }
 
-            using (var originalPage = await Browser.NewPageAsync())
+            await using (var originalPage = await Browser.NewPageAsync())
             {
                 var response = await originalPage.EvaluateExpressionAsync<int>("7 * 6");
                 Assert.Equal(42, response);
@@ -55,13 +55,13 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         [Fact]
         public async Task ShouldSupportIgnoreHTTPSErrorsOption()
         {
-            using (var originalBrowser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions()))
-            using (var browser = await Puppeteer.ConnectAsync(new ConnectOptions
+            await using (var originalBrowser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions()))
+            await using (var browser = await Puppeteer.ConnectAsync(new ConnectOptions
             {
                 BrowserWSEndpoint = originalBrowser.WebSocketEndpoint,
                 IgnoreHTTPSErrors = true
             }))
-            using (var page = await browser.NewPageAsync())
+            await using (var page = await browser.NewPageAsync())
             {
                 var requestTask = HttpsServer.WaitForRequest(
                     "/empty.html",
@@ -95,7 +95,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
 
             Browser.Disconnect();
 
-            using (var browser = await Puppeteer.ConnectAsync(options, TestConstants.LoggerFactory))
+            await using (var browser = await Puppeteer.ConnectAsync(options, TestConstants.LoggerFactory))
             {
                 var pages = (await browser.PagesAsync()).ToList();
                 var restoredPage = pages.FirstOrDefault(x => x.Url == url);
@@ -146,7 +146,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 }
             };
 
-            using (await Puppeteer.ConnectAsync(options, TestConstants.LoggerFactory))
+            await using (await Puppeteer.ConnectAsync(options, TestConstants.LoggerFactory))
             {
                 Assert.True(customSocketCreated);
             }
@@ -166,7 +166,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 }
             };
 
-            using (await Puppeteer.ConnectAsync(options, TestConstants.LoggerFactory))
+            await using (await Puppeteer.ConnectAsync(options, TestConstants.LoggerFactory))
             {
                 Assert.True(customTransportCreated);
             }
