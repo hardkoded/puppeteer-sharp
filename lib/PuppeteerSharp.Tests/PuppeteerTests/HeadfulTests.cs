@@ -95,7 +95,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             {
                 await page.GoToAsync(TestConstants.EmptyPage);
                 await page.SetRequestInterceptionAsync(true);
-                page.Request += async (sender, e) => await e.Request.RespondAsync(
+                page.Request += async (_, e) => await e.Request.RespondAsync(
                     new ResponseData { Body = "{ body: 'YO, GOOGLE.COM'}" });
                 await page.EvaluateFunctionHandleAsync(@"() => {
                     const frame = document.createElement('iframe');

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Tests.Issues
         public async Task ShouldBeAbleToChangeToPost()
         {
             await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (sender, e) =>
+            Page.Request += async (_, e) =>
             {
                 var payload = new Payload()
                 {

@@ -46,7 +46,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             });
             var tcsDisconnected = new TaskCompletionSource<bool>();
 
-            originalBrowser.Disconnected += (sender, e) => tcsDisconnected.TrySetResult(true);
+            originalBrowser.Disconnected += (_, _) => tcsDisconnected.TrySetResult(true);
             await Task.WhenAll(
               tcsDisconnected.Task,
               remoteBrowser.CloseAsync());
