@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Mobile;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -24,7 +24,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// The default flags that Chromium will be launched with.
         /// </summary>
-        public static string[] DefaultArgs => ChromiumLauncher.DefaultArgs;
+        internal static string[] DefaultArgs => ChromiumLauncher.DefaultArgs;
 
         /// <summary>
         /// Returns an array of argument based on the options provided and the platform where the library is running

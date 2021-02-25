@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using PuppeteerSharp.Input;
@@ -134,7 +134,7 @@ namespace PuppeteerSharp.Tests.InputTests
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/offscreenbuttons.html");
             var messages = new List<string>();
-            Page.Console += (sender, e) => messages.Add(e.Message.Text);
+            Page.Console += (_, e) => messages.Add(e.Message.Text);
 
             for (var i = 0; i < 11; ++i)
             {

@@ -21,7 +21,7 @@ namespace PuppeteerSharp
         private readonly ILogger _logger;
         private TaskQueue _callbackQueue = new TaskQueue();
 
-        internal Connection(string url, int delay, IConnectionTransport transport, ILoggerFactory loggerFactory = null)
+        internal Connection(string url, int delay, bool enqueueAsyncMessages, IConnectionTransport transport, ILoggerFactory loggerFactory = null)
         {
             LoggerFactory = loggerFactory ?? new LoggerFactory();
             Url = url;
@@ -34,6 +34,7 @@ namespace PuppeteerSharp
             Transport.Closed += Transport_Closed;
             _callbacks = new ConcurrentDictionary<int, MessageTask>();
             _sessions = new ConcurrentDictionary<string, CDPSession>();
+            MessageQueue = new AsyncMessageQueue(enqueueAsyncMessages, _logger);
             _asyncSessions = new AsyncDictionaryHelper<string, CDPSession>(_sessions, "Session {0} not found");
         }
 
@@ -84,6 +85,8 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The logger factory.</value>
         public ILoggerFactory LoggerFactory { get; }
+
+        internal AsyncMessageQueue MessageQueue { get; }
 
         #endregion
 
@@ -176,6 +179,7 @@ namespace PuppeteerSharp
             }
 
             _callbacks.Clear();
+            MessageQueue.Dispose();
         }
 
         internal static Connection FromSession(CDPSession session) => session.Connection;
@@ -245,7 +249,7 @@ namespace PuppeteerSharp
             if (!string.IsNullOrEmpty(obj.SessionId))
             {
                 var session = GetSession(obj.SessionId);
-                session.OnMessage(obj);
+                session?.OnMessage(obj);
             }
             else if (obj.Id.HasValue)
             {
@@ -253,14 +257,7 @@ namespace PuppeteerSharp
                 // if not we add this to the list, sooner or later some one will come for it
                 if (_callbacks.TryRemove(obj.Id.Value, out var callback))
                 {
-                    if (obj.Error != null)
-                    {
-                        callback.TaskWrapper.TrySetException(new MessageException(callback, obj.Error));
-                    }
-                    else
-                    {
-                        callback.TaskWrapper.TrySetResult(obj.Result);
-                    }
+                    MessageQueue.Enqueue(callback, obj);
                 }
             }
             else
@@ -296,7 +293,7 @@ namespace PuppeteerSharp
                 transport = await transportFactory(new Uri(url), connectionOptions, cancellationToken).ConfigureAwait(false);
             }
 
-            return new Connection(url, connectionOptions.SlowMo, transport, loggerFactory);
+            return new Connection(url, connectionOptions.SlowMo, connectionOptions.EnqueueAsyncMessages, transport, loggerFactory);
         }
 
         /// <inheritdoc />

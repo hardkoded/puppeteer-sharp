@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -246,7 +247,7 @@ namespace PuppeteerSharp
 
             if (!responseHeaders.ContainsKey("content-length") && response.BodyData != null)
             {
-                responseHeaders["content-length"] = response.BodyData.Length.ToString();
+                responseHeaders["content-length"] = response.BodyData.Length.ToString(CultureInfo.CurrentCulture);
             }
 
             try

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using PuppeteerSharp.Mobile;
 using PuppeteerSharp.Tests.Attributes;
@@ -38,7 +38,7 @@ namespace PuppeteerSharp.Tests.InputTests
                 waitForTask,
                 Page.ClickAsync("input"));
 
-            Page.Metrics += (sender, e) => metricsTcs.TrySetResult(true);
+            Page.Metrics += (_, _) => metricsTcs.TrySetResult(true);
 
             await Task.WhenAll(
                 waitForTask.Result.AcceptAsync(TestConstants.FileToUpload),
@@ -106,7 +106,7 @@ namespace PuppeteerSharp.Tests.InputTests
                 waitForTask,
                 Page.ClickAsync("input"));
 
-            var ex = await Assert.ThrowsAsync<MessageException>(() => waitForTask.Result.AcceptAsync(
+            await Assert.ThrowsAsync<MessageException>(() => waitForTask.Result.AcceptAsync(
                 "./assets/file-to-upload.txt",
                 "./assets/pptr.png"));
         }

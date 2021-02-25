@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using PuppeteerSharp.Tests.Attributes;
 using Xunit;
@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Tests.ChromiumSpecificTests
             });
 
             await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (sender, e) => await e.Request.ContinueAsync();
+            Page.Request += async (_, e) => await e.Request.ContinueAsync();
 
             await Page.GoToAsync(TestConstants.ServerUrl + "/intervention");
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
@@ -36,7 +36,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             await client.SendAsync("Network.enable");
             var events = new List<object>();
 
-            client.MessageReceived += (sender, e) =>
+            client.MessageReceived += (_, e) =>
             {
                 if (e.MessageID == "Network.requestWillBeSent")
                 {

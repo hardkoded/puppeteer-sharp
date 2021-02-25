@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Helpers
         private readonly ConcurrentDictionary<TKey, List<TValue>> _map = new ConcurrentDictionary<TKey, List<TValue>>();
 
         internal void Add(TKey key, TValue value)
-            => _map.GetOrAdd(key, k => new List<TValue>()).Add(value);
+            => _map.GetOrAdd(key, _ => new List<TValue>()).Add(value);
 
         internal List<TValue> Get(TKey key)
             => _map.TryGetValue(key, out var set) ? set : new List<TValue>();

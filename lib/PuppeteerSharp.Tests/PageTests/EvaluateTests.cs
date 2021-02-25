@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -99,7 +99,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             Task<int> frameEvaluation = null;
 
-            Page.FrameNavigated += (sender, e) =>
+            Page.FrameNavigated += (_, e) =>
             {
                 frameEvaluation = e.Frame.EvaluateFunctionAsync<int>("() => 6 * 7");
             };

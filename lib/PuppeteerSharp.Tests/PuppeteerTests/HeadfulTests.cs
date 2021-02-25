@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
@@ -18,10 +18,10 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         [SkipBrowserFact(skipFirefox: true)]
         public async Task BackgroundPageTargetTypeShouldBeAvailable()
         {
-            using (var browserWithExtension = await Puppeteer.LaunchAsync(
+            await using (var browserWithExtension = await Puppeteer.LaunchAsync(
                 TestConstants.BrowserWithExtensionOptions(),
                 TestConstants.LoggerFactory))
-            using (var page = await browserWithExtension.NewPageAsync())
+            await using (await browserWithExtension.NewPageAsync())
             {
                 var backgroundPageTarget = await browserWithExtension.WaitForTargetAsync(t => t.Type == TargetType.BackgroundPage);
                 Assert.NotNull(backgroundPageTarget);
@@ -31,12 +31,12 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         [SkipBrowserFact(skipFirefox: true)]
         public async Task TargetPageShouldReturnABackgroundPage()
         {
-            using (var browserWithExtension = await Puppeteer.LaunchAsync(
+            await using (var browserWithExtension = await Puppeteer.LaunchAsync(
                 TestConstants.BrowserWithExtensionOptions(),
                 TestConstants.LoggerFactory))
             {
                 var backgroundPageTarget = await browserWithExtension.WaitForTargetAsync(t => t.Type == TargetType.BackgroundPage);
-                using (var page = await backgroundPageTarget.PageAsync())
+                await using (var page = await backgroundPageTarget.PageAsync())
                 {
                     Assert.Equal(6, await page.EvaluateFunctionAsync<int>("() => 2 * 3"));
                     Assert.Equal(42, await page.EvaluateFunctionAsync<int>("() => window.MAGIC"));
@@ -47,7 +47,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldHaveDefaultUrlWhenLaunchingBrowser()
         {
-            using (var browser = await Puppeteer.LaunchAsync(
+            await using (var browser = await Puppeteer.LaunchAsync(
                 TestConstants.BrowserWithExtensionOptions(),
                 TestConstants.LoggerFactory))
             {
@@ -65,8 +65,8 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 var options = TestConstants.DefaultBrowserOptions();
                 options.Args = options.Args.Concat(new[] { $"--user-data-dir=\"{userDataDir}\"" }).ToArray();
                 options.Headless = false;
-                using (var browser = await launcher.LaunchAsync(options))
-                using (var page = await browser.NewPageAsync())
+                await using (var browser = await launcher.LaunchAsync(options))
+                await using (var page = await browser.NewPageAsync())
                 {
                     await page.GoToAsync(TestConstants.EmptyPage);
                     await page.EvaluateExpressionAsync(
@@ -76,7 +76,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 await TestUtils.WaitForCookieInChromiumFileAsync(userDataDir.Path, "foo");
 
                 options.Headless = true;
-                using (var browser2 = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
+                await using (var browser2 = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
                 {
                     var page2 = await browser2.NewPageAsync();
                     await page2.GoToAsync(TestConstants.EmptyPage);
@@ -91,12 +91,12 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             // https://google.com is isolated by default in Chromium embedder.
             var headfulOptions = TestConstants.DefaultBrowserOptions();
             headfulOptions.Headless = false;
-            using (var browser = await Puppeteer.LaunchAsync(headfulOptions))
-            using (var page = await browser.NewPageAsync())
+            await using (var browser = await Puppeteer.LaunchAsync(headfulOptions))
+            await using (var page = await browser.NewPageAsync())
             {
                 await page.GoToAsync(TestConstants.EmptyPage);
                 await page.SetRequestInterceptionAsync(true);
-                page.Request += async (sender, e) => await e.Request.RespondAsync(
+                page.Request += async (_, e) => await e.Request.RespondAsync(
                     new ResponseData { Body = "{ body: 'YO, GOOGLE.COM'}" });
                 await page.EvaluateFunctionHandleAsync(@"() => {
                     const frame = document.createElement('iframe');
@@ -116,8 +116,8 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         {
             var headfulOptions = TestConstants.DefaultBrowserOptions();
             headfulOptions.Headless = false;
-            using (var browser = await Puppeteer.LaunchAsync(headfulOptions))
-            using (var page = await browser.NewPageAsync())
+            await using (var browser = await Puppeteer.LaunchAsync(headfulOptions))
+            await using (var page = await browser.NewPageAsync())
             {
                 await page.GoToAsync(TestConstants.ServerUrl + "/beforeunload.html");
                 // We have to interact with a page so that 'beforeunload' handlers fire.
@@ -130,7 +130,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         {
             var headfulOptions = TestConstants.DefaultBrowserOptions();
             headfulOptions.Devtools = true;
-            using (var browser = await Puppeteer.LaunchAsync(headfulOptions))
+            await using (var browser = await Puppeteer.LaunchAsync(headfulOptions))
             {
                 var context = await browser.CreateIncognitoBrowserContextAsync();
                 await Task.WhenAll(
@@ -142,10 +142,10 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         [SkipBrowserFact(skipFirefox: true)]
         public async Task BringToFrontShouldWork()
         {
-            using (var browserWithExtension = await Puppeteer.LaunchAsync(
+            await using (var browserWithExtension = await Puppeteer.LaunchAsync(
                 TestConstants.BrowserWithExtensionOptions(),
                 TestConstants.LoggerFactory))
-            using (var page = await browserWithExtension.NewPageAsync())
+            await using (var page = await browserWithExtension.NewPageAsync())
             {
                 await page.GoToAsync(TestConstants.EmptyPage);
                 Assert.Equal("visible", await page.EvaluateExpressionAsync<string>("document.visibilityState"));

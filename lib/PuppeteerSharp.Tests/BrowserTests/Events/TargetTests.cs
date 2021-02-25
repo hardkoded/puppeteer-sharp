@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,9 +20,9 @@ namespace PuppeteerSharp.Tests.BrowserTests.Events
         public async Task ShouldWork()
         {
             var events = new List<string>();
-            Browser.TargetCreated += (sender, e) => events.Add("CREATED");
-            Browser.TargetChanged += (sender, e) => events.Add("CHANGED");
-            Browser.TargetDestroyed += (sender, e) => events.Add("DESTROYED");
+            Browser.TargetCreated += (_, _) => events.Add("CREATED");
+            Browser.TargetChanged += (_, _) => events.Add("CHANGED");
+            Browser.TargetDestroyed += (_, _) => events.Add("DESTROYED");
             var page = await Browser.NewPageAsync();
             await page.GoToAsync(TestConstants.EmptyPage);
             await page.CloseAsync();

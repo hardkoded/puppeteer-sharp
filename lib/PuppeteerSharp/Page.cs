@@ -81,7 +81,7 @@ namespace PuppeteerSharp
 
             _screenshotTaskQueue = screenshotTaskQueue;
 
-            _ = target.CloseTask.ContinueWith((arg) =>
+            _ = target.CloseTask.ContinueWith(_ =>
             {
                 try
                 {
@@ -1835,14 +1835,14 @@ namespace PuppeteerSharp
             var networkManager = FrameManager.NetworkManager;
 
             Client.MessageReceived += Client_MessageReceived;
-            FrameManager.FrameAttached += (sender, e) => FrameAttached?.Invoke(this, e);
-            FrameManager.FrameDetached += (sender, e) => FrameDetached?.Invoke(this, e);
-            FrameManager.FrameNavigated += (sender, e) => FrameNavigated?.Invoke(this, e);
+            FrameManager.FrameAttached += (_, e) => FrameAttached?.Invoke(this, e);
+            FrameManager.FrameDetached += (_, e) => FrameDetached?.Invoke(this, e);
+            FrameManager.FrameNavigated += (_, e) => FrameNavigated?.Invoke(this, e);
 
-            networkManager.Request += (sender, e) => Request?.Invoke(this, e);
-            networkManager.RequestFailed += (sender, e) => RequestFailed?.Invoke(this, e);
-            networkManager.Response += (sender, e) => Response?.Invoke(this, e);
-            networkManager.RequestFinished += (sender, e) => RequestFinished?.Invoke(this, e);
+            networkManager.Request += (_, e) => Request?.Invoke(this, e);
+            networkManager.RequestFailed += (_, e) => RequestFailed?.Invoke(this, e);
+            networkManager.Response += (_, e) => Response?.Invoke(this, e);
+            networkManager.RequestFinished += (_, e) => RequestFinished?.Invoke(this, e);
 
             await Task.WhenAll(
                Client.SendAsync("Target.setAutoAttach", new TargetSetAutoAttachRequest
@@ -1985,7 +1985,7 @@ namespace PuppeteerSharp
 
             var screenMessage = new PageCaptureScreenshotRequest
             {
-                Format = type.ToString().ToLower()
+                Format = type.ToString().ToLower(CultureInfo.CurrentCulture)
             };
 
             if (options.Quality.HasValue)
@@ -2046,12 +2046,12 @@ namespace PuppeteerSharp
             decimal pixels;
             if (parameter is decimal || parameter is int)
             {
-                pixels = Convert.ToDecimal(parameter);
+                pixels = Convert.ToDecimal(parameter, CultureInfo.CurrentCulture);
             }
             else
             {
                 var text = parameter.ToString();
-                var unit = text.Substring(text.Length - 2).ToLower();
+                var unit = text.Substring(text.Length - 2).ToLower(CultureInfo.CurrentCulture);
                 string valueText;
                 if (_unitToPixels.ContainsKey(unit))
                 {

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -54,7 +55,7 @@ namespace PuppeteerSharp
         /// Default Chromium revision.
         /// </summary>
         [Obsolete("Use DefaultChromiumRevision instead")]
-        public static int DefaultRevision { get; } = int.Parse(DefaultChromiumRevision);
+        public static int DefaultRevision { get; } = int.Parse(DefaultChromiumRevision, CultureInfo.CurrentCulture.NumberFormat);
 
         /// <summary>
         /// Default Chromium revision.
@@ -139,7 +140,7 @@ namespace PuppeteerSharp
         /// <returns>Whether the version is available or not.</returns>
         /// <param name="revision">A revision to check availability.</param>
         [Obsolete("Use CanDownloadAsync(string revision) instead")]
-        public Task<bool> CanDownloadAsync(int revision) => CanDownloadAsync(revision.ToString());
+        public Task<bool> CanDownloadAsync(int revision) => CanDownloadAsync(revision.ToString(CultureInfo.CurrentCulture.NumberFormat));
 
         /// <summary>
         /// The method initiates a HEAD request to check if the revision is available.
@@ -155,7 +156,7 @@ namespace PuppeteerSharp
                 var client = WebRequest.Create(url);
                 client.Proxy = _webClient.Proxy;
                 client.Method = "HEAD";
-                using (var response = await client.GetResponseAsync().ConfigureAwait(false) as HttpWebResponse)
+                using (var response = (HttpWebResponse)await client.GetResponseAsync().ConfigureAwait(false))
                 {
                     return response.StatusCode == HttpStatusCode.OK;
                 }
@@ -187,7 +188,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="revision">Revision to remove.</param>
         [Obsolete("Use remove(string revision) instead")]
-        public void Remove(int revision) => Remove(revision.ToString());
+        public void Remove(int revision) => Remove(revision.ToString(CultureInfo.CurrentCulture.NumberFormat));
 
         /// <summary>
         /// Removes a downloaded revision.
@@ -208,7 +209,7 @@ namespace PuppeteerSharp
         /// <returns>Revision info.</returns>
         /// <param name="revision">A revision to get info for.</param>
         [Obsolete("Use RevisionInfo(string revision) instead")]
-        public RevisionInfo RevisionInfo(int revision) => RevisionInfo(revision.ToString());
+        public RevisionInfo RevisionInfo(int revision) => RevisionInfo(revision.ToString(CultureInfo.CurrentCulture.NumberFormat));
 
         /// <summary>
         /// Gets the revision info.
@@ -242,7 +243,7 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to the completed download.</returns>
         /// <param name="revision">Revision.</param>
         [Obsolete("Use DownloadAsync(string revision) instead")]
-        public Task<RevisionInfo> DownloadAsync(int revision) => DownloadAsync(revision.ToString());
+        public Task<RevisionInfo> DownloadAsync(int revision) => DownloadAsync(revision.ToString(CultureInfo.CurrentCulture.NumberFormat));
 
         /// <summary>
         /// Downloads the revision.
@@ -305,7 +306,11 @@ namespace PuppeteerSharp
 
             if (revisionInfo != null && GetCurrentPlatform() == Platform.Linux)
             {
-                LinuxSysCall.Chmod(revisionInfo.ExecutablePath, LinuxSysCall.ExecutableFilePermissions);
+                int code = LinuxSysCall.Chmod(revisionInfo.ExecutablePath, LinuxSysCall.ExecutableFilePermissions);
+                if (code == -1)
+                {
+                    throw new Exception("Chmod operation failed");
+                }
             }
 
             return revisionInfo;
@@ -461,7 +466,7 @@ namespace PuppeteerSharp
         /// <returns>The executable path.</returns>
         /// <param name="revision">Revision.</param>
         [Obsolete("Use GetExecutablePath(string revision) instead")]
-        public string GetExecutablePath(int revision) => GetExecutablePath(revision.ToString());
+        public string GetExecutablePath(int revision) => GetExecutablePath(revision.ToString(CultureInfo.CurrentCulture.NumberFormat));
 
         /// <summary>
         /// Gets the executable path for a revision.
@@ -481,7 +486,7 @@ namespace PuppeteerSharp
         /// <param name="folderPath">Folder path.</param>
         [Obsolete("Use GetExecutablePath(string product, Platform platform, string revision, string folderPath) instead")]
         public static string GetExecutablePath(Product product, Platform platform, int revision, string folderPath)
-            => GetExecutablePath(product, platform, revision.ToString(), folderPath);
+            => GetExecutablePath(product, platform, revision.ToString(CultureInfo.CurrentCulture.NumberFormat), folderPath);
 
         /// <summary>
         /// Gets the executable path.
@@ -625,6 +630,6 @@ namespace PuppeteerSharp
         }
 
         private static string GetDownloadURL(Product product, Platform platform, string host, string revision)
-            => string.Format(_downloadUrls[(product, platform)], host, revision, GetArchiveName(product, platform, revision));
+            => string.Format(CultureInfo.CurrentCulture, _downloadUrls[(product, platform)], host, revision, GetArchiveName(product, platform, revision));
     }
 }

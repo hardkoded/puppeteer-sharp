@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using PuppeteerSharp.Tests.Attributes;
 using System;
 using System.Linq;
@@ -221,7 +221,7 @@ namespace PuppeteerSharp.Tests.TargetTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             var targetCreatedCompletion = new TaskCompletionSource<Target>();
-            Browser.TargetCreated += (sender, e) => targetCreatedCompletion.TrySetResult(e.Target);
+            Browser.TargetCreated += (_, e) => targetCreatedCompletion.TrySetResult(e.Target);
             await Page.GoToAsync(TestConstants.ServerUrl + "/popup/window-open.html");
             var createdTarget = await targetCreatedCompletion.Task;
 

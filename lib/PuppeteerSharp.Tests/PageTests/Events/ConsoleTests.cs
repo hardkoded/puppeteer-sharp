@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
@@ -45,7 +45,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
         {
             var messages = new List<ConsoleMessage>();
 
-            Page.Console += (sender, e) => messages.Add(e.Message);
+            Page.Console += (_, e) => messages.Add(e.Message);
 
             await Page.EvaluateFunctionAsync(@"() => {
               // A pair of time/timeEnd generates only one Console API call.
@@ -112,7 +112,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
             await Page.GoToAsync(TestConstants.AboutBlank);
             var messageTask = new TaskCompletionSource<ConsoleMessage>();
 
-            Page.Console += (sender, e) => messageTask.TrySetResult(e.Message);
+            Page.Console += (_, e) => messageTask.TrySetResult(e.Message);
 
             await Page.EvaluateFunctionAsync("async url => fetch(url).catch(e => {})", TestConstants.EmptyPage);
             var message = await messageTask.Task;
@@ -133,7 +133,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             var consoleTask = new TaskCompletionSource<ConsoleEventArgs>();
-            Page.Console += (sender, e) => consoleTask.TrySetResult(e);
+            Page.Console += (_, e) => consoleTask.TrySetResult(e);
 
             await Task.WhenAll(
                 consoleTask.Task,
@@ -153,7 +153,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             var consoleTask = new TaskCompletionSource<ConsoleEventArgs>();
-            Page.Console += (sender, e) => consoleTask.TrySetResult(e);
+            Page.Console += (_, e) => consoleTask.TrySetResult(e);
 
             await Task.WhenAll(
                 consoleTask.Task,

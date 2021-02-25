@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -29,7 +29,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             await Page.GoToAsync(TestConstants.EmptyPage);
 
             await Page.EvaluateExpressionAsync("document.cookie = 'username=John Doe'");
-            var cookie = (await Page.GetCookiesAsync()).FirstOrDefault();
+            var cookie = (await Page.GetCookiesAsync()).First();
             Assert.Equal("username", cookie.Name);
             Assert.Equal("John Doe", cookie.Value);
             Assert.Equal("localhost", cookie.Domain);
@@ -52,7 +52,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
                 Value = "John Doe"
             });
 
-            var cookie = (await Page.GetCookiesAsync()).FirstOrDefault();
+            var cookie = (await Page.GetCookiesAsync()).First();
             Assert.Equal("username", cookie.Name);
             Assert.Equal("John Doe", cookie.Value);
             Assert.Equal("localhost", cookie.Domain);
@@ -88,7 +88,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             });
             Assert.Equal("cookie1=1", await Page.EvaluateExpressionAsync<string>("document.cookie"));
 
-            var cookie = (await Page.GetCookiesAsync()).FirstOrDefault();
+            var cookie = (await Page.GetCookiesAsync()).First();
             Assert.Equal("cookie1", cookie.Name);
             Assert.Equal("1", cookie.Value);
             Assert.Equal("localhost", cookie.Domain);

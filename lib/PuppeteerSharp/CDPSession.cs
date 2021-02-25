@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
@@ -186,20 +186,11 @@ namespace PuppeteerSharp
 
             if (id.HasValue && _callbacks.TryRemove(id.Value, out var callback))
             {
-                if (obj.Error != null)
-                {
-                    callback.TaskWrapper.TrySetException(new MessageException(callback, obj.Error));
-                }
-                else
-                {
-                    callback.TaskWrapper.TrySetResult(obj.Result);
-                }
+                Connection.MessageQueue.Enqueue(callback, obj);
             }
             else
             {
                 var method = obj.Method;
-                var param = obj.Params?.ToObject<ConnectionResponseParams>();
-
                 MessageReceived?.Invoke(this, new MessageEventArgs
                 {
                     MessageID = method,

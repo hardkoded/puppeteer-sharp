@@ -9,6 +9,9 @@ environment:
     secure: FxcQ9C8a/NgcQB5dFdZts6ZWEDT4zMhA4qPQAYwWc7huMmhmTIl1sbFEIaAWQMTL
   matrix:
     - framework: netcoreapp2.2
+      PRODUCT: CHROMIUM
+    - framework: netcoreapp2.2
+      PRODUCT: FIREFOX
 
 before_build:
 - sh: >-

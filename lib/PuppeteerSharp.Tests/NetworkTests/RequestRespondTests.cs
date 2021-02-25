@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
@@ -19,7 +19,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldWork()
         {
             await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (sender, e) =>
+            Page.Request += async (_, e) =>
             {
                 await e.Request.RespondAsync(new ResponseData
                 {
@@ -47,7 +47,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldWorkReturnStatusPhrases()
         {
             await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (sender, e) =>
+            Page.Request += async (_, e) =>
             {
                 await e.Request.RespondAsync(new ResponseData
                 {
@@ -67,7 +67,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
             await Page.SetRequestInterceptionAsync(true);
 
-            Page.Request += async (sender, e) =>
+            Page.Request += async (_, e) =>
             {
                 if (!e.Request.Url.Contains("rrredirect"))
                 {
@@ -96,7 +96,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldAllowMockingBinaryResponses()
         {
             await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (sender, e) =>
+            Page.Request += async (_, e) =>
             {
                 var imageData = File.ReadAllBytes("./Assets/pptr.png");
                 await e.Request.RespondAsync(new ResponseData
@@ -121,7 +121,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldStringifyInterceptedRequestResponseHeaders()
         {
             await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (sender, e) =>
+            Page.Request += async (_, e) =>
             {
                 await e.Request.RespondAsync(new ResponseData
                 {

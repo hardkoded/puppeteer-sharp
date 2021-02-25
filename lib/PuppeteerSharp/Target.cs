@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
@@ -149,8 +149,8 @@ namespace PuppeteerSharp
             return new Worker(
                 client,
                 TargetInfo.Url,
-                (consoleType, handles, stackTrace) => Task.CompletedTask,
-                (e) => { });
+                (_, _, _) => Task.CompletedTask,
+                _ => { });
         }
 
         private async Task<Page> CreatePageAsync()

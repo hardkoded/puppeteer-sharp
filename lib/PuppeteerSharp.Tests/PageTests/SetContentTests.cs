@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -50,7 +50,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldRespectTimeout()
         {
             const string imgPath = "/img.png";
-            Server.SetRoute(imgPath, context => Task.Delay(-1));
+            Server.SetRoute(imgPath, _ => Task.Delay(-1));
 
             await Page.GoToAsync(TestConstants.EmptyPage);
             var exception = await Assert.ThrowsAnyAsync<TimeoutException>(async () =>
@@ -66,7 +66,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldRespectDefaultTimeout()
         {
             const string imgPath = "/img.png";
-            Server.SetRoute(imgPath, context => Task.Delay(-1));
+            Server.SetRoute(imgPath, _ => Task.Delay(-1));
 
             await Page.GoToAsync(TestConstants.EmptyPage);
             Page.DefaultTimeout = 1;
@@ -81,7 +81,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             var imgPath = "/img.png";
             var imgResponse = new TaskCompletionSource<bool>();
-            Server.SetRoute(imgPath, context => imgResponse.Task);
+            Server.SetRoute(imgPath, _ => imgResponse.Task);
             var loaded = false;
             var waitTask = Server.WaitForRequest(imgPath);
             var contentTask = Page.SetContentAsync($"<img src=\"{TestConstants.ServerUrl + imgPath}\"></img>")

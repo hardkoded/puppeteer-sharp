@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -17,7 +17,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldFire()
         {
-            Page.Dialog += async (sender, e) =>
+            Page.Dialog += async (_, e) =>
             {
                 Assert.Equal(DialogType.Alert, e.Dialog.DialogType);
                 Assert.Equal(string.Empty, e.Dialog.DefaultValue);
@@ -32,7 +32,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldAllowAcceptingPrompts()
         {
-            Page.Dialog += async (sender, e) =>
+            Page.Dialog += async (_, e) =>
             {
                 Assert.Equal(DialogType.Prompt, e.Dialog.DialogType);
                 Assert.Equal("yes.", e.Dialog.DefaultValue);
@@ -48,7 +48,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldDismissThePrompt()
         {
-            Page.Dialog += async (sender, e) =>
+            Page.Dialog += async (_, e) =>
             {
                 await e.Dialog.Dismiss();
             };

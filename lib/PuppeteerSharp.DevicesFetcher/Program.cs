@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -28,8 +28,9 @@ namespace PuppeteerSharp.DevicesFetcher
 
             string chromeVersion = null;
             var fetcher = new BrowserFetcher();
+
             await fetcher.DownloadAsync();
-            using (var browser = await Puppeteer.LaunchAsync(new LaunchOptions()))
+            await using (var browser = await Puppeteer.LaunchAsync(new LaunchOptions()))
             {
                 chromeVersion = (await browser.GetVersionAsync()).Split('/').Last();
             }
@@ -44,6 +45,7 @@ namespace PuppeteerSharp.DevicesFetcher
             catch (Exception ex)
             {
                 Console.WriteLine($"FAILED: error parsing response - {ex.Message}");
+                return;
             }
             var devicePayloads = json.Extensions
                 .Where(extension => extension.Type == "emulated-device")
@@ -151,7 +153,6 @@ namespace PuppeteerSharp.Mobile
 
         static string GenerateCsharpFromDevice(OutputDevice device)
         {
-            var w = string.Empty;
             return $@"            [DeviceDescriptorName.{DeviceNameToEnumValue(device)}] = new DeviceDescriptor
             {{
                 Name = ""{device.Name}"",
@@ -167,6 +168,7 @@ namespace PuppeteerSharp.Mobile
                 }}
             }}";
         }
+
         static string DeviceNameToEnumValue(OutputDevice device)
         {
             var output = new StringBuilder();

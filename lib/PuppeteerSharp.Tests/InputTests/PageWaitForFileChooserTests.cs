@@ -45,26 +45,26 @@ namespace PuppeteerSharp.Tests.InputTests
         }
 
         [SkipBrowserFact(skipFirefox: true)]
-        public async Task ShouldRespectTimeout()
+        public Task ShouldRespectTimeout()
         {
-            var ex = await Assert.ThrowsAsync<TimeoutException>(() => Page.WaitForFileChooserAsync(new WaitForFileChooserOptions
+            return Assert.ThrowsAsync<TimeoutException>(() => Page.WaitForFileChooserAsync(new WaitForFileChooserOptions
             {
                 Timeout = 1
             }));
         }
 
         [SkipBrowserFact(skipFirefox: true)]
-        public async Task ShouldRespectTimeoutWhenThereIsNoCustomTimeout()
+        public Task ShouldRespectTimeoutWhenThereIsNoCustomTimeout()
         {
             Page.DefaultTimeout = 1;
-            var ex = await Assert.ThrowsAsync<TimeoutException>(() => Page.WaitForFileChooserAsync());
+            return Assert.ThrowsAsync<TimeoutException>(() => Page.WaitForFileChooserAsync());
         }
 
         [SkipBrowserFact(skipFirefox: true)]
-        public async Task ShouldPrioritizeExactTimeoutOverDefaultTimeout()
+        public Task ShouldPrioritizeExactTimeoutOverDefaultTimeout()
         {
             Page.DefaultTimeout = 0;
-            var ex = await Assert.ThrowsAsync<TimeoutException>(() => Page.WaitForFileChooserAsync(new WaitForFileChooserOptions
+            return Assert.ThrowsAsync<TimeoutException>(() => Page.WaitForFileChooserAsync(new WaitForFileChooserOptions
             {
                 Timeout = 1
             }));

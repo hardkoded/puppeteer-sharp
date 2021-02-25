@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
@@ -46,7 +46,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             var responses = new List<Response>();
             HttpsServer.SetRedirect("/plzredirect", "/empty.html");
 
-            Page.Response += (sender, e) => responses.Add(e.Response);
+            Page.Response += (_, e) => responses.Add(e.Response);
 
             var requestTask = HttpsServer.WaitForRequest(
                 "/empty.html",
@@ -70,7 +70,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         public async Task ShouldWorkWithRequestInterception()
         {
             await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (sender, e) => await e.Request.ContinueAsync();
+            Page.Request += async (_, e) => await e.Request.ContinueAsync();
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.Equal(HttpStatusCode.OK, response.Status);
         }

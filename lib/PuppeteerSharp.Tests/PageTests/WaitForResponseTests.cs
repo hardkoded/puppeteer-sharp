@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net;
 using System.Threading.Tasks;
 using Xunit;
@@ -52,7 +52,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             var exception = await Assert.ThrowsAnyAsync<TimeoutException>(async () =>
-                await Page.WaitForResponseAsync(request => false, new WaitForOptions
+                await Page.WaitForResponseAsync(_ => false, new WaitForOptions
                 {
                     Timeout = 1
                 }));
@@ -66,7 +66,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.GoToAsync(TestConstants.EmptyPage);
             Page.DefaultTimeout = 1;
             var exception = await Assert.ThrowsAnyAsync<TimeoutException>(async () =>
-                await Page.WaitForResponseAsync(request => false));
+                await Page.WaitForResponseAsync(_ => false));
 
             Assert.Contains("Timeout of 1 ms exceeded", exception.Message);
         }

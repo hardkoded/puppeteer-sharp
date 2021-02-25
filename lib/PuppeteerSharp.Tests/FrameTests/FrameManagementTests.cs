@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 using System.Linq;
@@ -30,7 +30,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             // validate frameattached events
             var attachedFrames = new List<Frame>();
 
-            Page.FrameAttached += (sender, e) => attachedFrames.Add(e.Frame);
+            Page.FrameAttached += (_, e) => attachedFrames.Add(e.Frame);
 
             await FrameUtils.AttachFrameAsync(Page, "frame1", "./Assets/frame.html");
 
@@ -39,7 +39,7 @@ namespace PuppeteerSharp.Tests.FrameTests
 
             // validate framenavigated events
             var navigatedFrames = new List<Frame>();
-            Page.FrameNavigated += (sender, e) => navigatedFrames.Add(e.Frame);
+            Page.FrameNavigated += (_, e) => navigatedFrames.Add(e.Frame);
 
             await FrameUtils.NavigateFrameAsync(Page, "frame1", "./empty.html");
             Assert.Single(navigatedFrames);
@@ -47,7 +47,7 @@ namespace PuppeteerSharp.Tests.FrameTests
 
             // validate framedetached events
             var detachedFrames = new List<Frame>();
-            Page.FrameDetached += (sender, e) => detachedFrames.Add(e.Frame);
+            Page.FrameDetached += (_, e) => detachedFrames.Add(e.Frame);
 
             await FrameUtils.DetachFrameAsync(Page, "frame1");
             Assert.Single(navigatedFrames);
@@ -59,7 +59,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             var frameNavigated = new TaskCompletionSource<bool>();
-            Page.FrameNavigated += (sender, e) => frameNavigated.TrySetResult(true);
+            Page.FrameNavigated += (_, _) => frameNavigated.TrySetResult(true);
             await Task.WhenAll(
                 Page.GoToAsync(TestConstants.EmptyPage + "#foo"),
                 frameNavigated.Task
@@ -80,8 +80,8 @@ namespace PuppeteerSharp.Tests.FrameTests
         public async Task ShouldNotSendAttachDetachEventsForMainFrame()
         {
             var hasEvents = false;
-            Page.FrameAttached += (sender, e) => hasEvents = true;
-            Page.FrameDetached += (sender, e) => hasEvents = true;
+            Page.FrameAttached += (_, _) => hasEvents = true;
+            Page.FrameDetached += (_, _) => hasEvents = true;
 
             await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.False(hasEvents);
@@ -94,9 +94,9 @@ namespace PuppeteerSharp.Tests.FrameTests
             var detachedFrames = new List<Frame>();
             var navigatedFrames = new List<Frame>();
 
-            Page.FrameAttached += (sender, e) => attachedFrames.Add(e.Frame);
-            Page.FrameDetached += (sender, e) => detachedFrames.Add(e.Frame);
-            Page.FrameNavigated += (sender, e) => navigatedFrames.Add(e.Frame);
+            Page.FrameAttached += (_, e) => attachedFrames.Add(e.Frame);
+            Page.FrameDetached += (_, e) => detachedFrames.Add(e.Frame);
+            Page.FrameNavigated += (_, e) => navigatedFrames.Add(e.Frame);
 
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/nested-frames.html");
             Assert.Equal(4, attachedFrames.Count);
@@ -165,7 +165,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             }");
             Assert.True(frame1.Detached);
             var frame2tsc = new TaskCompletionSource<Frame>();
-            Page.FrameAttached += (sender, e) => frame2tsc.TrySetResult(e.Frame);
+            Page.FrameAttached += (_, e) => frame2tsc.TrySetResult(e.Frame);
             await Page.EvaluateExpressionAsync("document.body.appendChild(window.frame)");
             var frame2 = await frame2tsc.Task;
             Assert.False(frame2.Detached);

@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -32,7 +32,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldWorkWithBothDomcontentloadedAndLoad()
         {
             var responseCompleted = new TaskCompletionSource<bool>();
-            Server.SetRoute("/one-style.css", context =>
+            Server.SetRoute("/one-style.css", _ =>
             {
                 return responseCompleted.Task;
             });
@@ -148,17 +148,17 @@ namespace PuppeteerSharp.Tests.PageTests
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWhenSubframeIssuesWindowStop()
         {
-            Server.SetRoute("/frames/style.css", (context) => Task.CompletedTask);
+            Server.SetRoute("/frames/style.css", _ => Task.CompletedTask);
             var navigationTask = Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
             var frameAttachedTaskSource = new TaskCompletionSource<Frame>();
-            Page.FrameAttached += (sender, e) =>
+            Page.FrameAttached += (_, e) =>
             {
                 frameAttachedTaskSource.SetResult(e.Frame);
             };
 
             var frame = await frameAttachedTaskSource.Task;
             var frameNavigatedTaskSource = new TaskCompletionSource<bool>();
-            Page.FrameNavigated += (sender, e) =>
+            Page.FrameNavigated += (_, e) =>
             {
                 if (e.Frame == frame)
                 {

@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -22,9 +22,9 @@ namespace PuppeteerSharp.Tests.BrowserTests.Events
             var disconnectedOriginal = 0;
             var disconnectedRemote1 = 0;
             var disconnectedRemote2 = 0;
-            originalBrowser.Disconnected += (sender, e) => ++disconnectedOriginal;
-            remoteBrowser1.Disconnected += (sender, e) => ++disconnectedRemote1;
-            remoteBrowser2.Disconnected += (sender, e) => ++disconnectedRemote2;
+            originalBrowser.Disconnected += (_, _) => ++disconnectedOriginal;
+            remoteBrowser1.Disconnected += (_, _) => ++disconnectedRemote1;
+            remoteBrowser2.Disconnected += (_, _) => ++disconnectedRemote2;
 
             var remoteBrowser2Disconnected = WaitForBrowserDisconnect(remoteBrowser2);
             remoteBrowser2.Disconnect();
@@ -51,9 +51,9 @@ namespace PuppeteerSharp.Tests.BrowserTests.Events
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldRejectNavigationWhenBrowserCloses()
         {
-            Server.SetRoute("/one-style.css", context => Task.Delay(10000));
+            Server.SetRoute("/one-style.css", _ => Task.Delay(10000));
 
-            using (var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions()))
+            await using (var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions()))
             {
                 var remote = await Puppeteer.ConnectAsync(new ConnectOptions
                 {
@@ -74,9 +74,9 @@ namespace PuppeteerSharp.Tests.BrowserTests.Events
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldRejectWaitForSelectorWhenBrowserCloses()
         {
-            Server.SetRoute("/empty.html", context => Task.Delay(10000));
+            Server.SetRoute("/empty.html", _ => Task.Delay(10000));
 
-            using (var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions()))
+            await using (var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions()))
             {
                 var remote = await Puppeteer.ConnectAsync(new ConnectOptions
                 {

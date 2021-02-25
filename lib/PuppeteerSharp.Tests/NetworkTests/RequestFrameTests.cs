@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -18,7 +18,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldWorkForMainFrameNavigationRequests()
         {
             var requests = new List<Request>();
-            Page.Request += (sender, e) =>
+            Page.Request += (_, e) =>
             {
                 if (!TestUtils.IsFavicon(e.Request))
                 {
@@ -35,7 +35,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldWorkForSubframeNavigationRequest()
         {
             var requests = new List<Request>();
-            Page.Request += (sender, e) =>
+            Page.Request += (_, e) =>
             {
                 if (!TestUtils.IsFavicon(e.Request))
                 {
@@ -54,7 +54,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldWorkForFetchRequests()
         {
             var requests = new List<Request>();
-            Page.Request += (sender, e) =>
+            Page.Request += (_, e) =>
             {
                 if (!TestUtils.IsFavicon(e.Request))
                 {

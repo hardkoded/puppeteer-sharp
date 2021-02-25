@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
@@ -13,7 +13,7 @@ namespace PuppeteerSharp
 {
     internal class FrameManager
     {
-        private readonly Dictionary<int, ExecutionContext> _contextIdToContext;
+        private readonly ConcurrentDictionary<int, ExecutionContext> _contextIdToContext;
         private bool _ensureNewDocumentNavigation;
         private readonly ILogger _logger;
         private readonly ConcurrentDictionary<string, Frame> _frames;
@@ -27,7 +27,7 @@ namespace PuppeteerSharp
             Client = client;
             Page = page;
             _frames = new ConcurrentDictionary<string, Frame>();
-            _contextIdToContext = new Dictionary<int, ExecutionContext>();
+            _contextIdToContext = new ConcurrentDictionary<int, ExecutionContext>();
             _logger = Client.Connection.LoggerFactory.CreateLogger<FrameManager>();
             NetworkManager = new NetworkManager(client, ignoreHTTPSErrors, this);
             TimeoutSettings = timeoutSettings;
@@ -101,7 +101,6 @@ namespace PuppeteerSharp
             var referrer = string.IsNullOrEmpty(options.Referer)
                ? NetworkManager.ExtraHTTPHeaders?.GetValueOrDefault(RefererHeaderName)
                : options.Referer;
-            var requests = new Dictionary<string, Request>();
             var timeout = options?.Timeout ?? TimeoutSettings.NavigationTimeout;
 
             using (var watcher = new LifecycleWatcher(this, frame, options?.WaitUntil, timeout))
@@ -240,24 +239,21 @@ namespace PuppeteerSharp
         {
             while (_contextIdToContext.Count > 0)
             {
-                var contextItem = _contextIdToContext.ElementAt(0);
-                _contextIdToContext.Remove(contextItem.Key);
-
-                if (contextItem.Value.World != null)
+                int key0 = _contextIdToContext.Keys.ElementAtOrDefault(0);
+                if (_contextIdToContext.TryRemove(key0, out var context))
                 {
-                    contextItem.Value.World.SetContext(null);
+                    if (context.World != null)
+                    {
+                        context.World.SetContext(null);
+                    }
                 }
             }
         }
 
         private void OnExecutionContextDestroyed(int executionContextId)
         {
-            _contextIdToContext.TryGetValue(executionContextId, out var context);
-
-            if (context != null)
+            if (_contextIdToContext.TryRemove(executionContextId, out var context))
             {
-                _contextIdToContext.Remove(executionContextId);
-
                 if (context.World != null)
                 {
                     context.World.SetContext(null);
