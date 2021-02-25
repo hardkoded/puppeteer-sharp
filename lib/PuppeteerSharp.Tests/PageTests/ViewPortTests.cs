@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using PuppeteerSharp.Tests.Attributes;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -11,7 +12,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldGetTheProperViewPortSize()
         {
             Assert.Equal(800, Page.Viewport.Width);
@@ -23,7 +24,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(456, Page.Viewport.Height);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldSupportMobileEmulation()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/mobile.html");
@@ -35,7 +36,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(400, await Page.EvaluateExpressionAsync<int>("window.innerWidth"));
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldSupportTouchEmulation()
         {
             const string dispatchTouch = @"
@@ -63,7 +64,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.False(await Page.EvaluateExpressionAsync<bool>("'ontouchstart' in window"));
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldBeDetectableByModernizr()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/detect-touch.html");
@@ -73,7 +74,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal("YES", await Page.EvaluateExpressionAsync<string>("document.body.textContent.trim()"));
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldDetectTouchWhenApplyingViewportWithTouches()
         {
             await Page.SetViewportAsync(new ViewPortOptions
@@ -89,7 +90,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(await Page.EvaluateFunctionAsync<bool>("() => Modernizr.touchevents"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldSupportLandscapeEmulation()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/mobile.html");

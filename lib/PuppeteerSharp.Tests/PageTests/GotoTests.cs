@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
@@ -17,13 +18,14 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.Equal(TestConstants.EmptyPage, Page.Url);
         }
-        [Fact]
+
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithAnchorNavigation()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -34,7 +36,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal($"{TestConstants.EmptyPage}#bar", Page.Url);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWithRedirects()
         {
             Server.SetRedirect("/redirect/1.html", "/redirect/2.html");
@@ -44,21 +46,21 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.GoToAsync(TestConstants.EmptyPage);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldNavigateToAboutBlank()
         {
             var response = await Page.GoToAsync(TestConstants.AboutBlank);
             Assert.Null(response);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldReturnResponseWhenPageChangesItsURLAfterLoad()
         {
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/historyapi.html");
             Assert.Equal(HttpStatusCode.OK, response.Status);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithSubframesReturn204()
         {
             Server.SetRoute("/frames/frame.html", context =>
@@ -69,7 +71,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldFailWhenServerReturns204()
         {
             Server.SetRoute("/empty.html", context =>
@@ -90,7 +92,7 @@ namespace PuppeteerSharp.Tests.PageTests
             }
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldNavigateToEmptyPageWithDOMContentLoaded()
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage, waitUntil: new[]
@@ -101,7 +103,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Null(response.SecurityDetails);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWhenPageCallsHistoryAPIInBeforeunload()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -113,16 +115,21 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(HttpStatusCode.OK, response.Status);
         }
 
-        [Theory]
-        [InlineData(WaitUntilNavigation.Networkidle0)]
-        [InlineData(WaitUntilNavigation.Networkidle2)]
-        public async Task ShouldNavigateToEmptyPage(WaitUntilNavigation waitUntil)
+        [SkipBrowserFact(skipFirefox: true)]
+        public async Task ShouldNavigateToEmptyPageWithNetworkidle0()
         {
-            var response = await Page.GoToAsync(TestConstants.EmptyPage, new NavigationOptions { WaitUntil = new[] { waitUntil } });
+            var response = await Page.GoToAsync(TestConstants.EmptyPage, new NavigationOptions { WaitUntil = new[] { WaitUntilNavigation.Networkidle0 } });
             Assert.Equal(HttpStatusCode.OK, response.Status);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
+        public async Task ShouldNavigateToEmptyPageWithNetworkidle2()
+        {
+            var response = await Page.GoToAsync(TestConstants.EmptyPage, new NavigationOptions { WaitUntil = new[] { WaitUntilNavigation.Networkidle2 } });
+            Assert.Equal(HttpStatusCode.OK, response.Status);
+        }
+
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldFailWhenNavigatingToBadUrl()
         {
             var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await Page.GoToAsync("asdfasdf"));
@@ -137,7 +144,7 @@ namespace PuppeteerSharp.Tests.PageTests
             }
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldFailWhenNavigatingToBadSSL()
         {
             Page.Request += (sender, e) => Assert.NotNull(e.Request);
@@ -156,11 +163,11 @@ namespace PuppeteerSharp.Tests.PageTests
             }
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldFailWhenNavigatingToBadSSLAfterRedirects()
         {
             var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await Page.GoToAsync(TestConstants.HttpsPrefix + "/redirect/2.html"));
-            
+
             if (TestConstants.IsChrome)
             {
                 Assert.Contains("net::ERR_CERT_AUTHORITY_INVALID", exception.Message);
@@ -171,7 +178,7 @@ namespace PuppeteerSharp.Tests.PageTests
             }
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldFailWhenMainResourcesFailedToLoad()
         {
             var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await Page.GoToAsync("http://localhost:44123/non-existing-url"));
@@ -186,7 +193,7 @@ namespace PuppeteerSharp.Tests.PageTests
             }
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldFailWhenExceedingMaximumNavigationTimeout()
         {
             Server.SetRoute("/empty.html", context => Task.Delay(-1));
@@ -196,7 +203,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Contains("Timeout of 1 ms exceeded", exception.Message);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldFailWhenExceedingDefaultMaximumNavigationTimeout()
         {
             Server.SetRoute("/empty.html", context => Task.Delay(-1));
@@ -206,7 +213,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Contains("Timeout of 1 ms exceeded", exception.Message);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldFailWhenExceedingDefaultMaximumTimeout()
         {
             // Hang for request to the empty.html
@@ -216,7 +223,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Contains("Timeout of 1 ms exceeded", exception.Message);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldPrioritizeDefaultNavigationTimeoutOverDefaultTimeout()
         {
             // Hang for request to the empty.html
@@ -227,7 +234,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Contains("Timeout of 1 ms exceeded", exception.Message);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldDisableTimeoutWhenItsSetTo0()
         {
             var loaded = false;
@@ -242,28 +249,28 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(loaded);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWhenNavigatingToValidUrl()
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.Equal(HttpStatusCode.OK, response.Status);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWhenNavigatingToDataUrl()
         {
             var response = await Page.GoToAsync("data:text/html,hello");
             Assert.Equal(HttpStatusCode.OK, response.Status);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWhenNavigatingTo404()
         {
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/not-found");
             Assert.Equal(HttpStatusCode.NotFound, response.Status);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldReturnLastResponseInRedirectChain()
         {
             Server.SetRedirect("/redirect/1.html", "/redirect/2.html");
@@ -275,7 +282,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(TestConstants.EmptyPage, response.Url);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWaitForNetworkIdleToSucceedNavigation()
         {
             var responses = new List<TaskCompletionSource<Func<HttpResponse, Task>>>();
@@ -364,7 +371,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(HttpStatusCode.OK, navigationResponse.Status);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldNavigateToDataURLAndFireDataURLRequests()
         {
             var requests = new List<Request>();
@@ -382,7 +389,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(dataUrl, requests[0].Url);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldNavigateToURLWithHashAndFireRequestsWithoutHash()
         {
             var requests = new List<Request>();
@@ -400,7 +407,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(TestConstants.EmptyPage, requests[0].Url);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWithSelfRequestingPage()
         {
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/self-request.html");
@@ -408,7 +415,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Contains("self-request.html", response.Url);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldFailWhenNavigatingAndShowTheUrlAtTheErrorMessage()
         {
             var url = TestConstants.HttpsPrefix + "/redirect/1.html";
@@ -417,17 +424,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Contains(url, exception.Url);
         }
 
-        [Fact]
-        public async Task ResponseOkShouldBeTrueForFile()
-        {
-            var fileToNavigate = Path.Combine(Directory.GetCurrentDirectory(), Path.Combine("Assets", "file-to-upload.txt"));
-            var url = new Uri(fileToNavigate).AbsoluteUri;
-
-            var response = await Page.GoToAsync(url);
-            Assert.True(response.Ok);
-        }
-
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldSendReferer()
         {
             await Page.SetRequestInterceptionAsync(true);

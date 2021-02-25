@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using PuppeteerSharp.Tests.Attributes;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -12,7 +13,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         {
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
             await Page.SetViewportAsync(new ViewPortOptions
@@ -26,7 +27,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.Equal(new BoundingBox(100, 50, 50, 50), box);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldHandleNestedFrames()
         {
             await Page.SetViewportAsync(new ViewPortOptions
@@ -50,7 +51,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             }
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReturnNullForInvisibleElements()
         {
             await Page.SetContentAsync("<div style='display:none'>hi</div>");
@@ -58,7 +59,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.Null(await elementHandle.BoundingBoxAsync());
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldForceALayout()
         {
             await Page.SetViewportAsync(new ViewPortOptions { Width = 500, Height = 500 });
@@ -69,7 +70,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.Equal(new BoundingBox(8, 8, 100, 200), box);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWworkWithSVGNodes()
         {
             await Page.SetContentAsync(@"

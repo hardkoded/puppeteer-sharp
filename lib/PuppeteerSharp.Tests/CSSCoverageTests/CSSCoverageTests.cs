@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using PuppeteerSharp.PageCoverage;
+using PuppeteerSharp.Tests.Attributes;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -16,7 +17,7 @@ namespace PuppeteerSharp.Tests.CSSCoverageTests
         {
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
             await Page.Coverage.StartCSSCoverageAsync();
@@ -36,7 +37,7 @@ namespace PuppeteerSharp.Tests.CSSCoverageTests
             Assert.Equal("div { color: green; }", coverage[0].Text.Substring(range.Start, range.End - range.Start));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReportSourceUrls()
         {
             await Page.Coverage.StartCSSCoverageAsync();
@@ -46,7 +47,7 @@ namespace PuppeteerSharp.Tests.CSSCoverageTests
             Assert.Equal("nicename.css", coverage[0].Url);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReportMultipleStylesheets()
         {
             await Page.Coverage.StartCSSCoverageAsync();
@@ -58,7 +59,7 @@ namespace PuppeteerSharp.Tests.CSSCoverageTests
             Assert.Contains("/csscoverage/stylesheet2.css", orderedList.ElementAt(1).Url);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReportStylesheetsThatHaveNoCoverage()
         {
             await Page.Coverage.StartCSSCoverageAsync();
@@ -70,7 +71,7 @@ namespace PuppeteerSharp.Tests.CSSCoverageTests
             Assert.Empty(entry.Ranges);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithMediaQueries()
         {
             await Page.Coverage.StartCSSCoverageAsync();
@@ -89,7 +90,7 @@ namespace PuppeteerSharp.Tests.CSSCoverageTests
             }, coverage[0].Ranges);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithComplicatedUsecases()
         {
             const string involved = @"[
@@ -116,7 +117,7 @@ namespace PuppeteerSharp.Tests.CSSCoverageTests
                 Regex.Replace(TestUtils.CompressText(JsonConvert.SerializeObject(coverage)), @":\d{4}\/", ":<PORT>/"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldIgnoreInjectedStylesheets()
         {
             await Page.Coverage.StartCSSCoverageAsync();
@@ -131,7 +132,7 @@ namespace PuppeteerSharp.Tests.CSSCoverageTests
             Assert.Empty(coverage);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithArRecentlyLoadedStylesheet()
         {
             await Page.Coverage.StartCSSCoverageAsync();

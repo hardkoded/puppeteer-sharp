@@ -32,14 +32,15 @@ namespace PuppeteerSharp
         /// <returns>Chromium arguments.</returns>
         /// <param name="options">Options.</param>
         public static string[] GetDefaultArgs(LaunchOptions options = null)
-            => ChromiumLauncher.GetDefaultArgs(options ?? new LaunchOptions());
+            => (options?.Product ?? Product.Chrome) == Product.Chrome
+                ? ChromiumLauncher.GetDefaultArgs(options ?? new LaunchOptions())
+                : FirefoxLauncher.GetDefaultArgs(options ?? new LaunchOptions());
 
         /// <summary>
         /// The method launches a browser instance with given arguments. The browser will be closed when the Browser is disposed.
         /// </summary>
         /// <param name="options">Options for launching Chrome</param>
         /// <param name="loggerFactory">The logger factory</param>
-        /// <param name="product">The browser to be used (Chrome, Firefox)</param>
         /// <returns>A connected browser.</returns>
         /// <remarks>
         /// See <a href="https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/">this article</a>
@@ -48,13 +49,13 @@ namespace PuppeteerSharp
         ///
         /// Environment Variables
         /// Puppeteer looks for certain <see href="https://en.wikipedia.org/wiki/Environment_variable">environment variables</see>() to aid its operations.
-        /// - <c>PUPPETEER_CHROMIUM_REVISION</c> - specify a certain version of Chromium you'd like Puppeteer to use. See <see cref="Puppeteer.LaunchAsync(LaunchOptions, ILoggerFactory, Product)"/> on how executable path is inferred.
+        /// - <c>PUPPETEER_CHROMIUM_REVISION</c> - specify a certain version of Chromium you'd like Puppeteer to use. See <see cref="Puppeteer.LaunchAsync(LaunchOptions, ILoggerFactory)"/> on how executable path is inferred.
         ///   **BEWARE**: Puppeteer is only <see href="https://github.com/GoogleChrome/puppeteer/#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy">guaranteed to work</see> with the bundled Chromium, use at your own risk.
-        /// - <c>PUPPETEER_EXECUTABLE_PATH</c> - specify an executable path to be used in <see cref="Puppeteer.LaunchAsync(LaunchOptions, ILoggerFactory, Product)"/>.
+        /// - <c>PUPPETEER_EXECUTABLE_PATH</c> - specify an executable path to be used in <see cref="Puppeteer.LaunchAsync(LaunchOptions, ILoggerFactory)"/>.
         ///   **BEWARE**: Puppeteer is only <see href="https://github.com/GoogleChrome/puppeteer/#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy">guaranteed to work</see> with the bundled Chromium, use at your own risk.
         /// </remarks>
-        public static Task<Browser> LaunchAsync(LaunchOptions options, ILoggerFactory loggerFactory = null, Product product = Product.Chrome)
-            => new Launcher(loggerFactory).LaunchAsync(options, product);
+        public static Task<Browser> LaunchAsync(LaunchOptions options, ILoggerFactory loggerFactory = null)
+            => new Launcher(loggerFactory).LaunchAsync(options);
 
         /// <summary>
         /// Attaches Puppeteer to an existing Chromium instance. The browser will be closed when the Browser is disposed.

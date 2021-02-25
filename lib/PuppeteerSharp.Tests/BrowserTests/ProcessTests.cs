@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Tests.BrowserTests
     {
         public ProcessTests(ITestOutputHelper output) : base(output) { }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldReturnProcessInstance()
         {
             var process = Browser.Process;

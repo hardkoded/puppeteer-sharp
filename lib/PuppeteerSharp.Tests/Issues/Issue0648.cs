@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using PuppeteerSharp.Tests.Attributes;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,7 +20,7 @@ namespace PuppeteerSharp.Tests.Issues
         {
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
             await Page.SetRequestInterceptionAsync(true);

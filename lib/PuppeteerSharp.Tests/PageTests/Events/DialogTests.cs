@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
         {
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldFire()
         {
             Page.Dialog += async (sender, e) =>
@@ -29,7 +29,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
             await Page.EvaluateExpressionAsync("alert('yo');");
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldAllowAcceptingPrompts()
         {
             Page.Dialog += async (sender, e) =>
@@ -45,7 +45,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
             Assert.Equal("answer!", result);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldDismissThePrompt()
         {
             Page.Dialog += async (sender, e) =>

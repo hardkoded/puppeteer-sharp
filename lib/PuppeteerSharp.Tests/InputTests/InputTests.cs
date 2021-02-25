@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using PuppeteerSharp.Input;
+using PuppeteerSharp.Tests.Attributes;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -25,7 +26,7 @@ namespace PuppeteerSharp.Tests.InputTests
         }
 
         // https://github.com/GoogleChrome/puppeteer/issues/161
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldNotHangWithTouchEnabledViewports()
         {
             await Page.SetViewportAsync(TestConstants.IPhone.ViewPort);
@@ -34,7 +35,7 @@ namespace PuppeteerSharp.Tests.InputTests
             await Page.Mouse.UpAsync();
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldUploadTheFile()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/fileupload.html");
@@ -50,7 +51,7 @@ namespace PuppeteerSharp.Tests.InputTests
             }", input));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldUploadTheFileIfResolveFilePathIsFalse()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/fileupload.html");
@@ -66,7 +67,7 @@ namespace PuppeteerSharp.Tests.InputTests
             }", input));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldNotUploadTheFileIfPathIsWrong()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/fileupload.html");
@@ -83,7 +84,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.Contains("Promise was collected", exception.Message);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldNotUploadTheFileIfPathIsWrongAndResolveFilePathIsFalse()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/fileupload.html");
@@ -100,7 +101,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.Contains("Promise was collected", exception.Message);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldResizeTheTextarea()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -115,7 +116,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.Equal(Math.Round(dimensions.Height + 104, MidpointRounding.AwayFromZero), newDimensions.Height);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldSelectTheTextWithMouse()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -136,7 +137,7 @@ namespace PuppeteerSharp.Tests.InputTests
             }"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldTriggerHoverState()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
@@ -148,7 +149,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.Equal("button-91", await Page.EvaluateExpressionAsync<string>("document.querySelector('button:hover').id"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldTriggerHoverStateWithRemovedWindowNode()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
@@ -157,7 +158,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.Equal("button-6", await Page.EvaluateExpressionAsync("document.querySelector('button:hover').id"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldSetModifierKeysOnClick()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
@@ -184,7 +185,7 @@ namespace PuppeteerSharp.Tests.InputTests
             }
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldTweenMouseMovement()
         {
             await Page.Mouse.MoveAsync(100, 100);
@@ -204,7 +205,7 @@ namespace PuppeteerSharp.Tests.InputTests
             }, await Page.EvaluateExpressionAsync<int[][]>("result"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithMobileViewportsAndCrossProcessNavigations()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -230,7 +231,7 @@ namespace PuppeteerSharp.Tests.InputTests
             }, await Page.EvaluateExpressionAsync<DomPointInternal>("result"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldScrollAccordingToMouseWheel()
         {
             var waitForFunctionOptions = new WaitForFunctionOptions

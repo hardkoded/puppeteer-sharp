@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using PuppeteerSharp.PageAccessibility;
+using PuppeteerSharp.Tests.Attributes;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -14,7 +15,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
         {
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
             await Page.SetContentAsync(@"
@@ -115,7 +116,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
             Assert.Equal(nodeToCheck, snapshot);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReportUninterestingNodes()
         {
             await Page.SetContentAsync("<textarea autofocus>hi</textarea>");
@@ -152,7 +153,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                 })));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task RoleDescription()
         {
             await Page.SetContentAsync("<div tabIndex=-1 aria-roledescription='foo'>Hi</div>");
@@ -160,7 +161,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
             Assert.Equal("foo", snapshot.Children[0].RoleDescription);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task Orientation()
         {
             await Page.SetContentAsync("<a href='' role='slider' aria-orientation='vertical'>11</a>");
@@ -168,7 +169,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
             Assert.Equal("vertical", snapshot.Children[0].Orientation);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task AutoComplete()
         {
             await Page.SetContentAsync("<input type='number' aria-autocomplete='list' />");
@@ -176,7 +177,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
             Assert.Equal("list", snapshot.Children[0].AutoComplete);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task MultiSelectable()
         {
             await Page.SetContentAsync("<div role='grid' tabIndex=-1 aria-multiselectable=true>hey</div>");
@@ -184,7 +185,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
             Assert.True(snapshot.Children[0].Multiselectable);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task KeyShortcuts()
         {
             await Page.SetContentAsync("<div role='grid' tabIndex=-1 aria-keyshortcuts='foo'>hey</div>");
@@ -192,7 +193,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
             Assert.Equal("foo", snapshot.Children[0].KeyShortcuts);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldNotReportTextNodesInsideControls()
         {
             await Page.SetContentAsync(@"
@@ -223,7 +224,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                 await Page.Accessibility.SnapshotAsync());
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task RichTextEditableFieldsShouldHaveChildren()
         {
             await Page.SetContentAsync(@"
@@ -253,7 +254,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                 (await Page.Accessibility.SnapshotAsync()).Children[0]);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task RichTextEditableFieldsWithRoleShouldHaveChildren()
         {
             await Page.SetContentAsync(@"
@@ -283,7 +284,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                 (await Page.Accessibility.SnapshotAsync()).Children[0]);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task PlainTextFieldWithRoleShouldNotHaveChildren()
         {
             await Page.SetContentAsync("<div contenteditable='plaintext-only' role='textbox'>Edit this image:<img src='fakeimage.png' alt='my fake image'></div>");
@@ -297,7 +298,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                 (await Page.Accessibility.SnapshotAsync()).Children[0]);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task PlainTextFieldWithTabindexAndWithoutRoleShouldNotHaveContent()
         {
             await Page.SetContentAsync("<div contenteditable='plaintext-only' role='textbox' tabIndex=0>Edit this image:<img src='fakeimage.png' alt='my fake image'></div>");
@@ -311,7 +312,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                 (await Page.Accessibility.SnapshotAsync()).Children[0]);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task PlainTextFieldWithoutRoleShouldNotHaveContent()
         {
             await Page.SetContentAsync(
@@ -321,7 +322,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
             Assert.Equal(string.Empty, snapshot.Children[0].Name);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task NonEditableTextboxWithRoleAndTabIndexAndLabelShouldNotHaveChildren()
         {
             await Page.SetContentAsync(@"
@@ -339,7 +340,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                 (await Page.Accessibility.SnapshotAsync()).Children[0]);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task CheckboxWithAndTabIndexAndLabelShouldNotHaveChildren()
         {
             await Page.SetContentAsync(@"
@@ -357,7 +358,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                 (await Page.Accessibility.SnapshotAsync()).Children[0]);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task CheckboxWithoutLabelShouldNotHaveChildren()
         {
             await Page.SetContentAsync(@"

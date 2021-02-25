@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using PuppeteerSharp.PageCoverage;
+using PuppeteerSharp.Tests.Attributes;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -16,7 +17,7 @@ namespace PuppeteerSharp.Tests.JSCoverageTests
         {
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
             await Page.Coverage.StartJSCoverageAsync();
@@ -39,7 +40,7 @@ namespace PuppeteerSharp.Tests.JSCoverageTests
             }, coverage[0].Ranges);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReportSourceUrls()
         {
             await Page.Coverage.StartJSCoverageAsync();
@@ -49,7 +50,7 @@ namespace PuppeteerSharp.Tests.JSCoverageTests
             Assert.Equal("nicename.js", coverage[0].Url);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldIgnoreEvalScriptsByDefault()
         {
             await Page.Coverage.StartJSCoverageAsync();
@@ -58,7 +59,7 @@ namespace PuppeteerSharp.Tests.JSCoverageTests
             Assert.Single(coverage);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldntIgnoreEvalScriptsIfReportAnonymousScriptsIsTrue()
         {
             await Page.Coverage.StartJSCoverageAsync(new CoverageStartOptions
@@ -71,7 +72,7 @@ namespace PuppeteerSharp.Tests.JSCoverageTests
             Assert.Equal(2, coverage.Count());
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldIgnorePptrInternalScriptsIfReportAnonymousScriptsIsTrue()
         {
             await Page.Coverage.StartJSCoverageAsync(new CoverageStartOptions
@@ -85,7 +86,7 @@ namespace PuppeteerSharp.Tests.JSCoverageTests
             Assert.Empty(coverage);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReportMultipleScripts()
         {
             await Page.Coverage.StartJSCoverageAsync();
@@ -97,7 +98,7 @@ namespace PuppeteerSharp.Tests.JSCoverageTests
             Assert.Contains("/jscoverage/script2.js", orderedList.ElementAt(1).Url);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReportRightRanges()
         {
             await Page.Coverage.StartJSCoverageAsync();
@@ -110,7 +111,7 @@ namespace PuppeteerSharp.Tests.JSCoverageTests
             Assert.Equal("console.log('used!');", entry.Text.Substring(range.Start, range.End - range.Start));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReportScriptsThatHaveNoCoverage()
         {
             await Page.Coverage.StartJSCoverageAsync();
@@ -122,7 +123,7 @@ namespace PuppeteerSharp.Tests.JSCoverageTests
             Assert.Empty(entry.Ranges);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithConditionals()
         {
             const string involved = @"[

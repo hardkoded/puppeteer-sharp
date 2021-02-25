@@ -19,7 +19,6 @@ namespace PuppeteerSharp
     /// </summary>
     public class LauncherBase : IDisposable
     {
-        private readonly ILogger _logger;
         private readonly StateManager _stateManager;
 
         /// <summary>
@@ -27,16 +26,12 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="executable">Full path of executable.</param>
         /// <param name="options">Options for launching Base.</param>
-        /// <param name="loggerFactory">Logger factory</param>
-        public LauncherBase(string executable, LaunchOptions options, ILoggerFactory loggerFactory)
+        public LauncherBase(string executable, LaunchOptions options)
         {
             _stateManager = new StateManager();
             _stateManager.Starting = new ChromiumStartingState(_stateManager);
 
             Options = options;
-            _logger = options.LogProcess
-                ? loggerFactory.CreateLogger<LauncherBase>()
-                : null;
 
             Process = new Process
             {

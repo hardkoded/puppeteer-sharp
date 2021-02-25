@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         {
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldHaveDifferentExecutionContexts()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -29,7 +29,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             Assert.Equal("bar", await frame2.EvaluateExpressionAsync<string>("window.FOO"));
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldExecuteAfterCrossSiteNavigation()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -40,7 +40,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             Assert.Contains("127", await mainFrame.EvaluateExpressionAsync<string>("window.location.href"));
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldThrowForDetachedFrames()
         {
             var frame1 = await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);

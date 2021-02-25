@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.BrowserTests
         {
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public void ShouldReturnBrowserTarget()
             => Assert.Equal(TargetType.Browser, Browser.Target.Type);
     }

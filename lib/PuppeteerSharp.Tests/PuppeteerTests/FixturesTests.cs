@@ -6,6 +6,7 @@ using System.Net;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Transport;
 using Xunit;
 using Xunit.Abstractions;
@@ -17,7 +18,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
     {
         public FixturesTests(ITestOutputHelper output) : base(output) { }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public void ShouldDumpBrowserProcessStderr()
         {
             var success = false;
@@ -36,14 +37,13 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             Assert.True(success);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldCloseTheBrowserWhenTheConnectedProcessCloses()
         {
             var browserClosedTaskWrapper = new TaskCompletionSource<bool>();
             var ChromiumLauncher = new ChromiumLauncher(
                 new BrowserFetcher(Product.Chrome).RevisionInfo().ExecutablePath,
-                new LaunchOptions { Headless = true },
-                TestConstants.LoggerFactory);
+                new LaunchOptions { Headless = true });
 
             await ChromiumLauncher.StartAsync().ConfigureAwait(false);
 
@@ -63,7 +63,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             Assert.True(browser.IsClosed);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldCloseTheBrowserWhenTheLaunchedProcessCloses()
         {
             var browserClosedTaskWrapper = new TaskCompletionSource<bool>();

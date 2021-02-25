@@ -7,7 +7,11 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using ICSharpCode.SharpZipLib.BZip2;
+using ICSharpCode.SharpZipLib.Tar;
+using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Linux;
 
 namespace PuppeteerSharp
@@ -29,7 +33,7 @@ namespace PuppeteerSharp
         private static readonly Dictionary<Product, string> _hosts = new Dictionary<Product, string>
         {
             [Product.Chrome] = "https://storage.googleapis.com",
-            [Product.Firefox] = "https://github.com/puppeteer/juggler/releases",
+            [Product.Firefox] = "https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central",
         };
 
         private static readonly Dictionary<(Product product, Platform platform), string> _downloadUrls = new Dictionary<(Product product, Platform platform), string>
@@ -38,10 +42,10 @@ namespace PuppeteerSharp
             [(Product.Chrome, Platform.MacOS)] = "{0}/chromium-browser-snapshots/Mac/{1}/{2}.zip",
             [(Product.Chrome, Platform.Win32)] = "{0}/chromium-browser-snapshots/Win/{1}/{2}.zip",
             [(Product.Chrome, Platform.Win64)] = "{0}/chromium-browser-snapshots/Win_x64/{1}/{2}.zip",
-            [(Product.Firefox, Platform.Linux)] = "{0}/download/{1}/{2}.zip",
-            [(Product.Firefox, Platform.MacOS)] = "{0}/download/{1}/{2}.zip",
-            [(Product.Firefox, Platform.Win32)] = "{0}/download/{1}/{2}.zip",
-            [(Product.Firefox, Platform.Win64)] = "{0}/download/{1}/{2}.zip",
+            [(Product.Firefox, Platform.Linux)] = "{0}/firefox-{1}.en-US.{2}-x86_64.tar.bz2",
+            [(Product.Firefox, Platform.MacOS)] = "{0}/firefox-{1}.en-US.{2}.dmg",
+            [(Product.Firefox, Platform.Win32)] = "{0}/firefox-{1}.en-US.{2}.zip",
+            [(Product.Firefox, Platform.Win64)] = "{0}/firefox-{1}.en-US.{2}.zip",
         };
 
         private readonly WebClient _webClient = new WebClient();
@@ -55,12 +59,12 @@ namespace PuppeteerSharp
         /// <summary>
         /// Default Chromium revision.
         /// </summary>
-        public const string DefaultChromiumRevision = "706915";
+        public const string DefaultChromiumRevision = "848005";
 
         /// <summary>
         /// Default Chromium revision.
         /// </summary>
-        public const string DefaultFirefoxRevision = "v0.0.1";
+        public const string DefaultFirefoxRevision = "87.0a1";
 
         /// <summary>
         /// Gets the downloads folder.
@@ -122,14 +126,12 @@ namespace PuppeteerSharp
         public BrowserFetcher(BrowserFetcherOptions options)
         {
             DownloadsFolder = string.IsNullOrEmpty(options.Path) ?
-               Path.Combine(Directory.GetCurrentDirectory(), ".local-chromium") :
+               Path.Combine(Directory.GetCurrentDirectory(), options.Product == Product.Chrome ? ".local-chromium" : ".local-firefox") :
                options.Path;
             DownloadHost = string.IsNullOrEmpty(options.Host) ? _hosts[options.Product] : options.Host;
             Platform = options.Platform ?? GetCurrentPlatform();
             Product = options.Product;
         }
-
-        #region Public Methods
 
         /// <summary>
         /// The method initiates a HEAD request to check if the revision is available.
@@ -256,7 +258,7 @@ namespace PuppeteerSharp
         public async Task<RevisionInfo> DownloadAsync(string revision)
         {
             var url = GetDownloadURL(Product, Platform, DownloadHost, revision);
-            var zipPath = Path.Combine(DownloadsFolder, $"download-{Platform}-{revision}.zip");
+            var filePath = Path.Combine(DownloadsFolder, url.Split('/').Last());
             var folderPath = GetFolderPath(revision);
 
             if (new DirectoryInfo(folderPath).Exists)
@@ -275,21 +277,29 @@ namespace PuppeteerSharp
                 _webClient.DownloadProgressChanged += DownloadProgressChanged;
             }
 
-            await _webClient.DownloadFileTaskAsync(new Uri(url), zipPath).ConfigureAwait(false);
+            await _webClient.DownloadFileTaskAsync(new Uri(url), filePath).ConfigureAwait(false);
 
-            if (Platform == Platform.MacOS)
+            if (filePath.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
             {
-                // ZipFile and many others unzip libraries have issues extracting .app files
-                // Until we have a clear solution we'll call the native unzip tool
-                // https://github.com/dotnet/corefx/issues/15516
-                NativeExtractToDirectory(zipPath, folderPath);
+                if (Platform == Platform.MacOS)
+                {
+                    NativeExtractToDirectory(filePath, folderPath);
+                }
+                else
+                {
+                    ZipFile.ExtractToDirectory(filePath, folderPath);
+                }
+            }
+            else if (filePath.EndsWith(".tar.bz2", StringComparison.OrdinalIgnoreCase))
+            {
+                ExtractStream(filePath, folderPath);
             }
             else
             {
-                ZipFile.ExtractToDirectory(zipPath, folderPath);
+                await InstallDMGAsync(filePath, folderPath).ConfigureAwait(false);
             }
 
-            new FileInfo(zipPath).Delete();
+            new FileInfo(filePath).Delete();
 
             var revisionInfo = RevisionInfo(revision);
 
@@ -299,6 +309,150 @@ namespace PuppeteerSharp
             }
 
             return revisionInfo;
+        }
+
+        private Task InstallDMGAsync(string dmgPath, string folderPath)
+        {
+            try
+            {
+                var destinationDirectoryInfo = new DirectoryInfo(folderPath);
+
+                if (!destinationDirectoryInfo.Exists)
+                {
+                    destinationDirectoryInfo.Create();
+                }
+
+                var mountAndCopyTcs = new TaskCompletionSource<bool>();
+
+                using var process = new Process
+                {
+                    EnableRaisingEvents = true
+                };
+
+                process.StartInfo.FileName = "hdiutil";
+                process.StartInfo.Arguments = $"attach -nobrowse -noautoopen \"{dmgPath}\"";
+                process.StartInfo.RedirectStandardOutput = true;
+                process.OutputDataReceived += (sender, e) =>
+                {
+                    if (e.Data == null || mountAndCopyTcs.Task.IsCompleted)
+                    {
+                        return;
+                    }
+
+                    var volumes = new Regex("\\/Volumes\\/(.*)").Match(e.Data);
+
+                    if (!volumes.Success)
+                    {
+                        return;
+                    }
+
+                    var mountPath = volumes.Captures[0];
+                    var appFile = new DirectoryInfo(mountPath.Value).GetDirectories("*.app").FirstOrDefault();
+
+                    if (appFile == null)
+                    {
+                        mountAndCopyTcs.TrySetException(new PuppeteerException($"Cannot find app in {mountPath.Value}"));
+                        return;
+                    }
+
+                    using var process = new Process();
+                    process.StartInfo.FileName = "cp";
+                    process.StartInfo.Arguments = $"-R \"{appFile.FullName}\" \"{folderPath}\"";
+                    process.StartInfo.RedirectStandardOutput = true;
+                    process.Start();
+                    process.WaitForExit();
+                    mountAndCopyTcs.TrySetResult(true);
+                };
+
+                process.Start();
+                process.BeginOutputReadLine();
+                process.WaitForExit();
+
+                return mountAndCopyTcs.Task.WithTimeout(Puppeteer.DefaultTimeout);
+            }
+            finally
+            {
+                UnmountDmg(dmgPath);
+            }
+        }
+
+        private void UnmountDmg(string dmgPath)
+        {
+            try
+            {
+                using var process = new Process();
+                process.StartInfo.FileName = "hdiutil";
+                process.StartInfo.Arguments = $"detach \"{ dmgPath}\" -quiet";
+                process.StartInfo.RedirectStandardOutput = true;
+                process.Start();
+                process.WaitForExit();
+            }
+            catch
+            {
+                // swallow
+            }
+        }
+
+        private static void ExtractStream(string zipPath, string folderPath)
+        {
+            using var bzFile = new FileInfo(zipPath).OpenRead();
+            using var bz2Stream = new BZip2InputStream(bzFile);
+
+            using (var tarStream = new TarInputStream(bz2Stream, System.Text.Encoding.UTF8))
+            {
+                TarEntry entry;
+
+                // extract the file or directory entry
+                while ((entry = tarStream.GetNextEntry()) != null)
+                {
+                    if (entry.IsDirectory)
+                    {
+                        ExtractDirectory(tarStream, folderPath, entry.Name, entry.ModTime);
+                    }
+                    else
+                    {
+                        ExtractFile(tarStream, folderPath, entry.Name);
+                    }
+                }
+            }
+        }
+
+        private static void ExtractFile(TarInputStream inputStream, string destDirectory, string entryName)
+        {
+            var destFile = new FileInfo(Path.Combine(destDirectory, entryName));
+
+            if (!destFile.Directory.Exists)
+            {
+                destFile.Directory.Create();
+            }
+
+            // extract the entry
+            using (var sw = new FileStream(destFile.FullName, FileMode.Create, FileAccess.Write))
+            {
+                var size = 2048;
+                var data = new byte[2048];
+
+                while (true)
+                {
+                    size = inputStream.Read(data, 0, data.Length);
+                    if (size == 0)
+                    {
+                        break;
+                    }
+                    sw.Write(data, 0, size);
+                }
+
+                sw.Close();
+            }
+        }
+
+        private static void ExtractDirectory(TarInputStream tarStream, string destDirectory, string entryName, DateTime modTime)
+        {
+            DirectoryInfo destDir = new DirectoryInfo(Path.Combine(destDirectory, entryName));
+            if (!destDir.Exists)
+            {
+                destDir.Create();
+            }
         }
 
         /// <summary>
@@ -367,8 +521,7 @@ namespace PuppeteerSharp
                     case Platform.MacOS:
                         return Path.Combine(
                             folderPath,
-                            "firefox",
-                            "Nightly.app",
+                            "Firefox Nightly.app",
                             "Contents",
                             "MacOS",
                             "firefox");
@@ -382,10 +535,6 @@ namespace PuppeteerSharp
                 }
             }
         }
-
-        #endregion
-
-        #region Private Methods
 
         internal static Platform GetCurrentPlatform()
         {
@@ -412,13 +561,11 @@ namespace PuppeteerSharp
 
         private void NativeExtractToDirectory(string zipPath, string folderPath)
         {
-            using (var process = new Process())
-            {
-                process.StartInfo.FileName = "unzip";
-                process.StartInfo.Arguments = $"\"{zipPath}\" -d \"{folderPath}\"";
-                process.Start();
-                process.WaitForExit();
-            }
+            using var process = new Process();
+            process.StartInfo.FileName = "unzip";
+            process.StartInfo.Arguments = $"\"{zipPath}\" -d \"{folderPath}\"";
+            process.Start();
+            process.WaitForExit();
         }
 
         private string GetRevisionFromPath(string folderName)
@@ -464,13 +611,13 @@ namespace PuppeteerSharp
                 switch (platform)
                 {
                     case Platform.Linux:
-                        return "firefox-linux";
+                        return "linux";
                     case Platform.MacOS:
-                        return "firefox-mac";
+                        return "mac";
                     case Platform.Win32:
-                        return "firefox-win32";
+                        return "win32";
                     case Platform.Win64:
-                        return "firefox-win64";
+                        return "win64";
                     default:
                         throw new ArgumentException("Invalid platform", nameof(platform));
                 }
@@ -479,7 +626,5 @@ namespace PuppeteerSharp
 
         private static string GetDownloadURL(Product product, Platform platform, string host, string revision)
             => string.Format(_downloadUrls[(product, platform)], host, revision, GetArchiveName(product, platform, revision));
-
-        #endregion
     }
 }

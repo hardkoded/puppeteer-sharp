@@ -21,7 +21,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             EnsureDownloadsFolderIsDeleted();
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldDownloadAndExtractLinuxBinary()
         {
             var browserFetcher = Puppeteer.CreateBrowserFetcher(new BrowserFetcherOptions

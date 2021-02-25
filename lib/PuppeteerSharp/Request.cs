@@ -50,7 +50,7 @@ namespace PuppeteerSharp
             Frame = frame;
             RedirectChainList = redirectChain;
 
-            Headers = new Dictionary<string, string>();
+            Headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             foreach (var keyValue in e.Request.Headers)
             {
                 Headers[keyValue.Key] = keyValue.Value;

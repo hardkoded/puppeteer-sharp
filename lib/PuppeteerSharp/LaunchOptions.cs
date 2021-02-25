@@ -159,5 +159,10 @@ namespace PuppeteerSharp
         /// Setting this to <c>false</c> proved to work in .NET Core but it tends to fail on .NET Framework.
         /// </remarks>
         public bool EnqueueTransportMessages { get; set; } = true;
+
+        /// <summary>
+        /// The browser to be used (Chrome, Firefox)
+        /// </summary>
+        public Product Product { get; set; } = Product.Chrome;
     }
 }

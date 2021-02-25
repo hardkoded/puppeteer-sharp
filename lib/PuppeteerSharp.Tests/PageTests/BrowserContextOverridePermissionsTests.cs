@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using PuppeteerSharp.Tests.Attributes;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -16,14 +17,14 @@ namespace PuppeteerSharp.Tests.PageTests
                 "name => navigator.permissions.query({ name }).then(result => result.state)",
                 name);
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldBePromptByDefault()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.Equal("prompt", await GetPermissionAsync(Page, "geolocation"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldDenyPermissionWhenNotListed()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -31,7 +32,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal("denied", await GetPermissionAsync(Page, "geolocation"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldGrantPermissionWwhenListed()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -42,7 +43,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal("granted", await GetPermissionAsync(Page, "geolocation"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldResetPermissions()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -55,7 +56,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal("prompt", await GetPermissionAsync(Page, "geolocation"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldTriggerPermissionOnchange()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -84,7 +85,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 await Page.EvaluateExpressionAsync<string[]>("window.events"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldIsolatePermissionsBetweenBrowserContexs()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

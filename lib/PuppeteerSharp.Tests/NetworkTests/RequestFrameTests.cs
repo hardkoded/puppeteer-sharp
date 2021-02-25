@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkForMainFrameNavigationRequests()
         {
             var requests = new List<Request>();
@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(Page.MainFrame, requests[0].Frame);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkForSubframeNavigationRequest()
         {
             var requests = new List<Request>();
@@ -50,7 +50,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(Page.FirstChildFrame(), requests[1].Frame);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkForFetchRequests()
         {
             var requests = new List<Request>();

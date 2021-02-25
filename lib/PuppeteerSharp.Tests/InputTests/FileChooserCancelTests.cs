@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using PuppeteerSharp.Mobile;
+using PuppeteerSharp.Tests.Attributes;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -13,7 +14,7 @@ namespace PuppeteerSharp.Tests.InputTests
         {
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldCancelDialog()
         {
             // Consider file chooser canceled if we can summon another one.
@@ -34,7 +35,7 @@ namespace PuppeteerSharp.Tests.InputTests
                 Page.ClickAsync("input"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldFailWhenCancelingFileChooserTwice()
         {
             await Page.SetContentAsync("<input type=file>");

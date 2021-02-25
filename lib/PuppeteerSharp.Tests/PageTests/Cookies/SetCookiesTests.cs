@@ -13,7 +13,7 @@ namespace PuppeteerSharp.Tests.PageTests.Cookies
         {
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -25,7 +25,7 @@ namespace PuppeteerSharp.Tests.PageTests.Cookies
             Assert.Equal("password=123456", await Page.EvaluateExpressionAsync<string>("document.cookie"));
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldIsolateCookiesInBrowserContexts()
         {
             var anotherContext = await Browser.CreateIncognitoBrowserContextAsync();
@@ -59,7 +59,7 @@ namespace PuppeteerSharp.Tests.PageTests.Cookies
             await anotherContext.CloseAsync();
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldSetMultipleCookies()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -90,7 +90,7 @@ namespace PuppeteerSharp.Tests.PageTests.Cookies
             );
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldHaveExpiresSetToMinus1ForSessionCookies()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -107,7 +107,7 @@ namespace PuppeteerSharp.Tests.PageTests.Cookies
             Assert.Equal(-1, cookies[0].Expires);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldSetCookieWithReasonableDefaults()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -130,7 +130,7 @@ namespace PuppeteerSharp.Tests.PageTests.Cookies
             Assert.True(cookie.Session);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldSetACookieWithAPath()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
@@ -152,7 +152,7 @@ namespace PuppeteerSharp.Tests.PageTests.Cookies
             Assert.True(cookie.Session);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldDeleteACookie()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
@@ -174,7 +174,7 @@ namespace PuppeteerSharp.Tests.PageTests.Cookies
             Assert.Equal("cookie1=1; cookie3=3", await Page.EvaluateExpressionAsync<string>("document.cookie"));
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldNotSetACookieOnABlankPage()
         {
             await Page.GoToAsync(TestConstants.AboutBlank);
@@ -183,7 +183,7 @@ namespace PuppeteerSharp.Tests.PageTests.Cookies
             Assert.Equal("Protocol error (Network.deleteCookies): At least one of the url and domain needs to be specified", exception.Message);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldNotSetACookieWithBlankPageURL()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
@@ -201,7 +201,7 @@ namespace PuppeteerSharp.Tests.PageTests.Cookies
             Assert.Equal("Blank page can not have cookie \"example-cookie-blank\"", exception.Message);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldNotSetACookieOnADataURLPage()
         {
             await Page.GoToAsync("data:,Hello%2C%20World!");
@@ -210,7 +210,7 @@ namespace PuppeteerSharp.Tests.PageTests.Cookies
             Assert.Equal("Protocol error (Network.deleteCookies): At least one of the url and domain needs to be specified", exception.Message);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldDefaultToSettingSecureCookieForHttpsWebsites()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -226,7 +226,7 @@ namespace PuppeteerSharp.Tests.PageTests.Cookies
             Assert.True(cookie.Secure);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldBeAbleToSetUnsecureCookieForHttpWebSite()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -242,7 +242,7 @@ namespace PuppeteerSharp.Tests.PageTests.Cookies
             Assert.False(cookie.Secure);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldSetACookieOnADifferentDomain()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
@@ -261,7 +261,7 @@ namespace PuppeteerSharp.Tests.PageTests.Cookies
             Assert.True(cookie.Session);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldSetCookiesFromAFrame()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");

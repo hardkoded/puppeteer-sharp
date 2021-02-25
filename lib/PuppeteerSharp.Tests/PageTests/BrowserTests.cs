@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public void ShouldReturnTheCorrectBrowserInstance() => Assert.Same(Browser, Page.Browser);
     }
 }

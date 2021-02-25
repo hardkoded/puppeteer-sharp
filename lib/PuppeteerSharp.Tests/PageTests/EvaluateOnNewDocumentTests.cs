@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PuppeteerSharp.Tests.Attributes;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -15,7 +16,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldEvaluateBeforeAnythingElseOnThePage()
         {
             await Page.EvaluateFunctionOnNewDocumentAsync(@"function(){
@@ -25,7 +26,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(123, await Page.EvaluateExpressionAsync<int>("window.result"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithCSP()
         {
             Server.SetCSP("/empty.html", "script-src " + TestConstants.ServerUrl);
@@ -43,7 +44,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Null(await Page.EvaluateExpressionAsync("window.e"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithExpressions()
         {
             await Page.EvaluateExpressionOnNewDocumentAsync("window.injected = 123;");

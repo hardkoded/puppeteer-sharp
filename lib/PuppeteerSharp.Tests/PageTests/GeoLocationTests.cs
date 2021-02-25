@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using PuppeteerSharp.Tests.Attributes;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -13,7 +14,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
             await Context.OverridePermissionsAsync(TestConstants.ServerUrl, new[] { OverridePermission.Geolocation });
@@ -34,7 +35,7 @@ namespace PuppeteerSharp.Tests.PageTests
             }, geolocation);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldThrowWhenInvalidLongitude()
         {
             var exception = await Assert.ThrowsAsync<ArgumentException>(() =>
@@ -44,27 +45,6 @@ namespace PuppeteerSharp.Tests.PageTests
                     Latitude = 100
                 }));
             Assert.Contains("Invalid longitude '200'", exception.Message);
-        }
-
-        [Fact]
-        public async Task ShouldWorkWithDecimalValues()
-        {
-            await Context.OverridePermissionsAsync(TestConstants.ServerUrl, new[] { OverridePermission.Geolocation });
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            await Page.SetGeolocationAsync(new GeolocationOption
-            {
-                Longitude = 10.25m,
-                Latitude = 10.54m
-            });
-            var geolocation = await Page.EvaluateFunctionAsync<GeolocationOption>(
-                @"() => new Promise(resolve => navigator.geolocation.getCurrentPosition(position => {
-                    resolve({latitude: position.coords.latitude, longitude: position.coords.longitude});
-                }))");
-            Assert.Equal(new GeolocationOption
-            {
-                Longitude = 10.25m,
-                Latitude = 10.54m
-            }, geolocation);
         }
     }
 }

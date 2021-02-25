@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Tests.Attributes;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -18,7 +19,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task PageEventsRequest()
         {
             var requests = new List<Request>();
@@ -33,7 +34,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(TestConstants.EmptyPage, requests[0].Frame.Url);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task PageEventsResponse()
         {
             var responses = new List<Response>();
@@ -52,7 +53,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(TestConstants.Port, remoteAddress.Port);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task PageEventsRequestFailed()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -88,7 +89,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.NotNull(failedRequests[0].Frame);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task PageEventsRequestFinished()
         {
             var requests = new List<Request>();
@@ -102,7 +103,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(TestConstants.EmptyPage, requests[0].Frame.Url);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldFireEventsInProperOrder()
         {
             var events = new List<string>();
@@ -113,7 +114,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(new[] { "request", "response", "requestfinished" }, events);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldSupportRedirects()
         {
             var events = new List<string>();

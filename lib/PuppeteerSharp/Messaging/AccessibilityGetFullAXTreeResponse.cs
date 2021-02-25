@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Messaging
 
             public IEnumerable<AXTreeProperty> Properties { get; set; }
 
-            public int BackendDOMNodeId { get; set; }
+            public string BackendDOMNodeId { get; set; }
         }
 
         public class AXTreeProperty

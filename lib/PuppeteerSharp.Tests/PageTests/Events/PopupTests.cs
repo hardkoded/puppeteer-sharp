@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using PuppeteerSharp.Tests.Attributes;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -11,7 +12,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
         {
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
             var popupTaskSource = new TaskCompletionSource<Page>();
@@ -25,7 +26,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
             Assert.True(await popupTaskSource.Task.Result.EvaluateExpressionAsync<bool>("!!window.opener"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithNoopener()
         {
             var popupTaskSource = new TaskCompletionSource<Page>();
@@ -39,7 +40,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
             Assert.False(await popupTaskSource.Task.Result.EvaluateExpressionAsync<bool>("!!window.opener"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithClickingTargetBlank()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -56,7 +57,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
             Assert.True(await popupTaskSource.Task.Result.EvaluateExpressionAsync<bool>("!!window.opener"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithFakeClickingTargetBlankAndReNoopener()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -73,7 +74,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
             Assert.False(await popupTaskSource.Task.Result.EvaluateExpressionAsync<bool>("!!window.opener"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithClickingTargetBlankAndRelNoopener()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

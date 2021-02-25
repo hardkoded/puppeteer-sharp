@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.WorkerTests
 {
@@ -12,7 +13,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
         {
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task PageWorkers()
         {
             var workerCreatedTcs = new TaskCompletionSource<bool>();
@@ -34,7 +35,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.Empty(Page.Workers);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldEmitCreatedAndDestroyedEvents()
         {
             var workerCreatedTcs = new TaskCompletionSource<Worker>();
@@ -48,7 +49,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.Same(worker, await workerDestroyedTcs.Task);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReportConsoleLogs()
         {
             var consoleTcs = new TaskCompletionSource<ConsoleMessage>();
@@ -66,7 +67,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             }, log.Location);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldHaveJSHandlesForConsoleLogs()
         {
             var consoleTcs = new TaskCompletionSource<ConsoleMessage>();
@@ -82,7 +83,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.Equal("null", json);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldHaveAnExecutionContext()
         {
             var workerCreatedTcs = new TaskCompletionSource<Worker>();
@@ -93,7 +94,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.Equal(2, await worker.EvaluateExpressionAsync<int>("1+1"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReportErrors()
         {
             var errorTcs = new TaskCompletionSource<string>();

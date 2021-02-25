@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         {
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task QuerySelectorShouldWork()
         {
             await Page.SetContentAsync("<html><body><div class='tweet'><div class='like'>100</div><div class='retweets'>10</div></div></body></html>");
@@ -21,7 +21,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.Equal("100", content);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task QuerySelectorShouldRetrieveContentFromSubtree()
         {
             var htmlContent = "<div class='a'>not-a-child-div</div><div id='myId'><div class='a'>a-child-div</div></div>";
@@ -32,7 +32,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.Equal("a-child-div", content);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task QuerySelectorShouldThrowInCaseOfMissingSelector()
         {
             var htmlContent = "<div class=\"a\">not-a-child-div</div><div id=\"myId\"></div>";
@@ -44,7 +44,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.Equal("Error: failed to find element matching selector", exception.Message);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task QuerySelectorAllShouldWork()
         {
             await Page.SetContentAsync("<html><body><div class='tweet'><div class='like'>100</div><div class='like'>10</div></div></body></html>");
@@ -54,7 +54,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.Equal(new[] { "100", "10" }, content);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task QuerySelectorAllShouldRetrieveContentFromSubtree()
         {
             var htmlContent = "<div class='a'>not-a-child-div</div><div id='myId'><div class='a'>a1-child-div</div><div class='a'>a2-child-div</div></div>";
@@ -65,7 +65,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.Equal(new[] { "a1-child-div", "a2-child-div" }, content);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task QuerySelectorAllShouldNotThrowInCaseOfMissingSelector()
         {
             var htmlContent = "<div class='a'>not-a-child-div</div><div id='myId'></div>";

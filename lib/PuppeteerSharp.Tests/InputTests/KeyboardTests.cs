@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using PuppeteerSharp.Input;
+using PuppeteerSharp.Tests.Attributes;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -14,7 +15,7 @@ namespace PuppeteerSharp.Tests.InputTests
         {
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldTypeIntoTheTextarea()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -24,7 +25,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.Equal("Type in this text!", await Page.EvaluateExpressionAsync<string>("result"));
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldMoveWithTheArrowKeys()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -48,7 +49,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.Equal("Hello World!", await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldSendACharacterWithElementHandlePress()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -62,7 +63,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.Equal("a", await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ElementHandlePressShouldSupportTextOption()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -71,7 +72,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.Equal("ё", await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldSendACharacterWithSendCharacter()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -83,7 +84,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.Equal("嗨a", await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReportShiftKey()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/keyboard.html");
@@ -111,7 +112,7 @@ namespace PuppeteerSharp.Tests.InputTests
             }
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldReportMultipleModifiers()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/keyboard.html");
@@ -130,7 +131,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.Equal("Keyup: Alt AltLeft 18 []", await Page.EvaluateExpressionAsync<string>("getResult()"));
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldSendProperCodesWhileTyping()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/keyboard.html");
@@ -146,7 +147,7 @@ namespace PuppeteerSharp.Tests.InputTests
                 "Keyup: ^ Digit6 54 []" }), await Page.EvaluateExpressionAsync<string>("getResult()"));
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldSendProperCodesWhileTypingWithShift()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/keyboard.html");
@@ -161,7 +162,7 @@ namespace PuppeteerSharp.Tests.InputTests
             await keyboard.UpAsync("Shift");
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldNotTypeCanceledEvents()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -180,7 +181,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.Equal("He Wrd!", await Page.EvaluateExpressionAsync<string>("textarea.value"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldSpecifyRepeatProperty()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -201,7 +202,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.False(await Page.EvaluateExpressionAsync<bool>("window.lastEvent.repeat"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldTypeAllKindsOfCharacters()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -211,7 +212,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.Equal(text, await Page.EvaluateExpressionAsync<string>("result"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldSpecifyLocation()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -233,7 +234,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.Equal(3, await Page.EvaluateExpressionAsync<int>("keyLocation"));
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldThrowOnUnknownKeys()
         {
             await Assert.ThrowsAsync<KeyNotFoundException>(() => Page.Keyboard.PressAsync("NotARealKey"));
@@ -243,7 +244,7 @@ namespace PuppeteerSharp.Tests.InputTests
             await Assert.ThrowsAsync<KeyNotFoundException>(() => Page.Keyboard.PressAsync("😊"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldTypeEmoji()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -253,7 +254,7 @@ namespace PuppeteerSharp.Tests.InputTests
                 await Page.QuerySelectorAsync("textarea").EvaluateFunctionAsync<string>("t => t.value"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldTypeEmojiIntoAniframe()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -266,7 +267,7 @@ namespace PuppeteerSharp.Tests.InputTests
                 await frame.QuerySelectorAsync("textarea").EvaluateFunctionAsync<string>("t => t.value"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldPressTheMetaKey()
         {
             await Page.EvaluateFunctionAsync(@"() =>

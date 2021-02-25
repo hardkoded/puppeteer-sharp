@@ -13,7 +13,7 @@ namespace PuppeteerSharp.Tests.PageTests.Cookies
         {
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldDeleteACookie()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");

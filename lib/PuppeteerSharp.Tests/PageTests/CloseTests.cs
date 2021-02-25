@@ -1,4 +1,5 @@
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using PuppeteerSharp.Tests.Attributes;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -9,7 +10,7 @@ namespace PuppeteerSharp.Tests.PageTests
     {
         public CloseTests(ITestOutputHelper output) : base(output) { }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldRejectAllPromisesWhenPageIsClosed()
         {
             var exceptionTask = Assert.ThrowsAsync<TargetClosedException>(() => Page.EvaluateFunctionAsync("() => new Promise(r => {})"));
@@ -42,7 +43,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.DoesNotContain(Page, await Browser.PagesAsync());
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldRunBeforeunloadIfAskedFor()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/beforeunload.html");
@@ -80,7 +81,7 @@ namespace PuppeteerSharp.Tests.PageTests
             );
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldNotRunBeforeunloadByDefault()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/beforeunload.html");
@@ -88,7 +89,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.CloseAsync();
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldSetThePageCloseState()
         {
             Assert.False(Page.IsClosed);
@@ -96,7 +97,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(Page.IsClosed);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldTerminateNetworkWaiters()
         {
             var newPage = await Context.NewPageAsync();

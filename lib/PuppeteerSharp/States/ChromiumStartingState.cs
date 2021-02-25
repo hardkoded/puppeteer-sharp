@@ -37,7 +37,7 @@ namespace PuppeteerSharp.States
             base.Dispose(p);
         }
 
-        private async Task StartCoreAsync(LauncherBase p)
+        protected virtual async Task StartCoreAsync(LauncherBase p)
         {
             var output = new StringBuilder();
 
@@ -55,7 +55,7 @@ namespace PuppeteerSharp.States
             }
 
             void OnProcessExitedWhileStarting(object sender, EventArgs e)
-                => p.StartCompletionSource.TrySetException(new ProcessException($"Failed to launch Base! {output}"));
+                => p.StartCompletionSource.TrySetException(new ProcessException($"Failed to launch browser! {output}"));
             void OnProcessExited(object sender, EventArgs e) => StateManager.Exited.EnterFrom(p, StateManager.CurrentState);
 
             p.Process.ErrorDataReceived += OnProcessDataReceivedWhileStarting;

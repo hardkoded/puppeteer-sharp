@@ -39,24 +39,23 @@ namespace PuppeteerSharp
         /// The method launches a browser instance with given arguments. The browser will be closed when the Browser is disposed.
         /// </summary>
         /// <param name="options">Options for launching the browser</param>
-        /// <param name="product">The browser to launch (Chrome, Firefox)</param>
         /// <returns>A connected browser.</returns>
         /// <remarks>
         /// See <a href="https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/">this article</a>
         /// for a description of the differences between Chromium and Chrome.
         /// <a href="https://chromium.googlesource.com/chromium/src/+/lkcr/docs/chromium_browser_vs_google_chrome.md">This article</a> describes some differences for Linux users.
         /// </remarks>
-        public async Task<Browser> LaunchAsync(LaunchOptions options, Product product = Product.Chrome)
+        public async Task<Browser> LaunchAsync(LaunchOptions options)
         {
             EnsureSingleLaunchOrConnect();
-            _product = product;
+            _product = options.Product;
             var executable = GetOrFetchBrowserExecutable(options);
 
-            Process = product switch
+            Process = options.Product switch
             {
-                Product.Chrome => new ChromiumLauncher(executable, options, _loggerFactory),
-                Product.Firefox => new FirefoxLauncher(executable, options, _loggerFactory),
-                _ => throw new ArgumentException("Invalid product", nameof(product))
+                Product.Chrome => new ChromiumLauncher(executable, options),
+                Product.Firefox => new FirefoxLauncher(executable, options),
+                _ => throw new ArgumentException("Invalid product")
             };
 
             try
