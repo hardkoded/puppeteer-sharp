@@ -41,7 +41,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
         }
 
         [SkipBrowserFact(skipFirefox: true)]
-        public async Task ShouldWorkWithClickingTargetBlank()
+        public async Task ShouldWorkWithClickingTargetBlankWithoutRelOpener()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             await Page.SetContentAsync("<a target=_blank href='/one-style.html'>yo</a>");

@@ -292,7 +292,7 @@ namespace PuppeteerSharp
         /// <returns>Resolves to the first target found that matches the predicate function.</returns>
         public async Task<Target> WaitForTargetAsync(Func<Target, bool> predicate, WaitForOptions options = null)
         {
-            int timeout = options?.Timeout ?? DefaultWaitForTimeout;
+            var timeout = options?.Timeout ?? DefaultWaitForTimeout;
             var existingTarget = Targets().FirstOrDefault(predicate);
             if (existingTarget != null)
             {
@@ -395,7 +395,7 @@ namespace PuppeteerSharp
                 createTargetRequest.BrowserContextId = contextId;
             }
 
-            string targetId = (await Connection.SendAsync<TargetCreateTargetResponse>("Target.createTarget", createTargetRequest)
+            var targetId = (await Connection.SendAsync<TargetCreateTargetResponse>("Target.createTarget", createTargetRequest)
                 .ConfigureAwait(false)).TargetId;
             var target = TargetsMap[targetId];
             await target.InitializedTask.ConfigureAwait(false);
@@ -487,7 +487,7 @@ namespace PuppeteerSharp
         private async Task CreateTargetAsync(TargetCreatedResponse e)
         {
             var targetInfo = e.TargetInfo;
-            string browserContextId = targetInfo.BrowserContextId;
+            var browserContextId = targetInfo.BrowserContextId;
 
             if (!(browserContextId != null && _contexts.TryGetValue(browserContextId, out var context)))
             {
