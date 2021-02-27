@@ -420,7 +420,7 @@ namespace PuppeteerSharp
             }
             catch (Exception ex)
             {
-                string message = $"Browser failed to process Connection Close. {ex.Message}. {ex.StackTrace}";
+                var message = $"Browser failed to process Connection Close. {ex.Message}. {ex.StackTrace}";
                 _logger.LogError(ex, message);
                 Connection.Close(message);
             }
@@ -447,7 +447,7 @@ namespace PuppeteerSharp
             }
             catch (Exception ex)
             {
-                string message = $"Browser failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
+                var message = $"Browser failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
                 _logger.LogError(ex, message);
                 Connection.Close(message);
             }

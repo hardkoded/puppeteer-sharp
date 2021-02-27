@@ -10,12 +10,8 @@ environment:
   matrix:
     - framework: net48
       PRODUCT: CHROMIUM
-    - framework: net48
-      PRODUCT: FIREFOX
     - framework: netcoreapp2.2
       PRODUCT: CHROMIUM
-    - framework: netcoreapp2.2
-      PRODUCT: FIREFOX
     - framework: net48
       ENQUEUE_ASYNC_MESSAGES: true
     - framework: netcoreapp2.2

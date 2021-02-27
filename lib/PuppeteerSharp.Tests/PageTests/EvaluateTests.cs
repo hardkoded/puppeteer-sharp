@@ -351,9 +351,10 @@ namespace PuppeteerSharp.Tests.PageTests
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldAcceptObjectHandleAsAnArgument()
         {
-            var navigatorHandle = await Page.EvaluateExpressionHandleAsync("navigator");
-            var text = await Page.EvaluateFunctionAsync<string>("e => e.userAgent", navigatorHandle);
-            Assert.Contains("Mozilla", text);
+            await Page.SetContentAsync("<section>42</section>");
+            var element = await Page.QuerySelectorAsync("section");
+            var text = await Page.EvaluateFunctionAsync<string>("(e) => e.textContent", element);
+            Assert.Equal("42", text);
         }
 
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]

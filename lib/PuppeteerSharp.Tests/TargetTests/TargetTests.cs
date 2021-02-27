@@ -164,7 +164,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             Assert.Equal(TestConstants.EmptyPage, changedTarget.Url);
         }
 
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldNotReportUninitializedPages()
         {
             var targetChanged = false;
