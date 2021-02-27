@@ -61,7 +61,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.Equal("1", log.Text);
             Assert.Equal(new ConsoleMessageLocation
             {
-                URL = "data:text/javascript,console.log(1)",
+                URL = "",
                 LineNumber = 0,
                 ColumnNumber = 8
             }, log.Location);
