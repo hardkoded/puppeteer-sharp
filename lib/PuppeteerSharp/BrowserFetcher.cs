@@ -278,7 +278,7 @@ namespace PuppeteerSharp
                 _webClient.DownloadProgressChanged += DownloadProgressChanged;
             }
 
-            await _webClient.DownloadFileTaskAsync(new Uri(url), filePath).ConfigureAwait(false);
+            await _webClient.DownloadFileTaskAsync(url, filePath).ConfigureAwait(false);
 
             if (filePath.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
             {
