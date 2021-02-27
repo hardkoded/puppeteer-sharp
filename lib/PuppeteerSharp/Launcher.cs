@@ -55,7 +55,7 @@ namespace PuppeteerSharp
             {
                 Product.Chrome => new ChromiumLauncher(executable, options),
                 Product.Firefox => new FirefoxLauncher(executable, options),
-                _ => throw new ArgumentException("Invalid product")
+                _ => throw new ArgumentException("Invalid product"),
             };
 
             try

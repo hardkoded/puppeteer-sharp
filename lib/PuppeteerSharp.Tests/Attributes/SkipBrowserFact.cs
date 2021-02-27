@@ -26,6 +26,5 @@ namespace PuppeteerSharp.Tests.Attributes
 
         private static bool SkipBrowser(bool skipFirefox, bool skipChromium)
             => (skipFirefox && !TestConstants.IsChrome) || (skipChromium && TestConstants.IsChrome);
-
     }
 }
