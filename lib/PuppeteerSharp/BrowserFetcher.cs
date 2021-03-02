@@ -534,7 +534,7 @@ namespace PuppeteerSharp
                         return Path.Combine(folderPath, "firefox", "firefox");
                     case Platform.Win32:
                     case Platform.Win64:
-                        return Path.Combine(folderPath, GetArchiveName(product, platform, revision), "firefox.exe");
+                        return Path.Combine(folderPath, "firefox", "firefox.exe");
                     default:
                         throw new ArgumentException("Invalid platform", nameof(platform));
                 }
