@@ -19,7 +19,7 @@ namespace PuppeteerSharp
     public class Connection : IDisposable
     {
         private readonly ILogger _logger;
-        private TaskQueue _callbackQueue = new TaskQueue();
+        private readonly TaskQueue _callbackQueue = new TaskQueue();
 
         internal Connection(string url, int delay, bool enqueueAsyncMessages, IConnectionTransport transport, ILoggerFactory loggerFactory = null)
         {

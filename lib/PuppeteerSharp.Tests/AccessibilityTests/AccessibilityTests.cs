@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using PuppeteerSharp.PageAccessibility;
@@ -134,7 +134,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                     {
                         new SerializedAXNode
                         {
-                            Role = "GenericContainer",
+                            Role = "generic",
                             Name = "",
                             Children = new SerializedAXNode[]
                             {
@@ -234,7 +234,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
             Assert.Equal(
                 new SerializedAXNode
                 {
-                    Role = "GenericContainer",
+                    Role = "generic",
                     Name = "",
                     Value = "Edit this image: ",
                     Children = new SerializedAXNode[]
@@ -318,7 +318,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
             await Page.SetContentAsync(
                 "<div contenteditable='plaintext-only'>Edit this image:<img src='fakeimage.png' alt='my fake image'></div>");
             var snapshot = await Page.Accessibility.SnapshotAsync();
-            Assert.Equal("GenericContainer", snapshot.Children[0].Role);
+            Assert.Equal("generic", snapshot.Children[0].Role);
             Assert.Equal(string.Empty, snapshot.Children[0].Name);
         }
 

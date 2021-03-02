@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 
 namespace PuppeteerSharp.Messaging
@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Messaging
 
             public IEnumerable<AXTreeProperty> Properties { get; set; }
 
-            public string BackendDOMNodeId { get; set; }
+            public int BackendDOMNodeId { get; set; }
         }
 
         public class AXTreeProperty

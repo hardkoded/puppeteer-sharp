@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using PuppeteerSharp.Input;
@@ -65,40 +65,6 @@ namespace PuppeteerSharp.Tests.InputTests
                 reader.readAsText(e.files[0]);
                 return promise.then(() => reader.result);
             }", input));
-        }
-
-        [SkipBrowserFact(skipFirefox: true)]
-        public async Task ShouldNotUploadTheFileIfPathIsWrong()
-        {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/input/fileupload.html");
-            var filePath = TestConstants.FileToUpload.Replace("file-to-upload.txt", "missing-file.txt");
-            var input = await Page.QuerySelectorAsync("input");
-            await input.UploadFileAsync(filePath);
-            Assert.Equal("missing-file.txt", await Page.EvaluateFunctionAsync<string>("e => e.files[0].name", input));
-            var exception = await Assert.ThrowsAsync<EvaluationFailedException>(() => Page.EvaluateFunctionAsync<string>(@"e => {
-                const reader = new FileReader();
-                const promise = new Promise(fulfill => reader.onload = fulfill);
-                reader.readAsText(e.files[0]);
-                return promise.then(() => reader.result);
-            }", input));
-            Assert.Contains("Promise was collected", exception.Message);
-        }
-
-        [SkipBrowserFact(skipFirefox: true)]
-        public async Task ShouldNotUploadTheFileIfPathIsWrongAndResolveFilePathIsFalse()
-        {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/input/fileupload.html");
-            var filePath = TestConstants.FileToUpload.Replace("file-to-upload.txt", "missing-file.txt");
-            var input = await Page.QuerySelectorAsync("input");
-            await input.UploadFileAsync(false, filePath);
-            Assert.Equal("missing-file.txt", await Page.EvaluateFunctionAsync<string>("e => e.files[0].name", input));
-            var exception = await Assert.ThrowsAsync<EvaluationFailedException>(() => Page.EvaluateFunctionAsync<string>(@"e => {
-                const reader = new FileReader();
-                const promise = new Promise(fulfill => reader.onload = fulfill);
-                reader.readAsText(e.files[0]);
-                return promise.then(() => reader.result);
-            }", input));
-            Assert.Contains("Promise was collected", exception.Message);
         }
 
         [SkipBrowserFact(skipFirefox: true)]

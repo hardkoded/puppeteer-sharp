@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -242,7 +242,18 @@ namespace PuppeteerSharp
             return message;
         }
 
-        internal async Task<ElementHandle> AdoptElementHandleASync(ElementHandle elementHandle)
+        internal async Task<ElementHandle> AdoptBackendNodeAsync(int backendNodeId)
+        {
+            var obj = await _client.SendAsync<DomResolveNodeResponse>("DOM.resolveNode", new DomResolveNodeRequest
+            {
+                BackendNodeId = backendNodeId,
+                ExecutionContextId = _contextId
+            }).ConfigureAwait(false);
+
+            return CreateJSHandle(obj.Object) as ElementHandle;
+        }
+
+        internal async Task<ElementHandle> AdoptElementHandleAsync(ElementHandle elementHandle)
         {
             if (elementHandle.ExecutionContext == this)
             {

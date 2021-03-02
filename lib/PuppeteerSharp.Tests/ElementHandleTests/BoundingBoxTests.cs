@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
 using Xunit;
@@ -43,7 +43,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
 
             if (TestConstants.IsChrome)
             {
-                Assert.Equal(new BoundingBox(28, 260, 264, 18), box);
+                Assert.Equal(new BoundingBox(28, 182, 264, 18), box);
             }
             else
             {

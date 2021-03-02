@@ -54,7 +54,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
                 Page.ClickAsync("a"));
 
             Assert.False(await Page.EvaluateExpressionAsync<bool>("!!window.opener"));
-            Assert.True(await popupTaskSource.Task.Result.EvaluateExpressionAsync<bool>("!!window.opener"));
+            Assert.False(await popupTaskSource.Task.Result.EvaluateExpressionAsync<bool>("!!window.opener"));
         }
 
         [SkipBrowserFact(skipFirefox: true)]

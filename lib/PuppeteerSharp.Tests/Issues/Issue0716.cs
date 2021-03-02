@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.Issues
         {
         }
 
-        [SkipBrowserFact(skipFirefox: true)]
+        [Fact]
         public async Task ShouldWorkInSlowMo()
         {
             var options = TestConstants.DefaultBrowserOptions();

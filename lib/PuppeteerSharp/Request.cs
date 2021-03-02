@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Messaging;
@@ -189,7 +190,7 @@ namespace PuppeteerSharp
 
                 if (overrides?.PostData != null)
                 {
-                    requestData.PostData = overrides.PostData;
+                    requestData.PostData = Convert.ToBase64String(Encoding.UTF8.GetBytes(overrides?.PostData));
                 }
 
                 if (overrides?.Headers?.Count > 0)

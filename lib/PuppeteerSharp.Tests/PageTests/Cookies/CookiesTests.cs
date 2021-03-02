@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
@@ -45,7 +45,7 @@ namespace PuppeteerSharp.Tests.PageTests.Cookies
         {
             Server.SetRoute("/empty.html", context =>
             {
-                context.Response.Headers["Set-Cookie"] = ";HttpOnly; Path=/";
+                context.Response.Headers["Set-Cookie"] = "a=b; HttpOnly; Path=/";
                 return Task.CompletedTask;
             });
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -59,7 +59,7 @@ namespace PuppeteerSharp.Tests.PageTests.Cookies
         {
             Server.SetRoute("/empty.html", context =>
             {
-                context.Response.Headers["Set-Cookie"] = ";SameSite=Strict";
+                context.Response.Headers["Set-Cookie"] = "a=b; SameSite=Strict";
                 return Task.CompletedTask;
             });
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -73,7 +73,7 @@ namespace PuppeteerSharp.Tests.PageTests.Cookies
         {
             Server.SetRoute("/empty.html", context =>
             {
-                context.Response.Headers["Set-Cookie"] = ";SameSite=Lax";
+                context.Response.Headers["Set-Cookie"] = "a=b; SameSite=Lax";
                 return Task.CompletedTask;
             });
             await Page.GoToAsync(TestConstants.EmptyPage);

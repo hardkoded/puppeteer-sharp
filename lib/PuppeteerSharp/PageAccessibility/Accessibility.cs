@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using PuppeteerSharp.Messaging;
@@ -34,7 +34,7 @@ namespace PuppeteerSharp.PageAccessibility
         {
             var response = await _client.SendAsync<AccessibilityGetFullAXTreeResponse>("Accessibility.getFullAXTree").ConfigureAwait(false);
             var nodes = response.Nodes;
-            string backendNodeId = null;
+            int? backendNodeId = null;
             if (options?.Root != null)
             {
                 var node = await _client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
@@ -45,7 +45,7 @@ namespace PuppeteerSharp.PageAccessibility
             }
             var defaultRoot = AXNode.CreateTree(nodes);
             var needle = defaultRoot;
-            if (!string.IsNullOrEmpty(backendNodeId))
+            if (backendNodeId.HasValue)
             {
                 needle = defaultRoot.Find(node => node.Payload.BackendDOMNodeId == backendNodeId);
                 if (needle == null)

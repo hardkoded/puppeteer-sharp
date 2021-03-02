@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
@@ -16,7 +16,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             DefaultOptions.Args = new[] { "--site-per-process" };
         }
 
-        [SkipBrowserFact(skipFirefox: true)]
+        [Fact(Skip = "Ignored on puppeteer")]
         public async Task ShouldReportOopifFrames()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/dynamic-oopif.html");

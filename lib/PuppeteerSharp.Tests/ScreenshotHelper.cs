@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -30,9 +30,9 @@ namespace PuppeteerSharp.Tests
             var rgb2 = default(Rgb24);
             var invalidPixelsCount = 0;
 
-            for (int y = 0; y < baseImage.Height; y++)
+            for (var y = 0; y < baseImage.Height; y++)
             {
-                for (int x = 0; x < baseImage.Width; x++)
+                for (var x = 0; x < baseImage.Width; x++)
                 {
                     var pixelA = baseImage[x, y];
                     var pixelB = compareImage[x, y];

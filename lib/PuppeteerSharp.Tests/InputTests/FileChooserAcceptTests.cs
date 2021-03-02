@@ -106,7 +106,7 @@ namespace PuppeteerSharp.Tests.InputTests
                 waitForTask,
                 Page.ClickAsync("input"));
 
-            await Assert.ThrowsAsync<MessageException>(() => waitForTask.Result.AcceptAsync(
+            await Assert.ThrowsAsync<PuppeteerException>(() => waitForTask.Result.AcceptAsync(
                 "./assets/file-to-upload.txt",
                 "./assets/pptr.png"));
         }

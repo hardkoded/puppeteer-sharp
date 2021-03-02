@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using PuppeteerSharp.PageAccessibility;
 using PuppeteerSharp.Tests.Attributes;
 using Xunit;
@@ -104,14 +104,22 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
             Assert.Equal(
                 new SerializedAXNode
                 {
-                    Role = "GenericContainer",
+                    Role = "generic",
                     Name = "",
                     Children = new[]
                     {
                         new SerializedAXNode
                         {
                             Role = "button",
-                            Name = "My Button"
+                            Name = "My Button",
+                            Children = new[]
+                            {
+                                new SerializedAXNode
+                                {
+                                    Role = "text",
+                                    Name = "My Button",
+                                }
+                            }
                         }
                     }
                 },

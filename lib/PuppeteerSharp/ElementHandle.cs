@@ -211,15 +211,42 @@ namespace PuppeteerSharp
         /// <param name="filePaths">Sets the value of the file input to these paths. Paths are resolved using <see cref="Path.GetFullPath(string)"/></param>
         /// <remarks>This method expects <c>elementHandle</c> to point to an <c>input element</c> <see href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input"/> </remarks>
         /// <returns>Task</returns>
-        public Task UploadFileAsync(bool resolveFilePaths, params string[] filePaths)
+        public async Task UploadFileAsync(bool resolveFilePaths, params string[] filePaths)
         {
-            var files = resolveFilePaths ? filePaths.Select(Path.GetFullPath).ToArray() : filePaths;
-            var objectId = RemoteObject.ObjectId;
-            return Client.SendAsync("DOM.setFileInputFiles", new DomSetFileInputFilesRequest
+            var isMultiple = await EvaluateFunctionAsync<bool>("element => element.multiple").ConfigureAwait(false);
+
+            if (!isMultiple && filePaths.Length > 1)
             {
-                ObjectId = objectId,
-                Files = files
-            });
+                throw new PuppeteerException("Multiple file uploads only work with <input type=file multiple>");
+            }
+
+            var objectId = RemoteObject.ObjectId;
+            var node = await Client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
+            {
+                ObjectId = RemoteObject.ObjectId
+            }).ConfigureAwait(false);
+            var backendNodeId = node.Node.BackendNodeId;
+
+            if (!filePaths.Any())
+            {
+                await EvaluateFunctionAsync(@"(element) => {
+                    element.files = new DataTransfer().files;
+
+                    // Dispatch events for this case because it should behave akin to a user action.
+                    element.dispatchEvent(new Event('input', { bubbles: true }));
+                    element.dispatchEvent(new Event('change', { bubbles: true }));
+                }").ConfigureAwait(false);
+            }
+            else
+            {
+                var files = resolveFilePaths ? filePaths.Select(Path.GetFullPath).ToArray() : filePaths;
+                await Client.SendAsync("DOM.setFileInputFiles", new DomSetFileInputFilesRequest
+                {
+                    ObjectId = objectId,
+                    Files = files,
+                    BackendNodeId = backendNodeId
+                }).ConfigureAwait(false);
+            }
         }
 
         /// <summary>

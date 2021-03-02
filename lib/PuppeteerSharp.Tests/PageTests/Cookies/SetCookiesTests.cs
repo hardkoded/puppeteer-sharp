@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
@@ -278,7 +278,7 @@ namespace PuppeteerSharp.Tests.PageTests.Cookies
                 }", TestConstants.CrossProcessHttpPrefix);
             await Page.SetCookieAsync(new CookieParam { Name = "127-cookie", Value = "worst", Url = TestConstants.CrossProcessHttpPrefix });
             Assert.Equal("localhost-cookie=best", await Page.EvaluateExpressionAsync<string>("document.cookie"));
-            Assert.Equal("127-cookie=worst", await Page.FirstChildFrame().EvaluateExpressionAsync<string>("document.cookie"));
+            Assert.Equal(string.Empty, await Page.FirstChildFrame().EvaluateExpressionAsync<string>("document.cookie"));
             var cookie = Assert.Single(await Page.GetCookiesAsync());
             Assert.Equal("localhost-cookie", cookie.Name);
             Assert.Equal("best", cookie.Value);
