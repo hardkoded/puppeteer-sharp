@@ -221,10 +221,19 @@ namespace PuppeteerSharp
 
             if (revisionInfo != null && GetCurrentPlatform() == Platform.Linux)
             {
-                int code = LinuxSysCall.Chmod(revisionInfo.ExecutablePath, LinuxSysCall.ExecutableFilePermissions);
+                string execPath = revisionInfo.ExecutablePath;
+                string dirName = Path.GetDirectoryName(execPath);
+
+                int code = LinuxSysCall.Chmod(execPath, LinuxSysCall.ExecutableFilePermissions);
                 if (code == -1)
                 {
                     throw new Exception("Chmod operation failed");
+                }
+
+                string naclPath = $"{dirName}/nacl_helper";
+                if (File.Exists(naclPath))
+                {
+                    LinuxSysCall.Chmod(naclPath, LinuxSysCall.ExecutableFilePermissions);
                 }
             }
 
