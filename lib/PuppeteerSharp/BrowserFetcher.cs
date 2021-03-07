@@ -225,7 +225,7 @@ namespace PuppeteerSharp
                 string dirName = Path.GetDirectoryName(execPath);
 
                 int code = LinuxSysCall.Chmod(execPath, LinuxSysCall.ExecutableFilePermissions);
-                if (code == -1)
+                if (code != 0)
                 {
                     throw new Exception("Chmod operation failed");
                 }
@@ -233,7 +233,11 @@ namespace PuppeteerSharp
                 string naclPath = $"{dirName}/nacl_helper";
                 if (File.Exists(naclPath))
                 {
-                    LinuxSysCall.Chmod(naclPath, LinuxSysCall.ExecutableFilePermissions);
+                    code = LinuxSysCall.Chmod(naclPath, LinuxSysCall.ExecutableFilePermissions);
+                    if (code != 0)
+                    {
+                        throw new Exception("Chmod operation failed");
+                    }
                 }
             }
 
