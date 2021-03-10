@@ -129,7 +129,7 @@ namespace PuppeteerSharp
         private Task UpdateProtocolCacheDisabledAsync()
             => _client.SendAsync("Network.setCacheDisabled", new NetworkSetCacheDisabledRequest
             {
-                CacheDisabled = _userCacheDisabled || _protocolRequestInterceptionEnabled
+                CacheDisabled = _userCacheDisabled || _userRequestInterceptionEnabled
             });
 
         private async void Client_MessageReceived(object sender, MessageEventArgs e)
@@ -376,7 +376,7 @@ namespace PuppeteerSharp
         private async Task OnRequestWillBeSentAsync(RequestWillBeSentPayload e)
         {
             // Request interception doesn't happen for data URLs with Network Service.
-            if (_protocolRequestInterceptionEnabled && !e.Request.Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase))
+            if (_userRequestInterceptionEnabled && !e.Request.Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase))
             {
                 if (_requestIdToInterceptionId.TryRemove(e.RequestId, out var interceptionId))
                 {
