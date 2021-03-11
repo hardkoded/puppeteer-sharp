@@ -6,6 +6,6 @@ namespace PuppeteerSharp.Messaging
 
         public string[] Files { get; set; }
 
-        public string BackendNodeId { get; set; }
+        public object BackendNodeId { get; set; }
     }
 }

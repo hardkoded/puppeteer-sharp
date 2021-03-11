@@ -242,7 +242,7 @@ namespace PuppeteerSharp
             return message;
         }
 
-        internal async Task<ElementHandle> AdoptBackendNodeAsync(string backendNodeId)
+        internal async Task<ElementHandle> AdoptBackendNodeAsync(object backendNodeId)
         {
             var obj = await _client.SendAsync<DomResolveNodeResponse>("DOM.resolveNode", new DomResolveNodeRequest
             {

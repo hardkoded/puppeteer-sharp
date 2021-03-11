@@ -1,4 +1,4 @@
-namespace PuppeteerSharp.Messaging
+﻿namespace PuppeteerSharp.Messaging
 {
     internal class DomDescribeNodeResponse
     {
@@ -8,7 +8,7 @@ namespace PuppeteerSharp.Messaging
         {
             public string FrameId { get; set; }
 
-            public string BackendNodeId { get; set; }
+            public object BackendNodeId { get; set; }
         }
     }
 }
