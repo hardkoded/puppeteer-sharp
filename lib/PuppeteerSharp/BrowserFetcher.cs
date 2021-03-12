@@ -293,7 +293,7 @@ namespace PuppeteerSharp
             }
             else if (filePath.EndsWith(".tar.bz2", StringComparison.OrdinalIgnoreCase))
             {
-                ExtractStream(filePath, folderPath);
+                ExtractTar(filePath, folderPath);
             }
             else
             {
@@ -306,16 +306,16 @@ namespace PuppeteerSharp
 
             if (revisionInfo != null && GetCurrentPlatform() == Platform.Linux)
             {
-                string execPath = revisionInfo.ExecutablePath;
-                string dirName = Path.GetDirectoryName(execPath);
+                var execPath = revisionInfo.ExecutablePath;
+                var dirName = Path.GetDirectoryName(execPath);
 
-                int code = LinuxSysCall.Chmod(execPath, LinuxSysCall.ExecutableFilePermissions);
+                var code = LinuxSysCall.Chmod(execPath, LinuxSysCall.ExecutableFilePermissions);
                 if (code != 0)
                 {
                     throw new Exception("Chmod operation failed");
                 }
 
-                string naclPath = $"{dirName}/nacl_helper";
+                var naclPath = $"{dirName}/nacl_helper";
                 if (File.Exists(naclPath))
                 {
                     code = LinuxSysCall.Chmod(naclPath, LinuxSysCall.ExecutableFilePermissions);
@@ -411,66 +411,15 @@ namespace PuppeteerSharp
             }
         }
 
-        private static void ExtractStream(string zipPath, string folderPath)
+        private static void ExtractTar(string zipPath, string folderPath)
         {
-            using var bzFile = new FileInfo(zipPath).OpenRead();
-            using var bz2Stream = new BZip2InputStream(bzFile);
-
-            using (var tarStream = new TarInputStream(bz2Stream, System.Text.Encoding.UTF8))
-            {
-                TarEntry entry;
-
-                // extract the file or directory entry
-                while ((entry = tarStream.GetNextEntry()) != null)
-                {
-                    if (entry.IsDirectory)
-                    {
-                        ExtractDirectory(tarStream, folderPath, entry.Name, entry.ModTime);
-                    }
-                    else
-                    {
-                        ExtractFile(tarStream, folderPath, entry.Name);
-                    }
-                }
-            }
-        }
-
-        private static void ExtractFile(TarInputStream inputStream, string destDirectory, string entryName)
-        {
-            var destFile = new FileInfo(Path.Combine(destDirectory, entryName));
-
-            if (!destFile.Directory.Exists)
-            {
-                destFile.Directory.Create();
-            }
-
-            // extract the entry
-            using (var sw = new FileStream(destFile.FullName, FileMode.Create, FileAccess.Write))
-            {
-                var size = 2048;
-                var data = new byte[2048];
-
-                while (true)
-                {
-                    size = inputStream.Read(data, 0, data.Length);
-                    if (size == 0)
-                    {
-                        break;
-                    }
-                    sw.Write(data, 0, size);
-                }
-
-                sw.Close();
-            }
-        }
-
-        private static void ExtractDirectory(TarInputStream tarStream, string destDirectory, string entryName, DateTime modTime)
-        {
-            DirectoryInfo destDir = new DirectoryInfo(Path.Combine(destDirectory, entryName));
-            if (!destDir.Exists)
-            {
-                destDir.Create();
-            }
+            new DirectoryInfo(folderPath).Create();
+            using var process = new Process();
+            process.StartInfo.FileName = "tar";
+            process.StartInfo.Arguments = $"-xvjf \"{zipPath}\" -C \"{folderPath}\"";
+            process.StartInfo.RedirectStandardOutput = true;
+            process.Start();
+            process.WaitForExit();
         }
 
         /// <summary>
