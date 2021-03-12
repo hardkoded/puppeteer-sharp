@@ -47,7 +47,7 @@ namespace PuppeteerSharp.PageAccessibility
             var needle = defaultRoot;
             if (backendNodeId != null)
             {
-                needle = defaultRoot.Find(node => node.Payload.BackendDOMNodeId == backendNodeId);
+                needle = defaultRoot.Find(node => node.Payload.BackendDOMNodeId.Equals(backendNodeId));
                 if (needle == null)
                 {
                     return null;
