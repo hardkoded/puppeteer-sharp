@@ -56,6 +56,7 @@ namespace PuppeteerSharp.States
 
             void OnProcessExitedWhileStarting(object sender, EventArgs e)
                 => p.StartCompletionSource.TrySetException(new ProcessException($"Failed to launch browser! {output}"));
+
             void OnProcessExited(object sender, EventArgs e) => StateManager.Exited.EnterFrom(p, StateManager.CurrentState);
 
             p.Process.ErrorDataReceived += OnProcessDataReceivedWhileStarting;

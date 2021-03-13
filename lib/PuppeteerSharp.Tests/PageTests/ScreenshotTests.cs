@@ -145,7 +145,7 @@ namespace PuppeteerSharp.Tests.PageTests
             }
         }
 
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldTakeFullPageScreenshots()
         {
             await using (var page = await Context.NewPageAsync())
@@ -234,7 +234,7 @@ namespace PuppeteerSharp.Tests.PageTests
             }
         }
 
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldRenderWhiteBackgroundOnJpegFile()
         {
             await using (var page = await Context.NewPageAsync())
