@@ -16,7 +16,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithFile()
         {
             var outputFile = Path.Combine(BaseDirectory, "output.png");
@@ -50,7 +50,7 @@ namespace PuppeteerSharp.Tests.PageTests
             }
         }
 
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
             await using (var page = await Context.NewPageAsync())
@@ -270,7 +270,7 @@ namespace PuppeteerSharp.Tests.PageTests
             }
         }
 
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReturnBase64()
         {
             await using (var page = await Context.NewPageAsync())
@@ -297,7 +297,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Null(ScreenshotOptions.GetScreenshotTypeFromFile("Test.exe"));
         }
 
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithQuality()
         {
             await using (var page = await Context.NewPageAsync())
