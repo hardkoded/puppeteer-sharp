@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using PuppeteerSharp.Helpers;
@@ -285,6 +286,11 @@ namespace PuppeteerSharp
         internal static string[] GetDefaultArgs(LaunchOptions options)
         {
             var firefoxArguments = new List<string>(DefaultArgs);
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                firefoxArguments.Add("--wait-for-browser");
+            }
 
             if (!string.IsNullOrEmpty(options.UserDataDir))
             {
