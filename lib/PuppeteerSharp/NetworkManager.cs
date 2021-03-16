@@ -22,13 +22,19 @@ namespace PuppeteerSharp
         private readonly ConcurrentDictionary<string, string> _requestIdToInterceptionId = new ConcurrentDictionary<string, string>();
         private readonly ILogger _logger;
         private Dictionary<string, string> _extraHTTPHeaders;
-        private bool _offine;
         private Credentials _credentials;
         private readonly List<string> _attemptedAuthentications = new List<string>();
         private bool _userRequestInterceptionEnabled;
         private bool _protocolRequestInterceptionEnabled;
         private readonly bool _ignoreHTTPSErrors;
         private bool _userCacheDisabled;
+        private InternalNetworkConditions _emulatedNetworkConditions = new InternalNetworkConditions
+        {
+            Offline = false,
+            Upload = -1,
+            Download = -1,
+            Latency = 0,
+        };
         #endregion
 
         internal NetworkManager(CDPSession client, bool ignoreHTTPSErrors, FrameManager frameManager)
@@ -90,19 +96,26 @@ namespace PuppeteerSharp
 
         internal async Task SetOfflineModeAsync(bool value)
         {
-            if (_offine != value)
-            {
-                _offine = value;
-
-                await _client.SendAsync("Network.emulateNetworkConditions", new NetworkEmulateNetworkConditionsRequest
-                {
-                    Offline = value,
-                    Latency = 0,
-                    DownloadThroughput = -1,
-                    UploadThroughput = -1
-                }).ConfigureAwait(false);
-            }
+            _emulatedNetworkConditions.Offline = value;
+            await UpdateNetworkConditionsAsync().ConfigureAwait(false);
         }
+
+        internal async Task EmulateNetworkConditionsAsync(NetworkConditions networkConditions)
+        {
+            _emulatedNetworkConditions.Upload = networkConditions?.Upload ?? -1;
+            _emulatedNetworkConditions.Download = networkConditions?.Download ?? -1;
+            _emulatedNetworkConditions.Latency = networkConditions?.Latency ?? 0;
+            await UpdateNetworkConditionsAsync().ConfigureAwait(false);
+        }
+
+        private Task UpdateNetworkConditionsAsync()
+            => _client.SendAsync("Network.emulateNetworkConditions", new NetworkEmulateNetworkConditionsRequest
+            {
+                Offline = _emulatedNetworkConditions.Offline,
+                Latency = _emulatedNetworkConditions.Latency,
+                UploadThroughput = _emulatedNetworkConditions.Upload,
+                DownloadThroughput = _emulatedNetworkConditions.Download,
+            });
 
         internal Task SetUserAgentAsync(string userAgent)
             => _client.SendAsync("Network.setUserAgentOverride", new NetworkSetUserAgentOverrideRequest
@@ -129,7 +142,7 @@ namespace PuppeteerSharp
         private Task UpdateProtocolCacheDisabledAsync()
             => _client.SendAsync("Network.setCacheDisabled", new NetworkSetCacheDisabledRequest
             {
-                CacheDisabled = _userCacheDisabled || _protocolRequestInterceptionEnabled
+                CacheDisabled = _userCacheDisabled || _userRequestInterceptionEnabled
             });
 
         private async void Client_MessageReceived(object sender, MessageEventArgs e)
@@ -376,7 +389,7 @@ namespace PuppeteerSharp
         private async Task OnRequestWillBeSentAsync(RequestWillBeSentPayload e)
         {
             // Request interception doesn't happen for data URLs with Network Service.
-            if (_protocolRequestInterceptionEnabled && !e.Request.Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase))
+            if (_userRequestInterceptionEnabled && !e.Request.Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase))
             {
                 if (_requestIdToInterceptionId.TryRemove(e.RequestId, out var interceptionId))
                 {

@@ -617,6 +617,16 @@ namespace PuppeteerSharp
         public Task SetOfflineModeAsync(bool value) => FrameManager.NetworkManager.SetOfflineModeAsync(value);
 
         /// <summary>
+        /// Emulates network conditions
+        /// </summary>
+        /// <param name="networkConditions">Passing <c>null</c> disables network condition emulation.</param>
+        /// <returns>Result task</returns>
+        /// <remarks>
+        /// **NOTE** This does not affect WebSockets and WebRTC PeerConnections (see https://crbug.com/563644)
+        /// </remarks>
+        public Task EmulateNetworkConditionsAsync(NetworkConditions networkConditions) => FrameManager.NetworkManager.EmulateNetworkConditionsAsync(networkConditions);
+
+        /// <summary>
         /// Returns the page's cookies
         /// </summary>
         /// <param name="urls">Url's to return cookies for</param>

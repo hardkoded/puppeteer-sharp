@@ -1,4 +1,6 @@
-﻿using System.Net;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
 using Xunit;
@@ -64,6 +66,30 @@ namespace PuppeteerSharp.Tests.NetworkTests
 
             response = await Page.GoToAsync(TestConstants.CrossProcessUrl + "/empty.html");
             Assert.Equal(HttpStatusCode.Unauthorized, response.Status);
+        }
+
+        [Fact]
+        public async Task ShouldNotDisableCaching()
+        {
+            Server.SetAuth("/cached/one-style.css", "user4", "pass4");
+            Server.SetAuth("/cached/one-style.html", "user4", "pass4");
+
+            await Page.AuthenticateAsync(new Credentials
+            {
+                Username = "user4",
+                Password = "pass4"
+            });
+
+            var responses = new Dictionary<string, Response>();
+            Page.Response += (_, e) => responses[e.Response.Url.Split('/').Last()] = e.Response;
+
+            await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
+            await Page.ReloadAsync();
+
+            Assert.Equal(HttpStatusCode.NotModified, responses["one-style.html"].Status);
+            Assert.False(responses["one-style.html"].FromCache);
+            Assert.Equal(HttpStatusCode.OK, responses["one-style.css"].Status);
+            Assert.True(responses["one-style.css"].FromCache);
         }
     }
 }
