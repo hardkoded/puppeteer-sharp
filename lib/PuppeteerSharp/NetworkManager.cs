@@ -97,10 +97,10 @@ namespace PuppeteerSharp
         internal async Task SetOfflineModeAsync(bool value)
         {
             _emulatedNetworkConditions.Offline = value;
-            await _updateNetworkConditions().ConfigureAwait(false);
+            await UpdateNetworkConditionsAsync().ConfigureAwait(false);
         }
 
-        internal async Task EmulateNetworkConditions(NetworkConditions networkConditions)
+        internal async Task EmulateNetworkConditionsAsync(NetworkConditions networkConditions)
         {
             _emulatedNetworkConditions.Upload = networkConditions != null
               ? networkConditions.Upload
@@ -111,19 +111,17 @@ namespace PuppeteerSharp
             _emulatedNetworkConditions.Latency = networkConditions != null
               ? networkConditions.Latency
               : 0;
-            await _updateNetworkConditions().ConfigureAwait(false);
+            await UpdateNetworkConditionsAsync().ConfigureAwait(false);
         }
 
-        internal async Task _updateNetworkConditions()
-        {
-            await _client.SendAsync("Network.emulateNetworkConditions", new NetworkEmulateNetworkConditionsRequest
+        private Task UpdateNetworkConditionsAsync()
+            => _client.SendAsync("Network.emulateNetworkConditions", new NetworkEmulateNetworkConditionsRequest
             {
                 Offline = _emulatedNetworkConditions.Offline,
                 Latency = _emulatedNetworkConditions.Latency,
                 UploadThroughput = _emulatedNetworkConditions.Upload,
                 DownloadThroughput = _emulatedNetworkConditions.Download,
-            }).ConfigureAwait(false);
-        }
+            });
 
         internal Task SetUserAgentAsync(string userAgent)
             => _client.SendAsync("Network.setUserAgentOverride", new NetworkSetUserAgentOverrideRequest

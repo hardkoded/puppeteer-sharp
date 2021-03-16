@@ -624,7 +624,7 @@ namespace PuppeteerSharp
         /// <remarks>
         /// **NOTE** This does not affect WebSockets and WebRTC PeerConnections (see https://crbug.com/563644)
         /// </remarks>
-        public Task EmulateNetworkConditions(NetworkConditions networkConditions) => FrameManager.NetworkManager.EmulateNetworkConditions(networkConditions);
+        public Task EmulateNetworkConditionsAsync(NetworkConditions networkConditions) => FrameManager.NetworkManager.EmulateNetworkConditionsAsync(networkConditions);
 
         /// <summary>
         /// Returns the page's cookies
