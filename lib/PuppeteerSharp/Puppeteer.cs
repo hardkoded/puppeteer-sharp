@@ -95,5 +95,23 @@ namespace PuppeteerSharp
         /// </code>
         /// </example>
         public static IReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor> Devices => DeviceDescriptors.ToReadOnly();
+
+        /// <summary>
+        /// Returns a list of network conditions to be used with <seealso cref="Page.EmulateNetworkConditions(NetworkConditions)"/>.
+        /// Actual list of conditions can be found in <seealso cref="PredefinedNetworkConditions.Conditions"/>.
+        /// </summary>
+        /// <example>
+        /// <code>
+        ///<![CDATA[
+        /// var slow3G = Puppeteer.NetworkConditions["Slow 3G"];
+        /// using(var page = await browser.NewPageAsync())
+        /// {
+        ///     await page.EmulateNetworkConditions(slow3G);
+        ///     await page.goto('https://www.google.com');
+        /// }
+        /// ]]>
+        /// </code>
+        /// </example>
+        public static IReadOnlyDictionary<PredefinedNetworkConditionsName, NetworkConditions> NetworkConditions => PredefinedNetworkConditions.ToReadOnly();
     }
 }

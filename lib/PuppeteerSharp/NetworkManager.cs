@@ -22,13 +22,19 @@ namespace PuppeteerSharp
         private readonly ConcurrentDictionary<string, string> _requestIdToInterceptionId = new ConcurrentDictionary<string, string>();
         private readonly ILogger _logger;
         private Dictionary<string, string> _extraHTTPHeaders;
-        private bool _offine;
         private Credentials _credentials;
         private readonly List<string> _attemptedAuthentications = new List<string>();
         private bool _userRequestInterceptionEnabled;
         private bool _protocolRequestInterceptionEnabled;
         private readonly bool _ignoreHTTPSErrors;
         private bool _userCacheDisabled;
+        private InternalNetworkConditions _emulatedNetworkConditions = new InternalNetworkConditions
+        {
+            Offline = false,
+            Upload = -1,
+            Download = -1,
+            Latency = 0,
+        };
         #endregion
 
         internal NetworkManager(CDPSession client, bool ignoreHTTPSErrors, FrameManager frameManager)
@@ -90,18 +96,33 @@ namespace PuppeteerSharp
 
         internal async Task SetOfflineModeAsync(bool value)
         {
-            if (_offine != value)
-            {
-                _offine = value;
+            _emulatedNetworkConditions.Offline = value;
+            await _updateNetworkConditions().ConfigureAwait(false);
+        }
 
-                await _client.SendAsync("Network.emulateNetworkConditions", new NetworkEmulateNetworkConditionsRequest
-                {
-                    Offline = value,
-                    Latency = 0,
-                    DownloadThroughput = -1,
-                    UploadThroughput = -1
-                }).ConfigureAwait(false);
-            }
+        internal async Task EmulateNetworkConditions(NetworkConditions networkConditions)
+        {
+            _emulatedNetworkConditions.Upload = networkConditions != null
+              ? networkConditions.Upload
+              : -1;
+            _emulatedNetworkConditions.Download = networkConditions != null
+              ? networkConditions.Download
+              : -1;
+            _emulatedNetworkConditions.Latency = networkConditions != null
+              ? networkConditions.Latency
+              : 0;
+            await _updateNetworkConditions().ConfigureAwait(false);
+        }
+
+        internal async Task _updateNetworkConditions()
+        {
+            await _client.SendAsync("Network.emulateNetworkConditions", new NetworkEmulateNetworkConditionsRequest
+            {
+                Offline = _emulatedNetworkConditions.Offline,
+                Latency = _emulatedNetworkConditions.Latency,
+                UploadThroughput = _emulatedNetworkConditions.Upload,
+                DownloadThroughput = _emulatedNetworkConditions.Download,
+            }).ConfigureAwait(false);
         }
 
         internal Task SetUserAgentAsync(string userAgent)
