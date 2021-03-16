@@ -287,7 +287,6 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             }
         }
 
-
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldHaveDefaultUrlWhenLaunchingBrowser()
         {
