@@ -4,10 +4,10 @@
     {
         public bool Offline { get; set; }
 
-        public int Latency { get; set; }
+        public double Latency { get; set; }
 
-        public int DownloadThroughput { get; set; }
+        public double DownloadThroughput { get; set; }
 
-        public int UploadThroughput { get; set; }
+        public double UploadThroughput { get; set; }
     }
 }
