@@ -8,16 +8,16 @@ namespace PuppeteerSharp
         /// <summary>
         /// Download speed (bytes/s), `-1` to disable
         /// </summary>
-        public double Download { get; set; }
+        public double Download { get; set; } = -1;
 
         /// <summary>
         /// Upload speed (bytes/s), `-1` to disable
         /// </summary>
-        public double Upload { get; set; }
+        public double Upload { get; set; } = -1;
 
         /// <summary>
         /// Latency (ms), `0` to disable
         /// </summary>
-        public double Latency { get; set; }
+        public double Latency { get; set; } = 0;
     }
 }

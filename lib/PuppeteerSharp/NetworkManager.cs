@@ -102,15 +102,9 @@ namespace PuppeteerSharp
 
         internal async Task EmulateNetworkConditionsAsync(NetworkConditions networkConditions)
         {
-            _emulatedNetworkConditions.Upload = networkConditions != null
-              ? networkConditions.Upload
-              : -1;
-            _emulatedNetworkConditions.Download = networkConditions != null
-              ? networkConditions.Download
-              : -1;
-            _emulatedNetworkConditions.Latency = networkConditions != null
-              ? networkConditions.Latency
-              : 0;
+            _emulatedNetworkConditions.Upload = networkConditions?.Upload ?? -1;
+            _emulatedNetworkConditions.Download = networkConditions?.Download ?? -1;
+            _emulatedNetworkConditions.Latency = networkConditions?.Latency ?? 0;
             await UpdateNetworkConditionsAsync().ConfigureAwait(false);
         }
 
