@@ -15,8 +15,8 @@ namespace PuppeteerSharp.Tests.PageTests
         [Fact]
         public async Task ShouldChangeNavigatorConnectionEffectiveType()
         {
-            var slow3G = Puppeteer.NetworkConditions[PredefinedNetworkConditionsName.Slow3G];
-            var fast3G = Puppeteer.NetworkConditions[PredefinedNetworkConditionsName.Fast3G];
+            var slow3G = Puppeteer.NetworkConditions[NetworkConditions.Slow3G];
+            var fast3G = Puppeteer.NetworkConditions[NetworkConditions.Fast3G];
 
             Assert.Equal("4g", await Page.EvaluateExpressionAsync<string>("window.navigator.connection.effectiveType").ConfigureAwait(false));
             await Page.EmulateNetworkConditionsAsync(fast3G);

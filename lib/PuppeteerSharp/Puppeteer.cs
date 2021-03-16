@@ -112,6 +112,6 @@ namespace PuppeteerSharp
         /// ]]>
         /// </code>
         /// </example>
-        public static IReadOnlyDictionary<PredefinedNetworkConditionsName, NetworkConditions> NetworkConditions => PredefinedNetworkConditions.ToReadOnly();
+        public static IReadOnlyDictionary<string, NetworkConditions> NetworkConditions => PredefinedNetworkConditions.ToReadOnly();
     }
 }

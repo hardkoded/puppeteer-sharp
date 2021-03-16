@@ -6,6 +6,16 @@ namespace PuppeteerSharp
     public class NetworkConditions
     {
         /// <summary>
+        /// Key to be used with <see cref="Puppeteer.NetworkConditions()"/>
+        /// </summary>
+        public const string Slow3G = "Slow 3G";
+
+        /// <summary>
+        /// Key to be used with <see cref="Puppeteer.NetworkConditions()"/>
+        /// </summary>
+        public const string Fast3G = "Fast 3G";
+
+        /// <summary>
         /// Download speed (bytes/s), `-1` to disable
         /// </summary>
         public double Download { get; set; } = -1;
