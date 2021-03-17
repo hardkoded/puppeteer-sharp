@@ -66,7 +66,7 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public override bool Equals(object obj)
         {
-            if (obj == null && GetType() != obj.GetType())
+            if (obj == null || GetType() != obj.GetType())
             {
                 return false;
             }
