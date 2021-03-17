@@ -52,7 +52,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.True(ScreenshotHelper.PixelMatch("screenshot-element-padding-border.png", screenshot));
         }
 
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldCaptureFullElementWhenLargerThanViewport()
         {
             await Page.SetViewportAsync(new ViewPortOptions

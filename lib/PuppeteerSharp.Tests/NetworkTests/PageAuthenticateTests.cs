@@ -68,7 +68,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(HttpStatusCode.Unauthorized, response.Status);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldNotDisableCaching()
         {
             Server.SetAuth("/cached/one-style.css", "user4", "pass4");
