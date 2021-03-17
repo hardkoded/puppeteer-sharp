@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
