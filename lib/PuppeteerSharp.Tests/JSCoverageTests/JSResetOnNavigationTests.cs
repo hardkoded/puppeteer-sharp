@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using PuppeteerSharp.PageCoverage;
+using PuppeteerSharp.Tests.Attributes;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -15,7 +16,7 @@ namespace PuppeteerSharp.Tests.JSCoverageTests
         {
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReportScriptsAcrossNavigationsWhenDisabled()
         {
             await Page.Coverage.StartJSCoverageAsync(new CoverageStartOptions
@@ -28,7 +29,7 @@ namespace PuppeteerSharp.Tests.JSCoverageTests
             Assert.Equal(2, coverage.Length);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldNotReportScriptsAcrossNavigationsWhenEnabled()
         {
             await Page.Coverage.StartJSCoverageAsync();

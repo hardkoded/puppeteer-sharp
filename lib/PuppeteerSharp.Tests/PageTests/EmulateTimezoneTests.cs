@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using PuppeteerSharp.Media;
+using PuppeteerSharp.Tests.Attributes;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -12,7 +13,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
             await Page.EvaluateExpressionAsync("globalThis.date = new Date(1479579154987);");
@@ -37,7 +38,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 await Page.EvaluateExpressionAsync<string>("date.toString()"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldThrowForInvalidTimezoneId()
         {
             var exception = await Assert.ThrowsAnyAsync<PuppeteerException>(

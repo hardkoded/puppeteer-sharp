@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldQueryExistingElement()
         {
             await Page.SetContentAsync("<section>test</section>");
@@ -20,14 +20,14 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Single(elements);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldReturnEmptyArrayForNonExistingElement()
         {
             var elements = await Page.XPathAsync("/html/body/non-existing-element");
             Assert.Empty(elements);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldReturnMultipleElements()
         {
             await Page.SetContentAsync("<div></div><div></div>");

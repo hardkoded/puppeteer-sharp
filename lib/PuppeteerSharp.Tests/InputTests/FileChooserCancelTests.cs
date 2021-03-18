@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using PuppeteerSharp.Mobile;
+using PuppeteerSharp.Tests.Attributes;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -13,7 +14,7 @@ namespace PuppeteerSharp.Tests.InputTests
         {
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldCancelDialog()
         {
             // Consider file chooser canceled if we can summon another one.
@@ -27,14 +28,14 @@ namespace PuppeteerSharp.Tests.InputTests
                 Page.ClickAsync("input"));
 
             var fileChooser = waitForTask.Result;
-            await fileChooser.CancelAsync();
+            fileChooser.Cancel();
 
             await Task.WhenAll(
                 Page.WaitForFileChooserAsync(),
                 Page.ClickAsync("input"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldFailWhenCancelingFileChooserTwice()
         {
             await Page.SetContentAsync("<input type=file>");
@@ -45,9 +46,9 @@ namespace PuppeteerSharp.Tests.InputTests
                 Page.ClickAsync("input"));
 
             var fileChooser = waitForTask.Result;
-            await fileChooser.CancelAsync();
+            fileChooser.Cancel();
 
-            var ex = await Assert.ThrowsAsync<PuppeteerException>(() => fileChooser.CancelAsync());
+            var ex = Assert.Throws<PuppeteerException>(() => fileChooser.Cancel());
             Assert.Equal("Cannot accept FileChooser which is already handled!", ex.Message);
         }
     }

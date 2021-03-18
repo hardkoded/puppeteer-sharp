@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using PuppeteerSharp.Tests.Attributes;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -13,7 +14,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldThrowAnErrorIfNoOptionsAreProvided()
         {
             var exception = await Assert.ThrowsAsync<ArgumentException>(()
@@ -21,7 +22,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal("Provide options with a `Url`, `Path` or `Content` property", exception.Message);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWithAUrl()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -31,7 +32,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 "window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')"));
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldThrowAnErrorIfLoadingFromUrlFail()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -40,7 +41,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal("Loading style from /nonexistfile.js failed", exception.Message);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWithAPath()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -50,7 +51,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 "window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')"));
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldIncludeSourcemapWhenPathIsProvided()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -63,7 +64,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Contains(Path.Combine("Assets", "injectedstyle.css"), styleContent);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWithContent()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -73,7 +74,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 "window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldThrowWhenAddedWithContentToTheCSPPage()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/csp.html");
@@ -85,7 +86,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.NotNull(exception);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldThrowWhenAddedWithURLToTheCSPPage()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/csp.html");

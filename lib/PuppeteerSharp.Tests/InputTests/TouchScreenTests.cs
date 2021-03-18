@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using PuppeteerSharp.Mobile;
+using PuppeteerSharp.Tests.Attributes;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -14,7 +15,7 @@ namespace PuppeteerSharp.Tests.InputTests
         {
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldTapTheButton()
         {
             await Page.EmulateAsync(_iPhone);
@@ -23,7 +24,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.Equal("Clicked", await Page.EvaluateExpressionAsync<string>("result"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReportTouches()
         {
             await Page.EmulateAsync(_iPhone);

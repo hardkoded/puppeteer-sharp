@@ -8,7 +8,7 @@
         {
             public string FrameId { get; set; }
 
-            public int BackendNodeId { get; set; }
+            public object BackendNodeId { get; set; }
         }
     }
 }

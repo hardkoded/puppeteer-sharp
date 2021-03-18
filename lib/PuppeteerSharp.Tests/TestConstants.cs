@@ -12,6 +12,8 @@ namespace PuppeteerSharp.Tests
     public static class TestConstants
     {
         public const string TestFixtureCollectionName = "PuppeteerLoaderFixture collection";
+        public const int DefaultTestTimeout = 30_000;
+        public const int DefaultPuppeteerTimeout = 10_000;
         public const int Port = 8081;
         public const int HttpsPort = Port + 1;
         public const string ServerUrl = "http://localhost:8081";
@@ -43,6 +45,7 @@ namespace PuppeteerSharp.Tests
         {
             SlowMo = Convert.ToInt32(Environment.GetEnvironmentVariable("SLOW_MO")),
             Headless = Convert.ToBoolean(Environment.GetEnvironmentVariable("HEADLESS") ?? "true"),
+            Product = IsChrome ? Product.Chrome : Product.Firefox,
             EnqueueAsyncMessages = Convert.ToBoolean(Environment.GetEnvironmentVariable("ENQUEUE_ASYNC_MESSAGES") ?? "false"),
             Timeout = 0,
             LogProcess = true,

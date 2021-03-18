@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
         {
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldFireWhenExpected()
         {
             var _ = Page.GoToAsync(TestConstants.AboutBlank);

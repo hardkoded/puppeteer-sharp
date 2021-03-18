@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         {
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWork()
         {
             var aHandle = await Page.EvaluateExpressionHandleAsync("document.body");
@@ -19,7 +19,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             Assert.NotNull(element);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldReturnNullForNonElements()
         {
             var aHandle = await Page.EvaluateExpressionHandleAsync("2");
@@ -27,7 +27,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             Assert.Null(element);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldReturnElementHandleForTextNodes()
         {
             await Page.SetContentAsync("<div>ee!</div>");

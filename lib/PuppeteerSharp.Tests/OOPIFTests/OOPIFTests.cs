@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using PuppeteerSharp.Tests.Attributes;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -15,7 +16,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             DefaultOptions.Args = new[] { "--site-per-process" };
         }
 
-        [Fact(Skip = "Skipped in puppeteer")]
+        [Fact(Skip = "Ignored on puppeteer")]
         public async Task ShouldReportOopifFrames()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/dynamic-oopif.html");
@@ -23,7 +24,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             Assert.Equal(2, Page.Frames.Length);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldLoadOopifIframesWithSubresourcesAndRequestInterception()
         {
             await Page.SetRequestInterceptionAsync(true);

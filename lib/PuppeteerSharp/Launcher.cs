@@ -17,6 +17,7 @@ namespace PuppeteerSharp
 
         private readonly ILoggerFactory _loggerFactory;
         private bool _processLaunched;
+        private Product _product;
 
         #endregion
 
@@ -38,24 +39,23 @@ namespace PuppeteerSharp
         /// The method launches a browser instance with given arguments. The browser will be closed when the Browser is disposed.
         /// </summary>
         /// <param name="options">Options for launching the browser</param>
-        /// <param name="product">The browser to launch (Chrome, Firefox)</param>
         /// <returns>A connected browser.</returns>
         /// <remarks>
         /// See <a href="https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/">this article</a>
         /// for a description of the differences between Chromium and Chrome.
         /// <a href="https://chromium.googlesource.com/chromium/src/+/lkcr/docs/chromium_browser_vs_google_chrome.md">This article</a> describes some differences for Linux users.
         /// </remarks>
-        public async Task<Browser> LaunchAsync(LaunchOptions options, Product product = Product.Chrome)
+        public async Task<Browser> LaunchAsync(LaunchOptions options)
         {
             EnsureSingleLaunchOrConnect();
+            _product = options.Product;
+            var executable = GetOrFetchBrowserExecutable(options);
 
-            string executable = GetOrFetchBrowserExecutable(options);
-
-            Process = product switch
+            Process = options.Product switch
             {
-                Product.Chrome => new ChromiumLauncher(executable, options, _loggerFactory),
-                Product.Firefox => new FirefoxLauncher(executable, options, _loggerFactory),
-                _ => throw new ArgumentException("Invalid product", nameof(product))
+                Product.Chrome => new ChromiumLauncher(executable, options),
+                Product.Firefox => new FirefoxLauncher(executable, options),
+                _ => throw new ArgumentException("Invalid product"),
             };
 
             try
@@ -103,7 +103,7 @@ namespace PuppeteerSharp
 
             try
             {
-                string browserWSEndpoint = string.IsNullOrEmpty(options.BrowserURL)
+                var browserWSEndpoint = string.IsNullOrEmpty(options.BrowserURL)
                     ? options.BrowserWSEndpoint
                     : await GetWSEndpointAsync(options.BrowserURL).ConfigureAwait(false);
 
@@ -146,8 +146,7 @@ namespace PuppeteerSharp
         /// Gets the executable path.
         /// </summary>
         /// <returns>The executable path.</returns>
-        public static string GetExecutablePath()
-            => ResolveExecutablePath();
+        public string GetExecutablePath() => ResolveExecutablePath();
 
         #endregion
 
@@ -163,9 +162,9 @@ namespace PuppeteerSharp
             _processLaunched = true;
         }
 
-        private static string GetOrFetchBrowserExecutable(LaunchOptions options)
+        private string GetOrFetchBrowserExecutable(LaunchOptions options)
         {
-            string browserExecutable = options.ExecutablePath;
+            var browserExecutable = options.ExecutablePath;
 
             if (string.IsNullOrEmpty(browserExecutable))
             {
@@ -179,9 +178,9 @@ namespace PuppeteerSharp
             return browserExecutable;
         }
 
-        private static string ResolveExecutablePath()
+        private string ResolveExecutablePath()
         {
-            string executablePath = Environment.GetEnvironmentVariable("PUPPETEER_EXECUTABLE_PATH");
+            var executablePath = Environment.GetEnvironmentVariable("PUPPETEER_EXECUTABLE_PATH");
 
             if (!string.IsNullOrEmpty(executablePath))
             {
@@ -192,20 +191,20 @@ namespace PuppeteerSharp
                 return executablePath;
             }
 
-            var browserFetcher = new BrowserFetcher();
-            string revision = Environment.GetEnvironmentVariable("PUPPETEER_CHROMIUM_REVISION");
+            var revision = Environment.GetEnvironmentVariable("PUPPETEER_CHROMIUM_REVISION");
+            var browserFetcher = new BrowserFetcher(_product);
             RevisionInfo revisionInfo;
 
-            if (!string.IsNullOrEmpty(revision) && int.TryParse(revision, out int revisionNumber))
+            if (!string.IsNullOrEmpty(revision))
             {
-                revisionInfo = browserFetcher.RevisionInfo(revisionNumber);
+                revisionInfo = browserFetcher.RevisionInfo(revision);
                 if (!revisionInfo.Local)
                 {
                     throw new FileNotFoundException("Tried to use PUPPETEER_CHROMIUM_REVISION env variable to launch browser but did not find executable", revisionInfo.ExecutablePath);
                 }
                 return revisionInfo.ExecutablePath;
             }
-            revisionInfo = browserFetcher.RevisionInfo(BrowserFetcher.DefaultRevision);
+            revisionInfo = browserFetcher.RevisionInfo();
             if (!revisionInfo.Local)
             {
                 throw new FileNotFoundException("Process revision is not downloaded. Run BrowserFetcher.DownloadAsync or download the process manually", revisionInfo.ExecutablePath);

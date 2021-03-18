@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.PageTests.Events
 {
@@ -14,7 +15,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
         {
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldFire()
         {
             Page.Dialog += async (_, e) =>
@@ -29,7 +30,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
             await Page.EvaluateExpressionAsync("alert('yo');");
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldAllowAcceptingPrompts()
         {
             Page.Dialog += async (_, e) =>
@@ -45,7 +46,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
             Assert.Equal("answer!", result);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldDismissThePrompt()
         {
             Page.Dialog += async (_, e) =>

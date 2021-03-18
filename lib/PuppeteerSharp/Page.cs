@@ -1462,7 +1462,7 @@ namespace PuppeteerSharp
 
             await Task.WhenAll(
               navigationTask,
-              Client.SendAsync("Page.reload")).ConfigureAwait(false);
+              Client.SendAsync("Page.reload", new PageReloadRequest { FrameId = MainFrame.Id })).ConfigureAwait(false);
 
             return navigationTask.Result;
         }
@@ -2158,7 +2158,10 @@ namespace PuppeteerSharp
                 }
             }
 
-            var fileChooser = new FileChooser(Client, e);
+            var frame = await FrameManager.GetFrameAsync(e.FrameId).ConfigureAwait(false);
+            var context = await frame.GetExecutionContextAsync().ConfigureAwait(false);
+            var element = await context.AdoptBackendNodeAsync(e.BackendNodeId).ConfigureAwait(false);
+            var fileChooser = new FileChooser(element, e);
             while (_fileChooserInterceptors.Count > 0)
             {
                 var key = _fileChooserInterceptors.FirstOrDefault().Key;

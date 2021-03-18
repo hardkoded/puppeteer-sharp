@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using PuppeteerSharp.Tests.Attributes;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -13,7 +14,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/pptr.png");
@@ -21,7 +22,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(imageBuffer, await response.BufferAsync());
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithCompression()
         {
             Server.EnableGzip("/pptr.png");

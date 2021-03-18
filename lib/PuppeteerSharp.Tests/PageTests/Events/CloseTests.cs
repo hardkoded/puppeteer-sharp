@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using PuppeteerSharp.Tests.Attributes;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -11,7 +12,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
         {
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithWindowClose()
         {
             var newPageTaskSource = new TaskCompletionSource<Page>();
@@ -26,7 +27,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
             await closeTaskSource.Task;
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWithPageClose()
         {
             var newPage = await Context.NewPageAsync();

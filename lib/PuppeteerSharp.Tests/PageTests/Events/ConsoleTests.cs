@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.PageTests.Events
 {
@@ -13,7 +14,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
         {
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
             ConsoleMessage message = null;
@@ -39,7 +40,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
             Assert.Equal("bar", (await message.Args[2].JsonValueAsync<dynamic>()).foo.ToString());
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkForDifferentConsoleApiCalls()
         {
             var messages = new List<ConsoleMessage>();
@@ -84,7 +85,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
                 .ToArray());
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldNotFailForWindowObject()
         {
             var consoleTcs = new TaskCompletionSource<string>();
@@ -105,7 +106,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
             Assert.Equal("JSHandle@object", await consoleTcs.Task);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldTriggerCorrectLog()
         {
             await Page.GoToAsync(TestConstants.AboutBlank);
@@ -127,7 +128,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
             }
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldHaveLocationWhenFetchFails()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -147,7 +148,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
             }, args.Message.Location);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldHaveLocationForConsoleAPICalls()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -169,7 +170,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
             }, args.Message.Location);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldNotThrowWhenThereAreConsoleMessagesInDetachedIframes()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

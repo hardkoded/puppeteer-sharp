@@ -11,10 +11,10 @@ namespace PuppeteerSharp.Tests.BrowserTests
         {
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldIncludeWebKit()
         {
-            string userAgent = await Browser.GetUserAgentAsync();
+            var userAgent = await Browser.GetUserAgentAsync();
             Assert.NotEmpty(userAgent);
 
             if (TestConstants.IsChrome)

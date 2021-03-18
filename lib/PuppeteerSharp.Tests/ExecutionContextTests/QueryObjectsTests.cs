@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using PuppeteerSharp.Tests.Attributes;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -11,7 +12,7 @@ namespace PuppeteerSharp.Tests.ExecutionContextTests
         {
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
             // Instantiate an object
@@ -24,7 +25,7 @@ namespace PuppeteerSharp.Tests.ExecutionContextTests
             Assert.Equal(new[] { "hello", "world" }, values);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkForNonBlankPage()
         {
             // Instantiate an object
@@ -36,7 +37,7 @@ namespace PuppeteerSharp.Tests.ExecutionContextTests
             Assert.Equal(1, count);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldFailForDisposedHandles()
         {
             var prototypeHandle = await Page.EvaluateExpressionHandleAsync("HTMLBodyElement.prototype");
@@ -46,7 +47,7 @@ namespace PuppeteerSharp.Tests.ExecutionContextTests
             Assert.Equal("Prototype JSHandle is disposed!", exception.Message);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldFailPrimitiveValuesAsPrototypes()
         {
             var prototypeHandle = await Page.EvaluateExpressionHandleAsync("42");

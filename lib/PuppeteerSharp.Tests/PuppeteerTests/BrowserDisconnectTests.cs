@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.BrowserTests.Events
         {
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldEmittedWhenBrowserGetsClosedDisconnectedOrUnderlyingWebsocketGetsClosed()
         {
             var originalBrowser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.LoggerFactory);
@@ -48,7 +48,7 @@ namespace PuppeteerSharp.Tests.BrowserTests.Events
             Assert.Equal(1, disconnectedRemote2);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldRejectNavigationWhenBrowserCloses()
         {
             Server.SetRoute("/one-style.css", _ => Task.Delay(10000));
@@ -71,7 +71,7 @@ namespace PuppeteerSharp.Tests.BrowserTests.Events
             }
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldRejectWaitForSelectorWhenBrowserCloses()
         {
             Server.SetRoute("/empty.html", _ => Task.Delay(10000));

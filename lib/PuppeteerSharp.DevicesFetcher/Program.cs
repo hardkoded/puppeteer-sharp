@@ -15,8 +15,8 @@ namespace PuppeteerSharp.DevicesFetcher
     {
         const string DEVICES_URL = "https://raw.githubusercontent.com/ChromeDevTools/devtools-frontend/master/front_end/emulated_devices/module.json";
 
-        static string deviceDescriptorsOutput = "../../../../PuppeteerSharp/Mobile/DeviceDescriptors.cs";
-        static string deviceDescriptorNameOutput = "../../../../PuppeteerSharp/Mobile/DeviceDescriptorName.cs";
+        static readonly string deviceDescriptorsOutput = "../../../../PuppeteerSharp/Mobile/DeviceDescriptors.cs";
+        static readonly string deviceDescriptorNameOutput = "../../../../PuppeteerSharp/Mobile/DeviceDescriptorName.cs";
 
         static async Task Main(string[] args)
         {
@@ -28,7 +28,8 @@ namespace PuppeteerSharp.DevicesFetcher
 
             string chromeVersion = null;
             var fetcher = new BrowserFetcher();
-            await fetcher.DownloadAsync(BrowserFetcher.DefaultRevision);
+
+            await fetcher.DownloadAsync();
             await using (var browser = await Puppeteer.LaunchAsync(new LaunchOptions()))
             {
                 chromeVersion = (await browser.GetVersionAsync()).Split('/').Last();

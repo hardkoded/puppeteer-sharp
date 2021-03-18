@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using PuppeteerSharp.Input;
+using PuppeteerSharp.Tests.Attributes;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -14,7 +15,7 @@ namespace PuppeteerSharp.Tests.InputTests
         {
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldClickTheButton()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
@@ -22,7 +23,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.Equal("Clicked", await Page.EvaluateExpressionAsync<string>("result"));
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldClickSvg()
         {
             await Page.SetContentAsync($@"
@@ -34,7 +35,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.Equal(42, await Page.EvaluateFunctionAsync<int>("() => window.__CLICKED"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldClickTheButtonIfWindowNodeIsRemoved()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
@@ -61,17 +62,16 @@ namespace PuppeteerSharp.Tests.InputTests
         /// <summary>
         /// This test is called ShouldNotThrowUnhandledPromiseRejectionWhenPageCloses in puppeteer.
         /// </summary>
-        [Fact]
+        [Fact(Skip = "We don't need this test")]
         public async Task ShouldGracefullyFailWhenPageCloses()
         {
             var newPage = await Browser.NewPageAsync();
-            await Assert.ThrowsAsync<TargetClosedException>(() => Task.WhenAll(
+            await Task.WhenAll(
                 newPage.CloseAsync(),
-                newPage.Mouse.ClickAsync(1, 2)
-             ));
+                newPage.Mouse.ClickAsync(1, 2));
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldClickTheButtonAfterNavigation()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
@@ -81,7 +81,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.Equal("Clicked", await Page.EvaluateExpressionAsync<string>("result"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldClickWithDisabledJavascript()
         {
             await Page.SetJavaScriptEnabledAsync(false);
@@ -93,7 +93,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.Equal(TestConstants.ServerUrl + "/wrappedlink.html#clicked", Page.Url);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldClickWhenOneOfInlineBoxChildrenIsOutsideOfViewport()
         {
             await Page.SetContentAsync($@"
@@ -110,7 +110,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.Equal(42, await Page.EvaluateFunctionAsync<int>("() => window.CLICKED"));
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldSelectTheTextByTripleClicking()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -120,10 +120,16 @@ namespace PuppeteerSharp.Tests.InputTests
             await Page.ClickAsync("textarea");
             await Page.ClickAsync("textarea", new ClickOptions { ClickCount = 2 });
             await Page.ClickAsync("textarea", new ClickOptions { ClickCount = 3 });
-            Assert.Equal(text, await Page.EvaluateExpressionAsync<string>("window.getSelection().toString()"));
+            Assert.Equal(text, await Page.EvaluateFunctionAsync<string>(@"() => {
+                const textarea = document.querySelector('textarea');
+                return textarea.value.substring(
+                    textarea.selectionStart,
+                    textarea.selectionEnd
+                );
+            }"));
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldClickOffscreenButtons()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/offscreenbuttons.html");
@@ -152,7 +158,7 @@ namespace PuppeteerSharp.Tests.InputTests
             }, messages);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldClickWrappedLinks()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/wrappedlink.html");
@@ -160,7 +166,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.True(await Page.EvaluateExpressionAsync<bool>("window.__clicked"));
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldClickOnCheckboxInputAndToggle()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/checkbox.html");
@@ -181,7 +187,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.False(await Page.EvaluateExpressionAsync<bool>("result.check"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldClickOnCheckboxLabelAndToggle()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/checkbox.html");
@@ -197,7 +203,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.False(await Page.EvaluateExpressionAsync<bool>("result.check"));
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldFailToClickAMissingButton()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
@@ -207,7 +213,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.Equal("button.does-not-exist", exception.Selector);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldScrollAndClickTheButton()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
@@ -217,7 +223,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.Equal("clicked", await Page.EvaluateExpressionAsync<string>("document.querySelector(\"#button-80\").textContent"));
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldDoubleClickTheButton()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
@@ -234,7 +240,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.Equal("Clicked", await Page.EvaluateExpressionAsync<string>("result"));
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldClickAPartiallyObscuredButton()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
@@ -248,7 +254,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.Equal("Clicked", await Page.EvaluateExpressionAsync<string>("result"));
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldClickARotatedButton()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/rotatedButton.html");
@@ -256,7 +262,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.Equal("Clicked", await Page.EvaluateExpressionAsync<string>("result"));
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldFireContextmenuEventOnRightClick()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
@@ -265,7 +271,7 @@ namespace PuppeteerSharp.Tests.InputTests
         }
 
         // @see https://github.com/GoogleChrome/puppeteer/issues/206
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldClickLinksWhichCauseNavigation()
         {
             await Page.SetContentAsync($"<a href=\"{TestConstants.EmptyPage}\">empty.html</a>");
@@ -273,7 +279,7 @@ namespace PuppeteerSharp.Tests.InputTests
             await Page.ClickAsync("a");
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldClickTheButtonInsideAnIframe()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -302,7 +308,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.Equal("Clicked", await frame.EvaluateExpressionAsync<string>("window.result"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldClickTheButtonWithDeviceScaleFactorSet()
         {
             await Page.SetViewportAsync(new ViewPortOptions { Width = 400, Height = 400, DeviceScaleFactor = 5 });

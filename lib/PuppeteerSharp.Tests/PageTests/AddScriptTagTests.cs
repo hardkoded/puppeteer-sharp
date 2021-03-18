@@ -13,7 +13,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldThrowAnErrorIfNoOptionsAreProvided()
         {
             var exception = await Assert.ThrowsAsync<ArgumentException>(()
@@ -21,7 +21,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal("Provide options with a `Url`, `Path` or `Content` property", exception.Message);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWithAUrl()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -30,7 +30,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(42, await Page.EvaluateExpressionAsync<int>("__injected"));
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWithAUrlAndTypeModule()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -38,7 +38,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(42, await Page.EvaluateExpressionAsync<int>("__es6injected"));
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWithAPathAndTypeModule()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -51,7 +51,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(42, await Page.EvaluateExpressionAsync<int>("__es6injected"));
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWithAContentAndTypeModule()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -64,7 +64,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(42, await Page.EvaluateExpressionAsync<int>("__es6injected"));
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldThrowAnErrorIfLoadingFromUrlFail()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -73,7 +73,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal("Loading script from /nonexistfile.js failed", exception.Message);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWithAPath()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -85,7 +85,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(42, await Page.EvaluateExpressionAsync<int>("__injected"));
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldIncludeSourcemapWhenPathIsProvided()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -97,7 +97,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Contains(Path.Combine("Assets", "injectedfile.js"), result);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWithContent()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -118,7 +118,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.NotNull(exception);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldThrowWhenAddedWithURLToTheCSPPage()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/csp.html");

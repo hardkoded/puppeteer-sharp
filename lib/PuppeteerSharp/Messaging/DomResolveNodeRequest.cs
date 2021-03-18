@@ -2,7 +2,7 @@
 {
     internal class DomResolveNodeRequest
     {
-        public int BackendNodeId { get; set; }
+        public object BackendNodeId { get; set; }
 
         public int ExecutionContextId { get; set; }
     }

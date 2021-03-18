@@ -276,7 +276,7 @@ namespace PuppeteerSharp
                 return null;
             }
             var mainExecutionContext = await MainWorld.GetExecutionContextAsync().ConfigureAwait(false);
-            var result = await mainExecutionContext.AdoptElementHandleASync(handle).ConfigureAwait(false);
+            var result = await mainExecutionContext.AdoptElementHandleAsync(handle).ConfigureAwait(false);
             await handle.DisposeAsync().ConfigureAwait(false);
             return result;
         }
@@ -317,7 +317,7 @@ namespace PuppeteerSharp
                 return null;
             }
             var mainExecutionContext = await MainWorld.GetExecutionContextAsync().ConfigureAwait(false);
-            var result = await mainExecutionContext.AdoptElementHandleASync(handle).ConfigureAwait(false);
+            var result = await mainExecutionContext.AdoptElementHandleAsync(handle).ConfigureAwait(false);
             await handle.DisposeAsync().ConfigureAwait(false);
             return result;
         }

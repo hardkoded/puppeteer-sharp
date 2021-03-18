@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Messaging;
+using PuppeteerSharp.Tests.Attributes;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -15,7 +16,7 @@ namespace PuppeteerSharp.Tests.TargetTests
         {
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
             var client = await Page.Target.CreateCDPSessionAsync();
@@ -28,7 +29,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             Assert.Equal("bar", foo);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldSendEvents()
         {
             var client = await Page.Target.CreateCDPSessionAsync();
@@ -47,7 +48,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             Assert.Single(events);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldEnableAndDisableDomainsIndependently()
         {
             var client = await Page.Target.CreateCDPSessionAsync();
@@ -66,7 +67,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             Assert.Equal("foo.js", eventTask.Result["url"].Value<string>());
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldBeAbleToDetachSession()
         {
             var client = await Page.Target.CreateCDPSessionAsync();
@@ -88,7 +89,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             Assert.Contains("Session closed.", exception.Message);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldThrowNiceErrors()
         {
             var client = await Page.Target.CreateCDPSessionAsync();

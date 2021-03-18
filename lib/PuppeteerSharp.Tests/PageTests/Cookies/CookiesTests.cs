@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
+using PuppeteerSharp.Tests.Attributes;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -13,14 +14,14 @@ namespace PuppeteerSharp.Tests.PageTests.Cookies
         {
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldReturnNoCookiesInPristineBrowserContext()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.Empty(await Page.GetCookiesAsync());
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldGetACookie()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -39,12 +40,12 @@ namespace PuppeteerSharp.Tests.PageTests.Cookies
             Assert.True(cookie.Session);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldProperlyReportHttpOnlyCookie()
         {
             Server.SetRoute("/empty.html", context =>
             {
-                context.Response.Headers["Set-Cookie"] = ";HttpOnly; Path=/";
+                context.Response.Headers["Set-Cookie"] = "a=b; HttpOnly; Path=/";
                 return Task.CompletedTask;
             });
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -53,12 +54,12 @@ namespace PuppeteerSharp.Tests.PageTests.Cookies
             Assert.True(cookies[0].HttpOnly);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldProperlyReportSStrictSameSiteCookie()
         {
             Server.SetRoute("/empty.html", context =>
             {
-                context.Response.Headers["Set-Cookie"] = ";SameSite=Strict";
+                context.Response.Headers["Set-Cookie"] = "a=b; SameSite=Strict";
                 return Task.CompletedTask;
             });
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -67,12 +68,12 @@ namespace PuppeteerSharp.Tests.PageTests.Cookies
             Assert.Equal(SameSite.Strict, cookies[0].SameSite);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldProperlyReportLaxSameSiteCookie()
         {
             Server.SetRoute("/empty.html", context =>
             {
-                context.Response.Headers["Set-Cookie"] = ";SameSite=Lax";
+                context.Response.Headers["Set-Cookie"] = "a=b; SameSite=Lax";
                 return Task.CompletedTask;
             });
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -81,7 +82,7 @@ namespace PuppeteerSharp.Tests.PageTests.Cookies
             Assert.Equal(SameSite.Lax, cookies[0].SameSite);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldGetMultipleCookies()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -117,7 +118,7 @@ namespace PuppeteerSharp.Tests.PageTests.Cookies
             Assert.True(cookie.Session);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldGetCookiesFromMultipleUrls()
         {
             await Page.SetCookieAsync(

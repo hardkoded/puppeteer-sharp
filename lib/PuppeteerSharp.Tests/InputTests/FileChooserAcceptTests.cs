@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using PuppeteerSharp.Mobile;
+using PuppeteerSharp.Tests.Attributes;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -13,7 +14,7 @@ namespace PuppeteerSharp.Tests.InputTests
         {
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWhenFileInputIsAttachedToDOM()
         {
             await Page.SetContentAsync("<input type=file>");
@@ -26,7 +27,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.NotNull(waitForTask.Result);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldAcceptSingleFile()
         {
             await Page.SetContentAsync("<input type=file oninput='javascript:console.timeStamp()'>");
@@ -49,7 +50,7 @@ namespace PuppeteerSharp.Tests.InputTests
                 await Page.QuerySelectorAsync("input").EvaluateFunctionAsync<string>("input => input.files[0].name"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldBeAbleToReadSelectedFile()
         {
             await Page.SetContentAsync("<input type=file>");
@@ -68,7 +69,7 @@ namespace PuppeteerSharp.Tests.InputTests
                 }"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldBeAbleToResetSelectedFilesWithEmptyFileList()
         {
             await Page.SetContentAsync("<input type=file>");
@@ -95,7 +96,7 @@ namespace PuppeteerSharp.Tests.InputTests
             }"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldNotAcceptMultipleFilesForSingleFileInput()
         {
             await Page.SetContentAsync("<input type=file>");
@@ -105,12 +106,12 @@ namespace PuppeteerSharp.Tests.InputTests
                 waitForTask,
                 Page.ClickAsync("input"));
 
-            await Assert.ThrowsAsync<MessageException>(() => waitForTask.Result.AcceptAsync(
+            await Assert.ThrowsAsync<PuppeteerException>(() => waitForTask.Result.AcceptAsync(
                 "./assets/file-to-upload.txt",
                 "./assets/pptr.png"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldFailWhenAcceptingFileChooserTwice()
         {
             await Page.SetContentAsync("<input type=file>");

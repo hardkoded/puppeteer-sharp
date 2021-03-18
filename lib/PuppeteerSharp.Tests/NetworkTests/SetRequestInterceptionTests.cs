@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
@@ -20,7 +21,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldIntercept()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -47,7 +48,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(TestConstants.Port, response.RemoteAddress.Port);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWhenPostIsEedirectedWith302()
         {
             Server.SetRedirect("/rredirect", "/empty.html");
@@ -66,7 +67,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             );
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWhenHeaderManipulationHeadersWithRedirect()
         {
             Server.SetRedirect("/rredirect", "/empty.html");
@@ -82,7 +83,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/rrredirect");
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldBeAbleToRemoveHeaders()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -102,7 +103,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.True(string.IsNullOrEmpty(requestTask.Result));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldContainRefererHeader()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -129,7 +130,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Contains("/one-style.html", requests[1].Headers["Referer"]);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldProperlyReturnNavigationResponseWhenURLHasCookies()
         {
             // Setup cookie.
@@ -147,7 +148,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(HttpStatusCode.OK, response.Status);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldStopIntercepting()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -162,7 +163,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             await Page.GoToAsync(TestConstants.EmptyPage);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldShowCustomHTTPHeaders()
         {
             await Page.SetExtraHttpHeadersAsync(new Dictionary<string, string>
@@ -179,7 +180,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.True(response.Ok);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithRedirectInsideSyncXHR()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -197,7 +198,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(200, status);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithCustomRefererHeaders()
         {
             await Page.SetExtraHttpHeadersAsync(new Dictionary<string, string>
@@ -214,7 +215,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.True(response.Ok);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldBeAbortable()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -237,7 +238,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(1, failedRequests);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldBeAbortableWithCustomErrorCodes()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -252,7 +253,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal("net::ERR_INTERNET_DISCONNECTED", failedRequest.Failure);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldSendReferer()
         {
             await Page.SetExtraHttpHeadersAsync(new Dictionary<string, string>
@@ -269,7 +270,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal("http://google.com/", requestTask.Result);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldFailNavigationWhenAbortingMainResource()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -287,7 +288,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             }
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithRedirects()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -322,7 +323,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             }
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithRedirectsForSubresources()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -359,7 +360,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Contains("three-style.css", redirectChain[2].Url);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldBeAbleToAbortRedirects()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -398,7 +399,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             }
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithEqualRequests()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -435,7 +436,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(new[] { "11", "FAILED", "22" }, results);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldNavigateToDataURLAndFireDataURLRequests()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -452,7 +453,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(dataURL, requests[0].Url);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldBeAbleToFetchDataURLAndFireDataURLRequests()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -471,7 +472,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(dataURL, requests[0].Url);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldNavigateToURLWithHashAndAndFireRequestsWithoutHash()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -488,7 +489,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(TestConstants.EmptyPage, requests[0].Url);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithEncodedServer()
         {
             // The requestWillBeSent will report encoded URL, whereas interception will
@@ -499,7 +500,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(HttpStatusCode.NotFound, response.Status);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithBadlyEncodedServer()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -509,7 +510,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(HttpStatusCode.OK, response.Status);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithEncodedServerNegative2()
         {
             // The requestWillBeSent will report URL as-is, whereas interception will
@@ -527,7 +528,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(HttpStatusCode.NotFound, requests[1].Response.Status);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldNotThrowInvalidInterceptionIdIfTheRequestWasCancelled()
         {
             await Page.SetContentAsync("<iframe></iframe>");
@@ -548,7 +549,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             await request.ContinueAsync();
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldThrowIfInterceptionIsNotEnabled()
         {
             Exception exception = null;
@@ -567,7 +568,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Contains("Request Interception is not enabled", exception.Message);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithFileURLs()
         {
             await Page.SetRequestInterceptionAsync(true);

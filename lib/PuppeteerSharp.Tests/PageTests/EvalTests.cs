@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWork()
         {
             await Page.SetContentAsync("<section id='testAttribute'>43543</section>");
@@ -19,7 +19,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal("testAttribute", idAttribute);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWithAwaitedElements()
         {
             await Page.SetContentAsync("<section id='testAttribute'>43543</section>");
@@ -28,7 +28,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal("testAttribute", idAttribute);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldAcceptArguments()
         {
             await Page.SetContentAsync("<section>hello</section>");
@@ -36,7 +36,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal("hello world!", text);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldAcceptElementHandlesAsArguments()
         {
             await Page.SetContentAsync("<section>hello</section><div> world</div>");
@@ -45,7 +45,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal("hello world", text);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldThrowErrorIfNoElementIsFound()
         {
             var exception = await Assert.ThrowsAsync<SelectorException>(()

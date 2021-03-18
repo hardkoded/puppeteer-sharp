@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldSelectSingleOption()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
@@ -21,7 +21,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(new string[] { "blue" }, await Page.EvaluateExpressionAsync<string[]>("result.onChange"));
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldSelectOnlyFirstOption()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
@@ -30,7 +30,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(new string[] { "blue" }, await Page.EvaluateExpressionAsync<string[]>("result.onChange"));
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldNotThrowWhenSelectCausesNavigation()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
@@ -42,7 +42,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Contains("empty.html", Page.Url);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldSelectMultipleOptions()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
@@ -54,7 +54,7 @@ namespace PuppeteerSharp.Tests.PageTests
                          await Page.EvaluateExpressionAsync<string[]>("result.onChange"));
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldRespectEventBubbling()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
@@ -63,7 +63,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(new string[] { "blue" }, await Page.EvaluateExpressionAsync<string[]>("result.onBubblingChange"));
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldThrowWhenElementIsNotASelect()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
@@ -71,7 +71,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Contains("Element is not a <select> element.", exception.Message);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldReturnEmptyArrayOnNoMatchedValues()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
@@ -79,7 +79,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Empty(result);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldReturnAnArrayOfMatchedValues()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
@@ -89,21 +89,21 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(new string[] { "black", "blue", "magenta" }, result);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldReturnAnArrayOfOneElementWhenMultipleIsNotSet()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
             Assert.Single(await Page.SelectAsync("select", "42", "blue", "black", "magenta"));
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldReturnEmptyArrayOnNoValues()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
             Assert.Empty(await Page.SelectAsync("select"));
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldDeselectAllOptionsWhenPassedNoValuesForAMultipleSelect()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
@@ -114,7 +114,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 "select => Array.from(select.options).every(option => !option.selected)"));
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldDeselectAllOptionsWhenPassedNoValuesForASelectWithoutMultiple()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
@@ -122,16 +122,6 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.SelectAsync("select");
             Assert.True(await Page.QuerySelectorAsync("select").EvaluateFunctionAsync<bool>(
                 "select => Array.from(select.options).every(option => !option.selected)"));
-        }
-
-        [Fact]
-        public async Task ShouldWorkWhenRedefiningTopLevelEventClass()
-        {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
-            await Page.EvaluateFunctionAsync("() => window.Event = null");
-            await Page.SelectAsync("select", "blue");
-            Assert.Equal(new[] { "blue" }, await Page.EvaluateExpressionAsync<string[]>("result.onInput"));
-            Assert.Equal(new[] { "blue" }, await Page.EvaluateExpressionAsync<string[]>("result.onChange"));
         }
     }
 }

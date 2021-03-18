@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWork()
         {
             await Page.SetContentAsync("<div>hello</div>");
@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(ExpectedOutput, result);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWithDoctype()
         {
             const string doctype = "<!DOCTYPE html>";
@@ -34,7 +34,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal($"{doctype}{ExpectedOutput}", result);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWithHtml4Doctype()
         {
             const string doctype = "<!DOCTYPE html PUBLIC \" -//W3C//DTD HTML 4.01//EN\" " +
@@ -46,7 +46,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal($"{doctype}{ExpectedOutput}", result);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldRespectTimeout()
         {
             const string imgPath = "/img.png";
@@ -62,7 +62,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Contains("Timeout of 1 ms exceeded", exception.Message);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldRespectDefaultTimeout()
         {
             const string imgPath = "/img.png";
@@ -76,7 +76,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Contains("Timeout of 1 ms exceeded", exception.Message);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldAwaitResourcesToLoad()
         {
             var imgPath = "/img.png";
@@ -92,7 +92,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await contentTask;
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkFastEnough()
         {
             for (var i = 0; i < 20; ++i)
@@ -101,28 +101,28 @@ namespace PuppeteerSharp.Tests.PageTests
             }
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWithTrickyContent()
         {
             await Page.SetContentAsync("<div>hello world</div>\x7F");
             Assert.Equal("hello world", await Page.QuerySelectorAsync("div").EvaluateFunctionAsync<string>("div => div.textContent"));
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWithAccents()
         {
             await Page.SetContentAsync("<div>aberración</div>");
             Assert.Equal("aberración", await Page.QuerySelectorAsync("div").EvaluateFunctionAsync<string>("div => div.textContent"));
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWithEmojis()
         {
             await Page.SetContentAsync("<div>🐥</div>");
             Assert.Equal("🐥", await Page.QuerySelectorAsync("div").EvaluateFunctionAsync<string>("div => div.textContent"));
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWithNewline()
         {
             await Page.SetContentAsync("<div>\n</div>");

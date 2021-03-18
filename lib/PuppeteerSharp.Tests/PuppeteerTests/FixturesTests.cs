@@ -6,6 +6,7 @@ using System.Net;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Transport;
 using Xunit;
 using Xunit.Abstractions;
@@ -17,13 +18,13 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
     {
         public FixturesTests(ITestOutputHelper output) : base(output) { }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public void ShouldDumpBrowserProcessStderr()
         {
-            bool success = false;
+            var success = false;
             var process = GetTestAppProcess(
                 "PuppeteerSharp.Tests.DumpIO",
-                $"\"{new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath}\"");
+                $"\"{new BrowserFetcher(Product.Chrome).RevisionInfo().ExecutablePath}\"");
 
             process.ErrorDataReceived += (_, e) =>
             {
@@ -36,14 +37,13 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             Assert.True(success);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldCloseTheBrowserWhenTheConnectedProcessCloses()
         {
             var browserClosedTaskWrapper = new TaskCompletionSource<bool>();
             var ChromiumLauncher = new ChromiumLauncher(
-                new BrowserFetcher().RevisionInfo(BrowserFetcher.DefaultRevision).ExecutablePath,
-                new LaunchOptions { Headless = true },
-                TestConstants.LoggerFactory);
+                new BrowserFetcher(Product.Chrome).RevisionInfo().ExecutablePath,
+                new LaunchOptions { Headless = true });
 
             await ChromiumLauncher.StartAsync().ConfigureAwait(false);
 
@@ -63,7 +63,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             Assert.True(browser.IsClosed);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldCloseTheBrowserWhenTheLaunchedProcessCloses()
         {
             var browserClosedTaskWrapper = new TaskCompletionSource<bool>();
@@ -121,7 +121,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         private string GetSubprocessWorkingDir(string dir)
         {
 #if DEBUG
-            string build = "Debug";
+            var build = "Debug";
 #else
             
             var build = "Release";

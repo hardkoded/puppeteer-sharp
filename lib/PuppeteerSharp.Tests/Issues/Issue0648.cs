@@ -1,11 +1,4 @@
-using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Text;
+using PuppeteerSharp.Tests.Attributes;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -19,7 +12,7 @@ namespace PuppeteerSharp.Tests.Issues
         {
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
             await Page.SetRequestInterceptionAsync(true);

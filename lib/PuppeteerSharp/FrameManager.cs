@@ -281,10 +281,7 @@ namespace PuppeteerSharp
                     world = frame.SecondaryWorld;
                 }
             }
-            if (contextPayload.AuxData?.Type == DOMWorldType.Isolated)
-            {
-                _isolatedWorlds.Add(contextPayload.Name);
-            }
+
             var context = new ExecutionContext(Client, contextPayload, world);
             if (world != null)
             {

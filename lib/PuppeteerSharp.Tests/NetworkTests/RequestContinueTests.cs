@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
@@ -20,7 +21,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -28,7 +29,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             await Page.GoToAsync(TestConstants.EmptyPage);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldAmendHTTPHeaders()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -49,7 +50,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal("bar", requestTask.Result);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldRedirectInAWayNonObservableToPage()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -67,7 +68,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal("yellow", consoleMessage);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldAmendMethodData()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -87,7 +88,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal("POST", requestTask.Result);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldAmendPostData()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -115,7 +116,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal("doggo", await requestTask.Result);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldAmendBothPostDataAndMethodOnNavigation()
         {
             await Page.SetRequestInterceptionAsync(true);

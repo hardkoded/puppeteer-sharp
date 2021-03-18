@@ -161,6 +161,11 @@ namespace PuppeteerSharp
         public bool EnqueueTransportMessages { get; set; } = true;
 
         /// <summary>
+        /// The browser to be used (Chrome, Firefox)
+        /// </summary>
+        public Product Product { get; set; } = Product.Chrome;
+
+        /// <summary>
         /// Affects how responses to <see cref="CDPSession.SendAsync"/> are returned to the caller. If <c>true</c> (default), the
         /// response is delivered to the caller on its own thread; otherwise, the response is delivered the same way <see cref="CDPSession.MessageReceived"/>
         /// events are raised.

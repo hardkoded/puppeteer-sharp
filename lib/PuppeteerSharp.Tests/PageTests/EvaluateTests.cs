@@ -6,6 +6,7 @@ using Xunit;
 using Xunit.Abstractions;
 using PuppeteerSharp.Helpers.Json;
 using System.Numerics;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
@@ -25,7 +26,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(expected, result);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldTransferBigInt()
         {
             var result = await Page.EvaluateFunctionAsync<BigInteger>("a => a", new BigInteger(42));
@@ -43,43 +44,43 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(transferObject, result);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldTransferArrays()
         {
             var result = await Page.EvaluateFunctionAsync<int[]>("a => a", new int[] { 1, 2, 3 });
             Assert.Equal(new int[] { 1, 2, 3 }, result);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldTransferArraysAsArraysNotObjects()
         {
             var result = await Page.EvaluateFunctionAsync<bool>("a => Array.isArray(a)", new int[] { 1, 2, 3 });
             Assert.True(result);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldModifyGlobalEnvironment()
         {
             await Page.EvaluateFunctionAsync("() => window.globalVar = 123");
             Assert.Equal(123, await Page.EvaluateFunctionAsync<int>("() => window.globalVar"));
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldEvaluateInThePageContext()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/global-var.html");
             Assert.Equal(123, await Page.EvaluateFunctionAsync<int>("() => window.globalVar"));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReturnUndefinedForObjectsWithSymbols()
             => Assert.Null(await Page.EvaluateFunctionAsync<object>("() => [Symbol('foo4')]"));
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWithUnicodeChars()
             => Assert.Equal(42, await Page.EvaluateFunctionAsync<int>("a => a['中文字符']", new Dictionary<string, int> { ["中文字符"] = 42 }));
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldThrowWhenEvaluationTriggersReload()
         {
             var exception = await Assert.ThrowsAsync<EvaluationFailedException>(() =>
@@ -93,7 +94,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Contains("Protocol error", exception.Message);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkRightAfterFrameNavigated()
         {
             Task<int> frameEvaluation = null;
@@ -107,7 +108,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(42, await frameEvaluation);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkFromInsideAnExposedFunction()
         {
             await Page.ExposeFunctionAsync("callController", async (int a, int b) =>
@@ -120,7 +121,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(27, result);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldRejectPromiseWithExeption()
         {
             var exception = await Assert.ThrowsAsync<EvaluationFailedException>(() =>
@@ -131,7 +132,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Contains("not_existing_object", exception.Message);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldSupportThrownStringsAsErrorMessages()
         {
             var exception = await Assert.ThrowsAsync<EvaluationFailedException>(
@@ -139,7 +140,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Contains("qwerty", exception.Message);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldSupportThrownNumbersAsErrorMessages()
         {
             var exception = await Assert.ThrowsAsync<EvaluationFailedException>(
@@ -147,7 +148,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Contains("100500", exception.Message);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task SouldReturnComplexObjects()
         {
             dynamic obj = new
@@ -158,7 +159,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal("bar!", result.foo.ToString());
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldReturnBigInt()
         {
             var result = await Page.EvaluateFunctionAsync<object>("() => BigInt(42)");
@@ -176,7 +177,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(expected, result);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldAcceptNullAsOneOfMultipleParameters()
         {
             var result = await Page.EvaluateFunctionAsync<bool>(
@@ -186,11 +187,11 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(result);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReturnNullForNonSerializableObjects()
             => Assert.Null(await Page.EvaluateFunctionAsync("() => window"));
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldFailForCircularObject()
         {
             var result = await Page.EvaluateFunctionAsync(@"() => {
@@ -203,7 +204,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Null(result);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldBeAbleToThrowATrickyError()
         {
             var windowHandle = await Page.EvaluateFunctionHandleAsync("() => window");
@@ -226,7 +227,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(expected, result);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldAcceptElementHandleAsAnArgument()
         {
             await Page.SetContentAsync("<section>42</section>");
@@ -235,7 +236,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal("42", text);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldThrowIfUnderlyingElementWasDisposed()
         {
             await Page.SetContentAsync("<section>39</section>");
@@ -247,7 +248,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Contains("JSHandle is disposed", exception.Message);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldThrowIfElementHandlesAreFromOtherFrames()
         {
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
@@ -257,7 +258,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Contains("JSHandles can be evaluated only in the context they were created", exception.Message);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldSimulateAUserGesture()
             => Assert.True(await Page.EvaluateFunctionAsync<bool>(@"() => {
                 document.body.appendChild(document.createTextNode('test'));
@@ -265,7 +266,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 return document.execCommand('copy'); 
             }"));
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldThrowANiceErrorAfterANavigation()
         {
             var executionContext = await Page.MainFrame.GetExecutionContextAsync();
@@ -281,7 +282,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Contains("navigation", ex.Message);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldNotThrowAnErrorWhenEvaluationDoesANavigation()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
@@ -296,14 +297,14 @@ namespace PuppeteerSharp.Tests.PageTests
         /// <summary>
         /// Original Name "should transfer 100Mb of data from page to node.js"
         /// </summary>
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldTransfer100MbOfDataFromPage()
         {
             var a = await Page.EvaluateFunctionAsync<string>("() => Array(100 * 1024 * 1024 + 1).join('a')");
             Assert.Equal(100 * 1024 * 1024, a.Length);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldThrowErrorWithDetailedInformationOnExceptionInsidePromise()
         {
             var exception = await Assert.ThrowsAsync<EvaluationFailedException>(() =>
@@ -314,7 +315,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Contains("Error in promise", exception.Message);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWithDifferentSerializerSettings()
         {
             var result = await Page.EvaluateFunctionAsync<ComplexObjectTestClass>("() => { return { foo: 'bar' }}");
@@ -332,14 +333,14 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal("bar", result.Foo);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldProperlyIgnoreUndefinedFields()
         {
             var result = await Page.EvaluateFunctionAsync<Dictionary<string, object>>("() => ({a: undefined})");
             Assert.Empty(result);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldProperlySerializeNullFields()
         {
             var result = await Page.EvaluateFunctionAsync<Dictionary<string, object>>("() => ({a: null})");
@@ -347,15 +348,16 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Null(result["a"]);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldAcceptObjectHandleAsAnArgument()
         {
-            var navigatorHandle = await Page.EvaluateExpressionHandleAsync("navigator");
-            var text = await Page.EvaluateFunctionAsync<string>("e => e.userAgent", navigatorHandle);
-            Assert.Contains("Mozilla", text);
+            await Page.SetContentAsync("<section>42</section>");
+            var element = await Page.QuerySelectorAsync("section");
+            var text = await Page.EvaluateFunctionAsync<string>("(e) => e.textContent", element);
+            Assert.Equal("42", text);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldAcceptObjectHandleToPrimitiveTypes()
         {
             var aHandle = await Page.EvaluateExpressionHandleAsync("5");
@@ -363,7 +365,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(isFive);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWarnOnNestedObjectHandles()
         {
             var handle = await Page.EvaluateFunctionHandleAsync("() => document.body");
@@ -385,7 +387,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Contains("Are you passing a nested JSHandle?", exception.Message);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWithoutGenerics()
         {
             Assert.NotNull(await Page.EvaluateExpressionAsync("var obj = {}; obj;"));

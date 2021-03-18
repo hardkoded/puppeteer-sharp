@@ -1,9 +1,6 @@
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
+using PuppeteerSharp.Tests.Attributes;
 using System.IO;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,7 +16,7 @@ namespace PuppeteerSharp.Tests.Issues
         {
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldBeAbleToChangeToPost()
         {
             await Page.SetRequestInterceptionAsync(true);

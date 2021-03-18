@@ -52,9 +52,8 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="executable">Full path of executable.</param>
         /// <param name="options">Options for launching Chromium.</param>
-        /// <param name="loggerFactory">Logger factory</param>
-        public ChromiumLauncher(string executable, LaunchOptions options, ILoggerFactory loggerFactory)
-            : base(executable, options, loggerFactory)
+        public ChromiumLauncher(string executable, LaunchOptions options)
+            : base(executable, options)
         {
             List<string> chromiumArgs;
             (chromiumArgs, TempUserDataDir) = PrepareChromiumArgs(options);

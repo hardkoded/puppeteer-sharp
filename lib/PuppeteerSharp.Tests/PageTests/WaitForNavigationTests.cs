@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
@@ -13,7 +14,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -27,7 +28,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Contains("grid.html", response.Url);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWithBothDomcontentloadedAndLoad()
         {
             var responseCompleted = new TaskCompletionSource<bool>();
@@ -61,7 +62,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await navigationTask.WithTimeout();
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithClickingOnAnchorLinks()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -75,7 +76,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(TestConstants.EmptyPage + "#foobar", Page.Url);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithHistoryPushState()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -94,7 +95,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(TestConstants.ServerUrl + "/wow.html", Page.Url);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithHistoryReplaceState()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -113,7 +114,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(TestConstants.ServerUrl + "/replaced.html", Page.Url);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithDOMHistoryBackAndHistoryForward()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -144,7 +145,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(TestConstants.ServerUrl + "/second.html", Page.Url);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWhenSubframeIssuesWindowStop()
         {
             Server.SetRoute("/frames/style.css", _ => Task.CompletedTask);

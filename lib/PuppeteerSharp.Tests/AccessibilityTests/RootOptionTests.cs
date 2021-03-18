@@ -1,5 +1,6 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using PuppeteerSharp.PageAccessibility;
+using PuppeteerSharp.Tests.Attributes;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -12,7 +13,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
         {
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkAButton()
         {
             await Page.SetContentAsync("<button>My Button</button>");
@@ -27,7 +28,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                 await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions { Root = button }));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkAnInput()
         {
             await Page.SetContentAsync("<input title='My Input' value='My Value'>");
@@ -43,7 +44,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                 await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions { Root = input }));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkAMenu()
         {
             await Page.SetContentAsync(@"
@@ -82,7 +83,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                 await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions { Root = menu }));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReturnNullWhenTheElementIsNoLongerInDOM()
         {
             await Page.SetContentAsync("<button>My Button</button>");
@@ -91,7 +92,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
             Assert.Null(await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions { Root = button }));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldSupportTheInterestingOnlyOption()
         {
             await Page.SetContentAsync("<div><button>My Button</button></div>");
@@ -103,14 +104,22 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
             Assert.Equal(
                 new SerializedAXNode
                 {
-                    Role = "GenericContainer",
+                    Role = "generic",
                     Name = "",
                     Children = new[]
                     {
                         new SerializedAXNode
                         {
                             Role = "button",
-                            Name = "My Button"
+                            Name = "My Button",
+                            Children = new[]
+                            {
+                                new SerializedAXNode
+                                {
+                                    Role = "text",
+                                    Name = "My Button",
+                                }
+                            }
                         }
                     }
                 },

@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Page = await Context.NewPageAsync();
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task PageGetCookiesAsyncShouldWork()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -41,7 +41,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.True(cookie.Session);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task PageSetCookiesAsyncShouldWork()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -64,7 +64,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.True(cookie.Session);
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task PageDeleteCookieAsyncShouldWork()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

@@ -72,6 +72,10 @@ namespace PuppeteerSharp
         /// </summary>
         Ping,
         /// <summary>
+        /// Image.
+        /// </summary>
+        Img,
+        /// <summary>
         /// Other.
         /// </summary>
         Other

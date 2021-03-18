@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Tests.Attributes;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -14,7 +15,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         {
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task BackgroundPageTargetTypeShouldBeAvailable()
         {
             await using (var browserWithExtension = await Puppeteer.LaunchAsync(
@@ -27,7 +28,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             }
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task TargetPageShouldReturnABackgroundPage()
         {
             await using (var browserWithExtension = await Puppeteer.LaunchAsync(
@@ -43,7 +44,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             }
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldHaveDefaultUrlWhenLaunchingBrowser()
         {
             await using (var browser = await Puppeteer.LaunchAsync(
@@ -55,7 +56,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             }
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task HeadlessShouldBeAbleToReadCookiesWrittenByHeadful()
         {
             using (var userDataDir = new TempDirectory())
@@ -110,7 +111,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             }
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldCloseBrowserWithBeforeunloadPage()
         {
             var headfulOptions = TestConstants.DefaultBrowserOptions();
@@ -124,7 +125,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             }
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldOpenDevtoolsWhenDevtoolsTrueOptionIsGiven()
         {
             var headfulOptions = TestConstants.DefaultBrowserOptions();
@@ -138,7 +139,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             }
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task BringToFrontShouldWork()
         {
             await using (var browserWithExtension = await Puppeteer.LaunchAsync(

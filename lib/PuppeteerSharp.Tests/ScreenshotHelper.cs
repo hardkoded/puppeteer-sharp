@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -15,11 +15,11 @@ namespace PuppeteerSharp.Tests
             const int pixelThreshold = 10;
             const decimal totalTolerance = 0.05m;
 
-            var baseImage = Image.Load(Path.Combine(TestUtils.FindParentDirectory("Screenshots"), screenShotFile));
+            var baseImage = Image.Load(Path.Combine(TestUtils.FindParentDirectory("Screenshots"), TestConstants.IsChrome ? "golden-chromium" : "golden-firefox", screenShotFile));
             var compareImage = Image.Load(screenshot);
 
             //Just  for debugging purpose
-            compareImage.Save(Path.Combine(TestUtils.FindParentDirectory("Screenshots"), "test.png"));
+            compareImage.Save(Path.Combine(TestUtils.FindParentDirectory("Screenshots"), TestConstants.IsChrome ? "golden-chromium" : "golden-firefox", "test.png"));
 
             if (baseImage.Width != compareImage.Width || baseImage.Height != compareImage.Height)
             {
@@ -30,9 +30,9 @@ namespace PuppeteerSharp.Tests
             var rgb2 = default(Rgb24);
             var invalidPixelsCount = 0;
 
-            for (int y = 0; y < baseImage.Height; y++)
+            for (var y = 0; y < baseImage.Height; y++)
             {
-                for (int x = 0; x < baseImage.Width; x++)
+                for (var x = 0; x < baseImage.Width; x++)
                 {
                     var pixelA = baseImage[x, y];
                     var pixelB = compareImage[x, y];

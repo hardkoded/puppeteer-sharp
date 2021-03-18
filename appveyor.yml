@@ -14,10 +14,6 @@ environment:
       ENQUEUE_ASYNC_MESSAGES: true
     - framework: netcoreapp2.2
       ENQUEUE_ASYNC_MESSAGES: true
-    - framework: net48
-      ENQUEUE_ASYNC_MESSAGES: false
-    - framework: netcoreapp2.2
-      ENQUEUE_ASYNC_MESSAGES: false
 install:
 - ps: >-
     if($env:APPVEYOR_REPO_TAG -eq 'True' -And $env:framework -eq 'netcoreapp2.0') {

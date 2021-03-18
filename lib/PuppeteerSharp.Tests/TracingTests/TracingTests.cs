@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Tests.Attributes;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -51,7 +52,7 @@ namespace PuppeteerSharp.Tests.TracingTests
             }
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldOutputATrace()
         {
             await Page.Tracing.StartAsync(new TracingOptions
@@ -65,7 +66,7 @@ namespace PuppeteerSharp.Tests.TracingTests
             Assert.True(File.Exists(_file));
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldRunWithCustomCategoriesProvided()
         {
             await Page.Tracing.StartAsync(new TracingOptions
@@ -88,7 +89,7 @@ namespace PuppeteerSharp.Tests.TracingTests
             }
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldThrowIfTracingOnTwoPages()
         {
             await Page.Tracing.StartAsync(new TracingOptions
@@ -108,7 +109,7 @@ namespace PuppeteerSharp.Tests.TracingTests
             await Page.Tracing.StopAsync();
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReturnABuffer()
         {
             await Page.Tracing.StartAsync(new TracingOptions
@@ -122,7 +123,7 @@ namespace PuppeteerSharp.Tests.TracingTests
             Assert.Equal(trace, buf);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithoutOptions()
         {
             await Page.Tracing.StartAsync();
@@ -131,7 +132,7 @@ namespace PuppeteerSharp.Tests.TracingTests
             Assert.NotNull(trace);
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldSupportABufferWithoutAPath()
         {
             await Page.Tracing.StartAsync(new TracingOptions

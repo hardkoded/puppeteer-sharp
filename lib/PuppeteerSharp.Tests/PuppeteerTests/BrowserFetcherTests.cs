@@ -21,7 +21,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             EnsureDownloadsFolderIsDeleted();
         }
 
-        [Fact]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldDownloadAndExtractLinuxBinary()
         {
             var browserFetcher = Puppeteer.CreateBrowserFetcher(new BrowserFetcherOptions
@@ -30,17 +30,17 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 Path = _downloadsFolder,
                 Host = TestConstants.ServerUrl
             });
-            var revisionInfo = browserFetcher.RevisionInfo(123456);
+            var revisionInfo = browserFetcher.RevisionInfo("123456");
 
             Server.SetRedirect(revisionInfo.Url.Substring(TestConstants.ServerUrl.Length), "/chromium-linux.zip");
             Assert.False(revisionInfo.Local);
             Assert.Equal(Platform.Linux, revisionInfo.Platform);
-            Assert.False(await browserFetcher.CanDownloadAsync(100000));
-            Assert.True(await browserFetcher.CanDownloadAsync(123456));
+            Assert.False(await browserFetcher.CanDownloadAsync("100000"));
+            Assert.True(await browserFetcher.CanDownloadAsync("123456"));
 
             try
             {
-                revisionInfo = await browserFetcher.DownloadAsync(123456);
+                revisionInfo = await browserFetcher.DownloadAsync("123456");
                 Assert.True(revisionInfo.Local);
                 Assert.Equal("LINUX BINARY\n", File.ReadAllText(revisionInfo.ExecutablePath));
 
@@ -52,15 +52,15 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                     Assert.Equal(permissions, UnixFileSystemInfo.GetFileSystemEntry(revisionInfo.ExecutablePath).FileAccessPermissions & permissions);
 #endif
                 }
-                Assert.Equal(new[] { 123456 }, browserFetcher.LocalRevisions());
-                browserFetcher.Remove(123456);
+                Assert.Equal(new[] { "123456" }, browserFetcher.LocalRevisions());
+                browserFetcher.Remove("123456");
                 Assert.Empty(browserFetcher.LocalRevisions());
 
                 //Download should return data from a downloaded version
                 //This section is not in the Puppeteer test.
-                await browserFetcher.DownloadAsync(123456);
+                await browserFetcher.DownloadAsync("123456");
                 Server.Reset();
-                revisionInfo = await browserFetcher.DownloadAsync(123456);
+                revisionInfo = await browserFetcher.DownloadAsync("123456");
                 Assert.True(revisionInfo.Local);
                 Assert.Equal("LINUX BINARY\n", File.ReadAllText(revisionInfo.ExecutablePath));
             }

@@ -15,6 +15,7 @@ namespace PuppeteerSharp.Tests
         {
             await base.InitializeAsync();
             Page = await Context.NewPageAsync();
+            Page.DefaultTimeout = TestConstants.DefaultPuppeteerTimeout;
         }
 
         public override async Task DisposeAsync()
