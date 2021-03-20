@@ -17,7 +17,7 @@ Puppeteer Sharp is a .NET port of the official [Node.JS Puppeteer API](https://g
 # Useful links
 
 * [API Documentation](http://www.puppeteersharp.com/api/index.html)
-* Slack channel [#puppeteer-sharp](https://puppeteer.slack.com/join/shared_invite/enQtMzU4MjIyMDA5NTM4LWI0YTE0MjM0NWQzYmE2MTRmNjM1ZTBkN2MxNmJmNTIwNTJjMmFhOWFjMGExMDViYjk2YjU2ZmYzMmE1NmExYzc)
+* Slack channel [#puppeteer-sharp](https://www.hardkoded.com/goto/pptr-slack)
 * [StackOverflow](https://stackoverflow.com/search?q=puppeteer-sharp)
 * [Issues](https://github.com/hardkoded/puppeteer-sharp/issues?utf8=%E2%9C%93&q=is%3Aissue)
 
