@@ -71,7 +71,7 @@ namespace PuppeteerSharp
         /// <value>The URL.</value>
         public string Url => TargetInfo.Url;
         /// <summary>
-        /// Gets the type. It will be <see cref="TargetInfo.Type"/>.
+        /// Gets the type. It will be <see cref="PuppeteerSharp.TargetInfo.Type"/>.
         /// Can be `"page"`, `"background_page"`, `"service_worker"`, `"shared_worker"`, `"browser"` or `"other"`.
         /// </summary>
         /// <value>The type.</value>
