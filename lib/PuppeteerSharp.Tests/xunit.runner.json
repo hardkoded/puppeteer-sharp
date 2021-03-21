@@ -3,5 +3,6 @@
   "diagnosticMessages": true,
   "parallelizeAssembly": false,
   "maxParallelThreads": -1,
-  "longRunningTestSeconds": 5
+  "longRunningTestSeconds": 5,
+  "shadowCopy": false
 }
