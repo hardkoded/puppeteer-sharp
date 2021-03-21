@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Xunit;
 using PuppeteerSharp.Mobile;
 using Xunit.Abstractions;
 
@@ -65,13 +64,5 @@ namespace PuppeteerSharp.Tests
                 $"--load-extension={ExtensionPath}"
             }
         };
-
-        public static void SetupLogging(ITestOutputHelper output)
-        {
-            if (Debugger.IsAttached && LoggerFactory == null)
-            {
-                LoggerFactory = new LoggerFactory(new[] { new XunitLoggerProvider(output) });
-            }
-        }
     }
 }
