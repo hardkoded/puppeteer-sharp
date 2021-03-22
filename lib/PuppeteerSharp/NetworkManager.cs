@@ -28,7 +28,7 @@ namespace PuppeteerSharp
         private bool _protocolRequestInterceptionEnabled;
         private readonly bool _ignoreHTTPSErrors;
         private bool _userCacheDisabled;
-        private InternalNetworkConditions _emulatedNetworkConditions = new InternalNetworkConditions
+        private readonly InternalNetworkConditions _emulatedNetworkConditions = new InternalNetworkConditions
         {
             Offline = false,
             Upload = -1,

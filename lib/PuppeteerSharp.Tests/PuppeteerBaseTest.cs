@@ -15,8 +15,6 @@ namespace PuppeteerSharp.Tests
 
         public PuppeteerBaseTest(ITestOutputHelper output)
         {
-            TestConstants.SetupLogging(output);
-
             BaseDirectory = Path.Combine(Directory.GetCurrentDirectory(), "workspace");
             var dirInfo = new DirectoryInfo(BaseDirectory);
 
