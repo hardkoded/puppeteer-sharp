@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class Accessibility
    ">
-    <meta name="generator" content="docfx 2.40.5.0">
+    <meta name="generator" content="docfx 2.56.6.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -43,7 +43,7 @@
             <div class="collapse navbar-collapse" id="navbar">
               <form class="navbar-form navbar-right" role="search" id="search">
                 <div class="form-group">
-                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                  <input type="text" class="form-control" id="search-query" placeholder="" autocomplete="off">
                 </div>
               </form>
             </div>
@@ -61,7 +61,7 @@
       <div role="main" class="container body-content hide-when-search">
         
         <div class="sidenav hide-when-search">
-          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle"></a>
           <div class="sidetoggle collapse" id="sidetoggle">
             <div id="sidetoc"></div>
           </div>
@@ -74,11 +74,11 @@
   <h1 id="PuppeteerSharp_PageAccessibility_Accessibility" data-uid="PuppeteerSharp.PageAccessibility.Accessibility" class="text-break">Class Accessibility
   </h1>
   <div class="markdown level0 summary"><p>The Accessibility class provides methods for inspecting Chromium's accessibility tree.
-The accessibility tree is used by assistive technology such as screen readers.</p>
+The accessibility tree is used by assistive technology such as screen readers or switches.</p>
 <p>Accessibility is a very platform-specific thing. On different platforms, there are different screen readers that might have wildly different output.
 Blink - Chrome's rendering engine - has a concept of &quot;accessibility tree&quot;, which is than translated into different platform-specific APIs.
 Accessibility namespace gives users access to the Blink Accessibility Tree.
-Most of the accessibility tree gets filtered out when converting from Blink AX Tree to Platform-specific AX-Tree or by screen readers themselves.
+Most of the accessibility tree gets filtered out when converting from Blink AX Tree to Platform-specific AX-Tree or by assistive technologies themselves.
 By default, Puppeteer tries to approximate this filtering, exposing only the &quot;interesting&quot; nodes of the tree.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
@@ -91,16 +91,16 @@ By default, Puppeteer tries to approximate this filtering, exposing only the &qu
   <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
   <h5 id="PuppeteerSharp_PageAccessibility_Accessibility_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class Accessibility : object</code></pre>
+    <pre><code class="lang-csharp hljs">public class Accessibility</code></pre>
   </div>
   <h3 id="constructors">Constructors
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Accessibility(CDPSession)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PageAccessibility/Accessibility.cs/%23L26">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Accessibility(CDPSession)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/PageAccessibility/Accessibility.cs/%23L26">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PageAccessibility/Accessibility.cs/#L26">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/PageAccessibility/Accessibility.cs/#L26">View Source</a>
   </span>
   <a id="PuppeteerSharp_PageAccessibility_Accessibility__ctor_" data-uid="PuppeteerSharp.PageAccessibility.Accessibility.#ctor*"></a>
   <h4 id="PuppeteerSharp_PageAccessibility_Accessibility__ctor_PuppeteerSharp_CDPSession_" data-uid="PuppeteerSharp.PageAccessibility.Accessibility.#ctor(PuppeteerSharp.CDPSession)">Accessibility(CDPSession)</h4>
@@ -133,10 +133,10 @@ By default, Puppeteer tries to approximate this filtering, exposing only the &qu
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20SnapshotAsync(AccessibilitySnapshotOptions)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PageAccessibility/Accessibility.cs/%23L33">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20SnapshotAsync(AccessibilitySnapshotOptions)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/PageAccessibility/Accessibility.cs/%23L33">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PageAccessibility/Accessibility.cs/#L33">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/PageAccessibility/Accessibility.cs/#L33">View Source</a>
   </span>
   <a id="PuppeteerSharp_PageAccessibility_Accessibility_SnapshotAsync_" data-uid="PuppeteerSharp.PageAccessibility.Accessibility.SnapshotAsync*"></a>
   <h4 id="PuppeteerSharp_PageAccessibility_Accessibility_SnapshotAsync_PuppeteerSharp_PageAccessibility_AccessibilitySnapshotOptions_" data-uid="PuppeteerSharp.PageAccessibility.Accessibility.SnapshotAsync(PuppeteerSharp.PageAccessibility.AccessibilitySnapshotOptions)">SnapshotAsync(AccessibilitySnapshotOptions)</h4>
@@ -175,7 +175,7 @@ By default, Puppeteer tries to approximate this filtering, exposing only the &qu
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Task</span>&lt;<a class="xref" href="PuppeteerSharp.PageAccessibility.SerializedAXNode.html">SerializedAXNode</a>&gt;</td>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="PuppeteerSharp.PageAccessibility.SerializedAXNode.html">SerializedAXNode</a>&gt;</td>
         <td><p>The async.</p>
 </td>
       </tr>
@@ -189,15 +189,16 @@ By default, Puppeteer tries to approximate this filtering, exposing only the &qu
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Accessibility&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PageAccessibility/Accessibility.cs/%23L18" class="contribution-link">Request doc improvement</a>
+                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Accessibility&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/PageAccessibility/Accessibility.cs/%23L18" class="contribution-link">Request doc improvement</a>
                   </li>
                   <li>
-                    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PageAccessibility/Accessibility.cs/#L18" class="contribution-link">View Source</a>
+                    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/PageAccessibility/Accessibility.cs/#L18" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
-              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+                <h5></h5>
+                <div></div>
               </nav>
             </div>
           </div>

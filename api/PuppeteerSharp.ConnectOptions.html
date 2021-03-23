@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class ConnectOptions
    ">
-    <meta name="generator" content="docfx 2.40.5.0">
+    <meta name="generator" content="docfx 2.56.6.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -43,7 +43,7 @@
             <div class="collapse navbar-collapse" id="navbar">
               <form class="navbar-form navbar-right" role="search" id="search">
                 <div class="form-group">
-                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                  <input type="text" class="form-control" id="search-query" placeholder="" autocomplete="off">
                 </div>
               </form>
             </div>
@@ -61,7 +61,7 @@
       <div role="main" class="container body-content hide-when-search">
         
         <div class="sidenav hide-when-search">
-          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle"></a>
           <div class="sidetoggle collapse" id="sidetoggle">
             <div id="sidetoc"></div>
           </div>
@@ -90,16 +90,16 @@
   <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
   <h5 id="PuppeteerSharp_ConnectOptions_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class ConnectOptions : object, IBrowserOptions, IConnectionOptions</code></pre>
+    <pre><code class="lang-csharp hljs">public class ConnectOptions : IBrowserOptions, IConnectionOptions</code></pre>
   </div>
   <h3 id="properties">Properties
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20AppMode&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs/%23L23">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20AppMode&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/ConnectOptions.cs/%23L20">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs/#L23">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/ConnectOptions.cs/#L20">View Source</a>
   </span>
   <a id="PuppeteerSharp_ConnectOptions_AppMode_" data-uid="PuppeteerSharp.ConnectOptions.AppMode*"></a>
   <h4 id="PuppeteerSharp_ConnectOptions_AppMode" data-uid="PuppeteerSharp.ConnectOptions.AppMode">AppMode</h4>
@@ -108,7 +108,8 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool AppMode { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;No longer required and usages should be removed&quot;)]
+public bool AppMode { get; set; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -127,10 +128,42 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20BrowserWSEndpoint&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs/%23L28">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20BrowserURL&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/ConnectOptions.cs/%23L32">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs/#L28">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/ConnectOptions.cs/#L32">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_ConnectOptions_BrowserURL_" data-uid="PuppeteerSharp.ConnectOptions.BrowserURL*"></a>
+  <h4 id="PuppeteerSharp_ConnectOptions_BrowserURL" data-uid="PuppeteerSharp.ConnectOptions.BrowserURL">BrowserURL</h4>
+  <div class="markdown level1 summary"><p>A browser url to connect to, in format <code>http://${host}:${port}</code>.
+Use interchangeably with <code>browserWSEndpoint</code> to let Puppeteer fetch it from <a href="https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target">metadata endpoin</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string BrowserURL { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20BrowserWSEndpoint&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/ConnectOptions.cs/%23L26">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/ConnectOptions.cs/#L26">View Source</a>
   </span>
   <a id="PuppeteerSharp_ConnectOptions_BrowserWSEndpoint_" data-uid="PuppeteerSharp.ConnectOptions.BrowserWSEndpoint*"></a>
   <h4 id="PuppeteerSharp_ConnectOptions_BrowserWSEndpoint" data-uid="PuppeteerSharp.ConnectOptions.BrowserWSEndpoint">BrowserWSEndpoint</h4>
@@ -158,10 +191,10 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20DefaultViewport&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs/%23L51">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20DefaultViewport&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/ConnectOptions.cs/%23L55">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs/#L51">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/ConnectOptions.cs/#L55">View Source</a>
   </span>
   <a id="PuppeteerSharp_ConnectOptions_DefaultViewport_" data-uid="PuppeteerSharp.ConnectOptions.DefaultViewport*"></a>
   <h4 id="PuppeteerSharp_ConnectOptions_DefaultViewport" data-uid="PuppeteerSharp.ConnectOptions.DefaultViewport">DefaultViewport</h4>
@@ -190,10 +223,48 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EnqueueTransportMessages&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs/%23L64">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EnqueueAsyncMessages&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/ConnectOptions.cs/%23L87">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs/#L64">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/ConnectOptions.cs/#L87">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_ConnectOptions_EnqueueAsyncMessages_" data-uid="PuppeteerSharp.ConnectOptions.EnqueueAsyncMessages*"></a>
+  <h4 id="PuppeteerSharp_ConnectOptions_EnqueueAsyncMessages" data-uid="PuppeteerSharp.ConnectOptions.EnqueueAsyncMessages">EnqueueAsyncMessages</h4>
+  <div class="markdown level1 summary"><p>Affects how responses to <a class="xref" href="PuppeteerSharp.CDPSession.html#PuppeteerSharp_CDPSession_SendAsync_System_String_System_Object_System_Boolean_">SendAsync(String, Object, Boolean)</a> are returned to the caller. If <code>true</code> (default), the
+response is delivered to the caller on its own thread; otherwise, the response is delivered the same way <a class="xref" href="PuppeteerSharp.CDPSession.html#PuppeteerSharp_CDPSession_MessageReceived">MessageReceived</a>
+events are raised.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool EnqueueAsyncMessages { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_ConnectOptions_EnqueueAsyncMessages_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This should normally be set to <code>true</code> to support applications that aren't <code>async</code> &quot;all the way up&quot;; i.e., the application
+has legacy code that is not async which makes calls into PuppeteerSharp. If you experience issues, or your application is not mixed sync/async use, you
+can set this to <code>false</code> (default).</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EnqueueTransportMessages&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/ConnectOptions.cs/%23L75">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/ConnectOptions.cs/#L75">View Source</a>
   </span>
   <a id="PuppeteerSharp_ConnectOptions_EnqueueTransportMessages_" data-uid="PuppeteerSharp.ConnectOptions.EnqueueTransportMessages*"></a>
   <h4 id="PuppeteerSharp_ConnectOptions_EnqueueTransportMessages" data-uid="PuppeteerSharp.ConnectOptions.EnqueueTransportMessages">EnqueueTransportMessages</h4>
@@ -225,10 +296,10 @@ Setting this to <code>false</code> proved to work in .NET Core but it tends to f
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20IgnoreHTTPSErrors&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs/%23L18">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20IgnoreHTTPSErrors&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/ConnectOptions.cs/%23L15">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs/#L18">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/ConnectOptions.cs/#L15">View Source</a>
   </span>
   <a id="PuppeteerSharp_ConnectOptions_IgnoreHTTPSErrors_" data-uid="PuppeteerSharp.ConnectOptions.IgnoreHTTPSErrors*"></a>
   <h4 id="PuppeteerSharp_ConnectOptions_IgnoreHTTPSErrors" data-uid="PuppeteerSharp.ConnectOptions.IgnoreHTTPSErrors">IgnoreHTTPSErrors</h4>
@@ -256,10 +327,10 @@ Setting this to <code>false</code> proved to work in .NET Core but it tends to f
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20KeepAliveInterval&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs/%23L38">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20KeepAliveInterval&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/ConnectOptions.cs/%23L42">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs/#L38">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/ConnectOptions.cs/#L42">View Source</a>
   </span>
   <a id="PuppeteerSharp_ConnectOptions_KeepAliveInterval_" data-uid="PuppeteerSharp.ConnectOptions.KeepAliveInterval*"></a>
   <h4 id="PuppeteerSharp_ConnectOptions_KeepAliveInterval" data-uid="PuppeteerSharp.ConnectOptions.KeepAliveInterval">KeepAliveInterval</h4>
@@ -268,7 +339,8 @@ Setting this to <code>false</code> proved to work in .NET Core but it tends to f
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int KeepAliveInterval { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Chromium doesn't support pings yet (see: https://bugs.chromium.org/p/chromium/issues/detail?id=865002)&quot;)]
+public int KeepAliveInterval { get; set; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -287,10 +359,10 @@ Setting this to <code>false</code> proved to work in .NET Core but it tends to f
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20SlowMo&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs/%23L33">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20SlowMo&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/ConnectOptions.cs/%23L37">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs/#L33">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/ConnectOptions.cs/#L37">View Source</a>
   </span>
   <a id="PuppeteerSharp_ConnectOptions_SlowMo_" data-uid="PuppeteerSharp.ConnectOptions.SlowMo*"></a>
   <h4 id="PuppeteerSharp_ConnectOptions_SlowMo" data-uid="PuppeteerSharp.ConnectOptions.SlowMo">SlowMo</h4>
@@ -318,10 +390,10 @@ Setting this to <code>false</code> proved to work in .NET Core but it tends to f
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Transport&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs/%23L56">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Transport&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/ConnectOptions.cs/%23L60">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs/#L56">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/ConnectOptions.cs/#L60">View Source</a>
   </span>
   <a id="PuppeteerSharp_ConnectOptions_Transport_" data-uid="PuppeteerSharp.ConnectOptions.Transport*"></a>
   <h4 id="PuppeteerSharp_ConnectOptions_Transport" data-uid="PuppeteerSharp.ConnectOptions.Transport">Transport</h4>
@@ -330,7 +402,8 @@ Setting this to <code>false</code> proved to work in .NET Core but it tends to f
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public IConnectionTransport Transport { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use TransportFactory instead&quot;)]
+public IConnectionTransport Transport { get; set; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -349,20 +422,19 @@ Setting this to <code>false</code> proved to work in .NET Core but it tends to f
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WebSocketFactory&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs/%23L45">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20TransportFactory&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/ConnectOptions.cs/%23L66">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs/#L45">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/ConnectOptions.cs/#L66">View Source</a>
   </span>
-  <a id="PuppeteerSharp_ConnectOptions_WebSocketFactory_" data-uid="PuppeteerSharp.ConnectOptions.WebSocketFactory*"></a>
-  <h4 id="PuppeteerSharp_ConnectOptions_WebSocketFactory" data-uid="PuppeteerSharp.ConnectOptions.WebSocketFactory">WebSocketFactory</h4>
-  <div class="markdown level1 summary"><p>Optional factory for <see cref="!:WebSocket"></see> implementations.
-If <a class="xref" href="PuppeteerSharp.ConnectOptions.html#PuppeteerSharp_ConnectOptions_Transport">Transport</a> is set this property will be ignored.</p>
+  <a id="PuppeteerSharp_ConnectOptions_TransportFactory_" data-uid="PuppeteerSharp.ConnectOptions.TransportFactory*"></a>
+  <h4 id="PuppeteerSharp_ConnectOptions_TransportFactory" data-uid="PuppeteerSharp.ConnectOptions.TransportFactory">TransportFactory</h4>
+  <div class="markdown level1 summary"><p>Optional factory for <a class="xref" href="PuppeteerSharp.Transport.IConnectionTransport.html">IConnectionTransport</a> implementations.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Func&lt;Uri, IConnectionOptions, CancellationToken, Task&lt;WebSocket&gt;&gt; WebSocketFactory { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">public TransportFactory TransportFactory { get; set; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -374,7 +446,39 @@ If <a class="xref" href="PuppeteerSharp.ConnectOptions.html#PuppeteerSharp_Conne
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Func</span>&lt;<span class="xref">Uri</span>, <a class="xref" href="PuppeteerSharp.IConnectionOptions.html">IConnectionOptions</a>, <span class="xref">CancellationToken</span>, <span class="xref">Task</span>&lt;<span class="xref">WebSocket</span>&gt;&gt;</td>
+        <td><a class="xref" href="PuppeteerSharp.Transport.TransportFactory.html">TransportFactory</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WebSocketFactory&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/ConnectOptions.cs/%23L49">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/ConnectOptions.cs/#L49">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_ConnectOptions_WebSocketFactory_" data-uid="PuppeteerSharp.ConnectOptions.WebSocketFactory*"></a>
+  <h4 id="PuppeteerSharp_ConnectOptions_WebSocketFactory" data-uid="PuppeteerSharp.ConnectOptions.WebSocketFactory">WebSocketFactory</h4>
+  <div class="markdown level1 summary"><p>Optional factory for <span class="xref">System.Net.WebSockets.WebSocket</span> implementations.
+If <a class="xref" href="PuppeteerSharp.ConnectOptions.html#PuppeteerSharp_ConnectOptions_Transport">Transport</a> is set this property will be ignored.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public WebSocketFactory WebSocketFactory { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.Transport.WebSocketFactory.html">WebSocketFactory</a></td>
         <td></td>
       </tr>
     </tbody>
@@ -394,15 +498,16 @@ If <a class="xref" href="PuppeteerSharp.ConnectOptions.html#PuppeteerSharp_Conne
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20ConnectOptions&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs/%23L13" class="contribution-link">Request doc improvement</a>
+                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20ConnectOptions&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/ConnectOptions.cs/%23L10" class="contribution-link">Request doc improvement</a>
                   </li>
                   <li>
-                    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs/#L13" class="contribution-link">View Source</a>
+                    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/ConnectOptions.cs/#L10" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
-              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+                <h5></h5>
+                <div></div>
               </nav>
             </div>
           </div>

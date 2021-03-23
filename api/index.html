@@ -8,7 +8,7 @@
     <title>Puppeteer Sharp </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Puppeteer Sharp ">
-    <meta name="generator" content="docfx 2.40.5.0">
+    <meta name="generator" content="docfx 2.56.6.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -41,7 +41,7 @@
             <div class="collapse navbar-collapse" id="navbar">
               <form class="navbar-form navbar-right" role="search" id="search">
                 <div class="form-group">
-                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                  <input type="text" class="form-control" id="search-query" placeholder="" autocomplete="off">
                 </div>
               </form>
             </div>
@@ -59,7 +59,7 @@
       <div role="main" class="container body-content hide-when-search">
         
         <div class="sidenav hide-when-search">
-          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle"></a>
           <div class="sidetoggle collapse" id="sidetoggle">
             <div id="sidetoc"></div>
           </div>
@@ -98,6 +98,28 @@ var page = await browser.NewPageAsync();
 await page.GoToAsync(&quot;http://www.google.com&quot;);
 await page.PdfAsync(outputFile);
 </code></pre>
+<h3 id="generate-pdf-files-with-custom-options">Generate PDF files with custom options</h3>
+<pre><code class="lang-cs">await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
+var browser = await Puppeteer.LaunchAsync(new LaunchOptions
+{
+    Headless = true
+});
+var page = await browser.NewPageAsync();
+await page.GoToAsync(&quot;http://www.google.com&quot;);
+await page.PdfAsync(outputFile, new PdfOptions
+{
+    Format = PaperFormat.A4,
+    DisplayHeaderFooter = true,
+    MarginOptions = new MarginOptions
+    {
+        Top = &quot;20px&quot;,
+        Right = &quot;20px&quot;,
+        Bottom = &quot;40px&quot;,
+        Left = &quot;20px&quot;
+    },
+    FooterTemplate = &quot;&lt;div id=\&quot;footer-template\&quot; style=\&quot;font-size:10px !important; color:#808080; padding-left:10px\&quot;&gt;Footer Text&lt;/div&gt;&quot;
+});
+</code></pre>
 <h2 id="inject-html">Inject HTML</h2>
 <pre><code class="lang-cs">using(var page = await Browser.NewPageAsync())
 {
@@ -110,7 +132,7 @@ await page.PdfAsync(outputFile);
 <h2 id="evaluate-javascript">Evaluate Javascript</h2>
 <pre><code class="lang-cs">using (var page = await Browser.NewPageAsync())
 {
-    var seven = await page.EvaluateFunctionAsync&lt;int&gt;(&quot;4 + 3&quot;);
+    var seven = await page.EvaluateExpressionAsync&lt;int&gt;(&quot;4 + 3&quot;);
     var someObject = await page.EvaluateFunctionAsync&lt;dynamic&gt;(&quot;(value) =&gt; ({a: value})&quot;, 5);
     Console.WriteLine(someObject.a);
 }
@@ -119,7 +141,7 @@ await page.PdfAsync(outputFile);
 <pre><code class="lang-cs">using (var page = await Browser.NewPageAsync())
 {
     await page.GoToAsync(&quot;http://www.spapage.com&quot;);
-    await page.WaitForSelectorAsync(&quot;div.main-content&quot;)
+    await page.WaitForSelectorAsync(&quot;div.main-content&quot;);
     await page.PdfAsync(outputFile));
 }
 </code></pre>
@@ -162,7 +184,8 @@ using (var browser = await PuppeteerSharp.Puppeteer.ConnectAsync(options))
                 </ul>
               </div>
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
-              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+                <h5></h5>
+                <div></div>
               </nav>
             </div>
           </div>

@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class Launcher
    ">
-    <meta name="generator" content="docfx 2.40.5.0">
+    <meta name="generator" content="docfx 2.56.6.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -43,7 +43,7 @@
             <div class="collapse navbar-collapse" id="navbar">
               <form class="navbar-form navbar-right" role="search" id="search">
                 <div class="form-group">
-                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                  <input type="text" class="form-control" id="search-query" placeholder="" autocomplete="off">
                 </div>
               </form>
             </div>
@@ -61,7 +61,7 @@
       <div role="main" class="container body-content hide-when-search">
         
         <div class="sidenav hide-when-search">
-          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle"></a>
           <div class="sidetoggle collapse" id="sidetoggle">
             <div id="sidetoc"></div>
           </div>
@@ -73,7 +73,7 @@
   
   <h1 id="PuppeteerSharp_Launcher" data-uid="PuppeteerSharp.Launcher" class="text-break">Class Launcher
   </h1>
-  <div class="markdown level0 summary"><p>Launcher controls the creation of Chromium processes or the connection remote ones.</p>
+  <div class="markdown level0 summary"><p>Launcher controls the creation of processes or the connection remote ones.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
@@ -85,16 +85,16 @@
   <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
   <h5 id="PuppeteerSharp_Launcher_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class Launcher : object</code></pre>
+    <pre><code class="lang-csharp hljs">public class Launcher</code></pre>
   </div>
   <h3 id="constructors">Constructors
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Launcher(ILoggerFactory)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Launcher.cs/%23L26">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Launcher(ILoggerFactory)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/Launcher.cs/%23L28">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Launcher.cs/#L26">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/Launcher.cs/#L28">View Source</a>
   </span>
   <a id="PuppeteerSharp_Launcher__ctor_" data-uid="PuppeteerSharp.Launcher.#ctor*"></a>
   <h4 id="PuppeteerSharp_Launcher__ctor_ILoggerFactory_" data-uid="PuppeteerSharp.Launcher.#ctor(ILoggerFactory)">Launcher(ILoggerFactory)</h4>
@@ -127,19 +127,19 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Process&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Launcher.cs/%23L32">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Process&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/Launcher.cs/%23L34">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Launcher.cs/#L32">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/Launcher.cs/#L34">View Source</a>
   </span>
   <a id="PuppeteerSharp_Launcher_Process_" data-uid="PuppeteerSharp.Launcher.Process*"></a>
   <h4 id="PuppeteerSharp_Launcher_Process" data-uid="PuppeteerSharp.Launcher.Process">Process</h4>
-  <div class="markdown level1 summary"><p>Gets Chromium process, if any was created by this launcher.</p>
+  <div class="markdown level1 summary"><p>Gets the process, if any was created by this launcher.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ChromiumProcess Process { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public LauncherBase Process { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -151,7 +151,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="PuppeteerSharp.ChromiumProcess.html">ChromiumProcess</a></td>
+        <td><a class="xref" href="PuppeteerSharp.LauncherBase.html">LauncherBase</a></td>
         <td></td>
       </tr>
     </tbody>
@@ -160,14 +160,14 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20ConnectAsync(ConnectOptions)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Launcher.cs/%23L85">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20ConnectAsync(ConnectOptions)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/Launcher.cs/%23L95">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Launcher.cs/#L85">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/Launcher.cs/#L95">View Source</a>
   </span>
   <a id="PuppeteerSharp_Launcher_ConnectAsync_" data-uid="PuppeteerSharp.Launcher.ConnectAsync*"></a>
   <h4 id="PuppeteerSharp_Launcher_ConnectAsync_PuppeteerSharp_ConnectOptions_" data-uid="PuppeteerSharp.Launcher.ConnectAsync(PuppeteerSharp.ConnectOptions)">ConnectAsync(ConnectOptions)</h4>
-  <div class="markdown level1 summary"><p>Attaches Puppeteer to an existing Chromium instance. The browser will be closed when the Browser is disposed.</p>
+  <div class="markdown level1 summary"><p>Attaches Puppeteer to an existing process instance. The browser will be closed when the Browser is disposed.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -202,7 +202,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Task</span>&lt;<a class="xref" href="PuppeteerSharp.Browser.html">Browser</a>&gt;</td>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="PuppeteerSharp.Browser.html">Browser</a>&gt;</td>
         <td><p>A connected browser.</p>
 </td>
       </tr>
@@ -210,10 +210,10 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20GetExecutablePath()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Launcher.cs/%23L107">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20GetExecutablePath()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/Launcher.cs/%23L149">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Launcher.cs/#L107">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/Launcher.cs/#L149">View Source</a>
   </span>
   <a id="PuppeteerSharp_Launcher_GetExecutablePath_" data-uid="PuppeteerSharp.Launcher.GetExecutablePath*"></a>
   <h4 id="PuppeteerSharp_Launcher_GetExecutablePath" data-uid="PuppeteerSharp.Launcher.GetExecutablePath">GetExecutablePath()</h4>
@@ -222,7 +222,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static string GetExecutablePath()</code></pre>
+    <pre><code class="lang-csharp hljs">public string GetExecutablePath()</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -242,10 +242,10 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20LaunchAsync(LaunchOptions)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Launcher.cs/%23L46">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20LaunchAsync(LaunchOptions)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/Launcher.cs/%23L48">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Launcher.cs/#L46">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/Launcher.cs/#L48">View Source</a>
   </span>
   <a id="PuppeteerSharp_Launcher_LaunchAsync_" data-uid="PuppeteerSharp.Launcher.LaunchAsync*"></a>
   <h4 id="PuppeteerSharp_Launcher_LaunchAsync_PuppeteerSharp_LaunchOptions_" data-uid="PuppeteerSharp.Launcher.LaunchAsync(PuppeteerSharp.LaunchOptions)">LaunchAsync(LaunchOptions)</h4>
@@ -269,7 +269,7 @@
       <tr>
         <td><a class="xref" href="PuppeteerSharp.LaunchOptions.html">LaunchOptions</a></td>
         <td><span class="parametername">options</span></td>
-        <td><p>Options for launching Chrome</p>
+        <td><p>Options for launching the browser</p>
 </td>
       </tr>
     </tbody>
@@ -284,7 +284,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Task</span>&lt;<a class="xref" href="PuppeteerSharp.Browser.html">Browser</a>&gt;</td>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="PuppeteerSharp.Browser.html">Browser</a>&gt;</td>
         <td><p>A connected browser.</p>
 </td>
       </tr>
@@ -303,15 +303,16 @@ for a description of the differences between Chromium and Chrome.
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Launcher&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Launcher.cs/%23L13" class="contribution-link">Request doc improvement</a>
+                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Launcher&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/Launcher.cs/%23L14" class="contribution-link">Request doc improvement</a>
                   </li>
                   <li>
-                    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Launcher.cs/#L13" class="contribution-link">View Source</a>
+                    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/Launcher.cs/#L14" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
-              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+                <h5></h5>
+                <div></div>
               </nav>
             </div>
           </div>

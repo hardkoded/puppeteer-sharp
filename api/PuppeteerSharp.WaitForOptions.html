@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class WaitForOptions
    ">
-    <meta name="generator" content="docfx 2.40.5.0">
+    <meta name="generator" content="docfx 2.56.6.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -43,7 +43,7 @@
             <div class="collapse navbar-collapse" id="navbar">
               <form class="navbar-form navbar-right" role="search" id="search">
                 <div class="form-group">
-                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                  <input type="text" class="form-control" id="search-query" placeholder="" autocomplete="off">
                 </div>
               </form>
             </div>
@@ -61,7 +61,7 @@
       <div role="main" class="container body-content hide-when-search">
         
         <div class="sidenav hide-when-search">
-          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle"></a>
           <div class="sidetoggle collapse" id="sidetoggle">
             <div id="sidetoc"></div>
           </div>
@@ -85,25 +85,26 @@
   <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
   <h5 id="PuppeteerSharp_WaitForOptions_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class WaitForOptions : object</code></pre>
+    <pre><code class="lang-csharp hljs">public class WaitForOptions</code></pre>
   </div>
   <h3 id="properties">Properties
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Timeout&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitForOptions.cs/%23L17">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Timeout&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/WaitForOptions.cs/%23L18">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitForOptions.cs/#L17">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/WaitForOptions.cs/#L18">View Source</a>
   </span>
   <a id="PuppeteerSharp_WaitForOptions_Timeout_" data-uid="PuppeteerSharp.WaitForOptions.Timeout*"></a>
   <h4 id="PuppeteerSharp_WaitForOptions_Timeout" data-uid="PuppeteerSharp.WaitForOptions.Timeout">Timeout</h4>
-  <div class="markdown level1 summary"><p>Maximum time to wait for in milliseconds. Defaults to 30000 (30 seconds). Pass 0 to disable timeout.</p>
+  <div class="markdown level1 summary"><p>Maximum time to wait for in milliseconds. Pass 0 to disable timeout.
+The default value can be changed by setting the <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_DefaultTimeout">DefaultTimeout</a> property.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int Timeout { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">public int? Timeout { get; set; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -115,17 +116,17 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Int32</span></td>
+        <td><span class="xref">System.Nullable</span>&lt;<span class="xref">System.Int32</span>&gt;</td>
         <td></td>
       </tr>
     </tbody>
   </table>
   <h3 id="seealso">See Also</h3>
   <div class="seealso">
-      <div><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_WaitForRequestAsync_Func_PuppeteerSharp_Request_System_Boolean__PuppeteerSharp_WaitForOptions_">WaitForRequestAsync(Func&lt;Request, Boolean&gt;, WaitForOptions)</a></div>
+      <div><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_WaitForRequestAsync_System_Func_PuppeteerSharp_Request_System_Boolean__PuppeteerSharp_WaitForOptions_">WaitForRequestAsync(Func&lt;Request, Boolean&gt;, WaitForOptions)</a></div>
       <div><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_WaitForRequestAsync_System_String_PuppeteerSharp_WaitForOptions_">WaitForRequestAsync(String, WaitForOptions)</a></div>
       <div><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_WaitForResponseAsync_System_String_PuppeteerSharp_WaitForOptions_">WaitForResponseAsync(String, WaitForOptions)</a></div>
-      <div><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_WaitForResponseAsync_Func_PuppeteerSharp_Response_System_Boolean__PuppeteerSharp_WaitForOptions_">WaitForResponseAsync(Func&lt;Response, Boolean&gt;, WaitForOptions)</a></div>
+      <div><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_WaitForResponseAsync_System_Func_PuppeteerSharp_Response_System_Boolean__PuppeteerSharp_WaitForOptions_">WaitForResponseAsync(Func&lt;Response, Boolean&gt;, WaitForOptions)</a></div>
   </div>
 </article>
           </div>
@@ -135,15 +136,16 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WaitForOptions&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitForOptions.cs/%23L12" class="contribution-link">Request doc improvement</a>
+                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WaitForOptions&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/WaitForOptions.cs/%23L12" class="contribution-link">Request doc improvement</a>
                   </li>
                   <li>
-                    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitForOptions.cs/#L12" class="contribution-link">View Source</a>
+                    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/WaitForOptions.cs/#L12" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
-              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+                <h5></h5>
+                <div></div>
               </nav>
             </div>
           </div>

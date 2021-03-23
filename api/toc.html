@@ -4,7 +4,8 @@
     <div class="sidefilter">
       <form class="toc-filter">
         <span class="glyphicon glyphicon-filter filter-icon"></span>
-        <input type="text" id="toc_filter_input" placeholder="Enter here to filter..." onkeypress="if(event.keyCode==13) {return false;}">
+        <span class="glyphicon glyphicon-remove clear-icon" id="toc_filter_clear"></span>
+        <input type="text" id="toc_filter_input" placeholder="" onkeypress="if(event.keyCode==13) {return false;}">
       </form>
     </div>
     <div class="sidetoc">
@@ -44,7 +45,7 @@
                               <a href="PuppeteerSharp.CDPSession.html" name="" title="CDPSession">CDPSession</a>
                           </li>
                           <li>
-                              <a href="PuppeteerSharp.ChromiumProcess.html" name="" title="ChromiumProcess">ChromiumProcess</a>
+                              <a href="PuppeteerSharp.ChromiumLauncher.html" name="" title="ChromiumLauncher">ChromiumLauncher</a>
                           </li>
                           <li>
                               <a href="PuppeteerSharp.ChromiumProcessException.html" name="" title="ChromiumProcessException">ChromiumProcessException</a>
@@ -60,6 +61,9 @@
                           </li>
                           <li>
                               <a href="PuppeteerSharp.ConsoleMessage.html" name="" title="ConsoleMessage">ConsoleMessage</a>
+                          </li>
+                          <li>
+                              <a href="PuppeteerSharp.ConsoleMessageLocation.html" name="" title="ConsoleMessageLocation">ConsoleMessageLocation</a>
                           </li>
                           <li>
                               <a href="PuppeteerSharp.ConsoleType.html" name="" title="ConsoleType">ConsoleType</a>
@@ -95,6 +99,12 @@
                               <a href="PuppeteerSharp.Extensions.html" name="" title="Extensions">Extensions</a>
                           </li>
                           <li>
+                              <a href="PuppeteerSharp.FileChooser.html" name="" title="FileChooser">FileChooser</a>
+                          </li>
+                          <li>
+                              <a href="PuppeteerSharp.FirefoxLauncher.html" name="" title="FirefoxLauncher">FirefoxLauncher</a>
+                          </li>
+                          <li>
                               <a href="PuppeteerSharp.Frame.html" name="" title="Frame">Frame</a>
                           </li>
                           <li>
@@ -116,7 +126,16 @@
                               <a href="PuppeteerSharp.Launcher.html" name="" title="Launcher">Launcher</a>
                           </li>
                           <li>
+                              <a href="PuppeteerSharp.LauncherBase.html" name="" title="LauncherBase">LauncherBase</a>
+                          </li>
+                          <li>
                               <a href="PuppeteerSharp.LaunchOptions.html" name="" title="LaunchOptions">LaunchOptions</a>
+                          </li>
+                          <li>
+                              <a href="PuppeteerSharp.MediaFeature.html" name="" title="MediaFeature">MediaFeature</a>
+                          </li>
+                          <li>
+                              <a href="PuppeteerSharp.MediaFeatureValue.html" name="" title="MediaFeatureValue">MediaFeatureValue</a>
                           </li>
                           <li>
                               <a href="PuppeteerSharp.MessageEventArgs.html" name="" title="MessageEventArgs">MessageEventArgs</a>
@@ -132,6 +151,9 @@
                           </li>
                           <li>
                               <a href="PuppeteerSharp.NavigationOptions.html" name="" title="NavigationOptions">NavigationOptions</a>
+                          </li>
+                          <li>
+                              <a href="PuppeteerSharp.NetworkConditions.html" name="" title="NetworkConditions">NetworkConditions</a>
                           </li>
                           <li>
                               <a href="PuppeteerSharp.OverridePermission.html" name="" title="OverridePermission">OverridePermission</a>
@@ -153,6 +175,18 @@
                           </li>
                           <li>
                               <a href="PuppeteerSharp.Platform.html" name="" title="Platform">Platform</a>
+                          </li>
+                          <li>
+                              <a href="PuppeteerSharp.PopupEventArgs.html" name="" title="PopupEventArgs">PopupEventArgs</a>
+                          </li>
+                          <li>
+                              <a href="PuppeteerSharp.PredefinedNetworkConditions.html" name="" title="PredefinedNetworkConditions">PredefinedNetworkConditions</a>
+                          </li>
+                          <li>
+                              <a href="PuppeteerSharp.ProcessException.html" name="" title="ProcessException">ProcessException</a>
+                          </li>
+                          <li>
+                              <a href="PuppeteerSharp.Product.html" name="" title="Product">Product</a>
                           </li>
                           <li>
                               <a href="PuppeteerSharp.Puppeteer.html" name="" title="Puppeteer">Puppeteer</a>
@@ -188,6 +222,9 @@
                               <a href="PuppeteerSharp.RevisionInfo.html" name="" title="RevisionInfo">RevisionInfo</a>
                           </li>
                           <li>
+                              <a href="PuppeteerSharp.SameSite.html" name="" title="SameSite">SameSite</a>
+                          </li>
+                          <li>
                               <a href="PuppeteerSharp.ScreenshotOptions.html" name="" title="ScreenshotOptions">ScreenshotOptions</a>
                           </li>
                           <li>
@@ -218,13 +255,13 @@
                               <a href="PuppeteerSharp.Tracing.html" name="" title="Tracing">Tracing</a>
                           </li>
                           <li>
-                              <a href="PuppeteerSharp.TracingCompleteEventArgs.html" name="" title="TracingCompleteEventArgs">TracingCompleteEventArgs</a>
-                          </li>
-                          <li>
                               <a href="PuppeteerSharp.TracingOptions.html" name="" title="TracingOptions">TracingOptions</a>
                           </li>
                           <li>
                               <a href="PuppeteerSharp.ViewPortOptions.html" name="" title="ViewPortOptions">ViewPortOptions</a>
+                          </li>
+                          <li>
+                              <a href="PuppeteerSharp.WaitForFileChooserOptions.html" name="" title="WaitForFileChooserOptions">WaitForFileChooserOptions</a>
                           </li>
                           <li>
                               <a href="PuppeteerSharp.WaitForFunctionOptions.html" name="" title="WaitForFunctionOptions">WaitForFunctionOptions</a>
@@ -320,6 +357,22 @@
                 </li>
                 <li>
                     <span class="expand-stub"></span>
+                    <a href="PuppeteerSharp.Messaging.html" name="" title="PuppeteerSharp.Messaging">PuppeteerSharp.Messaging</a>
+                    
+                    <ul class="nav level2">
+                          <li>
+                              <a href="PuppeteerSharp.Messaging.RemoteObject.html" name="" title="RemoteObject">RemoteObject</a>
+                          </li>
+                          <li>
+                              <a href="PuppeteerSharp.Messaging.RemoteObjectSubtype.html" name="" title="RemoteObjectSubtype">RemoteObjectSubtype</a>
+                          </li>
+                          <li>
+                              <a href="PuppeteerSharp.Messaging.RemoteObjectType.html" name="" title="RemoteObjectType">RemoteObjectType</a>
+                          </li>
+                    </ul>
+                </li>
+                <li>
+                    <span class="expand-stub"></span>
                     <a href="PuppeteerSharp.Mobile.html" name="" title="PuppeteerSharp.Mobile">PuppeteerSharp.Mobile</a>
                     
                     <ul class="nav level2">
@@ -385,6 +438,15 @@
                           </li>
                           <li>
                               <a href="PuppeteerSharp.Transport.TransportClosedEventArgs.html" name="" title="TransportClosedEventArgs">TransportClosedEventArgs</a>
+                          </li>
+                          <li>
+                              <a href="PuppeteerSharp.Transport.TransportFactory.html" name="" title="TransportFactory">TransportFactory</a>
+                          </li>
+                          <li>
+                              <a href="PuppeteerSharp.Transport.TransportTaskScheduler.html" name="" title="TransportTaskScheduler">TransportTaskScheduler</a>
+                          </li>
+                          <li>
+                              <a href="PuppeteerSharp.Transport.WebSocketFactory.html" name="" title="WebSocketFactory">WebSocketFactory</a>
                           </li>
                           <li>
                               <a href="PuppeteerSharp.Transport.WebSocketTransport.html" name="" title="WebSocketTransport">WebSocketTransport</a>

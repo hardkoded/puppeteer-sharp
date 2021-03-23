@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class ConsoleMessage
    ">
-    <meta name="generator" content="docfx 2.40.5.0">
+    <meta name="generator" content="docfx 2.56.6.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -43,7 +43,7 @@
             <div class="collapse navbar-collapse" id="navbar">
               <form class="navbar-form navbar-right" role="search" id="search">
                 <div class="form-group">
-                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                  <input type="text" class="form-control" id="search-query" placeholder="" autocomplete="off">
                 </div>
               </form>
             </div>
@@ -61,7 +61,7 @@
       <div role="main" class="container body-content hide-when-search">
         
         <div class="sidenav hide-when-search">
-          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle"></a>
           <div class="sidetoggle collapse" id="sidetoggle">
             <div id="sidetoc"></div>
           </div>
@@ -73,7 +73,7 @@
   
   <h1 id="PuppeteerSharp_ConsoleMessage" data-uid="PuppeteerSharp.ConsoleMessage" class="text-break">Class ConsoleMessage
   </h1>
-  <div class="markdown level0 summary"><p>ConsoleMessage is part of <a class="xref" href="PuppeteerSharp.ConsoleEventArgs.html">ConsoleEventArgs</a> used by <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_Console">Console</a></p>
+  <div class="markdown level0 summary"><p>ConsoleMessage is part of <a class="xref" href="PuppeteerSharp.ConsoleEventArgs.html">ConsoleEventArgs</a> used by <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_Console">Console</a>.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
@@ -85,25 +85,25 @@
   <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
   <h5 id="PuppeteerSharp_ConsoleMessage_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class ConsoleMessage : object</code></pre>
+    <pre><code class="lang-csharp hljs">public class ConsoleMessage</code></pre>
   </div>
   <h3 id="constructors">Constructors
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20ConsoleMessage(ConsoleType, String, IList&lt;JSHandle&gt;)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConsoleMessage.cs/%23L32">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20ConsoleMessage(ConsoleType, String, IList&lt;JSHandle&gt;, ConsoleMessageLocation)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/ConsoleMessage.cs/%23L17">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConsoleMessage.cs/#L32">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/ConsoleMessage.cs/#L17">View Source</a>
   </span>
   <a id="PuppeteerSharp_ConsoleMessage__ctor_" data-uid="PuppeteerSharp.ConsoleMessage.#ctor*"></a>
-  <h4 id="PuppeteerSharp_ConsoleMessage__ctor_PuppeteerSharp_ConsoleType_System_String_IList_PuppeteerSharp_JSHandle__" data-uid="PuppeteerSharp.ConsoleMessage.#ctor(PuppeteerSharp.ConsoleType,System.String,IList{PuppeteerSharp.JSHandle})">ConsoleMessage(ConsoleType, String, IList&lt;JSHandle&gt;)</h4>
+  <h4 id="PuppeteerSharp_ConsoleMessage__ctor_PuppeteerSharp_ConsoleType_System_String_System_Collections_Generic_IList_PuppeteerSharp_JSHandle__PuppeteerSharp_ConsoleMessageLocation_" data-uid="PuppeteerSharp.ConsoleMessage.#ctor(PuppeteerSharp.ConsoleType,System.String,System.Collections.Generic.IList{PuppeteerSharp.JSHandle},PuppeteerSharp.ConsoleMessageLocation)">ConsoleMessage(ConsoleType, String, IList&lt;JSHandle&gt;, ConsoleMessageLocation)</h4>
   <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="PuppeteerSharp.ConsoleMessage.html">ConsoleMessage</a> class.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ConsoleMessage(ConsoleType type, string text, IList&lt;JSHandle&gt; args = null)</code></pre>
+    <pre><code class="lang-csharp hljs">public ConsoleMessage(ConsoleType type, string text, IList&lt;JSHandle&gt; args, ConsoleMessageLocation location = null)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -128,9 +128,15 @@
 </td>
       </tr>
       <tr>
-        <td><span class="xref">IList</span>&lt;<a class="xref" href="PuppeteerSharp.JSHandle.html">JSHandle</a>&gt;</td>
+        <td><span class="xref">System.Collections.Generic.IList</span>&lt;<a class="xref" href="PuppeteerSharp.JSHandle.html">JSHandle</a>&gt;</td>
         <td><span class="parametername">args</span></td>
         <td><p>Arguments.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.ConsoleMessageLocation.html">ConsoleMessageLocation</a></td>
+        <td><span class="parametername">location</span></td>
+        <td><p>Message location</p>
 </td>
       </tr>
     </tbody>
@@ -139,10 +145,10 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Args&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConsoleMessage.cs/%23L24">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Args&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/ConsoleMessage.cs/%23L41">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConsoleMessage.cs/#L24">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/ConsoleMessage.cs/#L41">View Source</a>
   </span>
   <a id="PuppeteerSharp_ConsoleMessage_Args_" data-uid="PuppeteerSharp.ConsoleMessage.Args*"></a>
   <h4 id="PuppeteerSharp_ConsoleMessage_Args" data-uid="PuppeteerSharp.ConsoleMessage.Args">Args</h4>
@@ -163,7 +169,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IList</span>&lt;<a class="xref" href="PuppeteerSharp.JSHandle.html">JSHandle</a>&gt;</td>
+        <td><span class="xref">System.Collections.Generic.IList</span>&lt;<a class="xref" href="PuppeteerSharp.JSHandle.html">JSHandle</a>&gt;</td>
         <td><p>The arguments.</p>
 </td>
       </tr>
@@ -171,10 +177,41 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Text&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConsoleMessage.cs/%23L19">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Location&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/ConsoleMessage.cs/%23L46">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConsoleMessage.cs/#L19">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/ConsoleMessage.cs/#L46">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_ConsoleMessage_Location_" data-uid="PuppeteerSharp.ConsoleMessage.Location*"></a>
+  <h4 id="PuppeteerSharp_ConsoleMessage_Location" data-uid="PuppeteerSharp.ConsoleMessage.Location">Location</h4>
+  <div class="markdown level1 summary"><p>Gets the location.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ConsoleMessageLocation Location { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.ConsoleMessageLocation.html">ConsoleMessageLocation</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Text&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/ConsoleMessage.cs/%23L35">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/ConsoleMessage.cs/#L35">View Source</a>
   </span>
   <a id="PuppeteerSharp_ConsoleMessage_Text_" data-uid="PuppeteerSharp.ConsoleMessage.Text*"></a>
   <h4 id="PuppeteerSharp_ConsoleMessage_Text" data-uid="PuppeteerSharp.ConsoleMessage.Text">Text</h4>
@@ -203,10 +240,10 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Type&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConsoleMessage.cs/%23L14">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Type&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/ConsoleMessage.cs/%23L29">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConsoleMessage.cs/#L14">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/ConsoleMessage.cs/#L29">View Source</a>
   </span>
   <a id="PuppeteerSharp_ConsoleMessage_Type_" data-uid="PuppeteerSharp.ConsoleMessage.Type*"></a>
   <h4 id="PuppeteerSharp_ConsoleMessage_Type" data-uid="PuppeteerSharp.ConsoleMessage.Type">Type</h4>
@@ -241,15 +278,16 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20ConsoleMessage&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConsoleMessage.cs/%23L8" class="contribution-link">Request doc improvement</a>
+                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20ConsoleMessage&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/ConsoleMessage.cs/%23L8" class="contribution-link">Request doc improvement</a>
                   </li>
                   <li>
-                    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConsoleMessage.cs/#L8" class="contribution-link">View Source</a>
+                    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/ConsoleMessage.cs/#L8" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
-              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+                <h5></h5>
+                <div></div>
               </nav>
             </div>
           </div>

@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class WaitTaskTimeoutException
    ">
-    <meta name="generator" content="docfx 2.40.5.0">
+    <meta name="generator" content="docfx 2.56.6.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -43,7 +43,7 @@
             <div class="collapse navbar-collapse" id="navbar">
               <form class="navbar-form navbar-right" role="search" id="search">
                 <div class="form-group">
-                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                  <input type="text" class="form-control" id="search-query" placeholder="" autocomplete="off">
                 </div>
               </form>
             </div>
@@ -61,7 +61,7 @@
       <div role="main" class="container body-content hide-when-search">
         
         <div class="sidenav hide-when-search">
-          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle"></a>
           <div class="sidetoggle collapse" id="sidetoggle">
             <div id="sidetoc"></div>
           </div>
@@ -79,23 +79,30 @@
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><span class="xref">System.Object</span></div>
-    <div class="level1"><a class="xref" href="PuppeteerSharp.PuppeteerException.html">PuppeteerException</a></div>
-    <div class="level2"><span class="xref">WaitTaskTimeoutException</span></div>
+    <div class="level1"><span class="xref">System.Exception</span></div>
+    <div class="level2"><a class="xref" href="PuppeteerSharp.PuppeteerException.html">PuppeteerException</a></div>
+    <div class="level3"><span class="xref">WaitTaskTimeoutException</span></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><span class="xref">System.Runtime.InteropServices._Exception</span></div>
+    <div><span class="xref">System.Runtime.Serialization.ISerializable</span></div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="PuppeteerSharp.html">PuppeteerSharp</a></h6>
   <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
   <h5 id="PuppeteerSharp_WaitTaskTimeoutException_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class WaitTaskTimeoutException : PuppeteerException</code></pre>
+    <pre><code class="lang-csharp hljs">[Serializable]
+public class WaitTaskTimeoutException : PuppeteerException, _Exception, ISerializable</code></pre>
   </div>
   <h3 id="constructors">Constructors
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WaitTaskTimeoutException()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitTaskTimeoutException.cs/%23L26">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WaitTaskTimeoutException()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/WaitTaskTimeoutException.cs/%23L26">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitTaskTimeoutException.cs/#L26">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/WaitTaskTimeoutException.cs/#L26">View Source</a>
   </span>
   <a id="PuppeteerSharp_WaitTaskTimeoutException__ctor_" data-uid="PuppeteerSharp.WaitTaskTimeoutException.#ctor*"></a>
   <h4 id="PuppeteerSharp_WaitTaskTimeoutException__ctor" data-uid="PuppeteerSharp.WaitTaskTimeoutException.#ctor">WaitTaskTimeoutException()</h4>
@@ -108,50 +115,10 @@
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WaitTaskTimeoutException(SerializationInfo, StreamingContext)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitTaskTimeoutException.cs/%23L64">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WaitTaskTimeoutException(Int32, String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/WaitTaskTimeoutException.cs/%23L43">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitTaskTimeoutException.cs/#L64">View Source</a>
-  </span>
-  <a id="PuppeteerSharp_WaitTaskTimeoutException__ctor_" data-uid="PuppeteerSharp.WaitTaskTimeoutException.#ctor*"></a>
-  <h4 id="PuppeteerSharp_WaitTaskTimeoutException__ctor_SerializationInfo_StreamingContext_" data-uid="PuppeteerSharp.WaitTaskTimeoutException.#ctor(SerializationInfo,StreamingContext)">WaitTaskTimeoutException(SerializationInfo, StreamingContext)</h4>
-  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="PuppeteerSharp.WaitTaskTimeoutException.html">WaitTaskTimeoutException</a> class.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected WaitTaskTimeoutException(SerializationInfo info, StreamingContext context)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">SerializationInfo</span></td>
-        <td><span class="parametername">info</span></td>
-        <td><p>Info.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">StreamingContext</span></td>
-        <td><span class="parametername">context</span></td>
-        <td><p>Context.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WaitTaskTimeoutException(Int32, String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitTaskTimeoutException.cs/%23L43">Request doc improvement</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitTaskTimeoutException.cs/#L43">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/WaitTaskTimeoutException.cs/#L43">View Source</a>
   </span>
   <a id="PuppeteerSharp_WaitTaskTimeoutException__ctor_" data-uid="PuppeteerSharp.WaitTaskTimeoutException.#ctor*"></a>
   <h4 id="PuppeteerSharp_WaitTaskTimeoutException__ctor_System_Int32_System_String_" data-uid="PuppeteerSharp.WaitTaskTimeoutException.#ctor(System.Int32,System.String)">WaitTaskTimeoutException(Int32, String)</h4>
@@ -188,10 +155,50 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WaitTaskTimeoutException(String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitTaskTimeoutException.cs/%23L34">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WaitTaskTimeoutException(SerializationInfo, StreamingContext)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/WaitTaskTimeoutException.cs/%23L63">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitTaskTimeoutException.cs/#L34">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/WaitTaskTimeoutException.cs/#L63">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_WaitTaskTimeoutException__ctor_" data-uid="PuppeteerSharp.WaitTaskTimeoutException.#ctor*"></a>
+  <h4 id="PuppeteerSharp_WaitTaskTimeoutException__ctor_System_Runtime_Serialization_SerializationInfo_System_Runtime_Serialization_StreamingContext_" data-uid="PuppeteerSharp.WaitTaskTimeoutException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">WaitTaskTimeoutException(SerializationInfo, StreamingContext)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="PuppeteerSharp.WaitTaskTimeoutException.html">WaitTaskTimeoutException</a> class.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected WaitTaskTimeoutException(SerializationInfo info, StreamingContext context)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Runtime.Serialization.SerializationInfo</span></td>
+        <td><span class="parametername">info</span></td>
+        <td><p>Info.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Runtime.Serialization.StreamingContext</span></td>
+        <td><span class="parametername">context</span></td>
+        <td><p>Context.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WaitTaskTimeoutException(String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/WaitTaskTimeoutException.cs/%23L34">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/WaitTaskTimeoutException.cs/#L34">View Source</a>
   </span>
   <a id="PuppeteerSharp_WaitTaskTimeoutException__ctor_" data-uid="PuppeteerSharp.WaitTaskTimeoutException.#ctor*"></a>
   <h4 id="PuppeteerSharp_WaitTaskTimeoutException__ctor_System_String_" data-uid="PuppeteerSharp.WaitTaskTimeoutException.#ctor(System.String)">WaitTaskTimeoutException(String)</h4>
@@ -222,13 +229,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WaitTaskTimeoutException(String, Exception)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitTaskTimeoutException.cs/%23L55">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WaitTaskTimeoutException(String, Exception)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/WaitTaskTimeoutException.cs/%23L54">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitTaskTimeoutException.cs/#L55">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/WaitTaskTimeoutException.cs/#L54">View Source</a>
   </span>
   <a id="PuppeteerSharp_WaitTaskTimeoutException__ctor_" data-uid="PuppeteerSharp.WaitTaskTimeoutException.#ctor*"></a>
-  <h4 id="PuppeteerSharp_WaitTaskTimeoutException__ctor_System_String_Exception_" data-uid="PuppeteerSharp.WaitTaskTimeoutException.#ctor(System.String,Exception)">WaitTaskTimeoutException(String, Exception)</h4>
+  <h4 id="PuppeteerSharp_WaitTaskTimeoutException__ctor_System_String_System_Exception_" data-uid="PuppeteerSharp.WaitTaskTimeoutException.#ctor(System.String,System.Exception)">WaitTaskTimeoutException(String, Exception)</h4>
   <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="PuppeteerSharp.WaitTaskTimeoutException.html">WaitTaskTimeoutException</a> class.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -253,7 +260,7 @@
 </td>
       </tr>
       <tr>
-        <td><span class="xref">Exception</span></td>
+        <td><span class="xref">System.Exception</span></td>
         <td><span class="parametername">innerException</span></td>
         <td><p>Inner exception.</p>
 </td>
@@ -264,10 +271,10 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20ElementType&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitTaskTimeoutException.cs/%23L21">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20ElementType&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/WaitTaskTimeoutException.cs/%23L21">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitTaskTimeoutException.cs/#L21">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/WaitTaskTimeoutException.cs/#L21">View Source</a>
   </span>
   <a id="PuppeteerSharp_WaitTaskTimeoutException_ElementType_" data-uid="PuppeteerSharp.WaitTaskTimeoutException.ElementType*"></a>
   <h4 id="PuppeteerSharp_WaitTaskTimeoutException_ElementType" data-uid="PuppeteerSharp.WaitTaskTimeoutException.ElementType">ElementType</h4>
@@ -296,10 +303,10 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Timeout&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitTaskTimeoutException.cs/%23L16">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Timeout&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/WaitTaskTimeoutException.cs/%23L16">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitTaskTimeoutException.cs/#L16">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/WaitTaskTimeoutException.cs/#L16">View Source</a>
   </span>
   <a id="PuppeteerSharp_WaitTaskTimeoutException_Timeout_" data-uid="PuppeteerSharp.WaitTaskTimeoutException.Timeout*"></a>
   <h4 id="PuppeteerSharp_WaitTaskTimeoutException_Timeout" data-uid="PuppeteerSharp.WaitTaskTimeoutException.Timeout">Timeout</h4>
@@ -326,6 +333,13 @@
       </tr>
     </tbody>
   </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <span class="xref">System.Runtime.InteropServices._Exception</span>
+  </div>
+  <div>
+      <span class="xref">System.Runtime.Serialization.ISerializable</span>
+  </div>
 </article>
           </div>
           
@@ -334,15 +348,16 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WaitTaskTimeoutException&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitTaskTimeoutException.cs/%23L9" class="contribution-link">Request doc improvement</a>
+                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WaitTaskTimeoutException&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/WaitTaskTimeoutException.cs/%23L9" class="contribution-link">Request doc improvement</a>
                   </li>
                   <li>
-                    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitTaskTimeoutException.cs/#L9" class="contribution-link">View Source</a>
+                    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/WaitTaskTimeoutException.cs/#L9" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
-              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+                <h5></h5>
+                <div></div>
               </nav>
             </div>
           </div>

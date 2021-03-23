@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class WebSocketTransport
    ">
-    <meta name="generator" content="docfx 2.40.5.0">
+    <meta name="generator" content="docfx 2.56.6.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -43,7 +43,7 @@
             <div class="collapse navbar-collapse" id="navbar">
               <form class="navbar-form navbar-right" role="search" id="search">
                 <div class="form-group">
-                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                  <input type="text" class="form-control" id="search-query" placeholder="" autocomplete="off">
                 </div>
               </form>
             </div>
@@ -61,7 +61,7 @@
       <div role="main" class="container body-content hide-when-search">
         
         <div class="sidenav hide-when-search">
-          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle"></a>
           <div class="sidetoggle collapse" id="sidetoggle">
             <div id="sidetoc"></div>
           </div>
@@ -84,31 +84,31 @@
   <div classs="implements">
     <h5>Implements</h5>
     <div><a class="xref" href="PuppeteerSharp.Transport.IConnectionTransport.html">IConnectionTransport</a></div>
-    <div><span class="xref">IDisposable</span></div>
+    <div><span class="xref">System.IDisposable</span></div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="PuppeteerSharp.Transport.html">PuppeteerSharp.Transport</a></h6>
   <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
   <h5 id="PuppeteerSharp_Transport_WebSocketTransport_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class WebSocketTransport : object, IConnectionTransport, IDisposable</code></pre>
+    <pre><code class="lang-csharp hljs">public class WebSocketTransport : IConnectionTransport, IDisposable</code></pre>
   </div>
   <h3 id="constructors">Constructors
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WebSocketTransport(Boolean)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/%23L40">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WebSocketTransport(WebSocket, TransportTaskScheduler, Boolean)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/%23L75">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/#L40">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/#L75">View Source</a>
   </span>
   <a id="PuppeteerSharp_Transport_WebSocketTransport__ctor_" data-uid="PuppeteerSharp.Transport.WebSocketTransport.#ctor*"></a>
-  <h4 id="PuppeteerSharp_Transport_WebSocketTransport__ctor_System_Boolean_" data-uid="PuppeteerSharp.Transport.WebSocketTransport.#ctor(System.Boolean)">WebSocketTransport(Boolean)</h4>
-  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="PuppeteerSharp.Transport.WebSocketTransport.html">WebSocketTransport</a> class.</p>
+  <h4 id="PuppeteerSharp_Transport_WebSocketTransport__ctor_System_Net_WebSockets_WebSocket_PuppeteerSharp_Transport_TransportTaskScheduler_System_Boolean_" data-uid="PuppeteerSharp.Transport.WebSocketTransport.#ctor(System.Net.WebSockets.WebSocket,PuppeteerSharp.Transport.TransportTaskScheduler,System.Boolean)">WebSocketTransport(WebSocket, TransportTaskScheduler, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Initialize the Transport</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public WebSocketTransport(bool startReading = true)</code></pre>
+    <pre><code class="lang-csharp hljs">public WebSocketTransport(WebSocket client, TransportTaskScheduler scheduler, bool queueRequests)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -121,10 +121,114 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Boolean</span></td>
-        <td><span class="parametername">startReading</span></td>
-        <td><p>If set to <code>true</code> the Transport will start reading as soon as it's initialized.</p>
+        <td><span class="xref">System.Net.WebSockets.WebSocket</span></td>
+        <td><span class="parametername">client</span></td>
+        <td><p>The web socket</p>
 </td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.Transport.TransportTaskScheduler.html">TransportTaskScheduler</a></td>
+        <td><span class="parametername">scheduler</span></td>
+        <td><p>The scheduler to use for long-running tasks.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><span class="parametername">queueRequests</span></td>
+        <td><p>Indicates whether requests should be queued.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="fields">Fields
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20DefaultTransportFactory&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/%23L21">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/#L21">View Source</a>
+  </span>
+  <h4 id="PuppeteerSharp_Transport_WebSocketTransport_DefaultTransportFactory" data-uid="PuppeteerSharp.Transport.WebSocketTransport.DefaultTransportFactory">DefaultTransportFactory</h4>
+  <div class="markdown level1 summary"><p>Gets the default <a class="xref" href="PuppeteerSharp.Transport.WebSocketFactory.html">WebSocketFactory</a>. This factory does not support Windows 7.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static readonly TransportFactory DefaultTransportFactory</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.Transport.TransportFactory.html">TransportFactory</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20DefaultTransportScheduler&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/%23L31">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/#L31">View Source</a>
+  </span>
+  <h4 id="PuppeteerSharp_Transport_WebSocketTransport_DefaultTransportScheduler" data-uid="PuppeteerSharp.Transport.WebSocketTransport.DefaultTransportScheduler">DefaultTransportScheduler</h4>
+  <div class="markdown level1 summary"><p>Gets the default <a class="xref" href="PuppeteerSharp.Transport.TransportTaskScheduler.html">TransportTaskScheduler</a></p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static readonly TransportTaskScheduler DefaultTransportScheduler</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.Transport.TransportTaskScheduler.html">TransportTaskScheduler</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20DefaultWebSocketFactory&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/%23L26">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/#L26">View Source</a>
+  </span>
+  <h4 id="PuppeteerSharp_Transport_WebSocketTransport_DefaultWebSocketFactory" data-uid="PuppeteerSharp.Transport.WebSocketTransport.DefaultWebSocketFactory">DefaultWebSocketFactory</h4>
+  <div class="markdown level1 summary"><p>Gets the default <a class="xref" href="PuppeteerSharp.Transport.TransportFactory.html">TransportFactory</a></p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static readonly WebSocketFactory DefaultWebSocketFactory</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.Transport.WebSocketFactory.html">WebSocketFactory</a></td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -132,10 +236,10 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20IsClosed&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/%23L26">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20IsClosed&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/%23L98">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/#L26">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/#L98">View Source</a>
   </span>
   <a id="PuppeteerSharp_Transport_WebSocketTransport_IsClosed_" data-uid="PuppeteerSharp.Transport.WebSocketTransport.IsClosed*"></a>
   <h4 id="PuppeteerSharp_Transport_WebSocketTransport_IsClosed" data-uid="PuppeteerSharp.Transport.WebSocketTransport.IsClosed">IsClosed</h4>
@@ -165,10 +269,10 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Dispose()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/%23L153">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Dispose()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/%23L142">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/#L153">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/#L142">View Source</a>
   </span>
   <a id="PuppeteerSharp_Transport_WebSocketTransport_Dispose_" data-uid="PuppeteerSharp.Transport.WebSocketTransport.Dispose*"></a>
   <h4 id="PuppeteerSharp_Transport_WebSocketTransport_Dispose" data-uid="PuppeteerSharp.Transport.WebSocketTransport.Dispose">Dispose()</h4>
@@ -180,51 +284,19 @@
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20GetResponseAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/%23L94">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Dispose(Boolean)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/%23L152">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/#L94">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/#L152">View Source</a>
   </span>
-  <a id="PuppeteerSharp_Transport_WebSocketTransport_GetResponseAsync_" data-uid="PuppeteerSharp.Transport.WebSocketTransport.GetResponseAsync*"></a>
-  <h4 id="PuppeteerSharp_Transport_WebSocketTransport_GetResponseAsync" data-uid="PuppeteerSharp.Transport.WebSocketTransport.GetResponseAsync">GetResponseAsync()</h4>
-  <div class="markdown level1 summary"><p>Starts listening the socket</p>
+  <a id="PuppeteerSharp_Transport_WebSocketTransport_Dispose_" data-uid="PuppeteerSharp.Transport.WebSocketTransport.Dispose*"></a>
+  <h4 id="PuppeteerSharp_Transport_WebSocketTransport_Dispose_System_Boolean_" data-uid="PuppeteerSharp.Transport.WebSocketTransport.Dispose(System.Boolean)">Dispose(Boolean)</h4>
+  <div class="markdown level1 summary"><p>Close the WebSocketTransport</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected Task&lt;object&gt; GetResponseAsync()</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">Task</span>&lt;<span class="xref">System.Object</span>&gt;</td>
-        <td><p>The start.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20InitializeAsync(String, IConnectionOptions, ILoggerFactory)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/%23L54">Request doc improvement</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/#L54">View Source</a>
-  </span>
-  <a id="PuppeteerSharp_Transport_WebSocketTransport_InitializeAsync_" data-uid="PuppeteerSharp.Transport.WebSocketTransport.InitializeAsync*"></a>
-  <h4 id="PuppeteerSharp_Transport_WebSocketTransport_InitializeAsync_System_String_PuppeteerSharp_IConnectionOptions_ILoggerFactory_" data-uid="PuppeteerSharp.Transport.WebSocketTransport.InitializeAsync(System.String,PuppeteerSharp.IConnectionOptions,ILoggerFactory)">InitializeAsync(String, IConnectionOptions, ILoggerFactory)</h4>
-  <div class="markdown level1 summary"><p>Initialize the Transport</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public virtual Task InitializeAsync(string url, IConnectionOptions connectionOptions, ILoggerFactory loggerFactory = null)</code></pre>
+    <pre><code class="lang-csharp hljs">protected virtual void Dispose(bool disposing)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -237,46 +309,19 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.String</span></td>
-        <td><span class="parametername">url</span></td>
-        <td><p>Chromium URL</p>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><span class="parametername">disposing</span></td>
+        <td><p>Indicates whether disposal was initiated by <a class="xref" href="PuppeteerSharp.Transport.WebSocketTransport.html#PuppeteerSharp_Transport_WebSocketTransport_Dispose">Dispose()</a> operation.</p>
 </td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="PuppeteerSharp.IConnectionOptions.html">IConnectionOptions</a></td>
-        <td><span class="parametername">connectionOptions</span></td>
-        <td><p>Connection options</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">ILoggerFactory</span></td>
-        <td><span class="parametername">loggerFactory</span></td>
-        <td><p>Logger factory</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">Task</span></td>
-        <td></td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20SendAsync(String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/%23L76">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20SendAsync(String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/%23L117">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/#L76">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/#L117">View Source</a>
   </span>
   <a id="PuppeteerSharp_Transport_WebSocketTransport_SendAsync_" data-uid="PuppeteerSharp.Transport.WebSocketTransport.SendAsync*"></a>
   <h4 id="PuppeteerSharp_Transport_WebSocketTransport_SendAsync_System_String_" data-uid="PuppeteerSharp.Transport.WebSocketTransport.SendAsync(System.String)">SendAsync(String)</h4>
@@ -315,7 +360,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Task</span></td>
+        <td><span class="xref">System.Threading.Tasks.Task</span></td>
         <td><p>The task.</p>
 </td>
       </tr>
@@ -323,10 +368,10 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20StopReading()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/%23L88">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20StopReading()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/%23L129">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/#L88">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/#L129">View Source</a>
   </span>
   <a id="PuppeteerSharp_Transport_WebSocketTransport_StopReading_" data-uid="PuppeteerSharp.Transport.WebSocketTransport.StopReading*"></a>
   <h4 id="PuppeteerSharp_Transport_WebSocketTransport_StopReading" data-uid="PuppeteerSharp.Transport.WebSocketTransport.StopReading">StopReading()</h4>
@@ -341,10 +386,10 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Closed&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/%23L30">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Closed&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/%23L102">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/#L30">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/#L102">View Source</a>
   </span>
   <h4 id="PuppeteerSharp_Transport_WebSocketTransport_Closed" data-uid="PuppeteerSharp.Transport.WebSocketTransport.Closed">Closed</h4>
   <div class="markdown level1 summary"><p>Occurs when the transport is closed.</p>
@@ -364,17 +409,17 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">EventHandler</span>&lt;<a class="xref" href="PuppeteerSharp.Transport.TransportClosedEventArgs.html">TransportClosedEventArgs</a>&gt;</td>
+        <td><span class="xref">System.EventHandler</span>&lt;<a class="xref" href="PuppeteerSharp.Transport.TransportClosedEventArgs.html">TransportClosedEventArgs</a>&gt;</td>
         <td></td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20MessageReceived&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/%23L34">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20MessageReceived&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/%23L106">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/#L34">View Source</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/#L106">View Source</a>
   </span>
   <h4 id="PuppeteerSharp_Transport_WebSocketTransport_MessageReceived" data-uid="PuppeteerSharp.Transport.WebSocketTransport.MessageReceived">MessageReceived</h4>
   <div class="markdown level1 summary"><p>Occurs when a message is received.</p>
@@ -394,7 +439,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">EventHandler</span>&lt;<a class="xref" href="PuppeteerSharp.Transport.MessageReceivedEventArgs.html">MessageReceivedEventArgs</a>&gt;</td>
+        <td><span class="xref">System.EventHandler</span>&lt;<a class="xref" href="PuppeteerSharp.Transport.MessageReceivedEventArgs.html">MessageReceivedEventArgs</a>&gt;</td>
         <td></td>
       </tr>
     </tbody>
@@ -404,7 +449,7 @@
       <a class="xref" href="PuppeteerSharp.Transport.IConnectionTransport.html">IConnectionTransport</a>
   </div>
   <div>
-      <span class="xref">IDisposable</span>
+      <span class="xref">System.IDisposable</span>
   </div>
 </article>
           </div>
@@ -414,15 +459,16 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WebSocketTransport&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/%23L14" class="contribution-link">Request doc improvement</a>
+                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WebSocketTransport&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/%23L14" class="contribution-link">Request doc improvement</a>
                   </li>
                   <li>
-                    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/#L14" class="contribution-link">View Source</a>
+                    <a href="https://github.com/kblok/puppeteer-sharp/blob/fix-doc-deploy/lib/PuppeteerSharp/Transport/WebSocketTransport.cs/#L14" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
-              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+                <h5></h5>
+                <div></div>
               </nav>
             </div>
           </div>
