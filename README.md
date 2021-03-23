@@ -14,6 +14,10 @@
 
 Puppeteer Sharp is a .NET port of the official [Node.JS Puppeteer API](https://github.com/GoogleChrome/puppeteer). 
 
+# Puppeteer-Sharp 3 is here!
+
+Check out the [blog post](https://www.hardkoded.com/blog/puppeteer-sharp-3-is-here)!
+
 # Useful links
 
 * [API Documentation](http://www.puppeteersharp.com/api/index.html)
