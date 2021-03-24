@@ -2,6 +2,17 @@
 
 Puppeteer Sharp is a .NET port of the official [Node.JS Puppeteer API](https://github.com/GoogleChrome/puppeteer).
 
+
+# Puppeteer-Sharp 3 is here!
+
+Check out the [blog post](https://www.hardkoded.com/blog/puppeteer-sharp-3-is-here)!
+
+# Sponsor the project
+
+If you are making money using Puppeteer-Sharp, consider sponsoring this project.  
+This will give you priority support and code reviews (depending on the tier), and it will help this **community based** project keep moving.  
+[Click here](https://github.com/sponsors/hardkoded) to sponsor this project.
+
 # Prerequisites
 
  * As Puppeteer-Sharp is a NetStandard 2.0 library, The minimum platform versions are .NET Framework 4.6.1 and .NET Core 2.0. [Read more](https://docs.microsoft.com/en-us/dotnet/standard/net-standard).
