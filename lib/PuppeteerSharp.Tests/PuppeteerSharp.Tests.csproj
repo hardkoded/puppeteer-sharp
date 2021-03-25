@@ -28,6 +28,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\PuppeteerSharp.TestServer\PuppeteerSharp.TestServer.csproj" />
 		<ProjectReference Include="..\PuppeteerSharp\PuppeteerSharp.csproj" />
+		<ProjectReference Include="..\tests\PuppeteerSharp.Xunit\PuppeteerSharp.Xunit.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Update="Assets\**">
