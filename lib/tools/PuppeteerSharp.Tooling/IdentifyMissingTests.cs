@@ -134,7 +134,7 @@ namespace PuppeteerSharp.Tooling
             {
                 ScaffoldTest.FindTestsInFile(
                     fileInfo.FullName,
-                    (testName) =>
+                    (testDescribe, testName) =>
                     {
                         _testPairs.Add(new(basePath + fileInfo.Name.Substring(0, fileInfo.Name.IndexOf('.')), testName));
                     });
