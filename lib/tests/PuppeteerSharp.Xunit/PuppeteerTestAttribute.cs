@@ -49,5 +49,17 @@ namespace PuppeteerSharp.Xunit
         /// The describe of the test, the decorated code is based on, if one exists.
         /// </summary>
         public string Describe { get; }
+
+        public override string ToString()
+        {
+            if (Describe == null)
+            {
+                return $"{FileName}: {TestName}";
+            }
+            else
+            {
+                return $"{FileName}: {Describe}: {TestName}";
+            }
+        }
     }
 }

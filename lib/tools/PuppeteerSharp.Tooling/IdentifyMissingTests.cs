@@ -36,7 +36,7 @@ namespace PuppeteerSharp.Tooling
     /// </summary>
     internal static class IdentifyMissingTests
     {
-        private static readonly List<(string FileName, string TestName)> _testPairs = new();
+        private static readonly List<PuppeteerTestAttribute> _testPairs = new();
 
         /// <summary>
         /// Runs the scenario.
@@ -65,8 +65,8 @@ namespace PuppeteerSharp.Tooling
             int noMatches = 0;
             int totalTests = 0;
 
-            List<(string FileName, string TestName)> missingTests = new();
-            List<KeyValuePair<(string FileName, string TestName), List<(string FileName, string TestName)>>> invalidMaps = new();
+            List<PuppeteerTestAttribute> missingTests = new();
+            List<KeyValuePair<PuppeteerTestAttribute, List<PuppeteerTestAttribute>>> invalidMaps = new();
             foreach (var atx in attributes)
             {
                 totalTests++;
@@ -76,16 +76,16 @@ namespace PuppeteerSharp.Tooling
                 if (!potentialMatch.Any())
                 {
                     noMatches++;
-                    missingTests.Add((atx.FileName, atx.TestName));
+                    missingTests.Add(atx);
                 }
-                else if (potentialMatch.Any(x => string.Equals(x.FileName, atx.TrimmedName, StringComparison.InvariantCultureIgnoreCase)))
+                else if (potentialMatch.Any(x => string.Equals(x.TrimmedName, atx.TrimmedName, StringComparison.InvariantCultureIgnoreCase)))
                 {
                     fullMatches++;
                     continue;
                 }
                 else
                 {
-                    invalidMaps.Add(new KeyValuePair<(string, string), List<(string, string)>>((atx.TrimmedName, atx.TestName), potentialMatch.ToList()));
+                    invalidMaps.Add(new KeyValuePair<PuppeteerTestAttribute, List<PuppeteerTestAttribute>>(atx, potentialMatch.ToList()));
                     potentialMatches++;
                 }
             }
@@ -100,10 +100,10 @@ namespace PuppeteerSharp.Tooling
 
             foreach (var invalidTest in invalidMaps)
             {
-                Console.WriteLine($"{invalidTest.Key.FileName}: {invalidTest.Key.TestName}");
-                foreach (var (fileName, testName) in invalidTest.Value)
+                Console.WriteLine($"{invalidTest.Key}");
+                foreach (var value in invalidTest.Value)
                 {
-                    Console.WriteLine($"\t{fileName}: {testName}");
+                    Console.WriteLine($"\t{value}");
                 }
             }
 
@@ -113,7 +113,7 @@ namespace PuppeteerSharp.Tooling
 
             foreach (var invalidTest in missingTests)
             {
-                Console.WriteLine($"{invalidTest.FileName}: {invalidTest.TestName}");
+                Console.WriteLine($"{invalidTest}");
             }
 
             Console.WriteLine($"Found/Mismatched/Missing: {fullMatches}/{potentialMatches}/{noMatches} out of {totalTests}");
@@ -136,7 +136,7 @@ namespace PuppeteerSharp.Tooling
                     fileInfo.FullName,
                     (testDescribe, testName) =>
                     {
-                        _testPairs.Add(new(basePath + fileInfo.Name.Substring(0, fileInfo.Name.IndexOf('.')), testName));
+                        _testPairs.Add(new PuppeteerTestAttribute(basePath + fileInfo.Name, testDescribe, testName));
                     });
             }
         }
