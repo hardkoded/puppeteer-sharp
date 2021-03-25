@@ -9,8 +9,8 @@ Check out the [blog post](https://www.hardkoded.com/blog/puppeteer-sharp-3-is-he
 
 # Sponsor the project
 
-If you are making money using Puppeteer-Sharp, consider sponsoring this project.  
-This will give you priority support and code reviews (depending on the tier), and it will help this **community based** project keep moving.  
+If you are making money using Puppeteer-Sharp, consider sponsoring this project.
+This will give you priority support and code reviews (depending on the tier), and it will help this **community based** project keep moving.
 [Click here](https://github.com/sponsors/hardkoded) to sponsor this project.
 
 # Prerequisites

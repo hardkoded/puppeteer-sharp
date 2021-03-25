@@ -45,7 +45,7 @@ namespace PuppeteerSharp.AspNetFramework
         #region Constructor(s)
 
         /// <inheritdoc />
-        public AspNetWebSocketTransport(WebSocket client, bool queueRequests) 
+        public AspNetWebSocketTransport(WebSocket client, bool queueRequests)
             : base(client, AspNetTransportScheduler, queueRequests)
         { }
 

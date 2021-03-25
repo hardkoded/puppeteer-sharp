@@ -5,7 +5,7 @@ _Contributors: [Bilal Durrani](https://bilaldurrani.io/)_
 ## Problem
 
 You want to download Chrome in a custom folder and you want to reuse Chrome
-from a location where it was previously downloaded instead of from the default location. 
+from a location where it was previously downloaded instead of from the default location.
 
 ## Solution
 

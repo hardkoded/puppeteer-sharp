@@ -55,6 +55,6 @@ namespace Example.ReuseDownloadedChrome
                 Console.ReadLine();
             }
             return;
-        } 
+        }
     }
 }

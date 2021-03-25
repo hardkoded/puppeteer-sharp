@@ -17,7 +17,7 @@ public class Data
 {
     public string Title { get; set; }
     public string Url { get; set; }
-} 
+}
 
 using (var browser = await Puppeteer.LaunchAsync(options))
 using (var page = await browser.NewPageAsync())
@@ -25,7 +25,7 @@ using (var page = await browser.NewPageAsync())
     await page.GoToAsync("https://news.ycombinator.com/");
     Console.WriteLine("Get all urls from page");
     var jsCode = @"() => {
-const selectors = Array.from(document.querySelectorAll('a[class=""storylink""]')); 
+const selectors = Array.from(document.querySelectorAll('a[class=""storylink""]'));
 return selectors.map( t=> {return { title: t.innerHTML, url: t.href}});
 }";
     var results = await page.EvaluateFunctionAsync<Data[]>(jsCode);
@@ -35,5 +35,5 @@ return selectors.map( t=> {return { title: t.innerHTML, url: t.href}});
     }
     Console.WriteLine("Press any key to continue...");
     Console.ReadLine();
-} 
+}
 ```

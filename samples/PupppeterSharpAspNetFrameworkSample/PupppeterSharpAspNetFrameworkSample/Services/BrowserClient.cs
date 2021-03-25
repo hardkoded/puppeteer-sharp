@@ -8,7 +8,7 @@ namespace PupppeterSharpAspNetFrameworkSample.Services
     public class BrowserClient
     {
         private static readonly string HostPath = HostingEnvironment.MapPath("~/App_Data/");
-        
+
         public static async Task<string> GetTextAsync(string url)
         {
             var browserFetcher = new BrowserFetcher(new BrowserFetcherOptions()

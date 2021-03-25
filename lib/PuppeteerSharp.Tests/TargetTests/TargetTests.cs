@@ -210,7 +210,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             // Issue a redirect.
             serverResponse.Redirect("/injectedstyle.css");
             serverResponseEnd.SetResult(true);
-            // Wait for the new page to load.            
+            // Wait for the new page to load.
             await WaitEvent(newPage.Client, "Page.loadEventFired");
             // Cleanup.
             await newPage.CloseAsync();

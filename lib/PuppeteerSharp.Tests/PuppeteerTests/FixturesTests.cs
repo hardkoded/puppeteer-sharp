@@ -123,7 +123,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
 #if DEBUG
             var build = "Debug";
 #else
-            
+
             var build = "Release";
 #endif
 #if NETCOREAPP
