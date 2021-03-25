@@ -1,4 +1,4 @@
-﻿using PuppeteerSharp.TestServer;
+using PuppeteerSharp.TestServer;
 using System;
 using System.Threading.Tasks;
 

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Tests.Attributes;
 using System.Collections.Generic;

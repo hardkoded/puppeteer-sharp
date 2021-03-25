@@ -1,4 +1,4 @@
-﻿namespace PuppeteerSharp
+namespace PuppeteerSharp
 {
     /// <summary>
     /// Console type used on <see cref="ConsoleMessage"/>.

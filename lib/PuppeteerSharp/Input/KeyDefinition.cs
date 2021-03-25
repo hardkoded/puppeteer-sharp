@@ -1,4 +1,4 @@
-﻿namespace PuppeteerSharp.Input
+namespace PuppeteerSharp.Input
 {
     internal class KeyDefinition
     {

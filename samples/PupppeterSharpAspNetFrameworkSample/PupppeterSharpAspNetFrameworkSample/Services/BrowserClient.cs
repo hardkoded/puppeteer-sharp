@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using System.Web.Hosting;
 using PuppeteerSharp;
 using PuppeteerSharp.AspNetFramework;

@@ -1,4 +1,4 @@
-﻿namespace PuppeteerSharp.Transport
+namespace PuppeteerSharp.Transport
 {
     using System;
     using System.Threading;

@@ -1,4 +1,4 @@
-﻿namespace PuppeteerSharp.Messaging
+namespace PuppeteerSharp.Messaging
 {
     internal class NetworkGetResponseBodyResponse
     {

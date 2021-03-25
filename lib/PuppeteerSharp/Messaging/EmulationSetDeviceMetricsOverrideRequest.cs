@@ -1,4 +1,4 @@
-﻿using PuppeteerSharp.Media;
+using PuppeteerSharp.Media;
 
 namespace PuppeteerSharp.Messaging
 {

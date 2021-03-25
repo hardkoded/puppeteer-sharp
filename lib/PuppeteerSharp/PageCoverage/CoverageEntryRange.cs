@@ -1,4 +1,4 @@
-﻿namespace PuppeteerSharp.PageCoverage
+namespace PuppeteerSharp.PageCoverage
 {
     /// <summary>
     /// Script range.

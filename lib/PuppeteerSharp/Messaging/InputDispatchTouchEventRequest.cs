@@ -1,4 +1,4 @@
-﻿using PuppeteerSharp.Input;
+using PuppeteerSharp.Input;
 
 namespace PuppeteerSharp.Messaging
 {

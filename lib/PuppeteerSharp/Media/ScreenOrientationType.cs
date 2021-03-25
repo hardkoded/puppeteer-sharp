@@ -1,4 +1,4 @@
-﻿namespace PuppeteerSharp.Media
+namespace PuppeteerSharp.Media
 {
     internal class ScreenOrientationType
     {
