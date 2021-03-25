@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Tests.Attributes;
 using System.Threading.Tasks;
 using Xunit;

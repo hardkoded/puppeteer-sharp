@@ -1,4 +1,4 @@
-﻿namespace PuppeteerSharp.PageCoverage
+namespace PuppeteerSharp.PageCoverage
 {
     /// <summary>
     /// Set of configurable options for coverage.

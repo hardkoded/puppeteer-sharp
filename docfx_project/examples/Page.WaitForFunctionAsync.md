@@ -17,13 +17,13 @@ using (var page = await browser.NewPageAsync())
 {
     await page.GoToAsync("https://www.somepage.com");
     await Page.WaitForExpressionAsync("document.queryselector('#status_info').innerText.match('^Showing ([1-9][0-9]*?) to ([1-9][0-9]*?)') of ([1-9][0-9]*?) entries') != null");
-} 
+}
 ```
 
 If the evaluation is more complex, you could wrap it inside a function and use `WaitForFunctionAsync`:
 
 ```cs
-var waitTask = Page.WaitForFunctionAsync(@"() => 
+var waitTask = Page.WaitForFunctionAsync(@"() =>
 {
     return document.queryselector('#status_info').innerText.match('^Showing ([1-9][0-9]*?) to ([1-9][0-9]*?)') of ([1-9][0-9]*?) entries') != null;
 }");

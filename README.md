@@ -12,7 +12,7 @@
 [CodeFactorUrl]: https://www.codefactor.io/repository/github/hardkoded/puppeteer-sharp
 [Backers]: https://opencollective.com/hardkoded-projects
 
-Puppeteer Sharp is a .NET port of the official [Node.JS Puppeteer API](https://github.com/GoogleChrome/puppeteer). 
+Puppeteer Sharp is a .NET port of the official [Node.JS Puppeteer API](https://github.com/GoogleChrome/puppeteer).
 
 # Puppeteer-Sharp 3 is here!
 

@@ -106,7 +106,7 @@ namespace PuppeteerSharp.Mobile
 ";
             var end = @"
         };
-            
+
         /// <summary>
         /// Get the specified device description.
         /// </summary>

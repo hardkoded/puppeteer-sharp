@@ -263,7 +263,7 @@ namespace PuppeteerSharp.Tests.PageTests
             => Assert.True(await Page.EvaluateFunctionAsync<bool>(@"() => {
                 document.body.appendChild(document.createTextNode('test'));
                 document.execCommand('selectAll');
-                return document.execCommand('copy'); 
+                return document.execCommand('copy');
             }"));
 
         [SkipBrowserFact(skipFirefox: true)]

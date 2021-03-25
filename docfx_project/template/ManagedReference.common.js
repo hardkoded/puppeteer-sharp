@@ -190,7 +190,7 @@ function handleItem(vm, gitContribute, gitUrlPattern) {
   vm.sourceurl = common.getViewSourceHref(vm, null, gitUrlPattern);
   vm.docurl = "https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20" + vm.name[0].value + "&body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: " +
     vm.sourceurl.replace("#", "%23");
-  
+
   // set to null incase mustache looks up
   vm.summary = vm.summary || null;
   vm.remarks = vm.remarks || null;

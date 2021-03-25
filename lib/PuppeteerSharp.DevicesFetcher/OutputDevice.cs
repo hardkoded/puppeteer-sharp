@@ -1,4 +1,4 @@
-﻿namespace PuppeteerSharp.DevicesFetcher
+namespace PuppeteerSharp.DevicesFetcher
 {
     public class OutputDevice
     {

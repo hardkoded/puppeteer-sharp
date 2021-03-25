@@ -1,6 +1,6 @@
 # Puppeteer Sharp - Examples
 
-Puppeteer Sharp is a .NET port of the official [Node.JS Puppeteer API](https://github.com/GoogleChrome/puppeteer). 
+Puppeteer Sharp is a .NET port of the official [Node.JS Puppeteer API](https://github.com/GoogleChrome/puppeteer).
 
 # Basic Usage
 

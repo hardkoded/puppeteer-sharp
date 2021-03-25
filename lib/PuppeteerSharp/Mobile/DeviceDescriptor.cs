@@ -1,4 +1,4 @@
-﻿namespace PuppeteerSharp.Mobile
+namespace PuppeteerSharp.Mobile
 {
     /// <summary>
     /// Device descriptor.

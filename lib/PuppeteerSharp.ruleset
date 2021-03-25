@@ -1,4 +1,4 @@
-﻿<RuleSet Name="Rules for PlaywrightSharp" Description="Rules for PlaywrightSharp" ToolsVersion="10.0">
+<RuleSet Name="Rules for PlaywrightSharp" Description="Rules for PlaywrightSharp" ToolsVersion="10.0">
  <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
     <Rule Id="SA1633" Action="None" />
     <Rule Id="SA1200" Action="None" />

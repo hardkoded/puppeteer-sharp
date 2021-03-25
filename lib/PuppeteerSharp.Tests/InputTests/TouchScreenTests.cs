@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using PuppeteerSharp.Mobile;
 using PuppeteerSharp.Tests.Attributes;
 using Xunit;

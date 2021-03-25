@@ -1,4 +1,4 @@
-﻿namespace PuppeteerSharp
+namespace PuppeteerSharp
 {
     /// <summary>
     /// View port options used on <see cref="Page.SetViewportAsync(ViewPortOptions)"/>.

@@ -1,4 +1,4 @@
-﻿namespace PuppeteerSharp
+namespace PuppeteerSharp
 {
     /// <summary>
     /// <see cref="Page.FrameAttached"/>, <see cref="Page.FrameDetached"/> and <see cref="Page.FrameNavigated"/> arguments.

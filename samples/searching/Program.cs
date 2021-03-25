@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using PuppeteerSharp;
 
@@ -39,7 +39,7 @@ namespace Example.Searching
 
                 foreach (var link in links)
                 {
-                    Console.WriteLine(link); 
+                    Console.WriteLine(link);
                 }
 
                 Console.WriteLine("Press any key to continue...");

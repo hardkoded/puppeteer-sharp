@@ -4,7 +4,7 @@ _Contributors: [Darío Kondratiuk](https://www.hardkoded.com/)_
 
 ## Problem
 
-You want to log the messages sent by your app to Chromium and the messages received by Chromium. 
+You want to log the messages sent by your app to Chromium and the messages received by Chromium.
 
 ## Solution
 

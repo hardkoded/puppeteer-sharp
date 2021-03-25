@@ -23,6 +23,6 @@ using (var page = await browser.NewPageAsync())
     await page.WaitForSelectorAsync(allResultsSelector);
     await page.ClickAsync(allResultsSelector);
 
-    // continue the operation 
-} 
+    // continue the operation
+}
 ```
