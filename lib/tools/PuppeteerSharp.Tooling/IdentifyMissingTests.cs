@@ -67,25 +67,26 @@ namespace PuppeteerSharp.Tooling
 
             List<PuppeteerTestAttribute> missingTests = new();
             List<KeyValuePair<PuppeteerTestAttribute, List<PuppeteerTestAttribute>>> invalidMaps = new();
-            foreach (var atx in attributes)
+            foreach (var x in _testPairs)
             {
                 totalTests++;
 
                 // a test can either be a full match, a partial (i.e. just the test name) or no match
-                var potentialMatch = _testPairs.Where(x => string.Equals(x.TestName, atx.TestName, StringComparison.InvariantCultureIgnoreCase));
+                var potentialMatch = attributes.Where(atx => string.Equals(x.TestName, atx.TestName, StringComparison.InvariantCultureIgnoreCase))
+                                               .Where(atx => string.Equals(x.Describe, atx.Describe, StringComparison.InvariantCultureIgnoreCase));
                 if (!potentialMatch.Any())
                 {
                     noMatches++;
-                    missingTests.Add(atx);
+                    missingTests.Add(x);
                 }
-                else if (potentialMatch.Any(x => string.Equals(x.TrimmedName, atx.TrimmedName, StringComparison.InvariantCultureIgnoreCase)))
+                else if (potentialMatch.Any(atx => string.Equals(x.TrimmedName, atx.TrimmedName, StringComparison.InvariantCultureIgnoreCase)))
                 {
                     fullMatches++;
                     continue;
                 }
                 else
                 {
-                    invalidMaps.Add(new KeyValuePair<PuppeteerTestAttribute, List<PuppeteerTestAttribute>>(atx, potentialMatch.ToList()));
+                    invalidMaps.Add(new KeyValuePair<PuppeteerTestAttribute, List<PuppeteerTestAttribute>>(x, potentialMatch.ToList()));
                     potentialMatches++;
                 }
             }
