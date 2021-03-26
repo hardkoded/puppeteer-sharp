@@ -21,13 +21,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Common\SignAssembly.props = Common\SignAssembly.props
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{3385E672-CCFE-4558-847A-8B51A053DEB0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PuppeteerSharp.Xunit", "PuppeteerSharp.Xunit\PuppeteerSharp.Xunit.csproj", "{EE53767C-D321-4BCF-B372-57949F38AB40}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PuppeteerSharp.Xunit", "tests\PuppeteerSharp.Xunit\PuppeteerSharp.Xunit.csproj", "{EE53767C-D321-4BCF-B372-57949F38AB40}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{124329C0-4C8A-4FC1-B991-C03A9F728A25}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PuppeteerSharp.Tooling", "tools\PuppeteerSharp.Tooling\PuppeteerSharp.Tooling.csproj", "{912C1F21-9306-4D6B-A487-47A8FC793E6D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PuppeteerSharp.Tooling", "PuppeteerSharp.Tooling\PuppeteerSharp.Tooling.csproj", "{912C1F21-9306-4D6B-A487-47A8FC793E6D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -74,9 +70,5 @@ Global
 		Policies = $0
 		$0.DotNetNamingPolicy = $1
 		$1.DirectoryNamespaceAssociation = PrefixedHierarchical
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{EE53767C-D321-4BCF-B372-57949F38AB40} = {3385E672-CCFE-4558-847A-8B51A053DEB0}
-		{912C1F21-9306-4D6B-A487-47A8FC793E6D} = {124329C0-4C8A-4FC1-B991-C03A9F728A25}
 	EndGlobalSection
 EndGlobal

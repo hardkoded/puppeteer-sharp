@@ -22,6 +22,6 @@
 		<Folder Include="Options\" />
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\..\tests\PuppeteerSharp.Xunit\PuppeteerSharp.Xunit.csproj" />
+		<ProjectReference Include="..\PuppeteerSharp.Xunit\PuppeteerSharp.Xunit.csproj" />
 	</ItemGroup>
 </Project>
