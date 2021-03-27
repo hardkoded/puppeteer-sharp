@@ -50,6 +50,26 @@ namespace PuppeteerSharp.Tests.PageTests
             }
         }
 
+        [Fact]
+        public async Task Usage()
+        {
+            var outputFile = Path.Combine(BaseDirectory, "Usage.png");
+            var fileInfo = new FileInfo(outputFile);
+            if (fileInfo.Exists)
+            {
+                fileInfo.Delete();
+            }
+            #region ScreenshotAsync
+            var browserFetcher = new BrowserFetcher();
+            await browserFetcher.DownloadAsync();
+            await using var browser = await Puppeteer.LaunchAsync(
+                new LaunchOptions {Headless = true});
+            await using var page = await browser.NewPageAsync();
+            await page.GoToAsync("http://www.google.com");
+            await page.ScreenshotAsync(outputFile);
+            #endregion
+            Assert.True(File.Exists(outputFile));
+        }
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {

@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -9,6 +10,16 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
     {
         public EvaluateFunctionTests(ITestOutputHelper output) : base(output)
         {
+        }
+
+        async Task Usage(Browser browser)
+        {
+            #region Evaluate
+            await using var page = await browser.NewPageAsync();
+            var seven = await page.EvaluateExpressionAsync<int>("4 + 3");
+            var someObject = await page.EvaluateFunctionAsync<dynamic>("(value) => ({a: value})", 5);
+            Console.WriteLine(someObject.a);
+            #endregion
         }
 
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
