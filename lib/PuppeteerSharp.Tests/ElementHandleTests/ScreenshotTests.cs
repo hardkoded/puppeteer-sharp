@@ -16,11 +16,13 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldFire()
         {
+            #region SetViewportAsync
             await Page.SetViewportAsync(new ViewPortOptions
             {
                 Width = 500,
                 Height = 500
             });
+            #endregion
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             await Page.EvaluateExpressionAsync("window.scrollBy(50, 100)");
             var elementHandle = await Page.QuerySelectorAsync(".box:nth-of-type(3)");

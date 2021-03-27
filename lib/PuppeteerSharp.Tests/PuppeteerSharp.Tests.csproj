@@ -5,6 +5,7 @@
 		<IsTestProject>true</IsTestProject>
 	</PropertyGroup>
 	<ItemGroup>
+		<PackageReference Include="MarkdownSnippets.MsBuild" Version="23.1.1" PrivateAssets="All" />
 		<PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
 		<PackageReference Include="Mono.Posix.NETStandard" Version="1.0.0" />
@@ -17,7 +18,7 @@
 	<ItemGroup Condition="'$(TargetFramework)'=='net471'">
 		<PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0" PrivateAssets="All" />
 	</ItemGroup>
-  <Import Project="../Common/SignAssembly.props" />
+	<Import Project="../Common/SignAssembly.props" />
 	<ItemGroup>
 		<Folder Include="Issues\" />
 		<Folder Include="Attributes\" />

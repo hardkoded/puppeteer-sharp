@@ -14,6 +14,17 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
+        async Task Usage(Browser browser)
+        {
+            #region SetContentAsync
+
+            await using var page = await browser.NewPageAsync();
+            await page.SetContentAsync("<div>My Receipt</div>");
+            var result = await page.GetContentAsync();
+
+            #endregion
+        }
+
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWork()
         {
