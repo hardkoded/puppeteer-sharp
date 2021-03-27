@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using PuppeteerSharp.PageCoverage;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -16,6 +17,7 @@ namespace PuppeteerSharp.Tests.CSSCoverageTests
         {
         }
 
+        [PuppeteerTest("coverage.spec.ts", "resetOnNavigation", "should report stylesheets across navigations")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReportStylesheetsAcrossNavigationsWhenDisabled()
         {
@@ -29,6 +31,7 @@ namespace PuppeteerSharp.Tests.CSSCoverageTests
             Assert.Equal(2, coverage.Length);
         }
 
+        [PuppeteerTest("coverage.spec.ts", "resetOnNavigation", "should NOT report scripts across navigations")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldNotReportScriptsAcrossNavigationsWhenEnabled()
         {
