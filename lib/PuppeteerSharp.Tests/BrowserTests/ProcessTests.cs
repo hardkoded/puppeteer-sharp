@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -9,6 +10,7 @@ namespace PuppeteerSharp.Tests.BrowserTests
     {
         public ProcessTests(ITestOutputHelper output) : base(output) { }
 
+        [PuppeteerTest("browser.spec.ts", "Browser.process", "should return child_process instance")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldReturnProcessInstance()
         {

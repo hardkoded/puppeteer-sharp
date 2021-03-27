@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -13,6 +14,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         {
         }
 
+        [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.boundingBox", "should work")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
@@ -27,6 +29,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.Equal(new BoundingBox(100, 50, 50, 50), box);
         }
 
+        [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.boundingBox", "should handle nested frames")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldHandleNestedFrames()
         {
@@ -51,6 +54,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             }
         }
 
+        [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.boundingBox", "should return null for invisible elements")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReturnNullForInvisibleElements()
         {
@@ -59,6 +63,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.Null(await elementHandle.BoundingBoxAsync());
         }
 
+        [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.boundingBox", "should force a layout")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldForceALayout()
         {
@@ -70,6 +75,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.Equal(new BoundingBox(8, 8, 100, 200), box);
         }
 
+        [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.boundingBox", "should work with SVG nodes")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWworkWithSVGNodes()
         {

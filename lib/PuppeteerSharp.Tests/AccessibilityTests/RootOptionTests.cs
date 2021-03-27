@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using PuppeteerSharp.PageAccessibility;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -13,6 +14,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
         {
         }
 
+        [PuppeteerTest("accessibility.spec.ts", "root option", "should work a button")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkAButton()
         {
@@ -28,6 +30,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                 await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions { Root = button }));
         }
 
+        [PuppeteerTest("accessibility.spec.ts", "root option", "should work an input")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkAnInput()
         {
@@ -44,6 +47,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                 await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions { Root = input }));
         }
 
+        [PuppeteerTest("accessibility.spec.ts", "root option", "should work a menu")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkAMenu()
         {
@@ -83,6 +87,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                 await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions { Root = menu }));
         }
 
+        [PuppeteerTest("accessibility.spec.ts", "root option", "should return null when the element is no longer in DOM")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReturnNullWhenTheElementIsNoLongerInDOM()
         {
@@ -92,6 +97,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
             Assert.Null(await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions { Root = button }));
         }
 
+        [PuppeteerTest("accessibility.spec.ts", "root option", "should support the interestingOnly option")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldSupportTheInterestingOnlyOption()
         {

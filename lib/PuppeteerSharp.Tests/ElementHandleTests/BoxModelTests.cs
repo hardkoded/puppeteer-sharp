@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -13,6 +14,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         {
         }
 
+        [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.boxModel", "should work")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
@@ -73,6 +75,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             }, box.Content[0]);
         }
 
+        [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.boxModel", "should return null for invisible elements")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReturnNullForInvisibleElements()
         {

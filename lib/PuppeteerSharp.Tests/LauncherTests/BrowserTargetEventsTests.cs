@@ -4,18 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace PuppeteerSharp.Tests.BrowserTests.Events
+namespace PuppeteerSharp.Tests.LauncherTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class TargetTests : PuppeteerBrowserBaseTest
+    public class BrowserTargetEventsTests : PuppeteerBrowserBaseTest
     {
-        public TargetTests(ITestOutputHelper output) : base(output)
+        public BrowserTargetEventsTests(ITestOutputHelper output) : base(output)
         {
         }
 
+        [PuppeteerTest("defaultbrowsercontext.spec.ts", "Browser target events", "should work")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
