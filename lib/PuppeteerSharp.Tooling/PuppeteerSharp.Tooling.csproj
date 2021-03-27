@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net5.0</TargetFramework>
+		<CodeAnalysisRuleSet>../../PuppeteerSharp.ruleset</CodeAnalysisRuleSet>
+		<ReleaseVersion>0.0.0</ReleaseVersion>
+		<IsTool>true</IsTool>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="CommandLineParser" Version="2.9.0-preview1" />
+		<PackageReference Include="System.CodeDom" Version="5.0.0" />
+		<PackageReference Include="Macross.Json.Extensions" Version="1.5.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Primitives" Version="5.0.0" />
+	</ItemGroup>
+	<ItemGroup>
+		<Folder Include="Extensions\" />
+		<Folder Include="Linux\" />
+		<Folder Include="Models\" />
+		<Folder Include="Options\" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\PuppeteerSharp.Xunit\PuppeteerSharp.Xunit.csproj" />
+	</ItemGroup>
+</Project>

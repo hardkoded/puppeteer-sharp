@@ -5,6 +5,6 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="PuppeteerSharp" Version="2.0.3" />
+    <PackageReference Include="PuppeteerSharp" Version="3.0.0" />
   </ItemGroup>
 </Project>
