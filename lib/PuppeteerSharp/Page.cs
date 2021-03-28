@@ -169,7 +169,7 @@ namespace PuppeteerSharp
         /// An example of handling <see cref="Response"/> event:
         /// <code>
         /// <![CDATA[
-        /// var tcs = new TaskCompletionSource<string>();
+        /// var tcs = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
         /// page.Response += async(sender, e) =>
         /// {
         ///     if (e.Response.Url.Contains("script.js"))
@@ -1742,7 +1742,7 @@ namespace PuppeteerSharp
             }
 
             var timeout = options?.Timeout ?? _timeoutSettings.Timeout;
-            var tcs = new TaskCompletionSource<FileChooser>();
+            var tcs = new TaskCompletionSource<FileChooser>(TaskCreationOptions.RunContinuationsAsynchronously);
             var guid = Guid.NewGuid();
             _fileChooserInterceptors.TryAdd(guid, tcs);
 
