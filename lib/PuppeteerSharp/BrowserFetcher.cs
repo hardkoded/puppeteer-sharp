@@ -340,7 +340,7 @@ namespace PuppeteerSharp
                     destinationDirectoryInfo.Create();
                 }
 
-                var mountAndCopyTcs = new TaskCompletionSource<bool>();
+                var mountAndCopyTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
                 using var process = new Process
                 {

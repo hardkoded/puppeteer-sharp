@@ -45,7 +45,7 @@ namespace PuppeteerSharp
             else
             {
                 _documentCompletionSource = null;
-                _contextResolveTaskWrapper = new TaskCompletionSource<ExecutionContext>();
+                _contextResolveTaskWrapper = new TaskCompletionSource<ExecutionContext>(TaskCreationOptions.RunContinuationsAsynchronously);
             }
         }
 
