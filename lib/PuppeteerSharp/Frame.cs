@@ -61,16 +61,16 @@ namespace PuppeteerSharp
             ParentFrame = parentFrame;
             Id = frameId;
 
-            if (parentFrame != null)
-            {
-                ParentFrame.ChildFrames.Add(this);
-            }
-
             WaitTasks = new List<WaitTask>();
             LifecycleEvents = new List<string>();
 
             MainWorld = new DOMWorld(FrameManager, this, FrameManager.TimeoutSettings);
             SecondaryWorld = new DOMWorld(FrameManager, this, FrameManager.TimeoutSettings);
+
+            if (parentFrame != null)
+            {
+                ParentFrame.ChildFrames.Add(this);
+            }
         }
 
         #region Properties
