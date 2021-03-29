@@ -1,35 +1,39 @@
+using System;
 using System.Threading.Tasks;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.ElementHandleTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class XPathTests : PuppeteerPageBaseTest
+    public class QuerySelectorTests : PuppeteerPageBaseTest
     {
-        public XPathTests(ITestOutputHelper output) : base(output)
+        public QuerySelectorTests(ITestOutputHelper output) : base(output)
         {
         }
 
+        [PuppeteerTest("queryselector.spec.ts", "ElementHandle.$", "should query existing element")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldQueryExistingElement()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/playground.html");
             await Page.SetContentAsync("<html><body><div class=\"second\"><div class=\"inner\">A</div></div></body></html>");
             var html = await Page.QuerySelectorAsync("html");
-            var second = await html.XPathAsync("./body/div[contains(@class, 'second')]");
-            var inner = await second[0].XPathAsync("./div[contains(@class, 'inner')]");
-            var content = await Page.EvaluateFunctionAsync<string>("e => e.textContent", inner[0]);
+            var second = await html.QuerySelectorAsync(".second");
+            var inner = await second.QuerySelectorAsync(".inner");
+            var content = await Page.EvaluateFunctionAsync<string>("e => e.textContent", inner);
             Assert.Equal("A", content);
         }
 
+        [PuppeteerTest("queryselector.spec.ts", "ElementHandle.$", "should return null for non-existing element")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldReturnNullForNonExistingElement()
         {
             await Page.SetContentAsync("<html><body><div class=\"second\"><div class=\"inner\">B</div></div></body></html>");
             var html = await Page.QuerySelectorAsync("html");
-            var second = await html.XPathAsync("/div[contains(@class, 'third')]");
-            Assert.Empty(second);
+            var second = await html.QuerySelectorAsync(".third");
+            Assert.Null(second);
         }
     }
 }
