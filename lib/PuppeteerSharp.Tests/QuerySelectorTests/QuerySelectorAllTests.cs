@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -12,6 +13,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         {
         }
 
+        [PuppeteerTest("queryselector.spec.ts", "ElementHandle.$$", "should query existing elements")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldQueryExistingElements()
         {
@@ -23,6 +25,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.Equal(new[] { "A", "B" }, await Task.WhenAll(tasks));
         }
 
+        [PuppeteerTest("queryselector.spec.ts", "ElementHandle.$$", "should return empty array for non-existing elements")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldReturnEmptyArrayForNonExistingElements()
         {

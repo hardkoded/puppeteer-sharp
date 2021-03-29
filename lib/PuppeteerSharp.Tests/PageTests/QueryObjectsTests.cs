@@ -3,7 +3,7 @@ using PuppeteerSharp.Tests.Attributes;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace PuppeteerSharp.Tests.ExecutionContextTests
+namespace PuppeteerSharp.Tests.PageTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class QueryObjectsTests : PuppeteerPageBaseTest

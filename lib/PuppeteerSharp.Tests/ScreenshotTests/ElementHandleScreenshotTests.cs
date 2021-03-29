@@ -1,20 +1,22 @@
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace PuppeteerSharp.Tests.ElementHandleTests
+namespace PuppeteerSharp.Tests.ScreenshotTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class ScreenshotTests : PuppeteerPageBaseTest
+    public class ElementHandleScreenshotTests : PuppeteerPageBaseTest
     {
-        public ScreenshotTests(ITestOutputHelper output) : base(output)
+        public ElementHandleScreenshotTests(ITestOutputHelper output) : base(output)
         {
         }
 
+        [PuppeteerTest("screenshot.spec.ts", "ElementHandle.screenshot", "should work")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
-        public async Task ShouldFire()
+        public async Task ShouldWork()
         {
             #region SetViewportAsync
             await Page.SetViewportAsync(new ViewPortOptions
@@ -30,6 +32,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.True(ScreenshotHelper.PixelMatch("screenshot-element-bounding-box.png", screenshot));
         }
 
+        [PuppeteerTest("screenshot.spec.ts", "ElementHandle.screenshot", "should take into account padding and border")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldTakeIntoAccountPaddingAndBorder()
         {
@@ -54,6 +57,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.True(ScreenshotHelper.PixelMatch("screenshot-element-padding-border.png", screenshot));
         }
 
+        [PuppeteerTest("screenshot.spec.ts", "ElementHandle.screenshot", "should capture full element when larger than viewport")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldCaptureFullElementWhenLargerThanViewport()
         {

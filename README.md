@@ -74,7 +74,7 @@ await Page.SetViewportAsync(new ViewPortOptions
     Height = 500
 });
 ```
-<sup><a href='/lib/PuppeteerSharp.Tests/ElementHandleTests/ScreenshotTests.cs#L19-L25' title='Snippet source file'>snippet source</a> | <a href='#snippet-setviewportasync' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/lib/PuppeteerSharp.Tests/ScreenshotTests/ElementHandleScreenshotTests.cs#L21-L27' title='Snippet source file'>snippet source</a> | <a href='#snippet-setviewportasync' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -115,7 +115,7 @@ var seven = await page.EvaluateExpressionAsync<int>("4 + 3");
 var someObject = await page.EvaluateFunctionAsync<dynamic>("(value) => ({a: value})", 5);
 Console.WriteLine(someObject.a);
 ```
-<sup><a href='/lib/PuppeteerSharp.Tests/ElementHandleTests/EvaluateFunctionTests.cs#L17-L22' title='Snippet source file'>snippet source</a> | <a href='#snippet-evaluate' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/lib/PuppeteerSharp.Tests/QuerySelectorTests/QuerySelectorEvalTests.cs#L18-L23' title='Snippet source file'>snippet source</a> | <a href='#snippet-evaluate' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ## Wait For Selector
