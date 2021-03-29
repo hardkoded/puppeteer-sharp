@@ -13,7 +13,7 @@ namespace PuppeteerSharp
         private readonly FrameManager _frameManager;
         private readonly TimeoutSettings _timeoutSettings;
         private bool _detached;
-        private TaskCompletionSource<ExecutionContext> _contextResolveTaskWrapper;
+        private TaskCompletionSource<ExecutionContext> _contextResolveTaskWrapper = new(TaskCreationOptions.RunContinuationsAsynchronously);
         private TaskCompletionSource<ElementHandle> _documentCompletionSource;
 
         internal List<WaitTask> WaitTasks { get; set; }
@@ -25,8 +25,6 @@ namespace PuppeteerSharp
             _frameManager = frameManager;
             Frame = frame;
             _timeoutSettings = timeoutSettings;
-
-            SetContext(null);
 
             WaitTasks = new List<WaitTask>();
             _detached = false;
