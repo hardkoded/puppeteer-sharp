@@ -4,6 +4,7 @@ using Xunit;
 using System.Linq;
 using Xunit.Abstractions;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 
 namespace PuppeteerSharp.Tests.FrameTests
 {
@@ -14,6 +15,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         {
         }
 
+        [PuppeteerTest("frame.spec.ts", "Frame Management", "should handle nested frames")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldHandleNestedFrames()
         {
@@ -23,6 +25,7 @@ namespace PuppeteerSharp.Tests.FrameTests
                 FrameUtils.DumpFrames(Page.MainFrame));
         }
 
+        [PuppeteerTest("frame.spec.ts", "Frame Management", "should send events when frames are manipulated dynamically")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldSendEventsWhenFramesAreManipulatedDynamically()
         {
@@ -54,6 +57,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             Assert.True(navigatedFrames[0].Detached);
         }
 
+        [PuppeteerTest("frame.spec.ts", "Frame Management", "should send \"framenavigated\" when navigating on anchor URLs")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldSendFrameNavigatedWhenNavigatingOnAnchorURLs()
         {
@@ -67,6 +71,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             Assert.Equal(TestConstants.EmptyPage + "#foo", Page.Url);
         }
 
+        [PuppeteerTest("frame.spec.ts", "Frame Management", "should persist mainFrame on cross-process navigation")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldPersistMainFrameOnCrossProcessNavigation()
         {
@@ -76,6 +81,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             Assert.Equal(mainFrame, Page.MainFrame);
         }
 
+        [PuppeteerTest("frame.spec.ts", "Frame Management", "should not send attach/detach events for main frame")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldNotSendAttachDetachEventsForMainFrame()
         {
@@ -87,6 +93,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             Assert.False(hasEvents);
         }
 
+        [PuppeteerTest("frame.spec.ts", "Frame Management", "should detach child frames on navigation")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldDetachChildFramesOnNavigation()
         {
@@ -113,6 +120,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             Assert.Single(navigatedFrames);
         }
 
+        [PuppeteerTest("frame.spec.ts", "Frame Management", "should report frame from-inside shadow DOM")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldReportFrameFromInsideShadowDOM()
         {
@@ -128,6 +136,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             Assert.Single(Page.Frames, frame => frame.Url == TestConstants.EmptyPage);
         }
 
+        [PuppeteerTest("frame.spec.ts", "Frame Management", "should report frame.name()")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldReportFrameName()
         {
@@ -145,6 +154,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             Assert.Single(Page.Frames, frame => frame.Name == "theFrameName");
         }
 
+        [PuppeteerTest("frame.spec.ts", "Frame Management", "should report frame.name()")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldReportFrameParent()
         {
@@ -155,6 +165,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             Assert.Equal(2, Page.Frames.Count(f => f.ParentFrame == Page.MainFrame));
         }
 
+        [PuppeteerTest("frame.spec.ts", "Frame Management", "should report different frame instance when frame re-attaches")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldReportDifferentFrameInstanceWhenFrameReAttaches()
         {

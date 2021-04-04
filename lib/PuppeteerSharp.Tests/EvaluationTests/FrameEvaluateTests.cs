@@ -1,17 +1,19 @@
 using System.Linq;
 using System.Threading.Tasks;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace PuppeteerSharp.Tests.FrameTests
+namespace PuppeteerSharp.Tests.EvaluationTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class EvaluateTests : PuppeteerPageBaseTest
+    public class FrameEvaluateTests : PuppeteerPageBaseTest
     {
-        public EvaluateTests(ITestOutputHelper output) : base(output)
+        public FrameEvaluateTests(ITestOutputHelper output) : base(output)
         {
         }
 
+        [PuppeteerTest("evaluation.spec.ts", "Frame.evaluate", "should have different execution contexts")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldHaveDifferentExecutionContexts()
         {
@@ -29,6 +31,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             Assert.Equal("bar", await frame2.EvaluateExpressionAsync<string>("window.FOO"));
         }
 
+        [PuppeteerTest("evaluation.spec.ts", "Frame.evaluate", "should execute after cross-site navigation")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldExecuteAfterCrossSiteNavigation()
         {
@@ -38,16 +41,6 @@ namespace PuppeteerSharp.Tests.FrameTests
 
             await Page.GoToAsync(TestConstants.CrossProcessHttpPrefix + "/empty.html");
             Assert.Contains("127", await mainFrame.EvaluateExpressionAsync<string>("window.location.href"));
-        }
-
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
-        public async Task ShouldThrowForDetachedFrames()
-        {
-            var frame1 = await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
-            await FrameUtils.DetachFrameAsync(Page, "frame1");
-            var exception = await Assert.ThrowsAsync<PuppeteerException>(
-                () => frame1.EvaluateExpressionAsync("7 * 8"));
-            Assert.Contains("Execution Context is not available in detached frame", exception.Message);
         }
     }
 }
