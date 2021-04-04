@@ -137,9 +137,11 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
             _args = args ?? Array.Empty<object>();
             _title = title;
 
-            _world.WaitTasks.Add(this);
-
             _cts = new CancellationTokenSource();
+
+            _taskCompletion = new TaskCompletionSource<JSHandle>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            _world.WaitTasks.Add(this);
 
             if (timeout > 0)
             {
@@ -147,7 +149,6 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
                     => Terminate(new WaitTaskTimeoutException(timeout, title)));
             }
 
-            _taskCompletion = new TaskCompletionSource<JSHandle>(TaskCreationOptions.RunContinuationsAsynchronously);
             _ = Rerun();
         }
 
