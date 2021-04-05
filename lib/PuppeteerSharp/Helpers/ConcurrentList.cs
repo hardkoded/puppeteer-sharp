@@ -5,7 +5,7 @@ using System.Threading;
 
 // https://stackoverflow.com/a/23446622
 
-public class ConcurrentList<T> : IList<T>, IDisposable
+internal class ConcurrentList<T> : IList<T>, IDisposable
 {
     #region Fields
     private readonly List<T> _list;
