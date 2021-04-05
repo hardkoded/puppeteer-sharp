@@ -23,7 +23,7 @@ namespace PuppeteerSharp
         private readonly ILogger _logger;
         private Dictionary<string, string> _extraHTTPHeaders;
         private Credentials _credentials;
-        private readonly ConcurrentDictionary<string, bool> _attemptedAuthentications = new ConcurrentDictionary<string, bool>();
+        private readonly ConcurrentSet<string> _attemptedAuthentications = new ConcurrentSet<string>();
         private bool _userRequestInterceptionEnabled;
         private bool _protocolRequestInterceptionEnabled;
         private readonly bool _ignoreHTTPSErrors;
@@ -194,7 +194,7 @@ namespace PuppeteerSharp
 
                 if (request.InterceptionId != null)
                 {
-                    _attemptedAuthentications.TryRemove(request.InterceptionId, out var _);
+                    _attemptedAuthentications.Remove(request.InterceptionId);
                 }
 
                 RequestFailed?.Invoke(this, new RequestEventArgs
@@ -215,7 +215,7 @@ namespace PuppeteerSharp
 
                 if (request.InterceptionId != null)
                 {
-                    _attemptedAuthentications.TryRemove(request.InterceptionId, out var _);
+                    _attemptedAuthentications.Remove(request.InterceptionId);
                 }
 
                 RequestFinished?.Invoke(this, new RequestEventArgs
@@ -247,14 +247,14 @@ namespace PuppeteerSharp
         private async Task OnAuthRequiredAsync(FetchAuthRequiredResponse e)
         {
             var response = "Default";
-            if (_attemptedAuthentications.ContainsKey(e.RequestId))
+            if (_attemptedAuthentications.Contains(e.RequestId))
             {
                 response = "CancelAuth";
             }
             else if (_credentials != null)
             {
                 response = "ProvideCredentials";
-                _attemptedAuthentications.TryAdd(e.RequestId, true);
+                _attemptedAuthentications.Add(e.RequestId);
             }
             var credentials = _credentials ?? new Credentials();
             try
@@ -372,7 +372,7 @@ namespace PuppeteerSharp
 
             if (request.InterceptionId != null)
             {
-                _attemptedAuthentications.TryRemove(request.InterceptionId, out var _);
+                _attemptedAuthentications.Remove(request.InterceptionId);
             }
 
             Response?.Invoke(this, new ResponseCreatedEventArgs
