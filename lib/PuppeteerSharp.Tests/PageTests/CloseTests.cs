@@ -30,17 +30,19 @@ namespace PuppeteerSharp.Tests.PageTests
         [InlineData(true)]
         public async Task ShouldNotBeVisibleInBrowserPages(bool useDisposeAsync)
         {
-            Assert.Contains(Page, await Browser.PagesAsync());
+            await using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
+            var page = await browser.NewPageAsync();
+            Assert.Contains(page, await browser.PagesAsync());
             if (useDisposeAsync)
             {
                 // emulates what would happen in a C#8 await using block
-                await Page.DisposeAsync();
+                await page.DisposeAsync();
             }
             else
             {
-                await Page.CloseAsync();
+                await page.CloseAsync();
             }
-            Assert.DoesNotContain(Page, await Browser.PagesAsync());
+            Assert.DoesNotContain(page, await browser.PagesAsync());
         }
 
         [SkipBrowserFact(skipFirefox: true)]
