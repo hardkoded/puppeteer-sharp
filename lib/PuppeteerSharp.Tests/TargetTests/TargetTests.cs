@@ -30,9 +30,8 @@ namespace PuppeteerSharp.Tests.TargetTests
         {
             // The pages will be the testing page and the original newtab page
             var allPages = (await Context.PagesAsync()).ToArray();
-            Assert.Equal(2, allPages.Length);
+            Assert.Single(allPages);
             Assert.Contains(Page, allPages);
-            Assert.NotSame(allPages[0], allPages[1]);
         }
 
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
@@ -47,7 +46,7 @@ namespace PuppeteerSharp.Tests.TargetTests
         public async Task ShouldBeAbleToUseTheDefaultPageInTheBrowser()
         {
             // The pages will be the testing page and the original newtab page
-            var allPages = await Context.PagesAsync();
+            var allPages = await Browser.PagesAsync();
             var originalPage = allPages.First(p => p != Page);
             Assert.Equal("Hello world", await originalPage.EvaluateExpressionAsync<string>("['Hello', 'world'].join(' ')"));
             Assert.NotNull(await originalPage.QuerySelectorAsync("body"));
