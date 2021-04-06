@@ -25,7 +25,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal("Target.detachedFromTarget", exception.CloseReason);
         }
 
-        [Theory]
+        [Theory(Timeout = TestConstants.DefaultTestTimeout)]
         [InlineData(false)]
         [InlineData(true)]
         public async Task ShouldNotBeVisibleInBrowserPages(bool useDisposeAsync)
