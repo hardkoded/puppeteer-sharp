@@ -46,7 +46,8 @@ namespace PuppeteerSharp.Tests.TargetTests
         public async Task ShouldBeAbleToUseTheDefaultPageInTheBrowser()
         {
             // The pages will be the testing page and the original newtab page
-            var allPages = await Browser.PagesAsync();
+            await using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
+            var allPages = await browser.PagesAsync();
             var originalPage = allPages.First(p => p != Page);
             Assert.Equal("Hello world", await originalPage.EvaluateExpressionAsync<string>("['Hello', 'world'].join(' ')"));
             Assert.NotNull(await originalPage.QuerySelectorAsync("body"));
