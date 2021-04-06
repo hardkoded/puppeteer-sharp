@@ -90,7 +90,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         private class MatchingResponseData
         {
             public Task<Frame> FrameTask { get; internal set; }
-            public TaskCompletionSource<string> ServerResponseTcs { get; internal set; } = new TaskCompletionSource<string>();
+            public TaskCompletionSource<string> ServerResponseTcs { get; internal set; } = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
             public Task<Response> NavigationTask { get; internal set; }
         }
     }

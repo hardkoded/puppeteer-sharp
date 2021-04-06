@@ -48,7 +48,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/beforeunload.html");
 
-            var dialogTask = new TaskCompletionSource<bool>();
+            var dialogTask = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             Page.Dialog += async (_, e) =>
             {
                 Assert.Equal(DialogType.BeforeUnload, e.Dialog.DialogType);
@@ -67,7 +67,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 dialogTask.TrySetResult(true);
             };
 
-            var closeTask = new TaskCompletionSource<bool>();
+            var closeTask = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             Page.Close += (_, _) => closeTask.TrySetResult(true);
 
             // We have to interact with a page so that 'beforeunload' handlers

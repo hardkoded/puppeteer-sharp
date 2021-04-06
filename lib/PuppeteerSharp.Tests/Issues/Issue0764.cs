@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Tests.Issues
         [SkipBrowserFact(skipFirefox: true)]
         public async Task BufferAsyncShouldWorkWithBinaries()
         {
-            var tcs = new TaskCompletionSource<byte[]>();
+            var tcs = new TaskCompletionSource<byte[]>(TaskCreationOptions.RunContinuationsAsynchronously);
             Page.Response += async (_, e) =>
             {
                 if (e.Response.Url.Contains("digits/0.png"))

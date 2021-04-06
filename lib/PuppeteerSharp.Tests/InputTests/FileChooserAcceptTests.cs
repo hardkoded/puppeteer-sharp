@@ -32,7 +32,7 @@ namespace PuppeteerSharp.Tests.InputTests
         {
             await Page.SetContentAsync("<input type=file oninput='javascript:console.timeStamp()'>");
             var waitForTask = Page.WaitForFileChooserAsync();
-            var metricsTcs = new TaskCompletionSource<bool>();
+            var metricsTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             await Task.WhenAll(
                 waitForTask,

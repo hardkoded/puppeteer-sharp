@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
         public async Task ShouldFireWhenExpected()
         {
             var _ = Page.GoToAsync(TestConstants.AboutBlank);
-            var completion = new TaskCompletionSource<bool>();
+            var completion = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             Page.DOMContentLoaded += (_, _) => completion.SetResult(true);
             await completion.Task;
         }

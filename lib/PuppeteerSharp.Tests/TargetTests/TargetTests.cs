@@ -74,7 +74,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             Assert.Contains(Page, allPages);
             Assert.Contains(otherPage, allPages);
 
-            var closePageTaskCompletion = new TaskCompletionSource<Page>();
+            var closePageTaskCompletion = new TaskCompletionSource<Page>(TaskCreationOptions.RunContinuationsAsynchronously);
             async void TargetDestroyedEventHandler(object sender, TargetChangedArgs e)
             {
                 closePageTaskCompletion.SetResult(await e.Target.PageAsync());
@@ -93,7 +93,7 @@ namespace PuppeteerSharp.Tests.TargetTests
         public async Task ShouldReportWhenAServiceWorkerIsCreatedAndDestroyed()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var createdTargetTaskCompletion = new TaskCompletionSource<Target>();
+            var createdTargetTaskCompletion = new TaskCompletionSource<Target>(TaskCreationOptions.RunContinuationsAsynchronously);
             void TargetCreatedEventHandler(object sender, TargetChangedArgs e)
             {
                 createdTargetTaskCompletion.SetResult(e.Target);
@@ -106,7 +106,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             Assert.Equal(TargetType.ServiceWorker, createdTarget.Type);
             Assert.Equal(TestConstants.ServerUrl + "/serviceworkers/empty/sw.js", createdTarget.Url);
 
-            var targetDestroyedTaskCompletion = new TaskCompletionSource<Target>();
+            var targetDestroyedTaskCompletion = new TaskCompletionSource<Target>(TaskCreationOptions.RunContinuationsAsynchronously);
             void TargetDestroyedEventHandler(object sender, TargetChangedArgs e)
             {
                 targetDestroyedTaskCompletion.SetResult(e.Target);
@@ -145,7 +145,7 @@ namespace PuppeteerSharp.Tests.TargetTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
 
-            var changedTargetTaskCompletion = new TaskCompletionSource<Target>();
+            var changedTargetTaskCompletion = new TaskCompletionSource<Target>(TaskCreationOptions.RunContinuationsAsynchronously);
             void ChangedTargetEventHandler(object sender, TargetChangedArgs e)
             {
                 changedTargetTaskCompletion.SetResult(e.Target);
@@ -157,7 +157,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             var changedTarget = await changedTargetTaskCompletion.Task;
             Assert.Equal(TestConstants.CrossProcessUrl + "/", changedTarget.Url);
 
-            changedTargetTaskCompletion = new TaskCompletionSource<Target>();
+            changedTargetTaskCompletion = new TaskCompletionSource<Target>(TaskCreationOptions.RunContinuationsAsynchronously);
             Context.TargetChanged += ChangedTargetEventHandler;
             await Page.GoToAsync(TestConstants.EmptyPage);
             changedTarget = await changedTargetTaskCompletion.Task;
@@ -170,7 +170,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             var targetChanged = false;
             void listener(object sender, TargetChangedArgs e) => targetChanged = true;
             Context.TargetChanged += listener;
-            var targetCompletionTask = new TaskCompletionSource<Target>();
+            var targetCompletionTask = new TaskCompletionSource<Target>(TaskCreationOptions.RunContinuationsAsynchronously);
             void TargetCreatedEventHandler(object sender, TargetChangedArgs e)
             {
                 targetCompletionTask.SetResult(e.Target);
@@ -182,7 +182,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             Assert.Equal(TestConstants.AboutBlank, target.Url);
 
             var newPage = await newPageTask;
-            targetCompletionTask = new TaskCompletionSource<Target>();
+            targetCompletionTask = new TaskCompletionSource<Target>(TaskCreationOptions.RunContinuationsAsynchronously);
             Context.TargetCreated += TargetCreatedEventHandler;
             var evaluateTask = newPage.EvaluateExpressionHandleAsync("window.open('about:blank')");
             var target2 = await targetCompletionTask.Task;
@@ -196,7 +196,7 @@ namespace PuppeteerSharp.Tests.TargetTests
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldNotCrashWhileRedirectingIfOriginalRequestWasMissed()
         {
-            var serverResponseEnd = new TaskCompletionSource<bool>();
+            var serverResponseEnd = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             var serverResponse = (HttpResponse)null;
             Server.SetRoute("/one-style.css", context => { serverResponse = context.Response; return serverResponseEnd.Task; });
             // Open a new page. Use window.open to connect to the page later.
@@ -220,7 +220,7 @@ namespace PuppeteerSharp.Tests.TargetTests
         public async Task ShouldHaveAnOpener()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var targetCreatedCompletion = new TaskCompletionSource<Target>();
+            var targetCreatedCompletion = new TaskCompletionSource<Target>(TaskCreationOptions.RunContinuationsAsynchronously);
             Browser.TargetCreated += (_, e) => targetCreatedCompletion.TrySetResult(e.Target);
             await Page.GoToAsync(TestConstants.ServerUrl + "/popup/window-open.html");
             var createdTarget = await targetCreatedCompletion.Task;

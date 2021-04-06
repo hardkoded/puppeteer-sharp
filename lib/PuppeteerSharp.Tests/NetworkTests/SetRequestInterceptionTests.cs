@@ -108,7 +108,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
             await Page.SetRequestInterceptionAsync(true);
             var requests = new List<Request>();
-            var requestsReadyTcs = new TaskCompletionSource<bool>();
+            var requestsReadyTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             Page.Request += async (_, e) =>
             {
@@ -534,7 +534,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             await Page.SetContentAsync("<iframe></iframe>");
             await Page.SetRequestInterceptionAsync(true);
             Request request = null;
-            var requestIntercepted = new TaskCompletionSource<bool>();
+            var requestIntercepted = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             Page.Request += (_, e) =>
             {
                 request = e.Request;

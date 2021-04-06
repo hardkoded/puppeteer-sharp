@@ -51,7 +51,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             // Setup server to trap request.
-            var serverResponseCompletion = new TaskCompletionSource<bool>();
+            var serverResponseCompletion = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             HttpResponse serverResponse = null;
             Server.SetRoute("/get", context =>
             {
@@ -67,7 +67,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             // send request and wait for server response
             Task WaitForPageResponseEvent()
             {
-                var completion = new TaskCompletionSource<bool>();
+                var completion = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
                 Page.Response += (_, e) =>
                 {
                     if (!TestUtils.IsFavicon(e.Response.Request))

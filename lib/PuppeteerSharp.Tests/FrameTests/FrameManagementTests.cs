@@ -58,7 +58,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         public async Task ShouldSendFrameNavigatedWhenNavigatingOnAnchorURLs()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var frameNavigated = new TaskCompletionSource<bool>();
+            var frameNavigated = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             Page.FrameNavigated += (_, _) => frameNavigated.TrySetResult(true);
             await Task.WhenAll(
                 Page.GoToAsync(TestConstants.EmptyPage + "#foo"),
@@ -164,7 +164,7 @@ namespace PuppeteerSharp.Tests.FrameTests
                 window.frame.remove();
             }");
             Assert.True(frame1.Detached);
-            var frame2tsc = new TaskCompletionSource<Frame>();
+            var frame2tsc = new TaskCompletionSource<Frame>(TaskCreationOptions.RunContinuationsAsynchronously);
             Page.FrameAttached += (_, e) => frame2tsc.TrySetResult(e.Frame);
             await Page.EvaluateExpressionAsync("document.body.appendChild(window.frame)");
             var frame2 = await frame2tsc.Task;

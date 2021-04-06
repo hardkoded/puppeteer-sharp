@@ -26,7 +26,7 @@ namespace PuppeteerSharp.Tests.PageTests
         [SkipBrowserFact(skipFirefox: true)]
         public async Task MetricsEventFiredOnConsoleTimespan()
         {
-            var metricsTaskWrapper = new TaskCompletionSource<MetricEventArgs>();
+            var metricsTaskWrapper = new TaskCompletionSource<MetricEventArgs>(TaskCreationOptions.RunContinuationsAsynchronously);
             Page.Metrics += (_, e) => metricsTaskWrapper.SetResult(e);
 
             await Page.EvaluateExpressionAsync("console.timeStamp('test42')");

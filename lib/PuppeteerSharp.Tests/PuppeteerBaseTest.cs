@@ -34,7 +34,7 @@ namespace PuppeteerSharp.Tests
 
         protected static Task<JToken> WaitEvent(CDPSession emitter, string eventName)
         {
-            var completion = new TaskCompletionSource<JToken>();
+            var completion = new TaskCompletionSource<JToken>(TaskCreationOptions.RunContinuationsAsynchronously);
             void handler(object sender, MessageEventArgs e)
             {
                 if (e.MessageID != eventName)
@@ -51,7 +51,7 @@ namespace PuppeteerSharp.Tests
 
         protected static Task WaitForBrowserDisconnect(Browser browser)
         {
-            var disconnectedTask = new TaskCompletionSource<bool>();
+            var disconnectedTask = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             browser.Disconnected += (_, _) => disconnectedTask.TrySetResult(true);
             return disconnectedTask.Task;
         }

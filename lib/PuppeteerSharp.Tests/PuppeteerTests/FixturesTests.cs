@@ -40,7 +40,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldCloseTheBrowserWhenTheConnectedProcessCloses()
         {
-            var browserClosedTaskWrapper = new TaskCompletionSource<bool>();
+            var browserClosedTaskWrapper = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             var ChromiumLauncher = new ChromiumLauncher(
                 new BrowserFetcher(Product.Chrome).RevisionInfo().ExecutablePath,
                 new LaunchOptions { Headless = true });
@@ -66,7 +66,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldCloseTheBrowserWhenTheLaunchedProcessCloses()
         {
-            var browserClosedTaskWrapper = new TaskCompletionSource<bool>();
+            var browserClosedTaskWrapper = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             var browser = await Puppeteer.LaunchAsync(new LaunchOptions { Headless = true }, TestConstants.LoggerFactory);
 
             browser.Disconnected += (_, _) =>

@@ -46,7 +46,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             {
                 BrowserWSEndpoint = originalBrowser.WebSocketEndpoint
             });
-            var tcsDisconnected = new TaskCompletionSource<bool>();
+            var tcsDisconnected = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             originalBrowser.Disconnected += (_, _) => tcsDisconnected.TrySetResult(true);
             await Task.WhenAll(
@@ -117,7 +117,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             {
                 BrowserWSEndpoint = browserOne.WebSocketEndpoint
             });
-            var tcs = new TaskCompletionSource<Page>();
+            var tcs = new TaskCompletionSource<Page>(TaskCreationOptions.RunContinuationsAsynchronously);
             async void TargetCreated(object sender, TargetChangedArgs e)
             {
                 tcs.TrySetResult(await e.Target.PageAsync());

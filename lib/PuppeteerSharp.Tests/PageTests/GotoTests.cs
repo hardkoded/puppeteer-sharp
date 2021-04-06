@@ -293,10 +293,10 @@ namespace PuppeteerSharp.Tests.PageTests
                 "/fetch-request-c.js",
                 "/fetch-request-d.js" })
             {
-                fetches[url] = new TaskCompletionSource<bool>();
+                fetches[url] = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
                 Server.SetRoute(url, async context =>
                 {
-                    var taskCompletion = new TaskCompletionSource<Func<HttpResponse, Task>>();
+                    var taskCompletion = new TaskCompletionSource<Func<HttpResponse, Task>>(TaskCreationOptions.RunContinuationsAsynchronously);
                     responses.Add(taskCompletion);
                     fetches[context.Request.Path].SetResult(true);
                     var actionResponse = await taskCompletion.Task;
@@ -311,7 +311,7 @@ namespace PuppeteerSharp.Tests.PageTests
             );
             var secondFetchResourceRequested = Server.WaitForRequest("/fetch-request-d.js");
 
-            var pageLoaded = new TaskCompletionSource<bool>();
+            var pageLoaded = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             void WaitPageLoad(object sender, EventArgs e)
             {
                 pageLoaded.SetResult(true);

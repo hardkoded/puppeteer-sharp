@@ -63,7 +63,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             var context = await Browser.CreateIncognitoBrowserContextAsync();
             var page = await context.NewPageAsync();
             await page.GoToAsync(TestConstants.EmptyPage);
-            var popupTargetCompletion = new TaskCompletionSource<Target>();
+            var popupTargetCompletion = new TaskCompletionSource<Target>(TaskCreationOptions.RunContinuationsAsynchronously);
             Browser.TargetCreated += (_, e) => popupTargetCompletion.SetResult(e.Target);
 
             await Task.WhenAll(

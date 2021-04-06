@@ -120,7 +120,7 @@ namespace PuppeteerSharp.TestServer
 
         public async Task<T> WaitForRequest<T>(string path, Func<HttpRequest, T> selector)
         {
-            var taskCompletion = new TaskCompletionSource<T>();
+            var taskCompletion = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
             _requestSubscribers.Add(path, (httpRequest) =>
             {
                 taskCompletion.SetResult(selector(httpRequest));

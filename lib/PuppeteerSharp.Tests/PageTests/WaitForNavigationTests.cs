@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Tests.PageTests
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWithBothDomcontentloadedAndLoad()
         {
-            var responseCompleted = new TaskCompletionSource<bool>();
+            var responseCompleted = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             Server.SetRoute("/one-style.css", _ =>
             {
                 return responseCompleted.Task;
@@ -150,14 +150,14 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             Server.SetRoute("/frames/style.css", _ => Task.CompletedTask);
             var navigationTask = Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
-            var frameAttachedTaskSource = new TaskCompletionSource<Frame>();
+            var frameAttachedTaskSource = new TaskCompletionSource<Frame>(TaskCreationOptions.RunContinuationsAsynchronously);
             Page.FrameAttached += (_, e) =>
             {
                 frameAttachedTaskSource.SetResult(e.Frame);
             };
 
             var frame = await frameAttachedTaskSource.Task;
-            var frameNavigatedTaskSource = new TaskCompletionSource<bool>();
+            var frameNavigatedTaskSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             Page.FrameNavigated += (_, e) =>
             {
                 if (e.Frame == frame)

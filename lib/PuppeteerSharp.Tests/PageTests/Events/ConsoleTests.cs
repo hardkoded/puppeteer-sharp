@@ -88,7 +88,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldNotFailForWindowObject()
         {
-            var consoleTcs = new TaskCompletionSource<string>();
+            var consoleTcs = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             void EventHandler(object sender, ConsoleEventArgs e)
             {
@@ -110,7 +110,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
         public async Task ShouldTriggerCorrectLog()
         {
             await Page.GoToAsync(TestConstants.AboutBlank);
-            var messageTask = new TaskCompletionSource<ConsoleMessage>();
+            var messageTask = new TaskCompletionSource<ConsoleMessage>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             Page.Console += (_, e) => messageTask.TrySetResult(e.Message);
 
@@ -132,7 +132,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
         public async Task ShouldHaveLocationWhenFetchFails()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var consoleTask = new TaskCompletionSource<ConsoleEventArgs>();
+            var consoleTask = new TaskCompletionSource<ConsoleEventArgs>(TaskCreationOptions.RunContinuationsAsynchronously);
             Page.Console += (_, e) => consoleTask.TrySetResult(e);
 
             await Task.WhenAll(
@@ -152,7 +152,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
         public async Task ShouldHaveLocationForConsoleAPICalls()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var consoleTask = new TaskCompletionSource<ConsoleEventArgs>();
+            var consoleTask = new TaskCompletionSource<ConsoleEventArgs>(TaskCreationOptions.RunContinuationsAsynchronously);
             Page.Console += (_, e) => consoleTask.TrySetResult(e);
 
             await Task.WhenAll(
