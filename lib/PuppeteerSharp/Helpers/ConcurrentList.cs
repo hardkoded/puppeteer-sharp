@@ -155,13 +155,11 @@ internal class ConcurrentList<T> : IList<T>, IDisposable
     public void Dispose()
     {
         this.Dispose(true);
+        GC.SuppressFinalize(this);
     }
 
     private void Dispose(bool disposing)
     {
-        if (disposing)
-            GC.SuppressFinalize(this);
-
         this._lock.Dispose();
     }
     #endregion
@@ -181,6 +179,7 @@ internal class ConcurrentList<T> : IList<T>, IDisposable
                 this._lock.ExitReadLock();
             }
         }
+
         set
         {
             try

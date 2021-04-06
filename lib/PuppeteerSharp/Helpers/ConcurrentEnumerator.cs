@@ -34,6 +34,7 @@ internal class ConcurrentEnumerator<T> : IEnumerator<T>
     public void Dispose()
     {
         this._lock.ExitReadLock();
+        this._inner.Dispose();
     }
     #endregion
 
