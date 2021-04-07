@@ -48,7 +48,6 @@ namespace PuppeteerSharp
         private readonly TaskCompletionSource<bool> _closeCompletedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         private TaskCompletionSource<bool> _sessionClosedTcs;
         private readonly TimeoutSettings _timeoutSettings;
-        private bool _fileChooserInterceptionIsDisabled;
         private readonly ConcurrentDictionary<Guid, TaskCompletionSource<FileChooser>> _fileChooserInterceptors;
 
         private static readonly Dictionary<string, decimal> _unitToPixels = new Dictionary<string, decimal> {
@@ -1736,9 +1735,12 @@ namespace PuppeteerSharp
         /// <returns>A task that resolves after a page requests a file picker.</returns>
         public async Task<FileChooser> WaitForFileChooserAsync(WaitForFileChooserOptions options = null)
         {
-            if (_fileChooserInterceptionIsDisabled)
+            if (!_fileChooserInterceptors.Any())
             {
-                throw new PuppeteerException("File chooser handling does not work with multiple connections to the same page");
+                await Client.SendAsync("Page.setInterceptFileChooserDialog", new PageSetInterceptFileChooserDialog
+                {
+                    Enabled = true
+                }).ConfigureAwait(false);
             }
 
             var timeout = options?.Timeout ?? _timeoutSettings.Timeout;
@@ -1863,18 +1865,6 @@ namespace PuppeteerSharp
                }),
                Client.SendAsync("Performance.enable", null),
                Client.SendAsync("Log.enable", null)).ConfigureAwait(false);
-
-            try
-            {
-                await Client.SendAsync("Page.setInterceptFileChooserDialog", new PageSetInterceptFileChooserDialog
-                {
-                    Enabled = true
-                }).ConfigureAwait(false);
-            }
-            catch
-            {
-                _fileChooserInterceptionIsDisabled = true;
-            }
         }
 
         private async Task<Response> GoAsync(int delta, NavigationOptions options)
