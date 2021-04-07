@@ -4,18 +4,20 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace PuppeteerSharp.Tests.FrameTests
+namespace PuppeteerSharp.Tests.NavigationTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class GoToTests : PuppeteerPageBaseTest
+    public class FrameGoToTests : PuppeteerPageBaseTest
     {
-        public GoToTests(ITestOutputHelper output) : base(output)
+        public FrameGoToTests(ITestOutputHelper output) : base(output)
         {
         }
 
+        [PuppeteerTest("navigation.spec.ts", "Frame.goto", "should navigate subframes")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldNavigateSubFrames()
         {
@@ -28,6 +30,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             Assert.Same(response.Frame, childFrame);
         }
 
+        [PuppeteerTest("navigation.spec.ts", "Frame.goto", "should reject when frame detaches")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldRejectWhenFrameDetaches()
         {
@@ -41,6 +44,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             Assert.Equal("Navigating frame was detached", exception.Message);
         }
 
+        [PuppeteerTest("navigation.spec.ts", "Frame.goto", "should return matching responses")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReturnMatchingResponses()
         {

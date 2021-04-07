@@ -2,18 +2,20 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace PuppeteerSharp.Tests.FrameTests
+namespace PuppeteerSharp.Tests.NavigationTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class WaitForNavigationTests : PuppeteerPageBaseTest
+    public class FrameWaitForNavigationTests : PuppeteerPageBaseTest
     {
-        public WaitForNavigationTests(ITestOutputHelper output) : base(output)
+        public FrameWaitForNavigationTests(ITestOutputHelper output) : base(output)
         {
         }
 
+        [PuppeteerTest("navigation.spec.ts", "Frame.waitForNavigation", "should work")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
@@ -32,6 +34,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             Assert.Contains("/frames/one-frame.html", Page.Url);
         }
 
+        [PuppeteerTest("navigation.spec.ts", "Frame.waitForNavigation", "should fail when frame detaches")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldFailWhenFrameDetaches()
         {
