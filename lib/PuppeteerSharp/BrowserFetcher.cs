@@ -65,7 +65,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Default Chromium revision.
         /// </summary>
-        public const string DefaultFirefoxRevision = "88.0a1";
+        public const string DefaultFirefoxRevision = "89.0a1";
 
         /// <summary>
         /// Gets the downloads folder.
@@ -350,6 +350,7 @@ namespace PuppeteerSharp
                 process.StartInfo.FileName = "hdiutil";
                 process.StartInfo.Arguments = $"attach -nobrowse -noautoopen \"{dmgPath}\"";
                 process.StartInfo.RedirectStandardOutput = true;
+                process.StartInfo.UseShellExecute = false;
                 process.OutputDataReceived += (sender, e) =>
                 {
                     if (e.Data == null || mountAndCopyTcs.Task.IsCompleted)
@@ -376,7 +377,6 @@ namespace PuppeteerSharp
                     using var process = new Process();
                     process.StartInfo.FileName = "cp";
                     process.StartInfo.Arguments = $"-R \"{appFile.FullName}\" \"{folderPath}\"";
-                    process.StartInfo.RedirectStandardOutput = true;
                     process.Start();
                     process.WaitForExit();
                     mountAndCopyTcs.TrySetResult(true);

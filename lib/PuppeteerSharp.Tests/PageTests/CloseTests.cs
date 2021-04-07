@@ -25,22 +25,24 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal("Target.detachedFromTarget", exception.CloseReason);
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public async Task ShouldNotBeVisibleInBrowserPages(bool useDisposeAsync)
+        [SkipBrowserFact(skipFirefox: true)]
+        public async Task ShouldNotBeVisibleInBrowserPages()
         {
-            Assert.Contains(Page, await Browser.PagesAsync());
-            if (useDisposeAsync)
-            {
-                // emulates what would happen in a C#8 await using block
-                await Page.DisposeAsync();
-            }
-            else
-            {
-                await Page.CloseAsync();
-            }
-            Assert.DoesNotContain(Page, await Browser.PagesAsync());
+            await using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
+            var page = await browser.NewPageAsync();
+            Assert.Contains(page, await browser.PagesAsync());
+            await page.CloseAsync();
+            Assert.DoesNotContain(page, await browser.PagesAsync());
+        }
+
+        [SkipBrowserFact(skipFirefox: true)]
+        public async Task ShouldNotBeVisibleInBrowserPagesWithDisposeAsync()
+        {
+            await using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
+            var page = await browser.NewPageAsync();
+            Assert.Contains(page, await browser.PagesAsync());
+            await page.DisposeAsync();
+            Assert.DoesNotContain(page, await browser.PagesAsync());
         }
 
         [SkipBrowserFact(skipFirefox: true)]

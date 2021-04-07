@@ -83,7 +83,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             }
         }
 
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldBeAbleToReconnectToADisconnectedBrowser()
         {
             var options = new ConnectOptions()

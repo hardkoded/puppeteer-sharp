@@ -63,7 +63,7 @@ namespace PuppeteerSharp.Tests.PageTests
             var browserFetcher = new BrowserFetcher();
             await browserFetcher.DownloadAsync();
             await using var browser = await Puppeteer.LaunchAsync(
-                new LaunchOptions {Headless = true});
+                new LaunchOptions { Headless = true });
             await using var page = await browser.NewPageAsync();
             await page.GoToAsync("http://www.google.com");
             await page.ScreenshotAsync(outputFile);
@@ -184,7 +184,7 @@ namespace PuppeteerSharp.Tests.PageTests
             }
         }
 
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldRunInParallelInMultiplePages()
         {
             var n = 2;
