@@ -23,7 +23,7 @@ namespace PuppeteerSharp
         private readonly ILogger _logger;
         private Dictionary<string, string> _extraHTTPHeaders;
         private Credentials _credentials;
-        private readonly List<string> _attemptedAuthentications = new List<string>();
+        private readonly ConcurrentSet<string> _attemptedAuthentications = new ConcurrentSet<string>();
         private bool _userRequestInterceptionEnabled;
         private bool _protocolRequestInterceptionEnabled;
         private readonly bool _ignoreHTTPSErrors;
