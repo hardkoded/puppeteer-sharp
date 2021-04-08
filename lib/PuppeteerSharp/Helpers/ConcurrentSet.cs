@@ -2,19 +2,20 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-// https://github.com/dotnet/roslyn/blob/6da1274c9d24c2f90a48290394a951b23617f2a3/src/Compilers/Core/Portable/InternalUtilities/ConcurrentSet.cs#L16 
+// https://github.com/dotnet/roslyn/blob/6da1274c9d24c2f90a48290394a951b23617f2a3/src/Compilers/Core/Portable/InternalUtilities/ConcurrentSet.cs#L16
 
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-//namespace Roslyn.Utilities
+// namespace Roslyn.Utilities
 namespace PuppeteerSharp.Helpers
 {
     /// <summary>
     /// A concurrent, simplified HashSet.
     /// </summary>
+    /// <typeparam name="T">The type</typeparam>
     [DebuggerDisplay("Count = {Count}")]
     internal sealed class ConcurrentSet<T> : ICollection<T>
     {
