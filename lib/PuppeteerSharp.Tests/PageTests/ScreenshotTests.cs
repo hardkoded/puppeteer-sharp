@@ -111,6 +111,32 @@ namespace PuppeteerSharp.Tests.PageTests
             }
         }
 
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        public async Task ShouldClipScale()
+        {
+            await using (var page = await Context.NewPageAsync())
+            {
+                await page.SetViewportAsync(new ViewPortOptions
+                {
+                    Width = 500,
+                    Height = 500
+                });
+                await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+                var screenshot = await page.ScreenshotDataAsync(new ScreenshotOptions
+                {
+                    Clip = new Clip
+                    {
+                        X = 50,
+                        Y = 100,
+                        Width = 150,
+                        Height = 100,
+                        Scale = 2
+                    }
+                });
+                Assert.True(ScreenshotHelper.PixelMatch("screenshot-clip-rect-scale.png", screenshot));
+            }
+        }
+
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldClipElementsToTheViewport()
         {

@@ -31,6 +31,6 @@ namespace PuppeteerSharp.Media
         /// Scale of the webpage rendering. Defaults to 1.
         /// </summary>
         /// <value>The scale.</value>
-        public int Scale { get; internal set; }
+        public int Scale { get; set; } = 1;
     }
 }
