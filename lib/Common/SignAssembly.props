@@ -6,8 +6,8 @@
     <PublicSign>false</PublicSign>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="..\keys\public.snk">
-      <Link>public.snk</Link>
+    <None Include="..\keys\keypair.snk">
+      <Link>keypair.snk</Link>
     </None>
   </ItemGroup>
 </Project>
