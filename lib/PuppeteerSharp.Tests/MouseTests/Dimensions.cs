@@ -1,7 +1,7 @@
 using System;
 using Newtonsoft.Json;
 
-namespace PuppeteerSharp.Tests.InputTests
+namespace PuppeteerSharp.Tests.MouseTests
 {
     public class Dimensions
     {

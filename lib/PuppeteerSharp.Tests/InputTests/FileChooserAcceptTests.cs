@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using PuppeteerSharp.Mobile;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -14,19 +15,7 @@ namespace PuppeteerSharp.Tests.InputTests
         {
         }
 
-        [SkipBrowserFact(skipFirefox: true)]
-        public async Task ShouldWorkWhenFileInputIsAttachedToDOM()
-        {
-            await Page.SetContentAsync("<input type=file>");
-            var waitForTask = Page.WaitForFileChooserAsync();
-
-            await Task.WhenAll(
-                waitForTask,
-                Page.ClickAsync("input"));
-
-            Assert.NotNull(waitForTask.Result);
-        }
-
+        [PuppeteerTest("input.spec.ts", "FileChooser.accept", "should accept single file")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldAcceptSingleFile()
         {
@@ -50,6 +39,7 @@ namespace PuppeteerSharp.Tests.InputTests
                 await Page.QuerySelectorAsync("input").EvaluateFunctionAsync<string>("input => input.files[0].name"));
         }
 
+        [PuppeteerTest("input.spec.ts", "FileChooser.accept", "should be able to read selected file")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldBeAbleToReadSelectedFile()
         {
@@ -69,6 +59,7 @@ namespace PuppeteerSharp.Tests.InputTests
                 }"));
         }
 
+        [PuppeteerTest("input.spec.ts", "FileChooser.accept", "should be able to reset selected files with empty file list")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldBeAbleToResetSelectedFilesWithEmptyFileList()
         {
@@ -96,6 +87,7 @@ namespace PuppeteerSharp.Tests.InputTests
             }"));
         }
 
+        [PuppeteerTest("input.spec.ts", "FileChooser.accept", "should not accept multiple files for single-file input")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldNotAcceptMultipleFilesForSingleFileInput()
         {
@@ -111,6 +103,7 @@ namespace PuppeteerSharp.Tests.InputTests
                 "./assets/pptr.png"));
         }
 
+        [PuppeteerTest("input.spec.ts", "FileChooser.accept", "should fail when accepting file chooser twice")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldFailWhenAcceptingFileChooserTwice()
         {

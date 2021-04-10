@@ -22,6 +22,10 @@
 	<ItemGroup>
 		<Folder Include="Issues\" />
 		<Folder Include="Attributes\" />
+		<Folder Include="ClickTests\" />
+		<Folder Include="KeyboardTests\" />
+		<Folder Include="MouseTests\" />
+		<Folder Include="TouchScreenTests\" />
 	</ItemGroup>
 	<PropertyGroup Condition="'$(TargetFramework)'=='net471'">
 		<RuntimeIdentifier>win10-x64</RuntimeIdentifier>

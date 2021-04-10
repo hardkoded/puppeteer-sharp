@@ -1,10 +1,11 @@
 using System.Threading.Tasks;
 using PuppeteerSharp.Mobile;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace PuppeteerSharp.Tests.InputTests
+namespace PuppeteerSharp.Tests.TouchScreenTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class TouchScreenTests : PuppeteerPageBaseTest
@@ -15,6 +16,7 @@ namespace PuppeteerSharp.Tests.InputTests
         {
         }
 
+        [PuppeteerTest("touchescreen.spec.ts", "Touchscreen", "tap the button")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldTapTheButton()
         {
@@ -24,6 +26,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.Equal("Clicked", await Page.EvaluateExpressionAsync<string>("result"));
         }
 
+        [PuppeteerTest("touchescreen.spec.ts", "Touchscreen", "should report touches")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReportTouches()
         {
