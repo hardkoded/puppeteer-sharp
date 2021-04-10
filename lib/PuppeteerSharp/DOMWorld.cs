@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
@@ -16,7 +17,7 @@ namespace PuppeteerSharp
         private TaskCompletionSource<ExecutionContext> _contextResolveTaskWrapper;
         private TaskCompletionSource<ElementHandle> _documentCompletionSource;
 
-        internal List<WaitTask> WaitTasks { get; set; }
+        internal ICollection<WaitTask> WaitTasks { get; set; }
 
         internal Frame Frame { get; }
 
@@ -28,7 +29,7 @@ namespace PuppeteerSharp
 
             SetContext(null);
 
-            WaitTasks = new List<WaitTask>();
+            WaitTasks = new ConcurrentSet<WaitTask>();
             _detached = false;
         }
 
@@ -56,7 +57,7 @@ namespace PuppeteerSharp
             _detached = true;
             while (WaitTasks.Count > 0)
             {
-                WaitTasks[0].Terminate(new Exception("waitForFunction failed: frame got detached."));
+                WaitTasks.First().Terminate(new Exception("waitForFunction failed: frame got detached."));
             }
         }
 
