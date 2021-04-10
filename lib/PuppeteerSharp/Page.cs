@@ -40,7 +40,7 @@ namespace PuppeteerSharp
         private readonly TaskQueue _screenshotTaskQueue;
         private readonly EmulationManager _emulationManager;
         private readonly Dictionary<string, Delegate> _pageBindings;
-        private readonly Dictionary<string, Worker> _workers;
+        private readonly IDictionary<string, Worker> _workers;
         private readonly ILogger _logger;
         private PageGetLayoutMetricsResponse _burstModeMetrics;
         private bool _screenshotBurstModeOn;
@@ -74,7 +74,7 @@ namespace PuppeteerSharp
             _timeoutSettings = new TimeoutSettings();
             _emulationManager = new EmulationManager(client);
             _pageBindings = new Dictionary<string, Delegate>();
-            _workers = new Dictionary<string, Worker>();
+            _workers = new ConcurrentDictionary<string, Worker>();
             _logger = Client.Connection.LoggerFactory.CreateLogger<Page>();
             Accessibility = new Accessibility(client);
 
