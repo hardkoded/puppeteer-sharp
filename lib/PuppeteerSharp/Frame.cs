@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Input;
@@ -39,6 +40,7 @@ namespace PuppeteerSharp
     public class Frame
     {
         private readonly CDPSession _client;
+        private readonly List<Frame> _childFrames = new List<Frame>();
 
         internal string Id { get; set; }
 
@@ -66,7 +68,7 @@ namespace PuppeteerSharp
 
             if (parentFrame != null)
             {
-                ParentFrame.ChildFrames.Add(this);
+                ParentFrame.AddChildFrame(this);
             }
         }
 
@@ -74,7 +76,16 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets the child frames of the this frame
         /// </summary>
-        public List<Frame> ChildFrames { get; } = new List<Frame>();
+        public List<Frame> ChildFrames
+        {
+            get
+            {
+                lock (_childFrames)
+                {
+                    return _childFrames.ToList();
+                }
+            }
+        }
 
         /// <summary>
         /// Gets the frame's name attribute as specified in the tag
@@ -495,6 +506,22 @@ namespace PuppeteerSharp
         public Task TypeAsync(string selector, string text, TypeOptions options = null)
              => SecondaryWorld.TypeAsync(selector, text, options);
 
+        internal void AddChildFrame(Frame frame)
+        {
+            lock (_childFrames)
+            {
+                _childFrames.Add(frame);
+            }
+        }
+
+        internal void RemoveChildFrame(Frame frame)
+        {
+            lock (_childFrames)
+            {
+                _childFrames.Remove(frame);
+            }
+        }
+
         internal void OnLoadingStopped()
         {
             LifecycleEvents.Add("DOMContentLoaded");
@@ -527,7 +554,7 @@ namespace PuppeteerSharp
             SecondaryWorld.Detach();
             if (ParentFrame != null)
             {
-                ParentFrame.ChildFrames.Remove(this);
+                ParentFrame.RemoveChildFrame(this);
             }
             ParentFrame = null;
         }
