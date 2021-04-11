@@ -40,8 +40,6 @@ namespace PuppeteerSharp
     {
         private readonly CDPSession _client;
 
-        internal List<WaitTask> WaitTasks { get; }
-
         internal string Id { get; set; }
 
         internal string LoaderId { get; set; }
@@ -61,7 +59,6 @@ namespace PuppeteerSharp
             ParentFrame = parentFrame;
             Id = frameId;
 
-            WaitTasks = new List<WaitTask>();
             LifecycleEvents = new List<string>();
 
             MainWorld = new DOMWorld(FrameManager, this, FrameManager.TimeoutSettings);
