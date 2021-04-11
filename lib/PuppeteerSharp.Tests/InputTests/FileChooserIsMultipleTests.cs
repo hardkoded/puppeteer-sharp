@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using PuppeteerSharp.Mobile;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -14,6 +15,7 @@ namespace PuppeteerSharp.Tests.InputTests
         {
         }
 
+        [PuppeteerTest("input.spec.ts", "FileChooser.isMultiple", "should work for single file pick")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkForSingleFilePick()
         {
@@ -27,6 +29,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.False(waitForTask.Result.IsMultiple);
         }
 
+        [PuppeteerTest("input.spec.ts", "FileChooser.isMultiple", "should work for \"multiple\"")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkForMultiple()
         {
@@ -40,6 +43,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.True(waitForTask.Result.IsMultiple);
         }
 
+        [PuppeteerTest("input.spec.ts", "FileChooser.isMultiple", "should work for \"webkitdirectory\"")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkForWebkitDirectory()
         {

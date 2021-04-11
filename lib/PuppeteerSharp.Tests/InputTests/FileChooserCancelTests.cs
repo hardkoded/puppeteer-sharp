@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using PuppeteerSharp.Mobile;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -14,6 +15,7 @@ namespace PuppeteerSharp.Tests.InputTests
         {
         }
 
+        [PuppeteerTest("input.spec.ts", "FileChooser.cancel", "should cancel dialog")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldCancelDialog()
         {
@@ -35,6 +37,7 @@ namespace PuppeteerSharp.Tests.InputTests
                 Page.ClickAsync("input"));
         }
 
+        [PuppeteerTest("input.spec.ts", "FileChooser.cancel", "should fail when canceling file chooser twice")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldFailWhenCancelingFileChooserTwice()
         {
