@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -11,6 +12,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         {
         }
 
+        [PuppeteerTest("jshandle.spec.ts", "JSHandle.toString", "should work for primitives")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkForPrimitives()
         {
@@ -20,6 +22,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             Assert.Equal("JSHandle:a", stringHandle.ToString());
         }
 
+        [PuppeteerTest("jshandle.spec.ts", "JSHandle.toString", "should work for complicated objects")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkForComplicatedObjects()
         {

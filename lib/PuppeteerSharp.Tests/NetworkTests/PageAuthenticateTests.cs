@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -15,6 +16,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
+        [PuppeteerTest("network.spec.ts", "Page.authenticate", "should work")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
@@ -33,6 +35,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(HttpStatusCode.OK, response.Status);
         }
 
+        [PuppeteerTest("network.spec.ts", "Page.authenticate", "should fail if wrong credentials")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldFailIfWrongCredentials()
         {
@@ -48,6 +51,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(HttpStatusCode.Unauthorized, response.Status);
         }
 
+        [PuppeteerTest("network.spec.ts", "Page.authenticate", "should allow disable authentication")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldAllowDisableAuthentication()
         {
@@ -68,6 +72,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(HttpStatusCode.Unauthorized, response.Status);
         }
 
+        [PuppeteerTest("network.spec.ts", "Page.authenticate", "should not disable caching")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldNotDisableCaching()
         {
