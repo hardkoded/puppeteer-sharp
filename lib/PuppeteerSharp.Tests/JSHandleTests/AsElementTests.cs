@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -11,6 +12,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         {
         }
 
+        [PuppeteerTest("jshandle.spec.ts", "JSHandle.asElement", "should work")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWork()
         {
@@ -19,6 +21,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             Assert.NotNull(element);
         }
 
+        [PuppeteerTest("jshandle.spec.ts", "JSHandle.asElement", "should return null for non-elements")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldReturnNullForNonElements()
         {
@@ -27,6 +30,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             Assert.Null(element);
         }
 
+        [PuppeteerTest("jshandle.spec.ts", "JSHandle.asElement", "should return ElementHandle for TextNodes")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldReturnElementHandleForTextNodes()
         {

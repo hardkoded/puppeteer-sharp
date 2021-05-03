@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -19,6 +20,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
+        [PuppeteerTest("network.spec.ts", "Network Events", "Page.Events.Request")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task PageEventsRequest()
         {
@@ -34,6 +36,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(TestConstants.EmptyPage, requests[0].Frame.Url);
         }
 
+        [PuppeteerTest("network.spec.ts", "Network Events", "Page.Events.Response")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task PageEventsResponse()
         {
@@ -53,6 +56,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(TestConstants.Port, remoteAddress.Port);
         }
 
+        [PuppeteerTest("network.spec.ts", "Network Events", "Page.Events.RequestFailed")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task PageEventsRequestFailed()
         {
@@ -89,6 +93,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.NotNull(failedRequests[0].Frame);
         }
 
+        [PuppeteerTest("network.spec.ts", "Network Events", "Page.Events.RequestFinished")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task PageEventsRequestFinished()
         {
@@ -103,6 +108,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(TestConstants.EmptyPage, requests[0].Frame.Url);
         }
 
+        [PuppeteerTest("network.spec.ts", "Network Events", "should fire events in proper order")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldFireEventsInProperOrder()
         {
@@ -114,6 +120,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(new[] { "request", "response", "requestfinished" }, events);
         }
 
+        [PuppeteerTest("network.spec.ts", "Network Events", "should support redirects")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldSupportRedirects()
         {
