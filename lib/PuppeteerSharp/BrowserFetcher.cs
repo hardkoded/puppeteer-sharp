@@ -65,7 +65,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Default Chromium revision.
         /// </summary>
-        public const string DefaultFirefoxRevision = "89.0b7";
+        public const string DefaultFirefoxRevision = "89.0b9";
 
         /// <summary>
         /// Gets the downloads folder.
