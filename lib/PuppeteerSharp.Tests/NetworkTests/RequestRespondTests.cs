@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -15,6 +16,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
+        [PuppeteerTest("network.spec.ts", "Request.respond", "should work")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
@@ -43,6 +45,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         /// I found that status 422 is not available in all .NET runtimes (see https://github.com/dotnet/core/blob/4c4642d548074b3fbfd425541a968aadd75fea99/release-notes/2.1/Preview/api-diff/preview2/2.1-preview2_System.Net.md)
         /// As the goal here is testing HTTP codes that are not in Chromium (see https://cs.chromium.org/chromium/src/net/http/http_status_code_list.h?sq=package:chromium&g=0) we will use code 426: Upgrade Required
         /// </summary>
+        [PuppeteerTest("network.spec.ts", "Request.respond", "should work with status code 422")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkReturnStatusPhrases()
         {
@@ -62,6 +65,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal("Yo, page!", await Page.EvaluateExpressionAsync<string>("document.body.textContent"));
         }
 
+        [PuppeteerTest("network.spec.ts", "Request.respond", "should redirect")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldRedirect()
         {
@@ -92,6 +96,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(TestConstants.EmptyPage, response.Url);
         }
 
+        [PuppeteerTest("network.spec.ts", "Request.respond", "should allow mocking binary responses")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldAllowMockingBinaryResponses()
         {
@@ -117,6 +122,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.True(ScreenshotHelper.PixelMatch("mock-binary-response.png", await img.ScreenshotDataAsync()));
         }
 
+        [PuppeteerTest("network.spec.ts", "Request.respond", "should stringify intercepted request response headers")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldStringifyInterceptedRequestResponseHeaders()
         {

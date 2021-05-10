@@ -11,8 +11,9 @@ using Xunit;
 using Xunit.Abstractions;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 
-namespace PuppeteerSharp.Tests.NetworkTests
+namespace PuppeteerSharp.Tests.RequestInterceptionTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class RequestContinueTests : PuppeteerPageBaseTest
@@ -21,6 +22,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
+        [PuppeteerTest("requestinterception.spec.ts", "Request.continue", "should work")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
@@ -29,6 +31,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             await Page.GoToAsync(TestConstants.EmptyPage);
         }
 
+        [PuppeteerTest("requestinterception.spec.ts", "Request.continue", "should amend HTTP headers")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldAmendHTTPHeaders()
         {
@@ -50,6 +53,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal("bar", requestTask.Result);
         }
 
+        [PuppeteerTest("requestinterception.spec.ts", "Request.continue", "should redirect in a way non-observable to page")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldRedirectInAWayNonObservableToPage()
         {
@@ -68,6 +72,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal("yellow", consoleMessage);
         }
 
+        [PuppeteerTest("requestinterception.spec.ts", "Request.continue", "should amend method")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldAmendMethodData()
         {
@@ -88,6 +93,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal("POST", requestTask.Result);
         }
 
+        [PuppeteerTest("requestinterception.spec.ts", "Request.continue", "should amend post data")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldAmendPostData()
         {
@@ -116,6 +122,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal("doggo", await requestTask.Result);
         }
 
+        [PuppeteerTest("requestinterception.spec.ts", "Request.continue", "should amend both post data and method on navigation")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldAmendBothPostDataAndMethodOnNavigation()
         {

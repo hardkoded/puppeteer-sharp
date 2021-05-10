@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -18,6 +19,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
+        [PuppeteerTest("network.spec.ts", "Request.isNavigationRequest", "should work")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
@@ -32,6 +34,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.False(requests["style.css"].IsNavigationRequest);
         }
 
+        [PuppeteerTest("network.spec.ts", "Request.isNavigationRequest", "should work with request interception")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithRequestInterception()
         {
@@ -52,6 +55,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.False(requests["style.css"].IsNavigationRequest);
         }
 
+        [PuppeteerTest("network.spec.ts", "Request.isNavigationRequest", "should work when navigating to image")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWhenNavigatingToImage()
         {

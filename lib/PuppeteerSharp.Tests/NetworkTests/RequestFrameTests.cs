@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using PuppeteerSharp.Xunit;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
@@ -14,6 +15,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
+        [PuppeteerTest("network.spec.ts", "Request.Frame", "should work for main frame navigation request")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkForMainFrameNavigationRequests()
         {
@@ -31,6 +33,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(Page.MainFrame, requests[0].Frame);
         }
 
+        [PuppeteerTest("network.spec.ts", "Request.Frame", "should work for subframe navigation request")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkForSubframeNavigationRequest()
         {
@@ -50,6 +53,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(Page.FirstChildFrame(), requests[1].Frame);
         }
 
+        [PuppeteerTest("network.spec.ts", "Request.Frame", "should work for fetch requests")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkForFetchRequests()
         {

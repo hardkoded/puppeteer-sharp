@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -14,6 +15,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
+        [PuppeteerTest("network.spec.ts", "Response.buffer", "should work")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
@@ -22,6 +24,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(imageBuffer, await response.BufferAsync());
         }
 
+        [PuppeteerTest("network.spec.ts", "Response.buffer", "should work with compression")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithCompression()
         {

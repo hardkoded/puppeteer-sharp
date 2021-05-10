@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -15,6 +16,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
+        [PuppeteerTest("network.spec.ts", "Response.fromServiceWorker", "should return |false| for non-service-worker content")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReturnFalseForNonServiceWorkerContent()
         {
@@ -22,6 +24,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.False(response.FromServiceWorker);
         }
 
+        [PuppeteerTest("network.spec.ts", "Response.fromServiceWorker", "Response.fromServiceWorker")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ResponseFromServiceWorker()
         {

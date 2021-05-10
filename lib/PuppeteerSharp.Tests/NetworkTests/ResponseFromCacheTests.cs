@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -15,6 +16,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
+        [PuppeteerTest("network.spec.ts", "Response.fromCache", "should return |false| for non-cached content")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReturnFalseForNonCachedContent()
         {
@@ -22,6 +24,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.False(response.FromCache);
         }
 
+        [PuppeteerTest("network.spec.ts", "Response.fromCache", "should work")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {

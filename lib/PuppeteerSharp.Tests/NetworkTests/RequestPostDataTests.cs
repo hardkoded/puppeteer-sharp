@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
@@ -15,6 +16,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
+        [PuppeteerTest("network.spec.ts", "Request.postData", "should work")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
@@ -27,6 +29,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal("{\"foo\":\"bar\"}", request.PostData);
         }
 
+        [PuppeteerTest("network.spec.ts", "Request.postData", "should be |undefined| when there is no post data")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldBeUndefinedWhenThereIsNoPostData()
         {

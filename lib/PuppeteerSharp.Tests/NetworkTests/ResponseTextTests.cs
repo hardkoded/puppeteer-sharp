@@ -4,6 +4,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -16,6 +17,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
+        [PuppeteerTest("network.spec.ts", "Response.text", "should work")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
@@ -23,6 +25,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal("{\"foo\": \"bar\"}", (await response.TextAsync()).Trim());
         }
 
+        [PuppeteerTest("network.spec.ts", "Response.text", "should return uncompressed text")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReturnUncompressedText()
         {
@@ -32,8 +35,9 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal("{\"foo\": \"bar\"}", (await response.TextAsync()).Trim());
         }
 
+        [PuppeteerTest("network.spec.ts", "Response.text", "should throw when requesting body of redirected response")]
         [SkipBrowserFact(skipFirefox: true)]
-        public async Task PageEventsResponseShouldThrowWhenRequestingBodyOfRedirectedResponse()
+        public async Task ShouldThrowWhenRequestingBodyOfRedirectedResponse()
         {
             Server.SetRedirect("/foo.html", "/empty.html");
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/foo.html");
@@ -46,6 +50,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Contains("Response body is unavailable for redirect responses", exception.Message);
         }
 
+        [PuppeteerTest("network.spec.ts", "Response.text", "should wait until response completes")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWaitUntilResponseCompletes()
         {

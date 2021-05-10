@@ -11,8 +11,9 @@ using Xunit;
 using Xunit.Abstractions;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 
-namespace PuppeteerSharp.Tests.NetworkTests
+namespace PuppeteerSharp.Tests.RequestInterceptionTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class SetRequestInterceptionTests : PuppeteerPageBaseTest
@@ -21,6 +22,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
+        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should intercept")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldIntercept()
         {
@@ -48,6 +50,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(TestConstants.Port, response.RemoteAddress.Port);
         }
 
+        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should work when POST is redirected with 302")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWhenPostIsEedirectedWith302()
         {
@@ -67,6 +70,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             );
         }
 
+        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should work when header manipulation headers with redirect")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWhenHeaderManipulationHeadersWithRedirect()
         {
@@ -83,6 +87,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/rrredirect");
         }
 
+        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should be able to remove headers")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldBeAbleToRemoveHeaders()
         {
@@ -103,6 +108,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.True(string.IsNullOrEmpty(requestTask.Result));
         }
 
+        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should contain referer header")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldContainRefererHeader()
         {
@@ -130,6 +136,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Contains("/one-style.html", requests[1].Headers["Referer"]);
         }
 
+        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should properly return navigation response when URL has cookies")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldProperlyReturnNavigationResponseWhenURLHasCookies()
         {
@@ -148,6 +155,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(HttpStatusCode.OK, response.Status);
         }
 
+        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should stop intercepting")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldStopIntercepting()
         {
@@ -163,6 +171,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             await Page.GoToAsync(TestConstants.EmptyPage);
         }
 
+        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should show custom HTTP headers")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldShowCustomHTTPHeaders()
         {
@@ -180,6 +189,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.True(response.Ok);
         }
 
+        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should work with redirect inside sync XHR")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithRedirectInsideSyncXHR()
         {
@@ -198,6 +208,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(200, status);
         }
 
+        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should work with custom referer headers")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithCustomRefererHeaders()
         {
@@ -215,6 +226,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.True(response.Ok);
         }
 
+        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should be abortable")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldBeAbortable()
         {
@@ -238,6 +250,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(1, failedRequests);
         }
 
+        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should be abortable with custom error codes")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldBeAbortableWithCustomErrorCodes()
         {
@@ -253,6 +266,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal("net::ERR_INTERNET_DISCONNECTED", failedRequest.Failure);
         }
 
+        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should send referer")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldSendReferer()
         {
@@ -270,6 +284,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal("http://google.com/", requestTask.Result);
         }
 
+        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should fail navigation when aborting main resource")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldFailNavigationWhenAbortingMainResource()
         {
@@ -288,6 +303,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             }
         }
 
+        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should work with redirects")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithRedirects()
         {
@@ -323,6 +339,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             }
         }
 
+        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should work with redirects for subresources")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithRedirectsForSubresources()
         {
@@ -360,6 +377,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Contains("three-style.css", redirectChain[2].Url);
         }
 
+        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should be able to abort redirects")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldBeAbleToAbortRedirects()
         {
@@ -399,6 +417,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             }
         }
 
+        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should work with equal requests")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithEqualRequests()
         {
@@ -436,6 +455,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(new[] { "11", "FAILED", "22" }, results);
         }
 
+        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should navigate to dataURL and fire dataURL requests")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldNavigateToDataURLAndFireDataURLRequests()
         {
@@ -453,6 +473,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(dataURL, requests[0].Url);
         }
 
+        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should be able to fetch dataURL and fire dataURL requests")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldBeAbleToFetchDataURLAndFireDataURLRequests()
         {
@@ -472,6 +493,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(dataURL, requests[0].Url);
         }
 
+        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should navigate to URL with hash and fire requests without hash")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldNavigateToURLWithHashAndAndFireRequestsWithoutHash()
         {
@@ -489,6 +511,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(TestConstants.EmptyPage, requests[0].Url);
         }
 
+        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should work with encoded server")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithEncodedServer()
         {
@@ -500,6 +523,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(HttpStatusCode.NotFound, response.Status);
         }
 
+        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should work with badly encoded server")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithBadlyEncodedServer()
         {
@@ -510,6 +534,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(HttpStatusCode.OK, response.Status);
         }
 
+        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should work with encoded server - 2")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithEncodedServerNegative2()
         {
@@ -528,6 +553,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(HttpStatusCode.NotFound, requests[1].Response.Status);
         }
 
+        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should not throw \"Invalid Interception Id\" if the request was cancelled")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldNotThrowInvalidInterceptionIdIfTheRequestWasCancelled()
         {
@@ -549,6 +575,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             await request.ContinueAsync();
         }
 
+        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should throw if interception is not enabled")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldThrowIfInterceptionIsNotEnabled()
         {
@@ -568,6 +595,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Contains("Request Interception is not enabled", exception.Message);
         }
 
+        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should work with file URLs")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithFileURLs()
         {
