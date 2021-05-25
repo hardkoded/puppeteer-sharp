@@ -1,11 +1,10 @@
-using System;
-using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace PuppeteerSharp.Tests.PageTests.Cookies
+namespace PuppeteerSharp.Tests.CookiesTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class DeleteCookiesTests : PuppeteerPageBaseTest
@@ -14,8 +13,9 @@ namespace PuppeteerSharp.Tests.PageTests.Cookies
         {
         }
 
+        [PuppeteerTest("cookies.spec.ts", "Page.deleteCookie", "should work")]
         [SkipBrowserFact(skipFirefox: true)]
-        public async Task ShouldDeleteACookie()
+        public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             await Page.SetCookieAsync(new CookieParam

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -24,6 +25,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             Assert.Equal(2, Page.Frames.Length);
         }
 
+        [PuppeteerTest("oopif.spec.ts", "OOPIF", "should load oopif iframes with subresources and request interception")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldLoadOopifIframesWithSubresourcesAndRequestInterception()
         {

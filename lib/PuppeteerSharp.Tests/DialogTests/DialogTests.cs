@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 
-namespace PuppeteerSharp.Tests.PageTests.Events
+namespace PuppeteerSharp.Tests.DialogTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class DialogTests : PuppeteerPageBaseTest
@@ -15,6 +16,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
         {
         }
 
+        [PuppeteerTest("dialog.spec.ts", "Page.Events.Dialog", "should fire")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldFire()
         {
@@ -30,6 +32,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
             await Page.EvaluateExpressionAsync("alert('yo');");
         }
 
+        [PuppeteerTest("dialog.spec.ts", "Page.Events.Dialog", "should allow accepting prompts")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldAllowAcceptingPrompts()
         {
@@ -46,6 +49,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
             Assert.Equal("answer!", result);
         }
 
+        [PuppeteerTest("dialog.spec.ts", "Page.Events.Dialog", "should dismiss the prompt")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldDismissThePrompt()
         {

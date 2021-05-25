@@ -1,16 +1,18 @@
 using System.Threading.Tasks;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace PuppeteerSharp.Tests.PageTests.Events
+namespace PuppeteerSharp.Tests.PageTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class DOMContentLoadedTests : PuppeteerPageBaseTest
+    public class PageEventsDOMContentLoadedTests : PuppeteerPageBaseTest
     {
-        public DOMContentLoadedTests(ITestOutputHelper output) : base(output)
+        public PageEventsDOMContentLoadedTests(ITestOutputHelper output) : base(output)
         {
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.Events.DOMContentLoaded", "should fire when expected")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldFireWhenExpected()
         {
