@@ -4,16 +4,18 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 
 namespace PuppeteerSharp.Tests.PageTests.Events
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class ConsoleTests : PuppeteerPageBaseTest
+    public class PageEventsConsoleTests : PuppeteerPageBaseTest
     {
-        public ConsoleTests(ITestOutputHelper output) : base(output)
+        public PageEventsConsoleTests(ITestOutputHelper output) : base(output)
         {
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.Events.Console", "should work")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
@@ -40,6 +42,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
             Assert.Equal("bar", (await message.Args[2].JsonValueAsync<dynamic>()).foo.ToString());
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.Events.Console", "should work for different console API calls")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkForDifferentConsoleApiCalls()
         {
@@ -85,6 +88,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
                 .ToArray());
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.Events.Console", "should not fail for window object")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldNotFailForWindowObject()
         {
@@ -106,6 +110,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
             Assert.Equal("JSHandle@object", await consoleTcs.Task);
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.Events.Console", "should trigger correct Log")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldTriggerCorrectLog()
         {
@@ -128,6 +133,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
             }
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.Events.Console", "should have location when fetch fails")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldHaveLocationWhenFetchFails()
         {
@@ -148,6 +154,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
             }, args.Message.Location);
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.Events.Console", "should have location and stack trace for console API calls")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldHaveLocationForConsoleAPICalls()
         {
@@ -170,6 +177,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
             }, args.Message.Location);
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.Events.Console", "should not throw when there are console messages in detached iframes")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldNotThrowWhenThereAreConsoleMessagesInDetachedIframes()
         {

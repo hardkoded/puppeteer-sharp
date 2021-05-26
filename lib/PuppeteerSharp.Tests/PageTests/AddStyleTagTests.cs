@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -14,6 +15,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.addStyleTag", "should throw an error if no options are provided")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldThrowAnErrorIfNoOptionsAreProvided()
         {
@@ -22,6 +24,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal("Provide options with a `Url`, `Path` or `Content` property", exception.Message);
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.addStyleTag", "should work with a url")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWithAUrl()
         {
@@ -32,6 +35,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 "window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')"));
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.addStyleTag", "should throw an error if loading from url fail")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldThrowAnErrorIfLoadingFromUrlFail()
         {
@@ -41,6 +45,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal("Loading style from /nonexistfile.js failed", exception.Message);
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.addStyleTag", "should work with a path")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWithAPath()
         {
@@ -51,6 +56,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 "window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')"));
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.addStyleTag", "should include sourcemap when path is provided")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldIncludeSourcemapWhenPathIsProvided()
         {
@@ -64,6 +70,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Contains(Path.Combine("Assets", "injectedstyle.css"), styleContent);
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.addStyleTag", "should work with content")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWithContent()
         {
@@ -74,6 +81,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 "window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')"));
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.addStyleTag", "should throw when added with content to the CSP page")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldThrowWhenAddedWithContentToTheCSPPage()
         {
@@ -86,6 +94,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.NotNull(exception);
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.addStyleTag", "should throw when added with URL to the CSP page")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldThrowWhenAddedWithURLToTheCSPPage()
         {

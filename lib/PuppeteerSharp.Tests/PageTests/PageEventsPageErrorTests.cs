@@ -1,17 +1,19 @@
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace PuppeteerSharp.Tests.PageTests.Events
+namespace PuppeteerSharp.Tests.PageTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class PageErrorTests : PuppeteerPageBaseTest
+    public class PageEventsPageErrorTests : PuppeteerPageBaseTest
     {
-        public PageErrorTests(ITestOutputHelper output) : base(output)
+        public PageEventsPageErrorTests(ITestOutputHelper output) : base(output)
         {
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.Events.PageError", "should fire")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldFire()
         {
