@@ -91,7 +91,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
             await Task.WhenAll(
                 popupTaskSource.Task,
-                Page.QuerySelectorAsync("a").EvaluateFunctionAsync("a => a.click();"));
+                Page.QuerySelectorAsync("a").EvaluateFunctionAsync("a => a.click()"));
 
             Assert.False(await Page.EvaluateExpressionAsync<bool>("!!window.opener"));
             Assert.False(await popupTaskSource.Task.Result.EvaluateExpressionAsync<bool>("!!window.opener"));
