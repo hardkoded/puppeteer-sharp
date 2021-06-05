@@ -152,7 +152,6 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
                 {
                     Clip = new Clip
                     {
-
                         X = 50,
                         Y = 600,
                         Width = 100,

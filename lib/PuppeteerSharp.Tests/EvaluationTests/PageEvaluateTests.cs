@@ -94,7 +94,6 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldWorkWithUnicodeChars()
             => Assert.Equal(42, await Page.EvaluateFunctionAsync<int>("a => a['中文字符']", new Dictionary<string, int> { ["中文字符"] = 42 }));
 
-
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should throw when evaluation triggers reload")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldThrowWhenEvaluationTriggersReload()
