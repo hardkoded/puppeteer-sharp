@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -10,6 +11,7 @@ namespace PuppeteerSharp.Tests.PageTests
     {
         public CloseTests(ITestOutputHelper output) : base(output) { }
 
+        [PuppeteerTest("page.spec.ts", "Page.close", "should reject all promises when page is closed")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldRejectAllPromisesWhenPageIsClosed()
         {
@@ -25,6 +27,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal("Target.detachedFromTarget", exception.CloseReason);
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.close", "should not be visible in browser.pages")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldNotBeVisibleInBrowserPages()
         {
@@ -45,6 +48,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.DoesNotContain(page, await browser.PagesAsync());
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.close", "should run beforeunload if asked for")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldRunBeforeunloadIfAskedFor()
         {
@@ -83,6 +87,7 @@ namespace PuppeteerSharp.Tests.PageTests
             );
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.close", "should *not* run beforeunload by default")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldNotRunBeforeunloadByDefault()
         {
@@ -91,6 +96,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.CloseAsync();
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.close", "should set the page close state")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldSetThePageCloseState()
         {
@@ -99,6 +105,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(Page.IsClosed);
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.close", "should terminate network waiters")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldTerminateNetworkWaiters()
         {

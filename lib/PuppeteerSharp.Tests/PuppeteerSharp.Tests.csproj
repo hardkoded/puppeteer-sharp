@@ -26,6 +26,7 @@
 		<Folder Include="KeyboardTests\" />
 		<Folder Include="MouseTests\" />
 		<Folder Include="TouchScreenTests\" />
+		<Folder Include="EmulationTests\" />
 	</ItemGroup>
 	<PropertyGroup Condition="'$(TargetFramework)'=='net471'">
 		<RuntimeIdentifier>win10-x64</RuntimeIdentifier>
@@ -48,5 +49,6 @@
 		<Content Include="xunit.runner.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
+		<None Remove="Emulation\" />
 	</ItemGroup>
 </Project>

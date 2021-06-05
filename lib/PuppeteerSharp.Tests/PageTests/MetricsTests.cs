@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
@@ -15,6 +16,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.metrics", "should get metrics from a page")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldGetMetricsFromPage()
         {
@@ -23,6 +25,7 @@ namespace PuppeteerSharp.Tests.PageTests
             CheckMetrics(metrics);
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.metrics", "metrics event fired on console.timeStamp")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task MetricsEventFiredOnConsoleTimespan()
         {

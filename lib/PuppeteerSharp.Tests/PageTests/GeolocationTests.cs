@@ -2,18 +2,20 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class GeoLocationTests : PuppeteerPageBaseTest
+    public class GeolocationTests : PuppeteerPageBaseTest
     {
-        public GeoLocationTests(ITestOutputHelper output) : base(output)
+        public GeolocationTests(ITestOutputHelper output) : base(output)
         {
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.setGeolocation", "should work")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
@@ -35,6 +37,7 @@ namespace PuppeteerSharp.Tests.PageTests
             }, geolocation);
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.setGeolocation", "should throw when invalid longitude")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldThrowWhenInvalidLongitude()
         {

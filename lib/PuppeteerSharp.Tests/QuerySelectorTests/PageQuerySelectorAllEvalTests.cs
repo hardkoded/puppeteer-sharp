@@ -1,16 +1,18 @@
 using System.Threading.Tasks;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class EvalManyTests : PuppeteerPageBaseTest
+    public class PageQuerySelectorAllEvalTests : PuppeteerPageBaseTest
     {
-        public EvalManyTests(ITestOutputHelper output) : base(output)
+        public PageQuerySelectorAllEvalTests(ITestOutputHelper output) : base(output)
         {
         }
 
+        [PuppeteerTest("queryselector.spec.ts", "Page.$$eval", "should work")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWork()
         {

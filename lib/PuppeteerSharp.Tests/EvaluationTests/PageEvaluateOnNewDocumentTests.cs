@@ -4,18 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace PuppeteerSharp.Tests.PageTests
+namespace PuppeteerSharp.Tests.EvaluationTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class EvaluateOnNewDocumentTests : PuppeteerPageBaseTest
+    public class PageEvaluateOnNewDocumentTests : PuppeteerPageBaseTest
     {
-        public EvaluateOnNewDocumentTests(ITestOutputHelper output) : base(output)
+        public PageEvaluateOnNewDocumentTests(ITestOutputHelper output) : base(output)
         {
         }
 
+        [PuppeteerTest("evaluation.spec.ts", "Page.evaluateOnNewDocument", "should evaluate before anything else on the page")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldEvaluateBeforeAnythingElseOnThePage()
         {
@@ -26,6 +28,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(123, await Page.EvaluateExpressionAsync<int>("window.result"));
         }
 
+        [PuppeteerTest("evaluation.spec.ts", "Page.evaluateOnNewDocument", "should work with CSP")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithCSP()
         {

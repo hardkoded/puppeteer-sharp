@@ -1,16 +1,18 @@
 using System.Threading.Tasks;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace PuppeteerSharp.Tests.PageTests
+namespace PuppeteerSharp.Tests.QuerySelectorTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class XPathTests : PuppeteerPageBaseTest
+    public class PageXPathTests : PuppeteerPageBaseTest
     {
-        public XPathTests(ITestOutputHelper output) : base(output)
+        public PageXPathTests(ITestOutputHelper output) : base(output)
         {
         }
 
+        [PuppeteerTest("queryselector.spec.ts", "Path.$x", "should query existing element")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldQueryExistingElement()
         {
@@ -20,6 +22,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Single(elements);
         }
 
+        [PuppeteerTest("queryselector.spec.ts", "Path.$x", "should return empty array for non-existing element")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldReturnEmptyArrayForNonExistingElement()
         {
@@ -27,6 +30,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Empty(elements);
         }
 
+        [PuppeteerTest("queryselector.spec.ts", "Path.$x", "should return multiple elements")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldReturnMultipleElements()
         {

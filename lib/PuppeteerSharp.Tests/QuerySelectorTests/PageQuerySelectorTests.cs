@@ -1,16 +1,18 @@
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using PuppeteerSharp.Xunit;
 
-namespace PuppeteerSharp.Tests.PageTests
+namespace PuppeteerSharp.Tests.QuerySelectorTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class QuerySelectorTests : PuppeteerPageBaseTest
+    public class PageQuerySelectorTests : PuppeteerPageBaseTest
     {
-        public QuerySelectorTests(ITestOutputHelper output) : base(output)
+        public PageQuerySelectorTests(ITestOutputHelper output) : base(output)
         {
         }
 
+        [PuppeteerTest("queryselector.spec.ts", "Page.$", "should query existing element")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldQueryExistingElement()
         {
@@ -19,6 +21,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.NotNull(element);
         }
 
+        [PuppeteerTest("queryselector.spec.ts", "Page.$", "should query existing element")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldReturnNullForNonExistingElement()
         {
