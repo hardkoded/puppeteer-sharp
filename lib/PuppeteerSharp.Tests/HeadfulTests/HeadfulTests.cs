@@ -3,10 +3,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace PuppeteerSharp.Tests.PuppeteerTests
+namespace PuppeteerSharp.Tests.HeadfulTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class HeadfulTests : PuppeteerBaseTest
@@ -15,6 +16,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         {
         }
 
+        [PuppeteerTest("headful.spec.ts", "HEADFUL", "background_page target type should be available")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task BackgroundPageTargetTypeShouldBeAvailable()
         {
@@ -28,6 +30,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             }
         }
 
+        [PuppeteerTest("headful.spec.ts", "HEADFUL", "target.page() should return a background_page")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task TargetPageShouldReturnABackgroundPage()
         {
@@ -44,6 +47,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             }
         }
 
+        [PuppeteerTest("headful.spec.ts", "HEADFUL", "should have default url when launching browser")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldHaveDefaultUrlWhenLaunchingBrowser()
         {
@@ -56,6 +60,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             }
         }
 
+        [PuppeteerTest("headful.spec.ts", "HEADFUL", "headless should be able to read cookies written by headful")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task HeadlessShouldBeAbleToReadCookiesWrittenByHeadful()
         {
@@ -85,6 +90,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             }
         }
 
+        [PuppeteerTest("headful.spec.ts", "HEADFUL", "OOPIF: should report google.com frame")]
         [Fact(Skip = "TODO: Support OOOPIF. @see https://github.com/GoogleChrome/puppeteer/issues/2548")]
         public async Task OOPIFShouldReportGoogleComFrame()
         {
@@ -111,6 +117,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             }
         }
 
+        [PuppeteerTest("headful.spec.ts", "HEADFUL", "should close browser with beforeunload page")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldCloseBrowserWithBeforeunloadPage()
         {
@@ -125,6 +132,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             }
         }
 
+        [PuppeteerTest("headful.spec.ts", "HEADFUL", "should open devtools when \"devtools: true\" option is given")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldOpenDevtoolsWhenDevtoolsTrueOptionIsGiven()
         {
@@ -136,30 +144,6 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 await Task.WhenAll(
                     context.NewPageAsync(),
                     context.WaitForTargetAsync(target => target.Url.Contains("devtools://")));
-            }
-        }
-
-        [SkipBrowserFact(skipFirefox: true)]
-        public async Task BringToFrontShouldWork()
-        {
-            await using (var browserWithExtension = await Puppeteer.LaunchAsync(
-                TestConstants.BrowserWithExtensionOptions(),
-                TestConstants.LoggerFactory))
-            await using (var page = await browserWithExtension.NewPageAsync())
-            {
-                await page.GoToAsync(TestConstants.EmptyPage);
-                Assert.Equal("visible", await page.EvaluateExpressionAsync<string>("document.visibilityState"));
-
-                var newPage = await browserWithExtension.NewPageAsync();
-                await newPage.GoToAsync(TestConstants.EmptyPage);
-                Assert.Equal("hidden", await page.EvaluateExpressionAsync<string>("document.visibilityState"));
-                Assert.Equal("visible", await newPage.EvaluateExpressionAsync<string>("document.visibilityState"));
-
-                await page.BringToFrontAsync();
-                Assert.Equal("visible", await page.EvaluateExpressionAsync<string>("document.visibilityState"));
-                Assert.Equal("hidden", await newPage.EvaluateExpressionAsync<string>("document.visibilityState"));
-
-                await newPage.CloseAsync();
             }
         }
     }
