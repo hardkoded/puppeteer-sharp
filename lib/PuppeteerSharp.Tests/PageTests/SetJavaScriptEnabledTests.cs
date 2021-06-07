@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -13,6 +14,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.setJavaScriptEnabled", "should work")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {

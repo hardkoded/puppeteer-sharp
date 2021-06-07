@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -11,6 +12,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.setUserAgent", "should work")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWork()
         {
@@ -25,6 +27,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal("foobar", userAgentTask.Result);
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.setUserAgent", "should work for subframes")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkForSubframes()
         {
@@ -37,6 +40,7 @@ namespace PuppeteerSharp.Tests.PageTests
               FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage));
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.setUserAgent", "should emulate device user-agent")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldSimulateDeviceUserAgent()
         {

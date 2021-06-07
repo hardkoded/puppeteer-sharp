@@ -1,16 +1,18 @@
 using System.Threading.Tasks;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace PuppeteerSharp.Tests.PageTests
+namespace PuppeteerSharp.Tests.QuerySelectorTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class EvalTests : PuppeteerPageBaseTest
+    public class PageQuerySelectorEvalTests : PuppeteerPageBaseTest
     {
-        public EvalTests(ITestOutputHelper output) : base(output)
+        public PageQuerySelectorEvalTests(ITestOutputHelper output) : base(output)
         {
         }
 
+        [PuppeteerTest("queryselector.spec.ts", "Page.$eval", "should work")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWork()
         {
@@ -28,6 +30,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal("testAttribute", idAttribute);
         }
 
+        [PuppeteerTest("queryselector.spec.ts", "Page.$eval", "should accept arguments")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldAcceptArguments()
         {
@@ -36,6 +39,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal("hello world!", text);
         }
 
+        [PuppeteerTest("queryselector.spec.ts", "Page.$eval", "should accept ElementHandles as arguments")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldAcceptElementHandlesAsArguments()
         {
@@ -45,6 +49,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal("hello world", text);
         }
 
+        [PuppeteerTest("queryselector.spec.ts", "Page.$eval", "should throw error if no element is found")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldThrowErrorIfNoElementIsFound()
         {

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -14,6 +15,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.setCacheEnabled", "should enable or disable the cache based on the state passed")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldEnableOrDisableTheCacheBasedOnTheStatePassed()
         {
@@ -36,6 +38,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(string.IsNullOrEmpty(waitForRequestTask.Result));
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.setCacheEnabled", "should stay disabled when toggling request interception on/off")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldStayDisabledWhenTogglingRequestInterceptionOnOff()
         {

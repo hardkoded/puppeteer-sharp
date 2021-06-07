@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -11,6 +12,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.browser", "should return the correct browser instance")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public void ShouldReturnTheCorrectBrowserInstance() => Assert.Same(Browser, Page.Browser);
     }

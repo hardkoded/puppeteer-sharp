@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -25,6 +26,7 @@ namespace PuppeteerSharp.Tests.PageTests
             #endregion
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.setContent", "should work")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWork()
         {
@@ -34,6 +36,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(ExpectedOutput, result);
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.setContent", "should work with doctype")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWithDoctype()
         {
@@ -45,6 +48,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal($"{doctype}{ExpectedOutput}", result);
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.setContent", "should work with HTML 4 doctype")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWithHtml4Doctype()
         {
@@ -57,6 +61,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal($"{doctype}{ExpectedOutput}", result);
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.setContent", "should respect timeout")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldRespectTimeout()
         {
@@ -73,6 +78,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Contains("Timeout of 1 ms exceeded", exception.Message);
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.setContent", "should respect default navigation timeout")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldRespectDefaultTimeout()
         {
@@ -87,6 +93,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Contains("Timeout of 1 ms exceeded", exception.Message);
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.setContent", "should await resources to load")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldAwaitResourcesToLoad()
         {
@@ -103,6 +110,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await contentTask;
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.setContent", "should work fast enough")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkFastEnough()
         {
@@ -112,6 +120,7 @@ namespace PuppeteerSharp.Tests.PageTests
             }
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.setContent", "should work with tricky content")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWithTrickyContent()
         {
@@ -119,6 +128,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal("hello world", await Page.QuerySelectorAsync("div").EvaluateFunctionAsync<string>("div => div.textContent"));
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.setContent", "should work with accents")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWithAccents()
         {
@@ -126,6 +136,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal("aberración", await Page.QuerySelectorAsync("div").EvaluateFunctionAsync<string>("div => div.textContent"));
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.setContent", "should work with emojis")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWithEmojis()
         {
@@ -133,6 +144,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal("🐥", await Page.QuerySelectorAsync("div").EvaluateFunctionAsync<string>("div => div.textContent"));
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.setContent", "should work with newline")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWithNewline()
         {

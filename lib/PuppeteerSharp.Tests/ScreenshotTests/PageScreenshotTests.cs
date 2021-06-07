@@ -4,15 +4,16 @@ using System.IO;
 using System.Threading.Tasks;
 using PuppeteerSharp.Media;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace PuppeteerSharp.Tests.PageTests
+namespace PuppeteerSharp.Tests.ScreenshotTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class ScreenshotTests : PuppeteerBrowserContextBaseTest
+    public class PageScreenshotTests : PuppeteerBrowserContextBaseTest
     {
-        public ScreenshotTests(ITestOutputHelper output) : base(output)
+        public PageScreenshotTests(ITestOutputHelper output) : base(output)
         {
         }
 
@@ -70,6 +71,8 @@ namespace PuppeteerSharp.Tests.PageTests
             #endregion
             Assert.True(File.Exists(outputFile));
         }
+
+        [PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should work")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
@@ -86,6 +89,7 @@ namespace PuppeteerSharp.Tests.PageTests
             }
         }
 
+        [PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should clip rect")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldClipRect()
         {
@@ -148,7 +152,6 @@ namespace PuppeteerSharp.Tests.PageTests
                 {
                     Clip = new Clip
                     {
-
                         X = 50,
                         Y = 600,
                         Width = 100,
@@ -159,6 +162,7 @@ namespace PuppeteerSharp.Tests.PageTests
             }
         }
 
+        [PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should run in parallel")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldRunInParallel()
         {
@@ -191,6 +195,7 @@ namespace PuppeteerSharp.Tests.PageTests
             }
         }
 
+        [PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should take fullPage screenshots")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldTakeFullPageScreenshots()
         {
@@ -210,6 +215,7 @@ namespace PuppeteerSharp.Tests.PageTests
             }
         }
 
+        [PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should run in parallel in multiple pages")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldRunInParallelInMultiplePages()
         {
@@ -260,6 +266,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Task.WhenAll(closeTasks);
         }
 
+        [PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should allow transparency")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldAllowTransparency()
         {
@@ -280,6 +287,7 @@ namespace PuppeteerSharp.Tests.PageTests
             }
         }
 
+        [PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should render white background on jpeg file")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldRenderWhiteBackgroundOnJpegFile()
         {
@@ -296,6 +304,7 @@ namespace PuppeteerSharp.Tests.PageTests
             }
         }
 
+        [PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should work with odd clip size on Retina displays")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWithOddClipSizeOnRetinaDisplays()
         {
@@ -316,6 +325,7 @@ namespace PuppeteerSharp.Tests.PageTests
             }
         }
 
+        [PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should return base64")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReturnBase64()
         {

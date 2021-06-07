@@ -1,17 +1,19 @@
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace PuppeteerSharp.Tests.PageTests
+namespace PuppeteerSharp.Tests.EmulationTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class ViewPortTests : PuppeteerPageBaseTest
+    public class PageViewPortTests : PuppeteerPageBaseTest
     {
-        public ViewPortTests(ITestOutputHelper output) : base(output)
+        public PageViewPortTests(ITestOutputHelper output) : base(output)
         {
         }
 
+        [PuppeteerTest("emulation.spec.ts", "Page.viewport", "should get the proper viewport size")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldGetTheProperViewPortSize()
         {
@@ -24,6 +26,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(456, Page.Viewport.Height);
         }
 
+        [PuppeteerTest("emulation.spec.ts", "Page.viewport", "should support mobile emulation")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldSupportMobileEmulation()
         {
@@ -36,6 +39,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(400, await Page.EvaluateExpressionAsync<int>("window.innerWidth"));
         }
 
+        [PuppeteerTest("emulation.spec.ts", "Page.viewport", "should support touch emulation")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldSupportTouchEmulation()
         {
@@ -64,6 +68,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.False(await Page.EvaluateExpressionAsync<bool>("'ontouchstart' in window"));
         }
 
+        [PuppeteerTest("emulation.spec.ts", "Page.viewport", "should be detectable by Modernizr")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldBeDetectableByModernizr()
         {
@@ -74,6 +79,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal("YES", await Page.EvaluateExpressionAsync<string>("document.body.textContent.trim()"));
         }
 
+        [PuppeteerTest("emulation.spec.ts", "Page.viewport", "should detect touch when applying viewport with touches")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldDetectTouchWhenApplyingViewportWithTouches()
         {
@@ -90,6 +96,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(await Page.EvaluateFunctionAsync<bool>("() => Modernizr.touchevents"));
         }
 
+        [PuppeteerTest("emulation.spec.ts", "Page.viewport", "should support landscape emulation")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldSupportLandscapeEmulation()
         {

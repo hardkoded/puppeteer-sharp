@@ -1,18 +1,20 @@
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace PuppeteerSharp.Tests.PageTests
+namespace PuppeteerSharp.Tests.NavigationTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class GoBackTests : PuppeteerPageBaseTest
+    public class PageGoBackTests : PuppeteerPageBaseTest
     {
-        public GoBackTests(ITestOutputHelper output) : base(output)
+        public PageGoBackTests(ITestOutputHelper output) : base(output)
         {
         }
 
         //TODO: This is working in puppeteer. I don't know why is hanging here.
+        [PuppeteerTest("page.spec.ts", "Page.goBack", "should work")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
@@ -31,6 +33,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Null(response);
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.goBack", "should work with HistoryAPI")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithHistoryAPI()
         {

@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -12,6 +13,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.select", "should select single option")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldSelectSingleOption()
         {
@@ -21,6 +23,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(new string[] { "blue" }, await Page.EvaluateExpressionAsync<string[]>("result.onChange"));
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.select", "should select only first option")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldSelectOnlyFirstOption()
         {
@@ -30,6 +33,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(new string[] { "blue" }, await Page.EvaluateExpressionAsync<string[]>("result.onChange"));
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.select", "should not throw when select causes navigation")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldNotThrowWhenSelectCausesNavigation()
         {
@@ -42,6 +46,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Contains("empty.html", Page.Url);
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.select", "should select multiple options")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldSelectMultipleOptions()
         {
@@ -54,6 +59,7 @@ namespace PuppeteerSharp.Tests.PageTests
                          await Page.EvaluateExpressionAsync<string[]>("result.onChange"));
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.select", "should respect event bubbling")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldRespectEventBubbling()
         {
@@ -63,6 +69,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(new string[] { "blue" }, await Page.EvaluateExpressionAsync<string[]>("result.onBubblingChange"));
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.select", "throw when element is not a <select>")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldThrowWhenElementIsNotASelect()
         {
@@ -71,6 +78,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Contains("Element is not a <select> element.", exception.Message);
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.select", "should return [] on no matched values")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldReturnEmptyArrayOnNoMatchedValues()
         {
@@ -79,6 +87,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Empty(result);
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.select", "should return an array of matched values")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldReturnAnArrayOfMatchedValues()
         {
@@ -89,6 +98,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(new string[] { "black", "blue", "magenta" }, result);
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.select", "should return an array of one element when multiple is not set")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldReturnAnArrayOfOneElementWhenMultipleIsNotSet()
         {
@@ -96,6 +106,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Single(await Page.SelectAsync("select", "42", "blue", "black", "magenta"));
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.select", "should return [] on no values")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldReturnEmptyArrayOnNoValues()
         {
@@ -103,6 +114,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Empty(await Page.SelectAsync("select"));
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.select", "should deselect all options when passed no values for a multiple select")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldDeselectAllOptionsWhenPassedNoValuesForAMultipleSelect()
         {
@@ -114,6 +126,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 "select => Array.from(select.options).every(option => !option.selected)"));
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.select", "should deselect all options when passed no values for a select without multiple")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldDeselectAllOptionsWhenPassedNoValuesForASelectWithoutMultiple()
         {

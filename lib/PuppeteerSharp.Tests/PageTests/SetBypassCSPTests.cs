@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -12,6 +13,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.setBypassCSP", "should bypass CSP meta tag")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldBypassCSPMetaTag()
         {
@@ -33,6 +35,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(42, await Page.EvaluateExpressionAsync<int>("window.__injected"));
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.setBypassCSP", "should bypass CSP header")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldBypassCSPHeader()
         {
@@ -55,6 +58,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(42, await Page.EvaluateExpressionAsync<int>("window.__injected"));
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.setBypassCSP", "should bypass after cross-process navigation")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldBypassAfterCrossProcessNavigation()
         {
@@ -74,6 +78,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(42, await Page.EvaluateExpressionAsync<int>("window.__injected"));
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.setBypassCSP", "should bypass CSP in iframes as well")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldBypassCSPInIframesAsWell()
         {

@@ -4,16 +4,18 @@ using Xunit;
 using Xunit.Abstractions;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class WaitForNavigationTests : PuppeteerPageBaseTest
+    public class PageWaitForNavigationTests : PuppeteerPageBaseTest
     {
-        public WaitForNavigationTests(ITestOutputHelper output) : base(output)
+        public PageWaitForNavigationTests(ITestOutputHelper output) : base(output)
         {
         }
 
+        [PuppeteerTest("navigation.spec.ts", "Page.waitForNavigation", "should work")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
@@ -28,6 +30,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Contains("grid.html", response.Url);
         }
 
+        [PuppeteerTest("navigation.spec.ts", "Page.waitForNavigation", "should work with both domcontentloaded and load")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWithBothDomcontentloadedAndLoad()
         {
@@ -62,6 +65,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await navigationTask.WithTimeout();
         }
 
+        [PuppeteerTest("navigation.spec.ts", "Page.waitForNavigation", "should work with clicking on anchor links")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithClickingOnAnchorLinks()
         {
@@ -76,6 +80,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(TestConstants.EmptyPage + "#foobar", Page.Url);
         }
 
+        [PuppeteerTest("navigation.spec.ts", "Page.waitForNavigation", "should work with history.pushState()")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithHistoryPushState()
         {
@@ -95,6 +100,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(TestConstants.ServerUrl + "/wow.html", Page.Url);
         }
 
+        [PuppeteerTest("navigation.spec.ts", "Page.waitForNavigation", "should work with history.replaceState()")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithHistoryReplaceState()
         {
@@ -114,6 +120,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(TestConstants.ServerUrl + "/replaced.html", Page.Url);
         }
 
+        [PuppeteerTest("navigation.spec.ts", "Page.waitForNavigation", "should work with DOM history.back()/history.forward()")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithDOMHistoryBackAndHistoryForward()
         {
@@ -145,6 +152,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(TestConstants.ServerUrl + "/second.html", Page.Url);
         }
 
+        [PuppeteerTest("navigation.spec.ts", "Page.waitForNavigation", "should work when subframe issues window.stop()")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWhenSubframeIssuesWindowStop()
         {

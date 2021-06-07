@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Xunit;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
@@ -13,6 +14,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.waitForRequest", "should work")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWork()
         {
@@ -30,6 +32,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(TestConstants.ServerUrl + "/digits/2.png", task.Result.Url);
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.waitForRequest", "should work with predicate")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWithPredicate()
         {
@@ -47,6 +50,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(TestConstants.ServerUrl + "/digits/2.png", task.Result.Url);
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.waitForRequest", "should respect timeout")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldRespectTimeout()
         {
@@ -60,6 +64,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Contains("Timeout of 1 ms exceeded", exception.Message);
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.waitForRequest", "should respect default timeout")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldRespectDefaultTimeout()
         {
@@ -71,6 +76,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Contains("Timeout of 1 ms exceeded", exception.Message);
         }
 
+        [PuppeteerTest("page.spec.ts", "Page.waitForRequest", "should work with no timeout")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWithNoTimeout()
         {

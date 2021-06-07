@@ -1,8 +1,9 @@
 using System.Threading.Tasks;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace PuppeteerSharp.Tests.PageTests
+namespace PuppeteerSharp.Tests.EmulationTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class EmulateTests : PuppeteerPageBaseTest
@@ -11,6 +12,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
+        [PuppeteerTest("emulation.spec.ts", "Page.emulate", "should work")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWork()
         {
@@ -21,6 +23,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Contains("iPhone", await Page.EvaluateExpressionAsync<string>("navigator.userAgent"));
         }
 
+        [PuppeteerTest("emulation.spec.ts", "Page.emulate", "should support clicking")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldSupportClicking()
         {

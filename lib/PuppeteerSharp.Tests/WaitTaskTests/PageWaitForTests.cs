@@ -1,17 +1,19 @@
 using System;
 using System.Threading.Tasks;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace PuppeteerSharp.Tests.PageTests
+namespace PuppeteerSharp.Tests.WaitForTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class WaitForTests : PuppeteerPageBaseTest
+    public class PageWaitForTests : PuppeteerPageBaseTest
     {
-        public WaitForTests(ITestOutputHelper output) : base(output)
+        public PageWaitForTests(ITestOutputHelper output) : base(output)
         {
         }
 
+        [PuppeteerTest("waittask.spec.ts", "Page.waitFor", "should wait for selector")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWaitForSelector()
         {
@@ -26,6 +28,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(found);
         }
 
+        [PuppeteerTest("waittask.spec.ts", "Page.waitFor", "should wait for an xpath")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWaitForAnXpath()
         {
@@ -38,6 +41,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(found);
         }
 
+        [PuppeteerTest("waittask.spec.ts", "Page.waitFor", "should not allow you to select an element with single slash xpath")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldNotAllowYouToSelectAnElementWithSingleSlashXpath()
         {
@@ -47,6 +51,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.NotNull(exception);
         }
 
+        [PuppeteerTest("waittask.spec.ts", "Page.waitFor", "should timeout")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldTimeout()
         {
@@ -56,6 +61,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True((DateTime.Now - startTime).TotalMilliseconds > timeout / 2);
         }
 
+        [PuppeteerTest("waittask.spec.ts", "Page.waitFor", "should work with multiline body")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWorkWithMultilineBody()
         {
@@ -65,13 +71,14 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(await result.JsonValueAsync<bool>());
         }
 
+        [PuppeteerTest("waittask.spec.ts", "Page.waitFor", "should wait for predicate")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public Task ShouldWaitForPredicate()
             => Task.WhenAll(
                 Page.WaitForFunctionAsync("() => window.innerWidth < 100"),
-                Page.SetViewportAsync(new ViewPortOptions { Width = 10, Height = 10 })
-        );
+                Page.SetViewportAsync(new ViewPortOptions { Width = 10, Height = 10 }));
 
+        [PuppeteerTest("waittask.spec.ts", "Page.waitFor", "should wait for predicate with arguments")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldWaitForPredicateWithArguments()
             => await Page.WaitForFunctionAsync("(arg1, arg2) => arg1 !== arg2", new WaitForFunctionOptions(), 1, 2);

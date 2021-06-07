@@ -1,10 +1,11 @@
 using System.Threading.Tasks;
 using PuppeteerSharp.Media;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace PuppeteerSharp.Tests.PageTests
+namespace PuppeteerSharp.Tests.EmulationTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class EmulateMediaFeaturesAsyncTests : PuppeteerPageBaseTest
@@ -13,6 +14,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
+        [PuppeteerTest("emulation.spec.ts", "Page.emulateMediaFeatures", "should work")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {

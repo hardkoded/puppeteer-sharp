@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -12,6 +13,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
+        [PuppeteerTest("page.spec.ts", "ExecutionContext.queryObjects", "should work")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
@@ -25,6 +27,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(new[] { "hello", "world" }, values);
         }
 
+        [PuppeteerTest("page.spec.ts", "ExecutionContext.queryObjects", "should work for non-blank page")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkForNonBlankPage()
         {
@@ -37,6 +40,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(1, count);
         }
 
+        [PuppeteerTest("page.spec.ts", "ExecutionContext.queryObjects", "should fail for disposed handles")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldFailForDisposedHandles()
         {
@@ -47,6 +51,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal("Prototype JSHandle is disposed!", exception.Message);
         }
 
+        [PuppeteerTest("page.spec.ts", "ExecutionContext.queryObjects", "should fail primitive values as prototypes")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldFailPrimitiveValuesAsPrototypes()
         {
