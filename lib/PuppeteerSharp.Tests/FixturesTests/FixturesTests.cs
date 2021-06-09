@@ -1,23 +1,20 @@
-using System;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Net;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Transport;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace PuppeteerSharp.Tests.PuppeteerTests
+namespace PuppeteerSharp.Tests.FixturesTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class FixturesTests : PuppeteerBaseTest
     {
         public FixturesTests(ITestOutputHelper output) : base(output) { }
 
+        [PuppeteerTest("fixtures.spec.ts", "Fixtures", "should dump browser process stderr")]
         [SkipBrowserFact(skipFirefox: true)]
         public void ShouldDumpBrowserProcessStderr()
         {
@@ -63,6 +60,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             Assert.True(browser.IsClosed);
         }
 
+        [PuppeteerTest("fixtures.spec.ts", "Fixtures", "should close the browser when the node process closes")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldCloseTheBrowserWhenTheLaunchedProcessCloses()
         {

@@ -27,6 +27,8 @@
 		<Folder Include="MouseTests\" />
 		<Folder Include="TouchScreenTests\" />
 		<Folder Include="EmulationTests\" />
+		<Folder Include="FixturesTests\" />
+		<Folder Include="HeadfulTests\" />
 	</ItemGroup>
 	<PropertyGroup Condition="'$(TargetFramework)'=='net471'">
 		<RuntimeIdentifier>win10-x64</RuntimeIdentifier>
@@ -50,5 +52,7 @@
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
 		<None Remove="Emulation\" />
+		<None Remove="FixturesTests\" />
+		<None Remove="HeadfulTests\" />
 	</ItemGroup>
 </Project>

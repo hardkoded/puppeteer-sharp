@@ -7,6 +7,7 @@ using Xunit;
 using Xunit.Abstractions;
 using PuppeteerSharp.Helpers.Linux;
 using System.Collections.Generic;
+using PuppeteerSharp.Xunit;
 
 namespace PuppeteerSharp.Tests.PuppeteerTests
 {
@@ -21,6 +22,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             EnsureDownloadsFolderIsDeleted();
         }
 
+        [PuppeteerTest("launcher.spec.ts", "BrowserFetcher", "should download and extract chrome linux binary")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldDownloadAndExtractLinuxBinary()
         {
