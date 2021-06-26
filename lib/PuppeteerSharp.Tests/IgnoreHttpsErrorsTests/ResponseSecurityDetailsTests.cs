@@ -8,18 +8,20 @@ using Xunit;
 using Xunit.Abstractions;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 
-namespace PuppeteerSharp.Tests.PuppeteerTests
+namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class IgnoreHttpsErrorsTests : PuppeteerPageBaseTest
+    public class ResponseSecurityDetailsTests : PuppeteerPageBaseTest
     {
-        public IgnoreHttpsErrorsTests(ITestOutputHelper output) : base(output)
+        public ResponseSecurityDetailsTests(ITestOutputHelper output) : base(output)
         {
             DefaultOptions = TestConstants.DefaultBrowserOptions();
             DefaultOptions.IgnoreHTTPSErrors = true;
         }
 
+        [PuppeteerTest("ignorehttpserrors.spec.ts", "Response.securityDetails", "Should Work")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
@@ -40,6 +42,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 TestUtils.CurateProtocol(response.SecurityDetails.Protocol));
         }
 
+        [PuppeteerTest("ignorehttpserrors.spec.ts", "Response.securityDetails", "Network redirects should report SecurityDetails")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task NetworkRedirectsShouldReportSecurityDetails()
         {
@@ -66,6 +69,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
                 TestUtils.CurateProtocol(response.SecurityDetails.Protocol));
         }
 
+        [PuppeteerTest("ignorehttpserrors.spec.ts", "Response.securityDetails", "should work with request interception")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithRequestInterception()
         {
@@ -75,6 +79,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             Assert.Equal(HttpStatusCode.OK, response.Status);
         }
 
+        [PuppeteerTest("ignorehttpserrors.spec.ts", "Response.securityDetails", "should work with mixed content")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithMixedContent()
         {

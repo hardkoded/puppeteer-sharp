@@ -7,8 +7,9 @@ using Xunit;
 using Xunit.Abstractions;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 
-namespace PuppeteerSharp.Tests.PuppeteerTests
+namespace PuppeteerSharp.Tests.LauncherTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class PuppeteerConnectTests : PuppeteerBrowserBaseTest
@@ -17,6 +18,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
         {
         }
 
+        [PuppeteerTest("launcher.spec.ts", "Puppeteer.connect", "should be able to connect multiple times to the same browser")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldBeAbleToConnectMultipleTimesToSameBrowser()
         {
@@ -38,6 +40,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             }
         }
 
+        [PuppeteerTest("launcher.spec.ts", "Puppeteer.connect", "should be able to close remote browser")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldBeAbleToCloseRemoteBrowser()
         {
@@ -54,6 +57,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
               remoteBrowser.CloseAsync());
         }
 
+        [PuppeteerTest("launcher.spec.ts", "Puppeteer.connect", "should support ignoreHTTPSErrors option")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldSupportIgnoreHTTPSErrorsOption()
         {
@@ -83,6 +87,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             }
         }
 
+        [PuppeteerTest("launcher.spec.ts", "Puppeteer.connect", "should be able to reconnect to a disconnected browser")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldBeAbleToReconnectToADisconnectedBrowser()
         {
@@ -109,6 +114,7 @@ namespace PuppeteerSharp.Tests.PuppeteerTests
             }
         }
 
+        [PuppeteerTest("launcher.spec.ts", "Puppeteer.connect", "should be able to connect to the same page simultaneously")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldBeAbleToConnectToTheSamePageSimultaneously()
         {
