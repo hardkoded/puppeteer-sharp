@@ -4,10 +4,11 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Messaging;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace PuppeteerSharp.Tests.TargetTests
+namespace PuppeteerSharp.Tests.CDPSessionTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class CreateCDPSessionTests : PuppeteerPageBaseTest
@@ -16,6 +17,7 @@ namespace PuppeteerSharp.Tests.TargetTests
         {
         }
 
+        [PuppeteerTest("CDPSession.spec.ts", "Target.createCDPSession", "should work")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
@@ -29,6 +31,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             Assert.Equal("bar", foo);
         }
 
+        [PuppeteerTest("CDPSession.spec.ts", "Target.createCDPSession", "should send events")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldSendEvents()
         {
@@ -48,6 +51,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             Assert.Single(events);
         }
 
+        [PuppeteerTest("CDPSession.spec.ts", "Target.createCDPSession", "should enable and disable domains independently")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldEnableAndDisableDomainsIndependently()
         {
@@ -67,6 +71,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             Assert.Equal("foo.js", eventTask.Result["url"].Value<string>());
         }
 
+        [PuppeteerTest("CDPSession.spec.ts", "Target.createCDPSession", "should be able to detach session")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldBeAbleToDetachSession()
         {
@@ -89,6 +94,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             Assert.Contains("Session closed.", exception.Message);
         }
 
+        [PuppeteerTest("CDPSession.spec.ts", "Target.createCDPSession", "should throw nice errors")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldThrowNiceErrors()
         {

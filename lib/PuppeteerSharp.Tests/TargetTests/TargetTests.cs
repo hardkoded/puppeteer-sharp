@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ namespace PuppeteerSharp.Tests.TargetTests
         {
         }
 
+        [PuppeteerTest("target.spec.ts", "Target", "Browser.targets should return all of the targets")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public void BrowserTargetsShouldReturnAllOfTheTargets()
         {
@@ -25,6 +27,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             Assert.Contains(targets, target => target.Type == TargetType.Browser);
         }
 
+        [PuppeteerTest("target.spec.ts", "Target", "Browser.pages should return all of the pages")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task BrowserPagesShouldReturnAllOfThePages()
         {
@@ -34,6 +37,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             Assert.Contains(Page, allPages);
         }
 
+        [PuppeteerTest("target.spec.ts", "Target", "should contain browser target")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public void ShouldContainBrowserTarget()
         {
@@ -42,6 +46,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             Assert.NotNull(browserTarget);
         }
 
+        [PuppeteerTest("target.spec.ts", "Target", "should be able to use the default page in the browser")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldBeAbleToUseTheDefaultPageInTheBrowser()
         {
@@ -53,6 +58,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             Assert.NotNull(await originalPage.QuerySelectorAsync("body"));
         }
 
+        [PuppeteerTest("target.spec.ts", "Target", "should report when a new page is created and closed")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReportWhenANewPageIsCreatedAndClosed()
         {
@@ -89,6 +95,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             Assert.DoesNotContain(otherPage, allPages);
         }
 
+        [PuppeteerTest("target.spec.ts", "Target", "should report when a service worker is created and destroyed")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReportWhenAServiceWorkerIsCreatedAndDestroyed()
         {
@@ -117,6 +124,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             Assert.Equal(createdTarget, await targetDestroyedTaskCompletion.Task);
         }
 
+        [PuppeteerTest("target.spec.ts", "Target", "should create a worker from a service worker")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldCreateAWorkerFromAServiceWorker()
         {
@@ -127,6 +135,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             Assert.Equal("[object ServiceWorkerGlobalScope]", await worker.EvaluateFunctionAsync("() => self.toString()"));
         }
 
+        [PuppeteerTest("target.spec.ts", "Target", "should create a worker from a shared worker")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldCreateAWorkerFromASharedWorker()
         {
@@ -140,6 +149,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             Assert.Equal("[object SharedWorkerGlobalScope]", await worker.EvaluateFunctionAsync("() => self.toString()"));
         }
 
+        [PuppeteerTest("target.spec.ts", "Target", "should report when a target url changes")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReportWhenATargetUrlChanges()
         {
@@ -164,6 +174,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             Assert.Equal(TestConstants.EmptyPage, changedTarget.Url);
         }
 
+        [PuppeteerTest("target.spec.ts", "Target", "should not report uninitialized pages")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldNotReportUninitializedPages()
         {
@@ -193,6 +204,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             Context.TargetChanged -= listener;
         }
 
+        [PuppeteerTest("target.spec.ts", "Target", "should not crash while redirecting if original request was missed")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldNotCrashWhileRedirectingIfOriginalRequestWasMissed()
         {
@@ -216,6 +228,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             await newPage.CloseAsync();
         }
 
+        [PuppeteerTest("target.spec.ts", "Target", "should have an opener")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldHaveAnOpener()
         {
