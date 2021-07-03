@@ -60,10 +60,10 @@ namespace PuppeteerSharp.Tooling
             var attributes = assembly.DefinedTypes.SelectMany(
                 type => type.GetMethods().SelectMany(method => method.GetCustomAttributes<PuppeteerTestAttribute>()));
 
-            int potentialMatches = 0;
-            int fullMatches = 0;
-            int noMatches = 0;
-            int totalTests = 0;
+            var potentialMatches = 0;
+            var fullMatches = 0;
+            var noMatches = 0;
+            var totalTests = 0;
 
             List<PuppeteerTestAttribute> missingTests = new();
             List<KeyValuePair<PuppeteerTestAttribute, List<PuppeteerTestAttribute>>> invalidMaps = new();
@@ -133,12 +133,15 @@ namespace PuppeteerSharp.Tooling
 
             foreach (var fileInfo in directoryInfo.GetFiles(options.Pattern))
             {
-                ScaffoldTest.FindTestsInFile(
-                    fileInfo.FullName,
-                    (testDescribe, testName) =>
-                    {
-                        _testPairs.Add(new PuppeteerTestAttribute(basePath + fileInfo.Name, testDescribe, testName));
-                    });
+                if (!fileInfo.FullName.Contains("experimental"))
+                {
+                    ScaffoldTest.FindTestsInFile(
+                        fileInfo.FullName,
+                        (testDescribe, testName) =>
+                        {
+                            _testPairs.Add(new PuppeteerTestAttribute(basePath + fileInfo.Name, testDescribe, testName));
+                        });
+                }
             }
         }
     }
