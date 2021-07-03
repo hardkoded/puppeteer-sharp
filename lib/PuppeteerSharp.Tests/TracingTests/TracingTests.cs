@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -52,6 +53,7 @@ namespace PuppeteerSharp.Tests.TracingTests
             }
         }
 
+        [PuppeteerTest("tracing.spec.ts", "Tracing", "should output a trace")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldOutputATrace()
         {
@@ -66,6 +68,7 @@ namespace PuppeteerSharp.Tests.TracingTests
             Assert.True(File.Exists(_file));
         }
 
+        [PuppeteerTest("tracing.spec.ts", "Tracing", "should run with custom categories if provided")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldRunWithCustomCategoriesProvided()
         {
@@ -89,6 +92,7 @@ namespace PuppeteerSharp.Tests.TracingTests
             }
         }
 
+        [PuppeteerTest("tracing.spec.ts", "Tracing", "should throw if tracing on two pages")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldThrowIfTracingOnTwoPages()
         {
@@ -109,6 +113,7 @@ namespace PuppeteerSharp.Tests.TracingTests
             await Page.Tracing.StopAsync();
         }
 
+        [PuppeteerTest("tracing.spec.ts", "Tracing", "should return a buffer")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReturnABuffer()
         {
@@ -123,6 +128,7 @@ namespace PuppeteerSharp.Tests.TracingTests
             Assert.Equal(trace, buf);
         }
 
+        [PuppeteerTest("tracing.spec.ts", "Tracing", "should work without options")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithoutOptions()
         {
@@ -132,6 +138,7 @@ namespace PuppeteerSharp.Tests.TracingTests
             Assert.NotNull(trace);
         }
 
+        [PuppeteerTest("tracing.spec.ts", "Tracing", "should support a buffer without a path")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldSupportABufferWithoutAPath()
         {

@@ -3,16 +3,18 @@ using Xunit;
 using Xunit.Abstractions;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 
 namespace PuppeteerSharp.Tests.WorkerTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class WorkerTests : PuppeteerPageBaseTest
+    public class PageWorkerTests : PuppeteerPageBaseTest
     {
-        public WorkerTests(ITestOutputHelper output) : base(output)
+        public PageWorkerTests(ITestOutputHelper output) : base(output)
         {
         }
 
+        [PuppeteerTest("worker.spec.ts", "Workers", "Page.workers")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task PageWorkers()
         {
@@ -35,6 +37,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.Empty(Page.Workers);
         }
 
+        [PuppeteerTest("worker.spec.ts", "Workers", "should emit created and destroyed events")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldEmitCreatedAndDestroyedEvents()
         {
@@ -49,6 +52,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.Same(worker, await workerDestroyedTcs.Task);
         }
 
+        [PuppeteerTest("worker.spec.ts", "Workers", "should report console logs")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReportConsoleLogs()
         {
@@ -67,6 +71,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             }, log.Location);
         }
 
+        [PuppeteerTest("worker.spec.ts", "Workers", "should have JSHandles for console logs")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldHaveJSHandlesForConsoleLogs()
         {
@@ -83,6 +88,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.Equal("null", json);
         }
 
+        [PuppeteerTest("worker.spec.ts", "Workers", "should have an execution context")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldHaveAnExecutionContext()
         {
@@ -94,6 +100,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.Equal(2, await worker.EvaluateExpressionAsync<int>("1+1"));
         }
 
+        [PuppeteerTest("worker.spec.ts", "Workers", "should report errors")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReportErrors()
         {
