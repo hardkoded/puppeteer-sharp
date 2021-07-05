@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Messaging;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using Xunit;
@@ -12,8 +14,17 @@ namespace PuppeteerSharp.Tests.HeadfulTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class HeadfulTests : PuppeteerBaseTest
     {
+        private readonly LaunchOptions _forcedOopifOptions;
+        
         public HeadfulTests(ITestOutputHelper output) : base(output)
         {
+            _forcedOopifOptions = TestConstants.DefaultBrowserOptions();
+            _forcedOopifOptions.Headless =  false;
+            _forcedOopifOptions.Devtools = true;
+            _forcedOopifOptions.Args = new[] {
+                $"--host-rules=\"MAP oopifdomain 127.0.0.1\"",
+                $"--isolate-origins=\"{TestConstants.ServerUrl.Replace("localhost", "oopifdomain")}\""
+            };
         }
 
         [PuppeteerTest("headful.spec.ts", "HEADFUL", "background_page target type should be available")]
@@ -117,6 +128,69 @@ namespace PuppeteerSharp.Tests.HeadfulTests
             }
         }
 
+        [PuppeteerTest("headful.spec.ts", "HEADFUL", "OOPIF: should expose events within OOPIFs")]
+        [SkipBrowserFact(skipFirefox: true)]
+        public async Task OOPIFShouldExposeEventsWithinOOPIFs()
+        {
+            await using (var browser = await Puppeteer.LaunchAsync(_forcedOopifOptions))
+            await using (var page = await browser.NewPageAsync())
+            {
+                // Setup our session listeners to observe OOPIF activity.
+                var session = await page.Target.CreateCDPSessionAsync();
+                var networkEvents = new List<string>();
+                var otherSessions = new List<CDPSession>();
+
+                await session.SendAsync("Target.setAutoAttach", new TargetSetAutoAttachRequest
+                {
+                    AutoAttach = true,
+                    Flatten = true,
+                    WaitForDebuggerOnStart = true,
+                });
+
+                session.SessionAttached += async (_, e) =>
+                {
+                    otherSessions.Add(e.Session);
+
+                    await e.Session.SendAsync("Network.enable");
+                    await e.Session.SendAsync("Runtime.runIfWaitingForDebugger");
+
+                    e.Session.MessageReceived += (_, e) =>
+                    {
+                        if (e.MessageID.Equals("Network.requestWillBeSent", StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            networkEvents.Add(e.MessageData.SelectToken("request").SelectToken("url").ToObject<string>());
+                        }
+                    };
+                };
+
+                // Navigate to the empty page and add an OOPIF iframe with at least one request.
+                await page.GoToAsync(TestConstants.EmptyPage);
+                await page.EvaluateFunctionAsync(@"(frameUrl) => {
+                    const frame = document.createElement('iframe');
+                    frame.setAttribute('src', frameUrl);
+                    document.body.appendChild(frame);
+                    return new Promise((x, y) => {
+                        frame.onload = x;
+                        frame.onerror = y;
+                    });
+                }", TestConstants.ServerUrl.Replace("localhost", "oopifdomain") + "/one-style.html");
+                await page.WaitForSelectorAsync("iframe");
+
+                // Ensure we found the iframe session.
+                Assert.Single(otherSessions);
+
+                // Resume the iframe and trigger another request.
+                var iframeSession = otherSessions[0];
+                await iframeSession.SendAsync("Runtime.evaluate", new RuntimeEvaluateRequest {
+                    Expression = "fetch('/fetch')",
+                    AwaitPromise = true,
+                });
+                await browser.CloseAsync();
+
+                Assert.Contains($"http://oopifdomain:{TestConstants.Port}/fetch", networkEvents);
+            }
+        }
+
         [PuppeteerTest("headful.spec.ts", "HEADFUL", "should close browser with beforeunload page")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldCloseBrowserWithBeforeunloadPage()
@@ -143,7 +217,7 @@ namespace PuppeteerSharp.Tests.HeadfulTests
                 var context = await browser.CreateIncognitoBrowserContextAsync();
                 await Task.WhenAll(
                     context.NewPageAsync(),
-                    context.WaitForTargetAsync(target => target.Url.Contains("devtools://")));
+                    browser.WaitForTargetAsync(target => target.Url.Contains("devtools://")));
             }
         }
     }

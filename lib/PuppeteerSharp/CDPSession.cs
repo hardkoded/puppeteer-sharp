@@ -56,33 +56,42 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The target type.</value>
         public TargetType TargetType { get; }
+
         /// <summary>
         /// Gets the session identifier.
         /// </summary>
         /// <value>The session identifier.</value>
         public string SessionId { get; }
+
         /// <summary>
         /// Gets the connection.
         /// </summary>
         /// <value>The connection.</value>
         internal Connection Connection { get; private set; }
+
         /// <summary>
         /// Occurs when message received from Chromium.
         /// </summary>
         public event EventHandler<MessageEventArgs> MessageReceived;
+
         /// <summary>
         /// Occurs when the connection is closed.
         /// </summary>
         public event EventHandler Disconnected;
+
+        internal event EventHandler<SessionAttachedEventArgs> SessionAttached;
+
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="CDPSession"/> is closed.
         /// </summary>
         /// <value><c>true</c> if is closed; otherwise, <c>false</c>.</value>
         public bool IsClosed { get; internal set; }
+
         /// <summary>
         /// Connection close reason.
         /// </summary>
         public string CloseReason { get; private set; }
+
         /// <summary>
         /// Gets the logger factory.
         /// </summary>
@@ -220,6 +229,9 @@ namespace PuppeteerSharp
             Disconnected?.Invoke(this, EventArgs.Empty);
             Connection = null;
         }
+
+        internal void OnSessionAttached(CDPSession session)
+            => SessionAttached?.Invoke(this, new SessionAttachedEventArgs { Session = session });
 
         #endregion
     }
