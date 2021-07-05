@@ -43,13 +43,13 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
 
             var nodeToCheck = new SerializedAXNode
             {
-                Role = "WebArea",
+                Role = "RootWebArea",
                 Name = "Accessibility Test",
                 Children = new SerializedAXNode[]
                     {
                         new SerializedAXNode
                         {
-                            Role = "text",
+                            Role = "StaticText",
                             Name = "Hello World"
                         },
                         new SerializedAXNode
@@ -143,7 +143,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                             {
                                 new SerializedAXNode
                                 {
-                                    Role = "text",
+                                    Role = "StaticText",
                                     Name = "hi"
                                 }
                             }
@@ -213,7 +213,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
             Assert.Equal(
                 new SerializedAXNode
                 {
-                    Role = "WebArea",
+                    Role = "RootWebArea",
                     Name = "",
                     Children = new SerializedAXNode[]
                     {
@@ -251,7 +251,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                     {
                         new SerializedAXNode
                         {
-                            Role = "text",
+                            Role = "StaticText",
                             Name = "Edit this image:"
                         },
                         new SerializedAXNode
@@ -278,11 +278,12 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                     Role = "textbox",
                     Name = "",
                     Value = "Edit this image: ",
+                    Multiline = true,
                     Children = new SerializedAXNode[]
                     {
                         new SerializedAXNode
                         {
-                            Role = "text",
+                            Role = "StaticText",
                             Name = "Edit this image:"
                         },
                         new SerializedAXNode
@@ -305,22 +306,8 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                 {
                     Role = "textbox",
                     Name = "",
-                    Value = "Edit this image:"
-                },
-                (await Page.Accessibility.SnapshotAsync()).Children[0]);
-        }
-
-        [PuppeteerTest("accessibility.spec.ts", "plaintext contenteditable", "plain text field without role should not have content")]
-        [SkipBrowserFact(skipFirefox: true)]
-        public async Task PlainTextFieldWithTabindexAndWithoutRoleShouldNotHaveContent()
-        {
-            await Page.SetContentAsync("<div contenteditable='plaintext-only' role='textbox' tabIndex=0>Edit this image:<img src='fakeimage.png' alt='my fake image'></div>");
-            Assert.Equal(
-                new SerializedAXNode
-                {
-                    Role = "textbox",
-                    Name = "",
-                    Value = "Edit this image:"
+                    Value = "Edit this image:",
+                    Multiline = true,
                 },
                 (await Page.Accessibility.SnapshotAsync()).Children[0]);
         }
