@@ -137,7 +137,7 @@ namespace PuppeteerSharp.Tests.HeadfulTests
             {
                 // Setup our session listeners to observe OOPIF activity.
                 var session = await page.Target.CreateCDPSessionAsync();
-                var networkEvents = new List<RequestEventArgs>();
+                var networkEvents = new List<string>();
                 var otherSessions = new List<CDPSession>();
 
                 await session.SendAsync("Target.setAutoAttach", new TargetSetAutoAttachRequest
@@ -151,14 +151,14 @@ namespace PuppeteerSharp.Tests.HeadfulTests
                 {
                     otherSessions.Add(e.Session);
 
-                    await session.SendAsync("Network.enable");
-                    await session.SendAsync("Runtime.runIfWaitingForDebugger");
+                    await e.Session.SendAsync("Network.enable");
+                    await e.Session.SendAsync("Runtime.runIfWaitingForDebugger");
 
                     e.Session.MessageReceived += (_, e) =>
                     {
                         if (e.MessageID.Equals("Network.requestWillBeSent", StringComparison.CurrentCultureIgnoreCase))
                         {
-                            networkEvents.Add(e.MessageData.ToObject<RequestEventArgs>());
+                            networkEvents.Add(e.MessageData.SelectToken("request").SelectToken("url").ToObject<string>());
                         }
                     };
                 };
@@ -187,8 +187,7 @@ namespace PuppeteerSharp.Tests.HeadfulTests
                 });
                 await browser.CloseAsync();
 
-                var requests = networkEvents.Select(e => e.Request.Url);
-                Assert.Contains($"http://oopifdomain:{TestConstants.Port}/fetch", requests);
+                Assert.Contains($"http://oopifdomain:{TestConstants.Port}/fetch", networkEvents);
             }
         }
 
@@ -218,7 +217,7 @@ namespace PuppeteerSharp.Tests.HeadfulTests
                 var context = await browser.CreateIncognitoBrowserContextAsync();
                 await Task.WhenAll(
                     context.NewPageAsync(),
-                    context.WaitForTargetAsync(target => target.Url.Contains("devtools://")));
+                    browser.WaitForTargetAsync(target => target.Url.Contains("devtools://")));
             }
         }
     }

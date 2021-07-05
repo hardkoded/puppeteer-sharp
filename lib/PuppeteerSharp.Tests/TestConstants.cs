@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Mobile;
-using Xunit.Abstractions;
+using PuppeteerSharp.Helpers;
+using System.Reflection;
 
 namespace PuppeteerSharp.Tests
 {
@@ -22,14 +22,14 @@ namespace PuppeteerSharp.Tests
         public static readonly string CrossProcessHttpPrefix = "http://127.0.0.1:8081";
         public static readonly string EmptyPage = $"{ServerUrl}/empty.html";
         public static readonly string CrossProcessUrl = ServerIpUrl;
-        public static readonly string ExtensionPath = Path.Combine(Directory.GetCurrentDirectory(), "Assets", "simple-extension");
+        public static readonly string ExtensionPath = Path.Combine(AppContext.BaseDirectory, "Assets", "simple-extension");
         public static readonly bool IsChrome = Environment.GetEnvironmentVariable("PRODUCT") != "FIREFOX";
 
         public static readonly DeviceDescriptor IPhone = Puppeteer.Devices[DeviceDescriptorName.IPhone6];
         public static readonly DeviceDescriptor IPhone6Landscape = Puppeteer.Devices[DeviceDescriptorName.IPhone6Landscape];
 
         public static ILoggerFactory LoggerFactory { get; private set; }
-        public static string FileToUpload => Path.Combine(Directory.GetCurrentDirectory(), "Assets", "file-to-upload.txt");
+        public static string FileToUpload => Path.Combine(AppContext.BaseDirectory, "Assets", "file-to-upload.txt");
 
         public static readonly IEnumerable<string> NestedFramesDumpResult = new List<string>()
         {
@@ -60,8 +60,8 @@ namespace PuppeteerSharp.Tests
             Headless = false,
             Args = new[]
             {
-                $"--disable-extensions-except={ExtensionPath}",
-                $"--load-extension={ExtensionPath}"
+                $"--disable-extensions-except={ExtensionPath.Quote()}",
+                $"--load-extension={ExtensionPath.Quote()}"
             }
         };
     }
