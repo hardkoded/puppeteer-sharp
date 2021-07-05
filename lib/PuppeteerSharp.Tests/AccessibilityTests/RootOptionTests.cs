@@ -122,7 +122,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                             {
                                 new SerializedAXNode
                                 {
-                                    Role = "text",
+                                    Role = "StaticText",
                                     Name = "My Button",
                                 }
                             }
