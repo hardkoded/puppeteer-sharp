@@ -51,24 +51,31 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The URL.</value>
         public string Url { get; }
+
         /// <summary>
         /// Gets the sleep time when a message is received.
         /// </summary>
         /// <value>The delay.</value>
         public int Delay { get; }
+
         /// <summary>
         /// Gets the Connection transport.
         /// </summary>
         /// <value>Connection transport.</value>
         public IConnectionTransport Transport { get; }
+
         /// <summary>
         /// Occurs when the connection is closed.
         /// </summary>
         public event EventHandler Disconnected;
+
         /// <summary>
         /// Occurs when a message from chromium is received.
         /// </summary>
         public event EventHandler<MessageEventArgs> MessageReceived;
+
+        internal event EventHandler<SessionAttachedEventArgs> SessionAttached;
+
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="Connection"/> is closed.
         /// </summary>
@@ -236,6 +243,13 @@ namespace PuppeteerSharp
                 var sessionId = param.SessionId;
                 var session = new CDPSession(this, param.TargetInfo.Type, sessionId);
                 _asyncSessions.AddItem(sessionId, session);
+
+                SessionAttached?.Invoke(this, new SessionAttachedEventArgs { Session = session });
+
+                if (obj.SessionId != null && _sessions.TryGetValue(obj.SessionId, out var parentSession))
+                {
+                    parentSession.OnSessionAttached(session);
+                }
             }
             else if (method == "Target.detachedFromTarget")
             {

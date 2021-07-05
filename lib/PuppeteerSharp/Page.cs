@@ -2244,7 +2244,7 @@ namespace PuppeteerSharp
         {
             var targetInfo = e.TargetInfo;
             var sessionId = e.SessionId;
-            if (targetInfo.Type != TargetType.Worker)
+            if (targetInfo.Type != TargetType.Worker && targetInfo.Type != TargetType.iFrame)
             {
                 try
                 {
