@@ -196,7 +196,7 @@ namespace PuppeteerSharp
                 request.Failure = e.ErrorText;
                 request.Response?.BodyLoadedTaskWrapper.TrySetResult(true);
 
-                ForgetRequest(request);
+                ForgetRequest(request, true);
 
                 RequestFailed?.Invoke(this, new RequestEventArgs
                 {
@@ -213,7 +213,7 @@ namespace PuppeteerSharp
             {
                 request.Response?.BodyLoadedTaskWrapper.TrySetResult(true);
 
-                ForgetRequest(request);
+                ForgetRequest(request, true);
 
                 RequestFinished?.Invoke(this, new RequestEventArgs
                 {
@@ -222,13 +222,19 @@ namespace PuppeteerSharp
             }
         }
 
-        private void ForgetRequest(Request request)
+        private void ForgetRequest(Request request, bool events)
         {
             _requestIdToRequest.TryRemove(request.RequestId, out _);
 
             if (request.InterceptionId != null)
             {
                 _attemptedAuthentications.Remove(request.InterceptionId);
+            }
+
+            if (events)
+            {
+                _requestIdToRequestWillBeSentEvent.TryRemove(request.RequestId, out _);
+                _requestIdToRequestPausedEvent.TryRemove(request.RequestId, out _);
             }
         }
 
@@ -310,6 +316,16 @@ namespace PuppeteerSharp
 
             var hasRequestWillBeSentEvent = _requestIdToRequestWillBeSentEvent.TryGetValue(requestId, out var requestWillBeSentEvent);
 
+            // redirect requests have the same `requestId`
+
+            if (hasRequestWillBeSentEvent &&
+                (requestWillBeSentEvent.Request.Url != e.Request.Url ||
+                 requestWillBeSentEvent.Request.Method != e.Request.Method))
+            {
+                _requestIdToRequestWillBeSentEvent.TryRemove(requestId, out _);
+                hasRequestWillBeSentEvent = false;
+            }
+
             if (hasRequestWillBeSentEvent)
             {
                 await OnRequestAsync(requestWillBeSentEvent, interceptionId).ConfigureAwait(false);
@@ -377,7 +393,7 @@ namespace PuppeteerSharp
             response.BodyLoadedTaskWrapper.TrySetException(
                 new PuppeteerException("Response body is unavailable for redirect responses"));
 
-            ForgetRequest(request);
+            ForgetRequest(request, false);
 
             Response?.Invoke(this, new ResponseCreatedEventArgs
             {
@@ -396,16 +412,13 @@ namespace PuppeteerSharp
             if (_userRequestInterceptionEnabled && !e.Request.Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase))
             {
                 var hasRequestPausedEvent = _requestIdToRequestPausedEvent.TryGetValue(e.RequestId, out var requestPausedEvent);
+                _requestIdToRequestWillBeSentEvent[e.RequestId] = e;
 
                 if (hasRequestPausedEvent)
                 {
                     var interceptionId = requestPausedEvent.RequestId;
                     await OnRequestAsync(e, interceptionId).ConfigureAwait(false);
                     _requestIdToRequestPausedEvent.TryRemove(e.RequestId, out _);
-                }
-                else
-                {
-                    _requestIdToRequestWillBeSentEvent.TryAdd(e.RequestId, e);
                 }
 
                 return;
