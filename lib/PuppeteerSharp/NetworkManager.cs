@@ -147,7 +147,7 @@ namespace PuppeteerSharp
         private Task UpdateProtocolCacheDisabledAsync()
             => _client.SendAsync("Network.setCacheDisabled", new NetworkSetCacheDisabledRequest
             {
-                CacheDisabled = _userCacheDisabled || _userRequestInterceptionEnabled
+                CacheDisabled = _userCacheDisabled
             });
 
         private async void Client_MessageReceived(object sender, MessageEventArgs e)
