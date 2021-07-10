@@ -16,12 +16,12 @@ namespace PuppeteerSharp.Tests.FixturesTests
 
         [PuppeteerTest("fixtures.spec.ts", "Fixtures", "should dump browser process stderr")]
         [SkipBrowserFact(skipFirefox: true)]
-        public void ShouldDumpBrowserProcessStderr()
+        public async Task ShouldDumpBrowserProcessStderr()
         {
             var success = false;
             var process = GetTestAppProcess(
                 "PuppeteerSharp.Tests.DumpIO",
-                $"\"{new BrowserFetcher(Product.Chrome).RevisionInfo().ExecutablePath}\"");
+                $"\"{(await new BrowserFetcher(Product.Chrome).GetRevisionInfoAsync()).ExecutablePath}\"");
 
             process.ErrorDataReceived += (_, e) =>
             {
@@ -39,7 +39,7 @@ namespace PuppeteerSharp.Tests.FixturesTests
         {
             var browserClosedTaskWrapper = new TaskCompletionSource<bool>();
             var ChromiumLauncher = new ChromiumLauncher(
-                new BrowserFetcher(Product.Chrome).RevisionInfo().ExecutablePath,
+                (await new BrowserFetcher(Product.Chrome).GetRevisionInfoAsync()).ExecutablePath,
                 new LaunchOptions { Headless = true });
 
             await ChromiumLauncher.StartAsync().ConfigureAwait(false);

@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ICSharpCode.SharpZipLib.BZip2;
 using ICSharpCode.SharpZipLib.Tar;
+using Newtonsoft.Json;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Linux;
 
@@ -65,7 +66,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Default Chromium revision.
         /// </summary>
-        public const string DefaultFirefoxRevision = "90.0a1";
+        public string DefaultFirefoxRevision { get; private set; } = "latest";
 
         /// <summary>
         /// Gets the downloads folder.
@@ -215,7 +216,8 @@ namespace PuppeteerSharp
         /// Gets the revision info.
         /// </summary>
         /// <returns>Revision info.</returns>
-        public RevisionInfo RevisionInfo() => RevisionInfo(Product == Product.Chrome ? DefaultChromiumRevision : DefaultFirefoxRevision);
+        public async Task<RevisionInfo> GetRevisionInfoAsync()
+            => RevisionInfo(Product == Product.Chrome ? DefaultChromiumRevision : await GetDefaultFirefoxRevisionAsync().ConfigureAwait(false));
 
         /// <summary>
         /// Gets the revision info.
@@ -249,7 +251,11 @@ namespace PuppeteerSharp
         /// Downloads the revision.
         /// </summary>
         /// <returns>Task which resolves to the completed download.</returns>
-        public Task<RevisionInfo> DownloadAsync() => DownloadAsync(Product == Product.Chrome ? DefaultChromiumRevision : DefaultFirefoxRevision);
+        public async Task<RevisionInfo> DownloadAsync()
+            => await DownloadAsync(
+                Product == Product.Chrome
+                ? DefaultChromiumRevision
+                : await GetDefaultFirefoxRevisionAsync().ConfigureAwait(false)).ConfigureAwait(false);
 
         /// <summary>
         /// Downloads the revision.
@@ -562,6 +568,19 @@ namespace PuppeteerSharp
             }
 
             return splits[1];
+        }
+
+        private async Task<string> GetDefaultFirefoxRevisionAsync()
+        {
+            if (DefaultFirefoxRevision == "latest")
+            {
+                using var client = new HttpClient();
+                var response = await client.GetStringAsync("https://product-details.mozilla.org/1.0/firefox_versions.json").ConfigureAwait(false);
+                var version = JsonConvert.DeserializeObject<Dictionary<string, string>>(response);
+                DefaultFirefoxRevision = version["FIREFOX_NIGHTLY"];
+            }
+
+            return DefaultFirefoxRevision;
         }
 
         private static string GetArchiveName(Product product, Platform platform, string revision)

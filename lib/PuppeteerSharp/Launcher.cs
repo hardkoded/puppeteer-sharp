@@ -49,7 +49,7 @@ namespace PuppeteerSharp
         {
             EnsureSingleLaunchOrConnect();
             _product = options.Product;
-            var executable = GetOrFetchBrowserExecutable(options);
+            var executable = await GetOrFetchBrowserExecutableAsync(options).ConfigureAwait(false);
 
             Process = options.Product switch
             {
@@ -146,7 +146,7 @@ namespace PuppeteerSharp
         /// Gets the executable path.
         /// </summary>
         /// <returns>The executable path.</returns>
-        public string GetExecutablePath() => ResolveExecutablePath();
+        public Task<string> GetExecutablePathAsync() => ResolveExecutablePathAsync();
 
         #endregion
 
@@ -162,13 +162,13 @@ namespace PuppeteerSharp
             _processLaunched = true;
         }
 
-        private string GetOrFetchBrowserExecutable(LaunchOptions options)
+        private async Task<string> GetOrFetchBrowserExecutableAsync(LaunchOptions options)
         {
             var browserExecutable = options.ExecutablePath;
 
             if (string.IsNullOrEmpty(browserExecutable))
             {
-                browserExecutable = ResolveExecutablePath();
+                browserExecutable = await ResolveExecutablePathAsync().ConfigureAwait(false);
             }
 
             if (!File.Exists(browserExecutable))
@@ -178,7 +178,7 @@ namespace PuppeteerSharp
             return browserExecutable;
         }
 
-        private string ResolveExecutablePath()
+        private async Task<string> ResolveExecutablePathAsync()
         {
             var executablePath = Environment.GetEnvironmentVariable("PUPPETEER_EXECUTABLE_PATH");
 
@@ -204,7 +204,7 @@ namespace PuppeteerSharp
                 }
                 return revisionInfo.ExecutablePath;
             }
-            revisionInfo = browserFetcher.RevisionInfo();
+            revisionInfo = await browserFetcher.GetRevisionInfoAsync().ConfigureAwait(false);
             if (!revisionInfo.Local)
             {
                 throw new FileNotFoundException("Process revision is not downloaded. Run BrowserFetcher.DownloadAsync or download the process manually", revisionInfo.ExecutablePath);
