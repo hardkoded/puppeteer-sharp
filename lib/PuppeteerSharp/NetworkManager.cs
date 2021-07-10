@@ -15,11 +15,16 @@ namespace PuppeteerSharp
         #region Private members
 
         private readonly CDPSession _client;
-        private readonly ConcurrentDictionary<string, Request> _requestIdToRequest = new ConcurrentDictionary<string, Request>();
+
+        private readonly ConcurrentDictionary<string, Request> _requestIdToRequest =
+            new ConcurrentDictionary<string, Request>();
+
         private readonly ConcurrentDictionary<string, RequestWillBeSentPayload> _requestIdToRequestWillBeSentEvent =
             new ConcurrentDictionary<string, RequestWillBeSentPayload>();
 
-        private readonly ConcurrentDictionary<string, string> _requestIdToInterceptionId = new ConcurrentDictionary<string, string>();
+        private readonly ConcurrentDictionary<string, FetchRequestPausedResponse> _requestIdToRequestPausedEvent =
+            new ConcurrentDictionary<string, FetchRequestPausedResponse>();
+
         private readonly ILogger _logger;
         private Dictionary<string, string> _extraHTTPHeaders;
         private Credentials _credentials;
@@ -142,7 +147,7 @@ namespace PuppeteerSharp
         private Task UpdateProtocolCacheDisabledAsync()
             => _client.SendAsync("Network.setCacheDisabled", new NetworkSetCacheDisabledRequest
             {
-                CacheDisabled = _userCacheDisabled || _userRequestInterceptionEnabled
+                CacheDisabled = _userCacheDisabled
             });
 
         private async void Client_MessageReceived(object sender, MessageEventArgs e)
@@ -190,12 +195,8 @@ namespace PuppeteerSharp
             {
                 request.Failure = e.ErrorText;
                 request.Response?.BodyLoadedTaskWrapper.TrySetResult(true);
-                _requestIdToRequest.TryRemove(request.RequestId, out _);
 
-                if (request.InterceptionId != null)
-                {
-                    _attemptedAuthentications.Remove(request.InterceptionId);
-                }
+                ForgetRequest(request, true);
 
                 RequestFailed?.Invoke(this, new RequestEventArgs
                 {
@@ -211,17 +212,29 @@ namespace PuppeteerSharp
             if (_requestIdToRequest.TryGetValue(e.RequestId, out var request))
             {
                 request.Response?.BodyLoadedTaskWrapper.TrySetResult(true);
-                _requestIdToRequest.TryRemove(request.RequestId, out _);
 
-                if (request.InterceptionId != null)
-                {
-                    _attemptedAuthentications.Remove(request.InterceptionId);
-                }
+                ForgetRequest(request, true);
 
                 RequestFinished?.Invoke(this, new RequestEventArgs
                 {
                     Request = request
                 });
+            }
+        }
+
+        private void ForgetRequest(Request request, bool events)
+        {
+            _requestIdToRequest.TryRemove(request.RequestId, out _);
+
+            if (request.InterceptionId != null)
+            {
+                _attemptedAuthentications.Remove(request.InterceptionId);
+            }
+
+            if (events)
+            {
+                _requestIdToRequestWillBeSentEvent.TryRemove(request.RequestId, out _);
+                _requestIdToRequestPausedEvent.TryRemove(request.RequestId, out _);
             }
         }
 
@@ -296,16 +309,31 @@ namespace PuppeteerSharp
             var requestId = e.NetworkId;
             var interceptionId = e.RequestId;
 
-            if (!string.IsNullOrEmpty(requestId))
+            if (string.IsNullOrEmpty(requestId))
             {
-                if (_requestIdToRequestWillBeSentEvent.TryRemove(requestId, out var requestWillBeSentEvent))
-                {
-                    await OnRequestAsync(requestWillBeSentEvent, interceptionId).ConfigureAwait(false);
-                }
-                else
-                {
-                    _requestIdToInterceptionId[requestId] = interceptionId;
-                }
+                return;
+            }
+
+            var hasRequestWillBeSentEvent = _requestIdToRequestWillBeSentEvent.TryGetValue(requestId, out var requestWillBeSentEvent);
+
+            // redirect requests have the same `requestId`
+
+            if (hasRequestWillBeSentEvent &&
+                (requestWillBeSentEvent.Request.Url != e.Request.Url ||
+                 requestWillBeSentEvent.Request.Method != e.Request.Method))
+            {
+                _requestIdToRequestWillBeSentEvent.TryRemove(requestId, out _);
+                hasRequestWillBeSentEvent = false;
+            }
+
+            if (hasRequestWillBeSentEvent)
+            {
+                await OnRequestAsync(requestWillBeSentEvent, interceptionId).ConfigureAwait(false);
+                _requestIdToRequestWillBeSentEvent.TryRemove(requestId, out _);
+            }
+            else
+            {
+                _requestIdToRequestPausedEvent[requestId] = e;
             }
         }
 
@@ -365,15 +393,7 @@ namespace PuppeteerSharp
             response.BodyLoadedTaskWrapper.TrySetException(
                 new PuppeteerException("Response body is unavailable for redirect responses"));
 
-            if (request.RequestId != null)
-            {
-                _requestIdToRequest.TryRemove(request.RequestId, out _);
-            }
-
-            if (request.InterceptionId != null)
-            {
-                _attemptedAuthentications.Remove(request.InterceptionId);
-            }
+            ForgetRequest(request, false);
 
             Response?.Invoke(this, new ResponseCreatedEventArgs
             {
@@ -391,15 +411,16 @@ namespace PuppeteerSharp
             // Request interception doesn't happen for data URLs with Network Service.
             if (_userRequestInterceptionEnabled && !e.Request.Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase))
             {
-                if (_requestIdToInterceptionId.TryRemove(e.RequestId, out var interceptionId))
+                var hasRequestPausedEvent = _requestIdToRequestPausedEvent.TryGetValue(e.RequestId, out var requestPausedEvent);
+                _requestIdToRequestWillBeSentEvent[e.RequestId] = e;
+
+                if (hasRequestPausedEvent)
                 {
+                    var interceptionId = requestPausedEvent.RequestId;
                     await OnRequestAsync(e, interceptionId).ConfigureAwait(false);
+                    _requestIdToRequestPausedEvent.TryRemove(e.RequestId, out _);
                 }
-                else
-                {
-                    // Under load, we may get to this section more than once
-                    _requestIdToRequestWillBeSentEvent.TryAdd(e.RequestId, e);
-                }
+
                 return;
             }
             await OnRequestAsync(e, null).ConfigureAwait(false);

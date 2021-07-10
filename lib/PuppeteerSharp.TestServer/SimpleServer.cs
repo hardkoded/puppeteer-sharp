@@ -65,6 +65,12 @@ namespace PuppeteerSharp.TestServer
                             {
                                 fileResponseContext.Context.Response.Headers["Content-Security-Policy"] = csp;
                             }
+
+                            if (!fileResponseContext.Context.Request.Path.Value.StartsWith("/cached/"))
+                            {
+                                fileResponseContext.Context.Response.Headers["Cache-Control"] = "no-cache, no-store";
+                                fileResponseContext.Context.Response.Headers["Expires"] = "-1";
+                            }
                         }
                     }))
                 .UseKestrel(options =>
