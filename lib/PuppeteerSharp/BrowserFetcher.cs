@@ -308,8 +308,14 @@ namespace PuppeteerSharp
                 var executables = new string[]
                 {
                     "chrome",
+                    "chrome_sandbox", // setuid
                     "crashpad_handler",
+                    "google-chrome",
                     "nacl_helper",
+                    "nacl_helper_bootstrap",
+                    "xdg-mime",
+                    "xdg-settings",
+                    "cron/google-chrome",
                 };
 
                 foreach (var executable in executables)
