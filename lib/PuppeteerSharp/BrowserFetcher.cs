@@ -261,6 +261,7 @@ namespace PuppeteerSharp
             var url = GetDownloadURL(Product, Platform, DownloadHost, revision);
             var filePath = Path.Combine(DownloadsFolder, url.Split('/').Last());
             var folderPath = GetFolderPath(revision);
+            var archiveName = GetArchiveName(Product, Platform, revision);
 
             if (new DirectoryInfo(folderPath).Exists)
             {
@@ -302,31 +303,32 @@ namespace PuppeteerSharp
 
             new FileInfo(filePath).Delete();
 
-            var revisionInfo = RevisionInfo(revision);
-
-            if (revisionInfo != null && GetCurrentPlatform() == Platform.Linux)
+            if (GetCurrentPlatform() == Platform.Linux)
             {
-                var execPath = revisionInfo.ExecutablePath;
-                var dirName = Path.GetDirectoryName(execPath);
-
-                var code = LinuxSysCall.Chmod(execPath, LinuxSysCall.ExecutableFilePermissions);
-                if (code != 0)
+                var executables = new string[]
                 {
-                    throw new Exception("Chmod operation failed");
-                }
+                    "chrome",
+                    "crashpad_handler",
+                    "nacl_helper",
+                };
 
-                var naclPath = $"{dirName}/nacl_helper";
-                if (File.Exists(naclPath))
+                foreach (var executable in executables)
                 {
-                    code = LinuxSysCall.Chmod(naclPath, LinuxSysCall.ExecutableFilePermissions);
-                    if (code != 0)
+                    var execPath = Path.Combine(folderPath, archiveName, executable);
+
+                    if (File.Exists(execPath))
                     {
-                        throw new Exception("Chmod operation failed");
+                        var code = LinuxSysCall.Chmod(execPath, LinuxSysCall.ExecutableFilePermissions);
+
+                        if (code != 0)
+                        {
+                            throw new Exception("Chmod operation failed");
+                        }
                     }
                 }
             }
 
-            return revisionInfo;
+            return RevisionInfo(revision);
         }
 
         private Task InstallDMGAsync(string dmgPath, string folderPath)
