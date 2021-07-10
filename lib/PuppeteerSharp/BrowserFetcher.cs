@@ -64,7 +64,7 @@ namespace PuppeteerSharp
         public const string DefaultChromiumRevision = "884014";
 
         /// <summary>
-        /// Default Chromium revision.
+        /// Default Firefox revision.
         /// </summary>
         public string DefaultFirefoxRevision { get; private set; } = "latest";
 
