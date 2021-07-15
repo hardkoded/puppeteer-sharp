@@ -517,8 +517,36 @@ namespace PuppeteerSharp.Mobile
             },
             [DeviceDescriptorName.IPhoneX] = new DeviceDescriptor
             {
-                Name = "iPhone XR",
+                Name = "iPhone X",
                 UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 375,
+                    Height = 812,
+                    DeviceScaleFactor = 3,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = false
+                }
+            },
+            [DeviceDescriptorName.IPhoneXLandscape] = new DeviceDescriptor
+            {
+                Name = "iPhone X landscape",
+                UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 812,
+                    Height = 375,
+                    DeviceScaleFactor = 3,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = true
+                }
+            },
+            [DeviceDescriptorName.IPhoneXR] = new DeviceDescriptor
+            {
+                Name = "iPhone XR",
+                UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 12_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0 Mobile/15E148 Safari/604.1",
                 ViewPort = new ViewPortOptions
                 {
                     Width = 414,
@@ -529,10 +557,94 @@ namespace PuppeteerSharp.Mobile
                     IsLandscape = false
                 }
             },
-            [DeviceDescriptorName.IPhoneXLandscape] = new DeviceDescriptor
+            [DeviceDescriptorName.IPhoneXRLandscape] = new DeviceDescriptor
             {
                 Name = "iPhone XR landscape",
-                UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1",
+                UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 12_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0 Mobile/15E148 Safari/604.1",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 896,
+                    Height = 414,
+                    DeviceScaleFactor = 3,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = true
+                }
+            },
+            [DeviceDescriptorName.IPhone11] = new DeviceDescriptor
+            {
+                Name = "iPhone 11",
+                UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 13_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1 Mobile/15E148 Safari/604.1",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 414,
+                    Height = 896,
+                    DeviceScaleFactor = 3,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = false
+                }
+            },
+            [DeviceDescriptorName.IPhone11Landscape] = new DeviceDescriptor
+            {
+                Name = "iPhone 11 landscape",
+                UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 13_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1 Mobile/15E148 Safari/604.1",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 896,
+                    Height = 414,
+                    DeviceScaleFactor = 3,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = true
+                }
+            },
+            [DeviceDescriptorName.IPhone11Pro] = new DeviceDescriptor
+            {
+                Name = "iPhone 11 Pro",
+                UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 13_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1 Mobile/15E148 Safari/604.1",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 375,
+                    Height = 812,
+                    DeviceScaleFactor = 3,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = false
+                }
+            },
+            [DeviceDescriptorName.IPhone11ProLandscape] = new DeviceDescriptor
+            {
+                Name = "iPhone 11 Pro landscape",
+                UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 13_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1 Mobile/15E148 Safari/604.1",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 812,
+                    Height = 375,
+                    DeviceScaleFactor = 3,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = true
+                }
+            },
+            [DeviceDescriptorName.IPhone11ProMax] = new DeviceDescriptor
+            {
+                Name = "iPhone 11 Pro Max",
+                UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 13_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1 Mobile/15E148 Safari/604.1",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 414,
+                    Height = 896,
+                    DeviceScaleFactor = 3,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = false
+                }
+            },
+            [DeviceDescriptorName.IPhone11ProMaxLandscape] = new DeviceDescriptor
+            {
+                Name = "iPhone 11 Pro Max landscape",
+                UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 13_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1 Mobile/15E148 Safari/604.1",
                 ViewPort = new ViewPortOptions
                 {
                     Width = 896,
