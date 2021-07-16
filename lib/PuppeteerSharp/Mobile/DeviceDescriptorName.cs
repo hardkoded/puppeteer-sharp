@@ -158,6 +158,38 @@ namespace PuppeteerSharp.Mobile
         /// </summary>
         IPhoneXLandscape,
         /// <summary>
+        /// iPhone XR
+        /// </summary>
+        IPhoneXR,
+        /// <summary>
+        /// iPhone XR landscape
+        /// </summary>
+        IPhoneXRLandscape,
+        /// <summary>
+        /// iPhone 11 landscape
+        /// </summary>
+        IPhone11,
+        /// <summary>
+        /// iPhone 11 landscape
+        /// </summary>
+        IPhone11Landscape,
+        /// <summary>
+        /// iPhone 11 Pro
+        /// </summary>
+        IPhone11Pro,
+        /// <summary>
+        /// iPhone 11 Pro landscape
+        /// </summary>
+        IPhone11ProLandscape,
+        /// <summary>
+        /// iPhone 11 Pro Max
+        /// </summary>
+        IPhone11ProMax,
+        /// <summary>
+        /// iPhone 11 Pro Max landscape
+        /// </summary>
+        IPhone11ProMaxLandscape,
+        /// <summary>
         /// JioPhone 2
         /// </summary>
         JioPhone2,
