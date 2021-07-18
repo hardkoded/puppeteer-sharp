@@ -143,7 +143,11 @@ namespace PuppeteerSharp.Input
                 {
                     Type = MouseEventType.MouseWheel,
                     DeltaX = deltaX,
-                    DeltaY = deltaY
+                    DeltaY = deltaY,
+                    X = _x,
+                    Y = _y,
+                    Modifiers = _keyboard.Modifiers,
+                    PointerType = PointerType.Mouse
                 });
     }
 }

@@ -26,6 +26,35 @@ namespace PuppeteerSharp.Tests.MouseTests
         {
         }
 
+        [PuppeteerTest("mouse.spec.ts", "Mouse", "should click the document")]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        public async Task ShouldClickTheDocument()
+        {
+            await Page.EvaluateFunctionAsync(@"() => {
+                globalThis.clickPromise = new Promise((resolve) => {
+                    document.addEventListener('click', (event) => {
+                    resolve({
+                        type: event.type,
+                        detail: event.detail,
+                        clientX: event.clientX,
+                        clientY: event.clientY,
+                        isTrusted: event.isTrusted,
+                        button: event.button,
+                    });
+                    });
+                });
+            }");
+            await Page.Mouse.ClickAsync(50, 60);
+            var e = await Page.EvaluateFunctionAsync<MouseEvent>("() => globalThis.clickPromise");
+
+            Assert.Equal("click", e.Type);
+            Assert.Equal(1, e.Detail);
+            Assert.Equal(50, e.ClientX);
+            Assert.Equal(60, e.ClientY);
+            Assert.True(e.IsTrusted);
+            Assert.Equal(0, e.Button);
+        }
+
         [PuppeteerTest("mouse.spec.ts", "Mouse", "should resize the textarea")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldResizeTheTextarea()
@@ -115,16 +144,37 @@ namespace PuppeteerSharp.Tests.MouseTests
             }
         }
 
+        [PuppeteerTest("mouse.spec.ts", "Mouse", "should send mouse wheel events")]
+        [SkipBrowserFact(skipFirefox: true)]
+        public async Task ShouldSendMouseWheelEvents()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/wheel.html");
+            var elem = await Page.QuerySelectorAsync("div");
+            var boundingBoxBefore = await elem.BoundingBoxAsync();
+            Assert.Equal(115, boundingBoxBefore.Width);
+            Assert.Equal(115, boundingBoxBefore.Height);
+
+            await Page.Mouse.MoveAsync(
+                boundingBoxBefore.X + boundingBoxBefore.Width / 2,
+                boundingBoxBefore.Y + boundingBoxBefore.Height / 2
+            );
+
+            await Page.Mouse.WheelAsync(0, -100);
+            var boundingBoxAfter = await elem.BoundingBoxAsync();
+            Assert.Equal(230, boundingBoxAfter.Width);
+            Assert.Equal(230, boundingBoxAfter.Height);
+        }
+
         [PuppeteerTest("mouse.spec.ts", "Mouse", "should tween mouse movement")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldTweenMouseMovement()
         {
             await Page.Mouse.MoveAsync(100, 100);
             await Page.EvaluateExpressionAsync(@"{
-              window.result = [];
-              document.addEventListener('mousemove', event => {
-                window.result.push([event.clientX, event.clientY]);
-              });
+                window.result = [];
+                document.addEventListener('mousemove', event => {
+                    window.result.push([event.clientX, event.clientY]);
+                });
             }");
             await Page.Mouse.MoveAsync(200, 300, new MoveOptions { Steps = 5 });
             Assert.Equal(new[] {
@@ -191,6 +241,21 @@ namespace PuppeteerSharp.Tests.MouseTests
                 X = Math.Max(0, X + deltaX);
                 Y = Math.Max(0, Y + deltaY);
             }
+        }
+
+        internal struct MouseEvent
+        {
+            public string Type { get; set; }
+
+            public int Detail { get; set; }
+
+            public int ClientX { get; set; }
+
+            public int ClientY { get; set; }
+
+            public bool IsTrusted { get; set; }
+
+            public int Button { get; set; }
         }
     }
 }
