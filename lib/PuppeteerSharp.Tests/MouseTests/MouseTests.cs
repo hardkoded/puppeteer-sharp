@@ -155,8 +155,8 @@ namespace PuppeteerSharp.Tests.MouseTests
             Assert.Equal(115, boundingBoxBefore.Height);
 
             await Page.Mouse.MoveAsync(
-                boundingBoxBefore.X + boundingBoxBefore.Width / 2,
-                boundingBoxBefore.Y + boundingBoxBefore.Height / 2
+                boundingBoxBefore.X + (boundingBoxBefore.Width / 2),
+                boundingBoxBefore.Y + (boundingBoxBefore.Height / 2)
             );
 
             await Page.Mouse.WheelAsync(0, -100);
