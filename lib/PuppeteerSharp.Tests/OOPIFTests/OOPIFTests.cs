@@ -17,6 +17,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             DefaultOptions.Args = new[] { "--site-per-process" };
         }
 
+        [PuppeteerTest("oopif.spec.ts", "OOPIF", "should report oopif frames")]
         [Fact(Skip = "Ignored on puppeteer")]
         public async Task ShouldReportOopifFrames()
         {
