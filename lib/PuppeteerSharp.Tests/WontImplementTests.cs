@@ -17,6 +17,10 @@ namespace PuppeteerSharp.Tests
         [PuppeteerTest("chromiumonly.spec.ts", "Puppeteer.launch |pipe| option", "should support the pipe option")]
         [PuppeteerTest("chromiumonly.spec.ts", "Puppeteer.launch |pipe| option", "should support the pipe argument")]
         [PuppeteerTest("chromiumonly.spec.ts", "Puppeteer.launch |pipe| option", "should fire \"disconnected\" when closing with pipe")]
+        [PuppeteerTest("navigation.spec.ts", "should not leak listeners during navigation")]
+        [PuppeteerTest("navigation.spec.ts", "should not leak listeners during bad navigation")]
+        [PuppeteerTest("navigation.spec.ts", "should not leak listeners during navigation of 11 pages")]
+        [PuppeteerTest("navigation.spec.ts", "should throw if networkidle is passed as an option")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public void TheseTesstWontBeImplemented()
         {
