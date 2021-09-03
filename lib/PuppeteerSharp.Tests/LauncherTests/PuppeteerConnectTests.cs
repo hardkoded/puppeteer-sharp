@@ -87,6 +87,39 @@ namespace PuppeteerSharp.Tests.LauncherTests
             }
         }
 
+        [PuppeteerTest("launcher.spec.ts", "Puppeteer.connect", "should support targetFilter option")]
+        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        public async Task ShouldSupportTargetFilter()
+        {
+            await using (var originalBrowser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions()))
+            {
+                var page1 = await originalBrowser.NewPageAsync();
+                await page1.GoToAsync(TestConstants.EmptyPage);
+
+                var page2 = await originalBrowser.NewPageAsync();
+                await page2.GoToAsync(TestConstants.EmptyPage + "?should-be-ignored");
+
+                var browser = await Puppeteer.ConnectAsync(new ConnectOptions {
+                    BrowserWSEndpoint = originalBrowser.WebSocketEndpoint,
+                    TargetFilter = (TargetInfo targetInfo) => !targetInfo.Url.Contains("should-be-ignored"),
+                });
+
+                var pages = await browser.PagesAsync();
+
+                await page2.CloseAsync();
+                await page1.CloseAsync();
+                await browser.CloseAsync();
+
+                Assert.Equal(
+                    new string[]
+                    {
+                        "about:blank",
+                        TestConstants.EmptyPage
+                    },
+                    pages.Select((Page p) => p.Url).OrderBy(t => t));
+            }
+        }
+
         [PuppeteerTest("launcher.spec.ts", "Puppeteer.connect", "should be able to reconnect to a disconnected browser")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldBeAbleToReconnectToADisconnectedBrowser()
@@ -140,6 +173,30 @@ namespace PuppeteerSharp.Tests.LauncherTests
             Assert.Equal(42, await page2.EvaluateExpressionAsync<int>("7 * 6"));
             await browserOne.CloseAsync();
         }
+
+        [PuppeteerTest("launcher.spec.ts", "Puppeteer.connect", "should be able to reconnect")]
+        [SkipBrowserFact(skipFirefox: true)]
+        public async Task ShouldBeAbleToReconnect()
+        {
+            var browserOne = await Puppeteer.LaunchAsync(new LaunchOptions());
+            var browserWSEndpoint = browserOne.WebSocketEndpoint;
+            var page1 = await browserOne.NewPageAsync();
+            await page1.GoToAsync(TestConstants.EmptyPage);
+            browserOne.Disconnect();
+
+            var browserTwo = await Puppeteer.ConnectAsync(new ConnectOptions
+            {
+                BrowserWSEndpoint = browserWSEndpoint
+            });
+
+            var pages = await browserTwo.PagesAsync();
+            var pageTwo = pages.First(page => page.Url == TestConstants.EmptyPage);
+            await pageTwo.ReloadAsync();
+            var bodyHandle = await pageTwo.WaitForSelectorAsync("body", new WaitForSelectorOptions { Timeout = 10000 });
+            await bodyHandle.DisposeAsync();
+            await browserTwo.CloseAsync();
+        }
+
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldSupportCustomWebSocket()
         {

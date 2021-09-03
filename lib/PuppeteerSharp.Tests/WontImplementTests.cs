@@ -21,6 +21,8 @@ namespace PuppeteerSharp.Tests
         [PuppeteerTest("navigation.spec.ts", "should not leak listeners during bad navigation")]
         [PuppeteerTest("navigation.spec.ts", "should not leak listeners during navigation of 11 pages")]
         [PuppeteerTest("navigation.spec.ts", "should throw if networkidle is passed as an option")]
+        [PuppeteerTest("launcher.spec.ts", "Puppeteer.launch", "should report the correct product")] //We don't use the product in this way
+        [PuppeteerTest("launcher.spec.ts", "Puppeteer.launch", "falls back to launching chrome if there is an unknown product but logs a warning")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public void TheseTesstWontBeImplemented()
         {

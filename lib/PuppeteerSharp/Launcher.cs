@@ -69,7 +69,7 @@ namespace PuppeteerSharp
                         .ConfigureAwait(false);
 
                     var browser = await Browser
-                        .CreateAsync(connection, Array.Empty<string>(), options.IgnoreHTTPSErrors, options.DefaultViewport, Process)
+                        .CreateAsync(connection, Array.Empty<string>(), options.IgnoreHTTPSErrors, options.DefaultViewport, Process, options.TargetFilter)
                         .ConfigureAwait(false);
 
                     await browser.WaitForTargetAsync(t => t.Type == TargetType.Page).ConfigureAwait(false);
@@ -110,7 +110,13 @@ namespace PuppeteerSharp
                 var connection = await Connection.Create(browserWSEndpoint, options, _loggerFactory).ConfigureAwait(false);
                 var response = await connection.SendAsync<GetBrowserContextsResponse>("Target.getBrowserContexts").ConfigureAwait(false);
                 return await Browser
-                    .CreateAsync(connection, response.BrowserContextIds, options.IgnoreHTTPSErrors, options.DefaultViewport, null)
+                    .CreateAsync(
+                        connection,
+                        response.BrowserContextIds,
+                        options.IgnoreHTTPSErrors,
+                        options.DefaultViewport,
+                        null,
+                        options.TargetFilter)
                     .ConfigureAwait(false);
             }
             catch (Exception ex)
