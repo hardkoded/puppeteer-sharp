@@ -176,5 +176,10 @@ namespace PuppeteerSharp
         /// can set this to <c>false</c> (default).
         /// </remarks>
         public bool EnqueueAsyncMessages { get; set; }
+
+        /// <summary>
+        /// Callback to decide if Puppeteer should connect to a given target or not.
+        /// </summary>
+        public Func<TargetInfo, bool> TargetFilter { get; set; }
     }
 }

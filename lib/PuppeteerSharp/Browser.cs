@@ -42,20 +42,13 @@ namespace PuppeteerSharp
         /// </summary>
         private const int CloseTimeout = 5000;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Browser"/> class.
-        /// </summary>
-        /// <param name="connection">The connection</param>
-        /// <param name="contextIds">The context ids></param>
-        /// <param name="ignoreHTTPSErrors">The option to ignoreHTTPSErrors</param>
-        /// <param name="defaultViewport">Default viewport</param>
-        /// <param name="launcher">The launcher</param>
-        public Browser(
+        internal Browser(
             Connection connection,
             string[] contextIds,
             bool ignoreHTTPSErrors,
             ViewPortOptions defaultViewport,
-            LauncherBase launcher)
+            LauncherBase launcher,
+            Func<TargetInfo, bool> targetFilter)
         {
             Connection = connection;
             IgnoreHTTPSErrors = ignoreHTTPSErrors;
@@ -72,6 +65,7 @@ namespace PuppeteerSharp
 
             Launcher = launcher;
             _logger = Connection.LoggerFactory.CreateLogger<Browser>();
+            _targetFilterCallback = targetFilter ?? ((TargetInfo _) => true);
         }
 
         #region Private members
@@ -80,6 +74,7 @@ namespace PuppeteerSharp
 
         private readonly Dictionary<string, BrowserContext> _contexts;
         private readonly ILogger<Browser> _logger;
+        private readonly Func<TargetInfo, bool> _targetFilterCallback;
         private Task _closeTask;
 
         #endregion
@@ -489,6 +484,12 @@ namespace PuppeteerSharp
             var targetInfo = e.TargetInfo;
             var browserContextId = targetInfo.BrowserContextId;
 
+            var shouldAttachToTarget = _targetFilterCallback(targetInfo);
+            if (!shouldAttachToTarget)
+            {
+                return;
+            }
+
             if (!(browserContextId != null && _contexts.TryGetValue(browserContextId, out var context)))
             {
                 context = DefaultContext;
@@ -519,9 +520,10 @@ namespace PuppeteerSharp
             string[] contextIds,
             bool ignoreHTTPSErrors,
             ViewPortOptions defaultViewPort,
-            LauncherBase launcher)
+            LauncherBase launcher,
+            Func<TargetInfo, bool> targetFilter)
         {
-            var browser = new Browser(connection, contextIds, ignoreHTTPSErrors, defaultViewPort, launcher);
+            var browser = new Browser(connection, contextIds, ignoreHTTPSErrors, defaultViewPort, launcher, targetFilter);
             await connection.SendAsync("Target.setDiscoverTargets", new TargetSetDiscoverTargetsRequest
             {
                 Discover = true

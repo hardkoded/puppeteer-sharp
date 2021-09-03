@@ -432,6 +432,7 @@ namespace PuppeteerSharp
             process.StartInfo.FileName = "tar";
             process.StartInfo.Arguments = $"-xvjf \"{zipPath}\" -C \"{folderPath}\"";
             process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.UseShellExecute = false;
             process.Start();
             process.WaitForExit();
         }
