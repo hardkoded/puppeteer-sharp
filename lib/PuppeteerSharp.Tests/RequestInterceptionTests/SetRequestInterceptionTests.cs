@@ -613,5 +613,53 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.Contains("one-style.html", urls);
             Assert.Contains("one-style.css", urls);
         }
+
+        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should not cache if cache disabled")]
+        [SkipBrowserFact(skipFirefox: true)]
+        public async Task ShouldNotCacheIfCacheDisabled()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
+            await Page.SetRequestInterceptionAsync(true);
+            await Page.SetCacheEnabledAsync(false);
+            var urls = new List<string>();
+            Page.Request += (_, e) => _ = e.Request.ContinueAsync();
+
+            var cached = new List<Request>();
+            Page.RequestServedFromCache += (_, e) => cached.Add(e.Request);
+
+            await Page.ReloadAsync();
+            Assert.Empty(cached);
+        }
+
+        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should cache if cache enabled")]
+        [SkipBrowserFact(skipFirefox: true)]
+        public async Task ShouldNotCacheIfCacheEnabled()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
+            await Page.SetRequestInterceptionAsync(true);
+            await Page.SetCacheEnabledAsync(true);
+            var urls = new List<string>();
+            Page.Request += (_, e) => _ = e.Request.ContinueAsync();
+
+            var cached = new List<Request>();
+            Page.RequestServedFromCache += (_, e) => cached.Add(e.Request);
+
+            await Page.ReloadAsync();
+            Assert.Single(cached);
+        }
+
+        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should load fonts if cache enabled")]
+        [SkipBrowserFact(skipFirefox: true)]
+        public async Task ShouldLoadFontsIfCacheEnabled()
+        {
+            await Page.SetRequestInterceptionAsync(true);
+            await Page.SetCacheEnabledAsync(true);
+            var urls = new List<string>();
+            Page.Request += (_, e) => _ = e.Request.ContinueAsync();
+
+            var waitTask = Page.WaitForResponseAsync(response => response.Url.EndsWith("/one-style.woff"));
+            await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style-font.html");
+            await waitTask;
+        }
     }
 }

@@ -62,6 +62,8 @@ namespace PuppeteerSharp
 
         internal event EventHandler<RequestEventArgs> RequestFailed;
 
+        internal event EventHandler<RequestEventArgs> RequestServedFromCache;
+
         internal FrameManager FrameManager { get; set; }
         #endregion
 
@@ -379,6 +381,7 @@ namespace PuppeteerSharp
             {
                 request.FromMemoryCache = true;
             }
+            RequestServedFromCache?.Invoke(this, new RequestEventArgs { Request = request });
         }
 
         private void HandleRequestRedirect(Request request, ResponsePayload responseMessage)
