@@ -203,6 +203,11 @@ namespace PuppeteerSharp
         public event EventHandler<RequestEventArgs> RequestFailed;
 
         /// <summary>
+        /// Raised when a request ended up loading from cache.
+        /// </summary>
+        public event EventHandler<RequestEventArgs> RequestServedFromCache;
+
+        /// <summary>
         /// Raised when an uncaught exception happens within the page.
         /// </summary>
         public event EventHandler<PageErrorEventArgs> PageError;
@@ -1855,6 +1860,7 @@ namespace PuppeteerSharp
             networkManager.RequestFailed += (_, e) => RequestFailed?.Invoke(this, e);
             networkManager.Response += (_, e) => Response?.Invoke(this, e);
             networkManager.RequestFinished += (_, e) => RequestFinished?.Invoke(this, e);
+            networkManager.RequestServedFromCache += (_, e) => RequestServedFromCache?.Invoke(this, e);
 
             await Task.WhenAll(
                Client.SendAsync("Target.setAutoAttach", new TargetSetAutoAttachRequest
