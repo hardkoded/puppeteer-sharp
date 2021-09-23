@@ -67,7 +67,7 @@ namespace PuppeteerSharp
             Keyboard = new Keyboard(client);
             Mouse = new Mouse(client, Keyboard);
             Touchscreen = new Touchscreen(client, Keyboard);
-            Tracing = new Tracing(client);
+            Tracing = new DevToolsTracing(client);
             Coverage = new Coverage(client);
 
             _fileChooserInterceptors = new ConcurrentDictionary<Guid, TaskCompletionSource<FileChooser>>();
@@ -316,7 +316,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets this page's tracing
         /// </summary>
-        public Tracing Tracing { get; }
+        public DevToolsTracing Tracing { get; }
 
         /// <summary>
         /// Gets this page's mouse
@@ -475,7 +475,7 @@ namespace PuppeteerSharp
             => MainFrame.QuerySelectorAllAsync(selector);
 
         /// <summary>
-        /// A utility function to be used with <see cref="Extensions.EvaluateFunctionAsync{T}(Task{JSHandle}, string, object[])"/>
+        /// A utility function to be used with <see cref="PuppeteerHandleExtensions.EvaluateFunctionAsync{T}(Task{JSHandle}, string, object[])"/>
         /// </summary>
         /// <param name="selector">A selector to query page for</param>
         /// <returns>Task which resolves to a <see cref="JSHandle"/> of <c>document.querySelectorAll</c> result</returns>

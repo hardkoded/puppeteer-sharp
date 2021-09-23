@@ -14,11 +14,11 @@ using Xunit.Abstractions;
 namespace PuppeteerSharp.Tests.TracingTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class TracingTests : PuppeteerPageBaseTest
+    public class DevToolsTracingTests : PuppeteerPageBaseTest
     {
         private readonly string _file;
 
-        public TracingTests(ITestOutputHelper output) : base(output)
+        public DevToolsTracingTests(ITestOutputHelper output) : base(output)
         {
             _file = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         }
@@ -57,7 +57,7 @@ namespace PuppeteerSharp.Tests.TracingTests
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldOutputATrace()
         {
-            await Page.Tracing.StartAsync(new TracingOptions
+            await Page.Tracing.StartAsync(new DevToolsTracingOptions
             {
                 Screenshots = true,
                 Path = _file
@@ -72,7 +72,7 @@ namespace PuppeteerSharp.Tests.TracingTests
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldRunWithCustomCategoriesProvided()
         {
-            await Page.Tracing.StartAsync(new TracingOptions
+            await Page.Tracing.StartAsync(new DevToolsTracingOptions
             {
                 Screenshots = true,
                 Path = _file,
@@ -96,14 +96,14 @@ namespace PuppeteerSharp.Tests.TracingTests
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldThrowIfTracingOnTwoPages()
         {
-            await Page.Tracing.StartAsync(new TracingOptions
+            await Page.Tracing.StartAsync(new DevToolsTracingOptions
             {
                 Path = _file
             });
             var newPage = await Browser.NewPageAsync();
             await Assert.ThrowsAsync<InvalidOperationException>(async () =>
             {
-                await Page.Tracing.StartAsync(new TracingOptions
+                await Page.Tracing.StartAsync(new DevToolsTracingOptions
                 {
                     Path = _file
                 });
@@ -117,7 +117,7 @@ namespace PuppeteerSharp.Tests.TracingTests
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReturnABuffer()
         {
-            await Page.Tracing.StartAsync(new TracingOptions
+            await Page.Tracing.StartAsync(new DevToolsTracingOptions
             {
                 Screenshots = true,
                 Path = _file
@@ -142,7 +142,7 @@ namespace PuppeteerSharp.Tests.TracingTests
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldSupportABufferWithoutAPath()
         {
-            await Page.Tracing.StartAsync(new TracingOptions
+            await Page.Tracing.StartAsync(new DevToolsTracingOptions
             {
                 Screenshots = true
             });
