@@ -986,6 +986,11 @@ namespace PuppeteerSharp
             var marginBottom = ConvertPrintParameterToInches(options.MarginOptions.Bottom);
             var marginRight = ConvertPrintParameterToInches(options.MarginOptions.Right);
 
+            if (options.OmitBackground)
+            {
+                await SetTransparentBackgroundColorAsync().ConfigureAwait(false);
+            }
+
             var result = await Client.SendAsync<PagePrintToPDFResponse>("Page.printToPDF", new PagePrintToPDFRequest
             {
                 TransferMode = "ReturnAsStream",
@@ -1004,6 +1009,11 @@ namespace PuppeteerSharp
                 PageRanges = options.PageRanges,
                 PreferCSSPageSize = options.PreferCSSPageSize
             }).ConfigureAwait(false);
+
+            if (options.OmitBackground)
+            {
+                await ResetDefaultBackgroundColorAsync().ConfigureAwait(false);
+            }
 
             return await ProtocolStreamReader.ReadProtocolStreamByteAsync(Client, result.Stream, file).ConfigureAwait(false);
         }
@@ -1976,16 +1986,7 @@ namespace PuppeteerSharp
 
                 if (options?.OmitBackground == true && type == ScreenshotType.Png)
                 {
-                    await Client.SendAsync("Emulation.setDefaultBackgroundColorOverride", new EmulationSetDefaultBackgroundColorOverrideRequest
-                    {
-                        Color = new EmulationSetDefaultBackgroundColorOverrideColor
-                        {
-                            R = 0,
-                            G = 0,
-                            B = 0,
-                            A = 0
-                        }
-                    }).ConfigureAwait(false);
+                    await SetTransparentBackgroundColorAsync().ConfigureAwait(false);
                 }
             }
 
@@ -2036,11 +2037,26 @@ namespace PuppeteerSharp
         private Task ResetBackgroundColorAndViewportAsync(ScreenshotOptions options)
         {
             var omitBackgroundTask = options?.OmitBackground == true && options.Type == ScreenshotType.Png ?
-                Client.SendAsync("Emulation.setDefaultBackgroundColorOverride") : Task.CompletedTask;
+                ResetDefaultBackgroundColorAsync() : Task.CompletedTask;
             var setViewPortTask = (options?.FullPage == true && Viewport != null) ?
                 SetViewportAsync(Viewport) : Task.CompletedTask;
             return Task.WhenAll(omitBackgroundTask, setViewPortTask);
         }
+
+        private Task ResetDefaultBackgroundColorAsync()
+            => Client.SendAsync("Emulation.setDefaultBackgroundColorOverride");
+
+        private Task SetTransparentBackgroundColorAsync()
+            => Client.SendAsync("Emulation.setDefaultBackgroundColorOverride", new EmulationSetDefaultBackgroundColorOverrideRequest
+            {
+                Color = new EmulationSetDefaultBackgroundColorOverrideColor
+                {
+                    R = 0,
+                    G = 0,
+                    B = 0,
+                    A = 0
+                }
+            });
 
         private decimal ConvertPrintParameterToInches(object parameter)
         {
