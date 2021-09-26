@@ -1,3 +1,5 @@
+using System.Runtime.Serialization;
+
 namespace PuppeteerSharp
 {
     /// <summary>
@@ -81,5 +83,10 @@ namespace PuppeteerSharp
         /// Verbose.
         /// </summary>
         Verbose,
+        /// <summary>
+        /// Time Stamp.
+        /// </summary>
+        [EnumMember(Value = "timeStamp")]
+        Timestamp,
     }
 }
