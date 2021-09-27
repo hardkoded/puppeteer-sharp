@@ -284,7 +284,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
                 await frame.QuerySelectorAsync("textarea").EvaluateFunctionAsync<string>("t => t.value"));
         }
 
-        [PuppeteerTest("keyboard.spec.ts", "Keyboard", "should press the meta key")]
+        [PuppeteerTest("keyboard.spec.ts", "Keyboard", "should press the metaKey")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldPressTheMetaKey()
         {
