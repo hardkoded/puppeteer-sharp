@@ -67,7 +67,7 @@ namespace PuppeteerSharp
             Keyboard = new Keyboard(client);
             Mouse = new Mouse(client, Keyboard);
             Touchscreen = new Touchscreen(client, Keyboard);
-            Tracing = new DevToolsTracing(client);
+            Tracing = new Tracing(client);
             Coverage = new Coverage(client);
 
             _fileChooserInterceptors = new ConcurrentDictionary<Guid, TaskCompletionSource<FileChooser>>();
@@ -316,7 +316,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets this page's tracing
         /// </summary>
-        public DevToolsTracing Tracing { get; }
+        public Tracing Tracing { get; }
 
         /// <summary>
         /// Gets this page's mouse

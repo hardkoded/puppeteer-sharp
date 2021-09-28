@@ -3,9 +3,9 @@ using System.Collections.Generic;
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// Tracing options used on <see cref="DevToolsTracing.StartAsync(DevToolsTracingOptions)"/>.
+    /// Tracing options used on <see cref="Tracing.StartAsync(TracingOptions)"/>.
     /// </summary>
-    public class DevToolsTracingOptions
+    public class TracingOptions
     {
         /// <summary>
         /// Gets or sets a value indicating whether Tracing should capture screenshots in the trace

@@ -9,12 +9,13 @@ using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
+#pragma warning disable CA1724
     /// <summary>
-    /// You can use <see cref="DevToolsTracing.StartAsync(DevToolsTracingOptions)"/> and <see cref="DevToolsTracing.StopAsync"/> to create a trace file which can be opened in Chrome DevTools or timeline viewer.
+    /// You can use <see cref="Tracing.StartAsync(TracingOptions)"/> and <see cref="Tracing.StopAsync"/> to create a trace file which can be opened in Chrome DevTools or timeline viewer.
     /// </summary>
     /// <example>
     /// <code>
-    /// await Page.Tracing.StartAsync(new DevToolsTracingOptions
+    /// await Page.Tracing.StartAsync(new TracingOptions
     /// {
     ///     Screenshots = true,
     ///     Path = _file
@@ -23,7 +24,7 @@ namespace PuppeteerSharp
     /// await Page.Tracing.StopAsync();
     /// </code>
     /// </example>
-    public class DevToolsTracing
+    public class Tracing
     {
         private readonly CDPSession _client;
         private bool _recording;
@@ -45,10 +46,10 @@ namespace PuppeteerSharp
 
         private readonly ILogger _logger;
 
-        internal DevToolsTracing(CDPSession client)
+        internal Tracing(CDPSession client)
         {
             _client = client;
-            _logger = client.LoggerFactory.CreateLogger<DevToolsTracing>();
+            _logger = client.LoggerFactory.CreateLogger<Tracing>();
         }
 
         /// <summary>
@@ -56,7 +57,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>Start task</returns>
         /// <param name="options">Tracing options</param>
-        public Task StartAsync(DevToolsTracingOptions options = null)
+        public Task StartAsync(TracingOptions options = null)
         {
             if (_recording)
             {
