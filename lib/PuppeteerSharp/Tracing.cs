@@ -23,7 +23,9 @@ namespace PuppeteerSharp
     /// await Page.Tracing.StopAsync();
     /// </code>
     /// </example>
+#pragma warning disable CA1724
     public class Tracing
+#pragma warning restore CA1724
     {
         private readonly CDPSession _client;
         private bool _recording;
