@@ -96,7 +96,7 @@ namespace PuppeteerSharp
                 chromiumArgs.Add("--remote-debugging-port=0");
             }
 
-            string userDataDirOption = chromiumArgs.FirstOrDefault(i => i.StartsWith(UserDataDirArgument, StringComparison.Ordinal));
+            var userDataDirOption = chromiumArgs.FirstOrDefault(i => i.StartsWith(UserDataDirArgument, StringComparison.Ordinal));
             if (string.IsNullOrEmpty(userDataDirOption))
             {
                 tempUserDataDirectory = new TempDirectory();

@@ -111,6 +111,11 @@ namespace PuppeteerSharp
         /// <param name="prototypeHandle">A handle to the object prototype.</param>
         public async Task<JSHandle> QueryObjectsAsync(JSHandle prototypeHandle)
         {
+            if (prototypeHandle == null)
+            {
+                throw new ArgumentNullException(nameof(prototypeHandle));
+            }
+
             if (prototypeHandle.Disposed)
             {
                 throw new PuppeteerException("Prototype JSHandle is disposed!");

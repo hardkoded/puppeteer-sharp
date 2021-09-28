@@ -56,6 +56,11 @@ namespace PuppeteerSharp
         /// <param name="options">Screenshot options.</param>
         public async Task ScreenshotAsync(string file, ScreenshotOptions options)
         {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
             if (!options.Type.HasValue)
             {
                 options.Type = ScreenshotOptions.GetScreenshotTypeFromFile(file);
@@ -116,6 +121,11 @@ namespace PuppeteerSharp
         /// <param name="options">Screenshot options.</param>
         public async Task<string> ScreenshotBase64Async(ScreenshotOptions options)
         {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
             var needsViewportReset = false;
             var boundingBox = await BoundingBoxAsync().ConfigureAwait(false);
 

@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp
@@ -29,6 +30,11 @@ namespace PuppeteerSharp
         /// <exception cref="SelectorException">If <paramref name="elementHandleTask"/> resolves to <c>null</c></exception>
         public static async Task<T> EvaluateFunctionAsync<T>(this Task<ElementHandle> elementHandleTask, string pageFunction, params object[] args)
         {
+            if (elementHandleTask == null)
+            {
+                throw new ArgumentNullException(nameof(elementHandleTask));
+            }
+
             var elementHandle = await elementHandleTask.ConfigureAwait(false);
             if (elementHandle == null)
             {
@@ -78,7 +84,14 @@ namespace PuppeteerSharp
         /// <param name="args">Arguments to pass to <c>pageFunction</c></param>
         /// <returns>Task which resolves to the return value of <c>pageFunction</c></returns>
         public static async Task<T> EvaluateFunctionAsync<T>(this Task<JSHandle> arrayHandleTask, string pageFunction, params object[] args)
-            => await (await arrayHandleTask.ConfigureAwait(false)).EvaluateFunctionAsync<T>(pageFunction, args).ConfigureAwait(false);
+        {
+            if (arrayHandleTask == null)
+            {
+                throw new ArgumentNullException(nameof(arrayHandleTask));
+            }
+
+            return await (await arrayHandleTask.ConfigureAwait(false)).EvaluateFunctionAsync<T>(pageFunction, args).ConfigureAwait(false);
+        }
 
         /// <summary>
         /// Runs <paramref name="pageFunction"/> within the frame and passes it the outcome of <paramref name="arrayHandle"/> as the first argument. Use only after <see cref="Page.QuerySelectorAllHandleAsync(string)"/>
@@ -90,6 +103,11 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to the return value of <c>pageFunction</c></returns>
         public static async Task<T> EvaluateFunctionAsync<T>(this JSHandle arrayHandle, string pageFunction, params object[] args)
         {
+            if (arrayHandle == null)
+            {
+                throw new ArgumentNullException(nameof(arrayHandle));
+            }
+
             var result = await arrayHandle.EvaluateFunctionAsync<T>(pageFunction, args).ConfigureAwait(false);
             await arrayHandle.DisposeAsync().ConfigureAwait(false);
             return result;

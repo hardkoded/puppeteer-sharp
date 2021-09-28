@@ -407,6 +407,11 @@ namespace PuppeteerSharp
         /// </remarks>
         public Task SetGeolocationAsync(GeolocationOption options)
         {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
             if (options.Longitude < -180 || options.Longitude > 180)
             {
                 throw new ArgumentException($"Invalid longitude '{ options.Longitude }': precondition - 180 <= LONGITUDE <= 180 failed.");
@@ -918,7 +923,14 @@ namespace PuppeteerSharp
         /// Generating a pdf is currently only supported in Chrome headless
         /// </remarks>
         public async Task PdfAsync(string file, PdfOptions options)
-            => await PdfInternalAsync(file, options).ConfigureAwait(false);
+        {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            await PdfInternalAsync(file, options).ConfigureAwait(false);
+        }
 
         /// <summary>
         /// generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaAsync(MediaType)"/> with <see cref="MediaType.Screen"/>
@@ -957,7 +969,15 @@ namespace PuppeteerSharp
         /// <remarks>
         /// Generating a pdf is currently only supported in Chrome headless
         /// </remarks>
-        public Task<byte[]> PdfDataAsync(PdfOptions options) => PdfInternalAsync(null, options);
+        public Task<byte[]> PdfDataAsync(PdfOptions options)
+        {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            return PdfInternalAsync(null, options);
+        }
 
         internal async Task<byte[]> PdfInternalAsync(string file, PdfOptions options)
         {
@@ -1150,6 +1170,11 @@ namespace PuppeteerSharp
         /// <param name="viewport">Viewport options.</param>
         public async Task SetViewportAsync(ViewPortOptions viewport)
         {
+            if (viewport == null)
+            {
+                throw new ArgumentNullException(nameof(viewport));
+            }
+
             var needsReload = await _emulationManager.EmulateViewport(viewport).ConfigureAwait(false);
             Viewport = viewport;
 
@@ -1181,9 +1206,17 @@ namespace PuppeteerSharp
         /// </example>
         /// <returns>Task.</returns>
         /// <param name="options">Emulation options.</param>
-        public Task EmulateAsync(DeviceDescriptor options) => Task.WhenAll(
-            SetViewportAsync(options.ViewPort),
-            SetUserAgentAsync(options.UserAgent));
+        public Task EmulateAsync(DeviceDescriptor options)
+        {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            return Task.WhenAll(
+                SetViewportAsync(options.ViewPort),
+                SetUserAgentAsync(options.UserAgent));
+        }
 
         /// <summary>
         /// Takes a screenshot of the page
@@ -1204,6 +1237,11 @@ namespace PuppeteerSharp
         /// <param name="options">Screenshot options.</param>
         public async Task ScreenshotAsync(string file, ScreenshotOptions options)
         {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
             if (!options.Type.HasValue)
             {
                 options.Type = ScreenshotOptions.GetScreenshotTypeFromFile(file);
@@ -1248,6 +1286,11 @@ namespace PuppeteerSharp
         /// <param name="options">Screenshot options.</param>
         public Task<string> ScreenshotBase64Async(ScreenshotOptions options)
         {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
             var screenshotType = options.Type;
 
             if (!screenshotType.HasValue)
@@ -1468,7 +1511,14 @@ namespace PuppeteerSharp
         /// <param name="headers">Additional http headers to be sent with every request</param>
         /// <returns>Task</returns>
         public Task SetExtraHttpHeadersAsync(Dictionary<string, string> headers)
-            => FrameManager.NetworkManager.SetExtraHTTPHeadersAsync(headers);
+        {
+            if (headers == null)
+            {
+                throw new ArgumentNullException(nameof(headers));
+            }
+
+            return FrameManager.NetworkManager.SetExtraHTTPHeadersAsync(headers);
+        }
 
         /// <summary>
         /// Provide credentials for http authentication <see href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication"/>
