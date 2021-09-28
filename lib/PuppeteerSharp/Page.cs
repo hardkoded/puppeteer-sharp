@@ -1391,6 +1391,22 @@ namespace PuppeteerSharp
         /// <remarks>
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
         /// </remarks>
+        /// <example>
+        /// An example of scraping information from all hyperlinks on the page.
+        /// <code>
+        /// var hyperlinkInfo = await page.EvaluateExpressionAsync(@"
+        ///     Array
+        ///        .from(document.querySelectorAll('a'))
+        ///        .map(n => ({
+        ///            text: n.innerText,
+        ///            href: n.getAttribute('href'),
+        ///            target: n.getAttribute('target')
+        ///         }))
+        /// ");
+        /// Console.WriteLine(hyperlinkInfo.ToString()); // Displays JSON array of hyperlink info objects
+        /// </code>
+        /// </example>
+        /// <seealso href="https://www.newtonsoft.com/json/help/html/t_newtonsoft_json_linq_jtoken.htm"/>
         /// <seealso cref="EvaluateFunctionAsync{T}(string, object[])"/>
         /// <returns>Task which resolves to script return value</returns>
         public Task<JToken> EvaluateExpressionAsync(string script)
