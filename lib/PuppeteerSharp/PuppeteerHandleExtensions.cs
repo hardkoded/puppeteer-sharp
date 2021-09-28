@@ -6,7 +6,7 @@ namespace PuppeteerSharp
     /// <summary>
     /// <see cref="JSHandle"/> and <see cref="ElementHandle"/> Extensions.
     /// </summary>
-    public static class Extensions
+    public static class PuppeteerHandleExtensions
     {
         /// <summary>
         /// Runs <paramref name="pageFunction"/> within the frame and passes it the outcome of <paramref name="elementHandleTask"/> as the first argument
