@@ -9,7 +9,6 @@ using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
-#pragma warning disable CA1724
     /// <summary>
     /// You can use <see cref="Tracing.StartAsync(TracingOptions)"/> and <see cref="Tracing.StopAsync"/> to create a trace file which can be opened in Chrome DevTools or timeline viewer.
     /// </summary>
@@ -24,7 +23,9 @@ namespace PuppeteerSharp
     /// await Page.Tracing.StopAsync();
     /// </code>
     /// </example>
+#pragma warning disable CA1724
     public class Tracing
+#pragma warning restore CA1724
     {
         private readonly CDPSession _client;
         private bool _recording;
