@@ -25,6 +25,7 @@ namespace PuppeteerSharp.Tests
         [PuppeteerTest("launcher.spec.ts", "Puppeteer.launch", "falls back to launching chrome if there is an unknown product but logs a warning")]
         [PuppeteerTest("tracing.spec.ts", "Tracing", "should return null in case of Buffer error")]
         [PuppeteerTest("tracing.spec.ts", "Tracing", "should properly fail if readProtocolStream errors out")]
+        [PuppeteerTest("fixtures.spec.ts", "Fixtures", "dumpio option should work with pipe option")]
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public void TheseTesstWontBeImplemented()
         {

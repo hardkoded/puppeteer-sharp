@@ -164,7 +164,7 @@ namespace PuppeteerSharp
                 return "JSHandle@" + type.ToLower(System.Globalization.CultureInfo.CurrentCulture);
             }
 
-            return "JSHandle:" + RemoteObjectHelper.ValueFromRemoteObject<object>(RemoteObject)?.ToString();
+            return "JSHandle:" + RemoteObjectHelper.ValueFromRemoteObject<object>(RemoteObject, true)?.ToString();
         }
 
         /// <summary>
@@ -235,7 +235,7 @@ namespace PuppeteerSharp
 
             if (unserializableValue != null)
             {
-                return unserializableValue;
+                return new { unserializableValue };
             }
 
             if (RemoteObject.ObjectId == null)
