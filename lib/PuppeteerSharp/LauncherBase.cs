@@ -158,12 +158,12 @@ namespace PuppeteerSharp
         /// <param name="realEnv">The realEnv.</param>
         protected static void SetEnvVariables(IDictionary<string, string> environment, IDictionary<string, string> customEnv, IDictionary realEnv)
         {
-            if (environment is null)
+            if (environment == null)
             {
                 throw new ArgumentNullException(nameof(environment));
             }
 
-            if (realEnv is null)
+            if (realEnv == null)
             {
                 throw new ArgumentNullException(nameof(realEnv));
             }
