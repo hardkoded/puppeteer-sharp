@@ -349,7 +349,14 @@ namespace PuppeteerSharp
         /// <seealso cref="Page.WaitForFunctionAsync(string, WaitForFunctionOptions, object[])"/>
         /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
         public Task<JSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args)
-           => MainWorld.WaitForFunctionAsync(script, options, args);
+        {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            return MainWorld.WaitForFunctionAsync(script, options, args);
+        }
 
         /// <summary>
         /// Waits for an expression to be evaluated to a truthy value
@@ -360,7 +367,14 @@ namespace PuppeteerSharp
         /// <seealso cref="Page.WaitForExpressionAsync(string, WaitForFunctionOptions)"/>
         /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
         public Task<JSHandle> WaitForExpressionAsync(string script, WaitForFunctionOptions options)
-            => MainWorld.WaitForExpressionAsync(script, options);
+        {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            return MainWorld.WaitForExpressionAsync(script, options);
+        }
 
         /// <summary>
         /// Triggers a change and input event once all the provided options have been selected.
@@ -406,7 +420,15 @@ namespace PuppeteerSharp
         /// <seealso cref="Page.AddStyleTagAsync(AddTagOptions)"/>
         /// <seealso cref="Page.AddStyleTagAsync(string)"/>
         [Obsolete("Use AddStyleTagAsync instead")]
-        public Task<ElementHandle> AddStyleTag(AddTagOptions options) => MainWorld.AddStyleTagAsync(options);
+        public Task<ElementHandle> AddStyleTag(AddTagOptions options)
+        {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            return MainWorld.AddStyleTagAsync(options);
+        }
 
         /// <summary>
         /// Adds a <c><![CDATA[<script>]]></c> tag into the page with the desired url or content
@@ -416,7 +438,15 @@ namespace PuppeteerSharp
         /// <seealso cref="Page.AddScriptTagAsync(AddTagOptions)"/>
         /// <seealso cref="Page.AddScriptTagAsync(string)"/>
         [Obsolete("Use AddScriptTagAsync instead")]
-        public Task<ElementHandle> AddScriptTag(AddTagOptions options) => MainWorld.AddScriptTagAsync(options);
+        public Task<ElementHandle> AddScriptTag(AddTagOptions options)
+        {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            return MainWorld.AddScriptTagAsync(options);
+        }
 
         /// <summary>
         /// Adds a <c><![CDATA[<link rel="stylesheet">]]></c> tag into the page with the desired url or a <c><![CDATA[<link rel="stylesheet">]]></c> tag with the content
@@ -425,7 +455,15 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to the added tag when the stylesheet's onload fires or when the CSS content was injected into frame</returns>
         /// <seealso cref="Page.AddStyleTagAsync(AddTagOptions)"/>
         /// <seealso cref="Page.AddStyleTagAsync(string)"/>
-        public Task<ElementHandle> AddStyleTagAsync(AddTagOptions options) => MainWorld.AddStyleTagAsync(options);
+        public Task<ElementHandle> AddStyleTagAsync(AddTagOptions options)
+        {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            return MainWorld.AddStyleTagAsync(options);
+        }
 
         /// <summary>
         /// Adds a <c><![CDATA[<script>]]></c> tag into the page with the desired url or content
@@ -434,7 +472,15 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to the added tag when the script's onload fires or when the script content was injected into frame</returns>
         /// <seealso cref="Page.AddScriptTagAsync(AddTagOptions)"/>
         /// <seealso cref="Page.AddScriptTagAsync(string)"/>
-        public Task<ElementHandle> AddScriptTagAsync(AddTagOptions options) => MainWorld.AddScriptTagAsync(options);
+        public Task<ElementHandle> AddScriptTagAsync(AddTagOptions options)
+        {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            return MainWorld.AddScriptTagAsync(options);
+        }
 
         /// <summary>
         /// Gets the full HTML contents of the page, including the doctype.

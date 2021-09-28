@@ -31,7 +31,7 @@ namespace PuppeteerSharp
             _stateManager = new StateManager();
             _stateManager.Starting = new ChromiumStartingState(_stateManager);
 
-            Options = options;
+            Options = options ?? throw new ArgumentNullException(nameof(options));
 
             Process = new Process
             {
@@ -158,6 +158,16 @@ namespace PuppeteerSharp
         /// <param name="realEnv">The realEnv.</param>
         protected static void SetEnvVariables(IDictionary<string, string> environment, IDictionary<string, string> customEnv, IDictionary realEnv)
         {
+            if (environment is null)
+            {
+                throw new ArgumentNullException(nameof(environment));
+            }
+
+            if (realEnv is null)
+            {
+                throw new ArgumentNullException(nameof(realEnv));
+            }
+
             foreach (DictionaryEntry item in realEnv)
             {
                 environment[item.Key.ToString()] = item.Value.ToString();

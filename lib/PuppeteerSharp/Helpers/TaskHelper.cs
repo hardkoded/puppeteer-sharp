@@ -74,6 +74,16 @@ namespace PuppeteerSharp.Helpers
         /// <param name="cancellationToken">Cancellation token.</param>
         public static async Task WithTimeout(this Task task, Func<Task> timeoutAction, TimeSpan timeout, CancellationToken cancellationToken)
         {
+            if (task == null)
+            {
+                throw new ArgumentNullException(nameof(task));
+            }
+
+            if (timeoutAction == null)
+            {
+                throw new ArgumentNullException(nameof(timeoutAction));
+            }
+
             if (await TimeoutTask(task, timeout).ConfigureAwait(false) && !cancellationToken.IsCancellationRequested)
             {
                 await timeoutAction().ConfigureAwait(false);
@@ -104,6 +114,16 @@ namespace PuppeteerSharp.Helpers
         /// <typeparam name="T">Return type.</typeparam>
         public static async Task<T> WithTimeout<T>(this Task<T> task, Action timeoutAction, TimeSpan timeout)
         {
+            if (task == null)
+            {
+                throw new ArgumentNullException(nameof(task));
+            }
+
+            if (timeoutAction == null)
+            {
+                throw new ArgumentNullException(nameof(timeoutAction));
+            }
+
             if (await TimeoutTask(task, timeout).ConfigureAwait(false))
             {
                 timeoutAction();
@@ -136,6 +156,11 @@ namespace PuppeteerSharp.Helpers
         /// <typeparam name="T">Task return type.</typeparam>
         public static async Task<T> WithTimeout<T>(this Task<T> task, TimeSpan timeout, Func<TimeSpan, Exception> exceptionFactory = null)
         {
+            if (task == null)
+            {
+                throw new ArgumentNullException(nameof(task));
+            }
+
             if (await TimeoutTask(task, timeout).ConfigureAwait(false))
             {
                 throw (exceptionFactory ?? DefaultExceptionFactory)(timeout);

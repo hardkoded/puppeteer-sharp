@@ -127,6 +127,11 @@ namespace PuppeteerSharp
         /// <param name="options">Fetch options.</param>
         public BrowserFetcher(BrowserFetcherOptions options)
         {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
             DownloadsFolder = string.IsNullOrEmpty(options.Path) ?
                Path.Combine(Directory.GetCurrentDirectory(), options.Product == Product.Chrome ? ".local-chromium" : ".local-firefox") :
                options.Path;

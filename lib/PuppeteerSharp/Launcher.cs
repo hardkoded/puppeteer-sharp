@@ -47,6 +47,11 @@ namespace PuppeteerSharp
         /// </remarks>
         public async Task<Browser> LaunchAsync(LaunchOptions options)
         {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
             EnsureSingleLaunchOrConnect();
             _product = options.Product;
             var executable = await GetOrFetchBrowserExecutableAsync(options).ConfigureAwait(false);
@@ -94,6 +99,11 @@ namespace PuppeteerSharp
         /// <returns>A connected browser.</returns>
         public async Task<Browser> ConnectAsync(ConnectOptions options)
         {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
             EnsureSingleLaunchOrConnect();
 
             if (!string.IsNullOrEmpty(options.BrowserURL) && !string.IsNullOrEmpty(options.BrowserWSEndpoint))

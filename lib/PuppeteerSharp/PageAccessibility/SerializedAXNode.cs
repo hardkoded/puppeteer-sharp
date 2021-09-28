@@ -119,6 +119,7 @@ namespace PuppeteerSharp.PageAccessibility
         public SerializedAXNode[] Children { get; set; }
 
         /// <inheritdoc/>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Exceptions should not be raised in this type of method.")]
         public bool Equals(SerializedAXNode other)
             => ReferenceEquals(this, other) ||
                 (

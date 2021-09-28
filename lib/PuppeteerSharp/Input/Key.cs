@@ -420,6 +420,10 @@ namespace PuppeteerSharp.Input
         /// Converts the <paramref name="key"/> to its underlining string value
         /// </summary>
         /// <param name="key">The key</param>
-        public static implicit operator string(Key key) => key._value;
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Exceptions should not be raised in this type of method.")]
+        public static implicit operator string(Key key)
+        {
+            return key._value;
+        }
     }
 }
