@@ -1403,7 +1403,7 @@ namespace PuppeteerSharp
         ///            target: n.getAttribute('target')
         ///         }))
         /// ");
-        /// Console.WriteLine(hyperlinkInfo.ToString()); // Displays JSON array of hyperlink info objects
+        /// Console.WriteLine(hyperlinkInfo.ToString()); // Displays JSON array of hyperlinkInfo objects
         /// </code>
         /// </example>
         /// <seealso href="https://www.newtonsoft.com/json/help/html/t_newtonsoft_json_linq_jtoken.htm"/>
