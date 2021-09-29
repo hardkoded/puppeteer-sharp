@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.Serialization;
 using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
@@ -6,6 +7,7 @@ namespace PuppeteerSharp
     /// <summary>
     /// Exception thrown by <seealso cref="CDPSession.SendAsync{T}(string, object)"/>
     /// </summary>
+    [Serializable]
     public class MessageException : PuppeteerException
     {
         /// <summary>
@@ -32,6 +34,15 @@ namespace PuppeteerSharp
         }
 
         internal MessageException(MessageTask callback, ConnectionError error) : base(GetCallbackMessage(callback, error))
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MessageException"/> class.
+        /// </summary>
+        /// <param name="info"></param>
+        /// <param name="context"></param>
+        protected MessageException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
 
