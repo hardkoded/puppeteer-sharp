@@ -1,8 +1,11 @@
+using System.Runtime.Serialization;
+
 namespace PuppeteerSharp
 {
     /// <summary>
     /// Exception thrown by the <see cref="Connection"/> when it detects that the target was closed.
     /// </summary>
+    [System.Serializable]
     public class TargetClosedException : PuppeteerException
     {
         /// <summary>
@@ -42,5 +45,14 @@ namespace PuppeteerSharp
         /// <param name="closeReason">Close reason.</param>
         public TargetClosedException(string message, string closeReason) : base($"{message} ({closeReason})")
             => CloseReason = closeReason;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TargetClosedException"/> class.
+        /// </summary>
+        /// <param name="info"></param>
+        /// <param name="context"></param>
+        protected TargetClosedException(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+        }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.Serialization;
 
 namespace PuppeteerSharp
 {
@@ -6,6 +7,7 @@ namespace PuppeteerSharp
     /// Chromium process exception thrown by <see cref="Launcher"/>.
     /// </summary>
     [Obsolete("ProcessException will be thrown")]
+    [Serializable]
     public class ChromiumProcessException : PuppeteerException
     {
         /// <summary>
@@ -29,6 +31,15 @@ namespace PuppeteerSharp
         /// <param name="message">Message.</param>
         /// <param name="innerException">Inner exception.</param>
         public ChromiumProcessException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ChromiumProcessException"/> class.
+        /// </summary>
+        /// <param name="info"></param>
+        /// <param name="context"></param>
+        protected ChromiumProcessException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
     }
