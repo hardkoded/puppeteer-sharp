@@ -80,7 +80,7 @@
     <Rule Id="CA2008" Action="Error" /> <!-- Error ca2008: Pass TaskScheduler-->
     <Rule Id="CA2200" Action="Error" /> <!-- Error CA2200: Re-throwing caught exception changes stack information. (CA2200)  -->
     <Rule Id="CA2213" Action="Error" /> <!-- Error CA2213: 'WebSocketTransport' contains field '_readerCancellationSource' that is of IDisposable type 'CancellationTokenSource', but it is never disposed. Change the Dispose method on 'WebSocketTransport' to call Close or Dispose on this field. (CA2213) -->
-    <Rule Id="CA2220" Action="None" /> <!-- Error CA2229: Add a constructor to SelectorException with the following signature: 'protected SelectorException(SerializationInfo info, StreamingContext context)'. (CA2229) (PuppeteerSharp)-->
+    <Rule Id="CA2220" Action="Error" /> <!-- Error CA2229: Add a constructor to SelectorException with the following signature: 'protected SelectorException(SerializationInfo info, StreamingContext context)'. (CA2229) (PuppeteerSharp)-->
     <Rule Id="CA2229" Action="Error" /> <!-- Error CA2229: Add a constructor to SelectorException with the following signature: 'protected SelectorException(SerializationInfo info, StreamingContext context)'. (CA2229)-->
     <Rule Id="CA2237" Action="Error" /> <!-- Error CA2237: Add [Serializable] to TargetClosedException as this type implements ISerializable (CA2237)-->
   </Rules>
