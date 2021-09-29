@@ -26,7 +26,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldDownloadAndExtractLinuxBinary()
         {
-            var browserFetcher = Puppeteer.CreateBrowserFetcher(new BrowserFetcherOptions
+            using var browserFetcher = Puppeteer.CreateBrowserFetcher(new BrowserFetcherOptions
             {
                 Platform = Platform.Linux,
                 Path = _downloadsFolder,
@@ -76,7 +76,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
         [Fact(Timeout = TestConstants.DefaultTestTimeout)]
         public async Task ShouldDownloadAndExtractFirefoxLinuxBinary()
         {
-            var browserFetcher = Puppeteer.CreateBrowserFetcher(new BrowserFetcherOptions
+            using var browserFetcher = Puppeteer.CreateBrowserFetcher(new BrowserFetcherOptions
             {
                 Platform = Platform.Linux,
                 Path = _downloadsFolder,
