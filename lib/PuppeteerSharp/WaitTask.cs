@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace PuppeteerSharp
 {
-    internal class WaitTask
+    internal class WaitTask : IDisposable
     {
         private readonly DOMWorld _world;
         private readonly string _predicateBody;
@@ -21,6 +21,7 @@ namespace PuppeteerSharp
 
         private int _runCount;
         private bool _terminated;
+        private bool _isDisposing;
 
         private const string WaitForPredicatePageFunction = @"
 async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...args) {
@@ -232,8 +233,26 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
             {
                 _cts.Cancel();
             }
-            _cts?.Dispose();
             _world.WaitTasks.Remove(this);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool dispose)
+        {
+            if (_isDisposing)
+            {
+                return;
+            }
+
+            _cts.Dispose();
+            _timeoutTimer?.Dispose();
+
+            _isDisposing = true;
         }
     }
 }
