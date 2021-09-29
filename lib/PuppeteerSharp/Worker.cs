@@ -48,20 +48,24 @@ namespace PuppeteerSharp
             _client.MessageReceived += OnMessageReceived;
 
             _executionContextCallback = new TaskCompletionSource<ExecutionContext>(TaskCreationOptions.RunContinuationsAsynchronously);
+
             _ = _client.SendAsync("Runtime.enable").ContinueWith(task =>
             {
                 if (task.IsFaulted)
                 {
                     _logger.LogError(task.Exception.Message);
                 }
-            });
+            },
+            TaskScheduler.Default);
+
             _ = _client.SendAsync("Log.enable").ContinueWith(task =>
             {
                 if (task.IsFaulted)
                 {
                     _logger.LogError(task.Exception.Message);
                 }
-            });
+            },
+            TaskScheduler.Default);
         }
 
         /// <summary>

@@ -50,7 +50,11 @@ namespace PuppeteerSharp.Transport
         }
 
         private static void ScheduleTransportTask(Func<CancellationToken, Task> taskFactory, CancellationToken cancellationToken)
-            => Task.Factory.StartNew(() => taskFactory(cancellationToken), TaskCreationOptions.LongRunning);
+            => Task.Factory.StartNew(
+                () => taskFactory(cancellationToken),
+                cancellationToken,
+                TaskCreationOptions.LongRunning,
+                TaskScheduler.Default);
 
         #endregion
 

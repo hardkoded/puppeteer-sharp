@@ -91,7 +91,8 @@ namespace PuppeteerSharp
                     IsClosed = true;
                     _closeCompletedTcs.TrySetResult(true);
                 }
-            });
+            },
+            TaskScheduler.Default);
         }
 
         #region Public Properties
@@ -1367,7 +1368,7 @@ namespace PuppeteerSharp
                 return Client.Connection.SendAsync("Target.closeTarget", new TargetCloseTargetRequest
                 {
                     TargetId = Target.TargetId
-                }).ContinueWith(task => Target.CloseTask);
+                }).ContinueWith(task => Target.CloseTask, TaskScheduler.Default);
             }
 
             _logger.LogWarning("Protocol error: Connection closed. Most likely the page has been closed.");
@@ -2493,7 +2494,8 @@ namespace PuppeteerSharp
                     {
                         _logger.LogError(task.Exception.ToString());
                     }
-                }))).ConfigureAwait(false);
+                }, TaskScheduler.Default)))
+                .ConfigureAwait(false);
         }
 
         private static string EvaluationString(string fun, params object[] args)
