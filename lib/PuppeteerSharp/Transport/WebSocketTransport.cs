@@ -54,7 +54,7 @@ namespace PuppeteerSharp.Transport
                 () => taskFactory(cancellationToken),
                 cancellationToken,
                 TaskCreationOptions.LongRunning,
-                TaskScheduler.Current);
+                TaskScheduler.Default);
 
         #endregion
 

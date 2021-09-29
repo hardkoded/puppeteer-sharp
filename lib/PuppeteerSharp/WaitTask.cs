@@ -148,7 +148,7 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
                 _timeoutTimer = System.Threading.Tasks.Task.Delay(timeout, _cts.Token)
                     .ContinueWith(
                         _ => Terminate(new WaitTaskTimeoutException(timeout, title)),
-                        TaskScheduler.Current);
+                        TaskScheduler.Default);
             }
 
             _ = Rerun();
@@ -186,7 +186,7 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
                 await _world.EvaluateFunctionAsync<bool>("s => !s", success)
                     .ContinueWith(
                         task => task.IsFaulted || task.Result,
-                        TaskScheduler.Current)
+                        TaskScheduler.Default)
                     .ConfigureAwait(false))
             {
                 if (success != null)

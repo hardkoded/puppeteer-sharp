@@ -56,7 +56,7 @@ namespace PuppeteerSharp.Helpers
             },
             CancellationToken.None,
             TaskContinuationOptions.OnlyOnFaulted,
-            TaskScheduler.Current);
+            TaskScheduler.Default);
 
             // Always remove from the queue when done, regardless of outcome.
             task.ContinueWith(_ =>
@@ -65,7 +65,7 @@ namespace PuppeteerSharp.Helpers
                 {
                     _pendingTasks.Remove(callback);
                 }
-            }, TaskScheduler.Current);
+            }, TaskScheduler.Default);
         }
 
         public void Dispose()

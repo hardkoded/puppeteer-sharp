@@ -56,7 +56,7 @@ namespace PuppeteerSharp
                     _logger.LogError(task.Exception.Message);
                 }
             },
-            TaskScheduler.Current);
+            TaskScheduler.Default);
 
             _ = _client.SendAsync("Log.enable").ContinueWith(task =>
             {
@@ -65,7 +65,7 @@ namespace PuppeteerSharp
                     _logger.LogError(task.Exception.Message);
                 }
             },
-            TaskScheduler.Current);
+            TaskScheduler.Default);
         }
 
         /// <summary>
