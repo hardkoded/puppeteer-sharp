@@ -331,6 +331,7 @@ namespace PuppeteerSharp
         {
             Close("Connection disposed");
             Transport.Dispose();
+            _callbackQueue.Dispose();
         }
         #endregion
     }
