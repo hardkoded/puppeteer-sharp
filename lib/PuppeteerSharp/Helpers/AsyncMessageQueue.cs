@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -52,7 +53,10 @@ namespace PuppeteerSharp.Helpers
             {
                 _logger.LogError(t.Exception, "Failed to complete async handling of SendAsync for {callback}", callback.Method);
                 callback.TaskWrapper.TrySetException(t.Exception!); // t.Exception is available since this runs only on faulted
-            }, TaskContinuationOptions.OnlyOnFaulted);
+            },
+            CancellationToken.None,
+            TaskContinuationOptions.OnlyOnFaulted,
+            TaskScheduler.Current);
 
             // Always remove from the queue when done, regardless of outcome.
             task.ContinueWith(_ =>
@@ -61,7 +65,7 @@ namespace PuppeteerSharp.Helpers
                 {
                     _pendingTasks.Remove(callback);
                 }
-            });
+            }, TaskScheduler.Current);
         }
 
         public void Dispose()

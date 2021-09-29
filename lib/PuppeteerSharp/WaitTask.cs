@@ -145,8 +145,10 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
 
             if (timeout > 0)
             {
-                _timeoutTimer = System.Threading.Tasks.Task.Delay(timeout, _cts.Token).ContinueWith(_
-                    => Terminate(new WaitTaskTimeoutException(timeout, title)));
+                _timeoutTimer = System.Threading.Tasks.Task.Delay(timeout, _cts.Token)
+                    .ContinueWith(
+                        _ => Terminate(new WaitTaskTimeoutException(timeout, title)),
+                        TaskScheduler.Current);
             }
 
             _ = Rerun();
@@ -182,7 +184,9 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
             }
             if (exception == null &&
                 await _world.EvaluateFunctionAsync<bool>("s => !s", success)
-                    .ContinueWith(task => task.IsFaulted || task.Result)
+                    .ContinueWith(
+                        task => task.IsFaulted || task.Result,
+                        TaskScheduler.Current)
                     .ConfigureAwait(false))
             {
                 if (success != null)

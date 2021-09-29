@@ -53,7 +53,8 @@ namespace PuppeteerSharp
                 }
                 var popupPage = await PageAsync().ConfigureAwait(false);
                 openerPage.OnPopup(popupPage);
-            });
+            },
+            TaskScheduler.Current);
 
             CloseTaskWrapper = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             IsInitialized = TargetInfo.Type != TargetType.Page || !string.IsNullOrEmpty(TargetInfo.Url);
