@@ -61,7 +61,8 @@ namespace PuppeteerSharp
                     const result = { __proto__: null};
                     result[propertyName] = object[propertyName];
                     return result;
-                }", propertyName).ConfigureAwait(false);
+                }", 
+                propertyName).ConfigureAwait(false);
             var properties = await objectHandle.GetPropertiesAsync().ConfigureAwait(false);
             properties.TryGetValue(propertyName, out var result);
             await objectHandle.DisposeAsync().ConfigureAwait(false);
