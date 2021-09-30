@@ -330,6 +330,8 @@ namespace PuppeteerSharp
         protected virtual void Dispose(bool disposing)
         {
             Close("Connection disposed");
+            Transport.MessageReceived -= Transport_MessageReceived;
+            Transport.Closed -= Transport_Closed;
             Transport.Dispose();
             _callbackQueue.Dispose();
         }
