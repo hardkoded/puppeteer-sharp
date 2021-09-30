@@ -149,7 +149,8 @@ namespace PuppeteerSharp
             await ExecutionContext.EvaluateFunctionAsync(
                 @"function(element) {
                     element.scrollIntoView({ block: 'center', inline: 'center', behavior: 'instant'});
-                }", this).ConfigureAwait(false);
+                }", 
+                this).ConfigureAwait(false);
 
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
             boundingBox = await BoundingBoxAsync().ConfigureAwait(false);
