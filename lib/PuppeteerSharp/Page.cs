@@ -2498,7 +2498,8 @@ namespace PuppeteerSharp
                             {
                                 _logger.LogError(task.Exception.ToString());
                             }
-                        }, TaskScheduler.Default)))
+                        }, 
+                        TaskScheduler.Default)))
                 .ConfigureAwait(false);
         }
 
