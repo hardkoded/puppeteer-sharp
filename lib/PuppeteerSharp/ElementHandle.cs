@@ -586,7 +586,8 @@ namespace PuppeteerSharp
                     if (visibleRatio !== 1.0)
                         element.scrollIntoView({block: 'center', inline: 'center', behavior: 'instant'});
                     return null;
-                }", Page.JavascriptEnabled).ConfigureAwait(false);
+                }", 
+                Page.JavascriptEnabled).ConfigureAwait(false);
 
             if (errorMessage != null)
             {
