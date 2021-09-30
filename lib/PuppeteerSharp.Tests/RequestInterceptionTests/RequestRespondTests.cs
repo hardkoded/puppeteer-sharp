@@ -145,5 +145,35 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.Equal("True", response.Headers["foo"]);
             Assert.Equal("Yo, page!", await Page.EvaluateExpressionAsync<string>("document.body.textContent"));
         }
+
+        [SkipBrowserFact(skipFirefox: true)]
+        public async Task ShouldAllowMultipleInterceptedRequestResponseHeaders()
+        {
+            await Page.SetRequestInterceptionAsync(true);
+            Page.Request += async (_, e) =>
+            {
+                await e.Request.RespondAsync(new ResponseData
+                {
+                    Status = HttpStatusCode.OK,
+                    Headers = new Dictionary<string, object>
+                    {
+                        ["foo"] = new bool[] { true, false },
+                        ["Set-Cookie"] = new string[] { "sessionId=abcdef", "specialId=123456" }
+                    },
+                    Body = "Yo, page!"
+                });
+            };
+
+            var response = await Page.GoToAsync(TestConstants.EmptyPage);
+            var cookies = await Page.GetCookiesAsync(TestConstants.EmptyPage);
+
+            Assert.Equal(HttpStatusCode.OK, response.Status);
+            Assert.Equal("True\nFalse", response.Headers["foo"]);
+            Assert.Equal("Yo, page!", await Page.EvaluateExpressionAsync<string>("document.body.textContent"));
+            Assert.Equal("specialId", cookies[0].Name);
+            Assert.Equal("123456", cookies[0].Value);
+            Assert.Equal("sessionId", cookies[1].Name);
+            Assert.Equal("abcdef", cookies[1].Value);
+        }
     }
 }
