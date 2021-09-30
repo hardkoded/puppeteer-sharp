@@ -469,7 +469,8 @@ namespace PuppeteerSharp
                         observer.observe(element);
                     });
                     return visibleRatio > 0;
-                }", this);
+                }", 
+                this);
 
         /// <summary>
         /// Triggers a `change` and `input` event once all the provided options have been selected.
