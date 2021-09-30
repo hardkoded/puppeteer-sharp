@@ -51,7 +51,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             }
         }
 
-        [Fact]
+        [PuppeteerFact(Timeout = -1)]
         public async Task Usage()
         {
             var outputFile = Path.Combine(BaseDirectory, "Usage.png");
@@ -90,7 +90,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         }
 
         [PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should clip rect")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldClipRect()
         {
             await using (var page = await Context.NewPageAsync())
@@ -115,7 +115,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             }
         }
 
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldClipScale()
         {
             await using (var page = await Context.NewPageAsync())
@@ -163,7 +163,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         }
 
         [PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should run in parallel")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldRunInParallel()
         {
             await using (var page = await Context.NewPageAsync())
@@ -305,7 +305,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         }
 
         [PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should work with odd clip size on Retina displays")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldWorkWithOddClipSizeOnRetinaDisplays()
         {
             await using (var page = await Context.NewPageAsync())
@@ -343,7 +343,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             }
         }
 
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public void ShouldInferScreenshotTypeFromName()
         {
             Assert.Equal(ScreenshotType.Jpeg, ScreenshotOptions.GetScreenshotTypeFromFile("Test.jpg"));

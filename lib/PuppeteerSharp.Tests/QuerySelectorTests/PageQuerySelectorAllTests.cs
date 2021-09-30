@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 using PuppeteerSharp.Xunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.QuerySelectorTests
 {
@@ -14,7 +15,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         }
 
         [PuppeteerTest("queryselector.spec.ts", "Page.$$", "should query existing elements")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldQueryExistingElements()
         {
             await Page.SetContentAsync("<div>A</div><br/><div>B</div>");
@@ -25,7 +26,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         }
 
         [PuppeteerTest("queryselector.spec.ts", "Page.$$", "should return empty array if nothing is found")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldReturnEmptyArrayIfNothingIsFound()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

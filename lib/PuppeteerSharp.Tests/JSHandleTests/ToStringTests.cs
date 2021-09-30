@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
@@ -13,7 +14,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         }
 
         [PuppeteerTest("jshandle.spec.ts", "JSHandle.toString", "should work for primitives")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldWorkForPrimitives()
         {
             var numberHandle = await Page.EvaluateExpressionHandleAsync("2");
@@ -23,7 +24,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         }
 
         [PuppeteerTest("jshandle.spec.ts", "JSHandle.toString", "should work for complicated objects")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldWorkForComplicatedObjects()
         {
             var aHandle = await Page.EvaluateExpressionHandleAsync("window");
@@ -31,7 +32,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         }
 
         [PuppeteerTest("jshandle.spec.ts", "JSHandle.toString", "should work with different subtypes")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldWorkWithDifferentSubtypes()
         {
             Assert.Equal("JSHandle@function", (await Page.EvaluateExpressionHandleAsync("(function(){})")).ToString());

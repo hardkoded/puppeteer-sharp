@@ -19,7 +19,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
         }
 
         [PuppeteerTest("launcher.spec.ts", "Puppeteer.connect", "should be able to connect multiple times to the same browser")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldBeAbleToConnectMultipleTimesToSameBrowser()
         {
             var options = new ConnectOptions()
@@ -41,7 +41,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
         }
 
         [PuppeteerTest("launcher.spec.ts", "Puppeteer.connect", "should be able to close remote browser")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldBeAbleToCloseRemoteBrowser()
         {
             var originalBrowser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
@@ -58,7 +58,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
         }
 
         [PuppeteerTest("launcher.spec.ts", "Puppeteer.connect", "should support ignoreHTTPSErrors option")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldSupportIgnoreHTTPSErrorsOption()
         {
             await using (var originalBrowser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions()))
@@ -88,7 +88,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
         }
 
         [PuppeteerTest("launcher.spec.ts", "Puppeteer.connect", "should support targetFilter option")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldSupportTargetFilter()
         {
             await using (var originalBrowser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions()))
@@ -197,7 +197,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             await browserTwo.CloseAsync();
         }
 
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldSupportCustomWebSocket()
         {
             var customSocketCreated = false;
@@ -217,7 +217,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             }
         }
 
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldSupportCustomTransport()
         {
             var customTransportCreated = false;

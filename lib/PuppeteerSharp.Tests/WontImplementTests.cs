@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
@@ -36,7 +37,7 @@ namespace PuppeteerSharp.Tests
         [PuppeteerTest("EventEmitter.spec.ts", "removeAllListeners", "removes every listener from all events by default")]
         [PuppeteerTest("EventEmitter.spec.ts", "removeAllListeners", "returns the emitter for chaining")]
         [PuppeteerTest("EventEmitter.spec.ts", "removeAllListeners", "can filter to remove only listeners for a given event name")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public void TheseTesstWontBeImplemented()
         {
         }
