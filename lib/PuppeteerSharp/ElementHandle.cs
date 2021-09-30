@@ -501,7 +501,8 @@ namespace PuppeteerSharp
                     element.dispatchEvent(new Event('input', { 'bubbles': true }));
                     element.dispatchEvent(new Event('change', { 'bubbles': true }));
                     return options.filter(option => option.selected).map(option => option.value);
-                }", new[] { values });
+                }", 
+                new[] { values });
 
         private async Task<(decimal x, decimal y)> ClickablePointAsync()
         {
