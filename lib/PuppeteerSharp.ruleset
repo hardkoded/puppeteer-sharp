@@ -42,7 +42,7 @@
     <Rule Id="SA1614" Action="None" /> <!-- Error SA1614: Element parameter documentation should have text (SA1614)-->
     <Rule Id="SA1627" Action="None" /> <!-- Error SA1627: The documentation text within the \'exception\' tag should not be empty. (SA1627)-->
     <Rule Id="SA1622" Action="None" /> <!-- Error SA1622: Generic type parameter documentation should have text. (SA1622)-->
-    <Rule Id="SA1116" Action="None" /> <!-- Error SA1116: The parameters should begin on the line after the declaration, whenever the parameter span across multiple lines (SA1116)-->
+    <Rule Id="SA1116" Action="Error" /> <!-- Error SA1116: The parameters should begin on the line after the declaration, whenever the parameter span across multiple lines (SA1116)-->
     <Rule Id="SA1111" Action="Error" /> <!-- Error SA1111: Closing parenthesis should be on line of last parameter (SA1111)-->
     <Rule Id="SA1505" Action="Error" /> <!-- Error SA1505: An opening brace should not be followed by a blank line. (SA1505) -->
     <Rule Id="SA1612" Action="Error" /> <!-- Error SA1612: The parameter documentation for 'filePaths' should be at position 2. (SA1612) -->

@@ -49,23 +49,25 @@ namespace PuppeteerSharp.Helpers
             var task = Task.Run(() => HandleAsyncMessage(callback, obj));
 
             // Unhandled error handler
-            task.ContinueWith(t =>
-            {
-                _logger.LogError(t.Exception, "Failed to complete async handling of SendAsync for {callback}", callback.Method);
-                callback.TaskWrapper.TrySetException(t.Exception!); // t.Exception is available since this runs only on faulted
-            },
-            CancellationToken.None,
-            TaskContinuationOptions.OnlyOnFaulted,
-            TaskScheduler.Default);
+            task.ContinueWith(
+                t =>
+                {
+                    _logger.LogError(t.Exception, "Failed to complete async handling of SendAsync for {callback}", callback.Method);
+                    callback.TaskWrapper.TrySetException(t.Exception!); // t.Exception is available since this runs only on faulted
+                },
+                CancellationToken.None,
+                TaskContinuationOptions.OnlyOnFaulted,
+                TaskScheduler.Default);
 
             // Always remove from the queue when done, regardless of outcome.
-            task.ContinueWith(_ =>
-            {
-                lock (_pendingTasks)
+            task.ContinueWith(
+                _ =>
                 {
-                    _pendingTasks.Remove(callback);
-                }
-            }, TaskScheduler.Default);
+                    lock (_pendingTasks)
+                    {
+                        _pendingTasks.Remove(callback);
+                    }
+                }, TaskScheduler.Default);
         }
 
         public void Dispose()

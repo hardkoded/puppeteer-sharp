@@ -49,23 +49,25 @@ namespace PuppeteerSharp
 
             _executionContextCallback = new TaskCompletionSource<ExecutionContext>(TaskCreationOptions.RunContinuationsAsynchronously);
 
-            _ = _client.SendAsync("Runtime.enable").ContinueWith(task =>
-            {
-                if (task.IsFaulted)
+            _ = _client.SendAsync("Runtime.enable").ContinueWith(
+                task =>
                 {
-                    _logger.LogError(task.Exception.Message);
-                }
-            },
-            TaskScheduler.Default);
+                    if (task.IsFaulted)
+                    {
+                        _logger.LogError(task.Exception.Message);
+                    }
+                },
+                TaskScheduler.Default);
 
-            _ = _client.SendAsync("Log.enable").ContinueWith(task =>
-            {
-                if (task.IsFaulted)
+            _ = _client.SendAsync("Log.enable").ContinueWith(
+                task =>
                 {
-                    _logger.LogError(task.Exception.Message);
-                }
-            },
-            TaskScheduler.Default);
+                    if (task.IsFaulted)
+                    {
+                        _logger.LogError(task.Exception.Message);
+                    }
+                },
+                TaskScheduler.Default);
         }
 
         /// <summary>
