@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 using PuppeteerSharp.Xunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
@@ -16,7 +17,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Page.Events.Request", "should fire for navigation requests")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldFireForNavigationRequests()
         {
             var requests = new List<Request>();
@@ -33,7 +34,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Page.Events.Request", "should fire for iframes")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldFireForIframes()
         {
             var requests = new List<Request>();
@@ -52,7 +53,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Page.Events.Request", "should fire for fetches")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldFireForFetches()
         {
             var requests = new List<Request>();

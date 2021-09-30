@@ -5,6 +5,7 @@ using Xunit;
 using Xunit.Abstractions;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Xunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.WaitTaskTests
 {
@@ -18,7 +19,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForXPath", "should support some fancy xpath")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldSupportSomeFancyXpath()
         {
             await Page.SetContentAsync("<p>red herring</p><p>hello  world  </p>");
@@ -27,7 +28,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForXPath", "should run in specified frame")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldRunInSpecifiedFrame()
         {
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
@@ -42,7 +43,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForXPath", "should throw when frame is detached")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldThrowWhenFrameIsDetached()
         {
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
@@ -54,7 +55,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForXPath", "hidden should wait for display: none")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task HiddenShouldWaitForDisplayNone()
         {
             var divHidden = false;
@@ -69,7 +70,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForXPath", "should return the element handle")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldReturnTheElementHandle()
         {
             var waitForXPath = Page.WaitForXPathAsync("//*[@class=\"zombo\"]");
@@ -78,7 +79,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForXPath", "should allow you to select a text node")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldAllowYouToSelectATextNode()
         {
             await Page.SetContentAsync("<div>some text</div>");
@@ -87,7 +88,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForXPath", "should allow you to select an element with single slash")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldAllowYouToSelectAnElementWithSingleSlash()
         {
             await Page.SetContentAsync("<div>some text</div>");
@@ -96,7 +97,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForXPath", "should respect timeout")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldRespectTimeout()
         {
             var exception = await Assert.ThrowsAsync<WaitTaskTimeoutException>(()

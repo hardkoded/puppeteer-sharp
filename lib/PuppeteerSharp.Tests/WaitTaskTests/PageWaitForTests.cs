@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
@@ -14,7 +15,7 @@ namespace PuppeteerSharp.Tests.WaitForTests
         }
 
         [PuppeteerTest("waittask.spec.ts", "Page.waitFor", "should wait for selector")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldWaitForSelector()
         {
             var found = false;
@@ -29,7 +30,7 @@ namespace PuppeteerSharp.Tests.WaitForTests
         }
 
         [PuppeteerTest("waittask.spec.ts", "Page.waitFor", "should wait for an xpath")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldWaitForAnXpath()
         {
             var found = false;
@@ -42,7 +43,7 @@ namespace PuppeteerSharp.Tests.WaitForTests
         }
 
         [PuppeteerTest("waittask.spec.ts", "Page.waitFor", "should not allow you to select an element with single slash xpath")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldNotAllowYouToSelectAnElementWithSingleSlashXpath()
         {
             await Page.SetContentAsync("<div>some text</div>");
@@ -52,7 +53,7 @@ namespace PuppeteerSharp.Tests.WaitForTests
         }
 
         [PuppeteerTest("waittask.spec.ts", "Page.waitFor", "should timeout")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldTimeout()
         {
             var startTime = DateTime.Now;
@@ -62,7 +63,7 @@ namespace PuppeteerSharp.Tests.WaitForTests
         }
 
         [PuppeteerTest("waittask.spec.ts", "Page.waitFor", "should work with multiline body")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldWorkWithMultilineBody()
         {
             var result = await Page.WaitForExpressionAsync(@"
@@ -72,14 +73,14 @@ namespace PuppeteerSharp.Tests.WaitForTests
         }
 
         [PuppeteerTest("waittask.spec.ts", "Page.waitFor", "should wait for predicate")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public Task ShouldWaitForPredicate()
             => Task.WhenAll(
                 Page.WaitForFunctionAsync("() => window.innerWidth < 100"),
                 Page.SetViewportAsync(new ViewPortOptions { Width = 10, Height = 10 }));
 
         [PuppeteerTest("waittask.spec.ts", "Page.waitFor", "should wait for predicate with arguments")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldWaitForPredicateWithArguments()
             => await Page.WaitForFunctionAsync("(arg1, arg2) => arg1 !== arg2", new WaitForFunctionOptions(), 1, 2);
     }

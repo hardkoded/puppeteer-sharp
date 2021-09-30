@@ -1,6 +1,7 @@
 using System;
 using System.Net;
 using System.Threading.Tasks;
+using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
@@ -15,7 +16,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.waitForResponse", "should work")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -33,7 +34,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.waitForResponse", "should work with predicate")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldWorkWithPredicate()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -51,7 +52,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.waitForResponse", "should respect timeout")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldRespectTimeout()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -65,7 +66,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.waitForResponse", "should respect default timeout")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldRespectDefaultTimeout()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -77,7 +78,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.waitForResponse", "should work with not timeout")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldWorkWithNoTimeout()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

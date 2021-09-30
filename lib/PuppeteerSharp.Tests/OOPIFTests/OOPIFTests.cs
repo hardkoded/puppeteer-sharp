@@ -18,7 +18,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         }
 
         [PuppeteerTest("oopif.spec.ts", "OOPIF", "should report oopif frames")]
-        [Fact(Skip = "Ignored on puppeteer")]
+        [PuppeteerFact(Skip = "Ignored on puppeteer")]
         public async Task ShouldReportOopifFrames()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/dynamic-oopif.html");

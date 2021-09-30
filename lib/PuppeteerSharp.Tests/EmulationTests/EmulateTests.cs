@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
@@ -13,7 +14,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
         }
 
         [PuppeteerTest("emulation.spec.ts", "Page.emulate", "should work")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/mobile.html");
@@ -24,7 +25,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
         }
 
         [PuppeteerTest("emulation.spec.ts", "Page.emulate", "should support clicking")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldSupportClicking()
         {
             await Page.EmulateAsync(TestConstants.IPhone);

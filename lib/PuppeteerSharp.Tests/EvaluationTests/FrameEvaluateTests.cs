@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
+using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
@@ -14,7 +15,7 @@ namespace PuppeteerSharp.Tests.EvaluationTests
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Frame.evaluate", "should have different execution contexts")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldHaveDifferentExecutionContexts()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -32,7 +33,7 @@ namespace PuppeteerSharp.Tests.EvaluationTests
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Frame.evaluate", "should execute after cross-site navigation")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldExecuteAfterCrossSiteNavigation()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

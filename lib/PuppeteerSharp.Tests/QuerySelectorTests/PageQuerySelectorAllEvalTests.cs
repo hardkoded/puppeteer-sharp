@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
@@ -13,7 +14,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("queryselector.spec.ts", "Page.$$eval", "should work")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldWork()
         {
             await Page.SetContentAsync("<div>hello</div><div>beautiful</div><div>world!</div>");
@@ -21,7 +22,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(3, divsCount);
         }
 
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldWorkWithAwaitedElements()
         {
             await Page.SetContentAsync("<div>hello</div><div>beautiful</div><div>world!</div>");

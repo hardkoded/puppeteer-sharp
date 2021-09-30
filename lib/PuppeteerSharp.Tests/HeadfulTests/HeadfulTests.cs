@@ -102,7 +102,7 @@ namespace PuppeteerSharp.Tests.HeadfulTests
         }
 
         [PuppeteerTest("headful.spec.ts", "HEADFUL", "OOPIF: should report google.com frame")]
-        [Fact(Skip = "TODO: Support OOOPIF. @see https://github.com/GoogleChrome/puppeteer/issues/2548")]
+        [PuppeteerFact(Skip = "TODO: Support OOOPIF. @see https://github.com/GoogleChrome/puppeteer/issues/2548")]
         public async Task OOPIFShouldReportGoogleComFrame()
         {
             // https://google.com is isolated by default in Chromium embedder.

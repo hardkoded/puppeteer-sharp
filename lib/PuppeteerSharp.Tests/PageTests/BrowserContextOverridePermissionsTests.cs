@@ -19,7 +19,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 name);
 
         [PuppeteerTest("page.spec.ts", "BrowserContext.overridePermissions", "should be prompt by default")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldBePromptByDefault()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

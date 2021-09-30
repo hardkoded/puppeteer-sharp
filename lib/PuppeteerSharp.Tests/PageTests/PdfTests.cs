@@ -2,6 +2,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using PuppeteerSharp.Media;
+using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
@@ -15,7 +16,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Fact]
+        [PuppeteerFact(Timeout = -1)]
         public async Task Usage()
         {
             var outputFile = Path.Combine(BaseDirectory, "Usage.pdf");
@@ -40,7 +41,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "printing to PDF", "can print to PDF and save to file")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldBeAbleToSaveFile()
         {
             var outputFile = Path.Combine(BaseDirectory, "output.pdf");
@@ -58,7 +59,7 @@ namespace PuppeteerSharp.Tests.PageTests
             }
         }
 
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public void PdfOptionsShouldBeSerializable()
         {
             var pdfOptions = new PdfOptions

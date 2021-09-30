@@ -18,7 +18,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         }
 
         [PuppeteerTest("browsercontext.spec.ts", "BrowserContext", "should have default context")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldHaveDefaultContext()
         {
             Assert.Single(Browser.BrowserContexts());
@@ -30,7 +30,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         }
 
         [PuppeteerTest("browsercontext.spec.ts", "BrowserContext", "should create new incognito context")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldCreateNewIncognitoContext()
         {
             Assert.Single(Browser.BrowserContexts());
@@ -43,7 +43,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         }
 
         [PuppeteerTest("browsercontext.spec.ts", "BrowserContext", "should close all belonging targets once closing context")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldCloseAllBelongingTargetsOnceClosingContext()
         {
             Assert.Single((await Browser.PagesAsync()));
@@ -97,7 +97,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         }
 
         [PuppeteerTest("browsercontext.spec.ts", "BrowserContext", "should isolate local storage and cookies")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldIsolateLocalStorageAndCookies()
         {
             // Create two incognito contexts.
@@ -174,7 +174,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         }
 
         [PuppeteerTest("browsercontext.spec.ts", "BrowserContext", "should timeout waiting for non existant target")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldTimeoutWaitingForNonExistantTarget()
         {
             var context = await Browser.CreateIncognitoBrowserContextAsync();
