@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using PuppeteerSharp.Tests.Attributes;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -11,7 +12,7 @@ namespace PuppeteerSharp.Tests.Issues
         {
         }
 
-        [Fact(Timeout = 30000)]
+        [PuppeteerFact]
         public async Task ShouldAllowSyncClose()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -28,7 +29,7 @@ namespace PuppeteerSharp.Tests.Issues
             }
         }
 
-        [Fact(Timeout = 30000)]
+        [PuppeteerFact]
         public async Task ShouldAllowSyncPageMethod()
         {
             var options = TestConstants.DefaultBrowserOptions();

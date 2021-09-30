@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.Issues
         {
         }
 
-        [Fact]
+        [PuppeteerFact(Timeout = -1)]
         public async Task ShouldWorkInSlowMo()
         {
             var options = TestConstants.DefaultBrowserOptions();

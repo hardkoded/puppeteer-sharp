@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
@@ -26,7 +27,7 @@ namespace PuppeteerSharp.Tests
         [PuppeteerTest("tracing.spec.ts", "Tracing", "should return null in case of Buffer error")]
         [PuppeteerTest("tracing.spec.ts", "Tracing", "should properly fail if readProtocolStream errors out")]
         [PuppeteerTest("fixtures.spec.ts", "Fixtures", "dumpio option should work with pipe option")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public void TheseTesstWontBeImplemented()
         {
         }

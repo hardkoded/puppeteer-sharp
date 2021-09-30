@@ -5,7 +5,7 @@ namespace PuppeteerSharp.Tests.Attributes
     /// <summary>
     /// Skip browsers.
     /// </summary>
-    public class SkipBrowserFact : FactAttribute
+    public class SkipBrowserFact : PuppeteerFact
     {
         /// <summary>
         /// Creates a new <seealso cref="SkipBrowserFact"/>
@@ -16,8 +16,6 @@ namespace PuppeteerSharp.Tests.Attributes
             bool skipFirefox = false,
             bool skipChromium = false)
         {
-            Timeout = TestConstants.DefaultTestTimeout;
-
             if (SkipBrowser(skipFirefox, skipChromium))
             {
                 Skip = "Skipped by browser";

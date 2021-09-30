@@ -97,7 +97,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.close", "should set the page close state")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldSetThePageCloseState()
         {
             Assert.False(Page.IsClosed);
@@ -124,7 +124,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.DoesNotContain("Timeout", exception.Message);
         }
 
-        [Fact(Timeout = 10000)]
+        [PuppeteerFact(Timeout = 10000)]
         public async Task ShouldCloseWhenConnectionBreaksPrematurely()
         {
             Browser.Connection.Dispose();

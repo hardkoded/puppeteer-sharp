@@ -17,7 +17,7 @@ namespace PuppeteerSharp.Tests.DialogTests
         }
 
         [PuppeteerTest("dialog.spec.ts", "Page.Events.Dialog", "should fire")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldFire()
         {
             Page.Dialog += async (_, e) =>
@@ -50,7 +50,7 @@ namespace PuppeteerSharp.Tests.DialogTests
         }
 
         [PuppeteerTest("dialog.spec.ts", "Page.Events.Dialog", "should dismiss the prompt")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldDismissThePrompt()
         {
             Page.Dialog += async (_, e) =>

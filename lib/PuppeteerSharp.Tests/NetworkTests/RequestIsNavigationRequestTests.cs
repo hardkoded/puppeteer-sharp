@@ -56,7 +56,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Request.isNavigationRequest", "should work when navigating to image")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldWorkWhenNavigatingToImage()
         {
             var requests = new List<Request>();
