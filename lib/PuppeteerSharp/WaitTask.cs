@@ -250,7 +250,6 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
             }
 
             _cts.Dispose();
-            _timeoutTimer?.Dispose();
 
             _isDisposing = true;
         }
