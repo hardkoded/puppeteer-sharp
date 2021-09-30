@@ -498,6 +498,100 @@ namespace PuppeteerSharp
                 return options.filter(option => option.selected).map(option => option.value);
             }", new[] { values });
 
+        /// <summary>
+        /// This method creates and captures a dragevent from the element.
+        /// </summary>
+        /// <param name="x">X coordinate</param>
+        /// <param name="y">Y coordinate</param>
+        /// <returns>A Task that resolves when the message was confirmed by the browser with the drag data</returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<DragData> DragAsync(decimal x, decimal y)
+        {
+            if (!Page.IsDragInterceptionEnabled)
+            {
+                throw new PuppeteerException("Drag Interception is not enabled!");
+            }
+
+            await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
+            var start = await ClickablePointAsync().ConfigureAwait(false);
+            return await Page.Mouse.DragAsync(start.x, start.y, x, y).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Dispatches a `dragenter` event.
+        /// </summary>
+        /// <param name="data">Drag data containing items and operations mask.</param>
+        /// <returns>A Task that resolves when the message was confirmed by the browser</returns>
+        public async Task DragEnterAsync(DragData data)
+        {
+            if (!Page.IsDragInterceptionEnabled)
+            {
+                throw new PuppeteerException("Drag Interception is not enabled!");
+            }
+
+            await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
+            var start = await ClickablePointAsync().ConfigureAwait(false);
+            await Page.Mouse.DragEnterAsync(start.x, start.y, data).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Dispatches a `dragover` event.
+        /// </summary>
+        /// <param name="data">Drag data containing items and operations mask.</param>
+        /// <returns>A Task that resolves when the message was confirmed by the browser</returns>
+        public async Task DragOverAsync(DragData data)
+        {
+            if (!Page.IsDragInterceptionEnabled)
+            {
+                throw new PuppeteerException("Drag Interception is not enabled!");
+            }
+
+            await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
+            var start = await ClickablePointAsync().ConfigureAwait(false);
+            await Page.Mouse.DragOverAsync(start.x, start.y, data).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs a dragenter, dragover, and drop in sequence.
+        /// </summary>
+        /// <param name="data">Drag data containing items and operations mask.</param>
+        /// <returns>A Task that resolves when the message was confirmed by the browser</returns>
+        public async Task DropAsync(DragData data)
+        {
+            if (!Page.IsDragInterceptionEnabled)
+            {
+                throw new PuppeteerException("Drag Interception is not enabled!");
+            }
+
+            await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
+            var start = await ClickablePointAsync().ConfigureAwait(false);
+            await Page.Mouse.DropAsync(start.x, start.y, data).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs a drag, dragenter, dragover, and drop in sequence.
+        /// </summary>
+        /// <param name="target">Target element</param>
+        /// <param name="delay">If specified, is the time to wait between `dragover` and `drop` in milliseconds.</param>
+        /// <returns>A Task that resolves when the message was confirmed by the browser</returns>
+        public async Task DragAndDropAsync(ElementHandle target, int delay = 0)
+        {
+            if (target == null)
+            {
+                throw new ArgumentException("Target cannot be null", nameof(target));
+            }
+
+            if (!Page.IsDragInterceptionEnabled)
+            {
+                throw new PuppeteerException("Drag Interception is not enabled!");
+            }
+
+            await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
+            var start = await ClickablePointAsync().ConfigureAwait(false);
+            var targetPoint = await target.ClickablePointAsync().ConfigureAwait(false);
+            await Page.Mouse.DragAndDropAsync(start.x, start.y, targetPoint.x, targetPoint.y, delay).ConfigureAwait(false);
+        }
+
         private async Task<(decimal x, decimal y)> ClickablePointAsync()
         {
             GetContentQuadsResponse result = null;
