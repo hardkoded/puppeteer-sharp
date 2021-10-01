@@ -13,7 +13,7 @@ Use `BrowserFetcherOptions` to specify the full path for where to download Chrom
 
 ```
 var browserFetcherOptions = new BrowserFetcherOptions { Path = downloadPath };
-var browserFetcher = new BrowserFetcher(browserFetcherOptions);
+using var browserFetcher = new BrowserFetcher(browserFetcherOptions);
 await browserFetcher.DownloadAsync(BrowserFetcher.DefaultRevision);
 ```
 

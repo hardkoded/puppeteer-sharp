@@ -158,6 +158,7 @@ namespace PuppeteerSharp.Transport
             // Make sure any outstanding asynchronous read operation is cancelled.
             StopReading();
             _client?.Dispose();
+            _socketQueue.Dispose();
         }
 
         #endregion

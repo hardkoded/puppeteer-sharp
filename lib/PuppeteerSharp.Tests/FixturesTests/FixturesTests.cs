@@ -19,9 +19,10 @@ namespace PuppeteerSharp.Tests.FixturesTests
         public async Task ShouldDumpBrowserProcessStderr()
         {
             var success = false;
+            using var browserFetcher = new BrowserFetcher(Product.Chrome);
             var process = GetTestAppProcess(
                 "PuppeteerSharp.Tests.DumpIO",
-                $"\"{(await new BrowserFetcher(Product.Chrome).GetRevisionInfoAsync()).ExecutablePath}\"");
+                $"\"{(await browserFetcher.GetRevisionInfoAsync().ConfigureAwait(false)).ExecutablePath}\"");
 
             process.ErrorDataReceived += (_, e) =>
             {
@@ -38,8 +39,9 @@ namespace PuppeteerSharp.Tests.FixturesTests
         public async Task ShouldCloseTheBrowserWhenTheConnectedProcessCloses()
         {
             var browserClosedTaskWrapper = new TaskCompletionSource<bool>();
+            using var browserFetcher = new BrowserFetcher(Product.Chrome);
             var ChromiumLauncher = new ChromiumLauncher(
-                (await new BrowserFetcher(Product.Chrome).GetRevisionInfoAsync()).ExecutablePath,
+                (await browserFetcher.GetRevisionInfoAsync()).ExecutablePath,
                 new LaunchOptions { Headless = true });
 
             await ChromiumLauncher.StartAsync().ConfigureAwait(false);

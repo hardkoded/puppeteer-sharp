@@ -61,7 +61,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
                 fileInfo.Delete();
             }
             #region ScreenshotAsync
-            var browserFetcher = new BrowserFetcher();
+            using var browserFetcher = new BrowserFetcher();
             await browserFetcher.DownloadAsync();
             await using var browser = await Puppeteer.LaunchAsync(
                 new LaunchOptions { Headless = true });

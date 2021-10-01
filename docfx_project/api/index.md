@@ -7,7 +7,8 @@ Puppeteer Sharp is a .NET port of the official [Node.JS Puppeteer API](https://g
 ## Take screenshots
 
 ```cs
-await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
+using var browserFetcher = new BrowserFetcher();
+await browserFetcher.DownloadAsync(BrowserFetcher.DefaultRevision);
 var browser = await Puppeteer.LaunchAsync(new LaunchOptions
 {
     Headless = true
@@ -45,7 +46,8 @@ await page.PdfAsync(outputFile);
 ### Generate PDF files with custom options
 
 ```cs
-await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
+using var browserFetcher = new BrowserFetcher();
+await browserFetcher.DownloadAsync(BrowserFetcher.DefaultRevision);
 var browser = await Puppeteer.LaunchAsync(new LaunchOptions
 {
     Headless = true
