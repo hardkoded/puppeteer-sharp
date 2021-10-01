@@ -8,6 +8,7 @@ using Xunit.Abstractions;
 using PuppeteerSharp.Helpers.Linux;
 using System.Collections.Generic;
 using PuppeteerSharp.Xunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.LauncherTests
 {
@@ -23,10 +24,10 @@ namespace PuppeteerSharp.Tests.LauncherTests
         }
 
         [PuppeteerTest("launcher.spec.ts", "BrowserFetcher", "should download and extract chrome linux binary")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldDownloadAndExtractLinuxBinary()
         {
-            var browserFetcher = Puppeteer.CreateBrowserFetcher(new BrowserFetcherOptions
+            using var browserFetcher = Puppeteer.CreateBrowserFetcher(new BrowserFetcherOptions
             {
                 Platform = Platform.Linux,
                 Path = _downloadsFolder,
@@ -73,10 +74,10 @@ namespace PuppeteerSharp.Tests.LauncherTests
         }
 
         [PuppeteerTest("launcher.spec.ts", "BrowserFetcher", "should download and extract firefox linux binary")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldDownloadAndExtractFirefoxLinuxBinary()
         {
-            var browserFetcher = Puppeteer.CreateBrowserFetcher(new BrowserFetcherOptions
+            using var browserFetcher = Puppeteer.CreateBrowserFetcher(new BrowserFetcherOptions
             {
                 Platform = Platform.Linux,
                 Path = _downloadsFolder,

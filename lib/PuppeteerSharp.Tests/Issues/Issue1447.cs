@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
+using PuppeteerSharp.Tests.Attributes;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -10,7 +11,7 @@ namespace PuppeteerSharp.Tests.Issues
     {
         public Issue1447(ITestOutputHelper output) : base(output) { }
 
-        [Fact(Skip = "It's an example")]
+        [PuppeteerFact(Skip = "It's an example")]
         public async Task Example()
         {
             var opts = new LaunchOptions

@@ -17,7 +17,7 @@ namespace PuppeteerSharp.Tests.ClickTests
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click the button")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldClickTheButton()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
@@ -26,7 +26,7 @@ namespace PuppeteerSharp.Tests.ClickTests
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click svg")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldClickSvg()
         {
             await Page.SetContentAsync($@"
@@ -49,7 +49,7 @@ namespace PuppeteerSharp.Tests.ClickTests
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click on a span with an inline element inside")]
-        [Fact(Skip = "See https://github.com/GoogleChrome/puppeteer/issues/4281")]
+        [PuppeteerFact(Skip = "See https://github.com/GoogleChrome/puppeteer/issues/4281")]
         public async Task ShouldClickOnASpanWithAnInlineElementInside()
         {
             await Page.SetContentAsync($@"
@@ -68,7 +68,7 @@ namespace PuppeteerSharp.Tests.ClickTests
         /// This test is called ShouldNotThrowUnhandledPromiseRejectionWhenPageCloses in puppeteer.
         /// </summary>
         [PuppeteerTest("click.spec.ts", "Page.click", "should not throw UnhandledPromiseRejection when page closes")]
-        [Fact(Skip = "We don't need this test")]
+        [PuppeteerFact(Skip = "We don't need this test")]
         public async Task ShouldGracefullyFailWhenPageCloses()
         {
             var newPage = await Browser.NewPageAsync();
@@ -78,7 +78,7 @@ namespace PuppeteerSharp.Tests.ClickTests
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click the button after navigation ")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldClickTheButtonAfterNavigation()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
@@ -102,7 +102,7 @@ namespace PuppeteerSharp.Tests.ClickTests
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click when one of inline box children is outside of viewport")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldClickWhenOneOfInlineBoxChildrenIsOutsideOfViewport()
         {
             await Page.SetContentAsync($@"
@@ -120,7 +120,7 @@ namespace PuppeteerSharp.Tests.ClickTests
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should select the text by triple clicking")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldSelectTheTextByTripleClicking()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -140,7 +140,7 @@ namespace PuppeteerSharp.Tests.ClickTests
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click offscreen buttons")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldClickOffscreenButtons()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/offscreenbuttons.html");
@@ -170,7 +170,7 @@ namespace PuppeteerSharp.Tests.ClickTests
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click wrapped links")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldClickWrappedLinks()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/wrappedlink.html");
@@ -179,7 +179,7 @@ namespace PuppeteerSharp.Tests.ClickTests
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click on checkbox input and toggle")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldClickOnCheckboxInputAndToggle()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/checkbox.html");
@@ -218,7 +218,7 @@ namespace PuppeteerSharp.Tests.ClickTests
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should fail to click a missing button")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldFailToClickAMissingButton()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
@@ -240,7 +240,7 @@ namespace PuppeteerSharp.Tests.ClickTests
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should scroll and click the button")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldScrollAndClickTheButton()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
@@ -251,7 +251,7 @@ namespace PuppeteerSharp.Tests.ClickTests
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should double click the button")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldDoubleClickTheButton()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
@@ -269,7 +269,7 @@ namespace PuppeteerSharp.Tests.ClickTests
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click a partially obscured button")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldClickAPartiallyObscuredButton()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
@@ -284,7 +284,7 @@ namespace PuppeteerSharp.Tests.ClickTests
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click a rotated button")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldClickARotatedButton()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/rotatedButton.html");
@@ -293,7 +293,7 @@ namespace PuppeteerSharp.Tests.ClickTests
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should fire contextmenu event on right click")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldFireContextmenuEventOnRightClick()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
@@ -303,7 +303,7 @@ namespace PuppeteerSharp.Tests.ClickTests
 
         // @see https://github.com/GoogleChrome/puppeteer/issues/206
         [PuppeteerTest("click.spec.ts", "Page.click", "should click links which cause navigation")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldClickLinksWhichCauseNavigation()
         {
             await Page.SetContentAsync($"<a href=\"{TestConstants.EmptyPage}\">empty.html</a>");
@@ -325,7 +325,7 @@ namespace PuppeteerSharp.Tests.ClickTests
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click the button with fixed position inside an iframe")]
-        [Fact(Skip = "see https://github.com/GoogleChrome/puppeteer/issues/4110")]
+        [PuppeteerFact(Skip = "see https://github.com/GoogleChrome/puppeteer/issues/4110")]
         public async Task ShouldClickTheButtonWithFixedPositionInsideAnIframe()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

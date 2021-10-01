@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using PuppeteerSharp.Tests.Attributes;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -11,7 +12,7 @@ namespace PuppeteerSharp.Tests.Issues
         {
         }
 
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task PdfDarkskyShouldWork()
         {
             await using (var page = await Context.NewPageAsync())

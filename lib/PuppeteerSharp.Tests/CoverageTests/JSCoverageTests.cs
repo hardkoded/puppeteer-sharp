@@ -173,7 +173,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
         }
 
         [PuppeteerTest("coverage.spec.ts", "JSCoverage", "should not hang when there is a debugger statement")]
-        [Fact(Skip = "Skipped in puppeteer")]
+        [PuppeteerFact(Skip = "Skipped in puppeteer")]
         public async Task ShouldNotHangWhenThereIsADebuggerStatement()
         {
             await Page.Coverage.StartJSCoverageAsync();

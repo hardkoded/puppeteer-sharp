@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Tests
         {
             await base.InitializeAsync();
             Page = await Context.NewPageAsync();
-            Page.DefaultTimeout = TestConstants.DefaultPuppeteerTimeout;
+            Page.DefaultTimeout = System.Diagnostics.Debugger.IsAttached ? TestConstants.DebuggerAttachedTestTimeout : TestConstants.DefaultPuppeteerTimeout;
         }
 
         public override async Task DisposeAsync()

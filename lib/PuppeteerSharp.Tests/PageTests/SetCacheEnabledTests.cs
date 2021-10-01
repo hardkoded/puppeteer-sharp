@@ -16,7 +16,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.setCacheEnabled", "should enable or disable the cache based on the state passed")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldEnableOrDisableTheCacheBasedOnTheStatePassed()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");

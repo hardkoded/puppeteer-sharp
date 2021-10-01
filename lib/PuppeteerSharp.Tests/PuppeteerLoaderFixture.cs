@@ -21,7 +21,8 @@ namespace PuppeteerSharp.Tests
 
         private async Task SetupAsync()
         {
-            var downloaderTask = new BrowserFetcher(TestConstants.IsChrome ? Product.Chrome : Product.Firefox).DownloadAsync();
+            using var browserFetcher = new BrowserFetcher(TestConstants.IsChrome ? Product.Chrome : Product.Firefox);
+            var downloaderTask = browserFetcher.DownloadAsync();
 
             Server = SimpleServer.Create(TestConstants.Port, TestUtils.FindParentDirectory("PuppeteerSharp.TestServer"));
             HttpsServer = SimpleServer.CreateHttps(TestConstants.HttpsPort, TestUtils.FindParentDirectory("PuppeteerSharp.TestServer"));

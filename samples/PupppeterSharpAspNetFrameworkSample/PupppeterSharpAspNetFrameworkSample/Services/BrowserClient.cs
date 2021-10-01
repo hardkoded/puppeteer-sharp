@@ -11,7 +11,7 @@ namespace PupppeterSharpAspNetFrameworkSample.Services
 
         public static async Task<string> GetTextAsync(string url)
         {
-            var browserFetcher = new BrowserFetcher(new BrowserFetcherOptions()
+            using var browserFetcher = new BrowserFetcher(new BrowserFetcherOptions()
             {
                 Path = HostPath
             });
@@ -23,7 +23,7 @@ namespace PupppeterSharpAspNetFrameworkSample.Services
                 TransportFactory = AspNetWebSocketTransport.AspNetTransportFactory,
                 ExecutablePath = browserFetcher.GetExecutablePath(BrowserFetcher.DefaultRevision)
             }).ConfigureAwait(false))
-            using(var page = await browser.NewPageAsync().ConfigureAwait(false))
+            using (var page = await browser.NewPageAsync().ConfigureAwait(false))
             {
                 var response = await page.GoToAsync(url).ConfigureAwait(false);
                 return await response.TextAsync().ConfigureAwait(false);

@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         }
 
         [PuppeteerTest("screenshot.spec.ts", "ElementHandle.screenshot", "should work")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldWork()
         {
             #region SetViewportAsync
@@ -33,7 +33,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         }
 
         [PuppeteerTest("screenshot.spec.ts", "ElementHandle.screenshot", "should take into account padding and border")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldTakeIntoAccountPaddingAndBorder()
         {
             await Page.SetViewportAsync(new ViewPortOptions
@@ -88,7 +88,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
                 await Page.EvaluateExpressionAsync("({ w: window.innerWidth, h: window.innerHeight })"));
         }
 
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldScrollElementIntoView()
         {
             await Page.SetViewportAsync(new ViewPortOptions
@@ -118,7 +118,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             Assert.True(ScreenshotHelper.PixelMatch("screenshot-element-scrolled-into-view.png", screenshot));
         }
 
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldWorkWithARotatedElement()
         {
             await Page.SetViewportAsync(new ViewPortOptions
@@ -151,7 +151,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             Assert.Equal("Node is either not visible or not an HTMLElement", exception.Message);
         }
 
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldNotHangWithZeroWidthHeightElement()
         {
             await Page.SetContentAsync(@"<div style='width: 50px; height: 0'></div>");
@@ -160,7 +160,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             Assert.Equal("Node has 0 height.", exception.Message);
         }
 
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [PuppeteerFact]
         public async Task ShouldWorkForAnElementWithFractionalDimensions()
         {
             await Page.SetContentAsync("<div style=\"width:48.51px;height:19.8px;border:1px solid black;\"></div>");
