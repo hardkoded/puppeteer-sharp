@@ -30,9 +30,9 @@ namespace PuppeteerSharp.Input
         /// <summary>
         /// Dispatches a <c>mousemove</c> event.
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="options"></param>
+        /// <param name="x">The destination mouse X coordinate.</param>
+        /// <param name="y">The destination mouse Y coordinate.</param>
+        /// <param name="options">Options to apply to the move operation.</param>
         /// <returns>Task</returns>
         public async Task MoveAsync(decimal x, decimal y, MoveOptions options = null)
         {
@@ -60,9 +60,9 @@ namespace PuppeteerSharp.Input
         /// <summary>
         /// Shortcut for <see cref="MoveAsync(decimal, decimal, MoveOptions)"/>, <see cref="DownAsync(ClickOptions)"/> and <see cref="UpAsync(ClickOptions)"/>
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="options"></param>
+        /// <param name="x">The target mouse X location to click.</param>
+        /// <param name="y">The target mouse Y location to click.</param>
+        /// <param name="options">Options to apply to the click operation.</param>
         /// <returns>Task</returns>
         public async Task ClickAsync(decimal x, decimal y, ClickOptions options = null)
         {
@@ -89,7 +89,7 @@ namespace PuppeteerSharp.Input
         /// <summary>
         /// Dispatches a <c>mousedown</c> event.
         /// </summary>
-        /// <param name="options"></param>
+        /// <param name="options">Options to apply to the mouse down operation.</param>
         /// <returns>Task</returns>
         public Task DownAsync(ClickOptions options = null)
         {
@@ -111,7 +111,7 @@ namespace PuppeteerSharp.Input
         /// <summary>
         /// Dispatches a <c>mouseup</c> event.
         /// </summary>
-        /// <param name="options"></param>
+        /// <param name="options">Options to apply to the mouse up operation.</param>
         /// <returns>Task</returns>
         public Task UpAsync(ClickOptions options = null)
         {

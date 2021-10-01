@@ -26,8 +26,8 @@ namespace PuppeteerSharp.Input
         /// <summary>
         /// Dispatches a <c>touchstart</c> and <c>touchend</c> event.
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
+        /// <param name="x">The touch X location.</param>
+        /// <param name="y">The touch Y location.</param>
         /// <returns>Task</returns>
         /// <seealso cref="Page.TapAsync(string)"/>
         public async Task TapAsync(decimal x, decimal y)
