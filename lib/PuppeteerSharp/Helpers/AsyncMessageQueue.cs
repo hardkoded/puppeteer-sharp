@@ -67,7 +67,8 @@ namespace PuppeteerSharp.Helpers
                     {
                         _pendingTasks.Remove(callback);
                     }
-                }, TaskScheduler.Default);
+                }, 
+                TaskScheduler.Default);
         }
 
         public void Dispose()
