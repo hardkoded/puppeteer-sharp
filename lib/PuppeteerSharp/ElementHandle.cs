@@ -149,7 +149,7 @@ namespace PuppeteerSharp
             await ExecutionContext.EvaluateFunctionAsync(
                 @"function(element) {
                     element.scrollIntoView({ block: 'center', inline: 'center', behavior: 'instant'});
-                }", 
+                }",
                 this).ConfigureAwait(false);
 
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
@@ -469,7 +469,7 @@ namespace PuppeteerSharp
                         observer.observe(element);
                     });
                     return visibleRatio > 0;
-                }", 
+                }",
                 this);
 
         /// <summary>
@@ -501,7 +501,7 @@ namespace PuppeteerSharp
                     element.dispatchEvent(new Event('input', { 'bubbles': true }));
                     element.dispatchEvent(new Event('change', { 'bubbles': true }));
                     return options.filter(option => option.selected).map(option => option.value);
-                }", 
+                }",
                 new[] { values });
 
         private async Task<(decimal x, decimal y)> ClickablePointAsync()
@@ -586,7 +586,7 @@ namespace PuppeteerSharp
                     if (visibleRatio !== 1.0)
                         element.scrollIntoView({block: 'center', inline: 'center', behavior: 'instant'});
                     return null;
-                }", 
+                }",
                 Page.JavascriptEnabled).ConfigureAwait(false);
 
             if (errorMessage != null)

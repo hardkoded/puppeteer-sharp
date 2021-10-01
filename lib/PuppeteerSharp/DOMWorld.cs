@@ -149,7 +149,7 @@ namespace PuppeteerSharp
                     document.open();
                     document.write(html);
                     document.close();
-                }", 
+                }",
                 html).ConfigureAwait(false);
 
             using (var watcher = new LifecycleWatcher(_frameManager, Frame, waitUntil, timeout))
