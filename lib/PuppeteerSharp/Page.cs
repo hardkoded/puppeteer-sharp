@@ -370,7 +370,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// `true` if drag events are being intercepted, `false` otherwise.
         /// </summary>
-        public bool IsDragInterceptionEnabled { get; internal set; }
+        public bool IsDragInterceptionEnabled { get; private set; }
 
         internal bool JavascriptEnabled { get; set; } = true;
 
