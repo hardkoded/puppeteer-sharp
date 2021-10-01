@@ -243,8 +243,7 @@ namespace PuppeteerSharp.Input
         /// <param name="endX">End X coordinate</param>
         /// <param name="endY">End Y coordinate</param>
         /// <param name="delay">If specified, is the time to wait between `dragover` and `drop` in milliseconds.</param>
-        /// <returns></returns>
-        /// <exception cref="System.NotImplementedException"></exception>
+        /// <returns>A Task that resolves when the message was confirmed by the browser</returns>
         public async Task DragAndDropAsync(decimal startX, decimal startY, decimal endX, decimal endY, int delay = 0)
         {
             var data = await DragAsync(startX, startY, endX, endY).ConfigureAwait(false);
