@@ -10,7 +10,8 @@ You need to take an screenshot of a page.
 Use `Page.ScreenshotAsync` passing a file path as an argument.
 
 ```cs
-new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
+using var browserFetcher = new BrowserFetcher();
+await browserFetcher.DownloadAsync(BrowserFetcher.DefaultRevision);
 
 var url = "https://www.somepage.com";
 var file = ".\\somepage.jpg";

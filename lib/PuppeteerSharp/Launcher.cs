@@ -208,7 +208,7 @@ namespace PuppeteerSharp
             }
 
             var revision = Environment.GetEnvironmentVariable("PUPPETEER_CHROMIUM_REVISION");
-            var browserFetcher = new BrowserFetcher(_product);
+            using var browserFetcher = new BrowserFetcher(_product);
             RevisionInfo revisionInfo;
 
             if (!string.IsNullOrEmpty(revision))

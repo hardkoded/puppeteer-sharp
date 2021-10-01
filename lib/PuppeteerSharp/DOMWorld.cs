@@ -352,26 +352,38 @@ namespace PuppeteerSharp
         internal Task<ElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
             => WaitForSelectorOrXPathAsync(xpath, true, options);
 
-        internal Task<JSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args)
-            => new WaitTask(
-                this,
-                script,
-                false,
-                "function",
-                options.Polling,
-                options.PollingInterval,
-                options.Timeout ?? _timeoutSettings.Timeout,
-                args).Task;
+        internal async Task<JSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args)
+        {
+            using var waitTask = new WaitTask(
+                 this,
+                 script,
+                 false,
+                 "function",
+                 options.Polling,
+                 options.PollingInterval,
+                 options.Timeout ?? _timeoutSettings.Timeout,
+                 args);
 
-        internal Task<JSHandle> WaitForExpressionAsync(string script, WaitForFunctionOptions options)
-            => new WaitTask(
+            return await waitTask
+                .Task
+                .ConfigureAwait(false);
+        }
+
+        internal async Task<JSHandle> WaitForExpressionAsync(string script, WaitForFunctionOptions options)
+        {
+            using var waitTask = new WaitTask(
                 this,
                 script,
                 true,
                 "function",
                 options.Polling,
                 options.PollingInterval,
-                options.Timeout ?? _timeoutSettings.Timeout).Task;
+                options.Timeout ?? _timeoutSettings.Timeout);
+
+            return await waitTask
+                .Task
+                .ConfigureAwait(false);
+        }
 
         internal Task<string> GetTitleAsync() => EvaluateExpressionAsync<string>("document.title");
 
@@ -414,7 +426,8 @@ namespace PuppeteerSharp
                 }
               }";
             var polling = options.Visible || options.Hidden ? WaitForFunctionPollingOption.Raf : WaitForFunctionPollingOption.Mutation;
-            var handle = await new WaitTask(
+
+            using var waitTask = new WaitTask(
                 this,
                 predicate,
                 false,
@@ -422,7 +435,9 @@ namespace PuppeteerSharp
                 polling,
                 null,
                 timeout,
-                new object[] { selectorOrXPath, isXPath, options.Visible, options.Hidden }).Task.ConfigureAwait(false);
+                new object[] { selectorOrXPath, isXPath, options.Visible, options.Hidden });
+
+            var handle = await waitTask.Task.ConfigureAwait(false);
 
             if (!(handle is ElementHandle elementHandle))
             {

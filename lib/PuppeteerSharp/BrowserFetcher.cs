@@ -30,7 +30,7 @@ namespace PuppeteerSharp
     /// var browser = await await Puppeteer.LaunchAsync(new LaunchOptions { ExecutablePath = revisionInfo.ExecutablePath});
     /// </code>
     /// </example>
-    public class BrowserFetcher
+    public class BrowserFetcher : IDisposable
     {
         private static readonly Dictionary<Product, string> _hosts = new Dictionary<Product, string>
         {
@@ -51,6 +51,7 @@ namespace PuppeteerSharp
         };
 
         private readonly WebClient _webClient = new WebClient();
+        private bool _isDisposed;
 
         /// <summary>
         /// Default Chromium revision.
@@ -626,5 +627,33 @@ namespace PuppeteerSharp
 
         private static string GetDownloadURL(Product product, Platform platform, string host, string revision)
             => string.Format(CultureInfo.CurrentCulture, _downloadUrls[(product, platform)], host, revision, GetArchiveName(product, platform, revision));
+
+        /// <summary>
+        /// Disposes of any disposable members in <see cref="BrowserFetcher" />.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Disposes of any disposable members in <see cref="BrowserFetcher" />.
+        /// </summary>
+        /// <param name="disposing"></param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_isDisposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                _webClient.Dispose();
+            }
+
+            _isDisposed = true;
+        }
     }
 }

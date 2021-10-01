@@ -27,7 +27,7 @@ namespace PuppeteerSharp.DevicesFetcher
             }
 
             string chromeVersion = null;
-            var fetcher = new BrowserFetcher();
+            using var fetcher = new BrowserFetcher();
 
             await fetcher.DownloadAsync();
             await using (var browser = await Puppeteer.LaunchAsync(new LaunchOptions()))

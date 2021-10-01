@@ -10,10 +10,11 @@ You need to test a chrome extension
 Use `Puppeteer.LaunchAsync` passing arguments specifying to load your extension.
 
 ```cs
-await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
+using var browserFetcher = new BrowserFetcher();
+await browserFetcher.DownloadAsync(BrowserFetcher.DefaultRevision);
 
 var pathToExtension = "path/to/extension";
-var launhcOptions = new LaunhcOptions()
+var launchOptions = new LaunchOptions()
 {
     Headless = false,
     Args = new []
