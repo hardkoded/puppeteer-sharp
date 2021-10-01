@@ -548,10 +548,9 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
         protected virtual void Dispose(bool disposing) => _ = CloseAsync()
-            .ContinueWith(_ =>
-            {
-                ScreenshotTaskQueue.Dispose();
-            }, TaskScheduler.Default);
+            .ContinueWith(
+                _ => ScreenshotTaskQueue.DisposeAsync(),
+                TaskScheduler.Default);
 
         #endregion
 

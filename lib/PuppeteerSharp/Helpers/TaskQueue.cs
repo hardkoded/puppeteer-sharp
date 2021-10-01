@@ -1,11 +1,14 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp.Helpers
 {
-    internal class TaskQueue : IDisposable
+    internal class TaskQueue : IDisposable, IAsyncDisposable
     {
+        [SuppressMessage("Usage", "CA2213: Disposable fields should be disposed", Justification = "The disposable field is being disposed asynchronously.")]
+        [SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "The CA2213 suppression is actually necessary.")]
         private readonly SemaphoreSlim _semaphore;
         private bool _isDisposed;
 
@@ -52,10 +55,24 @@ namespace PuppeteerSharp.Helpers
 
             if (dispose)
             {
-                _semaphore.Dispose();
+                _ = Task.Run(() => DisposeAsync());
             }
 
             _isDisposed = true;
+        }
+
+        [SuppressMessage("Usage", "CA1816:Dispose methods should call SuppressFinalize", Justification = "Per MSDN instructions for implementing the IAsyncDisposable pattern.")]
+        public async ValueTask DisposeAsync()
+        {
+            await DisposeAsyncCore();
+            Dispose(false);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual async ValueTask DisposeAsyncCore()
+        {
+            await _semaphore.WaitAsync().ConfigureAwait(false);
+            _semaphore.Dispose();
         }
     }
 }
