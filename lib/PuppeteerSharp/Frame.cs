@@ -333,7 +333,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Waits for a timeout
         /// </summary>
-        /// <param name="milliseconds"></param>
+        /// <param name="milliseconds">The amount of time to wait.</param>
         /// <returns>A task that resolves when after the timeout</returns>
         /// <seealso cref="Page.WaitForTimeoutAsync(int)"/>
         /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
@@ -537,7 +537,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="selector">A selector of an element to type into. If there are multiple elements satisfying the selector, the first will be used.</param>
         /// <param name="text">A text to type into a focused element</param>
-        /// <param name="options"></param>
+        /// <param name="options">The options to apply to the type operation.</param>
         /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
         /// <remarks>
         /// To press a special key, like <c>Control</c> or <c>ArrowDown</c> use <see cref="Keyboard.PressAsync(string, PressOptions)"/>

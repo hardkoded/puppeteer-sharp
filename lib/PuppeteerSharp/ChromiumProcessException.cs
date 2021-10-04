@@ -37,8 +37,8 @@ namespace PuppeteerSharp
         /// <summary>
         /// Initializes a new instance of the <see cref="ChromiumProcessException"/> class.
         /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
+        /// <param name="info">The serialization collection for custom serializations.</param>
+        /// <param name="context">Provides additional caller-provided context.</param>
         protected ChromiumProcessException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }

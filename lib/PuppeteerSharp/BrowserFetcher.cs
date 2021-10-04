@@ -640,7 +640,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Disposes of any disposable members in <see cref="BrowserFetcher" />.
         /// </summary>
-        /// <param name="disposing"></param>
+        /// <param name="disposing">Indicates disposing of managed resources.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (_isDisposed)
