@@ -238,13 +238,11 @@ namespace PuppeteerSharp
             {
                 foreach (var keyValuePair in response.Headers)
                 {
-                    // Skip headers with null values
                     if (keyValuePair.Value == null)
                     {
                         continue;
                     }
 
-                    // Use ICollection instead of IEnumerable as string implements IEnumerable
                     if (keyValuePair.Value is ICollection values)
                     {
                         foreach (var val in values)
