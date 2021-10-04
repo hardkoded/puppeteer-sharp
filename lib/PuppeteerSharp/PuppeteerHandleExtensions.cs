@@ -78,7 +78,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Runs <paramref name="pageFunction"/> within the frame and passes it the outcome of <paramref name="arrayHandleTask"/> as the first argument. Use only after <see cref="Page.QuerySelectorAllHandleAsync(string)"/>
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">The type to deserialize the result to</typeparam>
         /// <param name="arrayHandleTask">A task that returns an <see cref="JSHandle"/> that represents an array of <see cref="ElementHandle"/> that will be used as the first argument in <paramref name="pageFunction"/></param>
         /// <param name="pageFunction">Function to be evaluated in browser context</param>
         /// <param name="args">Arguments to pass to <c>pageFunction</c></param>
@@ -96,7 +96,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Runs <paramref name="pageFunction"/> within the frame and passes it the outcome of <paramref name="arrayHandle"/> as the first argument. Use only after <see cref="Page.QuerySelectorAllHandleAsync(string)"/>
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">The type to deserialize the result to</typeparam>
         /// <param name="arrayHandle">An <see cref="JSHandle"/> that represents an array of <see cref="ElementHandle"/> that will be used as the first argument in <paramref name="pageFunction"/></param>
         /// <param name="pageFunction">Function to be evaluated in browser context</param>
         /// <param name="args">Arguments to pass to <c>pageFunction</c></param>
