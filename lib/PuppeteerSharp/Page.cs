@@ -80,22 +80,21 @@ namespace PuppeteerSharp
 
             _screenshotTaskQueue = screenshotTaskQueue;
 
-            _ = target.CloseTask.ContinueWith(_ =>
-            {
-                try
+            _ = target.CloseTask.ContinueWith(
+                _ =>
                 {
-                    Close?.Invoke(this, EventArgs.Empty);
-                }
-                finally
-                {
-                    IsClosed = true;
-                    _closeCompletedTcs.TrySetResult(true);
-                }
-            },
-            TaskScheduler.Default);
+                    try
+                    {
+                        Close?.Invoke(this, EventArgs.Empty);
+                    }
+                    finally
+                    {
+                        IsClosed = true;
+                        _closeCompletedTcs.TrySetResult(true);
+                    }
+                },
+                TaskScheduler.Default);
         }
-
-        #region Public Properties
 
         /// <summary>
         /// Chrome DevTools Protocol session.
@@ -369,6 +368,11 @@ namespace PuppeteerSharp
         /// </summary>
         public Accessibility Accessibility { get; }
 
+        /// <summary>
+        /// `true` if drag events are being intercepted, `false` otherwise.
+        /// </summary>
+        public bool IsDragInterceptionEnabled { get; private set; }
+
         internal bool JavascriptEnabled { get; set; } = true;
 
         internal bool HasPopupEventListeners => Popup?.GetInvocationList().Any() == true;
@@ -394,9 +398,6 @@ namespace PuppeteerSharp
                 return _sessionClosedTcs.Task;
             }
         }
-        #endregion
-
-        #region Public Methods
 
         /// <summary>
         /// Sets the page's geolocation.
@@ -427,6 +428,22 @@ namespace PuppeteerSharp
             }
 
             return Client.SendAsync("Emulation.setGeolocationOverride", options);
+        }
+
+        /// <summary>
+        /// Whether to enable drag interception.
+        /// </summary>
+        /// <remarks>
+        /// Activating drag interception enables the `Input.drag`,
+        /// methods This provides the capability to capture drag events emitted
+        /// on the page, which can then be used to simulate drag-and-drop.
+        /// </remarks>
+        /// <param name="enabled">Interception enabled</param>
+        /// <returns>A Task that resolves when the message was confirmed by the browser</returns>
+        public Task SetDragInterceptionAsync(bool enabled)
+        {
+            IsDragInterceptionEnabled = enabled;
+            return Client.SendAsync("Input.setInterceptDrags", new InputSetInterceptDragsRequest { Enabled = enabled });
         }
 
         /// <summary>
@@ -1413,7 +1430,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="selector">A selector of an element to type into. If there are multiple elements satisfying the selector, the first will be used.</param>
         /// <param name="text">A text to type into a focused element</param>
-        /// <param name="options"></param>
+        /// <param name="options">The options to apply to the type operation.</param>
         /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
         /// <remarks>
         /// To press a special key, like <c>Control</c> or <c>ArrowDown</c> use <see cref="PuppeteerSharp.Input.Keyboard.PressAsync(string, PressOptions)"/>
@@ -1574,7 +1591,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Waits for a timeout
         /// </summary>
-        /// <param name="milliseconds"></param>
+        /// <param name="milliseconds">The amount of time to wait.</param>
         /// <returns>A task that resolves when after the timeout</returns>
         /// <seealso cref="Frame.WaitForTimeoutAsync(int)"/>
         public Task WaitForTimeoutAsync(int milliseconds)
@@ -1899,11 +1916,7 @@ namespace PuppeteerSharp
             }
         }
 
-        #endregion
-
         internal void OnPopup(Page popupPage) => Popup?.Invoke(this, new PopupEventArgs { PopupPage = popupPage });
-
-        #region Private Method
 
         internal static async Task<Page> CreateAsync(
             CDPSession client,
@@ -2487,14 +2500,18 @@ namespace PuppeteerSharp
                 Source = expression
             }).ConfigureAwait(false);
 
-            await Task.WhenAll(Frames.Select(frame => frame.EvaluateExpressionAsync(expression)
-                .ContinueWith(task =>
-                {
-                    if (task.IsFaulted)
-                    {
-                        _logger.LogError(task.Exception.ToString());
-                    }
-                }, TaskScheduler.Default)))
+            await Task.WhenAll(Frames.Select(
+                frame => frame
+                    .EvaluateExpressionAsync(expression)
+                    .ContinueWith(
+                        task =>
+                        {
+                            if (task.IsFaulted)
+                            {
+                                _logger.LogError(task.Exception.ToString());
+                            }
+                        },
+                        TaskScheduler.Default)))
                 .ConfigureAwait(false);
         }
 
@@ -2509,9 +2526,6 @@ namespace PuppeteerSharp
                     : JsonConvert.SerializeObject(arg, JsonHelper.DefaultJsonSerializerSettings);
             }
         }
-        #endregion
-
-        #region IDisposable
 
         /// <inheritdoc />
         public void Dispose()
@@ -2528,10 +2542,9 @@ namespace PuppeteerSharp
         /// calling <see cref="Dispose()"/>, you must release all references to the <see cref="Page"/> so
         /// the garbage collector can reclaim the memory that the <see cref="Page"/> was occupying.</remarks>
         /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
-        protected virtual void Dispose(bool disposing) => _ = DisposeAsync();
-        #endregion
+        protected virtual void Dispose(bool disposing)
+            => _ = DisposeAsync();
 
-        #region IAsyncDisposable
         /// <summary>
         /// Releases all resource used by the <see cref="Page"/> object by calling the <see cref="CloseAsync"/> method.
         /// </summary>
@@ -2544,6 +2557,5 @@ namespace PuppeteerSharp
             .ContinueWith(
                 _ => _screenshotTaskQueue.DisposeAsync(),
                 TaskScheduler.Default));
-        #endregion
     }
 }

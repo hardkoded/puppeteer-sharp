@@ -56,11 +56,13 @@ namespace PuppeteerSharp
         /// <returns>Task of <see cref="JSHandle"/></returns>
         public async Task<JSHandle> GetPropertyAsync(string propertyName)
         {
-            var objectHandle = await EvaluateFunctionHandleAsync(@"(object, propertyName) => {
-              const result = { __proto__: null};
-              result[propertyName] = object[propertyName];
-              return result;
-            }", propertyName).ConfigureAwait(false);
+            var objectHandle = await EvaluateFunctionHandleAsync(
+                @"(object, propertyName) => {
+                    const result = { __proto__: null};
+                    result[propertyName] = object[propertyName];
+                    return result;
+                }",
+                propertyName).ConfigureAwait(false);
             var properties = await objectHandle.GetPropertiesAsync().ConfigureAwait(false);
             properties.TryGetValue(propertyName, out var result);
             await objectHandle.DisposeAsync().ConfigureAwait(false);

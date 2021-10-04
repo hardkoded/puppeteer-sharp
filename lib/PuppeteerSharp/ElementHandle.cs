@@ -146,9 +146,11 @@ namespace PuppeteerSharp
                 await Page.SetViewportAsync(newRawViewport.ToObject<ViewPortOptions>(true)).ConfigureAwait(false);
                 needsViewportReset = true;
             }
-            await ExecutionContext.EvaluateFunctionAsync(@"function(element) {
-                element.scrollIntoView({ block: 'center', inline: 'center', behavior: 'instant'});
-            }", this).ConfigureAwait(false);
+            await ExecutionContext.EvaluateFunctionAsync(
+                @"function(element) {
+                    element.scrollIntoView({ block: 'center', inline: 'center', behavior: 'instant'});
+                }",
+                this).ConfigureAwait(false);
 
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
             boundingBox = await BoundingBoxAsync().ConfigureAwait(false);
@@ -454,19 +456,21 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>A task which resolves to true if the element is visible in the current viewport.</returns>
         public Task<bool> IsIntersectingViewportAsync()
-            => ExecutionContext.EvaluateFunctionAsync<bool>(@"async element =>
-            {
-                const visibleRatio = await new Promise(resolve =>
+            => ExecutionContext.EvaluateFunctionAsync<bool>(
+                @"async element =>
                 {
-                    const observer = new IntersectionObserver(entries =>
+                    const visibleRatio = await new Promise(resolve =>
                     {
-                        resolve(entries[0].intersectionRatio);
-                        observer.disconnect();
+                        const observer = new IntersectionObserver(entries =>
+                        {
+                            resolve(entries[0].intersectionRatio);
+                            observer.disconnect();
+                        });
+                        observer.observe(element);
                     });
-                    observer.observe(element);
-                });
-                return visibleRatio > 0;
-            }", this);
+                    return visibleRatio > 0;
+                }",
+                this);
 
         /// <summary>
         /// Triggers a `change` and `input` event once all the provided options have been selected.
@@ -481,22 +485,118 @@ namespace PuppeteerSharp
         /// <param name="values">Values of options to select. If the `select` has the `multiple` attribute, all values are considered, otherwise only the first one is taken into account.</param>
         /// <returns>A task that resolves to an array of option values that have been successfully selected.</returns>
         public Task<string[]> SelectAsync(params string[] values)
-            => EvaluateFunctionAsync<string[]>(@"(element, values) =>
-            {
-                if (element.nodeName.toLowerCase() !== 'select')
-                    throw new Error('Element is not a <select> element.');
+            => EvaluateFunctionAsync<string[]>(
+                @"(element, values) =>
+                {
+                    if (element.nodeName.toLowerCase() !== 'select')
+                        throw new Error('Element is not a <select> element.');
 
-                const options = Array.from(element.options);
-                element.value = undefined;
-                for (const option of options) {
-                    option.selected = values.includes(option.value);
-                    if (option.selected && !element.multiple)
-                        break;
-                }
-                element.dispatchEvent(new Event('input', { 'bubbles': true }));
-                element.dispatchEvent(new Event('change', { 'bubbles': true }));
-                return options.filter(option => option.selected).map(option => option.value);
-            }", new[] { values });
+                    const options = Array.from(element.options);
+                    element.value = undefined;
+                    for (const option of options) {
+                        option.selected = values.includes(option.value);
+                        if (option.selected && !element.multiple)
+                            break;
+                    }
+                    element.dispatchEvent(new Event('input', { 'bubbles': true }));
+                    element.dispatchEvent(new Event('change', { 'bubbles': true }));
+                    return options.filter(option => option.selected).map(option => option.value);
+                }",
+                new[] { values });
+
+        /// <summary>
+        /// This method creates and captures a dragevent from the element.
+        /// </summary>
+        /// <param name="x">X coordinate</param>
+        /// <param name="y">Y coordinate</param>
+        /// <returns>A Task that resolves when the message was confirmed by the browser with the drag data</returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<DragData> DragAsync(decimal x, decimal y)
+        {
+            if (!Page.IsDragInterceptionEnabled)
+            {
+                throw new PuppeteerException("Drag Interception is not enabled!");
+            }
+
+            await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
+            var start = await ClickablePointAsync().ConfigureAwait(false);
+            return await Page.Mouse.DragAsync(start.x, start.y, x, y).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Dispatches a `dragenter` event.
+        /// </summary>
+        /// <param name="data">Drag data containing items and operations mask.</param>
+        /// <returns>A Task that resolves when the message was confirmed by the browser</returns>
+        public async Task DragEnterAsync(DragData data)
+        {
+            if (!Page.IsDragInterceptionEnabled)
+            {
+                throw new PuppeteerException("Drag Interception is not enabled!");
+            }
+
+            await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
+            var start = await ClickablePointAsync().ConfigureAwait(false);
+            await Page.Mouse.DragEnterAsync(start.x, start.y, data).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Dispatches a `dragover` event.
+        /// </summary>
+        /// <param name="data">Drag data containing items and operations mask.</param>
+        /// <returns>A Task that resolves when the message was confirmed by the browser</returns>
+        public async Task DragOverAsync(DragData data)
+        {
+            if (!Page.IsDragInterceptionEnabled)
+            {
+                throw new PuppeteerException("Drag Interception is not enabled!");
+            }
+
+            await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
+            var start = await ClickablePointAsync().ConfigureAwait(false);
+            await Page.Mouse.DragOverAsync(start.x, start.y, data).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs a dragenter, dragover, and drop in sequence.
+        /// </summary>
+        /// <param name="data">Drag data containing items and operations mask.</param>
+        /// <returns>A Task that resolves when the message was confirmed by the browser</returns>
+        public async Task DropAsync(DragData data)
+        {
+            if (!Page.IsDragInterceptionEnabled)
+            {
+                throw new PuppeteerException("Drag Interception is not enabled!");
+            }
+
+            await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
+            var start = await ClickablePointAsync().ConfigureAwait(false);
+            await Page.Mouse.DropAsync(start.x, start.y, data).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs a drag, dragenter, dragover, and drop in sequence.
+        /// </summary>
+        /// <param name="target">Target element</param>
+        /// <param name="delay">If specified, is the time to wait between `dragover` and `drop` in milliseconds.</param>
+        /// <returns>A Task that resolves when the message was confirmed by the browser</returns>
+        public async Task DragAndDropAsync(ElementHandle target, int delay = 0)
+        {
+            if (target == null)
+            {
+                throw new ArgumentException("Target cannot be null", nameof(target));
+            }
+
+            if (!Page.IsDragInterceptionEnabled)
+            {
+                throw new PuppeteerException("Drag Interception is not enabled!");
+            }
+
+            await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
+            var start = await ClickablePointAsync().ConfigureAwait(false);
+            var targetPoint = await target.ClickablePointAsync().ConfigureAwait(false);
+            await Page.Mouse.DragAndDropAsync(start.x, start.y, targetPoint.x, targetPoint.y, delay).ConfigureAwait(false);
+        }
 
         private async Task<(decimal x, decimal y)> ClickablePointAsync()
         {
@@ -559,27 +659,29 @@ namespace PuppeteerSharp
 
         private async Task ScrollIntoViewIfNeededAsync()
         {
-            var errorMessage = await EvaluateFunctionAsync<string>(@"async(element, pageJavascriptEnabled) => {
-              if (!element.isConnected)
-                return 'Node is detached from document';
-              if (element.nodeType !== Node.ELEMENT_NODE)
-                return 'Node is not of type HTMLElement';
-              // force-scroll if page's javascript is disabled.
-              if (!pageJavascriptEnabled) {
-                element.scrollIntoView({block: 'center', inline: 'center', behavior: 'instant'});
-                return null;
-              }
-              const visibleRatio = await new Promise(resolve => {
-                const observer = new IntersectionObserver(entries => {
-                  resolve(entries[0].intersectionRatio);
-                  observer.disconnect();
-                });
-                observer.observe(element);
-              });
-              if (visibleRatio !== 1.0)
-                element.scrollIntoView({block: 'center', inline: 'center', behavior: 'instant'});
-              return null;
-            }", Page.JavascriptEnabled).ConfigureAwait(false);
+            var errorMessage = await EvaluateFunctionAsync<string>(
+                @"async(element, pageJavascriptEnabled) => {
+                    if (!element.isConnected)
+                        return 'Node is detached from document';
+                    if (element.nodeType !== Node.ELEMENT_NODE)
+                        return 'Node is not of type HTMLElement';
+                    // force-scroll if page's javascript is disabled.
+                    if (!pageJavascriptEnabled) {
+                        element.scrollIntoView({block: 'center', inline: 'center', behavior: 'instant'});
+                        return null;
+                    }
+                    const visibleRatio = await new Promise(resolve => {
+                    const observer = new IntersectionObserver(entries => {
+                        resolve(entries[0].intersectionRatio);
+                        observer.disconnect();
+                    });
+                    observer.observe(element);
+                    });
+                    if (visibleRatio !== 1.0)
+                        element.scrollIntoView({block: 'center', inline: 'center', behavior: 'instant'});
+                    return null;
+                }",
+                Page.JavascriptEnabled).ConfigureAwait(false);
 
             if (errorMessage != null)
             {
