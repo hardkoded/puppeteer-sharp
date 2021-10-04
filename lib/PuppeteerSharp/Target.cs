@@ -33,28 +33,29 @@ namespace PuppeteerSharp
             BrowserContext = browserContext;
             PageTask = null;
 
-            _ = _initializedTaskWrapper.Task.ContinueWith(async initializedTask =>
-            {
-                var success = initializedTask.Result;
-                if (!success)
+            _ = _initializedTaskWrapper.Task.ContinueWith(
+                async initializedTask =>
                 {
-                    return;
-                }
+                    var success = initializedTask.Result;
+                    if (!success)
+                    {
+                        return;
+                    }
 
-                var openerPageTask = Opener?.PageTask;
-                if (openerPageTask == null || Type != TargetType.Page)
-                {
-                    return;
-                }
-                var openerPage = await openerPageTask.ConfigureAwait(false);
-                if (!openerPage.HasPopupEventListeners)
-                {
-                    return;
-                }
-                var popupPage = await PageAsync().ConfigureAwait(false);
-                openerPage.OnPopup(popupPage);
-            },
-            TaskScheduler.Default);
+                    var openerPageTask = Opener?.PageTask;
+                    if (openerPageTask == null || Type != TargetType.Page)
+                    {
+                        return;
+                    }
+                    var openerPage = await openerPageTask.ConfigureAwait(false);
+                    if (!openerPage.HasPopupEventListeners)
+                    {
+                        return;
+                    }
+                    var popupPage = await PageAsync().ConfigureAwait(false);
+                    openerPage.OnPopup(popupPage);
+                },
+                TaskScheduler.Default);
 
             CloseTaskWrapper = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             IsInitialized = TargetInfo.Type != TargetType.Page || !string.IsNullOrEmpty(TargetInfo.Url);
