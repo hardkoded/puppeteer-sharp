@@ -80,19 +80,20 @@ namespace PuppeteerSharp
 
             _screenshotTaskQueue = screenshotTaskQueue;
 
-            _ = target.CloseTask.ContinueWith(_ =>
-            {
-                try
+            _ = target.CloseTask.ContinueWith(
+                _ =>
                 {
-                    Close?.Invoke(this, EventArgs.Empty);
-                }
-                finally
-                {
-                    IsClosed = true;
-                    _closeCompletedTcs.TrySetResult(true);
-                }
-            },
-            TaskScheduler.Default);
+                    try
+                    {
+                        Close?.Invoke(this, EventArgs.Empty);
+                    }
+                    finally
+                    {
+                        IsClosed = true;
+                        _closeCompletedTcs.TrySetResult(true);
+                    }
+                },
+                TaskScheduler.Default);
         }
 
         /// <summary>
@@ -2499,14 +2500,18 @@ namespace PuppeteerSharp
                 Source = expression
             }).ConfigureAwait(false);
 
-            await Task.WhenAll(Frames.Select(frame => frame.EvaluateExpressionAsync(expression)
-                .ContinueWith(task =>
-                {
-                    if (task.IsFaulted)
-                    {
-                        _logger.LogError(task.Exception.ToString());
-                    }
-                }, TaskScheduler.Default)))
+            await Task.WhenAll(Frames.Select(
+                frame => frame
+                    .EvaluateExpressionAsync(expression)
+                    .ContinueWith(
+                        task =>
+                        {
+                            if (task.IsFaulted)
+                            {
+                                _logger.LogError(task.Exception.ToString());
+                            }
+                        },
+                        TaskScheduler.Default)))
                 .ConfigureAwait(false);
         }
 
