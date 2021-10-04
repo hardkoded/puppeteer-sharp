@@ -166,7 +166,8 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
             var context = await _world.GetExecutionContextAsync().ConfigureAwait(false);
             try
             {
-                success = await context.EvaluateFunctionHandleAsync(WaitForPredicatePageFunction,
+                success = await context.EvaluateFunctionHandleAsync(
+                    WaitForPredicatePageFunction,
                     new object[] { _predicateBody, _pollingInterval ?? (object)_polling, _timeout }.Concat(_args).ToArray()).ConfigureAwait(false);
             }
             catch (Exception ex)

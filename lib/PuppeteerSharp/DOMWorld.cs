@@ -127,7 +127,8 @@ namespace PuppeteerSharp
             return value;
         }
 
-        internal Task<string> GetContentAsync() => EvaluateFunctionAsync<string>(@"() => {
+        internal Task<string> GetContentAsync() => EvaluateFunctionAsync<string>(
+            @"() => {
                 let retVal = '';
                 if (document.doctype)
                     retVal = new XMLSerializer().serializeToString(document.doctype);
@@ -143,11 +144,13 @@ namespace PuppeteerSharp
 
             // We rely upon the fact that document.open() will reset frame lifecycle with "init"
             // lifecycle event. @see https://crrev.com/608658
-            await EvaluateFunctionAsync(@"html => {
-                document.open();
-                document.write(html);
-                document.close();
-            }", html).ConfigureAwait(false);
+            await EvaluateFunctionAsync(
+                @"html => {
+                    document.open();
+                    document.write(html);
+                    document.close();
+                }",
+                html).ConfigureAwait(false);
 
             using (var watcher = new LifecycleWatcher(_frameManager, Frame, waitUntil, timeout))
             {
