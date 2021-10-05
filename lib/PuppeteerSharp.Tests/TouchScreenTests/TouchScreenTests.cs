@@ -16,7 +16,7 @@ namespace PuppeteerSharp.Tests.TouchScreenTests
         {
         }
 
-        [PuppeteerTest("touchscreen.spec.ts", "Touchscreen", "tap the button")]
+        [PuppeteerTest("touchscreen.spec.ts", "Touchscreen", "should tap the button")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldTapTheButton()
         {
