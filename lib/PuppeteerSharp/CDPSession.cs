@@ -127,7 +127,7 @@ namespace PuppeteerSharp
         /// If <c>false</c> the task will be considered complete after sending the message to Chromium.
         /// </param>
         /// <returns>The task.</returns>
-        /// <exception cref="PuppeteerSharp.PuppeteerException"></exception>
+        /// <exception cref="PuppeteerSharp.PuppeteerException">If the <see cref="Connection"/> is closed.</exception>
         public async Task<JObject> SendAsync(string method, object args = null, bool waitForCallback = true)
         {
             if (Connection == null)
@@ -169,7 +169,7 @@ namespace PuppeteerSharp
         /// Detaches session from target. Once detached, session won't emit any events and can't be used to send messages.
         /// </summary>
         /// <returns></returns>
-        /// <exception cref="T:PuppeteerSharp.PuppeteerException"></exception>
+        /// <exception cref="T:PuppeteerSharp.PuppeteerException">If the <see cref="Connection"/> is closed.</exception>
         public Task DetachAsync()
         {
             if (Connection == null)

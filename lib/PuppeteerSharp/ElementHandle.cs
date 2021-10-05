@@ -526,7 +526,6 @@ namespace PuppeteerSharp
         /// <param name="x">X coordinate</param>
         /// <param name="y">Y coordinate</param>
         /// <returns>A Task that resolves when the message was confirmed by the browser with the drag data</returns>
-        /// <exception cref="NotImplementedException"></exception>
         public async Task<DragData> DragAsync(decimal x, decimal y)
         {
             if (!Page.IsDragInterceptionEnabled)
