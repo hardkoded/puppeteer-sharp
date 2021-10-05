@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using PuppeteerSharp.Messaging;
+using CefSharp.Puppeteer.Messaging;
 
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     /// <summary>
     /// <see cref="Dialog"/> objects are dispatched by page via the 'dialog' event.
@@ -21,7 +21,7 @@ namespace PuppeteerSharp
     /// </example>
     public class Dialog
     {
-        private readonly CDPSession _client;
+        private readonly Connection _client;
 
         /// <summary>
         /// Dialog's type, can be one of alert, beforeunload, confirm or prompt.
@@ -46,7 +46,7 @@ namespace PuppeteerSharp
         /// <param name="type">Type.</param>
         /// <param name="message">Message.</param>
         /// <param name="defaultValue">Default value.</param>
-        public Dialog(CDPSession client, DialogType type, string message, string defaultValue)
+        public Dialog(Connection client, DialogType type, string message, string defaultValue)
         {
             _client = client;
             DialogType = type;

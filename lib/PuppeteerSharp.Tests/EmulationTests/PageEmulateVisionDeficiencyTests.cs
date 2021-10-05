@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
+using CefSharp.Puppeteer;
 using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
@@ -14,7 +14,6 @@ namespace PuppeteerSharp.Tests.EmulationTests
         }
 
         [PuppeteerTest("emulation.spec.ts", "Page.emulateVisionDeficiency", "should work")]
-        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
             await Page.SetViewportAsync(new ViewPortOptions { Width = 500, Height = 500 });

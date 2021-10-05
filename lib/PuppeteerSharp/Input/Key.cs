@@ -1,4 +1,4 @@
-namespace PuppeteerSharp.Input
+namespace CefSharp.Puppeteer.Input
 {
     /// <summary>
     /// Utility class to be used with <see cref="Keyboard"/> operations

@@ -1,5 +1,6 @@
 using System.Net;
 using System.Threading.Tasks;
+using CefSharp.Puppeteer;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using Xunit;
@@ -15,7 +16,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.setOfflineMode", "should work")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldWork()
         {
             await Page.SetOfflineModeAsync(true);
@@ -27,7 +28,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.setOfflineMode", "should emulate navigator.onLine")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldEmulateNavigatorOnLine()
         {
             Assert.True(await Page.EvaluateExpressionAsync<bool>("window.navigator.onLine"));

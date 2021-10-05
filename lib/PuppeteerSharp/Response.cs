@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using CefSharp.Puppeteer.Helpers.Json;
+using CefSharp.Puppeteer.Messaging;
 using Newtonsoft.Json.Linq;
-using PuppeteerSharp.Helpers.Json;
-using PuppeteerSharp.Messaging;
 
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     /// <summary>
     /// <see cref="Response"/> class represents responses which are received by page.
@@ -19,12 +19,12 @@ namespace PuppeteerSharp
     /// <seealso cref="Page.WaitForResponseAsync(Func{Response, bool}, WaitForOptions)"/>
     public class Response
     {
-        private readonly CDPSession _client;
+        private readonly Connection _client;
         private readonly bool _fromDiskCache;
         private byte[] _buffer;
 
         internal Response(
-            CDPSession client,
+            Connection client,
             Request request,
             ResponsePayload responseMessage)
         {

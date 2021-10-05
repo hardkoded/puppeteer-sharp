@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
-using PuppeteerSharp.Mobile;
+using CefSharp.Puppeteer;
+using CefSharp.Puppeteer.Mobile;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using Xunit;
@@ -10,14 +11,14 @@ namespace PuppeteerSharp.Tests.TouchScreenTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class TouchScreenTests : PuppeteerPageBaseTest
     {
-        private readonly DeviceDescriptor _iPhone = Puppeteer.Devices[DeviceDescriptorName.IPhone6];
+        private readonly DeviceDescriptor _iPhone = Emulation.Devices[DeviceDescriptorName.IPhone6];
 
         public TouchScreenTests(ITestOutputHelper output) : base(output)
         {
         }
 
         [PuppeteerTest("touchscreen.spec.ts", "Touchscreen", "should tap the button")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldTapTheButton()
         {
             await Page.EmulateAsync(_iPhone);
@@ -27,7 +28,7 @@ namespace PuppeteerSharp.Tests.TouchScreenTests
         }
 
         [PuppeteerTest("touchscreen.spec.ts", "Touchscreen", "should report touches")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldReportTouches()
         {
             await Page.EmulateAsync(_iPhone);

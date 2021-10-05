@@ -1,4 +1,4 @@
-namespace PuppeteerSharp.PageCoverage
+namespace CefSharp.Puppeteer.PageCoverage
 {
     /// <summary>
     /// Script range.
@@ -9,12 +9,12 @@ namespace PuppeteerSharp.PageCoverage
         /// A start offset in text, inclusive.
         /// </summary>
         /// <value>Start offset.</value>
-        public int Start { get; internal set; }
+        public int Start { get; set; }
         /// <summary>
         /// An end offset in text, exclusive.
         /// </summary>
         /// <value>End offset.</value>
-        public int End { get; internal set; }
+        public int End { get; set; }
 
         /// <inheritdoc/>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Exceptions should not be raised in this type of method.")]

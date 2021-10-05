@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     [Serializable]
     internal class InvalidTargetException : PuppeteerException

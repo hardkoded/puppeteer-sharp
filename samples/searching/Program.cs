@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
-using PuppeteerSharp;
+using CefSharp.OffScreen;
+using CefSharp.Puppeteer;
 
 namespace Example.Searching
 {
@@ -8,28 +9,27 @@ namespace Example.Searching
     {
         public static async Task Main(string[] args)
         {
-            var options = new LaunchOptions { Headless = true };
-            Console.WriteLine("Downloading chromium");
+            using var chromiumWebBrowser = new ChromiumWebBrowser("https://github.com");
 
-            await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
+            await chromiumWebBrowser.WaitForInitialLoadAsync();
+
+            await using var page = await chromiumWebBrowser.GetPuppeteerPageAsync();
+
             Console.WriteLine("Navigating to developers.google.com");
 
-            using (var browser = await Puppeteer.LaunchAsync(options))
-            using (var page = await browser.NewPageAsync())
-            {
-                await page.GoToAsync("https://developers.google.com/web/");
-                // Type into search box.
-                await page.TypeAsync("#searchbox input", "Headless Chrome");
+            await page.GoToAsync("https://developers.google.com/web/");
+            // Type into search box.
+            await page.TypeAsync(@"input[name='q']", "Headless Chrome");
 
-                // Wait for suggest overlay to appear and click "show all results".
-                var allResultsSelector = ".devsite-suggest-all-results";
-                await page.WaitForSelectorAsync(allResultsSelector);
-                await page.ClickAsync(allResultsSelector);
+            // Wait for suggest overlay to appear and click "show all results".
+            var allResultsSelector = ".devsite-suggest-all-results";
+            await page.WaitForSelectorAsync(allResultsSelector);
+            await page.ClickAsync(allResultsSelector);
 
-                // Wait for the results page to load and display the results.
-                var resultsSelector = ".gsc-results .gsc-thumbnail-inside a.gs-title";
-                await page.WaitForSelectorAsync(resultsSelector);
-                var links = await page.EvaluateFunctionAsync(@"(resultsSelector) => {
+            // Wait for the results page to load and display the results.
+            var resultsSelector = ".gsc-results .gsc-thumbnail-inside a.gs-title";
+            await page.WaitForSelectorAsync(resultsSelector);
+            var links = await page.EvaluateFunctionAsync(@"(resultsSelector) => {
     const anchors = Array.from(document.querySelectorAll(resultsSelector));
     return anchors.map(anchor => {
       const title = anchor.textContent.split('|')[0].trim();
@@ -37,14 +37,13 @@ namespace Example.Searching
     });
 }", resultsSelector);
 
-                foreach (var link in links)
-                {
-                    Console.WriteLine(link);
-                }
-
-                Console.WriteLine("Press any key to continue...");
-                Console.ReadLine();
+            foreach (var link in links)
+            {
+                Console.WriteLine(link);
             }
+
+            Console.WriteLine("Press any key to continue...");
+            Console.ReadKey();
         }
     }
 }

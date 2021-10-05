@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
+using CefSharp.Puppeteer;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using Xunit;
@@ -15,7 +16,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.boundingBox", "should work")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldWork()
         {
             await Page.SetViewportAsync(new ViewPortOptions
@@ -30,7 +31,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.boundingBox", "should handle nested frames")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldHandleNestedFrames()
         {
             await Page.SetViewportAsync(new ViewPortOptions
@@ -44,18 +45,11 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             var elementHandle = await nestedFrame.QuerySelectorAsync("div");
             var box = await elementHandle.BoundingBoxAsync();
 
-            if (TestConstants.IsChrome)
-            {
-                Assert.Equal(new BoundingBox(28, 182, 264, 18), box);
-            }
-            else
-            {
-                Assert.Equal(new BoundingBox(28, 182, 254, 18), box);
-            }
+            Assert.Equal(new BoundingBox(28, 182, 264, 18), box);
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.boundingBox", "should return null for invisible elements")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldReturnNullForInvisibleElements()
         {
             await Page.SetContentAsync("<div style='display:none'>hi</div>");
@@ -64,7 +58,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.boundingBox", "should force a layout")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldForceALayout()
         {
             await Page.SetViewportAsync(new ViewPortOptions { Width = 500, Height = 500 });
@@ -76,7 +70,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.boundingBox", "should work with SVG nodes")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact(Skip = "SVG NOT WORKING IN CEF REASON UNKNOWN")]
         public async Task ShouldWworkWithSVGNodes()
         {
             await Page.SetContentAsync(@"

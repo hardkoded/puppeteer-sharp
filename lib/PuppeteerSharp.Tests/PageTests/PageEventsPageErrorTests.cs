@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using CefSharp.Puppeteer;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using Xunit;
@@ -14,7 +15,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.Events.PageError", "should fire")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldFire()
         {
             string error = null;

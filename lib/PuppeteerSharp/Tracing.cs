@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using System.Threading.Tasks;
+using CefSharp.Puppeteer.Helpers;
+using CefSharp.Puppeteer.Messaging;
 using Microsoft.Extensions.Logging;
-using PuppeteerSharp.Helpers;
-using PuppeteerSharp.Messaging;
 
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     /// <summary>
     /// You can use <see cref="Tracing.StartAsync(TracingOptions)"/> and <see cref="Tracing.StopAsync"/> to create a trace file which can be opened in Chrome DevTools or timeline viewer.
@@ -27,7 +25,7 @@ namespace PuppeteerSharp
     public class Tracing
 #pragma warning restore CA1724
     {
-        private readonly CDPSession _client;
+        private readonly Connection _client;
         private bool _recording;
         private string _path;
         private static readonly List<string> _defaultCategories = new List<string>
@@ -47,7 +45,7 @@ namespace PuppeteerSharp
 
         private readonly ILogger _logger;
 
-        internal Tracing(CDPSession client)
+        internal Tracing(Connection client)
         {
             _client = client;
             _logger = client.LoggerFactory.CreateLogger<Tracing>();

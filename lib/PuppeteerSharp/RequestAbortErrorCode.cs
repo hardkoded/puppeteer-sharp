@@ -1,4 +1,4 @@
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     /// <summary>
     /// Abort error codes. used by <see cref="Request.AbortAsync(RequestAbortErrorCode)"/>

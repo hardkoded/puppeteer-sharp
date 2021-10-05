@@ -6,6 +6,7 @@ using Xunit;
 using Xunit.Abstractions;
 using PuppeteerSharp.Xunit;
 using PuppeteerSharp.Tests.Attributes;
+using CefSharp.Puppeteer;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {

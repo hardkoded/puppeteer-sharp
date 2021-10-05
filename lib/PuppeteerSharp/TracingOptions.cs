@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     /// <summary>
     /// Tracing options used on <see cref="Tracing.StartAsync(TracingOptions)"/>.

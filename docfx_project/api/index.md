@@ -1,6 +1,9 @@
-# Puppeteer Sharp
+# PuppeteerSharp Embedded (CefSharp)
 
-Puppeteer Sharp is a .NET port of the official [Node.JS Puppeteer API](https://github.com/GoogleChrome/puppeteer).
+Puppeteer Embedded is a fork of [puppeteer-sharp by Darío Kondratiuk](https://github.com/hardkoded/puppeteer-sharp) that has been adapted specifically for use with CefSharp.
+Direct communication with the ChromiumWebBrowser instance rather than opening a web socket.
+1:1 mapping of Page and ChromiumWebBrowser
+CEF only supports a subset of features, features will be added/removed as the project matures
 
 # Usage
 

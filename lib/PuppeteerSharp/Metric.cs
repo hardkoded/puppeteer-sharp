@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     internal struct Metric
     {

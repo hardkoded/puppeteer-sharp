@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Net;
 
-namespace PuppeteerSharp.Messaging
+namespace CefSharp.Puppeteer.Messaging
 {
     internal class FetchAuthRequiredResponse
     {

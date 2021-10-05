@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace PuppeteerSharp.Input
+namespace CefSharp.Puppeteer.Input
 {
     internal static class KeyDefinitions
     {

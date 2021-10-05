@@ -1,4 +1,4 @@
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     /// <summary>
     /// View port options used on <see cref="Page.SetViewportAsync(ViewPortOptions)"/>.

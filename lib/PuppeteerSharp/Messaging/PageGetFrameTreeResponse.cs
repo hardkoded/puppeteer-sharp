@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 
-namespace PuppeteerSharp.Messaging
+namespace CefSharp.Puppeteer.Messaging
 {
     internal class PageGetFrameTreeResponse
     {

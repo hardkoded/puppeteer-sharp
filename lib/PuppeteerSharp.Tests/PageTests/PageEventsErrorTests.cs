@@ -17,7 +17,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.Events.Error", "should throw when page crashes")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldThrowWhenPageCrashes()
         {
             string error = null;

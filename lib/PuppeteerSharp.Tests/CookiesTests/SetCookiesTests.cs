@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using CefSharp.Puppeteer;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using Xunit;
@@ -15,7 +16,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
         }
 
         [PuppeteerTest("cookies.spec.ts", "Page.setCookie", "should work")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -27,43 +28,8 @@ namespace PuppeteerSharp.Tests.CookiesTests
             Assert.Equal("password=123456", await Page.EvaluateExpressionAsync<string>("document.cookie"));
         }
 
-        [PuppeteerTest("cookies.spec.ts", "Page.setCookie", "should isolate cookies in browser contexts")]
-        [SkipBrowserFact(skipFirefox: true)]
-        public async Task ShouldIsolateCookiesInBrowserContexts()
-        {
-            var anotherContext = await Browser.CreateIncognitoBrowserContextAsync();
-            var anotherPage = await anotherContext.NewPageAsync();
-
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            await anotherPage.GoToAsync(TestConstants.EmptyPage);
-
-            await Page.SetCookieAsync(new CookieParam
-            {
-                Name = "page1cookie",
-                Value = "page1value"
-            });
-
-            await anotherPage.SetCookieAsync(new CookieParam
-            {
-                Name = "page2cookie",
-                Value = "page2value"
-            });
-
-            var cookies1 = await Page.GetCookiesAsync();
-            var cookies2 = await anotherPage.GetCookiesAsync();
-
-            Assert.Single(cookies1);
-            Assert.Single(cookies2);
-            Assert.Equal("page1cookie", cookies1[0].Name);
-            Assert.Equal("page1value", cookies1[0].Value);
-            Assert.Equal("page2cookie", cookies2[0].Name);
-            Assert.Equal("page2value", cookies2[0].Value);
-
-            await anotherContext.CloseAsync();
-        }
-
         [PuppeteerTest("cookies.spec.ts", "Page.setCookie", "should set multiple cookies")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldSetMultipleCookies()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -137,7 +103,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
         }
 
         [PuppeteerTest("cookies.spec.ts", "Page.setCookie", "should set a cookie with a path")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldSetACookieWithAPath()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
@@ -160,7 +126,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
         }
 
         [PuppeteerTest("cookies.spec.ts", "Page.setCookie", "should not set a cookie on a blank page")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldNotSetACookieOnABlankPage()
         {
             await Page.GoToAsync(TestConstants.AboutBlank);
@@ -189,7 +155,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
         }
 
         [PuppeteerTest("cookies.spec.ts", "Page.setCookie", "should not set a cookie on a data URL page")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldNotSetACookieOnADataURLPage()
         {
             await Page.GoToAsync("data:,Hello%2C%20World!");
@@ -199,7 +165,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
         }
 
         [PuppeteerTest("cookies.spec.ts", "Page.setCookie", "should default to setting secure cookie for HTTPS websites")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldDefaultToSettingSecureCookieForHttpsWebsites()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -216,7 +182,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
         }
 
         [PuppeteerTest("cookies.spec.ts", "Page.setCookie", "should be able to set unsecure cookie for HTTP website")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldBeAbleToSetUnsecureCookieForHttpWebSite()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -233,7 +199,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
         }
 
         [PuppeteerTest("cookies.spec.ts", "Page.setCookie", "should set a cookie on a different domain")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldSetACookieOnADifferentDomain()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
@@ -253,7 +219,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
         }
 
         [PuppeteerTest("cookies.spec.ts", "Page.setCookie", "should set cookies from a frame")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact(Skip = "BUG: OOPIFs aren't working correct")]
         public async Task ShouldSetCookiesFromAFrame()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");

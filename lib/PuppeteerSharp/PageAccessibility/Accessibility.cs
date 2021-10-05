@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using PuppeteerSharp.Messaging;
+using CefSharp.Puppeteer.Messaging;
 
-namespace PuppeteerSharp.PageAccessibility
+namespace CefSharp.Puppeteer.PageAccessibility
 {
     /// <summary>
     /// The Accessibility class provides methods for inspecting Chromium's accessibility tree.
@@ -17,13 +17,13 @@ namespace PuppeteerSharp.PageAccessibility
     /// </summary>
     public class Accessibility
     {
-        private readonly CDPSession _client;
+        private readonly Connection _client;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PuppeteerSharp.PageAccessibility.Accessibility"/> class.
+        /// Initializes a new instance of the <see cref="PageAccessibility.Accessibility"/> class.
         /// </summary>
         /// <param name="client">Client.</param>
-        public Accessibility(CDPSession client) => _client = client;
+        public Accessibility(Connection client) => _client = client;
 
         /// <summary>
         /// Snapshots the async.

@@ -1,8 +1,8 @@
 using System.Collections.Generic;
+using CefSharp.Puppeteer.Media;
 using Newtonsoft.Json;
-using PuppeteerSharp.Media;
 
-namespace PuppeteerSharp.Messaging
+namespace CefSharp.Puppeteer.Messaging
 {
     internal class EmulationSetEmulatedMediaFeatureRequest
     {

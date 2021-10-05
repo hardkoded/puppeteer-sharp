@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Globalization;
 using System.Threading.Tasks;
 
-namespace PuppeteerSharp.Helpers
+namespace CefSharp.Puppeteer.Helpers
 {
     internal class AsyncDictionaryHelper<TKey, TValue>
     {

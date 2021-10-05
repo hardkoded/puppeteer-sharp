@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace PuppeteerSharp.Messaging
+namespace CefSharp.Puppeteer.Messaging
 {
     internal class RuntimeCallFunctionOnRequest
     {

@@ -1,17 +1,17 @@
 using System;
 using System.Threading.Tasks;
-using PuppeteerSharp.Media;
-using PuppeteerSharp.Messaging;
+using CefSharp.Puppeteer.Media;
+using CefSharp.Puppeteer.Messaging;
 
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     internal class EmulationManager
     {
-        private readonly CDPSession _client;
+        private readonly Connection _client;
         private bool _hasTouch;
         private bool _emulatingMobile;
 
-        public EmulationManager(CDPSession client)
+        public EmulationManager(Connection client)
         {
             _client = client;
         }

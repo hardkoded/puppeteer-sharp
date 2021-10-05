@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace PuppeteerSharp.Messaging
+namespace CefSharp.Puppeteer.Messaging
 {
     internal class ContinueWithAuthRequest
     {

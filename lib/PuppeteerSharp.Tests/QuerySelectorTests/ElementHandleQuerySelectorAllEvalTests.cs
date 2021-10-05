@@ -1,5 +1,5 @@
-using System;
 using System.Threading.Tasks;
+using CefSharp.Puppeteer;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using Xunit;

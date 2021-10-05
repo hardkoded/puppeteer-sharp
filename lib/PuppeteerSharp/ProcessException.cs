@@ -1,14 +1,14 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     /// <summary>
-    /// process exception thrown by <see cref="Launcher"/>.
+    /// process exception
     /// </summary>
     #pragma warning disable 612, 618
     [Serializable]
-    public class ProcessException : ChromiumProcessException
+    public class ProcessException : Exception
     #pragma warning restore 612, 618
     {
         /// <summary>

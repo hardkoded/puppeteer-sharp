@@ -1,7 +1,7 @@
 using System;
-using PuppeteerSharp.Messaging;
+using CefSharp.Puppeteer.Messaging;
 
-namespace PuppeteerSharp.PageCoverage
+namespace CefSharp.Puppeteer.PageCoverage
 {
     internal class CoverageEntryPoint : IComparable<CoverageEntryPoint>
     {

@@ -1,21 +1,21 @@
-using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
-using PuppeteerSharp.Helpers;
+using CefSharp.Puppeteer.Helpers;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
+using CefSharp.Puppeteer;
+using Microsoft.AspNetCore.Http;
 
 namespace PuppeteerSharp.Tests.NavigationTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageGotoTests : PuppeteerPageBaseTest
     {
-        public PageGotoTests(ITestOutputHelper output) : base(output)
+        public PageGotoTests(ITestOutputHelper output) : base(output, ignoreHTTPSerrors:false)
         {
         }
 
@@ -28,7 +28,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should work with anchor navigation")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldWorkWithAnchorNavigation()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -67,7 +67,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should work with subframes return 204")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldWorkWithSubframesReturn204()
         {
             Server.SetRoute("/frames/frame.html", context =>
@@ -79,7 +79,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should fail when server returns 204")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldFailWhenServerReturns204()
         {
             Server.SetRoute("/empty.html", context =>
@@ -90,14 +90,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             var exception = await Assert.ThrowsAnyAsync<PuppeteerException>(
                 () => Page.GoToAsync(TestConstants.EmptyPage));
 
-            if (TestConstants.IsChrome)
-            {
-                Assert.Contains("net::ERR_ABORTED", exception.Message);
-            }
-            else
-            {
-                Assert.Contains("NS_BINDING_ABORTED", exception.Message);
-            }
+            Assert.Contains("net::ERR_ABORTED", exception.Message);
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should navigate to empty page with domcontentloaded")]
@@ -126,7 +119,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should navigate to empty page with networkidle0")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldNavigateToEmptyPageWithNetworkidle0()
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage, new NavigationOptions { WaitUntil = new[] { WaitUntilNavigation.Networkidle0 } });
@@ -134,7 +127,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should navigate to empty page with networkidle2")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldNavigateToEmptyPageWithNetworkidle2()
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage, new NavigationOptions { WaitUntil = new[] { WaitUntilNavigation.Networkidle2 } });
@@ -142,23 +135,16 @@ namespace PuppeteerSharp.Tests.NavigationTests
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should fail when navigating to bad url")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldFailWhenNavigatingToBadUrl()
         {
             var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await Page.GoToAsync("asdfasdf"));
 
-            if (TestConstants.IsChrome)
-            {
-                Assert.Contains("Cannot navigate to invalid URL", exception.Message);
-            }
-            else
-            {
-                Assert.Contains("Invalid url", exception.Message);
-            }
+            Assert.Contains("Cannot navigate to invalid URL", exception.Message);
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should fail when navigating to bad SSL")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldFailWhenNavigatingToBadSSL()
         {
             Page.Request += (_, e) => Assert.NotNull(e.Request);
@@ -167,14 +153,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
 
             var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await Page.GoToAsync(TestConstants.HttpsPrefix + "/empty.html"));
 
-            if (TestConstants.IsChrome)
-            {
-                Assert.Contains("net::ERR_CERT_AUTHORITY_INVALID", exception.Message);
-            }
-            else
-            {
-                Assert.Contains("SSL_ERROR_UNKNOWN", exception.Message);
-            }
+            Assert.Contains("net::ERR_CERT_AUTHORITY_INVALID", exception.Message);
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should fail when navigating to bad SSL after redirects")]
@@ -183,14 +162,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         {
             var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await Page.GoToAsync(TestConstants.HttpsPrefix + "/redirect/2.html"));
 
-            if (TestConstants.IsChrome)
-            {
-                Assert.Contains("net::ERR_CERT_AUTHORITY_INVALID", exception.Message);
-            }
-            else
-            {
-                Assert.Contains("SSL_ERROR_UNKNOWN", exception.Message);
-            }
+            Assert.Contains("net::ERR_CERT_AUTHORITY_INVALID", exception.Message);
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should fail when main resources failed to load")]
@@ -199,14 +171,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         {
             var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await Page.GoToAsync("http://localhost:44123/non-existing-url"));
 
-            if (TestConstants.IsChrome)
-            {
-                Assert.Contains("net::ERR_CONNECTION_REFUSED", exception.Message);
-            }
-            else
-            {
-                Assert.Contains("NS_ERROR_CONNECTION_REFUSED", exception.Message);
-            }
+            Assert.Contains("net::ERR_CONNECTION_REFUSED", exception.Message);
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should fail when exceeding maximum navigation timeout")]
@@ -279,7 +244,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should work when navigating to data url")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldWorkWhenNavigatingToDataUrl()
         {
             var response = await Page.GoToAsync("data:text/html,hello");
@@ -308,7 +273,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should wait for network idle to succeed navigation")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldWaitForNetworkIdleToSucceedNavigation()
         {
             var responses = new List<TaskCompletionSource<Func<HttpResponse, Task>>>();
@@ -398,7 +363,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should navigate to dataURL and fire dataURL requests")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldNavigateToDataURLAndFireDataURLRequests()
         {
             var requests = new List<Request>();
@@ -417,7 +382,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should navigate to URL with hash and fire requests without hash")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldNavigateToURLWithHashAndFireRequestsWithoutHash()
         {
             var requests = new List<Request>();
@@ -455,7 +420,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should send referer")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldSendReferer()
         {
             await Page.SetRequestInterceptionAsync(true);

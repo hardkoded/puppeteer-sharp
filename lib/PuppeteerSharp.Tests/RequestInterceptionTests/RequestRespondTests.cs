@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
+using CefSharp.Puppeteer;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using Xunit;
@@ -17,7 +18,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Request.respond", "should work")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldWork()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -46,7 +47,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         /// As the goal here is testing HTTP codes that are not in Chromium (see https://cs.chromium.org/chromium/src/net/http/http_status_code_list.h?sq=package:chromium&g=0) we will use code 426: Upgrade Required
         /// </summary>
         [PuppeteerTest("requestinterception.spec.ts", "Request.respond", "should work with status code 422")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldWorkReturnStatusPhrases()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -66,7 +67,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Request.respond", "should redirect")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldRedirect()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -97,7 +98,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Request.respond", "should allow mocking binary responses")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldAllowMockingBinaryResponses()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -123,7 +124,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Request.respond", "should stringify intercepted request response headers")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldStringifyInterceptedRequestResponseHeaders()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -146,7 +147,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.Equal("Yo, page!", await Page.EvaluateExpressionAsync<string>("document.body.textContent"));
         }
 
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldAllowMultipleInterceptedRequestResponseHeaders()
         {
             await Page.SetRequestInterceptionAsync(true);

@@ -2,12 +2,11 @@ using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     /// <summary>
     /// Override permission.
     /// </summary>
-    /// <seealso cref="BrowserContext.OverridePermissionsAsync(string, System.Collections.Generic.IEnumerable{OverridePermission})"/>
     [JsonConverter(typeof(StringEnumConverter))]
     public enum OverridePermission
     {

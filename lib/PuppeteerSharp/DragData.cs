@@ -1,4 +1,4 @@
-﻿namespace PuppeteerSharp
+﻿namespace CefSharp.Puppeteer
 {
     /// <summary>
     /// Data returned by the drag methods.

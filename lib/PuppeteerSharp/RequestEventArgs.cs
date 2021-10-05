@@ -1,6 +1,6 @@
 using System;
 
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     /// <summary>
     /// Arguments used by <see cref="Page"/> events.

@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     internal class WaitTask : IDisposable
     {

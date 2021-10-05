@@ -1,8 +1,8 @@
 using System;
+using CefSharp.Puppeteer.Media;
 using Newtonsoft.Json;
-using PuppeteerSharp.Media;
 
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     /// <summary>
     /// Bounding box data returned by <see cref="ElementHandle.BoundingBoxAsync"/>.
@@ -31,7 +31,7 @@ namespace PuppeteerSharp
         public decimal Height { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:PuppeteerSharp.BoundingBox"/> class.
+        /// Initializes a new instance of the <see cref="BoundingBox"/> class.
         /// </summary>
         public BoundingBox()
         {
@@ -75,11 +75,11 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="PuppeteerSharp.BoundingBox"/> is equal to the current <see cref="T:PuppeteerSharp.BoundingBox"/>.
+        /// Determines whether the specified <see cref="BoundingBox"/> is equal to the current <see cref="BoundingBox"/>.
         /// </summary>
-        /// <param name="obj">The <see cref="PuppeteerSharp.BoundingBox"/> to compare with the current <see cref="T:PuppeteerSharp.BoundingBox"/>.</param>
-        /// <returns><c>true</c> if the specified <see cref="PuppeteerSharp.BoundingBox"/> is equal to the current
-        /// <see cref="T:PuppeteerSharp.BoundingBox"/>; otherwise, <c>false</c>.</returns>
+        /// <param name="obj">The <see cref="BoundingBox"/> to compare with the current <see cref="BoundingBox"/>.</param>
+        /// <returns><c>true</c> if the specified <see cref="BoundingBox"/> is equal to the current
+        /// <see cref="BoundingBox"/>; otherwise, <c>false</c>.</returns>
         public bool Equals(BoundingBox obj)
             => obj != null &&
                 obj.X == X &&

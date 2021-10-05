@@ -2,15 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CefSharp.Puppeteer.Helpers.Json;
+using CefSharp.Puppeteer.Messaging;
 using Microsoft.Extensions.Logging;
-using PuppeteerSharp.Helpers.Json;
-using PuppeteerSharp.Messaging;
 
-namespace PuppeteerSharp.PageCoverage
+namespace CefSharp.Puppeteer.PageCoverage
 {
     internal class JSCoverage
     {
-        private readonly CDPSession _client;
+        private readonly Connection _client;
         private readonly Dictionary<string, string> _scriptURLs;
         private readonly Dictionary<string, string> _scriptSources;
         private readonly ILogger _logger;
@@ -19,13 +19,13 @@ namespace PuppeteerSharp.PageCoverage
         private bool _resetOnNavigation;
         private bool _reportAnonymousScripts;
 
-        public JSCoverage(CDPSession client)
+        public JSCoverage(Connection client)
         {
             _client = client;
             _enabled = false;
             _scriptURLs = new Dictionary<string, string>();
             _scriptSources = new Dictionary<string, string>();
-            _logger = _client.Connection.LoggerFactory.CreateLogger<JSCoverage>();
+            _logger = _client.LoggerFactory.CreateLogger<JSCoverage>();
 
             _resetOnNavigation = false;
         }

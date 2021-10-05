@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
-using PuppeteerSharp.Messaging;
+using CefSharp.Puppeteer.Messaging;
 
-namespace PuppeteerSharp.Input
+namespace CefSharp.Puppeteer.Input
 {
     /// <summary>
     /// Keyboard provides an api for managing a virtual keyboard. The high level api is <see cref="TypeAsync(string, TypeOptions)"/>, which takes raw characters and generates proper keydown, keypress/input, and keyup events on your page.
@@ -12,12 +12,12 @@ namespace PuppeteerSharp.Input
     /// </summary>
     public class Keyboard
     {
-        private readonly CDPSession _client;
+        private readonly Connection _client;
         private readonly HashSet<string> _pressedKeys = new HashSet<string>();
 
         internal int Modifiers { get; set; }
 
-        internal Keyboard(CDPSession client)
+        internal Keyboard(Connection client)
         {
             _client = client;
         }

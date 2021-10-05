@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.Events.Popup", "should work")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Fact]
         public async Task ShouldWork()
         {
             var popupTaskSource = new TaskCompletionSource<Page>();
@@ -29,7 +29,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.Events.Popup", "should work with noopener")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Fact]
         public async Task ShouldWorkWithNoopener()
         {
             var popupTaskSource = new TaskCompletionSource<Page>();
@@ -44,7 +44,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.Events.Popup", "should work with clicking target=_blank and without rel=opener")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Fact]
         public async Task ShouldWorkWithClickingTargetBlankWithoutRelOpener()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -62,7 +62,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.Events.Popup", "should work with clicking target=_blank and with rel=opener")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Fact]
         public async Task ShouldWorkWithFakeClickingTargetBlankAndReNoopener()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -80,7 +80,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.Events.Popup", "should work with fake-clicking target=_blank and rel=noopener")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Fact]
         public async Task ShouldWorkWithFakeClickingTargetBlankAndRelNoopener()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -98,7 +98,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.Events.Popup", "should work with clicking target=_blank and rel=noopener")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Fact]
         public async Task ShouldWorkWithClickingTargetBlankAndRelNoopener()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

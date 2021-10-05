@@ -1,6 +1,6 @@
 using System.Runtime.Serialization;
 
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     /// <summary>
     /// Console type used on <see cref="ConsoleMessage"/>.

@@ -1,10 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
+using CefSharp.Puppeteer.Media;
 using Newtonsoft.Json;
-using PuppeteerSharp.Media;
 
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     /// <summary>
     /// Options to be used in <see cref="Page.ScreenshotAsync(string, ScreenshotOptions)"/>, <see cref="Page.ScreenshotStreamAsync(ScreenshotOptions)"/> and <see cref="Page.ScreenshotDataAsync(ScreenshotOptions)"/>
@@ -65,7 +64,12 @@ namespace PuppeteerSharp
         [JsonIgnore]
         public bool BurstMode { get; set; } = false;
 
-        internal static ScreenshotType? GetScreenshotTypeFromFile(string file)
+        /// <summary>
+        /// Get ScreenShot Type from filename
+        /// </summary>
+        /// <param name="file">file name</param>
+        /// <returns>screenshot type</returns>
+        public static ScreenshotType? GetScreenshotTypeFromFile(string file)
         {
             var extension = new FileInfo(file).Extension.Replace(".", string.Empty);
             _extensionScreenshotTypeMap.TryGetValue(extension, out var result);

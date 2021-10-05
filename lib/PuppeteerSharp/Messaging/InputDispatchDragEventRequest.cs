@@ -1,6 +1,6 @@
-using PuppeteerSharp.Input;
+using CefSharp.Puppeteer.Input;
 
-namespace PuppeteerSharp.Messaging
+namespace CefSharp.Puppeteer.Messaging
 {
     internal class InputDispatchDragEventRequest
     {

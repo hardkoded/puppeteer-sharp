@@ -1,6 +1,6 @@
 using Newtonsoft.Json.Linq;
 
-namespace PuppeteerSharp.Messaging
+namespace CefSharp.Puppeteer.Messaging
 {
     internal class ConnectionResponse
     {
@@ -13,7 +13,5 @@ namespace PuppeteerSharp.Messaging
         public string Method { get; set; }
 
         public JToken Params { get; set; }
-
-        public string SessionId { get; set; }
     }
 }

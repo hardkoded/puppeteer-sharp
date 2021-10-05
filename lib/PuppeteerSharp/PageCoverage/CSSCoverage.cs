@@ -2,16 +2,16 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CefSharp.Puppeteer.Helpers;
+using CefSharp.Puppeteer.Helpers.Json;
+using CefSharp.Puppeteer.Messaging;
 using Microsoft.Extensions.Logging;
-using PuppeteerSharp.Helpers;
-using PuppeteerSharp.Helpers.Json;
-using PuppeteerSharp.Messaging;
 
-namespace PuppeteerSharp.PageCoverage
+namespace CefSharp.Puppeteer.PageCoverage
 {
     internal class CSSCoverage
     {
-        private readonly CDPSession _client;
+        private readonly Connection _client;
         private readonly ConcurrentDictionary<string, (string Url, string Source)> _stylesheets;
         private readonly DeferredTaskQueue _callbackQueue;
         private readonly ILogger _logger;
@@ -19,12 +19,12 @@ namespace PuppeteerSharp.PageCoverage
         private bool _enabled;
         private bool _resetOnNavigation;
 
-        public CSSCoverage(CDPSession client)
+        public CSSCoverage(Connection client)
         {
             _client = client;
             _enabled = false;
             _stylesheets = new ConcurrentDictionary<string, (string Url, string Source)>();
-            _logger = _client.Connection.LoggerFactory.CreateLogger<CSSCoverage>();
+            _logger = _client.LoggerFactory.CreateLogger<CSSCoverage>();
             _callbackQueue = new DeferredTaskQueue();
 
             _resetOnNavigation = false;

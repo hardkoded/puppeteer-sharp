@@ -1,4 +1,4 @@
-namespace PuppeteerSharp.Messaging
+namespace CefSharp.Puppeteer.Messaging
 {
     internal class EmulationSetEmulatedVisionDeficiencyRequest
     {

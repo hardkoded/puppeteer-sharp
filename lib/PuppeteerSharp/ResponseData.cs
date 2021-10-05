@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text;
 
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     /// <summary>
     /// Response that will fulfill a request.

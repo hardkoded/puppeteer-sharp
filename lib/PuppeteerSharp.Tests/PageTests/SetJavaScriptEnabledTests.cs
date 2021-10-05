@@ -15,7 +15,6 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.setJavaScriptEnabled", "should work")]
-        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
             await Page.SetJavaScriptEnabledAsync(false);

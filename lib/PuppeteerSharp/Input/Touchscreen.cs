@@ -1,15 +1,15 @@
 using System;
 using System.Threading.Tasks;
-using PuppeteerSharp.Messaging;
+using CefSharp.Puppeteer.Messaging;
 
-namespace PuppeteerSharp.Input
+namespace CefSharp.Puppeteer.Input
 {
     /// <summary>
     /// Provides methods to interact with the touch screen
     /// </summary>
     public class Touchscreen
     {
-        private readonly CDPSession _client;
+        private readonly Connection _client;
         private readonly Keyboard _keyboard;
 
         /// <summary>
@@ -17,7 +17,7 @@ namespace PuppeteerSharp.Input
         /// </summary>
         /// <param name="client">The client</param>
         /// <param name="keyboard">The keyboard</param>
-        public Touchscreen(CDPSession client, Keyboard keyboard)
+        public Touchscreen(Connection client, Keyboard keyboard)
         {
             _client = client;
             _keyboard = keyboard;

@@ -1,4 +1,4 @@
-namespace PuppeteerSharp.Input
+namespace CefSharp.Puppeteer.Input
 {
     internal class KeyDefinition
     {

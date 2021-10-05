@@ -1,5 +1,7 @@
 using System;
 using System.Threading.Tasks;
+using CefSharp;
+using CefSharp.Puppeteer;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using Xunit;
@@ -16,11 +18,11 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        async Task Usage(Browser browser)
+        async Task Usage(IWebBrowser chromiumWebBrowser)
         {
             #region SetContentAsync
 
-            await using var page = await browser.NewPageAsync();
+            await using var page = await chromiumWebBrowser.GetPuppeteerPageAsync();
             await page.SetContentAsync("<div>My Receipt</div>");
             var result = await page.GetContentAsync();
 

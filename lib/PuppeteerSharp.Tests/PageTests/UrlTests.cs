@@ -18,7 +18,7 @@ namespace PuppeteerSharp.Tests.PageTests
         [PuppeteerFact]
         public async Task ShouldWork()
         {
-            Assert.Equal(TestConstants.AboutBlank, Page.Url);
+            Assert.Equal(TestConstants.ServerIpUrl + "/", Page.Url);
             await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.Equal(TestConstants.EmptyPage, Page.Url);
         }

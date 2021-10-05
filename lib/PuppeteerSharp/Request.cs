@@ -6,10 +6,10 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using CefSharp.Puppeteer.Messaging;
 using Microsoft.Extensions.Logging;
-using PuppeteerSharp.Messaging;
 
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     /// <summary>
     /// Whenever the page sends a request, the following events are emitted by puppeteer's page:
@@ -24,14 +24,14 @@ namespace PuppeteerSharp
     public class Request
     {
         #region Private Members
-        private readonly CDPSession _client;
+        private readonly Connection _client;
         private readonly bool _allowInterception;
         private readonly ILogger _logger;
         private bool _interceptionHandled;
         #endregion
 
         internal Request(
-            CDPSession client,
+            Connection client,
             Frame frame,
             string interceptionId,
             bool allowInterception,
@@ -41,7 +41,7 @@ namespace PuppeteerSharp
             _client = client;
             _allowInterception = allowInterception;
             _interceptionHandled = false;
-            _logger = _client.Connection.LoggerFactory.CreateLogger<Request>();
+            _logger = _client.LoggerFactory.CreateLogger<Request>();
 
             RequestId = e.RequestId;
             InterceptionId = interceptionId;

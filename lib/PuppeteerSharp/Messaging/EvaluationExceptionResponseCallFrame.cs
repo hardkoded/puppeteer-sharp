@@ -1,4 +1,4 @@
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     internal class EvaluationExceptionResponseCallFrame
     {

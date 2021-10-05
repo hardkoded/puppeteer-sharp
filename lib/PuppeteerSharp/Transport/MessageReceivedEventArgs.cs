@@ -1,6 +1,6 @@
 using System;
 
-namespace PuppeteerSharp.Transport
+namespace CefSharp.Puppeteer.Transport
 {
     /// <summary>
     /// Message received event arguments.
@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Transport
     public class MessageReceivedEventArgs : EventArgs
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="PuppeteerSharp.Transport.MessageReceivedEventArgs"/> class.
+        /// Initializes a new instance of the <see cref="Transport.MessageReceivedEventArgs"/> class.
         /// </summary>
         /// <param name="message">Message.</param>
         public MessageReceivedEventArgs(string message) => Message = message;

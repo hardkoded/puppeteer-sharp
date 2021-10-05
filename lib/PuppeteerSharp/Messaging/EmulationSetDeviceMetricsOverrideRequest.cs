@@ -1,6 +1,6 @@
-using PuppeteerSharp.Media;
+using CefSharp.Puppeteer.Media;
 
-namespace PuppeteerSharp.Messaging
+namespace CefSharp.Puppeteer.Messaging
 {
     internal class EmulationSetDeviceMetricsOverrideRequest
     {

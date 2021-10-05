@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using CefSharp.Puppeteer;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using Xunit;
@@ -54,7 +55,7 @@ namespace PuppeteerSharp.Tests.TracingTests
         }
 
         [PuppeteerTest("tracing.spec.ts", "Tracing", "should output a trace")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldOutputATrace()
         {
             await Page.Tracing.StartAsync(new TracingOptions
@@ -69,7 +70,7 @@ namespace PuppeteerSharp.Tests.TracingTests
         }
 
         [PuppeteerTest("tracing.spec.ts", "Tracing", "should run with custom categories if provided")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldRunWithCustomCategoriesProvided()
         {
             await Page.Tracing.StartAsync(new TracingOptions
@@ -92,29 +93,29 @@ namespace PuppeteerSharp.Tests.TracingTests
             }
         }
 
-        [PuppeteerTest("tracing.spec.ts", "Tracing", "should throw if tracing on two pages")]
-        [SkipBrowserFact(skipFirefox: true)]
-        public async Task ShouldThrowIfTracingOnTwoPages()
-        {
-            await Page.Tracing.StartAsync(new TracingOptions
-            {
-                Path = _file
-            });
-            var newPage = await Browser.NewPageAsync();
-            await Assert.ThrowsAsync<InvalidOperationException>(async () =>
-            {
-                await Page.Tracing.StartAsync(new TracingOptions
-                {
-                    Path = _file
-                });
-            });
+        //[PuppeteerTest("tracing.spec.ts", "Tracing", "should throw if tracing on two pages")]
+        //[PuppeteerFact]
+        //public async Task ShouldThrowIfTracingOnTwoPages()
+        //{
+        //    await Page.Tracing.StartAsync(new TracingOptions
+        //    {
+        //        Path = _file
+        //    });
+        //    var newPage = await Browser.NewPageAsync();
+        //    await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+        //    {
+        //        await Page.Tracing.StartAsync(new TracingOptions
+        //        {
+        //            Path = _file
+        //        });
+        //    });
 
-            await newPage.CloseAsync();
-            await Page.Tracing.StopAsync();
-        }
+        //    await newPage.CloseAsync();
+        //    await Page.Tracing.StopAsync();
+        //}
 
         [PuppeteerTest("tracing.spec.ts", "Tracing", "should return a buffer")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldReturnABuffer()
         {
             await Page.Tracing.StartAsync(new TracingOptions
@@ -129,7 +130,7 @@ namespace PuppeteerSharp.Tests.TracingTests
         }
 
         [PuppeteerTest("tracing.spec.ts", "Tracing", "should work without options")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldWorkWithoutOptions()
         {
             await Page.Tracing.StartAsync();
@@ -139,7 +140,7 @@ namespace PuppeteerSharp.Tests.TracingTests
         }
 
         [PuppeteerTest("tracing.spec.ts", "Tracing", "should support a buffer without a path")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldSupportABufferWithoutAPath()
         {
             await Page.Tracing.StartAsync(new TracingOptions

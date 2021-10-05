@@ -1,8 +1,8 @@
 using System.Runtime.Serialization;
+using CefSharp.Puppeteer.Helpers.Json;
 using Newtonsoft.Json;
-using PuppeteerSharp.Helpers.Json;
 
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     [JsonConverter(typeof(FlexibleStringEnumConverter), Other)]
     internal enum DOMWorldType

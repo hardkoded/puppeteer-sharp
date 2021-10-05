@@ -1,6 +1,6 @@
 using System;
 
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     /// <summary>
     /// <see cref="Page.Response"/> arguments.

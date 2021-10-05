@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using CefSharp.Puppeteer;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using Xunit;
@@ -14,7 +15,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
         }
 
         [PuppeteerTest("emulation.spec.ts", "Page.viewport", "should get the proper viewport size")]
-        [PuppeteerFact]
+        [PuppeteerFact(Skip = "TODO: OFFSCREEN DOESN'T SUPPORT RESIZE")]
         public async Task ShouldGetTheProperViewPortSize()
         {
             Assert.Equal(800, Page.Viewport.Width);
@@ -27,7 +28,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
         }
 
         [PuppeteerTest("emulation.spec.ts", "Page.viewport", "should support mobile emulation")]
-        [PuppeteerFact]
+        [PuppeteerFact(Skip = "TODO: OFFSCREEN DOESN'T SUPPORT RESIZE")]
         public async Task ShouldSupportMobileEmulation()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/mobile.html");
@@ -97,7 +98,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
         }
 
         [PuppeteerTest("emulation.spec.ts", "Page.viewport", "should support landscape emulation")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact(Skip = "TODO: OFFSCREEN DOESN'T SUPPORT RESIZE")]
         public async Task ShouldSupportLandscapeEmulation()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/mobile.html");

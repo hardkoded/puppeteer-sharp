@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PuppeteerSharp.Helpers
+namespace CefSharp.Puppeteer.Helpers
 {
     /// <summary>
     /// Task helper.

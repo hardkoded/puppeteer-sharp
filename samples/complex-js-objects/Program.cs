@@ -1,7 +1,8 @@
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using PuppeteerSharp;
+using CefSharp.OffScreen;
+using CefSharp.Puppeteer;
 
 namespace Example.ComplexJSObjects
 {
@@ -17,31 +18,27 @@ namespace Example.ComplexJSObjects
 
         static async Task Main(string[] args)
         {
-            var options = new LaunchOptions { Headless = true };
+            using var chromiumWebBrowser = new ChromiumWebBrowser("https://google.com");
 
-            Console.WriteLine("Downloading chromium");
+            await chromiumWebBrowser.WaitForInitialLoadAsync();
 
-            await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
+            await using var page = await chromiumWebBrowser.GetPuppeteerPageAsync();
 
             Console.WriteLine("Navigating to Hacker News");
 
-            using (var browser = await Puppeteer.LaunchAsync(options))
-            using (var page = await browser.NewPageAsync())
-            {
-                await page.GoToAsync("https://news.ycombinator.com/");
-                Console.WriteLine("Get all urls from page");
-                var jsCode = @"() => {
-const selectors = Array.from(document.querySelectorAll('a[class=""storylink""]'));
+            await page.GoToAsync("https://news.ycombinator.com/");
+            Console.WriteLine("Get all urls from page");
+            var jsCode = @"() => {
+const selectors = Array.from(document.querySelectorAll('a[class=""titlelink""]'));
 return selectors.map( t=> {return { title: t.innerHTML, url: t.href}});
 }";
-                var results = await page.EvaluateFunctionAsync<Data[]>(jsCode);
-                foreach (var result in results)
-                {
-                    Console.WriteLine(result.ToString());
-                }
-                Console.WriteLine("Press any key to continue...");
-                Console.ReadLine();
+            var results = await page.EvaluateFunctionAsync<Data[]>(jsCode);
+            foreach (var result in results)
+            {
+                Console.WriteLine(result.ToString());
             }
+            Console.WriteLine("Press any key to continue...");
+            Console.ReadKey();
         }
     }
 }

@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CefSharp.Puppeteer.Helpers;
+using CefSharp.Puppeteer.Helpers.Json;
+using CefSharp.Puppeteer.Messaging;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PuppeteerSharp.Helpers;
-using PuppeteerSharp.Helpers.Json;
-using PuppeteerSharp.Messaging;
 
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     /// <summary>
     /// JSHandle represents an in-page JavaScript object. JSHandles can be created with the <see cref="Page.EvaluateExpressionHandleAsync(string)"/> and <see cref="Page.EvaluateFunctionHandleAsync(string, object[])"/> methods.
@@ -15,11 +15,11 @@ namespace PuppeteerSharp
     [JsonConverter(typeof(JSHandleMethodConverter))]
     public class JSHandle
     {
-        internal JSHandle(ExecutionContext context, CDPSession client, RemoteObject remoteObject)
+        internal JSHandle(ExecutionContext context, Connection client, RemoteObject remoteObject)
         {
             ExecutionContext = context;
             Client = client;
-            Logger = Client.Connection.LoggerFactory.CreateLogger(GetType());
+            Logger = Client.LoggerFactory.CreateLogger(GetType());
             RemoteObject = remoteObject;
         }
 
@@ -42,7 +42,7 @@ namespace PuppeteerSharp
         /// Gets the client.
         /// </summary>
         /// <value>The client.</value>
-        protected CDPSession Client { get; }
+        protected Connection Client { get; }
         /// <summary>
         /// Gets the logger.
         /// </summary>

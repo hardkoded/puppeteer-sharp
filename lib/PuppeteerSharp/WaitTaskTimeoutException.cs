@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     /// <summary>
     /// Timeout exception that might be thrown by <c>WaitFor</c> methods in <see cref="Frame"/>.
@@ -21,14 +21,14 @@ namespace PuppeteerSharp
         public string ElementType { get; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PuppeteerSharp.WaitTaskTimeoutException"/> class.
+        /// Initializes a new instance of the <see cref="WaitTaskTimeoutException"/> class.
         /// </summary>
         public WaitTaskTimeoutException()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PuppeteerSharp.WaitTaskTimeoutException"/> class.
+        /// Initializes a new instance of the <see cref="WaitTaskTimeoutException"/> class.
         /// </summary>
         /// <param name="message">Message.</param>
         public WaitTaskTimeoutException(string message) : base(message)
@@ -36,7 +36,7 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PuppeteerSharp.WaitTaskTimeoutException"/> class.
+        /// Initializes a new instance of the <see cref="WaitTaskTimeoutException"/> class.
         /// </summary>
         /// <param name="timeout">Timeout.</param>
         /// <param name="elementType">Element type.</param>
@@ -47,7 +47,7 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PuppeteerSharp.WaitTaskTimeoutException"/> class.
+        /// Initializes a new instance of the <see cref="WaitTaskTimeoutException"/> class.
         /// </summary>
         /// <param name="message">Message.</param>
         /// <param name="innerException">Inner exception.</param>
@@ -56,7 +56,7 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PuppeteerSharp.WaitTaskTimeoutException"/> class.
+        /// Initializes a new instance of the <see cref="WaitTaskTimeoutException"/> class.
         /// </summary>
         /// <param name="info">Info.</param>
         /// <param name="context">Context.</param>

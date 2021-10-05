@@ -1,15 +1,15 @@
 using System.Threading.Tasks;
 
-using PuppeteerSharp.Messaging;
+using CefSharp.Puppeteer.Messaging;
 
-namespace PuppeteerSharp.Input
+namespace CefSharp.Puppeteer.Input
 {
     /// <summary>
     /// Provides methods to interact with the mouse
     /// </summary>
     public class Mouse
     {
-        private readonly CDPSession _client;
+        private readonly Connection _client;
         private readonly Keyboard _keyboard;
 
         private decimal _x = 0;
@@ -21,7 +21,7 @@ namespace PuppeteerSharp.Input
         /// </summary>
         /// <param name="client">The client</param>
         /// <param name="keyboard">The keyboard</param>
-        public Mouse(CDPSession client, Keyboard keyboard)
+        public Mouse(Connection client, Keyboard keyboard)
         {
             _client = client;
             _keyboard = keyboard;

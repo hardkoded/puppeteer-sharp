@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using PuppeteerSharp.Messaging;
+using CefSharp.Puppeteer.Messaging;
 
-namespace PuppeteerSharp.PageCoverage
+namespace CefSharp.Puppeteer.PageCoverage
 {
     /// <summary>
     /// gathers information about parts of JavaScript and CSS that were used by the page.
@@ -13,7 +13,7 @@ namespace PuppeteerSharp.PageCoverage
         private readonly JSCoverage _jsCoverage;
         private readonly CSSCoverage _cssCoverage;
 
-        internal Coverage(CDPSession client)
+        internal Coverage(Connection client)
         {
             _jsCoverage = new JSCoverage(client);
             _cssCoverage = new CSSCoverage(client);

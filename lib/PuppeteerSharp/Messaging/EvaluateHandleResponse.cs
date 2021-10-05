@@ -1,6 +1,6 @@
 using Newtonsoft.Json.Linq;
 
-namespace PuppeteerSharp.Messaging
+namespace CefSharp.Puppeteer.Messaging
 {
     internal class EvaluateHandleResponse
     {

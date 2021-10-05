@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using CefSharp.Puppeteer;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using Xunit;
@@ -17,7 +18,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Page.authenticate", "should work")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldWork()
         {
             Server.SetAuth("/empty.html", "user", "pass");
@@ -36,7 +37,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Page.authenticate", "should fail if wrong credentials")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldFailIfWrongCredentials()
         {
             Server.SetAuth("/empty.html", "user2", "pass2");
@@ -52,7 +53,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Page.authenticate", "should allow disable authentication")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldAllowDisableAuthentication()
         {
             Server.SetAuth("/empty.html", "user3", "pass3");
@@ -73,7 +74,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Page.authenticate", "should not disable caching")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact(Skip = "TODO: NOT WORKING IN CEF")]
         public async Task ShouldNotDisableCaching()
         {
             Server.SetAuth("/cached/one-style.css", "user4", "pass4");

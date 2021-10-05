@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using PuppeteerSharp.Media;
+using CefSharp.Puppeteer;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using Xunit;
@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
         }
 
         [PuppeteerTest("emulation.spec.ts", "Page.emulateTimezone", "should work")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldWork()
         {
             await Page.EvaluateExpressionAsync("globalThis.date = new Date(1479579154987);");
@@ -41,7 +41,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
         }
 
         [PuppeteerTest("emulation.spec.ts", "Page.emulateTimezone", "should throw for invalid timezone IDs")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldThrowForInvalidTimezoneId()
         {
             var exception = await Assert.ThrowsAnyAsync<PuppeteerException>(

@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     /// <summary>
     /// Exception thrown when a <see cref="Page"/> fails to navigate an URL.

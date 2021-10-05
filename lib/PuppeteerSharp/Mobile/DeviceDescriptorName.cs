@@ -1,4 +1,4 @@
-namespace PuppeteerSharp.Mobile
+namespace CefSharp.Puppeteer.Mobile
 {
     /// <summary>
     /// Device descriptor name.

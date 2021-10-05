@@ -1,6 +1,4 @@
-using Newtonsoft.Json;
-
-namespace PuppeteerSharp.Messaging
+namespace CefSharp.Puppeteer.Messaging
 {
     internal class ConnectionRequest
     {
@@ -9,7 +7,5 @@ namespace PuppeteerSharp.Messaging
         public string Method { get; set; }
 
         public object Params { get; set; }
-
-        public string SessionId { get; set; }
     }
 }

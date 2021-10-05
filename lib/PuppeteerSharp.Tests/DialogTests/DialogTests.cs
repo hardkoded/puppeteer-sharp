@@ -6,6 +6,7 @@ using Xunit;
 using Xunit.Abstractions;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
+using CefSharp.Puppeteer;
 
 namespace PuppeteerSharp.Tests.DialogTests
 {
@@ -33,7 +34,7 @@ namespace PuppeteerSharp.Tests.DialogTests
         }
 
         [PuppeteerTest("dialog.spec.ts", "Page.Events.Dialog", "should allow accepting prompts")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldAllowAcceptingPrompts()
         {
             Page.Dialog += async (_, e) =>

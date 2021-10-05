@@ -4,11 +4,11 @@ using System.Linq;
 using System.Numerics;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using CefSharp.Puppeteer.Helpers;
+using CefSharp.Puppeteer.Messaging;
 using Newtonsoft.Json.Linq;
-using PuppeteerSharp.Helpers;
-using PuppeteerSharp.Messaging;
 
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     /// <summary>
     /// The class represents a context for JavaScript execution. Examples of JavaScript contexts are:
@@ -21,18 +21,18 @@ namespace PuppeteerSharp
 
         private readonly string _evaluationScriptSuffix = $"//# sourceURL={EvaluationScriptUrl}";
         private static readonly Regex _sourceUrlRegex = new Regex(@"^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$", RegexOptions.Multiline);
-        private readonly CDPSession _client;
+        private readonly Connection _client;
         private readonly int _contextId;
 
         internal DOMWorld World { get; }
 
         internal ExecutionContext(
-            CDPSession client,
-            ContextPayload contextPayload,
+            Connection client,
+            int contextId,
             DOMWorld world)
         {
             _client = client;
-            _contextId = contextPayload.Id;
+            _contextId = contextId;
             World = world;
         }
 

@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace PuppeteerSharp.Transport
+namespace CefSharp.Puppeteer.Transport
 {
     /// <summary>
     /// Connection transport abstraction.
@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Transport
     public interface IConnectionTransport : IDisposable
     {
         /// <summary>
-        /// Gets a value indicating whether this <see cref="PuppeteerSharp.Transport.IConnectionTransport"/> is closed.
+        /// Gets a value indicating whether this <see cref="Transport.IConnectionTransport"/> is closed.
         /// </summary>
         bool IsClosed { get; }
         /// <summary>
@@ -22,10 +22,6 @@ namespace PuppeteerSharp.Transport
         /// <returns>The task.</returns>
         /// <param name="message">Message to send.</param>
         Task SendAsync(string message);
-        /// <summary>
-        /// Occurs when the transport is closed.
-        /// </summary>
-        event EventHandler<TransportClosedEventArgs> Closed;
         /// <summary>
         /// Occurs when a message is received.
         /// </summary>

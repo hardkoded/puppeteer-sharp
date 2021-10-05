@@ -1,7 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using PuppeteerSharp.Input;
+using CefSharp.Puppeteer;
+using CefSharp.Puppeteer.Input;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using Xunit;
@@ -39,7 +39,7 @@ namespace PuppeteerSharp.Tests.ClickTests
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click the button if window.Node is removed")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldClickTheButtonIfWindowNodeIsRemoved()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
@@ -64,19 +64,6 @@ namespace PuppeteerSharp.Tests.ClickTests
             Assert.Equal(42, await Page.EvaluateFunctionAsync<int>("() => window.CLICKED"));
         }
 
-        /// <summary>
-        /// This test is called ShouldNotThrowUnhandledPromiseRejectionWhenPageCloses in puppeteer.
-        /// </summary>
-        [PuppeteerTest("click.spec.ts", "Page.click", "should not throw UnhandledPromiseRejection when page closes")]
-        [PuppeteerFact(Skip = "We don't need this test")]
-        public async Task ShouldGracefullyFailWhenPageCloses()
-        {
-            var newPage = await Browser.NewPageAsync();
-            await Task.WhenAll(
-                newPage.CloseAsync(),
-                newPage.Mouse.ClickAsync(1, 2));
-        }
-
         [PuppeteerTest("click.spec.ts", "Page.click", "should click the button after navigation ")]
         [PuppeteerFact]
         public async Task ShouldClickTheButtonAfterNavigation()
@@ -89,7 +76,7 @@ namespace PuppeteerSharp.Tests.ClickTests
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click with disabled javascript")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldClickWithDisabledJavascript()
         {
             await Page.SetJavaScriptEnabledAsync(false);
@@ -201,7 +188,7 @@ namespace PuppeteerSharp.Tests.ClickTests
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click on checkbox label and toggle")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldClickOnCheckboxLabelAndToggle()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/checkbox.html");
@@ -230,7 +217,7 @@ namespace PuppeteerSharp.Tests.ClickTests
 
         // https://github.com/GoogleChrome/puppeteer/issues/161
         [PuppeteerTest("click.spec.ts", "Page.click", "should not hang with touch-enabled viewports")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldNotHangWithTouchEnabledViewports()
         {
             await Page.SetViewportAsync(TestConstants.IPhone.ViewPort);
@@ -312,7 +299,7 @@ namespace PuppeteerSharp.Tests.ClickTests
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click the button inside an iframe")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldClickTheButtonInsideAnIframe()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -343,7 +330,7 @@ namespace PuppeteerSharp.Tests.ClickTests
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click the button with deviceScaleFactor set")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact(Skip = "TODO: Fix this if possible")]
         public async Task ShouldClickTheButtonWithDeviceScaleFactorSet()
         {
             await Page.SetViewportAsync(new ViewPortOptions { Width = 400, Height = 400, DeviceScaleFactor = 5 });

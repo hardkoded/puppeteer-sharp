@@ -1,4 +1,4 @@
-namespace PuppeteerSharp.Media
+namespace CefSharp.Puppeteer.Media
 {
     /// <summary>
     /// Clip data.

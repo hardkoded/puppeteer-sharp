@@ -2,14 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using CefSharp.Puppeteer.Messaging;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using PuppeteerSharp.Messaging;
 
-namespace PuppeteerSharp.Helpers
+namespace CefSharp.Puppeteer.Helpers
 {
     /// <summary>
-    /// Provides an async queue for responses for <see cref="CDPSession.SendAsync"/>, so that responses can be handled
+    /// Provides an async queue for responses for <see cref="Connection.SendAsync{T}(string, object)"/>, so that responses can be handled
     /// async without risk callers causing a deadlock.
     /// </summary>
     internal class AsyncMessageQueue : IDisposable

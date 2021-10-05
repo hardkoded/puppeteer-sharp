@@ -1,9 +1,7 @@
 using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
-using PuppeteerSharp.Helpers;
-using PuppeteerSharp.Messaging;
+using CefSharp.Puppeteer.Messaging;
 
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     internal class FrameTree
     {

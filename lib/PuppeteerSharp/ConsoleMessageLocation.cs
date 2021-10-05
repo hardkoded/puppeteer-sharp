@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     /// <summary>
     /// Console message location.

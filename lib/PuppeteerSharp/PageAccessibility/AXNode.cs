@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using CefSharp.Puppeteer.Helpers;
+using CefSharp.Puppeteer.Messaging;
 using Newtonsoft.Json.Linq;
-using PuppeteerSharp.Helpers;
-using PuppeteerSharp.Messaging;
 
-namespace PuppeteerSharp.PageAccessibility
+namespace CefSharp.Puppeteer.PageAccessibility
 {
     internal class AXNode
     {
@@ -21,7 +21,7 @@ namespace PuppeteerSharp.PageAccessibility
         private readonly bool _editable;
         private readonly bool _expanded;
         private readonly bool _hidden;
-        private string _role;
+        private readonly string _role;
         private bool? _cachedHasFocusableChild;
 
         public AXNode(AccessibilityGetFullAXTreeResponse.AXTreeNode payload)

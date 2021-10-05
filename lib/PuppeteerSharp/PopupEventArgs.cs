@@ -1,6 +1,6 @@
 using System;
 
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     /// <summary>
     /// Popup event arguments. <see cref="Page.Popup"/>

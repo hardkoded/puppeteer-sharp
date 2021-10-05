@@ -1,4 +1,4 @@
-namespace PuppeteerSharp.Input
+namespace CefSharp.Puppeteer.Input
 {
     /// <summary>
     /// options to use with <see cref="Keyboard.DownAsync(string, DownOptions)"/>

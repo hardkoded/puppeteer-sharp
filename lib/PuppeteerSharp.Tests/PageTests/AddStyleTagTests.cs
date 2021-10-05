@@ -1,10 +1,11 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
+using PuppeteerSharp.Tests.Attributes;
 using Xunit;
 using Xunit.Abstractions;
+using CefSharp.Puppeteer;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
@@ -82,7 +83,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.addStyleTag", "should throw when added with content to the CSP page")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldThrowWhenAddedWithContentToTheCSPPage()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/csp.html");

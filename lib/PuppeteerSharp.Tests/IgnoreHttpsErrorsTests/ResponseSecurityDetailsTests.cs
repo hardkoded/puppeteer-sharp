@@ -1,14 +1,14 @@
-using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Connections.Features;
-using Microsoft.AspNetCore.Http;
 using Xunit;
 using Xunit.Abstractions;
-using PuppeteerSharp.Helpers;
+using CefSharp.Puppeteer.Helpers;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
+using Microsoft.AspNetCore.Connections.Features;
+using CefSharp.Puppeteer;
+using Microsoft.AspNetCore.Http;
 
 namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
 {
@@ -17,12 +17,11 @@ namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
     {
         public ResponseSecurityDetailsTests(ITestOutputHelper output) : base(output)
         {
-            DefaultOptions = TestConstants.DefaultBrowserOptions();
-            DefaultOptions.IgnoreHTTPSErrors = true;
+            
         }
 
         [PuppeteerTest("ignorehttpserrors.spec.ts", "Response.securityDetails", "Should Work")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldWork()
         {
             var requestTask = HttpsServer.WaitForRequest(
@@ -43,7 +42,7 @@ namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
         }
 
         [PuppeteerTest("ignorehttpserrors.spec.ts", "Response.securityDetails", "Network redirects should report SecurityDetails")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact(Skip ="TODO: CEF")]
         public async Task NetworkRedirectsShouldReportSecurityDetails()
         {
             var responses = new List<Response>();
@@ -70,7 +69,7 @@ namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
         }
 
         [PuppeteerTest("ignorehttpserrors.spec.ts", "Response.securityDetails", "should work with request interception")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldWorkWithRequestInterception()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -80,7 +79,7 @@ namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
         }
 
         [PuppeteerTest("ignorehttpserrors.spec.ts", "Response.securityDetails", "should work with mixed content")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact(Skip = "BUG: OOPIFs aren't working correct")]
         public async Task ShouldWorkWithMixedContent()
         {
             HttpsServer.SetRoute("/mixedcontent.html", async (context) =>

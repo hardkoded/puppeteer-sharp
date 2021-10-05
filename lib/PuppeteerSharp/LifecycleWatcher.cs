@@ -5,9 +5,9 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using PuppeteerSharp.Helpers;
+using CefSharp.Puppeteer.Helpers;
 
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     internal class LifecycleWatcher : IDisposable
     {

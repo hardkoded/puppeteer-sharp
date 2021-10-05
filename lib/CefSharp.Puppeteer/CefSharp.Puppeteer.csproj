@@ -1,0 +1,59 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp3.1;net472</TargetFrameworks>
+    <RuntimeIdentifier>$(NETCoreSdkRuntimeIdentifier)</RuntimeIdentifier>
+    <SelfContained Condition="'$(SelfContained)' == ''">false</SelfContained>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Alex Maitland, Darío Kondratiuk</Authors>
+    <Owners>amaitland</Owners>
+    <PackageProjectUrl>https://github.com/cefsharp/Puppeteer</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Summary>CefSharp Puppeteer - A cutdown version of PuppeteerSharp for use with CefSharp</Summary>
+    <PackageTags>chrome,browser,chromium-embedded,cefsharp,puppeteer</PackageTags>
+    <Title>CefSharp.Puppeteer</Title>
+    <Description>CefSharp Puppeteer - A cutdown version of PuppeteerSharp for use with CefSharp</Description>
+    <PackageId>CefSharp.Puppeteer</PackageId>
+    <PackageReleaseNotes></PackageReleaseNotes>
+    <VersionPrefix>1.0.0</VersionPrefix>
+    <VersionSuffix>preview</VersionSuffix>
+    <DebugType>embedded</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <EmbedAllSources>true</EmbedAllSources>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- Don't need to copy the CEF files to our output folder so set NoAction -->
+    <CefSharpBuildAction>NoAction</CefSharpBuildAction>
+    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
+  </PropertyGroup>
+  <Import Project="../Common/SignAssembly.props" />
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+    <PackageReference Include="CefSharp.Common" Version="95.7.141"/>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' != 'net472'">
+    <PackageReference Include="CefSharp.Common.NETCore" Version="95.7.141"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.1.0" />
+    <PackageReference Include="SharpZipLib" Version="1.3.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PuppeteerSharp\CefSharp.Puppeteer.Embedded.csproj">
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <IncludeAssets>CefSharp.Puppeteer.Embedded.dll</IncludeAssets>
+    </ProjectReference>
+  </ItemGroup>
+
+  <Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">
+    <ItemGroup>
+      <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths->WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))"/>
+    </ItemGroup>
+  </Target>
+</Project>

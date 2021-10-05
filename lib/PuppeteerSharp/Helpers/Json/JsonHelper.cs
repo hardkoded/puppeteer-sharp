@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace PuppeteerSharp.Helpers.Json
+namespace CefSharp.Puppeteer.Helpers.Json
 {
     internal static class JsonHelper
     {

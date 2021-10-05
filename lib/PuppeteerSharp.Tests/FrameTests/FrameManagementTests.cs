@@ -5,6 +5,7 @@ using System.Linq;
 using Xunit.Abstractions;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
+using CefSharp.Puppeteer;
 
 namespace PuppeteerSharp.Tests.FrameTests
 {
@@ -16,7 +17,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         }
 
         [PuppeteerTest("frame.spec.ts", "Frame Management", "should handle nested frames")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldHandleNestedFrames()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/nested-frames.html");
@@ -26,7 +27,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         }
 
         [PuppeteerTest("frame.spec.ts", "Frame Management", "should send events when frames are manipulated dynamically")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldSendEventsWhenFramesAreManipulatedDynamically()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -58,7 +59,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         }
 
         [PuppeteerTest("frame.spec.ts", "Frame Management", "should send \"framenavigated\" when navigating on anchor URLs")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldSendFrameNavigatedWhenNavigatingOnAnchorURLs()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -103,7 +104,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         }
 
         [PuppeteerTest("frame.spec.ts", "Frame Management", "should detach child frames on navigation")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldDetachChildFramesOnNavigation()
         {
             var attachedFrames = new List<Frame>();
@@ -146,7 +147,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         }
 
         [PuppeteerTest("frame.spec.ts", "Frame Management", "should report frame.name()")]
-        [PuppeteerFact]
+        [PuppeteerFact(Skip = "BUG: OOPIFs aren't working correct")]
         public async Task ShouldReportFrameName()
         {
             await FrameUtils.AttachFrameAsync(Page, "theFrameId", TestConstants.EmptyPage);
@@ -175,7 +176,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         }
 
         [PuppeteerTest("frame.spec.ts", "Frame Management", "should report different frame instance when frame re-attaches")]
-        [PuppeteerFact]
+        [PuppeteerFact(Skip = "BUG: OOPIFs aren't working correct")]
         public async Task ShouldReportDifferentFrameInstanceWhenFrameReAttaches()
         {
             var frame1 = await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);

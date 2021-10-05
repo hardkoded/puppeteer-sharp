@@ -1,4 +1,4 @@
-namespace PuppeteerSharp.Input
+namespace CefSharp.Puppeteer.Input
 {
     /// <summary>
     /// options to use when pressing a key.

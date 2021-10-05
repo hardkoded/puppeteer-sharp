@@ -5,6 +5,7 @@ using Xunit;
 using Xunit.Abstractions;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
+using CefSharp.Puppeteer;
 
 namespace PuppeteerSharp.Tests.PageTests.Events
 {
@@ -16,7 +17,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
         }
 
         [PuppeteerTest("page.spec.ts", "Page.Events.Console", "should work")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldWork()
         {
             ConsoleMessage message = null;
@@ -43,7 +44,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
         }
 
         [PuppeteerTest("page.spec.ts", "Page.Events.Console", "should work for different console API calls")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldWorkForDifferentConsoleApiCalls()
         {
             var messages = new List<ConsoleMessage>();
@@ -89,7 +90,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
         }
 
         [PuppeteerTest("page.spec.ts", "Page.Events.Console", "should not fail for window object")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldNotFailForWindowObject()
         {
             var consoleTcs = new TaskCompletionSource<string>();
@@ -111,7 +112,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
         }
 
         [PuppeteerTest("page.spec.ts", "Page.Events.Console", "should trigger correct Log")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldTriggerCorrectLog()
         {
             await Page.GoToAsync(TestConstants.AboutBlank);
@@ -123,18 +124,11 @@ namespace PuppeteerSharp.Tests.PageTests.Events
             var message = await messageTask.Task;
             Assert.Contains("No 'Access-Control-Allow-Origin'", message.Text);
 
-            if (TestConstants.IsChrome)
-            {
-                Assert.Equal(ConsoleType.Error, message.Type);
-            }
-            else
-            {
-                Assert.Equal(ConsoleType.Warning, message.Type);
-            }
+            Assert.Equal(ConsoleType.Error, message.Type);
         }
 
         [PuppeteerTest("page.spec.ts", "Page.Events.Console", "should have location when fetch fails")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldHaveLocationWhenFetchFails()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -155,7 +149,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
         }
 
         [PuppeteerTest("page.spec.ts", "Page.Events.Console", "should have location and stack trace for console API calls")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldHaveLocationForConsoleAPICalls()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -175,28 +169,6 @@ namespace PuppeteerSharp.Tests.PageTests.Events
                 LineNumber = 7,
                 ColumnNumber = 14
             }, args.Message.Location);
-        }
-
-        [PuppeteerTest("page.spec.ts", "Page.Events.Console", "should not throw when there are console messages in detached iframes")]
-        [SkipBrowserFact(skipFirefox: true)]
-        public async Task ShouldNotThrowWhenThereAreConsoleMessagesInDetachedIframes()
-        {
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            await Page.EvaluateFunctionAsync(@"async () =>
-            {
-                // 1. Create a popup that Puppeteer is not connected to.
-                const win = window.open(window.location.href, 'Title', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=780,height=200,top=0,left=0');
-                await new Promise(x => win.onload = x);
-                // 2. In this popup, create an iframe that console.logs a message.
-                win.document.body.innerHTML = `<iframe src='/consolelog.html'></iframe>`;
-                const frame = win.document.querySelector('iframe');
-                await new Promise(x => frame.onload = x);
-                // 3. After that, remove the iframe.
-                frame.remove();
-            }");
-            var popupTarget = Page.BrowserContext.Targets().First(target => target != Page.Target);
-            // 4. Connect to the popup and make sure it doesn't throw.
-            await popupTarget.PageAsync();
         }
     }
 }

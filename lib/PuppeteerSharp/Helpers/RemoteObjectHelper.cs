@@ -1,12 +1,12 @@
 using System;
 using System.Numerics;
 using System.Threading.Tasks;
+using CefSharp.Puppeteer.Helpers.Json;
+using CefSharp.Puppeteer.Messaging;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
-using PuppeteerSharp.Helpers.Json;
-using PuppeteerSharp.Messaging;
 
-namespace PuppeteerSharp.Helpers
+namespace CefSharp.Puppeteer.Helpers
 {
     internal class RemoteObjectHelper
     {
@@ -104,7 +104,7 @@ namespace PuppeteerSharp.Helpers
             }
         }
 
-        internal static async Task ReleaseObjectAsync(CDPSession client, RemoteObject remoteObject, ILogger logger)
+        internal static async Task ReleaseObjectAsync(Connection client, RemoteObject remoteObject, ILogger logger)
         {
             if (remoteObject.ObjectId == null)
             {

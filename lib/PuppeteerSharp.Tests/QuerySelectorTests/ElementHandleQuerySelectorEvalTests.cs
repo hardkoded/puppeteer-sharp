@@ -1,5 +1,7 @@
 using System;
 using System.Threading.Tasks;
+using CefSharp;
+using CefSharp.Puppeteer;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using Xunit;
@@ -14,10 +16,10 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         {
         }
 
-        async Task Usage(Browser browser)
+        async Task Usage(IWebBrowser chromiumWebBrowser)
         {
             #region Evaluate
-            await using var page = await browser.NewPageAsync();
+            await using var page = await chromiumWebBrowser.GetPuppeteerPageAsync();
             var seven = await page.EvaluateExpressionAsync<int>("4 + 3");
             var someObject = await page.EvaluateFunctionAsync<dynamic>("(value) => ({a: value})", 5);
             Console.WriteLine(someObject.a);

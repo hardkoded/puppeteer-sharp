@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     /// <summary>
     /// <see cref="JSHandle"/> and <see cref="ElementHandle"/> Extensions.

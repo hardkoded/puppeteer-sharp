@@ -1,6 +1,6 @@
 using System;
 
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     /// <summary>
     /// Optional waiting parameters.

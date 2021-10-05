@@ -3,18 +3,18 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
+using CefSharp.Puppeteer.Helpers;
+using CefSharp.Puppeteer.Helpers.Json;
+using CefSharp.Puppeteer.Messaging;
 using Microsoft.Extensions.Logging;
-using PuppeteerSharp.Helpers;
-using PuppeteerSharp.Helpers.Json;
-using PuppeteerSharp.Messaging;
 
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     internal class NetworkManager
     {
         #region Private members
 
-        private readonly CDPSession _client;
+        private readonly Connection _client;
 
         private readonly ConcurrentDictionary<string, Request> _requestIdToRequest =
             new ConcurrentDictionary<string, Request>();
@@ -43,13 +43,13 @@ namespace PuppeteerSharp
         private bool _userCacheDisabled;
         #endregion
 
-        internal NetworkManager(CDPSession client, bool ignoreHTTPSErrors, FrameManager frameManager)
+        internal NetworkManager(Connection client, bool ignoreHTTPSErrors, FrameManager frameManager)
         {
             FrameManager = frameManager;
             _client = client;
             _ignoreHTTPSErrors = ignoreHTTPSErrors;
             _client.MessageReceived += Client_MessageReceived;
-            _logger = _client.Connection.LoggerFactory.CreateLogger<NetworkManager>();
+            _logger = _client.LoggerFactory.CreateLogger<NetworkManager>();
         }
 
         #region Public Properties

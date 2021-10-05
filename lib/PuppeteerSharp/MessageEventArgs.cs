@@ -1,9 +1,9 @@
 using Newtonsoft.Json.Linq;
 
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     /// <summary>
-    /// <seealso cref="CDPSession.MessageReceived"/> arguments.
+    /// <seealso cref="Connection.MessageReceived"/> arguments.
     /// </summary>
     public class MessageEventArgs
     {

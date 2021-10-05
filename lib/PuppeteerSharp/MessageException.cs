@@ -1,11 +1,11 @@
 using System;
 using System.Runtime.Serialization;
-using PuppeteerSharp.Messaging;
+using CefSharp.Puppeteer.Messaging;
 
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     /// <summary>
-    /// Exception thrown by <seealso cref="CDPSession.SendAsync{T}(string, object)"/>
+    /// Exception thrown by <seealso cref="Connection.SendAsync{T}(string, object)"/>
     /// </summary>
     [Serializable]
     public class MessageException : PuppeteerException

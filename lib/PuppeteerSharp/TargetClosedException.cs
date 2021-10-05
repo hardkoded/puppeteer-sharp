@@ -1,6 +1,6 @@
 using System.Runtime.Serialization;
 
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     /// <summary>
     /// Exception thrown by the <see cref="Connection"/> when it detects that the target was closed.

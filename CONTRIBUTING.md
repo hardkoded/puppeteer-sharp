@@ -1,10 +1,8 @@
 # How to Contribute
 
-If you are interested in contributing to Puppeteer Sharp, Thank you!
+If you are interested in contributing to PuppeteerSharp Embedded (CefSharp), Thank you!
 
-Coding is not for lonely wolves. Welcome to the pack!
-
-The project has a clear roadmap we want to follow. If you want to contribute, ask before submitting a PR. We will analyze if it’s the right moment to implement that feature or not.
+If you want to contribute, ask before submitting a PR.
 If you don’t know what to do, ASK! We have many many things to implement :)
 
 ## Getting setup
@@ -23,9 +21,6 @@ New-SelfSignedCertificate -Subject "localhost" -FriendlyName "Puppeteer" -CertSt
 Get-ChildItem -Path cert:\CurrentUSer\my | where { $_.friendlyname -eq "Puppeteer" } | Export-Certificate -FilePath C:\projects\puppeteer-sharp\lib\PuppeteerSharp.TestServer\testCert.cer
 
 ```
-
-On MacOS, you can create an “SSL Server” certificate using the Keychain Access app and then export it to `.\lib\PuppeteerSharp.TestServer\testCert.cer`
-
 
 ## Code reviews
 

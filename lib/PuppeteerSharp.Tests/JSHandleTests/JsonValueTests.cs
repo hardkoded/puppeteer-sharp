@@ -1,4 +1,5 @@
 using Newtonsoft.Json.Linq;
+using CefSharp.Puppeteer;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using System.Threading.Tasks;
@@ -24,7 +25,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         }
 
         [PuppeteerTest("jshandle.spec.ts", "JSHandle.jsonValue", "works with jsonValues that are not objects")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task WorksWithJsonValuesThatAreNotObjects()
         {
             var aHandle = await Page.EvaluateFunctionHandleAsync("() => ['a', 'b']");
@@ -33,7 +34,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         }
 
         [PuppeteerTest("jshandle.spec.ts", "JSHandle.jsonValue", "works with jsonValues that are primitives")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task WorksWithJsonValuesThatArePrimitives()
         {
             var aHandle = await Page.EvaluateFunctionHandleAsync("() => 'foo'");
@@ -42,7 +43,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         }
 
         [PuppeteerTest("jshandle.spec.ts", "JSHandle.jsonValue", "should not work with dates")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldNotWorkWithDates()
         {
             var dateHandle = await Page.EvaluateExpressionHandleAsync("new Date('2017-09-26T00:00:00.000Z')");
@@ -58,7 +59,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             var exception = await Assert.ThrowsAsync<MessageException>(()
                 => windowHandle.JsonValueAsync());
 
-            Assert.Contains(TestConstants.IsChrome ? "Object reference chain is too long" : "Object is not serializable", exception.Message);
+            Assert.Contains("Object reference chain is too long", exception.Message);
         }
     }
 }

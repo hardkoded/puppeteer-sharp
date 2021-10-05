@@ -27,7 +27,7 @@ namespace PuppeteerSharp.Tests.InputTests
         }
 
         [PuppeteerTest("input.spec.ts", "Input", "should upload the file")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Fact]
         public async Task ShouldUploadTheFile()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/fileupload.html");

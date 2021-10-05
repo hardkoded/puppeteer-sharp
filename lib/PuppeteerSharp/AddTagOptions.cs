@@ -1,4 +1,4 @@
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     /// <summary>
     /// Options used by <see cref="Page.AddScriptTagAsync(AddTagOptions)"/> &amp; <see cref="Page.AddStyleTagAsync(AddTagOptions)"/>.

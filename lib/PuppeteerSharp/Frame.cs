@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CefSharp.Puppeteer.Input;
 using Newtonsoft.Json.Linq;
-using PuppeteerSharp.Input;
 
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     /// <summary>
     /// Provides methods to interact with a single page frame in Chromium. One <see cref="Page"/> instance might have multiple <see cref="Frame"/> instances.
@@ -39,10 +39,12 @@ namespace PuppeteerSharp
     /// </example>
     public class Frame
     {
-        private readonly CDPSession _client;
+        private readonly Connection _client;
         private readonly List<Frame> _childFrames = new List<Frame>();
 
         internal string Id { get; set; }
+
+        internal bool IsMainFrame { get; set; }
 
         internal string LoaderId { get; set; }
 
@@ -54,12 +56,13 @@ namespace PuppeteerSharp
 
         internal DOMWorld SecondaryWorld { get; }
 
-        internal Frame(FrameManager frameManager, CDPSession client, Frame parentFrame, string frameId)
+        internal Frame(FrameManager frameManager, Connection client, Frame parentFrame, string frameId, bool isMainFrame)
         {
             FrameManager = frameManager;
             _client = client;
             ParentFrame = parentFrame;
             Id = frameId;
+            IsMainFrame = isMainFrame;
 
             LifecycleEvents = new List<string>();
 
@@ -411,42 +414,6 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to an array of <see cref="ElementHandle"/></returns>
         /// <seealso cref="Page.XPathAsync(string)"/>
         public Task<ElementHandle[]> XPathAsync(string expression) => MainWorld.XPathAsync(expression);
-
-        /// <summary>
-        /// Adds a <c><![CDATA[<link rel="stylesheet">]]></c> tag into the page with the desired url or a <c><![CDATA[<link rel="stylesheet">]]></c> tag with the content
-        /// </summary>
-        /// <param name="options">add style tag options</param>
-        /// <returns>Task which resolves to the added tag when the stylesheet's onload fires or when the CSS content was injected into frame</returns>
-        /// <seealso cref="Page.AddStyleTagAsync(AddTagOptions)"/>
-        /// <seealso cref="Page.AddStyleTagAsync(string)"/>
-        [Obsolete("Use AddStyleTagAsync instead")]
-        public Task<ElementHandle> AddStyleTag(AddTagOptions options)
-        {
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
-            return MainWorld.AddStyleTagAsync(options);
-        }
-
-        /// <summary>
-        /// Adds a <c><![CDATA[<script>]]></c> tag into the page with the desired url or content
-        /// </summary>
-        /// <param name="options">add script tag options</param>
-        /// <returns>Task which resolves to the added tag when the script's onload fires or when the script content was injected into frame</returns>
-        /// <seealso cref="Page.AddScriptTagAsync(AddTagOptions)"/>
-        /// <seealso cref="Page.AddScriptTagAsync(string)"/>
-        [Obsolete("Use AddScriptTagAsync instead")]
-        public Task<ElementHandle> AddScriptTag(AddTagOptions options)
-        {
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
-            return MainWorld.AddScriptTagAsync(options);
-        }
 
         /// <summary>
         /// Adds a <c><![CDATA[<link rel="stylesheet">]]></c> tag into the page with the desired url or a <c><![CDATA[<link rel="stylesheet">]]></c> tag with the content

@@ -1,12 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
-  </PropertyGroup>
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <RuntimeIdentifier>$(NETCoreSdkRuntimeIdentifier)</RuntimeIdentifier>
+        <SelfContained Condition="'$(SelfContained)' == ''">false</SelfContained>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="puppeteersharp" Version="1.9.0" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="CefSharp.OffScreen.NETCore" Version="95.7.141" />
+        <PackageReference Include="CefSharp.Puppeteer" Version="1.0.18-preview" />
+    </ItemGroup>
 
 </Project>

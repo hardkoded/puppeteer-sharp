@@ -1,5 +1,5 @@
-using System;
 using System.Linq;
+using CefSharp.Puppeteer;
 
 namespace PuppeteerSharp.Tests
 {

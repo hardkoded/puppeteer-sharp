@@ -1,10 +1,7 @@
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features;
-using Newtonsoft.Json.Linq;
+using CefSharp.Puppeteer;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -21,7 +18,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Network Events", "Page.Events.Request")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task PageEventsRequest()
         {
             var requests = new List<Request>();
@@ -37,7 +34,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Network Events", "Page.Events.Response")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task PageEventsResponse()
         {
             var responses = new List<Response>();
@@ -57,7 +54,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Network Events", "Page.Events.RequestFailed")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task PageEventsRequestFailed()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -80,21 +77,12 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Contains("one-style.css", failedRequests[0].Url);
             Assert.Null(failedRequests[0].Response);
             Assert.Equal(ResourceType.StyleSheet, failedRequests[0].ResourceType);
-
-            if (TestConstants.IsChrome)
-            {
-                Assert.Equal("net::ERR_FAILED", failedRequests[0].Failure);
-            }
-            else
-            {
-                Assert.Equal("NS_ERROR_FAILURE", failedRequests[0].Failure);
-            }
-
+            Assert.Equal("net::ERR_FAILED", failedRequests[0].Failure);
             Assert.NotNull(failedRequests[0].Frame);
         }
 
         [PuppeteerTest("network.spec.ts", "Network Events", "Page.Events.RequestFinished")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task PageEventsRequestFinished()
         {
             var requests = new List<Request>();
@@ -109,7 +97,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Network Events", "should fire events in proper order")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldFireEventsInProperOrder()
         {
             var events = new List<string>();
@@ -121,7 +109,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Network Events", "should support redirects")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldSupportRedirects()
         {
             var events = new List<string>();

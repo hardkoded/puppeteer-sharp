@@ -1,4 +1,4 @@
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     /// <summary>
     /// Options to be used in <see cref="Page.AuthenticateAsync(Credentials)"/>

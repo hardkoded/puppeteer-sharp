@@ -54,7 +54,7 @@ namespace PuppeteerSharp.DevicesFetcher
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace PuppeteerSharp.Mobile
+namespace CefSharp.Puppeteer.Mobile
 {
     /// <summary>
     /// Device descriptors.
@@ -67,18 +67,10 @@ namespace PuppeteerSharp.Mobile
             var end = @"
         };
 
-        private static Lazy<IReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor>> _readOnlyDevices =
+        private static readonly Lazy<IReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor>> _readOnlyDevices =
             new Lazy<IReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor>>(() => new ReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor>(Devices));
 
         internal static IReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor> ToReadOnly() => _readOnlyDevices.Value;
-
-        /// <summary>
-        /// Get the specified device description.
-        /// </summary>
-        /// <returns>The device descriptor.</returns>
-        /// <param name=""name"">Device Name.</param>
-        [Obsolete(""Use Puppeteer.Devices instead"")]
-        public static DeviceDescriptor Get(DeviceDescriptorName name) => Devices[name];
     }
 }";
 
@@ -92,7 +84,7 @@ namespace PuppeteerSharp.Mobile
         static void WriteDeviceDescriptorName(IEnumerable<Device> devices)
         {
             var builder = new StringBuilder();
-            var begin = @"namespace PuppeteerSharp.Mobile
+            var begin = @"namespace CefSharp.Puppeteer.Mobile
 {
     /// <summary>
     /// Device descriptor name.

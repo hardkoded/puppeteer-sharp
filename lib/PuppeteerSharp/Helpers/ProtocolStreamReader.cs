@@ -4,13 +4,13 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using PuppeteerSharp.Messaging;
+using CefSharp.Puppeteer.Messaging;
 
-namespace PuppeteerSharp.Helpers
+namespace CefSharp.Puppeteer.Helpers
 {
     internal static class ProtocolStreamReader
     {
-        internal static async Task<string> ReadProtocolStreamStringAsync(CDPSession client, string handle, string path)
+        internal static async Task<string> ReadProtocolStreamStringAsync(Connection client, string handle, string path)
         {
             var result = new StringBuilder();
             var fs = !string.IsNullOrEmpty(path) ? AsyncFileHelper.CreateStream(path, FileMode.Create) : null;
@@ -50,7 +50,7 @@ namespace PuppeteerSharp.Helpers
             }
         }
 
-        internal static async Task<byte[]> ReadProtocolStreamByteAsync(CDPSession client, string handle, string path)
+        internal static async Task<byte[]> ReadProtocolStreamByteAsync(Connection client, string handle, string path)
         {
             IEnumerable<byte> result = null;
             var eof = false;

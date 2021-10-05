@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
-using PuppeteerSharp.Helpers.Json;
+using CefSharp.Puppeteer;
 using System.Numerics;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
@@ -85,7 +84,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should return undefined for objects with symbols")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldReturnUndefinedForObjectsWithSymbols()
             => Assert.Null(await Page.EvaluateFunctionAsync<object>("() => [Symbol('foo4')]"));
 
@@ -95,7 +94,7 @@ namespace PuppeteerSharp.Tests.PageTests
             => Assert.Equal(42, await Page.EvaluateFunctionAsync<int>("a => a['中文字符']", new Dictionary<string, int> { ["中文字符"] = 42 }));
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should throw when evaluation triggers reload")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldThrowWhenEvaluationTriggersReload()
         {
             var exception = await Assert.ThrowsAsync<EvaluationFailedException>(() =>
@@ -125,7 +124,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should work from-inside an exposed function")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldWorkFromInsideAnExposedFunction()
         {
             await Page.ExposeFunctionAsync("callController", async (int a, int b) =>
@@ -215,12 +214,12 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should return undefined for non-serializable objects")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldReturnNullForNonSerializableObjects()
             => Assert.Null(await Page.EvaluateFunctionAsync("() => window"));
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should fail for circular object")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldFailForCircularObject()
         {
             var result = await Page.EvaluateFunctionAsync(@"() => {
@@ -234,7 +233,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should be able to throw a tricky error")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldBeAbleToThrowATrickyError()
         {
             var windowHandle = await Page.EvaluateFunctionHandleAsync("() => window");
@@ -279,13 +278,13 @@ namespace PuppeteerSharp.Tests.PageTests
             var element = await Page.QuerySelectorAsync("section");
             Assert.NotNull(element);
             await element.DisposeAsync();
-            var exception = await Assert.ThrowsAsync<EvaluationFailedException>(()
+            var exception = await Assert.ThrowsAsync<PuppeteerException>(()
                 => Page.EvaluateFunctionAsync<string>("e => e.textContent", element));
             Assert.Contains("JSHandle is disposed", exception.Message);
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should throw if elementHandles are from other frames")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact(Skip = "BUG: OOPIFs aren't working correct")]
         public async Task ShouldThrowIfElementHandlesAreFromOtherFrames()
         {
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
@@ -296,7 +295,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should simulate a user gesture")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldSimulateAUserGesture()
             => Assert.True(await Page.EvaluateFunctionAsync<bool>(@"() => {
                 document.body.appendChild(document.createTextNode('test'));
@@ -305,7 +304,7 @@ namespace PuppeteerSharp.Tests.PageTests
             }"));
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should throw a nice error after a navigation")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldThrowANiceErrorAfterANavigation()
         {
             var executionContext = await Page.MainFrame.GetExecutionContextAsync();
@@ -322,7 +321,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should not throw an error when evaluation does a navigation")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task ShouldNotThrowAnErrorWhenEvaluationDoesANavigation()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
@@ -361,14 +360,14 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal("bar", result.Foo);
 
             result = (await Page.EvaluateFunctionAsync<JToken>("() => { return { Foo: 'bar' }}"))
-                .ToObject<ComplexObjectTestClass>(new JsonSerializerSettings());
+                .ToObject<ComplexObjectTestClass>();
             Assert.Equal("bar", result.Foo);
 
             result = await Page.EvaluateExpressionAsync<ComplexObjectTestClass>("var obj = { foo: 'bar' }; obj;");
             Assert.Equal("bar", result.Foo);
 
             result = (await Page.EvaluateExpressionAsync<JToken>("var obj = { Foo: 'bar' }; obj;"))
-                .ToObject<ComplexObjectTestClass>(new JsonSerializerSettings());
+                .ToObject<ComplexObjectTestClass>();
             Assert.Equal("bar", result.Foo);
         }
 

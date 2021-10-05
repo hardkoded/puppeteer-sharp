@@ -1,7 +1,4 @@
-using System.Collections.Generic;
-using Microsoft.AspNetCore.WebUtilities;
-
-namespace PuppeteerSharp.Messaging
+namespace CefSharp.Puppeteer.Messaging
 {
     internal class FetchFulfillRequest
     {

@@ -1,7 +1,7 @@
+using CefSharp.Puppeteer.Helpers.Json;
 using Newtonsoft.Json;
-using PuppeteerSharp.Helpers.Json;
 
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     /// <summary>
     /// SameSite values in cookies

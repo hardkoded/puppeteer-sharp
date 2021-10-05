@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     /// <summary>
     /// ConsoleMessage is part of <see cref="ConsoleEventArgs"/> used by <see cref="Page.Console"/>.

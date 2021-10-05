@@ -16,7 +16,7 @@ namespace PuppeteerSharp.Tests.InputTests
         }
 
         [PuppeteerTest("input.spec.ts", "FileChooser.cancel", "should cancel dialog")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Fact]
         public async Task ShouldCancelDialog()
         {
             // Consider file chooser canceled if we can summon another one.
@@ -38,7 +38,7 @@ namespace PuppeteerSharp.Tests.InputTests
         }
 
         [PuppeteerTest("input.spec.ts", "FileChooser.cancel", "should fail when canceling file chooser twice")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Fact]
         public async Task ShouldFailWhenCancelingFileChooserTwice()
         {
             await Page.SetContentAsync("<input type=file>");

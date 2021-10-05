@@ -1,36 +1,49 @@
 using System.Threading.Tasks;
+using CefSharp;
+using CefSharp.OffScreen;
+using CefSharp.Puppeteer;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests
 {
-    public class PuppeteerPageBaseTest : PuppeteerBrowserContextBaseTest
+    public class PuppeteerPageBaseTest : PuppeteerBaseTest, IAsyncLifetime
     {
-        public PuppeteerPageBaseTest(ITestOutputHelper output) : base(output)
+        private readonly bool _ignoreHTTPSerrors;
+
+        public PuppeteerPageBaseTest(ITestOutputHelper output, bool ignoreHTTPSerrors = true) : base(output)
         {
+            _ignoreHTTPSerrors = ignoreHTTPSerrors;
         }
 
         protected Page Page { get; set; }
+        protected ChromiumWebBrowser ChromiumWebBrowser { get; private set; }
 
-        public override async Task InitializeAsync()
+        public async Task InitializeAsync()
         {
-            await base.InitializeAsync();
-            Page = await Context.NewPageAsync();
+            var requestContext = new RequestContext();
+            ChromiumWebBrowser = new ChromiumWebBrowser(TestConstants.ServerIpUrl, requestContext : requestContext);
+
+            await ChromiumWebBrowser.WaitForInitialLoadAsync();
+
+            Page = await ChromiumWebBrowser.GetPuppeteerPageAsync(_ignoreHTTPSerrors);;
             Page.DefaultTimeout = System.Diagnostics.Debugger.IsAttached ? TestConstants.DebuggerAttachedTestTimeout : TestConstants.DefaultPuppeteerTimeout;
         }
 
-        public override async Task DisposeAsync()
+        public virtual Task DisposeAsync()
         {
-            await Page.CloseAsync();
-            await base.DisposeAsync();
+            ChromiumWebBrowser.Dispose();
+
+            return Task.CompletedTask;            
         }
 
         protected Task WaitForError()
         {
-            var wrapper = new TaskCompletionSource<bool>();
+            var wrapper = new TaskCompletionSource<bool>(TaskContinuationOptions.RunContinuationsAsynchronously);
 
             void errorEvent(object sender, ErrorEventArgs e)
             {
-                wrapper.SetResult(true);
+                wrapper.TrySetResult(true);
                 Page.Error -= errorEvent;
             }
 

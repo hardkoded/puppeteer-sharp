@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
-namespace PuppeteerSharp.Helpers.Json
+namespace CefSharp.Puppeteer.Helpers.Json
 {
     /// <summary>
     /// A set of extension methods for JToken

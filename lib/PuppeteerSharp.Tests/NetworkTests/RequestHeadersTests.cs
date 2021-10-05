@@ -19,14 +19,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
 
-            if (TestConstants.IsChrome)
-            {
-                Assert.Contains("Chrome", response.Request.Headers["User-Agent"]);
-            }
-            else
-            {
-                Assert.Contains("Firefox", response.Request.Headers["User-Agent"]);
-            }
+            Assert.Contains("Chrome", response.Request.Headers["User-Agent"]);
         }
     }
 }

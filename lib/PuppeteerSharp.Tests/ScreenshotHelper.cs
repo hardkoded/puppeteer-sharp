@@ -15,11 +15,11 @@ namespace PuppeteerSharp.Tests
             const int pixelThreshold = 10;
             const decimal totalTolerance = 0.05m;
 
-            var baseImage = Image.Load<Rgb24>(Path.Combine(TestUtils.FindParentDirectory("Screenshots"), TestConstants.IsChrome ? "golden-chromium" : "golden-firefox", screenShotFile));
+            var baseImage = Image.Load<Rgb24>(Path.Combine(TestUtils.FindParentDirectory("Screenshots"), "golden-chromium", screenShotFile));
             var compareImage = Image.Load<Rgb24>(screenshot);
 
             //Just  for debugging purpose
-            compareImage.Save(Path.Combine(TestUtils.FindParentDirectory("Screenshots"), TestConstants.IsChrome ? "golden-chromium" : "golden-firefox", "test.png"));
+            compareImage.Save(Path.Combine(TestUtils.FindParentDirectory("Screenshots"), "golden-chromium", "test.png"));
 
             if (baseImage.Width != compareImage.Width || baseImage.Height != compareImage.Height)
             {

@@ -16,7 +16,7 @@ namespace PuppeteerSharp.Tests.InputTests
         }
 
         [PuppeteerTest("input.spec.ts", "FileChooser.accept", "should accept single file")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Fact]
         public async Task ShouldAcceptSingleFile()
         {
             await Page.SetContentAsync("<input type=file oninput='javascript:console.timeStamp()'>");
@@ -40,7 +40,7 @@ namespace PuppeteerSharp.Tests.InputTests
         }
 
         [PuppeteerTest("input.spec.ts", "FileChooser.accept", "should be able to read selected file")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Fact]
         public async Task ShouldBeAbleToReadSelectedFile()
         {
             await Page.SetContentAsync("<input type=file>");
@@ -60,7 +60,7 @@ namespace PuppeteerSharp.Tests.InputTests
         }
 
         [PuppeteerTest("input.spec.ts", "FileChooser.accept", "should be able to reset selected files with empty file list")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Fact]
         public async Task ShouldBeAbleToResetSelectedFilesWithEmptyFileList()
         {
             await Page.SetContentAsync("<input type=file>");
@@ -88,7 +88,7 @@ namespace PuppeteerSharp.Tests.InputTests
         }
 
         [PuppeteerTest("input.spec.ts", "FileChooser.accept", "should not accept multiple files for single-file input")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Fact]
         public async Task ShouldNotAcceptMultipleFilesForSingleFileInput()
         {
             await Page.SetContentAsync("<input type=file>");
@@ -118,7 +118,7 @@ namespace PuppeteerSharp.Tests.InputTests
         }
 
         [PuppeteerTest("input.spec.ts", "FileChooser.accept", "should fail when accepting file chooser twice")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Fact]
         public async Task ShouldFailWhenAcceptingFileChooserTwice()
         {
             await Page.SetContentAsync("<input type=file>");

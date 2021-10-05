@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using PuppeteerSharp.Media;
+using CefSharp.Puppeteer.Media;
 
-namespace PuppeteerSharp
+namespace CefSharp.Puppeteer
 {
     /// <summary>
     /// Options to be used in <see cref="Page.PdfAsync(string, PdfOptions)"/>, <see cref="Page.PdfStreamAsync(PdfOptions)"/> and <see cref="Page.PdfDataAsync(PdfOptions)"/>
@@ -10,7 +10,7 @@ namespace PuppeteerSharp
     public class PdfOptions : IEquatable<PdfOptions>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="PuppeteerSharp.PdfOptions"/> class.
+        /// Initializes a new instance of the <see cref="PdfOptions"/> class.
         /// </summary>
         public PdfOptions()
         {
