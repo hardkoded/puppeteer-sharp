@@ -103,6 +103,20 @@ namespace PuppeteerSharp.Tests.InputTests
                 "./assets/pptr.png"));
         }
 
+        [PuppeteerTest("input.spec.ts", "FileChooser.accept", "should fail for non-existent files")]
+        [SkipBrowserFact(skipFirefox: true)]
+        public async Task ShouldFailForNonExistentFiles()
+        {
+            await Page.SetContentAsync("<input type=file>");
+            var waitForTask = Page.WaitForFileChooserAsync();
+
+            await Task.WhenAll(
+                waitForTask,
+                Page.ClickAsync("input"));
+
+            await Assert.ThrowsAsync<PuppeteerException>(() => waitForTask.Result.AcceptAsync("file-does-not-exist.txt"));
+        }
+
         [PuppeteerTest("input.spec.ts", "FileChooser.accept", "should fail when accepting file chooser twice")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldFailWhenAcceptingFileChooserTwice()

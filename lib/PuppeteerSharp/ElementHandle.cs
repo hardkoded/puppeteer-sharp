@@ -239,7 +239,7 @@ namespace PuppeteerSharp
             }).ConfigureAwait(false);
             var backendNodeId = node.Node.BackendNodeId;
 
-            if (!filePaths.Any())
+            if (!filePaths.Any() || filePaths == null)
             {
                 await EvaluateFunctionAsync(@"(element) => {
                     element.files = new DataTransfer().files;
@@ -252,12 +252,28 @@ namespace PuppeteerSharp
             else
             {
                 var files = resolveFilePaths ? filePaths.Select(Path.GetFullPath).ToArray() : filePaths;
+                CheckForFileAccess(files);
                 await Client.SendAsync("DOM.setFileInputFiles", new DomSetFileInputFilesRequest
                 {
                     ObjectId = objectId,
                     Files = files,
                     BackendNodeId = backendNodeId
                 }).ConfigureAwait(false);
+            }
+        }
+
+        private void CheckForFileAccess(string[] files)
+        {
+            foreach (var file in files)
+            {
+                try
+                {
+                    File.Open(file, FileMode.Open).Dispose();
+                }
+                catch (Exception ex)
+                {
+                    throw new PuppeteerException($"{files} does not exist or is not readable", ex);
+                }
             }
         }
 
@@ -536,8 +552,8 @@ namespace PuppeteerSharp
             }
 
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
-            var start = await ClickablePointAsync().ConfigureAwait(false);
-            await Page.Mouse.DragEnterAsync(start.x, start.y, data).ConfigureAwait(false);
+            var (x, y) = await ClickablePointAsync().ConfigureAwait(false);
+            await Page.Mouse.DragEnterAsync(x, y, data).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -553,8 +569,8 @@ namespace PuppeteerSharp
             }
 
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
-            var start = await ClickablePointAsync().ConfigureAwait(false);
-            await Page.Mouse.DragOverAsync(start.x, start.y, data).ConfigureAwait(false);
+            var (x, y) = await ClickablePointAsync().ConfigureAwait(false);
+            await Page.Mouse.DragOverAsync(x, y, data).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -570,8 +586,8 @@ namespace PuppeteerSharp
             }
 
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
-            var start = await ClickablePointAsync().ConfigureAwait(false);
-            await Page.Mouse.DropAsync(start.x, start.y, data).ConfigureAwait(false);
+            var (x, y) = await ClickablePointAsync().ConfigureAwait(false);
+            await Page.Mouse.DropAsync(x, y, data).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -593,9 +609,9 @@ namespace PuppeteerSharp
             }
 
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
-            var start = await ClickablePointAsync().ConfigureAwait(false);
+            var (x, y) = await ClickablePointAsync().ConfigureAwait(false);
             var targetPoint = await target.ClickablePointAsync().ConfigureAwait(false);
-            await Page.Mouse.DragAndDropAsync(start.x, start.y, targetPoint.x, targetPoint.y, delay).ConfigureAwait(false);
+            await Page.Mouse.DragAndDropAsync(x, y, targetPoint.x, targetPoint.y, delay).ConfigureAwait(false);
         }
 
         private async Task<(decimal x, decimal y)> ClickablePointAsync()
