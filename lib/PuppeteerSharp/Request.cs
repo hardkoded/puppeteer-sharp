@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -231,24 +232,39 @@ namespace PuppeteerSharp
 
             _interceptionHandled = true;
 
-            var responseHeaders = new Dictionary<string, string>();
+            var responseHeaders = new List<Header>();
 
             if (response.Headers != null)
             {
-                foreach (var keyValue in response.Headers)
+                foreach (var keyValuePair in response.Headers)
                 {
-                    responseHeaders[keyValue.Key] = keyValue.Value.ToString();
+                    if (keyValuePair.Value == null)
+                    {
+                        continue;
+                    }
+
+                    if (keyValuePair.Value is ICollection values)
+                    {
+                        foreach (var val in values)
+                        {
+                            responseHeaders.Add(new Header { Name = keyValuePair.Key, Value = val.ToString() });
+                        }
+                    }
+                    else
+                    {
+                        responseHeaders.Add(new Header { Name = keyValuePair.Key, Value = keyValuePair.Value.ToString() });
+                    }
+                }
+
+                if (!response.Headers.ContainsKey("content-length") && response.BodyData != null)
+                {
+                    responseHeaders.Add(new Header { Name = "content-length", Value = response.BodyData.Length.ToString(CultureInfo.CurrentCulture) });
                 }
             }
 
             if (response.ContentType != null)
             {
-                responseHeaders["content-type"] = response.ContentType;
-            }
-
-            if (!responseHeaders.ContainsKey("content-length") && response.BodyData != null)
-            {
-                responseHeaders["content-length"] = response.BodyData.Length.ToString(CultureInfo.CurrentCulture);
+                responseHeaders.Add(new Header { Name = "content-type", Value = response.ContentType });
             }
 
             try
@@ -257,7 +273,7 @@ namespace PuppeteerSharp
                 {
                     RequestId = InterceptionId,
                     ResponseCode = response.Status != null ? (int)response.Status : 200,
-                    ResponseHeaders = HeadersArray(responseHeaders),
+                    ResponseHeaders = responseHeaders.ToArray(),
                     Body = response.BodyData != null ? Convert.ToBase64String(response.BodyData) : null
                 }).ConfigureAwait(false);
             }

@@ -50,7 +50,7 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Finalizer.
+        /// Finalizes an instance of the <see cref="LauncherBase"/> class.
         /// </summary>
         ~LauncherBase()
         {
