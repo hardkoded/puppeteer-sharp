@@ -1,16 +1,15 @@
-using System.Net;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace PuppeteerSharp.Tests.PageTests
+namespace PuppeteerSharp.Tests.EmulationTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class EmulateNetworkConditionsTests : PuppeteerPageBaseTest
+    public class PageEmulateNetworkConditionsTests : PuppeteerPageBaseTest
     {
-        public EmulateNetworkConditionsTests(ITestOutputHelper output) : base(output)
+        public PageEmulateNetworkConditionsTests(ITestOutputHelper output) : base(output)
         {
         }
 

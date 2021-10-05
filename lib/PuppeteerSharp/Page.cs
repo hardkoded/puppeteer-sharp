@@ -1896,6 +1896,21 @@ namespace PuppeteerSharp
         public Task BringToFrontAsync() => Client.SendAsync("Page.bringToFront");
 
         /// <summary>
+        /// Simulates the given vision deficiency on the page.
+        /// </summary>
+        /// <example>
+        /// await Page.EmulateVisionDeficiencyAsync(VisionDeficiency.Achromatopsia);
+        /// await Page.ScreenshotAsync("Achromatopsia.png");
+        /// </example>
+        /// <param name="type">The type of deficiency to simulate, or <see cref="VisionDeficiency.None"/> to reset.</param>
+        /// <returns>A task that resolves when the message has been sent to the browser.</returns>
+        public Task EmulateVisionDeficiencyAsync(VisionDeficiency type)
+            => Client.SendAsync("Emulation.setEmulatedVisionDeficiency", new EmulationSetEmulatedVisionDeficiencyRequest
+            {
+                Type = type,
+            });
+
+        /// <summary>
         /// Changes the timezone of the page.
         /// </summary>
         /// <param name="timezoneId">Timezone to set. See <seealso href="https://cs.chromium.org/chromium/src/third_party/icu/source/data/misc/metaZones.txt?rcl=faee8bc70570192d82d2978a71e2a615788597d1" >ICU’s `metaZones.txt`</seealso>
@@ -1914,6 +1929,24 @@ namespace PuppeteerSharp
             {
                 throw new PuppeteerException($"Invalid timezone ID: { timezoneId }");
             }
+        }
+
+        /// <summary>
+        /// Enables CPU throttling to emulate slow CPUs.
+        /// </summary>
+        /// <param name="factor">Throttling rate as a slowdown factor (1 is no throttle, 2 is 2x slowdown, etc).</param>
+        /// <returns>A task that resolves when the message has been sent to the browser.</returns>
+        internal Task EmulateCPUThrottlingAsync(decimal? factor = null)
+        {
+            if (factor != null && factor < 1)
+            {
+                throw new ArgumentException("Throttling rate should be greater or equal to 1", nameof(factor));
+            }
+
+            return Client.SendAsync("Emulation.setCPUThrottlingRate", new EmulationSetCPUThrottlingRateRequest
+            {
+                Rate = factor ?? 1
+            });
         }
 
         internal void OnPopup(Page popupPage) => Popup?.Invoke(this, new PopupEventArgs { PopupPage = popupPage });

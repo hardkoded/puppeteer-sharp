@@ -37,6 +37,9 @@ namespace PuppeteerSharp.Tests
         [PuppeteerTest("EventEmitter.spec.ts", "removeAllListeners", "removes every listener from all events by default")]
         [PuppeteerTest("EventEmitter.spec.ts", "removeAllListeners", "returns the emitter for chaining")]
         [PuppeteerTest("EventEmitter.spec.ts", "removeAllListeners", "can filter to remove only listeners for a given event name")]
+        [PuppeteerTest("emulation.spec.ts", "Page.emulateMediaType", "should throw in case of bad argument")]
+        [PuppeteerTest("emulation.spec.ts", "Page.emulateMediaFeatures", "should throw in case of bad argument")]
+        [PuppeteerTest("emulation.spec.ts", "Page.emulateVisionDeficiency", "should throw for invalid vision deficiencies")]
         [PuppeteerFact]
         public void TheseTesstWontBeImplemented()
         {
