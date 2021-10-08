@@ -51,10 +51,10 @@ namespace PuppeteerSharp
         private readonly ConcurrentDictionary<Guid, TaskCompletionSource<FileChooser>> _fileChooserInterceptors;
 
         private static readonly Dictionary<string, decimal> _unitToPixels = new Dictionary<string, decimal> {
-            {"px", 1},
-            {"in", 96},
-            {"cm", 37.8m},
-            {"mm", 3.78m}
+            { "px", 1 },
+            { "in", 96 },
+            { "cm", 37.8m },
+            { "mm", 3.78m }
         };
 
         private Page(
@@ -416,11 +416,11 @@ namespace PuppeteerSharp
 
             if (options.Longitude < -180 || options.Longitude > 180)
             {
-                throw new ArgumentException($"Invalid longitude '{ options.Longitude }': precondition - 180 <= LONGITUDE <= 180 failed.");
+                throw new ArgumentException($"Invalid longitude '{options.Longitude}': precondition - 180 <= LONGITUDE <= 180 failed.");
             }
             if (options.Latitude < -90 || options.Latitude > 90)
             {
-                throw new ArgumentException($"Invalid latitude '{ options.Latitude }': precondition - 90 <= LATITUDE <= 90 failed.");
+                throw new ArgumentException($"Invalid latitude '{options.Latitude}': precondition - 90 <= LATITUDE <= 90 failed.");
             }
             if (options.Accuracy < 0)
             {
@@ -1927,7 +1927,7 @@ namespace PuppeteerSharp
             }
             catch (Exception ex) when (ex.Message.Contains("Invalid timezone"))
             {
-                throw new PuppeteerException($"Invalid timezone ID: { timezoneId }");
+                throw new PuppeteerException($"Invalid timezone ID: {timezoneId}");
             }
         }
 
