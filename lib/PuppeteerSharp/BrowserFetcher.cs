@@ -420,7 +420,7 @@ namespace PuppeteerSharp
             {
                 using var process = new Process();
                 process.StartInfo.FileName = "hdiutil";
-                process.StartInfo.Arguments = $"detach \"{ dmgPath}\" -quiet";
+                process.StartInfo.Arguments = $"detach \"{dmgPath}\" -quiet";
                 process.StartInfo.RedirectStandardOutput = true;
                 process.Start();
                 process.WaitForExit();
