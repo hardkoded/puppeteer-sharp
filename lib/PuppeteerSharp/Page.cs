@@ -42,13 +42,13 @@ namespace PuppeteerSharp
         private readonly Dictionary<string, Delegate> _pageBindings;
         private readonly IDictionary<string, Worker> _workers;
         private readonly ILogger _logger;
+        private readonly TaskCompletionSource<bool> _closeCompletedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        private readonly TimeoutSettings _timeoutSettings;
+        private readonly ConcurrentDictionary<Guid, TaskCompletionSource<FileChooser>> _fileChooserInterceptors;
         private PageGetLayoutMetricsResponse _burstModeMetrics;
         private bool _screenshotBurstModeOn;
         private ScreenshotOptions _screenshotBurstModeOptions;
-        private readonly TaskCompletionSource<bool> _closeCompletedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         private TaskCompletionSource<bool> _sessionClosedTcs;
-        private readonly TimeoutSettings _timeoutSettings;
-        private readonly ConcurrentDictionary<Guid, TaskCompletionSource<FileChooser>> _fileChooserInterceptors;
 
         private static readonly Dictionary<string, decimal> _unitToPixels = new Dictionary<string, decimal> {
             { "px", 1 },

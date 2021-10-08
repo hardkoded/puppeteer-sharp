@@ -17,11 +17,11 @@ namespace PuppeteerSharp.PageAccessibility
         public bool Focusable { get; set; }
 
         private readonly string _name;
-        private string _role;
         private readonly bool _richlyEditable;
         private readonly bool _editable;
         private readonly bool _expanded;
         private readonly bool _hidden;
+        private string _role;
         private bool? _cachedHasFocusableChild;
 
         public AXNode(AccessibilityGetFullAXTreeResponse.AXTreeNode payload)

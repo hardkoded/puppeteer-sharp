@@ -14,12 +14,12 @@ namespace PuppeteerSharp
     internal class FrameManager
     {
         private readonly ConcurrentDictionary<int, ExecutionContext> _contextIdToContext;
-        private bool _ensureNewDocumentNavigation;
         private readonly ILogger _logger;
         private readonly ConcurrentDictionary<string, Frame> _frames;
-        private const string RefererHeaderName = "referer";
         private readonly AsyncDictionaryHelper<string, Frame> _asyncFrames;
         private readonly List<string> _isolatedWorlds = new List<string>();
+        private bool _ensureNewDocumentNavigation;
+        private const string RefererHeaderName = "referer";
         private const string UtilityWorldName = "__puppeteer_utility_world__";
 
         private FrameManager(CDPSession client, Page page, bool ignoreHTTPSErrors, TimeoutSettings timeoutSettings)
