@@ -346,6 +346,7 @@ namespace PuppeteerSharp
             if (e.RedirectResponse != null)
             {
                 _requestIdToRequest.TryGetValue(e.RequestId, out request);
+
                 // If we connect late to the target, we could have missed the requestWillBeSent event.
                 if (request != null)
                 {
