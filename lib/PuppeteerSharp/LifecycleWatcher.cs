@@ -27,14 +27,14 @@ namespace PuppeteerSharp
         private readonly IEnumerable<string> _expectedLifecycle;
         private readonly int _timeout;
         private readonly string _initialLoaderId;
-        private Request _navigationRequest;
-        private bool _hasSameDocumentNavigation;
         private readonly TaskCompletionSource<bool> _newDocumentNavigationTaskWrapper;
         private readonly TaskCompletionSource<bool> _sameDocumentNavigationTaskWrapper;
         private readonly TaskCompletionSource<bool> _lifecycleTaskWrapper;
         private readonly TaskCompletionSource<bool> _terminationTaskWrapper;
         [SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", Justification = "False positive, as it is disposed.")]
         private readonly CancellationTokenSource _terminationCancellationToken;
+        private Request _navigationRequest;
+        private bool _hasSameDocumentNavigation;
 
         public LifecycleWatcher(
             FrameManager frameManager,

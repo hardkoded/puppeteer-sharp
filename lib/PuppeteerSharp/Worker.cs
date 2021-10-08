@@ -28,10 +28,10 @@ namespace PuppeteerSharp
     {
         private readonly ILogger _logger;
         private readonly CDPSession _client;
-        private ExecutionContext _executionContext;
         private readonly Func<ConsoleType, JSHandle[], StackTrace, Task> _consoleAPICalled;
         private readonly Action<EvaluateExceptionResponseDetails> _exceptionThrown;
         private readonly TaskCompletionSource<ExecutionContext> _executionContextCallback;
+        private ExecutionContext _executionContext;
         private Func<ExecutionContext, RemoteObject, JSHandle> _jsHandleFactory;
 
         internal Worker(
