@@ -24,5 +24,10 @@ namespace PuppeteerSharp
         /// A download host to be used. Defaults to https://storage.googleapis.com.
         /// </summary>
         public string Host { get; set; }
+
+        /// <summary>
+        /// This is a local cache
+        /// </summary>
+        public string CacheDirectory { get; set; }
     }
 }

@@ -90,6 +90,11 @@ namespace PuppeteerSharp
         public Product Product { get; }
 
         /// <summary>
+        /// Gets the local cache directory
+        /// </summary>
+        public string CacheDirectory { get; }
+
+        /// <summary>
         /// Proxy used by the WebClient in <see cref="DownloadAsync(int)"/> and <see cref="CanDownloadAsync(int)"/>
         /// </summary>
         public IWebProxy WebProxy
@@ -139,6 +144,7 @@ namespace PuppeteerSharp
             DownloadHost = string.IsNullOrEmpty(options.Host) ? _hosts[options.Product] : options.Host;
             Platform = options.Platform ?? GetCurrentPlatform();
             Product = options.Product;
+            CacheDirectory = options.CacheDirectory;
         }
 
         /// <summary>
@@ -271,9 +277,11 @@ namespace PuppeteerSharp
         public async Task<RevisionInfo> DownloadAsync(string revision)
         {
             var url = GetDownloadURL(Product, Platform, DownloadHost, revision);
-            var filePath = Path.Combine(DownloadsFolder, url.Split('/').Last());
+            var fileName = new UriBuilder(url).Uri.Segments.Last();
+            var filePath = Path.Combine(DownloadsFolder, fileName);
             var folderPath = GetFolderPath(revision);
             var archiveName = GetArchiveName(Product, Platform, revision);
+            var cacheFile = Path.Combine(CacheDirectory, fileName);
 
             if (new DirectoryInfo(folderPath).Exists)
             {
@@ -286,12 +294,20 @@ namespace PuppeteerSharp
                 downloadFolder.Create();
             }
 
+            var fileInfo = new FileInfo(cacheFile);
+            if (fileInfo.Exists)
+            {
+                fileInfo.CopyTo(filePath);
+            }
+            else
+            {
             if (DownloadProgressChanged != null)
             {
                 _webClient.DownloadProgressChanged += DownloadProgressChanged;
             }
 
             await _webClient.DownloadFileTaskAsync(url, filePath).ConfigureAwait(false);
+            }
 
             if (filePath.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
             {
