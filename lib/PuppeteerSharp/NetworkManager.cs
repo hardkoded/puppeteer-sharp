@@ -26,13 +26,8 @@ namespace PuppeteerSharp
             new ConcurrentDictionary<string, FetchRequestPausedResponse>();
 
         private readonly ILogger _logger;
-        private Dictionary<string, string> _extraHTTPHeaders;
-        private Credentials _credentials;
         private readonly ConcurrentSet<string> _attemptedAuthentications = new ConcurrentSet<string>();
-        private bool _userRequestInterceptionEnabled;
-        private bool _protocolRequestInterceptionEnabled;
         private readonly bool _ignoreHTTPSErrors;
-        private bool _userCacheDisabled;
         private readonly InternalNetworkConditions _emulatedNetworkConditions = new InternalNetworkConditions
         {
             Offline = false,
@@ -40,6 +35,12 @@ namespace PuppeteerSharp
             Download = -1,
             Latency = 0,
         };
+
+        private Dictionary<string, string> _extraHTTPHeaders;
+        private Credentials _credentials;
+        private bool _userRequestInterceptionEnabled;
+        private bool _protocolRequestInterceptionEnabled;
+        private bool _userCacheDisabled;
         #endregion
 
         internal NetworkManager(CDPSession client, bool ignoreHTTPSErrors, FrameManager frameManager)

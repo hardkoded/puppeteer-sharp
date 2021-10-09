@@ -30,11 +30,11 @@
     <Rule Id="SA1720" Action="None" /> <!-- Error SA1720: Name contains type-->
     <Rule Id="SA1300" Action="None" /> <!-- Error SA1300: Element 'iFrame' should begin with an uppercase letter (SA1300)-->
     <Rule Id="SA1500" Action="None" /> <!-- Error SA1500: Braces for multi-line statements should not share line (SA1500)-->
-    <Rule Id="SA1214" Action="None" /> <!-- Error SA1214: Readonly fields should appear before non-readonly fields (SA1214)-->
+    <Rule Id="SA1214" Action="Error" /> <!-- Error SA1214: Readonly fields should appear before non-readonly fields (SA1214)-->
     <Rule Id="SA1642" Action="None" /> <!-- Error SA1642: Constructor summary documentation should begin with standard text (SA1642) (PuppeteerSharp)-->
-    <Rule Id="SA1013" Action="None" /> <!-- Error SA1013: Closing brace should be preceded by a space. (SA1013) -->
+    <Rule Id="SA1013" Action="Error" /> <!-- Error SA1013: Closing brace should be preceded by a space. (SA1013) -->
     <Rule Id="SA1515" Action="Error" /> <!-- Error SA1515: Single-line comment should be preceded by blank line (SA1515) -->
-    <Rule Id="SA1012" Action="None" /> <!-- Error SA1012: Opening brace should be followed by a space. (SA1012) -->
+    <Rule Id="SA1012" Action="Error" /> <!-- Error SA1012: Opening brace should be followed by a space. (SA1012) -->
     <Rule Id="SA1512" Action="None" /> <!-- Error SA1502: Element should not be on a single line (SA1502) -->
     <Rule Id="SA1648" Action="None" /> <!-- Error SA1648: inheritdoc should be used with inheriting class (SA1648) -->
     <Rule Id="SA1616" Action="None" /> <!-- Error SA1616: Element return value documentation should have text (SA1616)-->

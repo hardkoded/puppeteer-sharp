@@ -39,10 +39,10 @@ namespace PuppeteerSharp
         }
 
         #region Private Members
-        private int _lastId;
         private readonly ConcurrentDictionary<int, MessageTask> _callbacks;
         private readonly ConcurrentDictionary<string, CDPSession> _sessions;
         private readonly AsyncDictionaryHelper<string, CDPSession> _asyncSessions;
+        private int _lastId;
         #endregion
 
         #region Properties

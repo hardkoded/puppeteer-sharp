@@ -14,10 +14,10 @@ namespace PuppeteerSharp.Helpers
     /// </summary>
     internal class AsyncMessageQueue : IDisposable
     {
-        private bool _disposed;
         private readonly List<MessageTask> _pendingTasks;
         private readonly bool _enqueueAsyncMessages;
         private readonly ILogger _logger;
+        private bool _disposed;
 
         public AsyncMessageQueue(bool enqueueAsyncMessages, ILogger logger = null)
         {
