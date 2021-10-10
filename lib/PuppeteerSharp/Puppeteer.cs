@@ -1,7 +1,7 @@
-using Microsoft.Extensions.Logging;
-using PuppeteerSharp.Mobile;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using PuppeteerSharp.Mobile;
 
 namespace PuppeteerSharp
 {

@@ -17,7 +17,7 @@
     <Rule Id="SA1201" Action="None" /> <!-- Error SA1201: A constructor should not follow a property (SA1201)-->
     <Rule Id="SA1202" Action="None" /> <!-- Error SA1202: 'public' members should come before 'internal' members (SA1202)-->
     <Rule Id="SA1210" Action="None" /> <!-- Error SA1210: Using directives should be ordered alphabetically by the namespaces. (SA1210)-->
-    <Rule Id="SA1208" Action="None" /> <!-- Error SA1208: Order usings-->
+    <Rule Id="SA1208" Action="Error" /> <!-- Error SA1208: Order usings-->
     <Rule Id="SA1204" Action="None" /> <!-- Error SA1204: Static members should appear before non-static members (SA1204)-->
     <Rule Id="SA1004" Action="None" /> <!-- Error SA1004: Documentation line should begin with a space. (SA1004)-->
     <Rule Id="SA1513" Action="None" /> <!-- Error SA1513: Closing brace should be followed by blank line (SA1513)-->

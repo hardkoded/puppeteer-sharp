@@ -1,10 +1,10 @@
 using System;
-using System.Threading.Tasks;
 using System.IO;
-using Microsoft.Extensions.Logging;
-using PuppeteerSharp.Messaging;
 using System.Net.Http;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {

@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq;
-using System.Diagnostics.Contracts;
-using PuppeteerSharp.Helpers;
-using System.Threading;
 using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.Contracts;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
 {
