@@ -9,10 +9,10 @@ environment:
     secure: FxcQ9C8a/NgcQB5dFdZts6ZWEDT4zMhA4qPQAYwWc7huMmhmTIl1sbFEIaAWQMTL
   matrix:
     - framework: net48
-    - framework: netcoreapp2.2
+    - framework: net5.0
     - framework: net48
       ENQUEUE_ASYNC_MESSAGES: true
-    - framework: netcoreapp2.2
+    - framework: net5.0
       ENQUEUE_ASYNC_MESSAGES: true
 install:
 - ps: >-

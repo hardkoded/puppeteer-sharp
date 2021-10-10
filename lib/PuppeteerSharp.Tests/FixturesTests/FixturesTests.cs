@@ -132,14 +132,14 @@ namespace PuppeteerSharp.Tests.FixturesTests
                 dir,
                 "bin",
                 build,
-                "netcoreapp2.2");
+                "net5.0");
 #else
             return Path.Combine(
                 TestUtils.FindParentDirectory("lib"),
                 dir,
                 "bin",
                 build,
-                "net471");
+                "net48");
 #endif
         }
     }
