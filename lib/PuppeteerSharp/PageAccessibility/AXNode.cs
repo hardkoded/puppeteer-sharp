@@ -1,10 +1,10 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
-using PuppeteerSharp.Messaging;
+using System.Globalization;
+using System.Linq;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
-using System.Globalization;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp.PageAccessibility
 {

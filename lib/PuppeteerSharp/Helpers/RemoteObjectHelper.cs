@@ -1,10 +1,10 @@
 using System;
+using System.Numerics;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
-using PuppeteerSharp.Messaging;
 using PuppeteerSharp.Helpers.Json;
-using System.Numerics;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp.Helpers
 {

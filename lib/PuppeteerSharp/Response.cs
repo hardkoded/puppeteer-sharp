@@ -4,8 +4,8 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using PuppeteerSharp.Messaging;
 using PuppeteerSharp.Helpers.Json;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
