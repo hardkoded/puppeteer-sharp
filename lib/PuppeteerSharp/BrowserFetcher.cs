@@ -15,6 +15,7 @@ using ICSharpCode.SharpZipLib.Tar;
 using Newtonsoft.Json;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Linux;
+using static PuppeteerSharp.BrowserFetcherOptions;
 
 namespace PuppeteerSharp
 {
@@ -90,9 +91,9 @@ namespace PuppeteerSharp
         public Product Product { get; }
 
         /// <summary>
-        /// Gets the local cache directory
+        /// Gets the default or a custom download delegate
         /// </summary>
-        public string CacheDirectory { get; }
+        public GetBrowserAsync GetBrowserTaskAsync { get; }
 
         /// <summary>
         /// Proxy used by the WebClient in <see cref="DownloadAsync(int)"/> and <see cref="CanDownloadAsync(int)"/>
@@ -117,6 +118,7 @@ namespace PuppeteerSharp
             DownloadHost = _hosts[Product.Chrome];
             Platform = GetCurrentPlatform();
             Product = Product.Chrome;
+            GetBrowserTaskAsync = _webClient.DownloadFileTaskAsync;
         }
 
         /// <summary>
@@ -144,7 +146,7 @@ namespace PuppeteerSharp
             DownloadHost = string.IsNullOrEmpty(options.Host) ? _hosts[options.Product] : options.Host;
             Platform = options.Platform ?? GetCurrentPlatform();
             Product = options.Product;
-            CacheDirectory = options.CacheDirectory;
+            GetBrowserTaskAsync = options.GetBrowserTaskAsync ?? _webClient.DownloadFileTaskAsync;
         }
 
         /// <summary>
@@ -277,11 +279,9 @@ namespace PuppeteerSharp
         public async Task<RevisionInfo> DownloadAsync(string revision)
         {
             var url = GetDownloadURL(Product, Platform, DownloadHost, revision);
-            var fileName = new UriBuilder(url).Uri.Segments.Last();
-            var filePath = Path.Combine(DownloadsFolder, fileName);
+            var filePath = Path.Combine(DownloadsFolder, url.Split('/').Last());
             var folderPath = GetFolderPath(revision);
             var archiveName = GetArchiveName(Product, Platform, revision);
-            var cacheFile = Path.Combine(CacheDirectory, fileName);
 
             if (new DirectoryInfo(folderPath).Exists)
             {
@@ -294,20 +294,12 @@ namespace PuppeteerSharp
                 downloadFolder.Create();
             }
 
-            var fileInfo = new FileInfo(cacheFile);
-            if (fileInfo.Exists)
-            {
-                fileInfo.CopyTo(filePath);
-            }
-            else
-            {
             if (DownloadProgressChanged != null)
             {
                 _webClient.DownloadProgressChanged += DownloadProgressChanged;
             }
 
-            await _webClient.DownloadFileTaskAsync(url, filePath).ConfigureAwait(false);
-            }
+            await GetBrowserTaskAsync(url, filePath).ConfigureAwait(false);
 
             if (filePath.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
             {
