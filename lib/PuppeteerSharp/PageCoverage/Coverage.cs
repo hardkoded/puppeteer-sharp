@@ -109,6 +109,7 @@ namespace PuppeteerSharp.PageCoverage
                     hitCountStack.RemoveAt(hitCountStack.Count - 1);
                 }
             }
+
             // Filter out empty ranges.
             return results.Where(range => range.End - range.Start > 1).ToArray();
         }

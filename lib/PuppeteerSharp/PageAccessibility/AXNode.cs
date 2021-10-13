@@ -1,10 +1,10 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
-using PuppeteerSharp.Messaging;
+using System.Globalization;
+using System.Linq;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
-using System.Globalization;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp.PageAccessibility
 {
@@ -180,11 +180,13 @@ namespace PuppeteerSharp.PageAccessibility
             {
                 return true;
             }
+
             // If it's not focusable but has a control role, then it's interesting.
             if (IsControl())
             {
                 return true;
             }
+
             // A non focusable child of a control is not interesting
             if (insideControl)
             {
@@ -225,6 +227,7 @@ namespace PuppeteerSharp.PageAccessibility
                 ValueText = properties.GetValueOrDefault("valuetext")?.ToObject<string>(),
                 Disabled = properties.GetValueOrDefault("disabled")?.ToObject<bool>() ?? false,
                 Expanded = properties.GetValueOrDefault("expanded")?.ToObject<bool>() ?? false,
+
                 // RootWebArea's treat focus differently than other nodes. They report whether their frame  has focus,
                 // not whether focus is specifically on the root node.
                 Focused = properties.GetValueOrDefault("focused")?.ToObject<bool>() == true && _role != "RootWebArea",

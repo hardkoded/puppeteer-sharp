@@ -81,8 +81,10 @@ namespace PuppeteerSharp
             {
                 // Make sure Shield doesn"t hit the network.
                 ["app.normandy.api_url"] = string.Empty,
+
                 // Disable Firefox old build background check
                 ["app.update.checkInstallTime"] = false,
+
                 // Disable automatically upgrading Firefox
                 ["app.update.disabledForTesting"] = true,
 
@@ -97,10 +99,13 @@ namespace PuppeteerSharp
                 // console
                 // https://bugzilla.mozilla.org/show_bug.cgi?id=1543115
                 ["browser.dom.window.dump.enabled"] = true,
+
                 // Disable topstories
                 ["browser.newtabpage.activity-stream.feeds.system.topstories"] = false,
+
                 // Always display a blank page
                 ["browser.newtabpage.enabled"] = false,
+
                 // Background thumbnails in particular cause grief: and disabling
                 // thumbnails in general cannot hurt
                 ["browser.pagethumbnails.capturing_disabled"] = true,
@@ -114,15 +119,19 @@ namespace PuppeteerSharp
 
                 // Disable updates to search engines.
                 ["browser.search.update"] = false,
+
                 // Do not restore the last open set of tabs if the browser has crashed
                 ["browser.sessionstore.resume_from_crash"] = false,
+
                 // Skip check for default browser on startup
                 ["browser.shell.checkDefaultBrowser"] = false,
 
                 // Disable newtabpage
                 ["browser.startup.homepage"] = "about:blank",
+
                 // Do not redirect user when a milstone upgrade of Firefox is detected
                 ["browser.startup.homepage_override.mstone"] = "ignore",
+
                 // Start with a blank page about:blank
                 ["browser.startup.page"] = 0,
 
@@ -130,18 +139,23 @@ namespace PuppeteerSharp
                 // tests that open additional tabs: the test harness tab itself might get
                 // unloaded
                 ["browser.tabs.disableBackgroundZombification"] = false,
+
                 // Do not warn when closing all other open tabs
                 ["browser.tabs.warnOnCloseOtherTabs"] = false,
+
                 // Do not warn when multiple tabs will be opened
                 ["browser.tabs.warnOnOpen"] = false,
 
                 // Disable the UI tour.
                 ["browser.uitour.enabled"] = false,
+
                 // Turn off search suggestions in the location bar so as not to trigger
                 // network connections.
                 ["browser.urlbar.suggest.searches"] = false,
+
                 // Disable first run splash page on Windows 10
                 ["browser.usedOnWindows10.introURL"] = string.Empty,
+
                 // Do not warn on quitting Firefox
                 ["browser.warnOnQuit"] = false,
 
@@ -202,20 +216,26 @@ namespace PuppeteerSharp
 
                 // Allow the application to have focus even it runs in the background
                 ["focusmanager.testmode"] = true,
+
                 // Disable useragent updates
                 ["general.useragent.updates.enabled"] = false,
+
                 // Always use network provider for geolocation tests so we bypass the
                 // macOS dialog raised by the corelocation provider
                 ["geo.provider.testing"] = true,
+
                 // Do not scan Wifi
                 ["geo.wifi.scan"] = false,
+
                 // No hang monitor
                 ["hangmonitor.timeout"] = 0,
+
                 // Show chrome errors and warnings in the error console
                 ["javascript.options.showInConsole"] = true,
 
                 // Disable download and usage of OpenH264: and Widevine plugins
                 ["media.gmp-manager.updateEnabled"] = false,
+
                 // Prevent various error message on the console
                 // jest-puppeteer asserts that no error message is emitted by the console
                 ["network.cookie.cookieBehavior"] = 0,
@@ -247,9 +267,11 @@ namespace PuppeteerSharp
 
                 // Don"t do network connections for mitm priming
                 ["security.certerrors.mitm.priming.enabled"] = false,
+
                 // Local documents have access to all other local documents,
                 // including directory listings
                 ["security.fileuri.strict_origin_policy"] = false,
+
                 // Do not wait for the notification button security delay
                 ["security.notification_enable_delay"] = 0,
 
@@ -259,6 +281,7 @@ namespace PuppeteerSharp
                 // Do not automatically fill sign-in forms with known usernames and
                 // passwords
                 ["signon.autofillForms"] = false,
+
                 // Disable password capture, so that tests that include forms are not
                 // influenced by the presence of the persistent doorhanger notification
                 ["signon.rememberSignons"] = false,

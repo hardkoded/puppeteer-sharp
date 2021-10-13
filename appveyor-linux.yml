@@ -9,9 +9,9 @@ environment:
   git_access_token:
     secure: FxcQ9C8a/NgcQB5dFdZts6ZWEDT4zMhA4qPQAYwWc7huMmhmTIl1sbFEIaAWQMTL
   matrix:
-    - framework: netcoreapp2.2
+    - framework: net5.0
       PRODUCT: CHROMIUM
-    - framework: netcoreapp2.2
+    - framework: net5.0
       PRODUCT: FIREFOX
 
 before_build:
