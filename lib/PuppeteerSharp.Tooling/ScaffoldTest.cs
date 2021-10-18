@@ -31,8 +31,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using CommandLine;
 using PuppeteerSharp.Xunit;
 
 namespace PuppeteerSharp.Tooling
@@ -52,7 +50,7 @@ namespace PuppeteerSharp.Tooling
             var stack = new Stack<(int Indent, string Func, string Name)>();
             stack.Push((-1, null, null));
 
-            foreach (string line in File.ReadAllLines(path))
+            foreach (var line in File.ReadAllLines(path))
             {
                 var m = rx.Match(line);
                 if (m?.Success == false)
@@ -63,7 +61,7 @@ namespace PuppeteerSharp.Tooling
                 // keep in mind, group 0 is the entire match
                 var indent = m.Groups[1].Value.Length;
                 var func = m.Groups[2].Value;
-                var name = m.Groups[3].Value ?? m.Groups[4].Value;
+                var name = string.IsNullOrEmpty(m.Groups[3].Value) ? m.Groups[4].Value : m.Groups[3].Value;
 
                 while (indent <= stack.Peek().Indent)
                 {
@@ -94,7 +92,7 @@ namespace PuppeteerSharp.Tooling
         /// <param name="testDescribe">The original test name.</param>
         /// <returns>Returns a "clean" string, suitable for C# method names.</returns>
         public static string CleanName(string testDescribe)
-            => new string(Array.FindAll(_textInfo.ToTitleCase(testDescribe).ToCharArray(), c => char.IsLetterOrDigit(c)));
+            => new(Array.FindAll(_textInfo.ToTitleCase(testDescribe).ToCharArray(), c => char.IsLetterOrDigit(c)));
 
         public static void Run(ScaffoldTestOptions options)
         {
@@ -105,19 +103,19 @@ namespace PuppeteerSharp.Tooling
 
             var fileInfo = new FileInfo(options.SpecFile);
 
-            int dotSeparator = fileInfo.Name.IndexOf('.');
-            string name = _textInfo.ToTitleCase(fileInfo.Name.Substring(0, dotSeparator)) + "Tests";
+            var dotSeparator = fileInfo.Name.IndexOf('.');
+            var name = _textInfo.ToTitleCase(fileInfo.Name.Substring(0, dotSeparator)) + "Tests";
             var targetClass = GenerateClass(options.Namespace, name, fileInfo.Name);
 
             FindTestsInFile(options.SpecFile, (describe, testName) => AddTest(targetClass, new PuppeteerTestAttribute(fileInfo.Name, describe, testName)));
 
-            using CodeDomProvider provider = CodeDomProvider.CreateProvider("CSharp");
-            CodeGeneratorOptions codegenOptions = new CodeGeneratorOptions()
+            using var provider = CodeDomProvider.CreateProvider("CSharp");
+            var codegenOptions = new CodeGeneratorOptions()
             {
                 BracingStyle = "C",
             };
 
-            using StreamWriter sourceWriter = new StreamWriter(options.OutputFile);
+            using var sourceWriter = new StreamWriter(options.OutputFile);
             provider.GenerateCodeFromCompileUnit(
                 targetClass, sourceWriter, codegenOptions);
         }
@@ -176,11 +174,11 @@ namespace PuppeteerSharp.Tooling
         private static void AddTest(CodeCompileUnit @class, PuppeteerTestAttribute test)
         {
             // make name out of the describe, and we should ignore any whitespaces, hyphens, etc.
-            string name = CleanName(test.TestName);
+            var name = CleanName(test.TestName);
 
             Console.WriteLine($"Adding {name}");
 
-            CodeMemberMethod method = new CodeMemberMethod()
+            var method = new CodeMemberMethod()
             {
                 Attributes = MemberAttributes.Public | MemberAttributes.Final,
                 ReturnType = new CodeTypeReference("async Task"),
