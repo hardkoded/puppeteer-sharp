@@ -19,9 +19,9 @@ namespace PuppeteerSharp
     public class Connection : IDisposable
     {
         private readonly ILogger _logger;
-        private TaskQueue _callbackQueue = new TaskQueue();
+        private readonly TaskQueue _callbackQueue = new TaskQueue();
 
-        internal Connection(string url, int delay, IConnectionTransport transport, ILoggerFactory loggerFactory = null)
+        internal Connection(string url, int delay, bool enqueueAsyncMessages, IConnectionTransport transport, ILoggerFactory loggerFactory = null)
         {
             LoggerFactory = loggerFactory ?? new LoggerFactory();
             Url = url;
@@ -34,14 +34,15 @@ namespace PuppeteerSharp
             Transport.Closed += Transport_Closed;
             _callbacks = new ConcurrentDictionary<int, MessageTask>();
             _sessions = new ConcurrentDictionary<string, CDPSession>();
+            MessageQueue = new AsyncMessageQueue(enqueueAsyncMessages, _logger);
             _asyncSessions = new AsyncDictionaryHelper<string, CDPSession>(_sessions, "Session {0} not found");
         }
 
         #region Private Members
-        private int _lastId;
         private readonly ConcurrentDictionary<int, MessageTask> _callbacks;
         private readonly ConcurrentDictionary<string, CDPSession> _sessions;
         private readonly AsyncDictionaryHelper<string, CDPSession> _asyncSessions;
+        private int _lastId;
         #endregion
 
         #region Properties
@@ -50,24 +51,31 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The URL.</value>
         public string Url { get; }
+
         /// <summary>
         /// Gets the sleep time when a message is received.
         /// </summary>
         /// <value>The delay.</value>
         public int Delay { get; }
+
         /// <summary>
         /// Gets the Connection transport.
         /// </summary>
         /// <value>Connection transport.</value>
         public IConnectionTransport Transport { get; }
+
         /// <summary>
         /// Occurs when the connection is closed.
         /// </summary>
         public event EventHandler Disconnected;
+
         /// <summary>
         /// Occurs when a message from chromium is received.
         /// </summary>
         public event EventHandler<MessageEventArgs> MessageReceived;
+
+        internal event EventHandler<SessionAttachedEventArgs> SessionAttached;
+
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="Connection"/> is closed.
         /// </summary>
@@ -85,11 +93,14 @@ namespace PuppeteerSharp
         /// <value>The logger factory.</value>
         public ILoggerFactory LoggerFactory { get; }
 
+        internal AsyncMessageQueue MessageQueue { get; }
+
         #endregion
 
         #region Public Methods
 
         internal int GetMessageID() => Interlocked.Increment(ref _lastId);
+
         internal Task RawSendASync(int id, string method, object args, string sessionId = null)
         {
             _logger.LogTrace("Send ► {Id} Method {Method} Params {@Params}", id, method, args);
@@ -118,7 +129,7 @@ namespace PuppeteerSharp
             {
                 callback = new MessageTask
                 {
-                    TaskWrapper = new TaskCompletionSource<JObject>(),
+                    TaskWrapper = new TaskCompletionSource<JObject>(TaskCreationOptions.RunContinuationsAsynchronously),
                     Method = method
                 };
                 _callbacks[id] = callback;
@@ -175,10 +186,13 @@ namespace PuppeteerSharp
             }
 
             _callbacks.Clear();
+            MessageQueue.Dispose();
         }
 
         internal static Connection FromSession(CDPSession session) => session.Connection;
+
         internal CDPSession GetSession(string sessionId) => _sessions.GetValueOrDefault(sessionId);
+
         internal Task<CDPSession> GetSessionAsync(string sessionId) => _asyncSessions.GetItemAsync(sessionId);
 
         #region Private Methods
@@ -229,6 +243,13 @@ namespace PuppeteerSharp
                 var sessionId = param.SessionId;
                 var session = new CDPSession(this, param.TargetInfo.Type, sessionId);
                 _asyncSessions.AddItem(sessionId, session);
+
+                SessionAttached?.Invoke(this, new SessionAttachedEventArgs { Session = session });
+
+                if (obj.SessionId != null && _sessions.TryGetValue(obj.SessionId, out var parentSession))
+                {
+                    parentSession.OnSessionAttached(session);
+                }
             }
             else if (method == "Target.detachedFromTarget")
             {
@@ -242,22 +263,15 @@ namespace PuppeteerSharp
             if (!string.IsNullOrEmpty(obj.SessionId))
             {
                 var session = GetSession(obj.SessionId);
-                session.OnMessage(obj);
+                session?.OnMessage(obj);
             }
             else if (obj.Id.HasValue)
             {
                 // If we get the object we are waiting for we return if
-                // if not we add this to the list, sooner or later some one will come for it 
+                // if not we add this to the list, sooner or later some one will come for it
                 if (_callbacks.TryRemove(obj.Id.Value, out var callback))
                 {
-                    if (obj.Error != null)
-                    {
-                        callback.TaskWrapper.TrySetException(new MessageException(callback, obj.Error));
-                    }
-                    else
-                    {
-                        callback.TaskWrapper.TrySetResult(obj.Result);
-                    }
+                    MessageQueue.Enqueue(callback, obj);
                 }
             }
             else
@@ -293,7 +307,7 @@ namespace PuppeteerSharp
                 transport = await transportFactory(new Uri(url), connectionOptions, cancellationToken).ConfigureAwait(false);
             }
 
-            return new Connection(url, connectionOptions.SlowMo, transport, loggerFactory);
+            return new Connection(url, connectionOptions.SlowMo, connectionOptions.EnqueueAsyncMessages, transport, loggerFactory);
         }
 
         /// <inheritdoc />
@@ -316,7 +330,10 @@ namespace PuppeteerSharp
         protected virtual void Dispose(bool disposing)
         {
             Close("Connection disposed");
+            Transport.MessageReceived -= Transport_MessageReceived;
+            Transport.Closed -= Transport_Closed;
             Transport.Dispose();
+            _callbackQueue.Dispose();
         }
         #endregion
     }

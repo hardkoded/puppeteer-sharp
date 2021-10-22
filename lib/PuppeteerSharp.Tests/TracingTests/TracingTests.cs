@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -51,7 +53,8 @@ namespace PuppeteerSharp.Tests.TracingTests
             }
         }
 
-        [Fact]
+        [PuppeteerTest("tracing.spec.ts", "Tracing", "should output a trace")]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldOutputATrace()
         {
             await Page.Tracing.StartAsync(new TracingOptions
@@ -65,7 +68,8 @@ namespace PuppeteerSharp.Tests.TracingTests
             Assert.True(File.Exists(_file));
         }
 
-        [Fact]
+        [PuppeteerTest("tracing.spec.ts", "Tracing", "should run with custom categories if provided")]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldRunWithCustomCategoriesProvided()
         {
             await Page.Tracing.StartAsync(new TracingOptions
@@ -88,7 +92,8 @@ namespace PuppeteerSharp.Tests.TracingTests
             }
         }
 
-        [Fact]
+        [PuppeteerTest("tracing.spec.ts", "Tracing", "should throw if tracing on two pages")]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldThrowIfTracingOnTwoPages()
         {
             await Page.Tracing.StartAsync(new TracingOptions
@@ -96,7 +101,7 @@ namespace PuppeteerSharp.Tests.TracingTests
                 Path = _file
             });
             var newPage = await Browser.NewPageAsync();
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            await Assert.ThrowsAsync<InvalidOperationException>(async () =>
             {
                 await Page.Tracing.StartAsync(new TracingOptions
                 {
@@ -108,7 +113,8 @@ namespace PuppeteerSharp.Tests.TracingTests
             await Page.Tracing.StopAsync();
         }
 
-        [Fact]
+        [PuppeteerTest("tracing.spec.ts", "Tracing", "should return a buffer")]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReturnABuffer()
         {
             await Page.Tracing.StartAsync(new TracingOptions
@@ -122,7 +128,8 @@ namespace PuppeteerSharp.Tests.TracingTests
             Assert.Equal(trace, buf);
         }
 
-        [Fact]
+        [PuppeteerTest("tracing.spec.ts", "Tracing", "should work without options")]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithoutOptions()
         {
             await Page.Tracing.StartAsync();
@@ -131,7 +138,8 @@ namespace PuppeteerSharp.Tests.TracingTests
             Assert.NotNull(trace);
         }
 
-        [Fact]
+        [PuppeteerTest("tracing.spec.ts", "Tracing", "should support a buffer without a path")]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldSupportABufferWithoutAPath()
         {
             await Page.Tracing.StartAsync(new TracingOptions

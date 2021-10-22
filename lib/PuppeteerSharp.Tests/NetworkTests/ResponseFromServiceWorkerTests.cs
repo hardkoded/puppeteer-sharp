@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -14,18 +16,20 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
-        [Fact]
+        [PuppeteerTest("network.spec.ts", "Response.fromServiceWorker", "should return |false| for non-service-worker content")]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReturnFalseForNonServiceWorkerContent()
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.False(response.FromServiceWorker);
         }
 
-        [Fact]
+        [PuppeteerTest("network.spec.ts", "Response.fromServiceWorker", "Response.fromServiceWorker")]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ResponseFromServiceWorker()
         {
             var responses = new Dictionary<string, Response>();
-            Page.Response += (sender, e) => responses[e.Response.Url.Split('/').Last()] = e.Response;
+            Page.Response += (_, e) => responses[e.Response.Url.Split('/').Last()] = e.Response;
             await Page.GoToAsync(TestConstants.ServerUrl + "/serviceworkers/fetch/sw.html",
                 waitUntil: new[] { WaitUntilNavigation.Networkidle2 });
             await Page.EvaluateFunctionAsync("async () => await window.activationPromise");

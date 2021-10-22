@@ -1,8 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -15,7 +17,8 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         {
         }
 
-        [Fact]
+        [PuppeteerTest("browsercontext.spec.ts", "BrowserContext", "should have default context")]
+        [PuppeteerFact]
         public async Task ShouldHaveDefaultContext()
         {
             Assert.Single(Browser.BrowserContexts());
@@ -26,7 +29,8 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.Contains("cannot be closed", exception.Message);
         }
 
-        [Fact]
+        [PuppeteerTest("browsercontext.spec.ts", "BrowserContext", "should create new incognito context")]
+        [PuppeteerFact]
         public async Task ShouldCreateNewIncognitoContext()
         {
             Assert.Single(Browser.BrowserContexts());
@@ -38,7 +42,8 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.Single(Browser.BrowserContexts());
         }
 
-        [Fact]
+        [PuppeteerTest("browsercontext.spec.ts", "BrowserContext", "should close all belonging targets once closing context")]
+        [PuppeteerFact]
         public async Task ShouldCloseAllBelongingTargetsOnceClosingContext()
         {
             Assert.Single((await Browser.PagesAsync()));
@@ -51,14 +56,15 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.Single((await Browser.PagesAsync()));
         }
 
-        [Fact]
+        [PuppeteerTest("browsercontext.spec.ts", "BrowserContext", "window.open should use parent tab context")]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task WindowOpenShouldUseParentTabContext()
         {
             var context = await Browser.CreateIncognitoBrowserContextAsync();
             var page = await context.NewPageAsync();
             await page.GoToAsync(TestConstants.EmptyPage);
             var popupTargetCompletion = new TaskCompletionSource<Target>();
-            Browser.TargetCreated += (sender, e) => popupTargetCompletion.SetResult(e.Target);
+            Browser.TargetCreated += (_, e) => popupTargetCompletion.SetResult(e.Target);
 
             await Task.WhenAll(
                 popupTargetCompletion.Task,
@@ -70,14 +76,15 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             await context.CloseAsync();
         }
 
-        [Fact]
+        [PuppeteerTest("browsercontext.spec.ts", "BrowserContext", "should fire target events")]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldFireTargetEvents()
         {
             var context = await Browser.CreateIncognitoBrowserContextAsync();
             var events = new List<string>();
-            context.TargetCreated += (sender, e) => events.Add("CREATED: " + e.Target.Url);
-            context.TargetChanged += (sender, e) => events.Add("CHANGED: " + e.Target.Url);
-            context.TargetDestroyed += (sender, e) => events.Add("DESTROYED: " + e.Target.Url);
+            context.TargetCreated += (_, e) => events.Add("CREATED: " + e.Target.Url);
+            context.TargetChanged += (_, e) => events.Add("CHANGED: " + e.Target.Url);
+            context.TargetDestroyed += (_, e) => events.Add("DESTROYED: " + e.Target.Url);
             var page = await context.NewPageAsync();
             await page.GoToAsync(TestConstants.EmptyPage);
             await page.CloseAsync();
@@ -89,7 +96,8 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             await context.CloseAsync();
         }
 
-        [Fact]
+        [PuppeteerTest("browsercontext.spec.ts", "BrowserContext", "should isolate local storage and cookies")]
+        [PuppeteerFact]
         public async Task ShouldIsolateLocalStorageAndCookies()
         {
             // Create two incognito contexts.
@@ -133,7 +141,8 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.Single(Browser.BrowserContexts());
         }
 
-        [Fact]
+        [PuppeteerTest("browsercontext.spec.ts", "BrowserContext", "should work across sessions")]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkAcrossSessions()
         {
             Assert.Single(Browser.BrowserContexts());
@@ -150,7 +159,8 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             await context.CloseAsync();
         }
 
-        [Fact]
+        [PuppeteerTest("browsercontext.spec.ts", "BrowserContext", "should wait for target")]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWaitForTarget()
         {
             var context = await Browser.CreateIncognitoBrowserContextAsync();
@@ -163,13 +173,14 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             await context.CloseAsync();
         }
 
-        [Fact]
+        [PuppeteerTest("browsercontext.spec.ts", "BrowserContext", "should timeout waiting for non existant target")]
+        [PuppeteerFact]
         public async Task ShouldTimeoutWaitingForNonExistantTarget()
         {
             var context = await Browser.CreateIncognitoBrowserContextAsync();
-            var exception = await Assert.ThrowsAsync<TimeoutException>(()
+            await Assert.ThrowsAsync<TimeoutException>(()
                 => context.WaitForTargetAsync((target) => target.Url == TestConstants.EmptyPage, new WaitForOptions { Timeout = 1 }));
-            await context.CloseAsync(); 
+            await context.CloseAsync();
         }
     }
 }

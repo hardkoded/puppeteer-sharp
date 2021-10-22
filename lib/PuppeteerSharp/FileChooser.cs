@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,7 +17,7 @@ namespace PuppeteerSharp
     /// await Task.WhenAll(
     ///     waitTask,
     ///     page.ClickAsync("#upload-file-button")); // some button that triggers file selection
-    /// 
+    ///
     /// await waitTask.Result.AcceptAsync('/tmp/myfile.pdf');
     /// ]]>
     /// </code>
@@ -28,12 +28,12 @@ namespace PuppeteerSharp
     /// </remarks>
     public class FileChooser
     {
-        private CDPSession _client;
+        private readonly ElementHandle _element;
         private bool _handled;
 
-        internal FileChooser(CDPSession client, PageFileChooserOpenedResponse e)
+        internal FileChooser(ElementHandle element, PageFileChooserOpenedResponse e)
         {
-            _client = client;
+            _element = element;
             IsMultiple = e.Mode != "selectSingle";
             _handled = false;
         }
@@ -44,7 +44,7 @@ namespace PuppeteerSharp
         public bool IsMultiple { get; }
 
         /// <summary>
-        /// Accept the file chooser request with given paths. 
+        /// Accept the file chooser request with given paths.
         /// If some of the filePaths are relative paths, then they are resolved relative to the current working directory.
         /// </summary>
         /// <param name="filePaths">File paths to send to the file chooser</param>
@@ -58,19 +58,13 @@ namespace PuppeteerSharp
 
             _handled = true;
             var files = filePaths.Select(Path.GetFullPath);
-
-            return _client.SendAsync("Page.handleFileChooser", new PageHandleFileChooserRequest
-            {
-                Action = FileChooserAction.Accept,
-                Files = files,
-            });
+            return _element.UploadFileAsync(files.ToArray());
         }
 
         /// <summary>
         /// Closes the file chooser without selecting any files.
         /// </summary>
-        /// <returns>A task that resolves after the cancel message is processed by the browser</returns>
-        public Task CancelAsync()
+        public void Cancel()
         {
             if (_handled)
             {
@@ -78,11 +72,6 @@ namespace PuppeteerSharp
             }
 
             _handled = true;
-
-            return _client.SendAsync("Page.handleFileChooser", new PageHandleFileChooserRequest
-            {
-                Action = FileChooserAction.Cancel
-            });
         }
     }
 }

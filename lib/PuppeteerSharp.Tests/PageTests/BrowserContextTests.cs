@@ -1,4 +1,6 @@
-﻿using Xunit;
+using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.PageTests
@@ -10,7 +12,8 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Fact]
+        [PuppeteerTest("page.spec.ts", "Page.browserContext", "should return the correct browser context instance")]
+        [PuppeteerFact]
         public void ShouldReturnTheCorrectBrowserInstance() => Assert.Same(Context, Page.BrowserContext);
     }
 }

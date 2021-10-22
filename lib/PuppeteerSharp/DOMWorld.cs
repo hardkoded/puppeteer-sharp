@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
@@ -16,7 +17,7 @@ namespace PuppeteerSharp
         private TaskCompletionSource<ExecutionContext> _contextResolveTaskWrapper;
         private TaskCompletionSource<ElementHandle> _documentCompletionSource;
 
-        internal List<WaitTask> WaitTasks { get; set; }
+        internal ICollection<WaitTask> WaitTasks { get; set; }
 
         internal Frame Frame { get; }
 
@@ -28,7 +29,7 @@ namespace PuppeteerSharp
 
             SetContext(null);
 
-            WaitTasks = new List<WaitTask>();
+            WaitTasks = new ConcurrentSet<WaitTask>();
             _detached = false;
         }
 
@@ -45,7 +46,7 @@ namespace PuppeteerSharp
             else
             {
                 _documentCompletionSource = null;
-                _contextResolveTaskWrapper = new TaskCompletionSource<ExecutionContext>();
+                _contextResolveTaskWrapper = new TaskCompletionSource<ExecutionContext>(TaskCreationOptions.RunContinuationsAsynchronously);
             }
         }
 
@@ -56,7 +57,7 @@ namespace PuppeteerSharp
             _detached = true;
             while (WaitTasks.Count > 0)
             {
-                WaitTasks[0].Terminate(new Exception("waitForFunction failed: frame got detached."));
+                WaitTasks.First().Terminate(new Exception("waitForFunction failed: frame got detached."));
             }
         }
 
@@ -86,6 +87,7 @@ namespace PuppeteerSharp
             var context = await GetExecutionContextAsync().ConfigureAwait(false);
             return await context.EvaluateExpressionAsync<T>(script).ConfigureAwait(false);
         }
+
         internal async Task<JToken> EvaluateExpressionAsync(string script)
         {
             var context = await GetExecutionContextAsync().ConfigureAwait(false);
@@ -97,6 +99,7 @@ namespace PuppeteerSharp
             var context = await GetExecutionContextAsync().ConfigureAwait(false);
             return await context.EvaluateFunctionAsync<T>(script, args).ConfigureAwait(false);
         }
+
         internal async Task<JToken> EvaluateFunctionAsync(string script, params object[] args)
         {
             var context = await GetExecutionContextAsync().ConfigureAwait(false);
@@ -124,7 +127,8 @@ namespace PuppeteerSharp
             return value;
         }
 
-        internal Task<string> GetContentAsync() => EvaluateFunctionAsync<string>(@"() => {
+        internal Task<string> GetContentAsync() => EvaluateFunctionAsync<string>(
+            @"() => {
                 let retVal = '';
                 if (document.doctype)
                     retVal = new XMLSerializer().serializeToString(document.doctype);
@@ -140,11 +144,13 @@ namespace PuppeteerSharp
 
             // We rely upon the fact that document.open() will reset frame lifecycle with "init"
             // lifecycle event. @see https://crrev.com/608658
-            await EvaluateFunctionAsync(@"html => {
-                document.open();
-                document.write(html);
-                document.close();
-            }", html).ConfigureAwait(false);
+            await EvaluateFunctionAsync(
+                @"html => {
+                    document.open();
+                    document.write(html);
+                    document.close();
+                }",
+                html).ConfigureAwait(false);
 
             using (var watcher = new LifecycleWatcher(_frameManager, Frame, waitUntil, timeout))
             {
@@ -349,26 +355,38 @@ namespace PuppeteerSharp
         internal Task<ElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
             => WaitForSelectorOrXPathAsync(xpath, true, options);
 
-        internal Task<JSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args)
-            => new WaitTask(
-                this,
-                script,
-                false,
-                "function",
-                options.Polling,
-                options.PollingInterval,
-                options.Timeout ?? _timeoutSettings.Timeout,
-                args).Task;
+        internal async Task<JSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args)
+        {
+            using var waitTask = new WaitTask(
+                 this,
+                 script,
+                 false,
+                 "function",
+                 options.Polling,
+                 options.PollingInterval,
+                 options.Timeout ?? _timeoutSettings.Timeout,
+                 args);
 
-        internal Task<JSHandle> WaitForExpressionAsync(string script, WaitForFunctionOptions options)
-            => new WaitTask(
+            return await waitTask
+                .Task
+                .ConfigureAwait(false);
+        }
+
+        internal async Task<JSHandle> WaitForExpressionAsync(string script, WaitForFunctionOptions options)
+        {
+            using var waitTask = new WaitTask(
                 this,
                 script,
                 true,
                 "function",
                 options.Polling,
                 options.PollingInterval,
-                options.Timeout ?? _timeoutSettings.Timeout).Task;
+                options.Timeout ?? _timeoutSettings.Timeout);
+
+            return await waitTask
+                .Task
+                .ConfigureAwait(false);
+        }
 
         internal Task<string> GetTitleAsync() => EvaluateExpressionAsync<string>("document.title");
 
@@ -411,7 +429,8 @@ namespace PuppeteerSharp
                 }
               }";
             var polling = options.Visible || options.Hidden ? WaitForFunctionPollingOption.Raf : WaitForFunctionPollingOption.Mutation;
-            var handle = await new WaitTask(
+
+            using var waitTask = new WaitTask(
                 this,
                 predicate,
                 false,
@@ -419,13 +438,9 @@ namespace PuppeteerSharp
                 polling,
                 null,
                 timeout,
-                new object[]
-                {
-                    selectorOrXPath,
-                    isXPath,
-                    options.Visible,
-                    options.Hidden
-                }).Task.ConfigureAwait(false);
+                new object[] { selectorOrXPath, isXPath, options.Visible, options.Hidden });
+
+            var handle = await waitTask.Task.ConfigureAwait(false);
 
             if (!(handle is ElementHandle elementHandle))
             {

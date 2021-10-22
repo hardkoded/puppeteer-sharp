@@ -1,6 +1,8 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using PuppeteerSharp.Mobile;
+using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -13,20 +15,8 @@ namespace PuppeteerSharp.Tests.InputTests
         {
         }
 
-        [Fact]
-        public async Task ShouldWorkWhenFileInputIsAttachedToDOM()
-        {
-            await Page.SetContentAsync("<input type=file>");
-            var waitForTask = Page.WaitForFileChooserAsync();
-
-            await Task.WhenAll(
-                waitForTask,
-                Page.ClickAsync("input"));
-
-            Assert.NotNull(waitForTask.Result);
-        }
-
-        [Fact]
+        [PuppeteerTest("input.spec.ts", "FileChooser.accept", "should accept single file")]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldAcceptSingleFile()
         {
             await Page.SetContentAsync("<input type=file oninput='javascript:console.timeStamp()'>");
@@ -37,7 +27,7 @@ namespace PuppeteerSharp.Tests.InputTests
                 waitForTask,
                 Page.ClickAsync("input"));
 
-            Page.Metrics += (sender, e) => metricsTcs.TrySetResult(true);
+            Page.Metrics += (_, _) => metricsTcs.TrySetResult(true);
 
             await Task.WhenAll(
                 waitForTask.Result.AcceptAsync(TestConstants.FileToUpload),
@@ -49,7 +39,8 @@ namespace PuppeteerSharp.Tests.InputTests
                 await Page.QuerySelectorAsync("input").EvaluateFunctionAsync<string>("input => input.files[0].name"));
         }
 
-        [Fact]
+        [PuppeteerTest("input.spec.ts", "FileChooser.accept", "should be able to read selected file")]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldBeAbleToReadSelectedFile()
         {
             await Page.SetContentAsync("<input type=file>");
@@ -68,7 +59,8 @@ namespace PuppeteerSharp.Tests.InputTests
                 }"));
         }
 
-        [Fact]
+        [PuppeteerTest("input.spec.ts", "FileChooser.accept", "should be able to reset selected files with empty file list")]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldBeAbleToResetSelectedFilesWithEmptyFileList()
         {
             await Page.SetContentAsync("<input type=file>");
@@ -95,7 +87,8 @@ namespace PuppeteerSharp.Tests.InputTests
             }"));
         }
 
-        [Fact]
+        [PuppeteerTest("input.spec.ts", "FileChooser.accept", "should not accept multiple files for single-file input")]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldNotAcceptMultipleFilesForSingleFileInput()
         {
             await Page.SetContentAsync("<input type=file>");
@@ -105,12 +98,27 @@ namespace PuppeteerSharp.Tests.InputTests
                 waitForTask,
                 Page.ClickAsync("input"));
 
-            var ex = await Assert.ThrowsAsync<MessageException>(() => waitForTask.Result.AcceptAsync(
+            await Assert.ThrowsAsync<PuppeteerException>(() => waitForTask.Result.AcceptAsync(
                 "./assets/file-to-upload.txt",
                 "./assets/pptr.png"));
         }
 
-        [Fact]
+        [PuppeteerTest("input.spec.ts", "FileChooser.accept", "should fail for non-existent files")]
+        [SkipBrowserFact(skipFirefox: true)]
+        public async Task ShouldFailForNonExistentFiles()
+        {
+            await Page.SetContentAsync("<input type=file>");
+            var waitForTask = Page.WaitForFileChooserAsync();
+
+            await Task.WhenAll(
+                waitForTask,
+                Page.ClickAsync("input"));
+
+            await Assert.ThrowsAsync<PuppeteerException>(() => waitForTask.Result.AcceptAsync("file-does-not-exist.txt"));
+        }
+
+        [PuppeteerTest("input.spec.ts", "FileChooser.accept", "should fail when accepting file chooser twice")]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldFailWhenAcceptingFileChooserTwice()
         {
             await Page.SetContentAsync("<input type=file>");

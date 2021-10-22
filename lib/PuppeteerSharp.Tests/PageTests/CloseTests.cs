@@ -1,4 +1,6 @@
 using System.Threading.Tasks;
+using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -9,7 +11,8 @@ namespace PuppeteerSharp.Tests.PageTests
     {
         public CloseTests(ITestOutputHelper output) : base(output) { }
 
-        [Fact]
+        [PuppeteerTest("page.spec.ts", "Page.close", "should reject all promises when page is closed")]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldRejectAllPromisesWhenPageIsClosed()
         {
             var exceptionTask = Assert.ThrowsAsync<TargetClosedException>(() => Page.EvaluateFunctionAsync("() => new Promise(r => {})"));
@@ -24,42 +27,54 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal("Target.detachedFromTarget", exception.CloseReason);
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public async Task ShouldNotBeVisibleInBrowserPages(bool useDisposeAsync)
+        [PuppeteerTest("page.spec.ts", "Page.close", "should not be visible in browser.pages")]
+        [SkipBrowserFact(skipFirefox: true)]
+        public async Task ShouldNotBeVisibleInBrowserPages()
         {
-            Assert.Contains(Page, await Browser.PagesAsync());
-            if (useDisposeAsync)
-            {
-                // emulates what would happen in a C#8 await using block
-                await Page.DisposeAsync();
-            }
-            else
-            {
-                await Page.CloseAsync();
-            }
-            Assert.DoesNotContain(Page, await Browser.PagesAsync());
+            await using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
+            var page = await browser.NewPageAsync();
+            Assert.Contains(page, await browser.PagesAsync());
+            await page.CloseAsync();
+            Assert.DoesNotContain(page, await browser.PagesAsync());
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
+        public async Task ShouldNotBeVisibleInBrowserPagesWithDisposeAsync()
+        {
+            await using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
+            var page = await browser.NewPageAsync();
+            Assert.Contains(page, await browser.PagesAsync());
+            await page.DisposeAsync();
+            Assert.DoesNotContain(page, await browser.PagesAsync());
+        }
+
+        [PuppeteerTest("page.spec.ts", "Page.close", "should run beforeunload if asked for")]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldRunBeforeunloadIfAskedFor()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/beforeunload.html");
 
             var dialogTask = new TaskCompletionSource<bool>();
-            Page.Dialog += async (sender, e) =>
+            Page.Dialog += async (_, e) =>
             {
                 Assert.Equal(DialogType.BeforeUnload, e.Dialog.DialogType);
-                Assert.Equal(string.Empty, e.Dialog.Message);
                 Assert.Equal(string.Empty, e.Dialog.DefaultValue);
+
+                if (TestConstants.IsChrome)
+                {
+                    Assert.Equal(string.Empty, e.Dialog.Message);
+                }
+                else
+                {
+                    Assert.Equal("This page is asking you to confirm that you want to leave - data you have entered may not be saved.", e.Dialog.Message);
+                }
 
                 await e.Dialog.Accept();
                 dialogTask.TrySetResult(true);
             };
 
             var closeTask = new TaskCompletionSource<bool>();
-            Page.Close += (sender, e) => closeTask.TrySetResult(true);
+            Page.Close += (_, _) => closeTask.TrySetResult(true);
 
             // We have to interact with a page so that 'beforeunload' handlers
             // fire.
@@ -72,7 +87,8 @@ namespace PuppeteerSharp.Tests.PageTests
             );
         }
 
-        [Fact]
+        [PuppeteerTest("page.spec.ts", "Page.close", "should *not* run beforeunload by default")]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldNotRunBeforeunloadByDefault()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/beforeunload.html");
@@ -80,7 +96,8 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.CloseAsync();
         }
 
-        [Fact]
+        [PuppeteerTest("page.spec.ts", "Page.close", "should set the page close state")]
+        [PuppeteerFact]
         public async Task ShouldSetThePageCloseState()
         {
             Assert.False(Page.IsClosed);
@@ -88,7 +105,8 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(Page.IsClosed);
         }
 
-        [Fact]
+        [PuppeteerTest("page.spec.ts", "Page.close", "should terminate network waiters")]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldTerminateNetworkWaiters()
         {
             var newPage = await Context.NewPageAsync();
@@ -106,7 +124,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.DoesNotContain("Timeout", exception.Message);
         }
 
-        [Fact(Timeout = 10000)]
+        [PuppeteerFact(Timeout = 10000)]
         public async Task ShouldCloseWhenConnectionBreaksPrematurely()
         {
             Browser.Connection.Dispose();

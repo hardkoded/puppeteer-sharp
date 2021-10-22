@@ -2,9 +2,9 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using PuppeteerSharp.Messaging;
-using PuppeteerSharp.Helpers.Json;
 using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Helpers.Json;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
@@ -28,10 +28,10 @@ namespace PuppeteerSharp
     {
         private readonly ILogger _logger;
         private readonly CDPSession _client;
-        private ExecutionContext _executionContext;
         private readonly Func<ConsoleType, JSHandle[], StackTrace, Task> _consoleAPICalled;
         private readonly Action<EvaluateExceptionResponseDetails> _exceptionThrown;
         private readonly TaskCompletionSource<ExecutionContext> _executionContextCallback;
+        private ExecutionContext _executionContext;
         private Func<ExecutionContext, RemoteObject, JSHandle> _jsHandleFactory;
 
         internal Worker(
@@ -48,20 +48,26 @@ namespace PuppeteerSharp
             _client.MessageReceived += OnMessageReceived;
 
             _executionContextCallback = new TaskCompletionSource<ExecutionContext>(TaskCreationOptions.RunContinuationsAsynchronously);
-            _ = _client.SendAsync("Runtime.enable").ContinueWith(task =>
-            {
-                if (task.IsFaulted)
+
+            _ = _client.SendAsync("Runtime.enable").ContinueWith(
+                task =>
                 {
-                    _logger.LogError(task.Exception.Message);
-                }
-            });
-            _ = _client.SendAsync("Log.enable").ContinueWith(task =>
-            {
-                if (task.IsFaulted)
+                    if (task.IsFaulted)
+                    {
+                        _logger.LogError(task.Exception.Message);
+                    }
+                },
+                TaskScheduler.Default);
+
+            _ = _client.SendAsync("Log.enable").ContinueWith(
+                task =>
                 {
-                    _logger.LogError(task.Exception.Message);
-                }
-            });
+                    if (task.IsFaulted)
+                    {
+                        _logger.LogError(task.Exception.Message);
+                    }
+                },
+                TaskScheduler.Default);
         }
 
         /// <summary>

@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
@@ -9,14 +9,6 @@ namespace PuppeteerSharp.Helpers.Json
     /// </summary>
     internal static class JTokenExtensions
     {
-        /// <summary>
-        /// Shortcut for converting the JToken to a string
-        /// </summary>
-        /// <param name="token">The JToken</param>
-        /// <remarks>Returns null if token is null</remarks>
-        /// <returns>A string representation of the JToken</returns>
-        public static string AsString(this JToken token) => token?.Value<string>();
-
         /// <summary>
         /// Creates an instance of the specified .NET type from the <see cref="T:Newtonsoft.Json.Linq.JToken" />.
         /// </summary>

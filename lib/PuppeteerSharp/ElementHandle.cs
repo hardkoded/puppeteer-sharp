@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,8 +13,8 @@ using PuppeteerSharp.Messaging;
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// Inherits from <see cref="JSHandle"/>. It represents an in-page DOM element. 
-    /// ElementHandles can be created by <see cref="Page.QuerySelectorAsync(string)"/> or <see cref="Page.QuerySelectorAllAsync(string)"/>.
+    /// Inherits from <see cref="JSHandle"/>. It represents an in-page DOM element.
+    /// ElementHandles can be created by <see cref="PuppeteerSharp.Page.QuerySelectorAsync(string)"/> or <see cref="PuppeteerSharp.Page.QuerySelectorAllAsync(string)"/>.
     /// </summary>
     public class ElementHandle : JSHandle
     {
@@ -36,26 +36,31 @@ namespace PuppeteerSharp
         internal Page Page { get; }
 
         /// <summary>
-        /// This method scrolls element into view if needed, and then uses <seealso cref="Page.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element. 
+        /// This method scrolls element into view if needed, and then uses <seealso cref="PuppeteerSharp.Page.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
         /// If the element is detached from DOM, the method throws an error.
         /// </summary>
         /// <returns>The task</returns>
-        /// <param name="file">The file path to save the image to. The screenshot type will be inferred from file extension. 
-        /// If path is a relative path, then it is resolved relative to current working directory. If no path is provided, 
+        /// <param name="file">The file path to save the image to. The screenshot type will be inferred from file extension.
+        /// If path is a relative path, then it is resolved relative to current working directory. If no path is provided,
         /// the image won't be saved to the disk.</param>
         public Task ScreenshotAsync(string file) => ScreenshotAsync(file, new ScreenshotOptions());
 
         /// <summary>
-        /// This method scrolls element into view if needed, and then uses <seealso cref="Page.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element. 
+        /// This method scrolls element into view if needed, and then uses <seealso cref="PuppeteerSharp.Page.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
         /// If the element is detached from DOM, the method throws an error.
         /// </summary>
         /// <returns>The task</returns>
-        /// <param name="file">The file path to save the image to. The screenshot type will be inferred from file extension. 
-        /// If path is a relative path, then it is resolved relative to current working directory. If no path is provided, 
+        /// <param name="file">The file path to save the image to. The screenshot type will be inferred from file extension.
+        /// If path is a relative path, then it is resolved relative to current working directory. If no path is provided,
         /// the image won't be saved to the disk.</param>
         /// <param name="options">Screenshot options.</param>
         public async Task ScreenshotAsync(string file, ScreenshotOptions options)
         {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
             if (!options.Type.HasValue)
             {
                 options.Type = ScreenshotOptions.GetScreenshotTypeFromFile(file);
@@ -70,14 +75,14 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// This method scrolls element into view if needed, and then uses <seealso cref="Page.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element. 
+        /// This method scrolls element into view if needed, and then uses <seealso cref="PuppeteerSharp.Page.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
         /// If the element is detached from DOM, the method throws an error.
         /// </summary>
         /// <returns>Task which resolves to a <see cref="Stream"/> containing the image data.</returns>
         public Task<Stream> ScreenshotStreamAsync() => ScreenshotStreamAsync(new ScreenshotOptions());
 
         /// <summary>
-        /// This method scrolls element into view if needed, and then uses <seealso cref="Page.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element. 
+        /// This method scrolls element into view if needed, and then uses <seealso cref="PuppeteerSharp.Page.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
         /// If the element is detached from DOM, the method throws an error.
         /// </summary>
         /// <returns>Task which resolves to a <see cref="Stream"/> containing the image data.</returns>
@@ -86,14 +91,14 @@ namespace PuppeteerSharp
             => new MemoryStream(await ScreenshotDataAsync(options).ConfigureAwait(false));
 
         /// <summary>
-        /// This method scrolls element into view if needed, and then uses <seealso cref="Page.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element. 
+        /// This method scrolls element into view if needed, and then uses <seealso cref="PuppeteerSharp.Page.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
         /// If the element is detached from DOM, the method throws an error.
         /// </summary>
         /// <returns>Task which resolves to a <see cref="byte"/>[] containing the image data.</returns>
         public Task<byte[]> ScreenshotDataAsync() => ScreenshotDataAsync(new ScreenshotOptions());
 
         /// <summary>
-        /// This method scrolls element into view if needed, and then uses <seealso cref="Page.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element. 
+        /// This method scrolls element into view if needed, and then uses <seealso cref="PuppeteerSharp.Page.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
         /// If the element is detached from DOM, the method throws an error.
         /// </summary>
         /// <returns>Task which resolves to a <see cref="byte"/>[] containing the image data.</returns>
@@ -102,20 +107,25 @@ namespace PuppeteerSharp
             => Convert.FromBase64String(await ScreenshotBase64Async(options).ConfigureAwait(false));
 
         /// <summary>
-        /// This method scrolls element into view if needed, and then uses <seealso cref="Page.ScreenshotBase64Async(ScreenshotOptions)"/> to take a screenshot of the element. 
+        /// This method scrolls element into view if needed, and then uses <seealso cref="PuppeteerSharp.Page.ScreenshotBase64Async(ScreenshotOptions)"/> to take a screenshot of the element.
         /// If the element is detached from DOM, the method throws an error.
         /// </summary>
         /// <returns>Task which resolves to a <see cref="string"/> containing the image data as base64.</returns>
         public Task<string> ScreenshotBase64Async() => ScreenshotBase64Async(new ScreenshotOptions());
 
         /// <summary>
-        /// This method scrolls element into view if needed, and then uses <seealso cref="Page.ScreenshotBase64Async(ScreenshotOptions)"/> to take a screenshot of the element. 
+        /// This method scrolls element into view if needed, and then uses <seealso cref="PuppeteerSharp.Page.ScreenshotBase64Async(ScreenshotOptions)"/> to take a screenshot of the element.
         /// If the element is detached from DOM, the method throws an error.
         /// </summary>
         /// <returns>Task which resolves to a <see cref="string"/> containing the image data as base64.</returns>
         /// <param name="options">Screenshot options.</param>
         public async Task<string> ScreenshotBase64Async(ScreenshotOptions options)
         {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
             var needsViewportReset = false;
             var boundingBox = await BoundingBoxAsync().ConfigureAwait(false);
 
@@ -136,9 +146,11 @@ namespace PuppeteerSharp
                 await Page.SetViewportAsync(newRawViewport.ToObject<ViewPortOptions>(true)).ConfigureAwait(false);
                 needsViewportReset = true;
             }
-            await ExecutionContext.EvaluateFunctionAsync(@"function(element) {
-                element.scrollIntoView({ block: 'center', inline: 'center', behavior: 'instant'});
-            }", this).ConfigureAwait(false);
+            await ExecutionContext.EvaluateFunctionAsync(
+                @"function(element) {
+                    element.scrollIntoView({ block: 'center', inline: 'center', behavior: 'instant'});
+                }",
+                this).ConfigureAwait(false);
 
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
             boundingBox = await BoundingBoxAsync().ConfigureAwait(false);
@@ -173,7 +185,7 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Scrolls element into view if needed, and then uses <see cref="Page.Mouse"/> to hover over the center of the element.
+        /// Scrolls element into view if needed, and then uses <see cref="PuppeteerSharp.Page.Mouse"/> to hover over the center of the element.
         /// </summary>
         /// <returns>Task which resolves when the element is successfully hovered</returns>
         public async Task HoverAsync()
@@ -184,7 +196,7 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Scrolls element into view if needed, and then uses <see cref="Page.Mouse"/> to click in the center of the element.
+        /// Scrolls element into view if needed, and then uses <see cref="PuppeteerSharp.Page.Mouse"/> to click in the center of the element.
         /// </summary>
         /// <param name="options">click options</param>
         /// <exception cref="PuppeteerException">if the element is detached from DOM</exception>
@@ -207,19 +219,62 @@ namespace PuppeteerSharp
         /// <summary>
         /// Uploads files
         /// </summary>
-        /// <param name="filePaths">Sets the value of the file input to these paths. Paths are resolved using <see cref="Path.GetFullPath(string)"/></param>
         /// <param name="resolveFilePaths">Set to true to resolve paths using <see cref="Path.GetFullPath(string)"/></param>
+        /// <param name="filePaths">Sets the value of the file input to these paths. Paths are resolved using <see cref="Path.GetFullPath(string)"/></param>
         /// <remarks>This method expects <c>elementHandle</c> to point to an <c>input element</c> <see href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input"/> </remarks>
         /// <returns>Task</returns>
-        public Task UploadFileAsync(bool resolveFilePaths, params string[] filePaths)
+        public async Task UploadFileAsync(bool resolveFilePaths, params string[] filePaths)
         {
-            var files = resolveFilePaths ? filePaths.Select(Path.GetFullPath).ToArray() : filePaths;
-            var objectId = RemoteObject.ObjectId;
-            return Client.SendAsync("DOM.setFileInputFiles", new DomSetFileInputFilesRequest
+            var isMultiple = await EvaluateFunctionAsync<bool>("element => element.multiple").ConfigureAwait(false);
+
+            if (!isMultiple && filePaths.Length > 1)
             {
-                ObjectId = objectId,
-                Files = files
-            });
+                throw new PuppeteerException("Multiple file uploads only work with <input type=file multiple>");
+            }
+
+            var objectId = RemoteObject.ObjectId;
+            var node = await Client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
+            {
+                ObjectId = RemoteObject.ObjectId
+            }).ConfigureAwait(false);
+            var backendNodeId = node.Node.BackendNodeId;
+
+            if (!filePaths.Any() || filePaths == null)
+            {
+                await EvaluateFunctionAsync(@"(element) => {
+                    element.files = new DataTransfer().files;
+
+                    // Dispatch events for this case because it should behave akin to a user action.
+                    element.dispatchEvent(new Event('input', { bubbles: true }));
+                    element.dispatchEvent(new Event('change', { bubbles: true }));
+                }").ConfigureAwait(false);
+            }
+            else
+            {
+                var files = resolveFilePaths ? filePaths.Select(Path.GetFullPath).ToArray() : filePaths;
+                CheckForFileAccess(files);
+                await Client.SendAsync("DOM.setFileInputFiles", new DomSetFileInputFilesRequest
+                {
+                    ObjectId = objectId,
+                    Files = files,
+                    BackendNodeId = backendNodeId
+                }).ConfigureAwait(false);
+            }
+        }
+
+        private void CheckForFileAccess(string[] files)
+        {
+            foreach (var file in files)
+            {
+                try
+                {
+                    File.Open(file, FileMode.Open).Dispose();
+                }
+                catch (Exception ex)
+                {
+                    throw new PuppeteerException($"{files} does not exist or is not readable", ex);
+                }
+            }
         }
 
         /// <summary>
@@ -320,7 +375,7 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// A utility function to be used with <see cref="Extensions.EvaluateFunctionAsync{T}(Task{JSHandle}, string, object[])"/>
+        /// A utility function to be used with <see cref="PuppeteerHandleExtensions.EvaluateFunctionAsync{T}(Task{JSHandle}, string, object[])"/>
         /// </summary>
         /// <param name="selector">A selector to query element for</param>
         /// <returns>Task which resolves to a <see cref="JSHandle"/> of <c>document.querySelectorAll</c> result</returns>
@@ -354,7 +409,7 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// This method returns the bounding box of the element (relative to the main frame), 
+        /// This method returns the bounding box of the element (relative to the main frame),
         /// or null if the element is not visible.
         /// </summary>
         /// <returns>The BoundingBox task.</returns>
@@ -417,19 +472,21 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>A task which resolves to true if the element is visible in the current viewport.</returns>
         public Task<bool> IsIntersectingViewportAsync()
-            => ExecutionContext.EvaluateFunctionAsync<bool>(@"async element =>
-            {
-                const visibleRatio = await new Promise(resolve =>
+            => ExecutionContext.EvaluateFunctionAsync<bool>(
+                @"async element =>
                 {
-                    const observer = new IntersectionObserver(entries =>
+                    const visibleRatio = await new Promise(resolve =>
                     {
-                        resolve(entries[0].intersectionRatio);
-                        observer.disconnect();
+                        const observer = new IntersectionObserver(entries =>
+                        {
+                            resolve(entries[0].intersectionRatio);
+                            observer.disconnect();
+                        });
+                        observer.observe(element);
                     });
-                    observer.observe(element);
-                });
-                return visibleRatio > 0;
-            }", this);
+                    return visibleRatio > 0;
+                }",
+                this);
 
         /// <summary>
         /// Triggers a `change` and `input` event once all the provided options have been selected.
@@ -444,22 +501,117 @@ namespace PuppeteerSharp
         /// <param name="values">Values of options to select. If the `select` has the `multiple` attribute, all values are considered, otherwise only the first one is taken into account.</param>
         /// <returns>A task that resolves to an array of option values that have been successfully selected.</returns>
         public Task<string[]> SelectAsync(params string[] values)
-            => EvaluateFunctionAsync<string[]>(@"(element, values) =>
-            {
-                if (element.nodeName.toLowerCase() !== 'select')
-                    throw new Error('Element is not a <select> element.');
+            => EvaluateFunctionAsync<string[]>(
+                @"(element, values) =>
+                {
+                    if (element.nodeName.toLowerCase() !== 'select')
+                        throw new Error('Element is not a <select> element.');
 
-                const options = Array.from(element.options);
-                element.value = undefined;
-                for (const option of options) {
-                    option.selected = values.includes(option.value);
-                    if (option.selected && !element.multiple)
-                        break;
-                }
-                element.dispatchEvent(new Event('input', { 'bubbles': true }));
-                element.dispatchEvent(new Event('change', { 'bubbles': true }));
-                return options.filter(option => option.selected).map(option => option.value);
-            }", new[] { values });
+                    const options = Array.from(element.options);
+                    element.value = undefined;
+                    for (const option of options) {
+                        option.selected = values.includes(option.value);
+                        if (option.selected && !element.multiple)
+                            break;
+                    }
+                    element.dispatchEvent(new Event('input', { 'bubbles': true }));
+                    element.dispatchEvent(new Event('change', { 'bubbles': true }));
+                    return options.filter(option => option.selected).map(option => option.value);
+                }",
+                new[] { values });
+
+        /// <summary>
+        /// This method creates and captures a dragevent from the element.
+        /// </summary>
+        /// <param name="x">X coordinate</param>
+        /// <param name="y">Y coordinate</param>
+        /// <returns>A Task that resolves when the message was confirmed by the browser with the drag data</returns>
+        public async Task<DragData> DragAsync(decimal x, decimal y)
+        {
+            if (!Page.IsDragInterceptionEnabled)
+            {
+                throw new PuppeteerException("Drag Interception is not enabled!");
+            }
+
+            await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
+            var start = await ClickablePointAsync().ConfigureAwait(false);
+            return await Page.Mouse.DragAsync(start.x, start.y, x, y).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Dispatches a `dragenter` event.
+        /// </summary>
+        /// <param name="data">Drag data containing items and operations mask.</param>
+        /// <returns>A Task that resolves when the message was confirmed by the browser</returns>
+        public async Task DragEnterAsync(DragData data)
+        {
+            if (!Page.IsDragInterceptionEnabled)
+            {
+                throw new PuppeteerException("Drag Interception is not enabled!");
+            }
+
+            await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
+            var (x, y) = await ClickablePointAsync().ConfigureAwait(false);
+            await Page.Mouse.DragEnterAsync(x, y, data).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Dispatches a `dragover` event.
+        /// </summary>
+        /// <param name="data">Drag data containing items and operations mask.</param>
+        /// <returns>A Task that resolves when the message was confirmed by the browser</returns>
+        public async Task DragOverAsync(DragData data)
+        {
+            if (!Page.IsDragInterceptionEnabled)
+            {
+                throw new PuppeteerException("Drag Interception is not enabled!");
+            }
+
+            await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
+            var (x, y) = await ClickablePointAsync().ConfigureAwait(false);
+            await Page.Mouse.DragOverAsync(x, y, data).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs a dragenter, dragover, and drop in sequence.
+        /// </summary>
+        /// <param name="data">Drag data containing items and operations mask.</param>
+        /// <returns>A Task that resolves when the message was confirmed by the browser</returns>
+        public async Task DropAsync(DragData data)
+        {
+            if (!Page.IsDragInterceptionEnabled)
+            {
+                throw new PuppeteerException("Drag Interception is not enabled!");
+            }
+
+            await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
+            var (x, y) = await ClickablePointAsync().ConfigureAwait(false);
+            await Page.Mouse.DropAsync(x, y, data).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs a drag, dragenter, dragover, and drop in sequence.
+        /// </summary>
+        /// <param name="target">Target element</param>
+        /// <param name="delay">If specified, is the time to wait between `dragover` and `drop` in milliseconds.</param>
+        /// <returns>A Task that resolves when the message was confirmed by the browser</returns>
+        public async Task DragAndDropAsync(ElementHandle target, int delay = 0)
+        {
+            if (target == null)
+            {
+                throw new ArgumentException("Target cannot be null", nameof(target));
+            }
+
+            if (!Page.IsDragInterceptionEnabled)
+            {
+                throw new PuppeteerException("Drag Interception is not enabled!");
+            }
+
+            await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
+            var (x, y) = await ClickablePointAsync().ConfigureAwait(false);
+            var targetPoint = await target.ClickablePointAsync().ConfigureAwait(false);
+            await Page.Mouse.DragAndDropAsync(x, y, targetPoint.x, targetPoint.y, delay).ConfigureAwait(false);
+        }
 
         private async Task<(decimal x, decimal y)> ClickablePointAsync()
         {
@@ -522,27 +674,29 @@ namespace PuppeteerSharp
 
         private async Task ScrollIntoViewIfNeededAsync()
         {
-            var errorMessage = await EvaluateFunctionAsync<string>(@"async(element, pageJavascriptEnabled) => {
-              if (!element.isConnected)
-                return 'Node is detached from document';
-              if (element.nodeType !== Node.ELEMENT_NODE)
-                return 'Node is not of type HTMLElement';
-              // force-scroll if page's javascript is disabled.
-              if (!pageJavascriptEnabled) {
-                element.scrollIntoView({block: 'center', inline: 'center', behavior: 'instant'});
-                return null;
-              }
-              const visibleRatio = await new Promise(resolve => {
-                const observer = new IntersectionObserver(entries => {
-                  resolve(entries[0].intersectionRatio);
-                  observer.disconnect();
-                });
-                observer.observe(element);
-              });
-              if (visibleRatio !== 1.0)
-                element.scrollIntoView({block: 'center', inline: 'center', behavior: 'instant'});
-              return null;
-            }", Page.JavascriptEnabled).ConfigureAwait(false);
+            var errorMessage = await EvaluateFunctionAsync<string>(
+                @"async(element, pageJavascriptEnabled) => {
+                    if (!element.isConnected)
+                        return 'Node is detached from document';
+                    if (element.nodeType !== Node.ELEMENT_NODE)
+                        return 'Node is not of type HTMLElement';
+                    // force-scroll if page's javascript is disabled.
+                    if (!pageJavascriptEnabled) {
+                        element.scrollIntoView({block: 'center', inline: 'center', behavior: 'instant'});
+                        return null;
+                    }
+                    const visibleRatio = await new Promise(resolve => {
+                    const observer = new IntersectionObserver(entries => {
+                        resolve(entries[0].intersectionRatio);
+                        observer.disconnect();
+                    });
+                    observer.observe(element);
+                    });
+                    if (visibleRatio !== 1.0)
+                        element.scrollIntoView({block: 'center', inline: 'center', behavior: 'instant'});
+                    return null;
+                }",
+                Page.JavascriptEnabled).ConfigureAwait(false);
 
             if (errorMessage != null)
             {

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
+using PuppeteerSharp.Tests.Attributes;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -11,11 +12,11 @@ namespace PuppeteerSharp.Tests.Issues
         {
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task BufferAsyncShouldWorkWithBinaries()
         {
             var tcs = new TaskCompletionSource<byte[]>();
-            Page.Response += async (sender, e) =>
+            Page.Response += async (_, e) =>
             {
                 if (e.Response.Url.Contains("digits/0.png"))
                 {

@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using PuppeteerSharp.Messaging;
 using PuppeteerSharp.Helpers.Json;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
@@ -103,6 +103,7 @@ namespace PuppeteerSharp
         /// Remove server address.
         /// </summary>
         public RemoteAddress RemoteAddress { get; }
+
         internal TaskCompletionSource<bool> BodyLoadedTaskWrapper { get; }
 
         /// <summary>

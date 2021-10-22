@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -23,7 +23,9 @@ namespace PuppeteerSharp
     /// await Page.Tracing.StopAsync();
     /// </code>
     /// </example>
+#pragma warning disable CA1724
     public class Tracing
+#pragma warning restore CA1724
     {
         private readonly CDPSession _client;
         private bool _recording;
@@ -42,6 +44,7 @@ namespace PuppeteerSharp
             "disabled-by-default-devtools.timeline.stack",
             "disabled-by-default-v8.cpu_profiler",
         };
+
         private readonly ILogger _logger;
 
         internal Tracing(CDPSession client)

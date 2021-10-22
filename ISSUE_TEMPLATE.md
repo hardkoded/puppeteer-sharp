@@ -1,3 +1,5 @@
+## Looking for some help? Get priority support by [sponsoring the project](https://github.com/sponsors/hardkoded)/
+
 **Before you file a bug, have you:**
 
 * Tried upgrading to newest version of PuppeteerSharp, to see if your issue has already been resolved and released?

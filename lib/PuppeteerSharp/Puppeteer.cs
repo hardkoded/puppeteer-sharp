@@ -1,8 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
-using PuppeteerSharp.Mobile;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using PuppeteerSharp.Mobile;
 
 namespace PuppeteerSharp
 {
@@ -25,21 +24,17 @@ namespace PuppeteerSharp
         /// <summary>
         /// The default flags that Chromium will be launched with.
         /// </summary>
-        public static string[] DefaultArgs => ChromiumProcess.DefaultArgs;
+        internal static string[] DefaultArgs => ChromiumLauncher.DefaultArgs;
 
         /// <summary>
-        /// A path where Puppeteer expects to find bundled Chromium. Chromium might not exist there if the downloader was not used.
-        /// </summary>
-        /// <returns>The path to chrome.exe</returns>
-        public static string GetExecutablePath() => Launcher.GetExecutablePath();
-
-        /// <summary>
-        /// Returns an array of argument based on the options provided and the platform where the library is running 
+        /// Returns an array of argument based on the options provided and the platform where the library is running
         /// </summary>
         /// <returns>Chromium arguments.</returns>
         /// <param name="options">Options.</param>
         public static string[] GetDefaultArgs(LaunchOptions options = null)
-            => ChromiumProcess.GetDefaultArgs(options ?? new LaunchOptions());
+            => (options?.Product ?? Product.Chrome) == Product.Chrome
+                ? ChromiumLauncher.GetDefaultArgs(options ?? new LaunchOptions())
+                : FirefoxLauncher.GetDefaultArgs(options ?? new LaunchOptions());
 
         /// <summary>
         /// The method launches a browser instance with given arguments. The browser will be closed when the Browser is disposed.
@@ -51,12 +46,12 @@ namespace PuppeteerSharp
         /// See <a href="https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/">this article</a>
         /// for a description of the differences between Chromium and Chrome.
         /// <a href="https://chromium.googlesource.com/chromium/src/+/lkcr/docs/chromium_browser_vs_google_chrome.md">This article</a> describes some differences for Linux users.
-        /// 
+        ///
         /// Environment Variables
         /// Puppeteer looks for certain <see href="https://en.wikipedia.org/wiki/Environment_variable">environment variables</see>() to aid its operations.
-        /// - <c>PUPPETEER_CHROMIUM_REVISION</c> - specify a certain version of Chromium you'd like Puppeteer to use. See <see cref="Puppeteer.LaunchAsync(LaunchOptions, ILoggerFactory)"/> on how executable path is inferred. 
+        /// - <c>PUPPETEER_CHROMIUM_REVISION</c> - specify a certain version of Chromium you'd like Puppeteer to use. See <see cref="Puppeteer.LaunchAsync(LaunchOptions, ILoggerFactory)"/> on how executable path is inferred.
         ///   **BEWARE**: Puppeteer is only <see href="https://github.com/GoogleChrome/puppeteer/#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy">guaranteed to work</see> with the bundled Chromium, use at your own risk.
-        /// - <c>PUPPETEER_EXECUTABLE_PATH</c> - specify an executable path to be used in <see cref="Puppeteer.LaunchAsync(LaunchOptions, ILoggerFactory)"/>. 
+        /// - <c>PUPPETEER_EXECUTABLE_PATH</c> - specify an executable path to be used in <see cref="Puppeteer.LaunchAsync(LaunchOptions, ILoggerFactory)"/>.
         ///   **BEWARE**: Puppeteer is only <see href="https://github.com/GoogleChrome/puppeteer/#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy">guaranteed to work</see> with the bundled Chromium, use at your own risk.
         /// </remarks>
         public static Task<Browser> LaunchAsync(LaunchOptions options, ILoggerFactory loggerFactory = null)
@@ -80,7 +75,7 @@ namespace PuppeteerSharp
             => new BrowserFetcher(options);
 
         /// <summary>
-        /// Returns a list of devices to be used with <seealso cref="Page.EmulateAsync(DeviceDescriptor)"/>. 
+        /// Returns a list of devices to be used with <seealso cref="Page.EmulateAsync(DeviceDescriptor)"/>.
         /// </summary>
         /// <example>
         /// <code>
@@ -95,5 +90,23 @@ namespace PuppeteerSharp
         /// </code>
         /// </example>
         public static IReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor> Devices => DeviceDescriptors.ToReadOnly();
+
+        /// <summary>
+        /// Returns a list of network conditions to be used with <seealso cref="Page.EmulateNetworkConditionsAsync(NetworkConditions)"/>.
+        /// Actual list of conditions can be found in <seealso cref="PredefinedNetworkConditions.Conditions"/>.
+        /// </summary>
+        /// <example>
+        /// <code>
+        ///<![CDATA[
+        /// var slow3G = Puppeteer.NetworkConditions["Slow 3G"];
+        /// using(var page = await browser.NewPageAsync())
+        /// {
+        ///     await page.EmulateNetworkConditionsAsync(slow3G);
+        ///     await page.goto('https://www.google.com');
+        /// }
+        /// ]]>
+        /// </code>
+        /// </example>
+        public static IReadOnlyDictionary<string, NetworkConditions> NetworkConditions => PredefinedNetworkConditions.ToReadOnly();
     }
 }

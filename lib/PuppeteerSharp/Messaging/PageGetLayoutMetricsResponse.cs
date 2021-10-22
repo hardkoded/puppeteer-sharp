@@ -1,4 +1,4 @@
-﻿namespace PuppeteerSharp.Messaging
+namespace PuppeteerSharp.Messaging
 {
     internal class PageGetLayoutMetricsResponse
     {
@@ -7,6 +7,7 @@
         public class LayourContentSize
         {
             public decimal Width { get; set; }
+
             public decimal Height { get; set; }
         }
     }

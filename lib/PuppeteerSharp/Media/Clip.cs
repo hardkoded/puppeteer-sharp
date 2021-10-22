@@ -1,4 +1,4 @@
-﻿namespace PuppeteerSharp.Media
+namespace PuppeteerSharp.Media
 {
     /// <summary>
     /// Clip data.
@@ -31,6 +31,6 @@
         /// Scale of the webpage rendering. Defaults to 1.
         /// </summary>
         /// <value>The scale.</value>
-        public int Scale { get; internal set; }
+        public int Scale { get; set; } = 1;
     }
 }

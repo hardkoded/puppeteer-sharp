@@ -1,7 +1,10 @@
-﻿using System;
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Messaging;
@@ -13,9 +16,9 @@ namespace PuppeteerSharp
     /// <see cref="Page.Request"/> emitted when the request is issued by the page.
     /// <see cref="Page.Response"/> emitted when/if the response is received for the request.
     /// <see cref="Page.RequestFinished"/> emitted when the response body is downloaded and the request is complete.
-    /// 
+    ///
     /// If request fails at some point, then instead of <see cref="Page.RequestFinished"/> event (and possibly instead of <see cref="Page.Response"/> event), the <see cref="Page.RequestFailed"/> event is emitted.
-    /// 
+    ///
     /// If request gets a 'redirect' response, the request is successfully finished with the <see cref="Page.RequestFinished"/> event, and a new request is issued to a redirected url.
     /// </summary>
     public class Request
@@ -50,7 +53,7 @@ namespace PuppeteerSharp
             Frame = frame;
             RedirectChainList = redirectChain;
 
-            Headers = new Dictionary<string, string>();
+            Headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             foreach (var keyValue in e.Request.Headers)
             {
                 Headers[keyValue.Key] = keyValue.Value;
@@ -140,6 +143,7 @@ namespace PuppeteerSharp
         public Request[] RedirectChain => RedirectChainList.ToArray();
 
         internal bool FromMemoryCache { get; set; }
+
         internal List<Request> RedirectChainList { get; }
         #endregion
 
@@ -187,7 +191,7 @@ namespace PuppeteerSharp
 
                 if (overrides?.PostData != null)
                 {
-                    requestData.PostData = overrides.PostData;
+                    requestData.PostData = Convert.ToBase64String(Encoding.UTF8.GetBytes(overrides?.PostData));
                 }
 
                 if (overrides?.Headers?.Count > 0)
@@ -228,24 +232,39 @@ namespace PuppeteerSharp
 
             _interceptionHandled = true;
 
-            var responseHeaders = new Dictionary<string, string>();
+            var responseHeaders = new List<Header>();
 
             if (response.Headers != null)
             {
-                foreach (var keyValue in response.Headers)
+                foreach (var keyValuePair in response.Headers)
                 {
-                    responseHeaders[keyValue.Key] = keyValue.Value.ToString();
+                    if (keyValuePair.Value == null)
+                    {
+                        continue;
+                    }
+
+                    if (keyValuePair.Value is ICollection values)
+                    {
+                        foreach (var val in values)
+                        {
+                            responseHeaders.Add(new Header { Name = keyValuePair.Key, Value = val.ToString() });
+                        }
+                    }
+                    else
+                    {
+                        responseHeaders.Add(new Header { Name = keyValuePair.Key, Value = keyValuePair.Value.ToString() });
+                    }
+                }
+
+                if (!response.Headers.ContainsKey("content-length") && response.BodyData != null)
+                {
+                    responseHeaders.Add(new Header { Name = "content-length", Value = response.BodyData.Length.ToString(CultureInfo.CurrentCulture) });
                 }
             }
 
             if (response.ContentType != null)
             {
-                responseHeaders["content-type"] = response.ContentType;
-            }
-
-            if (!responseHeaders.ContainsKey("content-length") && response.BodyData != null)
-            {
-                responseHeaders["content-length"] = response.BodyData.Length.ToString();
+                responseHeaders.Add(new Header { Name = "content-type", Value = response.ContentType });
             }
 
             try
@@ -254,7 +273,7 @@ namespace PuppeteerSharp
                 {
                     RequestId = InterceptionId,
                     ResponseCode = response.Status != null ? (int)response.Status : 200,
-                    ResponseHeaders = HeadersArray(responseHeaders),
+                    ResponseHeaders = responseHeaders.ToArray(),
                     Body = response.BodyData != null ? Convert.ToBase64String(response.BodyData) : null
                 }).ConfigureAwait(false);
             }

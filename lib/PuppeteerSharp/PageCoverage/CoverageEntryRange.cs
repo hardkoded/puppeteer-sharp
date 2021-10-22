@@ -1,4 +1,4 @@
-﻿namespace PuppeteerSharp.PageCoverage
+namespace PuppeteerSharp.PageCoverage
 {
     /// <summary>
     /// Script range.
@@ -17,6 +17,7 @@
         public int End { get; internal set; }
 
         /// <inheritdoc/>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Exceptions should not be raised in this type of method.")]
         public override bool Equals(object obj)
         {
             if (obj == null && GetType() != obj.GetType())

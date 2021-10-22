@@ -1,6 +1,8 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Threading.Tasks;
+using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -13,7 +15,8 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Fact]
+        [PuppeteerTest("page.spec.ts", "Page.addScriptTag", "should throw an error if no options are provided")]
+        [PuppeteerFact]
         public async Task ShouldThrowAnErrorIfNoOptionsAreProvided()
         {
             var exception = await Assert.ThrowsAsync<ArgumentException>(()
@@ -21,7 +24,8 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal("Provide options with a `Url`, `Path` or `Content` property", exception.Message);
         }
 
-        [Fact]
+        [PuppeteerTest("page.spec.ts", "Page.addScriptTag", "should work with a url")]
+        [PuppeteerFact]
         public async Task ShouldWorkWithAUrl()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -30,7 +34,8 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(42, await Page.EvaluateExpressionAsync<int>("__injected"));
         }
 
-        [Fact]
+        [PuppeteerTest("page.spec.ts", "Page.addScriptTag", "should work with a url and type=module")]
+        [PuppeteerFact]
         public async Task ShouldWorkWithAUrlAndTypeModule()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -38,7 +43,8 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(42, await Page.EvaluateExpressionAsync<int>("__es6injected"));
         }
 
-        [Fact]
+        [PuppeteerTest("page.spec.ts", "Page.addScriptTag", "should work with a path and type=module")]
+        [PuppeteerFact]
         public async Task ShouldWorkWithAPathAndTypeModule()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -51,7 +57,8 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(42, await Page.EvaluateExpressionAsync<int>("__es6injected"));
         }
 
-        [Fact]
+        [PuppeteerTest("page.spec.ts", "Page.addScriptTag", "should work with a content and type=module")]
+        [PuppeteerFact]
         public async Task ShouldWorkWithAContentAndTypeModule()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -64,7 +71,8 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(42, await Page.EvaluateExpressionAsync<int>("__es6injected"));
         }
 
-        [Fact]
+        [PuppeteerTest("page.spec.ts", "Page.addScriptTag", "should throw an error if loading from url fail")]
+        [PuppeteerFact]
         public async Task ShouldThrowAnErrorIfLoadingFromUrlFail()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -73,7 +81,8 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal("Loading script from /nonexistfile.js failed", exception.Message);
         }
 
-        [Fact]
+        [PuppeteerTest("page.spec.ts", "Page.addScriptTag", "should work with a path")]
+        [PuppeteerFact]
         public async Task ShouldWorkWithAPath()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -85,7 +94,8 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(42, await Page.EvaluateExpressionAsync<int>("__injected"));
         }
 
-        [Fact]
+        [PuppeteerTest("page.spec.ts", "Page.addScriptTag", "should include sourcemap when path is provided")]
+        [PuppeteerFact]
         public async Task ShouldIncludeSourcemapWhenPathIsProvided()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -97,7 +107,8 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Contains(Path.Combine("Assets", "injectedfile.js"), result);
         }
 
-        [Fact]
+        [PuppeteerTest("page.spec.ts", "Page.addScriptTag", "should work with content")]
+        [PuppeteerFact]
         public async Task ShouldWorkWithContent()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -106,7 +117,8 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(35, await Page.EvaluateExpressionAsync<int>("__injected"));
         }
 
-        [Fact(Skip = "@see https://github.com/GoogleChrome/puppeteer/issues/4840")]
+        [PuppeteerTest("page.spec.ts", "Page.addScriptTag", "should throw when added with content to the CSP page")]
+        [PuppeteerFact(Skip = "@see https://github.com/GoogleChrome/puppeteer/issues/4840")]
         public async Task ShouldThrowWhenAddedWithContentToTheCSPPage()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/csp.html");
@@ -118,7 +130,8 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.NotNull(exception);
         }
 
-        [Fact]
+        [PuppeteerTest("page.spec.ts", "Page.addScriptTag", "should throw when added with URL to the CSP page")]
+        [PuppeteerFact]
         public async Task ShouldThrowWhenAddedWithURLToTheCSPPage()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/csp.html");

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
@@ -64,6 +64,7 @@ namespace PuppeteerSharp
         /// ]]></example>
         [JsonIgnore]
         public bool BurstMode { get; set; } = false;
+
         internal static ScreenshotType? GetScreenshotTypeFromFile(string file)
         {
             var extension = new FileInfo(file).Extension.Replace(".", string.Empty);

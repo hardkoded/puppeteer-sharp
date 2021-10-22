@@ -1,4 +1,4 @@
-﻿namespace PuppeteerSharp.Messaging
+namespace PuppeteerSharp.Messaging
 {
     internal class ProfilerTakePreciseCoverageResponse
     {
@@ -7,6 +7,7 @@
         internal class ProfilerTakePreciseCoverageResponseItem
         {
             public string ScriptId { get; set; }
+
             public ProfilerTakePreciseCoverageResponseFunction[] Functions { get; set; }
         }
 

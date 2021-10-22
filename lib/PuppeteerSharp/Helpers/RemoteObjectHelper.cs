@@ -1,22 +1,35 @@
-﻿using System;
+using System;
+using System.Numerics;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
-using PuppeteerSharp.Messaging;
 using PuppeteerSharp.Helpers.Json;
-using System.Numerics;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp.Helpers
 {
     internal class RemoteObjectHelper
     {
-        internal static object ValueFromRemoteObject<T>(RemoteObject remoteObject)
+        internal static object ValueFromRemoteObject<T>(RemoteObject remoteObject, bool stringify = false)
         {
             var unserializableValue = remoteObject.UnserializableValue;
 
             if (unserializableValue != null)
             {
                 return ValueFromUnserializableValue(remoteObject, unserializableValue);
+            }
+
+            if (stringify)
+            {
+                if (remoteObject.Type == RemoteObjectType.Undefined)
+                {
+                    return "undefined";
+                }
+
+                if (remoteObject.Value == null)
+                {
+                    return "null";
+                }
             }
 
             var value = remoteObject.Value;
@@ -26,25 +39,46 @@ namespace PuppeteerSharp.Helpers
                 return default(T);
             }
 
-            return typeof(T) == typeof(JToken) ? value : ValueFromType<T>(value, remoteObject.Type);
+            return typeof(T) == typeof(JToken) ? value : ValueFromType<T>(value, remoteObject.Type, stringify);
         }
 
-        private static object ValueFromType<T>(JToken value, RemoteObjectType objectType)
+        private static object ValueFromType<T>(JToken value, RemoteObjectType objectType, bool stringify = false)
         {
-            switch (objectType)
+            if (stringify)
             {
-                case RemoteObjectType.Object:
-                    return value.ToObject<T>(true);
-                case RemoteObjectType.Undefined:
-                    return null;
-                case RemoteObjectType.Number:
-                    return value.Value<T>();
-                case RemoteObjectType.Boolean:
-                    return value.Value<bool>();
-                case RemoteObjectType.Bigint:
-                    return value.Value<double>();
-                default: // string, symbol, function
-                    return value.ToObject<T>();
+                switch (objectType)
+                {
+                    case RemoteObjectType.Object:
+                        return value.ToObject<T>(true);
+                    case RemoteObjectType.Undefined:
+                        return "undefined";
+                    case RemoteObjectType.Number:
+                        return value.Value<T>();
+                    case RemoteObjectType.Boolean:
+                        return value.Value<bool>();
+                    case RemoteObjectType.Bigint:
+                        return value.Value<double>();
+                    default: // string, symbol, function
+                        return value.ToObject<T>();
+                }
+            }
+            else
+            {
+                switch (objectType)
+                {
+                    case RemoteObjectType.Object:
+                        return value.ToObject<T>(true);
+                    case RemoteObjectType.Undefined:
+                        return null;
+                    case RemoteObjectType.Number:
+                        return value.Value<T>();
+                    case RemoteObjectType.Boolean:
+                        return value.Value<bool>();
+                    case RemoteObjectType.Bigint:
+                        return value.Value<double>();
+                    default: // string, symbol, function
+                        return value.ToObject<T>();
+                }
             }
         }
 

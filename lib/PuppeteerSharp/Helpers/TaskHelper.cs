@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Helpers
         private static readonly Func<TimeSpan, Exception> DefaultExceptionFactory =
             timeout => new TimeoutException($"Timeout of {timeout.TotalMilliseconds} ms exceeded");
 
-        //Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
+        // Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
         /// <summary>
         /// Cancels the <paramref name="task"/> after <paramref name="milliseconds"/> milliseconds
         /// </summary>
@@ -28,7 +28,7 @@ namespace PuppeteerSharp.Helpers
             CancellationToken cancellationToken = default)
             => WithTimeout(task, TimeSpan.FromMilliseconds(milliseconds), exceptionFactory, cancellationToken);
 
-        //Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
+        // Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
         /// <summary>
         /// Cancels the <paramref name="task"/> after a given <paramref name="timeout"/> period
         /// </summary>
@@ -47,7 +47,7 @@ namespace PuppeteerSharp.Helpers
                 timeout,
                 cancellationToken);
 
-        //Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
+        // Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
         /// <summary>
         /// Cancels the <paramref name="task"/> after <paramref name="milliseconds"/> milliseconds
         /// </summary>
@@ -63,7 +63,7 @@ namespace PuppeteerSharp.Helpers
             CancellationToken cancellationToken = default)
             => WithTimeout(task, timeoutAction, TimeSpan.FromMilliseconds(milliseconds), cancellationToken);
 
-        //Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
+        // Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
         /// <summary>
         /// Cancels the <paramref name="task"/> after a given <paramref name="timeout"/> period
         /// </summary>
@@ -74,6 +74,16 @@ namespace PuppeteerSharp.Helpers
         /// <param name="cancellationToken">Cancellation token.</param>
         public static async Task WithTimeout(this Task task, Func<Task> timeoutAction, TimeSpan timeout, CancellationToken cancellationToken)
         {
+            if (task == null)
+            {
+                throw new ArgumentNullException(nameof(task));
+            }
+
+            if (timeoutAction == null)
+            {
+                throw new ArgumentNullException(nameof(timeoutAction));
+            }
+
             if (await TimeoutTask(task, timeout).ConfigureAwait(false) && !cancellationToken.IsCancellationRequested)
             {
                 await timeoutAction().ConfigureAwait(false);
@@ -81,7 +91,7 @@ namespace PuppeteerSharp.Helpers
             await task.ConfigureAwait(false);
         }
 
-        //Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
+        // Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
         /// <summary>
         /// Cancels the <paramref name="task"/> after <paramref name="milliseconds"/> milliseconds
         /// </summary>
@@ -93,7 +103,7 @@ namespace PuppeteerSharp.Helpers
         public static Task<T> WithTimeout<T>(this Task<T> task, Action timeoutAction, int milliseconds = 1_000)
             => WithTimeout(task, timeoutAction, TimeSpan.FromMilliseconds(milliseconds));
 
-        //Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
+        // Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
         /// <summary>
         /// Cancels the <paramref name="task"/> after a given <paramref name="timeout"/> period
         /// </summary>
@@ -104,6 +114,16 @@ namespace PuppeteerSharp.Helpers
         /// <typeparam name="T">Return type.</typeparam>
         public static async Task<T> WithTimeout<T>(this Task<T> task, Action timeoutAction, TimeSpan timeout)
         {
+            if (task == null)
+            {
+                throw new ArgumentNullException(nameof(task));
+            }
+
+            if (timeoutAction == null)
+            {
+                throw new ArgumentNullException(nameof(timeoutAction));
+            }
+
             if (await TimeoutTask(task, timeout).ConfigureAwait(false))
             {
                 timeoutAction();
@@ -113,7 +133,7 @@ namespace PuppeteerSharp.Helpers
             return await task.ConfigureAwait(false);
         }
 
-        //Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
+        // Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
         /// <summary>
         /// Cancels the <paramref name="task"/> after <paramref name="milliseconds"/> milliseconds
         /// </summary>
@@ -125,7 +145,7 @@ namespace PuppeteerSharp.Helpers
         public static Task<T> WithTimeout<T>(this Task<T> task, int milliseconds = 1_000, Func<TimeSpan, Exception> exceptionFactory = null)
             => WithTimeout(task, TimeSpan.FromMilliseconds(milliseconds), exceptionFactory);
 
-        //Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
+        // Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
         /// <summary>
         /// Cancels the <paramref name="task"/> after a given <paramref name="timeout"/> period
         /// </summary>
@@ -136,6 +156,11 @@ namespace PuppeteerSharp.Helpers
         /// <typeparam name="T">Task return type.</typeparam>
         public static async Task<T> WithTimeout<T>(this Task<T> task, TimeSpan timeout, Func<TimeSpan, Exception> exceptionFactory = null)
         {
+            if (task == null)
+            {
+                throw new ArgumentNullException(nameof(task));
+            }
+
             if (await TimeoutTask(task, timeout).ConfigureAwait(false))
             {
                 throw (exceptionFactory ?? DefaultExceptionFactory)(timeout);

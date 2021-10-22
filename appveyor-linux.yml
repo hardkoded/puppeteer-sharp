@@ -5,10 +5,14 @@ branches:
 image: ubuntu1804
 configuration: Release
 environment:
+  MOZ_WEBRENDER: 0
   git_access_token:
     secure: FxcQ9C8a/NgcQB5dFdZts6ZWEDT4zMhA4qPQAYwWc7huMmhmTIl1sbFEIaAWQMTL
   matrix:
-    - framework: netcoreapp2.2
+    - framework: net5.0
+      PRODUCT: CHROMIUM
+    - framework: net5.0
+      PRODUCT: FIREFOX
 
 before_build:
 - sh: >-
@@ -28,7 +32,7 @@ build_script:
 
     dotnet build -f $framework ./lib/PuppeteerSharp.Tests.DumpIO/PuppeteerSharp.Tests.DumpIO.csproj
 
-    dotnet build ./lib/PuppeteerSharp.TestServer/PuppeteerSharp.TestServer.csproj
+    dotnet build -f $framework ./lib/PuppeteerSharp.TestServer/PuppeteerSharp.TestServer.csproj
 
     dotnet build -f $framework ./lib/PuppeteerSharp.Tests/PuppeteerSharp.Tests.csproj
 

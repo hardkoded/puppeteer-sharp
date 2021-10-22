@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 
 namespace PuppeteerSharp.PageAccessibility
@@ -119,6 +119,7 @@ namespace PuppeteerSharp.PageAccessibility
         public SerializedAXNode[] Children { get; set; }
 
         /// <inheritdoc/>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Exceptions should not be raised in this type of method.")]
         public bool Equals(SerializedAXNode other)
             => ReferenceEquals(this, other) ||
                 (
@@ -146,8 +147,7 @@ namespace PuppeteerSharp.PageAccessibility
                     Level == other.Level &&
                     ValueMin == other.ValueMin &&
                     ValueMax == other.ValueMax &&
-                    (Children == other.Children || Children.SequenceEqual(other.Children))
-                );
+                    (Children == other.Children || Children.SequenceEqual(other.Children)));
 
         /// <inheritdoc/>
         public override bool Equals(object obj) => obj is SerializedAXNode s && Equals(s);

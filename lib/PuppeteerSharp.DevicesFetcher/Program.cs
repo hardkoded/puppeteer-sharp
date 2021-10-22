@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -15,8 +15,8 @@ namespace PuppeteerSharp.DevicesFetcher
     {
         const string DEVICES_URL = "https://raw.githubusercontent.com/ChromeDevTools/devtools-frontend/master/front_end/emulated_devices/module.json";
 
-        static string deviceDescriptorsOutput = "../../../../PuppeteerSharp/Mobile/DeviceDescriptors.cs";
-        static string deviceDescriptorNameOutput = "../../../../PuppeteerSharp/Mobile/DeviceDescriptorName.cs";
+        static readonly string deviceDescriptorsOutput = "../../../../PuppeteerSharp/Mobile/DeviceDescriptors.cs";
+        static readonly string deviceDescriptorNameOutput = "../../../../PuppeteerSharp/Mobile/DeviceDescriptorName.cs";
 
         static async Task Main(string[] args)
         {
@@ -27,9 +27,10 @@ namespace PuppeteerSharp.DevicesFetcher
             }
 
             string chromeVersion = null;
-            var fetcher = new BrowserFetcher();
-            await fetcher.DownloadAsync(BrowserFetcher.DefaultRevision);
-            using (var browser = await Puppeteer.LaunchAsync(new LaunchOptions()))
+            using var fetcher = new BrowserFetcher();
+
+            await fetcher.DownloadAsync();
+            await using (var browser = await Puppeteer.LaunchAsync(new LaunchOptions()))
             {
                 chromeVersion = (await browser.GetVersionAsync()).Split('/').Last();
             }
@@ -44,6 +45,7 @@ namespace PuppeteerSharp.DevicesFetcher
             catch (Exception ex)
             {
                 Console.WriteLine($"FAILED: error parsing response - {ex.Message}");
+                return;
             }
             var devicePayloads = json.Extensions
                 .Where(extension => extension.Type == "emulated-device")
@@ -104,7 +106,7 @@ namespace PuppeteerSharp.Mobile
 ";
             var end = @"
         };
-            
+
         /// <summary>
         /// Get the specified device description.
         /// </summary>
@@ -151,7 +153,6 @@ namespace PuppeteerSharp.Mobile
 
         static string GenerateCsharpFromDevice(OutputDevice device)
         {
-            var w = string.Empty;
             return $@"            [DeviceDescriptorName.{DeviceNameToEnumValue(device)}] = new DeviceDescriptor
             {{
                 Name = ""{device.Name}"",
@@ -167,6 +168,7 @@ namespace PuppeteerSharp.Mobile
                 }}
             }}";
         }
+
         static string DeviceNameToEnumValue(OutputDevice device)
         {
             var output = new StringBuilder();

@@ -1,24 +1,27 @@
-﻿using System;
-using System.Linq;
+using System;
 using System.Collections.Generic;
-using PuppeteerSharp.Messaging;
+using System.Globalization;
+using System.Linq;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp.PageAccessibility
 {
     internal class AXNode
     {
         internal AccessibilityGetFullAXTreeResponse.AXTreeNode Payload { get; }
+
         public List<AXNode> Children { get; }
+
         public bool Focusable { get; set; }
 
         private readonly string _name;
-        private string _role;
         private readonly bool _richlyEditable;
         private readonly bool _editable;
         private readonly bool _expanded;
         private readonly bool _hidden;
+        private string _role;
         private bool? _cachedHasFocusableChild;
 
         public AXNode(AccessibilityGetFullAXTreeResponse.AXTreeNode payload)
@@ -177,11 +180,13 @@ namespace PuppeteerSharp.PageAccessibility
             {
                 return true;
             }
+
             // If it's not focusable but has a control role, then it's interesting.
             if (IsControl())
             {
                 return true;
             }
+
             // A non focusable child of a control is not interesting
             if (insideControl)
             {
@@ -195,7 +200,7 @@ namespace PuppeteerSharp.PageAccessibility
             var properties = new Dictionary<string, JToken>();
             foreach (var property in Payload.Properties)
             {
-                properties[property.Name.ToLower()] = property.Value.Value;
+                properties[property.Name.ToLower(CultureInfo.CurrentCulture)] = property.Value.Value;
             }
 
             if (Payload.Name != null)
@@ -222,9 +227,10 @@ namespace PuppeteerSharp.PageAccessibility
                 ValueText = properties.GetValueOrDefault("valuetext")?.ToObject<string>(),
                 Disabled = properties.GetValueOrDefault("disabled")?.ToObject<bool>() ?? false,
                 Expanded = properties.GetValueOrDefault("expanded")?.ToObject<bool>() ?? false,
-                // WebArea"s treat focus differently than other nodes. They report whether their frame  has focus,
+
+                // RootWebArea's treat focus differently than other nodes. They report whether their frame  has focus,
                 // not whether focus is specifically on the root node.
-                Focused = properties.GetValueOrDefault("focused")?.ToObject<bool>() == true && _role != "WebArea",
+                Focused = properties.GetValueOrDefault("focused")?.ToObject<bool>() == true && _role != "RootWebArea",
                 Modal = properties.GetValueOrDefault("modal")?.ToObject<bool>() ?? false,
                 Multiline = properties.GetValueOrDefault("multiline")?.ToObject<bool>() ?? false,
                 Multiselectable = properties.GetValueOrDefault("multiselectable")?.ToObject<bool>() ?? false,

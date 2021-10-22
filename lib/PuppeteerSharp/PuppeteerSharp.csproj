@@ -1,41 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>2.0.3</PackageVersion>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
-    <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
-    <Summary>Headless Chrome .NET API</Summary>
+    <PackageProjectUrl>https://github.com/hardkoded/puppeteer-sharp</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Summary>Headless Browser .NET API</Summary>
     <PackageTags>headless,chrome,puppeteer</PackageTags>
     <Title>PuppeteerSharp</Title>
-    <Description>Headless Chrome .NET API</Description>
+    <Description>Headless Browser .NET API</Description>
     <PackageId>PuppeteerSharp</PackageId>
-    <PackageReleaseNotes><![CDATA[
-
-# Changelog
- * IDisposableAsync support
-
- ]]></PackageReleaseNotes>
-    <ReleaseVersion>2.0.3</ReleaseVersion>
+    <PackageReleaseNotes></PackageReleaseNotes>
+    <PackageVersion>5.1.0</PackageVersion>
+    <ReleaseVersion>5.1.0</ReleaseVersion>
+    <AssemblyVersion>5.1.0.0</AssemblyVersion>
+    <FileVersion>5.1.0.0</FileVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
     <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
     <CodeAnalysisRuleSet>../PuppeteerSharp.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <Import Project="../Common/SignAssembly.props" />
   <PropertyGroup>
-    <DocumentationFile>bin\$(Configuration)\netstandard2.0\PuppeteerSharp.xml</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup>
-    <LangVersion>7.3</LangVersion>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DebugType>embedded</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <PackageProjectUrl>https://github.com/hardkoded/puppeteer-sharp</PackageProjectUrl>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.2" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-    <PackageReference Include="System.Net.Http" Version="4.3.3" />
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.0.2" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.1.0" />
-    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.2" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
@@ -52,5 +51,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="SharpZipLib" Version="1.3.1" />
   </ItemGroup>
 </Project>

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
@@ -12,6 +12,7 @@ namespace PuppeteerSharp
 
         #region public Properties
         internal TaskCompletionSource<JObject> TaskWrapper { get; set; }
+
         internal string Method { get; set; }
         #endregion
     }

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Messaging;
@@ -109,6 +109,7 @@ namespace PuppeteerSharp.PageCoverage
                     hitCountStack.RemoveAt(hitCountStack.Count - 1);
                 }
             }
+
             // Filter out empty ranges.
             return results.Where(range => range.End - range.Start > 1).ToArray();
         }

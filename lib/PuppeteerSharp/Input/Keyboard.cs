@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
 using PuppeteerSharp.Messaging;
@@ -7,7 +7,7 @@ namespace PuppeteerSharp.Input
 {
     /// <summary>
     /// Keyboard provides an api for managing a virtual keyboard. The high level api is <see cref="TypeAsync(string, TypeOptions)"/>, which takes raw characters and generates proper keydown, keypress/input, and keyup events on your page.
-    /// 
+    ///
     /// For finer control, you can use <see cref="Keyboard.DownAsync(string, DownOptions)"/>, <see cref="UpAsync(string)"/>, and <see cref="SendCharacterAsync(string)"/> to manually fire events as if they were generated from a real keyboard.
     /// </summary>
     public class Keyboard

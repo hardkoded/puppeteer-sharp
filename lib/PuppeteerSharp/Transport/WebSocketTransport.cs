@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
@@ -49,7 +50,11 @@ namespace PuppeteerSharp.Transport
         }
 
         private static void ScheduleTransportTask(Func<CancellationToken, Task> taskFactory, CancellationToken cancellationToken)
-            => Task.Factory.StartNew(() => taskFactory(cancellationToken), TaskCreationOptions.LongRunning);
+            => Task.Factory.StartNew(
+                () => taskFactory(cancellationToken),
+                cancellationToken,
+                TaskCreationOptions.LongRunning,
+                TaskScheduler.Default);
 
         #endregion
 
@@ -58,6 +63,7 @@ namespace PuppeteerSharp.Transport
         private readonly WebSocket _client;
         private readonly bool _queueRequests;
         private readonly TaskQueue _socketQueue = new TaskQueue();
+        [SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", Justification = "False positive, as it is disposed in StopReading() method.")]
         private CancellationTokenSource _readerCancellationSource = new CancellationTokenSource();
 
         #endregion
@@ -152,6 +158,7 @@ namespace PuppeteerSharp.Transport
             // Make sure any outstanding asynchronous read operation is cancelled.
             StopReading();
             _client?.Dispose();
+            _socketQueue.Dispose();
         }
 
         #endregion

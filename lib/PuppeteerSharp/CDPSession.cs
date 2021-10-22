@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
@@ -56,33 +56,42 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The target type.</value>
         public TargetType TargetType { get; }
+
         /// <summary>
         /// Gets the session identifier.
         /// </summary>
         /// <value>The session identifier.</value>
         public string SessionId { get; }
+
         /// <summary>
         /// Gets the connection.
         /// </summary>
         /// <value>The connection.</value>
         internal Connection Connection { get; private set; }
+
         /// <summary>
         /// Occurs when message received from Chromium.
         /// </summary>
         public event EventHandler<MessageEventArgs> MessageReceived;
+
         /// <summary>
         /// Occurs when the connection is closed.
         /// </summary>
         public event EventHandler Disconnected;
+
+        internal event EventHandler<SessionAttachedEventArgs> SessionAttached;
+
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="CDPSession"/> is closed.
         /// </summary>
         /// <value><c>true</c> if is closed; otherwise, <c>false</c>.</value>
         public bool IsClosed { get; internal set; }
+
         /// <summary>
         /// Connection close reason.
         /// </summary>
         public string CloseReason { get; private set; }
+
         /// <summary>
         /// Gets the logger factory.
         /// </summary>
@@ -118,7 +127,7 @@ namespace PuppeteerSharp
         /// If <c>false</c> the task will be considered complete after sending the message to Chromium.
         /// </param>
         /// <returns>The task.</returns>
-        /// <exception cref="PuppeteerSharp.PuppeteerException"></exception>
+        /// <exception cref="PuppeteerSharp.PuppeteerException">If the <see cref="Connection"/> is closed.</exception>
         public async Task<JObject> SendAsync(string method, object args = null, bool waitForCallback = true)
         {
             if (Connection == null)
@@ -135,7 +144,7 @@ namespace PuppeteerSharp
             {
                 callback = new MessageTask
                 {
-                    TaskWrapper = new TaskCompletionSource<JObject>(),
+                    TaskWrapper = new TaskCompletionSource<JObject>(TaskCreationOptions.RunContinuationsAsynchronously),
                     Method = method
                 };
                 _callbacks[id] = callback;
@@ -160,7 +169,7 @@ namespace PuppeteerSharp
         /// Detaches session from target. Once detached, session won't emit any events and can't be used to send messages.
         /// </summary>
         /// <returns></returns>
-        /// <exception cref="T:PuppeteerSharp.PuppeteerException"></exception>
+        /// <exception cref="T:PuppeteerSharp.PuppeteerException">If the <see cref="Connection"/> is closed.</exception>
         public Task DetachAsync()
         {
             if (Connection == null)
@@ -186,20 +195,11 @@ namespace PuppeteerSharp
 
             if (id.HasValue && _callbacks.TryRemove(id.Value, out var callback))
             {
-                if (obj.Error != null)
-                {
-                    callback.TaskWrapper.TrySetException(new MessageException(callback, obj.Error));
-                }
-                else
-                {
-                    callback.TaskWrapper.TrySetResult(obj.Result);
-                }
+                Connection.MessageQueue.Enqueue(callback, obj);
             }
             else
             {
                 var method = obj.Method;
-                var param = obj.Params?.ToObject<ConnectionResponseParams>();
-
                 MessageReceived?.Invoke(this, new MessageEventArgs
                 {
                     MessageID = method,
@@ -229,6 +229,9 @@ namespace PuppeteerSharp
             Disconnected?.Invoke(this, EventArgs.Empty);
             Connection = null;
         }
+
+        internal void OnSessionAttached(CDPSession session)
+            => SessionAttached?.Invoke(this, new SessionAttachedEventArgs { Session = session });
 
         #endregion
     }

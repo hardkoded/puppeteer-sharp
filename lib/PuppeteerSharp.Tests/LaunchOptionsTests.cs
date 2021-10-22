@@ -1,13 +1,12 @@
-﻿using System.Threading.Tasks;
+using PuppeteerSharp.Tests.Attributes;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests
 {
     public class LaunchOptionsTests
     {
-        [Fact]
-        public void DisableHeadlessWhenDevtoolsEnabled() 
+        [PuppeteerFact]
+        public void DisableHeadlessWhenDevtoolsEnabled()
         {
             var options = new LaunchOptions
             {

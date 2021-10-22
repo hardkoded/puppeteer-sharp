@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
-using System.Net;
+using Newtonsoft.Json.Linq;
 
 namespace PuppeteerSharp
 {

@@ -1,9 +1,11 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using PuppeteerSharp.Xunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
@@ -14,11 +16,12 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
-        [Fact]
+        [PuppeteerTest("network.spec.ts", "Page.Events.Request", "should fire for navigation requests")]
+        [PuppeteerFact]
         public async Task ShouldFireForNavigationRequests()
         {
             var requests = new List<Request>();
-            Page.Request += (sender, e) =>
+            Page.Request += (_, e) =>
             {
                 if (!TestUtils.IsFavicon(e.Request))
                 {
@@ -30,11 +33,12 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Single(requests);
         }
 
-        [Fact]
+        [PuppeteerTest("network.spec.ts", "Page.Events.Request", "should fire for iframes")]
+        [PuppeteerFact]
         public async Task ShouldFireForIframes()
         {
             var requests = new List<Request>();
-            Page.Request += (sender, e) =>
+            Page.Request += (_, e) =>
             {
                 if (!TestUtils.IsFavicon(e.Request))
                 {
@@ -48,11 +52,12 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(2, requests.Count);
         }
 
-        [Fact]
+        [PuppeteerTest("network.spec.ts", "Page.Events.Request", "should fire for fetches")]
+        [PuppeteerFact]
         public async Task ShouldFireForFetches()
         {
             var requests = new List<Request>();
-            Page.Request += (sender, e) =>
+            Page.Request += (_, e) =>
             {
                 if (!TestUtils.IsFavicon(e.Request))
                 {

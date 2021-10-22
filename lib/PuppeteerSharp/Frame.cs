@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Input;
@@ -9,7 +10,7 @@ namespace PuppeteerSharp
     /// <summary>
     /// Provides methods to interact with a single page frame in Chromium. One <see cref="Page"/> instance might have multiple <see cref="Frame"/> instances.
     /// At every point of time, page exposes its current frame tree via the <see cref="Page.MainFrame"/> and <see cref="ChildFrames"/> properties.
-    /// 
+    ///
     /// <see cref="Frame"/> object's lifecycle is controlled by three events, dispatched on the page object
     /// - <see cref="Page.FrameAttached"/> - fires when the frame gets attached to the page. A Frame can be attached to the page only once
     /// - <see cref="Page.FrameNavigated"/> - fired when the frame commits navigation to a different URL
@@ -24,7 +25,7 @@ namespace PuppeteerSharp
     /// await page.GoToAsync("https://www.google.com/chrome/browser/canary.html");
     /// dumpFrameTree(page.MainFrame, string.Empty);
     /// await browser.CloseAsync();
-    /// 
+    ///
     /// void dumpFrameTree(Frame frame, string indent)
     /// {
     ///     Console.WriteLine(indent + frame.Url);
@@ -39,13 +40,18 @@ namespace PuppeteerSharp
     public class Frame
     {
         private readonly CDPSession _client;
+        private readonly List<Frame> _childFrames = new List<Frame>();
 
-        internal List<WaitTask> WaitTasks { get; }
         internal string Id { get; set; }
+
         internal string LoaderId { get; set; }
+
         internal List<string> LifecycleEvents { get; }
+
         internal string NavigationURL { get; private set; }
+
         internal DOMWorld MainWorld { get; }
+
         internal DOMWorld SecondaryWorld { get; }
 
         internal Frame(FrameManager frameManager, CDPSession client, Frame parentFrame, string frameId)
@@ -55,23 +61,31 @@ namespace PuppeteerSharp
             ParentFrame = parentFrame;
             Id = frameId;
 
-            if (parentFrame != null)
-            {
-                ParentFrame.ChildFrames.Add(this);
-            }
-
-            WaitTasks = new List<WaitTask>();
             LifecycleEvents = new List<string>();
 
             MainWorld = new DOMWorld(FrameManager, this, FrameManager.TimeoutSettings);
             SecondaryWorld = new DOMWorld(FrameManager, this, FrameManager.TimeoutSettings);
+
+            if (parentFrame != null)
+            {
+                ParentFrame.AddChildFrame(this);
+            }
         }
 
         #region Properties
         /// <summary>
         /// Gets the child frames of the this frame
         /// </summary>
-        public List<Frame> ChildFrames { get; } = new List<Frame>();
+        public List<Frame> ChildFrames
+        {
+            get
+            {
+                lock (_childFrames)
+                {
+                    return _childFrames.ToList();
+                }
+            }
+        }
 
         /// <summary>
         /// Gets the frame's name attribute as specified in the tag
@@ -109,13 +123,13 @@ namespace PuppeteerSharp
         /// - the `timeout` is exceeded during navigation.
         /// - the remote server does not respond or is unreachable.
         /// - the main resource failed to load.
-        /// 
-        /// <see cref="GoToAsync(string, int?, WaitUntilNavigation[])"/> will not throw an error when any valid HTTP status code is returned by the remote server, 
+        ///
+        /// <see cref="GoToAsync(string, int?, WaitUntilNavigation[])"/> will not throw an error when any valid HTTP status code is returned by the remote server,
         /// including 404 "Not Found" and 500 "Internal Server Error".  The status code for such responses can be retrieved by calling <see cref="Response.Status"/>
-        /// 
-        /// > **NOTE** <see cref="GoToAsync(string, int?, WaitUntilNavigation[])"/> either throws an error or returns a main resource response. 
+        ///
+        /// > **NOTE** <see cref="GoToAsync(string, int?, WaitUntilNavigation[])"/> either throws an error or returns a main resource response.
         /// The only exceptions are navigation to `about:blank` or navigation to the same URL with a different hash, which would succeed and return `null`.
-        /// 
+        ///
         /// > **NOTE** Headless mode doesn't support navigation to a PDF document. See the <see fref="https://bugs.chromium.org/p/chromium/issues/detail?id=761295">upstream issue</see>.
         /// </remarks>
         /// <param name="url">URL to navigate page to. The url should include scheme, e.g. https://.</param>
@@ -141,7 +155,7 @@ namespace PuppeteerSharp
         /// It is useful for when you run code which will indirectly cause the frame to navigate.
         /// </summary>
         /// <param name="options">navigation options</param>
-        /// <returns>Task which resolves to the main resource response. 
+        /// <returns>Task which resolves to the main resource response.
         /// In case of multiple redirects, the navigation will resolve with the response of the last redirect.
         /// In case of navigation to a different anchor or navigation due to History API usage, the navigation will resolve with `null`.
         /// </returns>
@@ -236,7 +250,7 @@ namespace PuppeteerSharp
         /// return handle; // Handle for the global object.
         /// </code>
         /// <see cref="JSHandle"/> instances can be passed as arguments to the <see cref="ExecutionContext.EvaluateFunctionAsync(string, object[])"/>:
-        /// 
+        ///
         /// const handle = await Page.MainFrame.EvaluateExpressionHandleAsync("document.body");
         /// const resultHandle = await Page.MainFrame.EvaluateFunctionHandleAsync("body => body.innerHTML", handle);
         /// return await resultHandle.JsonValueAsync(); // prints body's innerHTML
@@ -270,7 +284,7 @@ namespace PuppeteerSharp
                 return null;
             }
             var mainExecutionContext = await MainWorld.GetExecutionContextAsync().ConfigureAwait(false);
-            var result = await mainExecutionContext.AdoptElementHandleASync(handle).ConfigureAwait(false);
+            var result = await mainExecutionContext.AdoptElementHandleAsync(handle).ConfigureAwait(false);
             await handle.DisposeAsync().ConfigureAwait(false);
             return result;
         }
@@ -280,7 +294,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="xpath">A xpath selector of an element to wait for</param>
         /// <param name="options">Optional waiting parameters</param>
-        /// <returns>A task which resolves when element specified by xpath string is added to DOM. 
+        /// <returns>A task which resolves when element specified by xpath string is added to DOM.
         /// Resolves to `null` if waiting for `hidden: true` and xpath is not found in DOM.</returns>
         /// <example>
         /// <code>
@@ -311,7 +325,7 @@ namespace PuppeteerSharp
                 return null;
             }
             var mainExecutionContext = await MainWorld.GetExecutionContextAsync().ConfigureAwait(false);
-            var result = await mainExecutionContext.AdoptElementHandleASync(handle).ConfigureAwait(false);
+            var result = await mainExecutionContext.AdoptElementHandleAsync(handle).ConfigureAwait(false);
             await handle.DisposeAsync().ConfigureAwait(false);
             return result;
         }
@@ -319,7 +333,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Waits for a timeout
         /// </summary>
-        /// <param name="milliseconds"></param>
+        /// <param name="milliseconds">The amount of time to wait.</param>
         /// <returns>A task that resolves when after the timeout</returns>
         /// <seealso cref="Page.WaitForTimeoutAsync(int)"/>
         /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
@@ -335,7 +349,14 @@ namespace PuppeteerSharp
         /// <seealso cref="Page.WaitForFunctionAsync(string, WaitForFunctionOptions, object[])"/>
         /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
         public Task<JSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args)
-           => MainWorld.WaitForFunctionAsync(script, options, args);
+        {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            return MainWorld.WaitForFunctionAsync(script, options, args);
+        }
 
         /// <summary>
         /// Waits for an expression to be evaluated to a truthy value
@@ -346,15 +367,22 @@ namespace PuppeteerSharp
         /// <seealso cref="Page.WaitForExpressionAsync(string, WaitForFunctionOptions)"/>
         /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
         public Task<JSHandle> WaitForExpressionAsync(string script, WaitForFunctionOptions options)
-            => MainWorld.WaitForExpressionAsync(script, options);
+        {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            return MainWorld.WaitForExpressionAsync(script, options);
+        }
 
         /// <summary>
-        /// Triggers a change and input event once all the provided options have been selected. 
+        /// Triggers a change and input event once all the provided options have been selected.
         /// If there's no <![CDATA[<select>]]> element matching selector, the method throws an error.
         /// </summary>
         /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
         /// <param name="selector">A selector to query page for</param>
-        /// <param name="values">Values of options to select. If the <![CDATA[<select>]]> has the multiple attribute, 
+        /// <param name="values">Values of options to select. If the <![CDATA[<select>]]> has the multiple attribute,
         /// all values are considered, otherwise only the first one is taken into account.</param>
         /// <returns>Returns an array of option values that have been successfully selected.</returns>
         /// <seealso cref="Page.SelectAsync(string, string[])"/>
@@ -392,7 +420,15 @@ namespace PuppeteerSharp
         /// <seealso cref="Page.AddStyleTagAsync(AddTagOptions)"/>
         /// <seealso cref="Page.AddStyleTagAsync(string)"/>
         [Obsolete("Use AddStyleTagAsync instead")]
-        public Task<ElementHandle> AddStyleTag(AddTagOptions options) => MainWorld.AddStyleTagAsync(options);
+        public Task<ElementHandle> AddStyleTag(AddTagOptions options)
+        {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            return MainWorld.AddStyleTagAsync(options);
+        }
 
         /// <summary>
         /// Adds a <c><![CDATA[<script>]]></c> tag into the page with the desired url or content
@@ -402,7 +438,15 @@ namespace PuppeteerSharp
         /// <seealso cref="Page.AddScriptTagAsync(AddTagOptions)"/>
         /// <seealso cref="Page.AddScriptTagAsync(string)"/>
         [Obsolete("Use AddScriptTagAsync instead")]
-        public Task<ElementHandle> AddScriptTag(AddTagOptions options) => MainWorld.AddScriptTagAsync(options);
+        public Task<ElementHandle> AddScriptTag(AddTagOptions options)
+        {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            return MainWorld.AddScriptTagAsync(options);
+        }
 
         /// <summary>
         /// Adds a <c><![CDATA[<link rel="stylesheet">]]></c> tag into the page with the desired url or a <c><![CDATA[<link rel="stylesheet">]]></c> tag with the content
@@ -411,7 +455,15 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to the added tag when the stylesheet's onload fires or when the CSS content was injected into frame</returns>
         /// <seealso cref="Page.AddStyleTagAsync(AddTagOptions)"/>
         /// <seealso cref="Page.AddStyleTagAsync(string)"/>
-        public Task<ElementHandle> AddStyleTagAsync(AddTagOptions options) => MainWorld.AddStyleTagAsync(options);
+        public Task<ElementHandle> AddStyleTagAsync(AddTagOptions options)
+        {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            return MainWorld.AddStyleTagAsync(options);
+        }
 
         /// <summary>
         /// Adds a <c><![CDATA[<script>]]></c> tag into the page with the desired url or content
@@ -420,7 +472,15 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to the added tag when the script's onload fires or when the script content was injected into frame</returns>
         /// <seealso cref="Page.AddScriptTagAsync(AddTagOptions)"/>
         /// <seealso cref="Page.AddScriptTagAsync(string)"/>
-        public Task<ElementHandle> AddScriptTagAsync(AddTagOptions options) => MainWorld.AddScriptTagAsync(options);
+        public Task<ElementHandle> AddScriptTagAsync(AddTagOptions options)
+        {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            return MainWorld.AddScriptTagAsync(options);
+        }
 
         /// <summary>
         /// Gets the full HTML contents of the page, including the doctype.
@@ -477,7 +537,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="selector">A selector of an element to type into. If there are multiple elements satisfying the selector, the first will be used.</param>
         /// <param name="text">A text to type into a focused element</param>
-        /// <param name="options"></param>
+        /// <param name="options">The options to apply to the type operation.</param>
         /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
         /// <remarks>
         /// To press a special key, like <c>Control</c> or <c>ArrowDown</c> use <see cref="Keyboard.PressAsync(string, PressOptions)"/>
@@ -491,6 +551,22 @@ namespace PuppeteerSharp
         /// <returns>Task</returns>
         public Task TypeAsync(string selector, string text, TypeOptions options = null)
              => SecondaryWorld.TypeAsync(selector, text, options);
+
+        internal void AddChildFrame(Frame frame)
+        {
+            lock (_childFrames)
+            {
+                _childFrames.Add(frame);
+            }
+        }
+
+        internal void RemoveChildFrame(Frame frame)
+        {
+            lock (_childFrames)
+            {
+                _childFrames.Remove(frame);
+            }
+        }
 
         internal void OnLoadingStopped()
         {
@@ -524,7 +600,7 @@ namespace PuppeteerSharp
             SecondaryWorld.Detach();
             if (ParentFrame != null)
             {
-                ParentFrame.ChildFrames.Remove(this);
+                ParentFrame.RemoveChildFrame(this);
             }
             ParentFrame = null;
         }

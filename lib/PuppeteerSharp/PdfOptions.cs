@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using PuppeteerSharp.Media;
 
@@ -82,10 +82,15 @@ namespace PuppeteerSharp
         public MarginOptions MarginOptions { get; set; } = new MarginOptions();
 
         /// <summary>
-        /// Give any CSS <c>@page</c> size declared in the page priority over what is declared in <c>width</c> and <c>height</c> or <c>format</c> options. 
+        /// Give any CSS <c>@page</c> size declared in the page priority over what is declared in <c>width</c> and <c>height</c> or <c>format</c> options.
         /// Defaults to <c>false</c>, which will scale the content to fit the paper size.
         /// </summary>
         public bool PreferCSSPageSize { get; set; }
+
+        /// <summary>
+        /// Hides default white background and allows generating pdfs with transparency.
+        /// </summary>
+        public bool OmitBackground { get; set; }
 
         /// <inheritdoc/>
         public override bool Equals(object obj)
@@ -112,7 +117,8 @@ namespace PuppeteerSharp
                    EqualityComparer<object>.Default.Equals(Width, options.Width) &&
                    EqualityComparer<object>.Default.Equals(Height, options.Height) &&
                    EqualityComparer<MarginOptions>.Default.Equals(MarginOptions, options.MarginOptions) &&
-                   PreferCSSPageSize == options.PreferCSSPageSize;
+                   PreferCSSPageSize == options.PreferCSSPageSize &&
+                   OmitBackground == options.OmitBackground;
 
         /// <inheritdoc/>
         public override int GetHashCode()
@@ -122,6 +128,7 @@ namespace PuppeteerSharp
                 ^ EqualityComparer<string>.Default.GetHashCode(HeaderTemplate)
                 ^ EqualityComparer<string>.Default.GetHashCode(FooterTemplate)
                 ^ PrintBackground.GetHashCode()
+                ^ OmitBackground.GetHashCode()
                 ^ Landscape.GetHashCode()
                 ^ EqualityComparer<string>.Default.GetHashCode(PageRanges)
                 ^ EqualityComparer<PaperFormat>.Default.GetHashCode(Format)

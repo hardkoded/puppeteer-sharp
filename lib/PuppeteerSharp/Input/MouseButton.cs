@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
 namespace PuppeteerSharp.Input
@@ -6,7 +6,7 @@ namespace PuppeteerSharp.Input
     /// <summary>
     /// The type of button click to use with <see cref="Mouse.DownAsync(ClickOptions)"/>, <see cref="Mouse.UpAsync(ClickOptions)"/> and <see cref="Mouse.ClickAsync(decimal, decimal, ClickOptions)"/>
     /// </summary>
-    [JsonConverter(typeof(StringEnumConverter), true)]    
+    [JsonConverter(typeof(StringEnumConverter), true)]
     public enum MouseButton
     {
         /// <summary>

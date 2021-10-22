@@ -1,40 +1,56 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <TargetFrameworks>net471;netcoreapp2.2</TargetFrameworks>
-        <IsPackable>false</IsPackable>
-        <IsTestProject>true</IsTestProject>
-        <LangVersion>7.3</LangVersion>
-    </PropertyGroup>
-    <ItemGroup>
-        <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
-        <PackageReference Include="MicrosoftExtensions.Logging.Xunit" Version="1.0.0" />
-        <PackageReference Include="Mono.Posix.NETStandard" Version="1.0.0" />
-        <PackageReference Include="xunit" Version="2.4.1" />
-        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
-        <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0005" />
-        <PackageReference Include="Microsoft.AspNetCore.Connections.Abstractions" Version="2.2.0" />
-    </ItemGroup>
-    <ItemGroup Condition="'$(TargetFramework)'=='net471'">
-        <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0" PrivateAssets="All" />
-    </ItemGroup>
-    <ItemGroup>
-        <Folder Include="Issues\" />
-    </ItemGroup>
-    <PropertyGroup Condition="'$(TargetFramework)'=='net471'">
-        <RuntimeIdentifier>win10-x64</RuntimeIdentifier>
-    </PropertyGroup>
-    <ItemGroup>
-        <ProjectReference Include="..\PuppeteerSharp.TestServer\PuppeteerSharp.TestServer.csproj" />
-        <ProjectReference Include="..\PuppeteerSharp\PuppeteerSharp.csproj" />
-    </ItemGroup>
-    <ItemGroup>
-        <None Update="Assets\**">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Update="test.runsettings">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-    </ItemGroup>
+	<PropertyGroup>
+		<TargetFrameworks>net48;net5.0</TargetFrameworks>
+		<IsTestProject>true</IsTestProject>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="MarkdownSnippets.MsBuild" Version="23.1.1" PrivateAssets="All" />
+		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
+		<PackageReference Include="Mono.Posix.NETStandard" Version="1.0.0" />
+		<PackageReference Include="System.Net.Http" Version="4.3.4" />
+		<PackageReference Include="xunit" Version="2.4.1" />
+		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="SixLabors.ImageSharp" Version="1.0.3" />
+		<PackageReference Include="Microsoft.AspNetCore.Connections.Abstractions" Version="2.2.0" />
+		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0-preview.2.21154.6" />
+	</ItemGroup>
+	<Import Project="../Common/SignAssembly.props" />
+	<ItemGroup>
+		<Folder Include="Issues\" />
+		<Folder Include="Attributes\" />
+		<Folder Include="ClickTests\" />
+		<Folder Include="KeyboardTests\" />
+		<Folder Include="MouseTests\" />
+		<Folder Include="TouchScreenTests\" />
+		<Folder Include="EmulationTests\" />
+		<Folder Include="FixturesTests\" />
+		<Folder Include="HeadfulTests\" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\PuppeteerSharp.TestServer\PuppeteerSharp.TestServer.csproj" />
+		<ProjectReference Include="..\PuppeteerSharp\PuppeteerSharp.csproj" />
+		<ProjectReference Include="..\PuppeteerSharp.Xunit\PuppeteerSharp.Xunit.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Update="Assets\**">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="test.runsettings">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+	<ItemGroup>
+		<None Remove="xunit.runner.json" />
+		<Content Include="xunit.runner.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<None Remove="Emulation\" />
+		<None Remove="FixturesTests\" />
+		<None Remove="HeadfulTests\" />
+	</ItemGroup>
 </Project>

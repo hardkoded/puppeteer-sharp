@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers.Json;
 
@@ -9,6 +9,7 @@ namespace PuppeteerSharp.Messaging
         private string _payloadJson;
 
         public int ExecutionContextId { get; set; }
+
         public BindingCalledResponsePayload BindingPayload { get; set; }
 
         public string Payload
@@ -26,7 +27,9 @@ namespace PuppeteerSharp.Messaging
         internal class BindingCalledResponsePayload
         {
             public string Name { get; set; }
+
             public JToken[] Args { get; set; }
+
             public int Seq { get; set; }
 
             public JObject JsonObject { get; set; }

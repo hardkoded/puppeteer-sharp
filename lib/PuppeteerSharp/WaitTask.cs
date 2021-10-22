@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp
 {
-    internal class WaitTask
+    internal class WaitTask : IDisposable
     {
         private readonly DOMWorld _world;
         private readonly string _predicateBody;
@@ -21,6 +21,7 @@ namespace PuppeteerSharp
 
         private int _runCount;
         private bool _terminated;
+        private bool _isDisposing;
 
         private const string WaitForPredicatePageFunction = @"
 async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...args) {
@@ -137,17 +138,20 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
             _args = args ?? Array.Empty<object>();
             _title = title;
 
-            _world.WaitTasks.Add(this);
-
             _cts = new CancellationTokenSource();
+
+            _taskCompletion = new TaskCompletionSource<JSHandle>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            _world.WaitTasks.Add(this);
 
             if (timeout > 0)
             {
-                _timeoutTimer = System.Threading.Tasks.Task.Delay(timeout, _cts.Token).ContinueWith(_
-                    => Terminate(new WaitTaskTimeoutException(timeout, title)));
+                _timeoutTimer = System.Threading.Tasks.Task.Delay(timeout, _cts.Token)
+                    .ContinueWith(
+                        _ => Terminate(new WaitTaskTimeoutException(timeout, title)),
+                        TaskScheduler.Default);
             }
 
-            _taskCompletion = new TaskCompletionSource<JSHandle>(TaskCreationOptions.RunContinuationsAsynchronously);
             _ = Rerun();
         }
 
@@ -162,7 +166,8 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
             var context = await _world.GetExecutionContextAsync().ConfigureAwait(false);
             try
             {
-                success = await context.EvaluateFunctionHandleAsync(WaitForPredicatePageFunction,
+                success = await context.EvaluateFunctionHandleAsync(
+                    WaitForPredicatePageFunction,
                     new object[] { _predicateBody, _pollingInterval ?? (object)_polling, _timeout }.Concat(_args).ToArray()).ConfigureAwait(false);
             }
             catch (Exception ex)
@@ -181,7 +186,9 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
             }
             if (exception == null &&
                 await _world.EvaluateFunctionAsync<bool>("s => !s", success)
-                    .ContinueWith(task => task.IsFaulted || task.Result)
+                    .ContinueWith(
+                        task => task.IsFaulted || task.Result,
+                        TaskScheduler.Default)
                     .ConfigureAwait(false))
             {
                 if (success != null)
@@ -227,8 +234,25 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
             {
                 _cts.Cancel();
             }
-            _cts?.Dispose();
             _world.WaitTasks.Remove(this);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool dispose)
+        {
+            if (_isDisposing)
+            {
+                return;
+            }
+
+            _cts.Dispose();
+
+            _isDisposing = true;
         }
     }
 }

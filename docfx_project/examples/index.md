@@ -1,13 +1,14 @@
 # Puppeteer Sharp - Examples
 
-Puppeteer Sharp is a .NET port of the official [Node.JS Puppeteer API](https://github.com/GoogleChrome/puppeteer). 
+Puppeteer Sharp is a .NET port of the official [Node.JS Puppeteer API](https://github.com/GoogleChrome/puppeteer).
 
 # Basic Usage
 
 ## Take screenshots
 
 ```cs
-await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
+using var browserFetcher = new BrowserFetcher();
+await browserFetcher.DownloadAsync(BrowserFetcher.DefaultChromiumRevision);
 var browser = await Puppeteer.LaunchAsync(new LaunchOptions
 {
     Headless = true
@@ -30,7 +31,8 @@ await page.SetViewportAsync(new ViewPortOptions
 ## Generate PDF files
 
 ```cs
-await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
+using var browserFetcher = new BrowserFetcher();
+await browserFetcher.DownloadAsync(BrowserFetcher.DefaultChromiumRevision);
 var browser = await Puppeteer.LaunchAsync(new LaunchOptions
 {
     Headless = true
@@ -38,6 +40,19 @@ var browser = await Puppeteer.LaunchAsync(new LaunchOptions
 var page = await browser.NewPageAsync();
 await page.GoToAsync("http://www.google.com");
 await page.PdfAsync(outputFile);
+```
+
+## Get Inner Text of an Element
+
+```cs
+using (var page = await browser.NewPageAsync())
+{
+    await page.GoToAsync("https://www.hardkoded.com/blog/ui-testing-with-puppeteer-released");
+    var pageHeaderHandle = await page.QuerySelectorAsync("h1");
+    var innerTextHandle = await pageHeaderHandle.GetPropertyAsync("innerText");
+    var innerText = await innerTextHandle.JsonValueAsync();
+    // Inner Text: UI testing with Puppeteer book officially released!
+}
 ```
 
 ## Inject HTML

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Messaging;
@@ -27,6 +27,7 @@ namespace PuppeteerSharp
 
         #region Properties
         internal FramePayload Frame { get; set; }
+
         internal List<FrameTree> Childs { get; set; }
         #endregion
 

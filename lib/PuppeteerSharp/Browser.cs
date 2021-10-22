@@ -38,24 +38,17 @@ namespace PuppeteerSharp
     public class Browser : IDisposable, IAsyncDisposable
     {
         /// <summary>
-        /// Time in milliseconds for chromium process to exit gracefully.
+        /// Time in milliseconds for process to exit gracefully.
         /// </summary>
         private const int CloseTimeout = 5000;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Browser"/> class.
-        /// </summary>
-        /// <param name="connection">The connection</param>
-        /// <param name="contextIds">The context ids></param>
-        /// <param name="ignoreHTTPSErrors">The option to ignoreHTTPSErrors</param>
-        /// <param name="defaultViewport">Default viewport</param>
-        /// <param name="chromiumProcess">The Chromium process</param>
-        public Browser(
+        internal Browser(
             Connection connection,
             string[] contextIds,
             bool ignoreHTTPSErrors,
             ViewPortOptions defaultViewport,
-            ChromiumProcess chromiumProcess)
+            LauncherBase launcher,
+            Func<TargetInfo, bool> targetFilter)
         {
             Connection = connection;
             IgnoreHTTPSErrors = ignoreHTTPSErrors;
@@ -70,8 +63,9 @@ namespace PuppeteerSharp
             Connection.Disconnected += Connection_Disconnected;
             Connection.MessageReceived += Connect_MessageReceived;
 
-            ChromiumProcess = chromiumProcess;
+            Launcher = launcher;
             _logger = Connection.LoggerFactory.CreateLogger<Browser>();
+            _targetFilterCallback = targetFilter ?? ((TargetInfo _) => true);
         }
 
         #region Private members
@@ -80,6 +74,7 @@ namespace PuppeteerSharp
 
         private readonly Dictionary<string, BrowserContext> _contexts;
         private readonly ILogger<Browser> _logger;
+        private readonly Func<TargetInfo, bool> _targetFilterCallback;
         private Task _closeTask;
 
         #endregion
@@ -87,7 +82,7 @@ namespace PuppeteerSharp
         #region Properties
 
         /// <summary>
-        /// Raised when the <see cref="Browser"/> gets closed. 
+        /// Raised when the <see cref="Browser"/> gets closed.
         /// </summary>
         public event EventHandler Closed;
 
@@ -128,7 +123,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets the spawned browser process. Returns <c>null</c> if the browser instance was created with <see cref="Puppeteer.ConnectAsync(ConnectOptions, ILoggerFactory)"/> method.
         /// </summary>
-        public Process Process => ChromiumProcess?.Process;
+        public Process Process => Launcher?.Process;
 
         /// <summary>
         /// Gets or Sets whether to ignore HTTPS errors during navigation
@@ -142,7 +137,7 @@ namespace PuppeteerSharp
         {
             get
             {
-                if (ChromiumProcess == null)
+                if (Launcher == null)
                 {
                     return Connection.IsClosed;
                 }
@@ -158,9 +153,12 @@ namespace PuppeteerSharp
         public BrowserContext DefaultContext { get; }
 
         internal TaskQueue ScreenshotTaskQueue { get; set; }
+
         internal Connection Connection { get; }
+
         internal ViewPortOptions DefaultViewport { get; }
-        internal ChromiumProcess ChromiumProcess { get; set; }
+
+        internal LauncherBase Launcher { get; set; }
 
         /// <summary>
         /// Dafault wait time in milliseconds. Defaults to 30 seconds.
@@ -232,7 +230,7 @@ namespace PuppeteerSharp
 
         /// <summary>
         /// Returns a Task which resolves to an array of all open pages.
-        /// Non visible pages, such as <c>"background_page"</c>, will not be listed here. You can find them using <see cref="Target.PageAsync"/>
+        /// Non visible pages, such as <c>"background_page"</c>, will not be listed here. You can find them using <see cref="PuppeteerSharp.Target.PageAsync"/>
         /// </summary>
         /// <returns>Task which resolves to an array of all open pages inside the Browser.
         /// In case of multiple browser contexts, the method will return an array with all the pages in all browser contexts.
@@ -263,7 +261,7 @@ namespace PuppeteerSharp
             => (await Connection.SendAsync<BrowserGetVersionResponse>("Browser.getVersion").ConfigureAwait(false)).UserAgent;
 
         /// <summary>
-        /// Disconnects Puppeteer from the browser, but leaves the Chromium process running. After calling <see cref="Disconnect"/>, the browser object is considered disposed and cannot be used anymore
+        /// Disconnects Puppeteer from the browser, but leaves the process running. After calling <see cref="Disconnect"/>, the browser object is considered disposed and cannot be used anymore
         /// </summary>
         public void Disconnect() => Connection.Dispose();
 
@@ -327,17 +325,17 @@ namespace PuppeteerSharp
                 try
                 {
                     // Initiate graceful browser close operation but don't await it just yet,
-                    // because we want to ensure chromium process shutdown first.
+                    // because we want to ensure process shutdown first.
                     var browserCloseTask = Connection.IsClosed
                         ? Task.CompletedTask
                         : Connection.SendAsync("Browser.close", null);
 
-                    if (ChromiumProcess != null)
+                    if (Launcher != null)
                     {
-                        // Notify chromium process that exit is expected, but should be enforced if it
+                        // Notify process that exit is expected, but should be enforced if it
                         // doesn't occur withing the close timeout.
                         var closeTimeout = TimeSpan.FromMilliseconds(CloseTimeout);
-                        await ChromiumProcess.EnsureExitAsync(closeTimeout).ConfigureAwait(false);
+                        await Launcher.EnsureExitAsync(closeTimeout).ConfigureAwait(false);
                     }
 
                     // Now we can safely await the browser close operation without risking keeping chromium
@@ -353,9 +351,9 @@ namespace PuppeteerSharp
             {
                 _logger.LogError(ex, ex.Message);
 
-                if (ChromiumProcess != null)
+                if (Launcher != null)
                 {
-                    await ChromiumProcess.KillAsync().ConfigureAwait(false);
+                    await Launcher.KillAsync().ConfigureAwait(false);
                 }
             }
 
@@ -486,6 +484,12 @@ namespace PuppeteerSharp
             var targetInfo = e.TargetInfo;
             var browserContextId = targetInfo.BrowserContextId;
 
+            var shouldAttachToTarget = _targetFilterCallback(targetInfo);
+            if (!shouldAttachToTarget)
+            {
+                return;
+            }
+
             if (!(browserContextId != null && _contexts.TryGetValue(browserContextId, out var context)))
             {
                 context = DefaultContext;
@@ -516,9 +520,10 @@ namespace PuppeteerSharp
             string[] contextIds,
             bool ignoreHTTPSErrors,
             ViewPortOptions defaultViewPort,
-            ChromiumProcess chromiumProcess)
+            LauncherBase launcher,
+            Func<TargetInfo, bool> targetFilter)
         {
-            var browser = new Browser(connection, contextIds, ignoreHTTPSErrors, defaultViewPort, chromiumProcess);
+            var browser = new Browser(connection, contextIds, ignoreHTTPSErrors, defaultViewPort, launcher, targetFilter);
             await connection.SendAsync("Target.setDiscoverTargets", new TargetSetDiscoverTargetsRequest
             {
                 Discover = true
@@ -542,7 +547,10 @@ namespace PuppeteerSharp
         /// created by Puppeteer.
         /// </summary>
         /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
-        protected virtual void Dispose(bool disposing) => _ = CloseAsync();
+        protected virtual void Dispose(bool disposing) => _ = CloseAsync()
+            .ContinueWith(
+                _ => ScreenshotTaskQueue.DisposeAsync(),
+                TaskScheduler.Default);
 
         #endregion
 

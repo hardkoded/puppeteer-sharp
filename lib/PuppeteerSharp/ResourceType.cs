@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
-using PuppeteerSharp.Helpers.Json;
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
+using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp
 {
@@ -71,6 +71,10 @@ namespace PuppeteerSharp
         /// Ping.
         /// </summary>
         Ping,
+        /// <summary>
+        /// Image.
+        /// </summary>
+        Img,
         /// <summary>
         /// Other.
         /// </summary>

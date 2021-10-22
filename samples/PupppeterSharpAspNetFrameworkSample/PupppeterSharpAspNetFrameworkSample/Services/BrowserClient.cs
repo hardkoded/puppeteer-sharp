@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using System.Web.Hosting;
 using PuppeteerSharp;
 using PuppeteerSharp.AspNetFramework;
@@ -8,10 +8,10 @@ namespace PupppeterSharpAspNetFrameworkSample.Services
     public class BrowserClient
     {
         private static readonly string HostPath = HostingEnvironment.MapPath("~/App_Data/");
-        
+
         public static async Task<string> GetTextAsync(string url)
         {
-            var browserFetcher = new BrowserFetcher(new BrowserFetcherOptions()
+            using var browserFetcher = new BrowserFetcher(new BrowserFetcherOptions()
             {
                 Path = HostPath
             });
@@ -23,7 +23,7 @@ namespace PupppeterSharpAspNetFrameworkSample.Services
                 TransportFactory = AspNetWebSocketTransport.AspNetTransportFactory,
                 ExecutablePath = browserFetcher.GetExecutablePath(BrowserFetcher.DefaultRevision)
             }).ConfigureAwait(false))
-            using(var page = await browser.NewPageAsync().ConfigureAwait(false))
+            using (var page = await browser.NewPageAsync().ConfigureAwait(false))
             {
                 var response = await page.GoToAsync(url).ConfigureAwait(false);
                 return await response.TextAsync().ConfigureAwait(false);

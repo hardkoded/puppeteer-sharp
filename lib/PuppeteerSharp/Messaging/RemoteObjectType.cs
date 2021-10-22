@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp.Messaging
@@ -16,7 +16,9 @@ namespace PuppeteerSharp.Messaging
         /// <summary>
         /// Object.
         /// </summary>
+#pragma warning disable CA1720 // Identifier contains type name
         Object,
+#pragma warning restore CA1720 // Identifier contains type name
         /// <summary>
         /// Function.
         /// </summary>
@@ -28,7 +30,9 @@ namespace PuppeteerSharp.Messaging
         /// <summary>
         /// String.
         /// </summary>
+#pragma warning disable CA1720 // Identifier contains type name
         String,
+#pragma warning restore CA1720 // Identifier contains type name
         /// <summary>
         /// Number.
         /// </summary>

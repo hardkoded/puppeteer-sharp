@@ -1,4 +1,4 @@
-﻿namespace PuppeteerSharp.Messaging
+namespace PuppeteerSharp.Messaging
 {
     internal class CSSStyleSheetAddedResponse
     {
@@ -7,6 +7,7 @@
         public class CSSStyleSheetAddedResponseHeader
         {
             public string StyleSheetId { get; set; }
+
             public string SourceURL { get; set; }
         }
     }

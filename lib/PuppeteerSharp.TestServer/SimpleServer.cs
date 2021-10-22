@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -64,6 +64,12 @@ namespace PuppeteerSharp.TestServer
                             if (_csp.TryGetValue(fileResponseContext.Context.Request.Path, out var csp))
                             {
                                 fileResponseContext.Context.Response.Headers["Content-Security-Policy"] = csp;
+                            }
+
+                            if (!fileResponseContext.Context.Request.Path.Value.StartsWith("/cached/"))
+                            {
+                                fileResponseContext.Context.Response.Headers["Cache-Control"] = "no-cache, no-store";
+                                fileResponseContext.Context.Response.Headers["Expires"] = "-1";
                             }
                         }
                     }))
@@ -132,16 +138,16 @@ namespace PuppeteerSharp.TestServer
             return request;
         }
 
-        public Task WaitForRequest(string path) => WaitForRequest<bool>(path, request => true);
+        public Task WaitForRequest(string path) => WaitForRequest<bool>(path, _ => true);
 
         private static bool Authenticate(string username, string password, HttpContext context)
         {
             string authHeader = context.Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Basic", StringComparison.Ordinal))
             {
-                string encodedUsernamePassword = authHeader.Substring("Basic ".Length).Trim();
+                var encodedUsernamePassword = authHeader.Substring("Basic ".Length).Trim();
                 var encoding = Encoding.GetEncoding("iso-8859-1");
-                string auth = encoding.GetString(Convert.FromBase64String(encodedUsernamePassword));
+                var auth = encoding.GetString(Convert.FromBase64String(encodedUsernamePassword));
 
                 return auth == $"{username}:{password}";
             }

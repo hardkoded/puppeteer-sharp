@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -15,14 +17,16 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
-        [Fact]
+        [PuppeteerTest("network.spec.ts", "Response.text", "should work")]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/simple.json");
             Assert.Equal("{\"foo\": \"bar\"}", (await response.TextAsync()).Trim());
         }
 
-        [Fact]
+        [PuppeteerTest("network.spec.ts", "Response.text", "should return uncompressed text")]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReturnUncompressedText()
         {
             Server.EnableGzip("/simple.json");
@@ -31,8 +35,9 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal("{\"foo\": \"bar\"}", (await response.TextAsync()).Trim());
         }
 
-        [Fact]
-        public async Task PageEventsResponseShouldThrowWhenRequestingBodyOfRedirectedResponse()
+        [PuppeteerTest("network.spec.ts", "Response.text", "should throw when requesting body of redirected response")]
+        [SkipBrowserFact(skipFirefox: true)]
+        public async Task ShouldThrowWhenRequestingBodyOfRedirectedResponse()
         {
             Server.SetRedirect("/foo.html", "/empty.html");
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/foo.html");
@@ -45,7 +50,8 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Contains("Response body is unavailable for redirect responses", exception.Message);
         }
 
-        [Fact]
+        [PuppeteerTest("network.spec.ts", "Response.text", "should wait until response completes")]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWaitUntilResponseCompletes()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -61,13 +67,13 @@ namespace PuppeteerSharp.Tests.NetworkTests
             // Setup page to trap response.
             Response pageResponse = null;
             var requestFinished = false;
-            Page.Response += (sender, e) => pageResponse = e.Response;
-            Page.RequestFinished += (sender, e) => requestFinished = true;
+            Page.Response += (_, e) => pageResponse = e.Response;
+            Page.RequestFinished += (_, _) => requestFinished = true;
             // send request and wait for server response
             Task WaitForPageResponseEvent()
             {
                 var completion = new TaskCompletionSource<bool>();
-                Page.Response += (sender, e) =>
+                Page.Response += (_, e) =>
                 {
                     if (!TestUtils.IsFavicon(e.Response.Request))
                     {

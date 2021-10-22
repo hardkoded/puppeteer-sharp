@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using PuppeteerSharp;
@@ -13,7 +13,7 @@ namespace Example.ComplexJSObjects
             public string Title { get; set; }
             public string Url { get; set; }
             public override string ToString() => $"Title: {Title} \nURL: {Url}";
-        } 
+        }
 
         static async Task Main(string[] args)
         {
@@ -31,7 +31,7 @@ namespace Example.ComplexJSObjects
                 await page.GoToAsync("https://news.ycombinator.com/");
                 Console.WriteLine("Get all urls from page");
                 var jsCode = @"() => {
-const selectors = Array.from(document.querySelectorAll('a[class=""storylink""]')); 
+const selectors = Array.from(document.querySelectorAll('a[class=""storylink""]'));
 return selectors.map( t=> {return { title: t.innerHTML, url: t.href}});
 }";
                 var results = await page.EvaluateFunctionAsync<Data[]>(jsCode);

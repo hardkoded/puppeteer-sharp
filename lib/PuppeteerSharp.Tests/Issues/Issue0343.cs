@@ -1,7 +1,8 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 using System.Linq;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.Issues
 {
@@ -12,7 +13,7 @@ namespace PuppeteerSharp.Tests.Issues
         {
         }
 
-        [Fact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldSupportLongExpiresValueInCookies()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

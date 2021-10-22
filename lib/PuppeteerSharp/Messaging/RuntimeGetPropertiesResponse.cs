@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace PuppeteerSharp.Messaging
 {
@@ -9,7 +9,9 @@ namespace PuppeteerSharp.Messaging
         public class RuntimeGetPropertiesResponseItem
         {
             public object Enumerable { get; set; }
+
             public string Name { get; set; }
+
             public RemoteObject Value { get; set; }
         }
     }

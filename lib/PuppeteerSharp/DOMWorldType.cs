@@ -1,4 +1,4 @@
-﻿using System.Runtime.Serialization;
+using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using PuppeteerSharp.Helpers.Json;
 
@@ -9,6 +9,8 @@ namespace PuppeteerSharp
     {
         Other,
         [EnumMember(Value = "isolated")]
-        Isolated
+        Isolated,
+        [EnumMember(Value = "default")]
+        Default
     }
 }

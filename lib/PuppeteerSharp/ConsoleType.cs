@@ -1,4 +1,6 @@
-﻿namespace PuppeteerSharp
+using System.Runtime.Serialization;
+
+namespace PuppeteerSharp
 {
     /// <summary>
     /// Console type used on <see cref="ConsoleMessage"/>.
@@ -81,5 +83,10 @@
         /// Verbose.
         /// </summary>
         Verbose,
+        /// <summary>
+        /// Time Stamp.
+        /// </summary>
+        [EnumMember(Value = "timeStamp")]
+        Timestamp,
     }
 }

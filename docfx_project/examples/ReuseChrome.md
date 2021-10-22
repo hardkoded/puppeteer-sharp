@@ -5,7 +5,7 @@ _Contributors: [Bilal Durrani](https://bilaldurrani.io/)_
 ## Problem
 
 You want to download Chrome in a custom folder and you want to reuse Chrome
-from a location where it was previously downloaded instead of from the default location. 
+from a location where it was previously downloaded instead of from the default location.
 
 ## Solution
 
@@ -13,7 +13,7 @@ Use `BrowserFetcherOptions` to specify the full path for where to download Chrom
 
 ```
 var browserFetcherOptions = new BrowserFetcherOptions { Path = downloadPath };
-var browserFetcher = new BrowserFetcher(browserFetcherOptions);
+using var browserFetcher = new BrowserFetcher(browserFetcherOptions);
 await browserFetcher.DownloadAsync(BrowserFetcher.DefaultRevision);
 ```
 

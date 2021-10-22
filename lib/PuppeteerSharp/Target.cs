@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
@@ -20,6 +20,7 @@ namespace PuppeteerSharp
         #endregion
 
         internal bool IsInitialized { get; set; }
+
         internal TargetInfo TargetInfo { get; set; }
 
         internal Target(
@@ -32,27 +33,29 @@ namespace PuppeteerSharp
             BrowserContext = browserContext;
             PageTask = null;
 
-            _ = _initializedTaskWrapper.Task.ContinueWith(async initializedTask =>
-            {
-                var success = initializedTask.Result;
-                if (!success)
+            _ = _initializedTaskWrapper.Task.ContinueWith(
+                async initializedTask =>
                 {
-                    return;
-                }
+                    var success = initializedTask.Result;
+                    if (!success)
+                    {
+                        return;
+                    }
 
-                var openerPageTask = Opener?.PageTask;
-                if (openerPageTask == null || Type != TargetType.Page)
-                {
-                    return;
-                }
-                var openerPage = await openerPageTask.ConfigureAwait(false);
-                if (!openerPage.HasPopupEventListeners)
-                {
-                    return;
-                }
-                var popupPage = await PageAsync().ConfigureAwait(false);
-                openerPage.OnPopup(popupPage);
-            });
+                    var openerPageTask = Opener?.PageTask;
+                    if (openerPageTask == null || Type != TargetType.Page)
+                    {
+                        return;
+                    }
+                    var openerPage = await openerPageTask.ConfigureAwait(false);
+                    if (!openerPage.HasPopupEventListeners)
+                    {
+                        return;
+                    }
+                    var popupPage = await PageAsync().ConfigureAwait(false);
+                    openerPage.OnPopup(popupPage);
+                },
+                TaskScheduler.Default);
 
             CloseTaskWrapper = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             IsInitialized = TargetInfo.Type != TargetType.Page || !string.IsNullOrEmpty(TargetInfo.Url);
@@ -70,7 +73,7 @@ namespace PuppeteerSharp
         /// <value>The URL.</value>
         public string Url => TargetInfo.Url;
         /// <summary>
-        /// Gets the type. It will be <see cref="TargetInfo.Type"/>.
+        /// Gets the type. It will be <see cref="PuppeteerSharp.TargetInfo.Type"/>.
         /// Can be `"page"`, `"background_page"`, `"service_worker"`, `"shared_worker"`, `"browser"` or `"other"`.
         /// </summary>
         /// <value>The type.</value>
@@ -102,8 +105,11 @@ namespace PuppeteerSharp
         public BrowserContext BrowserContext { get; }
 
         internal Task<bool> InitializedTask => _initializedTaskWrapper.Task;
+
         internal Task CloseTask => CloseTaskWrapper.Task;
+
         internal TaskCompletionSource<bool> CloseTaskWrapper { get; }
+
         internal Task<Page> PageTask { get; set; }
         #endregion
 
@@ -145,8 +151,8 @@ namespace PuppeteerSharp
             return new Worker(
                 client,
                 TargetInfo.Url,
-                (consoleType, handles, stackTrace) => Task.CompletedTask,
-                (e) => { });
+                (_, _, _) => Task.CompletedTask,
+                _ => { });
         }
 
         private async Task<Page> CreatePageAsync()

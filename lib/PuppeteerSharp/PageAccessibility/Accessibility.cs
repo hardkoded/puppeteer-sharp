@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using PuppeteerSharp.Messaging;
@@ -6,13 +6,13 @@ using PuppeteerSharp.Messaging;
 namespace PuppeteerSharp.PageAccessibility
 {
     /// <summary>
-    /// The Accessibility class provides methods for inspecting Chromium's accessibility tree. 
+    /// The Accessibility class provides methods for inspecting Chromium's accessibility tree.
     /// The accessibility tree is used by assistive technology such as screen readers or switches.
-    /// 
+    ///
     /// Accessibility is a very platform-specific thing. On different platforms, there are different screen readers that might have wildly different output.
-    /// Blink - Chrome's rendering engine - has a concept of "accessibility tree", which is than translated into different platform-specific APIs. 
+    /// Blink - Chrome's rendering engine - has a concept of "accessibility tree", which is than translated into different platform-specific APIs.
     /// Accessibility namespace gives users access to the Blink Accessibility Tree.
-    /// Most of the accessibility tree gets filtered out when converting from Blink AX Tree to Platform-specific AX-Tree or by assistive technologies themselves. 
+    /// Most of the accessibility tree gets filtered out when converting from Blink AX Tree to Platform-specific AX-Tree or by assistive technologies themselves.
     /// By default, Puppeteer tries to approximate this filtering, exposing only the "interesting" nodes of the tree.
     /// </summary>
     public class Accessibility
@@ -34,7 +34,7 @@ namespace PuppeteerSharp.PageAccessibility
         {
             var response = await _client.SendAsync<AccessibilityGetFullAXTreeResponse>("Accessibility.getFullAXTree").ConfigureAwait(false);
             var nodes = response.Nodes;
-            int? backendNodeId = null;
+            object backendNodeId = null;
             if (options?.Root != null)
             {
                 var node = await _client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
@@ -45,9 +45,9 @@ namespace PuppeteerSharp.PageAccessibility
             }
             var defaultRoot = AXNode.CreateTree(nodes);
             var needle = defaultRoot;
-            if (backendNodeId.HasValue)
+            if (backendNodeId != null)
             {
-                needle = defaultRoot.Find(node => node.Payload.BackendDOMNodeId == backendNodeId);
+                needle = defaultRoot.Find(node => node.Payload.BackendDOMNodeId.Equals(backendNodeId));
                 if (needle == null)
                 {
                     return null;

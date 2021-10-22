@@ -1,4 +1,4 @@
-﻿namespace PuppeteerSharp.Input
+namespace PuppeteerSharp.Input
 {
     /// <summary>
     /// options to use when pressing a key.

@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
+using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -11,7 +13,8 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Fact]
+        [PuppeteerTest("page.spec.ts", "Page.setUserAgent", "should work")]
+        [PuppeteerFact]
         public async Task ShouldWork()
         {
             Assert.Contains("Mozilla", await Page.EvaluateFunctionAsync<string>("() => navigator.userAgent"));
@@ -25,7 +28,8 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal("foobar", userAgentTask.Result);
         }
 
-        [Fact]
+        [PuppeteerTest("page.spec.ts", "Page.setUserAgent", "should work for subframes")]
+        [PuppeteerFact]
         public async Task ShouldWorkForSubframes()
         {
             Assert.Contains("Mozilla", await Page.EvaluateExpressionAsync<string>("navigator.userAgent"));
@@ -37,7 +41,8 @@ namespace PuppeteerSharp.Tests.PageTests
               FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage));
         }
 
-        [Fact]
+        [PuppeteerTest("page.spec.ts", "Page.setUserAgent", "should emulate device user-agent")]
+        [PuppeteerFact]
         public async Task ShouldSimulateDeviceUserAgent()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/mobile.html");

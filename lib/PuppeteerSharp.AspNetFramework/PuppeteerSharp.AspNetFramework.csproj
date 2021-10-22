@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.Net.Sdk">
   <PropertyGroup>
     <TargetFramework>net461</TargetFramework>
@@ -9,6 +9,7 @@
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
     <Summary>Puppeteer-Sharp Helpers for ASP.NET Full Framework</Summary>
   </PropertyGroup>
+  <Import Project="../Common/SignAssembly.props" />
   <ItemGroup>
     <ProjectReference Include="..\PuppeteerSharp\PuppeteerSharp.csproj" />
   </ItemGroup>

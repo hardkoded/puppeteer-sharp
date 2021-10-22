@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -56,11 +56,13 @@ namespace PuppeteerSharp
         /// <returns>Task of <see cref="JSHandle"/></returns>
         public async Task<JSHandle> GetPropertyAsync(string propertyName)
         {
-            var objectHandle = await EvaluateFunctionHandleAsync(@"(object, propertyName) => {
-              const result = { __proto__: null};
-              result[propertyName] = object[propertyName];
-              return result;
-            }", propertyName).ConfigureAwait(false);
+            var objectHandle = await EvaluateFunctionHandleAsync(
+                @"(object, propertyName) => {
+                    const result = { __proto__: null};
+                    result[propertyName] = object[propertyName];
+                    return result;
+                }",
+                propertyName).ConfigureAwait(false);
             var properties = await objectHandle.GetPropertiesAsync().ConfigureAwait(false);
             properties.TryGetValue(propertyName, out var result);
             await objectHandle.DisposeAsync().ConfigureAwait(false);
@@ -161,10 +163,10 @@ namespace PuppeteerSharp
                 var type = RemoteObject.Subtype != RemoteObjectSubtype.Other
                     ? RemoteObject.Subtype.ToString()
                     : RemoteObject.Type.ToString();
-                return "JSHandle@" + type.ToLower();
+                return "JSHandle@" + type.ToLower(System.Globalization.CultureInfo.CurrentCulture);
             }
 
-            return "JSHandle:" + RemoteObjectHelper.ValueFromRemoteObject<object>(RemoteObject)?.ToString();
+            return "JSHandle:" + RemoteObjectHelper.ValueFromRemoteObject<object>(RemoteObject, true)?.ToString();
         }
 
         /// <summary>
@@ -235,7 +237,7 @@ namespace PuppeteerSharp
 
             if (unserializableValue != null)
             {
-                return unserializableValue;
+                return new { unserializableValue };
             }
 
             if (RemoteObject.ObjectId == null)

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Newtonsoft.Json;
 using PuppeteerSharp.Media;
 
@@ -66,7 +66,7 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public override bool Equals(object obj)
         {
-            if (obj == null && GetType() != obj.GetType())
+            if (obj == null || GetType() != obj.GetType())
             {
                 return false;
             }

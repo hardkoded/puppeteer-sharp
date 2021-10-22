@@ -1,6 +1,8 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using PuppeteerSharp.Mobile;
+using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -13,7 +15,8 @@ namespace PuppeteerSharp.Tests.InputTests
         {
         }
 
-        [Fact]
+        [PuppeteerTest("input.spec.ts", "Page.waitForFileChooser", "should work when file input is attached to DOM")]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWhenFileInputIsAttachedToDOM()
         {
             await Page.SetContentAsync("<input type=file>");
@@ -26,7 +29,8 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.NotNull(waitForTask.Result);
         }
 
-        [Fact]
+        [PuppeteerTest("input.spec.ts", "Page.waitForFileChooser", "should work when file input is not attached to DOM")]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWhenFileInputIsNotAttachedToDOM()
         {
             var waitForTask = Page.WaitForFileChooserAsync();
@@ -43,33 +47,37 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.NotNull(waitForTask.Result);
         }
 
-        [Fact]
-        public async Task ShouldRespectTimeout()
+        [PuppeteerTest("input.spec.ts", "Page.waitForFileChooser", "should respect timeout")]
+        [SkipBrowserFact(skipFirefox: true)]
+        public Task ShouldRespectTimeout()
         {
-            var ex = await Assert.ThrowsAsync<TimeoutException>(() => Page.WaitForFileChooserAsync(new WaitForFileChooserOptions
+            return Assert.ThrowsAsync<TimeoutException>(() => Page.WaitForFileChooserAsync(new WaitForFileChooserOptions
             {
                 Timeout = 1
             }));
         }
 
-        [Fact]
-        public async Task ShouldRespectTimeoutWhenThereIsNoCustomTimeout()
+        [PuppeteerTest("input.spec.ts", "Page.waitForFileChooser", "should respect default timeout when there is no custom timeout")]
+        [SkipBrowserFact(skipFirefox: true)]
+        public Task ShouldRespectTimeoutWhenThereIsNoCustomTimeout()
         {
             Page.DefaultTimeout = 1;
-            var ex = await Assert.ThrowsAsync<TimeoutException>(() => Page.WaitForFileChooserAsync());
+            return Assert.ThrowsAsync<TimeoutException>(() => Page.WaitForFileChooserAsync());
         }
 
-        [Fact]
-        public async Task ShouldPrioritizeExactTimeoutOverDefaultTimeout()
+        [PuppeteerTest("input.spec.ts", "Page.waitForFileChooser", "should prioritize exact timeout over default timeout")]
+        [SkipBrowserFact(skipFirefox: true)]
+        public Task ShouldPrioritizeExactTimeoutOverDefaultTimeout()
         {
             Page.DefaultTimeout = 0;
-            var ex = await Assert.ThrowsAsync<TimeoutException>(() => Page.WaitForFileChooserAsync(new WaitForFileChooserOptions
+            return Assert.ThrowsAsync<TimeoutException>(() => Page.WaitForFileChooserAsync(new WaitForFileChooserOptions
             {
                 Timeout = 1
             }));
         }
 
-        [Fact]
+        [PuppeteerTest("input.spec.ts", "Page.waitForFileChooser", "should work with no timeout")]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithNoTimeout()
         {
             var waitForTask = Page.WaitForFileChooserAsync(new WaitForFileChooserOptions { Timeout = 0 });
@@ -85,7 +93,8 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.NotNull(waitForTask.Result);
         }
 
-        [Fact]
+        [PuppeteerTest("input.spec.ts", "Page.waitForFileChooser", "should return the same file chooser when there are many watchdogs simultaneously")]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReturnTheSameFileChooserWhenThereAreManyWatchdogsSimultaneously()
         {
             await Page.SetContentAsync("<input type=file>");

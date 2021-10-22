@@ -1,0 +1,43 @@
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
+using Xunit;
+using Xunit.Abstractions;
+
+namespace PuppeteerSharp.Tests.ChromiumSpecificTests
+{
+    [Collection(TestConstants.TestFixtureCollectionName)]
+    public class PageTests : PuppeteerPageBaseTest
+    {
+        public PageTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
+        [PuppeteerTest("chromiumonly.spec.ts", "Chromium-Specific Page Tests", "Page.setRequestInterception should work with intervention headers")]
+        [SkipBrowserFact(skipFirefox: true)]
+        public async Task ShouldWorkWithInterventionHeaders()
+        {
+            Server.SetRoute("/intervention", context => context.Response.WriteAsync($@"
+              <script>
+                document.write('<script src=""{TestConstants.CrossProcessHttpPrefix}/intervention.js"">' + '</scr' + 'ipt>');
+              </script>
+            "));
+            Server.SetRedirect("/intervention.js", "/redirect.js");
+
+            string interventionHeader = null;
+            Server.SetRoute("/redirect.js", context =>
+            {
+                interventionHeader = context.Request.Headers["intervention"];
+                return context.Response.WriteAsync("console.log(1);");
+            });
+
+            await Page.SetRequestInterceptionAsync(true);
+            Page.Request += async (_, e) => await e.Request.ContinueAsync();
+
+            await Page.GoToAsync(TestConstants.ServerUrl + "/intervention");
+
+            Assert.Contains("feature/5718547946799104", interventionHeader);
+        }
+    }
+}

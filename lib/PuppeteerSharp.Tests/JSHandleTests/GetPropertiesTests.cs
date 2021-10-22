@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
+using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -11,7 +13,8 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         {
         }
 
-        [Fact]
+        [PuppeteerTest("jshandle.spec.ts", "JSHandle.getProperties", "should work")]
+        [PuppeteerFact]
         public async Task ShouldWork()
         {
             var aHandle = await Page.EvaluateExpressionHandleAsync(@"({
@@ -23,7 +26,8 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             Assert.Equal("bar", await foo.JsonValueAsync<string>());
         }
 
-        [Fact]
+        [PuppeteerTest("jshandle.spec.ts", "JSHandle.getProperties", "should return even non-own properties")]
+        [PuppeteerFact]
         public async Task ShouldReturnEvenNonOwnProperties()
         {
             var aHandle = await Page.EvaluateFunctionHandleAsync(@"() => {

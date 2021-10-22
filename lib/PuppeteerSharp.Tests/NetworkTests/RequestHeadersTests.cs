@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
+using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -11,11 +13,20 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
-        [Fact]
+        [PuppeteerTest("network.spec.ts", "Request.Headers", "should work")]
+        [PuppeteerFact]
         public async Task ShouldWork()
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Contains("Chrome", response.Request.Headers["User-Agent"]);
+
+            if (TestConstants.IsChrome)
+            {
+                Assert.Contains("Chrome", response.Request.Headers["User-Agent"]);
+            }
+            else
+            {
+                Assert.Contains("Firefox", response.Request.Headers["User-Agent"]);
+            }
         }
     }
 }

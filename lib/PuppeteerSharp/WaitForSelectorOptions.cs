@@ -1,4 +1,4 @@
-﻿namespace PuppeteerSharp
+namespace PuppeteerSharp
 {
     /// <summary>
     /// Optional waiting parameters.
@@ -8,8 +8,8 @@
     public class WaitForSelectorOptions
     {
         /// <summary>
-        /// Maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds). 
-        /// Pass `0` to disable timeout. 
+        /// Maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
+        /// Pass `0` to disable timeout.
         /// The default value can be changed by using <seealso cref="Page.DefaultTimeout"/>  method
         /// </summary>
         public int? Timeout { get; set; }

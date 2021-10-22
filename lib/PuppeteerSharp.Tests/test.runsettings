@@ -1,7 +1,7 @@
-﻿<?xml version="1.0" encoding="UTF-8" ?>
-<RunSettings>  
-  <!-- Configurations that affect the Test Framework -->  
+<?xml version="1.0" encoding="UTF-8" ?>
+<RunSettings>
+  <!-- Configurations that affect the Test Framework -->
   <RunConfiguration>
-    <TestSessionTimeout>900000</TestSessionTimeout>
+    <TestSessionTimeout>1800000</TestSessionTimeout>
   </RunConfiguration>
 </RunSettings>

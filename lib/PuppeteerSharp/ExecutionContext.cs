@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -111,6 +111,11 @@ namespace PuppeteerSharp
         /// <param name="prototypeHandle">A handle to the object prototype.</param>
         public async Task<JSHandle> QueryObjectsAsync(JSHandle prototypeHandle)
         {
+            if (prototypeHandle == null)
+            {
+                throw new ArgumentNullException(nameof(prototypeHandle));
+            }
+
             if (prototypeHandle.Disposed)
             {
                 throw new PuppeteerException("Prototype JSHandle is disposed!");
@@ -242,7 +247,18 @@ namespace PuppeteerSharp
             return message;
         }
 
-        internal async Task<ElementHandle> AdoptElementHandleASync(ElementHandle elementHandle)
+        internal async Task<ElementHandle> AdoptBackendNodeAsync(object backendNodeId)
+        {
+            var obj = await _client.SendAsync<DomResolveNodeResponse>("DOM.resolveNode", new DomResolveNodeRequest
+            {
+                BackendNodeId = backendNodeId,
+                ExecutionContextId = _contextId
+            }).ConfigureAwait(false);
+
+            return CreateJSHandle(obj.Object) as ElementHandle;
+        }
+
+        internal async Task<ElementHandle> AdoptElementHandleAsync(ElementHandle elementHandle)
         {
             if (elementHandle.ExecutionContext == this)
             {

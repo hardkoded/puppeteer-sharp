@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests
@@ -15,6 +15,7 @@ namespace PuppeteerSharp.Tests
         {
             await base.InitializeAsync();
             Page = await Context.NewPageAsync();
+            Page.DefaultTimeout = System.Diagnostics.Debugger.IsAttached ? TestConstants.DebuggerAttachedTestTimeout : TestConstants.DefaultPuppeteerTimeout;
         }
 
         public override async Task DisposeAsync()
