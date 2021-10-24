@@ -108,5 +108,10 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
             Assert.Contains("TheSourceOfTheProblems", exception.StackTrace);
             Assert.Contains("ThisCommand.DoesNotExist", exception.Message);
         }
+
+        [PuppeteerTest("CDPSession.spec.ts", "Target.createCDPSession", "should expose the underlying connection")]
+        [SkipBrowserFact(skipFirefox: true)]
+        public async Task ShouldExposeTheUnderlyingConnection()
+            => Assert.NotNull(await Page.Target.CreateCDPSessionAsync());
     }
 }
