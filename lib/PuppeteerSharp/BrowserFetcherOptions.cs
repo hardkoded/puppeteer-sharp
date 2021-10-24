@@ -14,7 +14,7 @@ namespace PuppeteerSharp
         /// <param name="address">address</param>
         /// <param name="fileName">fileName</param>
         /// <returns></returns>
-        public delegate Task GetBrowserAsync(string address, string fileName);
+        public delegate Task CustomFileDownloadAction(string address, string fileName);
 
         /// <summary>
         /// Product. Defaults to Chrome.
@@ -39,6 +39,6 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets the default or a custom download delegate
         /// </summary>
-        public GetBrowserAsync GetBrowserTaskAsync { get; set; }
+        public CustomFileDownloadAction CustomFileDownload { get; set; }
     }
 }

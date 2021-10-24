@@ -52,6 +52,7 @@ namespace PuppeteerSharp
         };
 
         private readonly WebClient _webClient = new WebClient();
+        private readonly CustomFileDownloadAction _customFileDownload;
         private bool _isDisposed;
 
         /// <summary>
@@ -91,11 +92,6 @@ namespace PuppeteerSharp
         public Product Product { get; }
 
         /// <summary>
-        /// Gets the default or a custom download delegate
-        /// </summary>
-        public GetBrowserAsync GetBrowserTaskAsync { get; }
-
-        /// <summary>
         /// Proxy used by the WebClient in <see cref="DownloadAsync(int)"/> and <see cref="CanDownloadAsync(int)"/>
         /// </summary>
         public IWebProxy WebProxy
@@ -118,7 +114,7 @@ namespace PuppeteerSharp
             DownloadHost = _hosts[Product.Chrome];
             Platform = GetCurrentPlatform();
             Product = Product.Chrome;
-            GetBrowserTaskAsync = _webClient.DownloadFileTaskAsync;
+            _customFileDownload = _webClient.DownloadFileTaskAsync;
         }
 
         /// <summary>
@@ -146,7 +142,7 @@ namespace PuppeteerSharp
             DownloadHost = string.IsNullOrEmpty(options.Host) ? _hosts[options.Product] : options.Host;
             Platform = options.Platform ?? GetCurrentPlatform();
             Product = options.Product;
-            GetBrowserTaskAsync = options.GetBrowserTaskAsync ?? _webClient.DownloadFileTaskAsync;
+            _customFileDownload = options.CustomFileDownload ?? _webClient.DownloadFileTaskAsync;
         }
 
         /// <summary>
@@ -299,7 +295,7 @@ namespace PuppeteerSharp
                 _webClient.DownloadProgressChanged += DownloadProgressChanged;
             }
 
-            await GetBrowserTaskAsync(url, filePath).ConfigureAwait(false);
+            await _customFileDownload(url, filePath).ConfigureAwait(false);
 
             if (filePath.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
             {
