@@ -71,6 +71,15 @@ namespace PuppeteerSharp.Tests.FrameTests
             Assert.Equal(TestConstants.EmptyPage + "#foo", Page.Url);
         }
 
+        [PuppeteerTest("frame.spec.ts", "Frame Management", "should support url fragment")]
+        [PuppeteerFact]
+        public async Task ShouldReturnUrlFragmentAsPartOfUrl()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame-url-fragment.html");
+            Assert.Equal(2, Page.Frames.Length);
+            Assert.Equal(TestConstants.ServerUrl + "/frames/frame.html?param=value#fragment", Page.FirstChildFrame().Url);
+        }
+
         [PuppeteerTest("frame.spec.ts", "Frame Management", "should persist mainFrame on cross-process navigation")]
         [PuppeteerFact]
         public async Task ShouldPersistMainFrameOnCrossProcessNavigation()

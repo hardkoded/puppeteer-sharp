@@ -423,7 +423,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             var responseCount = 1;
-            Server.SetRoute("/zzz", context => context.Response.WriteAsync((responseCount++) * 11 + string.Empty));
+            Server.SetRoute("/zzz", context => context.Response.WriteAsync(((responseCount++) * 11) + string.Empty));
             await Page.SetRequestInterceptionAsync(true);
 
             var spinner = false;
