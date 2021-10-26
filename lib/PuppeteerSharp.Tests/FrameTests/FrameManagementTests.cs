@@ -77,7 +77,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame-url-fragment.html");
             Assert.Equal(2, Page.Frames.Length);
-            Assert.Equal(TestConstants.ServerUrl + "/frames/frame.html?param=value#fragment", Page.Frames[1].Url);
+            Assert.Equal(TestConstants.ServerUrl + "/frames/frame.html?param=value#fragment", Page.FirstChildFrame().Url);
         }
 
         [PuppeteerTest("frame.spec.ts", "Frame Management", "should persist mainFrame on cross-process navigation")]
