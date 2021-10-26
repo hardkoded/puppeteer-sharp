@@ -15,6 +15,7 @@ using ICSharpCode.SharpZipLib.Tar;
 using Newtonsoft.Json;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Linux;
+using static PuppeteerSharp.BrowserFetcherOptions;
 
 namespace PuppeteerSharp
 {
@@ -51,6 +52,7 @@ namespace PuppeteerSharp
         };
 
         private readonly WebClient _webClient = new WebClient();
+        private readonly CustomFileDownloadAction _customFileDownload;
         private bool _isDisposed;
 
         /// <summary>
@@ -112,6 +114,7 @@ namespace PuppeteerSharp
             DownloadHost = _hosts[Product.Chrome];
             Platform = GetCurrentPlatform();
             Product = Product.Chrome;
+            _customFileDownload = _webClient.DownloadFileTaskAsync;
         }
 
         /// <summary>
@@ -139,6 +142,7 @@ namespace PuppeteerSharp
             DownloadHost = string.IsNullOrEmpty(options.Host) ? _hosts[options.Product] : options.Host;
             Platform = options.Platform ?? GetCurrentPlatform();
             Product = options.Product;
+            _customFileDownload = options.CustomFileDownload ?? _webClient.DownloadFileTaskAsync;
         }
 
         /// <summary>
@@ -291,7 +295,7 @@ namespace PuppeteerSharp
                 _webClient.DownloadProgressChanged += DownloadProgressChanged;
             }
 
-            await _webClient.DownloadFileTaskAsync(url, filePath).ConfigureAwait(false);
+            await _customFileDownload(url, filePath).ConfigureAwait(false);
 
             if (filePath.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
             {

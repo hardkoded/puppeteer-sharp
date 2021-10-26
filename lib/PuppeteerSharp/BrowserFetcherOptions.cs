@@ -1,3 +1,6 @@
+using System;
+using System.Threading.Tasks;
+
 namespace PuppeteerSharp
 {
     /// <summary>
@@ -5,6 +8,14 @@ namespace PuppeteerSharp
     /// </summary>
     public class BrowserFetcherOptions
     {
+        /// <summary>
+        /// A custom download delegate
+        /// </summary>
+        /// <param name="address">address</param>
+        /// <param name="fileName">fileName</param>
+        /// <returns></returns>
+        public delegate Task CustomFileDownloadAction(string address, string fileName);
+
         /// <summary>
         /// Product. Defaults to Chrome.
         /// </summary>
@@ -24,5 +35,10 @@ namespace PuppeteerSharp
         /// A download host to be used. Defaults to https://storage.googleapis.com.
         /// </summary>
         public string Host { get; set; }
+
+        /// <summary>
+        /// Gets the default or a custom download delegate
+        /// </summary>
+        public CustomFileDownloadAction CustomFileDownload { get; set; }
     }
 }
