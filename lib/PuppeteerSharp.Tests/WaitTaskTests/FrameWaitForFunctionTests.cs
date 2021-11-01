@@ -42,6 +42,22 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             await watchdog;
             Assert.True((DateTime.Now - startTime).TotalMilliseconds > polling / 2);
         }
+        
+        [PuppeteerTest("waittask.spec.ts", "Frame.waitForFunction", "should poll on interval async")]
+        [PuppeteerFact]
+        public async Task ShouldPollOnIntervalAsync()
+        {
+            var success = false;
+            var startTime = DateTime.Now;
+            var polling = 100;
+            var watchdog = Page.WaitForFunctionAsync("async () => window.__FOO === 'hit'", new WaitForFunctionOptions { PollingInterval = polling })
+                .ContinueWith(_ => success = true);
+            await Page.EvaluateFunctionAsync("async () => window.__FOO = 'hit'");
+            Assert.False(success);
+            await Page.EvaluateExpressionAsync("document.body.appendChild(document.createElement('div'))");
+            await watchdog;
+            Assert.True((DateTime.Now - startTime).TotalMilliseconds > polling / 2);
+        }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForFunction", "should poll on mutation")]
         [PuppeteerFact]
@@ -57,6 +73,20 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             await watchdog;
         }
 
+        [PuppeteerTest("waittask.spec.ts", "Frame.waitForFunction", "should poll on mutation async")]
+        [PuppeteerFact]
+        public async Task ShouldPollOnMutationAsync()
+        {
+            var success = false;
+            var watchdog = Page.WaitForFunctionAsync("async () => window.__FOO === 'hit'",
+                new WaitForFunctionOptions { Polling = WaitForFunctionPollingOption.Mutation })
+                .ContinueWith(_ => success = true);
+            await Page.EvaluateFunctionAsync("async () => window.__FOO = 'hit'");
+            Assert.False(success);
+            await Page.EvaluateExpressionAsync("document.body.appendChild(document.createElement('div'))");
+            await watchdog;
+        }
+
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForFunction", "should poll on raf")]
         [PuppeteerFact]
         public async Task ShouldPollOnRaf()
@@ -64,6 +94,16 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             var watchdog = Page.WaitForFunctionAsync("() => window.__FOO === 'hit'",
                 new WaitForFunctionOptions { Polling = WaitForFunctionPollingOption.Raf });
             await Page.EvaluateExpressionAsync("window.__FOO = 'hit'");
+            await watchdog;
+        }
+
+        [PuppeteerTest("waittask.spec.ts", "Frame.waitForFunction", "should poll on raf async")]
+        [PuppeteerFact]
+        public async Task ShouldPollOnRafAsync()
+        {
+            var watchdog = Page.WaitForFunctionAsync("async () => window.__FOO === 'hit'",
+                new WaitForFunctionOptions { Polling = WaitForFunctionPollingOption.Raf });
+            await Page.EvaluateFunctionAsync("async () => (globalThis.__FOO = 'hit')");
             await watchdog;
         }
 
