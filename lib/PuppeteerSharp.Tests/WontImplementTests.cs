@@ -40,6 +40,10 @@ namespace PuppeteerSharp.Tests
         [PuppeteerTest("emulation.spec.ts", "Page.emulateMediaType", "should throw in case of bad argument")]
         [PuppeteerTest("emulation.spec.ts", "Page.emulateMediaFeatures", "should throw in case of bad argument")]
         [PuppeteerTest("emulation.spec.ts", "Page.emulateVisionDeficiency", "should throw for invalid vision deficiencies")]
+        [PuppeteerTest("waittask.spec.ts", "Page.waitFor", "should throw when unknown type")]
+        [PuppeteerTest("waittask.spec.ts", "Page.waitFor", "should log a deprecation warning")]
+        [PuppeteerTest("waittask.spec.ts", "Frame.waitForFunction", "should accept a string")]
+        [PuppeteerTest("waittask.spec.ts", "Frame.waitForFunction", "should throw on bad polling value")]
         [PuppeteerFact]
         public void TheseTesstWontBeImplemented()
         {
