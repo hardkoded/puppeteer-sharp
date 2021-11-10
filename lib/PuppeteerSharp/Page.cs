@@ -1936,7 +1936,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="factor">Throttling rate as a slowdown factor (1 is no throttle, 2 is 2x slowdown, etc).</param>
         /// <returns>A task that resolves when the message has been sent to the browser.</returns>
-        internal Task EmulateCPUThrottlingAsync(decimal? factor = null)
+        public Task EmulateCPUThrottlingAsync(decimal? factor = null)
         {
             if (factor != null && factor < 1)
             {
