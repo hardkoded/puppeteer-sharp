@@ -54,6 +54,30 @@ namespace PuppeteerSharp.Mobile
         /// </summary>
         GalaxyS5Landscape,
         /// <summary>
+        /// Galaxy S8
+        /// </summary>
+        GalaxyS8,
+        /// <summary>
+        /// Galaxy S8 landscape
+        /// </summary>
+        GalaxyS8Landscape,
+        /// <summary>
+        /// Galaxy S9+
+        /// </summary>
+        GalaxyS9Plus,
+        /// <summary>
+        /// Galaxy S9+ landscape
+        /// </summary>
+        GalaxyS9PlusLandscape,
+        /// <summary>
+        /// Galaxy Tab S4
+        /// </summary>
+        GalaxyTabS4,
+        /// <summary>
+        /// Galaxy Tab S4 landscape
+        /// </summary>
+        GalaxyTabS4Landscape,
+        /// <summary>
         /// iPad
         /// </summary>
         IPad,
@@ -166,7 +190,7 @@ namespace PuppeteerSharp.Mobile
         /// </summary>
         IPhoneXRLandscape,
         /// <summary>
-        /// iPhone 11 landscape
+        /// iPhone 11
         /// </summary>
         IPhone11,
         /// <summary>
@@ -312,6 +336,22 @@ namespace PuppeteerSharp.Mobile
         /// <summary>
         /// Pixel 2 XL landscape
         /// </summary>
-        Pixel2XLLandscape
+        Pixel2XLLandscape,
+        /// <summary>
+        /// Pixel 3
+        /// </summary>
+        Pixel3,
+        /// <summary>
+        /// Pixel 3 landscape
+        /// </summary>
+        Pixel3Landscape,
+        /// <summary>
+        /// Pixel 4
+        /// </summary>
+        Pixel4,
+        /// <summary>
+        /// Pixel 4 landscape
+        /// </summary>
+        Pixel4Landscape
     }
 }

@@ -179,6 +179,90 @@ namespace PuppeteerSharp.Mobile
                     IsLandscape = true
                 }
             },
+            [DeviceDescriptorName.GalaxyS8] = new DeviceDescriptor
+            {
+                Name = "Galaxy S8",
+                UserAgent = "Mozilla/5.0 (Linux; Android 7.0; SM-G950U Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.84 Mobile Safari/537.36",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 360,
+                    Height = 740,
+                    DeviceScaleFactor = 3,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = false
+                }
+            },
+            [DeviceDescriptorName.GalaxyS8Landscape] = new DeviceDescriptor
+            {
+                Name = "Galaxy S8 landscape",
+                UserAgent = "Mozilla/5.0 (Linux; Android 7.0; SM-G950U Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.84 Mobile Safari/537.36",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 740,
+                    Height = 360,
+                    DeviceScaleFactor = 3,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = true
+                }
+            },
+            [DeviceDescriptorName.GalaxyS9Plus] = new DeviceDescriptor
+            {
+                Name = "Galaxy S9+",
+                UserAgent = "Mozilla/5.0 (Linux; Android 8.0.0; SM-G965U Build/R16NW) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.111 Mobile Safari/537.36",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 320,
+                    Height = 658,
+                    DeviceScaleFactor = 4.5,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = false
+                }
+            },
+            [DeviceDescriptorName.GalaxyS9PlusLandscape] = new DeviceDescriptor
+            {
+                Name = "Galaxy S9+ landscape",
+                UserAgent = "Mozilla/5.0 (Linux; Android 8.0.0; SM-G965U Build/R16NW) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.111 Mobile Safari/537.36",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 658,
+                    Height = 320,
+                    DeviceScaleFactor = 4.5,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = true
+                }
+            },
+            [DeviceDescriptorName.GalaxyTabS4] = new DeviceDescriptor
+            {
+                Name = "Galaxy Tab S4",
+                UserAgent = "Mozilla/5.0 (Linux; Android 8.1.0; SM-T837A) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.80 Safari/537.36",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 712,
+                    Height = 1138,
+                    DeviceScaleFactor = 2.25,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = false
+                }
+            },
+            [DeviceDescriptorName.GalaxyTabS4Landscape] = new DeviceDescriptor
+            {
+                Name = "Galaxy Tab S4 landscape",
+                UserAgent = "Mozilla/5.0 (Linux; Android 8.1.0; SM-T837A) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.80 Safari/537.36",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 1138,
+                    Height = 712,
+                    DeviceScaleFactor = 2.25,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = true
+                }
+            },
             [DeviceDescriptorName.IPad] = new DeviceDescriptor
             {
                 Name = "iPad",
@@ -578,8 +662,8 @@ namespace PuppeteerSharp.Mobile
                 ViewPort = new ViewPortOptions
                 {
                     Width = 414,
-                    Height = 896,
-                    DeviceScaleFactor = 3,
+                    Height = 828,
+                    DeviceScaleFactor = 2,
                     IsMobile = true,
                     HasTouch = true,
                     IsLandscape = false
@@ -591,9 +675,9 @@ namespace PuppeteerSharp.Mobile
                 UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 13_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1 Mobile/15E148 Safari/604.1",
                 ViewPort = new ViewPortOptions
                 {
-                    Width = 896,
+                    Width = 828,
                     Height = 414,
-                    DeviceScaleFactor = 3,
+                    DeviceScaleFactor = 2,
                     IsMobile = true,
                     HasTouch = true,
                     IsLandscape = true
@@ -1084,6 +1168,62 @@ namespace PuppeteerSharp.Mobile
                     Width = 823,
                     Height = 411,
                     DeviceScaleFactor = 3.5,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = true
+                }
+            },
+            [DeviceDescriptorName.Pixel3] = new DeviceDescriptor
+            {
+                Name = "Pixel 3",
+                UserAgent = "Mozilla/5.0 (Linux; Android 9; Pixel 3 Build/PQ1A.181105.017.A1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.158 Mobile Safari/537.36",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 393,
+                    Height = 786,
+                    DeviceScaleFactor = 2.75,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = false
+                }
+            },
+            [DeviceDescriptorName.Pixel3Landscape] = new DeviceDescriptor
+            {
+                Name = "Pixel 3 landscape",
+                UserAgent = "Mozilla/5.0 (Linux; Android 9; Pixel 3 Build/PQ1A.181105.017.A1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.158 Mobile Safari/537.36",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 786,
+                    Height = 393,
+                    DeviceScaleFactor = 2.75,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = true
+                }
+            },
+            [DeviceDescriptorName.Pixel4] = new DeviceDescriptor
+            {
+                Name = "Pixel 4",
+                UserAgent = "Mozilla/5.0 (Linux; Android 10; Pixel 4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Mobile Safari/537.36",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 353,
+                    Height = 745,
+                    DeviceScaleFactor = 3,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = false
+                }
+            },
+            [DeviceDescriptorName.Pixel4Landscape] = new DeviceDescriptor
+            {
+                Name = "Pixel 4 landscape",
+                UserAgent = "Mozilla/5.0 (Linux; Android 10; Pixel 4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Mobile Safari/537.36",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 745,
+                    Height = 353,
+                    DeviceScaleFactor = 3,
                     IsMobile = true,
                     HasTouch = true,
                     IsLandscape = true

@@ -6,14 +6,11 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
-
 namespace PuppeteerSharp.DevicesFetcher
 {
     class Program
     {
-        const string DEVICES_URL = "https://raw.githubusercontent.com/ChromeDevTools/devtools-frontend/master/front_end/emulated_devices/module.json";
+        const string DEVICES_URL = "https://raw.githubusercontent.com/puppeteer/puppeteer/master/src/common/DeviceDescriptors.ts";
 
         static readonly string deviceDescriptorsOutput = "../../../../PuppeteerSharp/Mobile/DeviceDescriptors.cs";
         static readonly string deviceDescriptorNameOutput = "../../../../PuppeteerSharp/Mobile/DeviceDescriptorName.cs";
@@ -26,80 +23,43 @@ namespace PuppeteerSharp.DevicesFetcher
                 url = args[0];
             }
 
-            string chromeVersion = null;
-            using var fetcher = new BrowserFetcher();
-
-            await fetcher.DownloadAsync();
-            await using (var browser = await Puppeteer.LaunchAsync(new LaunchOptions()))
-            {
-                chromeVersion = (await browser.GetVersionAsync()).Split('/').Last();
-            }
-
             Console.WriteLine($"GET {url}");
             var text = await HttpGET(url);
-            RootObject json = null;
+
+            const string DeviceArray = "Device[] = [";
+            var startIndex = text.IndexOf(DeviceArray) + DeviceArray.Length;
+            var endIndex = text.IndexOf("];", startIndex);
+            var length = endIndex - startIndex;
+            text = "[" + text.Substring(startIndex, length) + "]";
+
+            Device[] devices;
             try
             {
-                json = JsonConvert.DeserializeObject<RootObject>(text);
+                devices = JsonConvert.DeserializeObject<Device[]>(text);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"FAILED: error parsing response - {ex.Message}");
                 return;
             }
-            var devicePayloads = json.Extensions
-                .Where(extension => extension.Type == "emulated-device")
-                .Select(extension => extension.Device)
-                .ToArray();
-            var devices = new List<OutputDevice>();
-            foreach (var payload in devicePayloads)
-            {
-                string[] names;
-                if (payload.Title == "iPhone 6/7/8")
-                {
-                    names = new[] { "iPhone 6", "iPhone 7", "iPhone 8" };
-                }
-                else if (payload.Title == "iPhone 6/7/8 Plus")
-                {
-                    names = new[] { "iPhone 6 Plus", "iPhone 7 Plus", "iPhone 8 Plus" };
-                }
-                else if (payload.Title == "iPhone 5/SE")
-                {
-                    names = new[] { "iPhone 5", "iPhone SE" };
-                }
-                else
-                {
-                    names = new[] { payload.Title };
-                }
-                foreach (var name in names)
-                {
-                    var device = CreateDevice(chromeVersion, name, payload, false);
-                    var landscape = CreateDevice(chromeVersion, name, payload, true);
-                    devices.Add(device);
-                    if (landscape.Viewport.Width != device.Viewport.Width || landscape.Viewport.Height != device.Viewport.Height)
-                    {
-                        devices.Add(landscape);
-                    }
-                }
-            }
-            devices.RemoveAll(device => !device.Viewport.IsMobile);
-            devices.Sort((a, b) => a.Name.CompareTo(b.Name));
 
             WriteDeviceDescriptors(devices);
             WriteDeviceDescriptorName(devices);
         }
 
-        static void WriteDeviceDescriptors(IEnumerable<OutputDevice> devices)
+        static void WriteDeviceDescriptors(IEnumerable<Device> devices)
         {
             var builder = new StringBuilder();
-            var begin = @"using System.Collections.Generic;
+            var begin = @"using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace PuppeteerSharp.Mobile
 {
     /// <summary>
     /// Device descriptors.
     /// </summary>
-    public class DeviceDescriptors
+    public static class DeviceDescriptors
     {
         private static readonly Dictionary<DeviceDescriptorName, DeviceDescriptor> Devices = new Dictionary<DeviceDescriptorName, DeviceDescriptor>
         {
@@ -107,11 +67,17 @@ namespace PuppeteerSharp.Mobile
             var end = @"
         };
 
+        private static Lazy<IReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor>> _readOnlyDevices =
+            new Lazy<IReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor>>(() => new ReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor>(Devices));
+
+        internal static IReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor> ToReadOnly() => _readOnlyDevices.Value;
+
         /// <summary>
         /// Get the specified device description.
         /// </summary>
         /// <returns>The device descriptor.</returns>
         /// <param name=""name"">Device Name.</param>
+        [Obsolete(""Use Puppeteer.Devices instead"")]
         public static DeviceDescriptor Get(DeviceDescriptorName name) => Devices[name];
     }
 }";
@@ -123,7 +89,7 @@ namespace PuppeteerSharp.Mobile
             File.WriteAllText(deviceDescriptorsOutput, builder.ToString());
         }
 
-        static void WriteDeviceDescriptorName(IEnumerable<OutputDevice> devices)
+        static void WriteDeviceDescriptorName(IEnumerable<Device> devices)
         {
             var builder = new StringBuilder();
             var begin = @"namespace PuppeteerSharp.Mobile
@@ -151,7 +117,7 @@ namespace PuppeteerSharp.Mobile
             File.WriteAllText(deviceDescriptorNameOutput, builder.ToString());
         }
 
-        static string GenerateCsharpFromDevice(OutputDevice device)
+        static string GenerateCsharpFromDevice(Device device)
         {
             return $@"            [DeviceDescriptorName.{DeviceNameToEnumValue(device)}] = new DeviceDescriptor
             {{
@@ -169,63 +135,26 @@ namespace PuppeteerSharp.Mobile
             }}";
         }
 
-        static string DeviceNameToEnumValue(OutputDevice device)
+        static string DeviceNameToEnumValue(Device device)
         {
+            var dotNetName = device.Name.Replace("+", "Plus");
             var output = new StringBuilder();
-            output.Append(char.ToUpper(device.Name[0]));
-            for (var i = 1; i < device.Name.Length; i++)
+            output.Append(char.ToUpper(dotNetName[0]));
+            for (var i = 1; i < dotNetName.Length; i++)
             {
-                if (char.IsWhiteSpace(device.Name[i]))
+                if (char.IsWhiteSpace(dotNetName[i]))
                 {
-                    output.Append(char.ToUpper(device.Name[i + 1]));
+                    output.Append(char.ToUpper(dotNetName[i + 1]));
                     i++;
                 }
                 else
                 {
-                    output.Append(device.Name[i]);
+                    output.Append(dotNetName[i]);
                 }
             }
 
             return output.ToString();
         }
-
-        static OutputDevice CreateDevice(string chromeVersion, string deviceName, RootObject.Device descriptor, bool landscape)
-        {
-            var devicePayload = LoadFromJSONV1(descriptor);
-            var viewportPayload = landscape ? devicePayload.Horizontal : devicePayload.Vertical;
-            return new OutputDevice
-            {
-                Name = deviceName + (landscape ? " landscape" : string.Empty),
-                UserAgent = devicePayload.UserAgent.Replace("%s", chromeVersion),
-                Viewport = new OutputDevice.OutputDeviceViewport
-                {
-                    Width = viewportPayload.Width,
-                    Height = viewportPayload.Height,
-                    DeviceScaleFactor = devicePayload.DeviceScaleFactor,
-                    IsMobile = devicePayload.Capabilities.Contains("mobile"),
-                    HasTouch = devicePayload.Capabilities.Contains("touch"),
-                    IsLandscape = landscape
-                }
-            };
-        }
-
-        static DevicePayload LoadFromJSONV1(RootObject.Device json) => new DevicePayload
-        {
-            Type = json.Type,
-            UserAgent = json.UserAgent,
-            Capabilities = json.Capabilities.ToHashSet(),
-            DeviceScaleFactor = json.Screen.DevicePixelRatio,
-            Horizontal = new ViewportPayload
-            {
-                Height = json.Screen.Horizontal.Height,
-                Width = json.Screen.Horizontal.Width
-            },
-            Vertical = new ViewportPayload
-            {
-                Height = json.Screen.Vertical.Height,
-                Width = json.Screen.Vertical.Width
-            }
-        };
 
         static Task<string> HttpGET(string url) => new HttpClient().GetStringAsync(url);
     }
