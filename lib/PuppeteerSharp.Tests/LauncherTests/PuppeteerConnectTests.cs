@@ -120,6 +120,26 @@ namespace PuppeteerSharp.Tests.LauncherTests
             }
         }
 
+        [PuppeteerTest("launcher.spec.ts", "Puppeteer.connect", "should be able to set browser properties using connect options")]
+        [PuppeteerFact]
+        public async Task ShouldBeAbleToSetBrowserPropertiesUsingConnectOptions()
+        {
+            var initActionExecuted = false;
+            var options = new ConnectOptions
+            {
+                BrowserWSEndpoint = Browser.WebSocketEndpoint,
+                InitAction = brw =>
+                {
+                    initActionExecuted = true;
+                }
+            };
+            var browser = await Puppeteer.ConnectAsync(options, TestConstants.LoggerFactory);
+
+            Assert.True(initActionExecuted);
+
+            await browser.CloseAsync();
+        }
+
         [PuppeteerTest("launcher.spec.ts", "Puppeteer.connect", "should be able to reconnect to a disconnected browser")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldBeAbleToReconnectToADisconnectedBrowser()

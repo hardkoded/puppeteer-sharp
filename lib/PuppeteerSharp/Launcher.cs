@@ -126,7 +126,8 @@ namespace PuppeteerSharp
                         options.IgnoreHTTPSErrors,
                         options.DefaultViewport,
                         null,
-                        options.TargetFilter)
+                        options.TargetFilter,
+                        options.InitAction)
                     .ConfigureAwait(false);
             }
             catch (Exception ex)

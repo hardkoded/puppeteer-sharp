@@ -521,9 +521,16 @@ namespace PuppeteerSharp
             bool ignoreHTTPSErrors,
             ViewPortOptions defaultViewPort,
             LauncherBase launcher,
-            Func<TargetInfo, bool> targetFilter)
+            Func<TargetInfo, bool> targetFilter,
+            Action<Browser> initAction = null)
         {
             var browser = new Browser(connection, contextIds, ignoreHTTPSErrors, defaultViewPort, launcher, targetFilter);
+
+            if (initAction != null)
+            {
+                initAction(browser);
+            }
+
             await connection.SendAsync("Target.setDiscoverTargets", new TargetSetDiscoverTargetsRequest
             {
                 Discover = true
