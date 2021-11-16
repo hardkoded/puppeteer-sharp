@@ -103,16 +103,12 @@ namespace PuppeteerSharp
 
         internal Task RawSendASync(int id, string method, object args, string sessionId = null)
         {
-            _logger.LogTrace("Send ► {Id} Method {Method} Params {@Params}", id, method, args);
-            return Transport.SendAsync(JsonConvert.SerializeObject(
-                new ConnectionRequest
-                {
-                    Id = id,
-                    Method = method,
-                    Params = args,
-                    SessionId = sessionId
-                },
-                JsonHelper.DefaultJsonSerializerSettings));
+            var message = JsonConvert.SerializeObject(
+                new ConnectionRequest { Id = id, Method = method, Params = args, SessionId = sessionId },
+                JsonHelper.DefaultJsonSerializerSettings);
+            _logger.LogTrace("Send ► {Message}", message);
+
+            return Transport.SendAsync(message);
         }
 
         internal async Task<JObject> SendAsync(string method, object args = null, bool waitForCallback = true)
