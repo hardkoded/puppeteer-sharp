@@ -1,6 +1,6 @@
 # How to log messages between Puppeteer-Sharp and Chromium
 
-_Contributors: [Darío Kondratiuk](https://www.hardkoded.com/)_
+_Contributors: [Darío Kondratiuk](https://www.hardkoded.com/), [Barnabas Szenasi](https://outisnemo.com/)_
 
 ## Problem
 
@@ -56,7 +56,7 @@ private static ILoggerFactory GetLoggerFactory()
 }
 ```
 
-Now we can use `GetLoggerFactory` to inject a logger into Puppeteer.LaunchAsync or Puppeteer.ConnectAsync.
+Now we can use `GetLoggerFactory` to inject a logger into Puppeteer.LaunchAsync or Puppeteer.ConnectAsync method.
 
 ```cs
 using (var browser = await Puppeteer.LaunchAsync(browserOptions, GetLoggerFactory()))
