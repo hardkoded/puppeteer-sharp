@@ -120,7 +120,6 @@ namespace PuppeteerSharp.Tests.LauncherTests
             }
         }
 
-        [PuppeteerTest("launcher.spec.ts", "Puppeteer.connect", "should be able to set browser properties using connect options")]
         [PuppeteerFact]
         public async Task ShouldBeAbleToSetBrowserPropertiesUsingConnectOptions()
         {
