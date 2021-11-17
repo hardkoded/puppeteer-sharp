@@ -17,4 +17,4 @@
 - name: Advanced
   items:
     - name: How to log CDP communication
-      href: LogCDP.md
+      href: LogCDPCommunication.md
