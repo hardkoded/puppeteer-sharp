@@ -8,8 +8,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="CefSharp.OffScreen.NETCore" Version="95.7.141" />
-        <PackageReference Include="CefSharp.Puppeteer" Version="1.0.18-preview" />
+        <PackageReference Include="CefSharp.OffScreen.NETCore" Version="96.0.142" />
+        <PackageReference Include="CefSharp.Puppeteer" Version="1.0.21" />
     </ItemGroup>
 
 </Project>
