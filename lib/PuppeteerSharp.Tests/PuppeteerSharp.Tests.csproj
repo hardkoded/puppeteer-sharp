@@ -30,7 +30,7 @@
 		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
 		<PackageReference Include="SixLabors.ImageSharp" Version="1.0.3" />
     <PackageReference Include="Nito.AsyncEx.Context" Version="5.1.2" />
-    <PackageReference Include="CefSharp.OffScreen.NETCore" Version="95.7.141" />
+    <PackageReference Include="CefSharp.OffScreen.NETCore" Version="96.0.142" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\CefSharp.Puppeteer\CefSharp.Puppeteer.csproj" />
