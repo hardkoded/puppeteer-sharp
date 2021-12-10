@@ -2586,9 +2586,6 @@ namespace PuppeteerSharp
         /// calling <see cref="DisposeAsync"/>, you must release all references to the <see cref="Page"/> so
         /// the garbage collector can reclaim the memory that the <see cref="Page"/> was occupying.</remarks>
         /// <returns>ValueTask</returns>
-        public ValueTask DisposeAsync() => new ValueTask(CloseAsync()
-            .ContinueWith(
-                _ => _screenshotTaskQueue.DisposeAsync(),
-                TaskScheduler.Default));
+        public ValueTask DisposeAsync() => new ValueTask(CloseAsync());
     }
 }
