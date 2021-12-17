@@ -75,6 +75,11 @@ namespace PuppeteerSharp
         /// MIDI sysex.
         /// </summary>
         [EnumMember(Value = "midiSysex")]
-        MidiSysex
+        MidiSysex,
+        /// <summary>
+        /// Idle detection.
+        /// </summary>
+        [EnumMember(Value = "idleDetection")]
+        IdleDetection
     }
 }
