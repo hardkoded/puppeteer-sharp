@@ -17,7 +17,7 @@ This will give you priority support and code reviews (depending on the tier), an
 
  * As Puppeteer-Sharp is a NetStandard 2.0 library, The minimum platform versions are .NET Framework 4.6.1 and .NET Core 2.0. [Read more](https://docs.microsoft.com/en-us/dotnet/standard/net-standard).
  * The minimum Windows versions supporting the WebSocket library are Windows 8 and Windows Server 2012. [Read more](https://docs.microsoft.com/en-us/dotnet/api/system.net.websockets?redirectedfrom=MSDN&view=netframework-4.7.2).
- * Mono is required on **Linux**. Read more about installing Mono [here](https://www.mono-project.com/download/stable/#download-lin-ubuntu).
+ * Mono is required on **Linux** if your project targets the .NET Framework 4 or earlier. Read more about installing Mono [here](https://www.mono-project.com/download/stable/#download-lin-ubuntu). Mono is **not** required if you target .NET Core 3.1, .NET 5 or .NET 6 on Linux.
  * If you have issues running Chrome on Linux, the Puppeteer repo has a [great troubleshooting guide](https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md).
 
 # Monthly reports
