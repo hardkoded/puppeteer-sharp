@@ -9,21 +9,19 @@ namespace PuppeteerSharp.States
         {
         }
 
-        public void EnterFrom(LauncherBase p, State fromState)
+        public override Task EnterFromAsync(LauncherBase p, State fromState, TimeSpan timeSpan)
         {
-            if (!StateManager.TryEnter(p, fromState, this))
+            if (fromState == StateManager.Exited)
             {
-                // Delegate Dispose to current state, because it has already changed since
-                // transition to this state was initiated.
-                StateManager.CurrentState.Dispose(p);
+                return null;
             }
-            else if (fromState != StateManager.Exited)
-            {
-                Kill(p);
 
-                p.ExitCompletionSource.TrySetException(new ObjectDisposedException(p.ToString()));
-                p.TempUserDataDir?.Dispose();
-            }
+            Kill(p);
+
+            p.ExitCompletionSource.TrySetException(new ObjectDisposedException(p.ToString()));
+            p.TempUserDataDir?.Dispose();
+
+            return null;
         }
 
         public override Task StartAsync(LauncherBase p) => throw new ObjectDisposedException(p.ToString());
