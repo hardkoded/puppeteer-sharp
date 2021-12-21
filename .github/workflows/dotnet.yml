@@ -36,9 +36,9 @@ jobs:
         sudo update-ca-certificates
       
     - name: Build
-      run: dotnet build lib/PuppeteerSharp.sln -f net5.0
+      run: dotnet build lib/PuppeteerSharp.sln
     
     - name: Test
       run: |
           cd lib/PuppeteerSharp.Tests
-          dotnet test -f net5.0 -s test.runsettings
+          dotnet test -s test.runsettings
