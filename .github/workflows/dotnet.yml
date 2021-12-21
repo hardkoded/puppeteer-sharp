@@ -37,3 +37,8 @@ jobs:
       
     - name: Build
       run: dotnet build lib/PuppeteerSharp.sln
+    
+    - name: Test
+      run: |
+          cd lib/PuppeteerSharp.Tests
+          dotnet test -f $framework -s test.runsettings
