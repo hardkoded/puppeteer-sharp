@@ -41,4 +41,4 @@ jobs:
     - name: Test
       run: |
           cd lib/PuppeteerSharp.Tests
-          dotnet test -s test.runsettings
+          dotnet test -f net5.0 -s test.runsettings
