@@ -31,4 +31,8 @@ jobs:
       run: dotnet restore lib/PuppeteerSharp.sln
       
     - name: Build
-      run: dotnet build --configuration Release --no-restore
+      run: 
+       dotnet build -f $framework ./lib/PuppeteerSharp.DevicesFetcher/PuppeteerSharp.DevicesFetcher.csproj
+       dotnet build -f $framework ./lib/PuppeteerSharp.Tests.DumpIO/PuppeteerSharp.Tests.DumpIO.csproj
+       dotnet build -f $framework ./lib/PuppeteerSharp.TestServer/PuppeteerSharp.TestServer.csproj
+       dotnet build -f $framework ./lib/PuppeteerSharp.Tests/PuppeteerSharp.Tests.csproj
