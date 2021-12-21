@@ -28,7 +28,7 @@ jobs:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
     - name: Install dependencies
-      run: dotnet restore
+      run: dotnet restore lib/PuppeteerSharp.sln
       
     - name: Build
       run: dotnet build --configuration Release --no-restore
