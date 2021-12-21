@@ -31,4 +31,4 @@ jobs:
       run: dotnet restore lib/PuppeteerSharp.sln
       
     - name: Build
-      run: dotnet build -f $framework lib/PuppeteerSharp.sln
+      run: dotnet build lib/PuppeteerSharp.sln
