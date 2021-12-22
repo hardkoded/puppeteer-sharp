@@ -1,0 +1,53 @@
+﻿using System.Linq;
+using System.Threading.Tasks;
+using Xunit;
+using Xunit.Abstractions;
+
+namespace PuppeteerSharp.Tests.FrameTests
+{
+    [Collection(TestConstants.TestFixtureCollectionName)]
+    public class EvaluateTests : PuppeteerPageBaseTest
+    {
+        public EvaluateTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
+        [Fact]
+        public async Task ShouldHaveDifferentExecutionContexts()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
+            Assert.Equal(2, Page.Frames.Count());
+
+            var frame1 = Page.MainFrame;
+            var frame2 = Page.FirstChildFrame();
+
+            await frame1.EvaluateExpressionAsync("window.FOO = 'foo'");
+            await frame2.EvaluateExpressionAsync("window.FOO = 'bar'");
+
+            Assert.Equal("foo", await frame1.EvaluateExpressionAsync<string>("window.FOO"));
+            Assert.Equal("bar", await frame2.EvaluateExpressionAsync<string>("window.FOO"));
+        }
+
+        [Fact]
+        public async Task ShouldExecuteAfterCrossSiteNavigation()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var mainFrame = Page.MainFrame;
+            Assert.Contains("localhost", await mainFrame.EvaluateExpressionAsync<string>("window.location.href"));
+
+            await Page.GoToAsync(TestConstants.CrossProcessHttpPrefix + "/empty.html");
+            Assert.Contains("127", await mainFrame.EvaluateExpressionAsync<string>("window.location.href"));
+        }
+
+        [Fact]
+        public async Task ShouldThrowForDetachedFrames()
+        {
+            var frame1 = await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
+            await FrameUtils.DetachFrameAsync(Page, "frame1");
+            var exception = await Assert.ThrowsAsync<PuppeteerException>(
+                () => frame1.EvaluateExpressionAsync("7 * 8"));
+            Assert.Contains("Execution Context is not available in detached frame", exception.Message);
+        }
+    }
+}
