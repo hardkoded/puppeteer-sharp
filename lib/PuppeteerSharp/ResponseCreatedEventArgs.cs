@@ -8,7 +8,7 @@ namespace PuppeteerSharp
     public class ResponseCreatedEventArgs : EventArgs
     {
         /// <summary>
-        /// Gets or sets the response.
+        /// Gets the response.
         /// </summary>
         /// <value>The response.</value>
         public Response Response { get; internal set; }

@@ -29,7 +29,7 @@ namespace PuppeteerSharp
         /// <value>The execution context.</value>
         public ExecutionContext ExecutionContext { get; }
         /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="JSHandle"/> is disposed.
+        /// Gets a value indicating whether this <see cref="JSHandle"/> is disposed.
         /// </summary>
         /// <value><c>true</c> if disposed; otherwise, <c>false</c>.</value>
         public bool Disposed { get; private set; }

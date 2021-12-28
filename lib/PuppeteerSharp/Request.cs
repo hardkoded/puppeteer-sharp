@@ -69,22 +69,22 @@ namespace PuppeteerSharp
         /// <value>The response.</value>
         public Response Response { get; internal set; }
         /// <summary>
-        /// Gets or sets the failure.
+        /// Gets the failure.
         /// </summary>
         /// <value>The failure.</value>
         public string Failure { get; internal set; }
         /// <summary>
-        /// Gets or sets the request identifier.
+        /// Gets the request identifier.
         /// </summary>
         /// <value>The request identifier.</value>
         public string RequestId { get; internal set; }
         /// <summary>
-        /// Gets or sets the interception identifier.
+        /// Gets the interception identifier.
         /// </summary>
         /// <value>The interception identifier.</value>
         public string InterceptionId { get; internal set; }
         /// <summary>
-        /// Gets or sets the type of the resource.
+        /// Gets the type of the resource.
         /// </summary>
         /// <value>The type of the resource.</value>
         public ResourceType ResourceType { get; internal set; }
@@ -98,22 +98,22 @@ namespace PuppeteerSharp
         /// </summary>
         public bool IsNavigationRequest { get; }
         /// <summary>
-        /// Gets or sets the HTTP method.
+        /// Gets the HTTP method.
         /// </summary>
         /// <value>HTTP method.</value>
         public HttpMethod Method { get; internal set; }
         /// <summary>
-        /// Gets or sets the post data.
+        /// Gets the post data.
         /// </summary>
         /// <value>The post data.</value>
         public object PostData { get; internal set; }
         /// <summary>
-        /// Gets or sets the HTTP headers.
+        /// Gets the HTTP headers.
         /// </summary>
         /// <value>HTTP headers.</value>
         public Dictionary<string, string> Headers { get; internal set; }
         /// <summary>
-        /// Gets or sets the URL.
+        /// Gets the URL.
         /// </summary>
         /// <value>The URL.</value>
         public string Url { get; internal set; }
