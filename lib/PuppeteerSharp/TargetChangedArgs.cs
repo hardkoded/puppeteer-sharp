@@ -9,12 +9,12 @@ namespace PuppeteerSharp
     public class TargetChangedArgs
     {
         /// <summary>
-        /// Gets or sets the target info.
+        /// Gets the target info.
         /// </summary>
         /// <value>The target info.</value>
         public TargetInfo TargetInfo { get; internal set; }
         /// <summary>
-        /// Gets or sets the target.
+        /// Gets the target.
         /// </summary>
         /// <value>The target.</value>
         public Target Target { get; internal set; }
