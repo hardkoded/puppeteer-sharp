@@ -1,0 +1,37 @@
+name: Demo Project
+
+on:
+  push:
+  pull_request:
+    branches: [ main ]
+
+env:
+  DOTNET_VERSION: '5.0.301' # The .NET SDK version to use
+
+jobs:
+  build:
+
+    name: Demo Project
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Install dependencies
+      run: |
+        dotnet restore demos\PuppeteerSharpDemos-Local.sln
+      
+    - name: Build
+      run: dotnet build demos\PuppeteerSharpDemos-Local.sln
+    
+    - name: Run Project
+      run: |
+          cd demos\PuppeteerSharpPdfDemo
+          dotnet run -p PuppeteerSharpPdfDemo-Local.csproj auto-exit
