@@ -82,7 +82,7 @@ namespace PuppeteerSharp
         internal event EventHandler<SessionAttachedEventArgs> SessionAttached;
 
         /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="CDPSession"/> is closed.
+        /// Gets a value indicating whether this <see cref="CDPSession"/> is closed.
         /// </summary>
         /// <value><c>true</c> if is closed; otherwise, <c>false</c>.</value>
         public bool IsClosed { get; internal set; }

@@ -11,7 +11,7 @@ namespace PuppeteerSharp
     public class RequestEventArgs : EventArgs
     {
         /// <summary>
-        /// Gets or sets the request.
+        /// Gets the request.
         /// </summary>
         /// <value>The request.</value>
         public Request Request { get; internal set; }
