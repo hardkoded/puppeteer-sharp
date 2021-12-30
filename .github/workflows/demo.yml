@@ -15,20 +15,16 @@ jobs:
         os: [windows-latest]
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET Core 3.1
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 3.1.x
-      
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1
       with:
         dotnet-version: 4.7.1
+    - name: Setup NuGet
+      uses: NuGet/setup-nuget@v1.0.5
 
     - name: Install dependencies
       run: |
-        dotnet restore -f net471 demos/PuppeteerSharpDemos-Local.sln
+        dotnet restore demos/PuppeteerSharpDemos-Local.sln
       
     - name: Build
       run: dotnet build -f net471 demos/PuppeteerSharpDemos-Local.sln
