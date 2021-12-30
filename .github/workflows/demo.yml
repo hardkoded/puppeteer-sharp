@@ -19,10 +19,16 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET Core
+    - name: Setup .NET Core 3.1
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
+        dotnet-version: 3.1.x
+        
+    - uses: actions/checkout@v2
+    - name: Setup .NET 4.7.1
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 4.7.1
 
     - name: Install dependencies
       run: |
@@ -34,4 +40,4 @@ jobs:
     - name: Run Project
       run: |
           cd demos/PuppeteerSharpPdfDemo
-          dotnet run -p PuppeteerSharpPdfDemo-Local.csproj auto-exit
+          dotnet run -p PuppeteerSharpPdfDemo-Local.csproj -f netcoreapp3.1 auto-exit
