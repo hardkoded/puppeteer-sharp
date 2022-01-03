@@ -132,11 +132,19 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                 Method = HttpMethod.Post,
                 PostData = "doggo"
             });
-            var serverRequest = Server.WaitForRequest("/empty.html", req => new { req.Method, Body = new StreamReader(req.Body).ReadToEnd() });
+            
+            var serverRequestTask = Server.WaitForRequest("/empty.html", async req =>
+            {
+                var body = await new StreamReader(req.Body).ReadToEndAsync();
+                return new { req.Method, Body = body };
+            });
+            
+            
             await Task.WhenAll(
-                serverRequest,
+                serverRequestTask,
                 Page.GoToAsync(TestConstants.EmptyPage)
             );
+            var serverRequest = await serverRequestTask;
             Assert.Equal(HttpMethod.Post.Method, serverRequest.Result.Method);
             Assert.Equal("doggo", serverRequest.Result.Body);
         }
