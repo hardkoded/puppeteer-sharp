@@ -33,6 +33,6 @@ test_script:
 - cmd: >-
     cd .\lib\PuppeteerSharp.Tests
 
-    dotnet test -f net5.0 -s test.runsettings
+    dotnet test -f net6.0 -s test.runsettings
 cache:
   - $HOME/.nuget/packages
