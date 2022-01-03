@@ -2,17 +2,17 @@ version: 1.0.{build}
 branches:
   only:
   - master
-image: Visual Studio 2019
+image: Visual Studio 2033
 configuration: Release
 environment:
   git_access_token:
     secure: FxcQ9C8a/NgcQB5dFdZts6ZWEDT4zMhA4qPQAYwWc7huMmhmTIl1sbFEIaAWQMTL
   matrix:
     - framework: net48
-    - framework: net5.0
+    - framework: net6.0
     - framework: net48
       ENQUEUE_ASYNC_MESSAGES: true
-    - framework: net5.0
+    - framework: net6.0
       ENQUEUE_ASYNC_MESSAGES: true
 install:
 - ps: >-
