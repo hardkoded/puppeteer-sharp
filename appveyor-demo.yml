@@ -7,7 +7,7 @@ configuration: Release
 environment:
   matrix:
     - framework: net471
-    - framework: netcoreapp3.1
+    - framework: net6.0
 before_build:
 - ps: >-
     dotnet restore .\demos\PuppeteerSharpDemos-Local.sln

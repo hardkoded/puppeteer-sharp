@@ -1,4 +1,4 @@
-if($env:APPVEYOR_REPO_TAG -eq 'True' -And $env:framework -eq 'netcoreapp2.2' -And $env:ENQUEUE_ASYNC_MESSAGES -eq 'true') {
+if($env:APPVEYOR_REPO_TAG -eq 'True' -And $env:framework -eq 'net6.0' -And $env:ENQUEUE_ASYNC_MESSAGES -eq 'true') {
     git config --global credential.helper store
     Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:git_access_token):x-oauth-basic@github.com`n"
 
