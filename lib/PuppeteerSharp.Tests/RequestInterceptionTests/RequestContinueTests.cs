@@ -139,7 +139,6 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                 return new { req.Method, Body = body };
             });
             
-            
             await Task.WhenAll(
                 serverRequestTask,
                 Page.GoToAsync(TestConstants.EmptyPage)
