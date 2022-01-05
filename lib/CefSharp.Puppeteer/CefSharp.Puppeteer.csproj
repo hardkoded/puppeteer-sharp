@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1;net472</TargetFrameworks>
-    <RuntimeIdentifier>$(NETCoreSdkRuntimeIdentifier)</RuntimeIdentifier>
-    <SelfContained Condition="'$(SelfContained)' == ''">false</SelfContained>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Alex Maitland, Darío Kondratiuk</Authors>
     <Owners>amaitland</Owners>
