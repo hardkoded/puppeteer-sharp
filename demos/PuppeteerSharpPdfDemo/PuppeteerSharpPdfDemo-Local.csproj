@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>netcoreapp3.1;net471</TargetFrameworks>
+    <TargetFrameworks>net6.0;net471</TargetFrameworks>
     <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net471'">
