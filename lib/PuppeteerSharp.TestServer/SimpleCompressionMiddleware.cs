@@ -40,7 +40,11 @@ namespace PuppeteerSharp.TestServer
                 context.Response.Headers["Content-Encoding"] = "gzip";
                 context.Response.Headers["Content-Length"] = stream.Length.ToString();
                 stream.Position = 0;
+#if NETCOREAPP
+                await stream.CopyToAsync(response);
+#else
                 stream.CopyTo(response);
+#endif
                 context.Response.Body = response;
             }
         }

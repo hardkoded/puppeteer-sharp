@@ -30,7 +30,7 @@ namespace PuppeteerSharp
         [JsonProperty]
         public string TargetId { get; internal set; }
         /// <summary>
-        /// Gets or sets the target browser contextId
+        /// Gets the target browser contextId
         /// </summary>
         [JsonProperty]
         public string BrowserContextId { get; internal set; }

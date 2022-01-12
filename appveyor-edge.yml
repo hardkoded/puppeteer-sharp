@@ -2,7 +2,7 @@ version: 1.0.{build}
 branches:
   only:
   - disabled
-image: Visual Studio 2019
+image: Visual Studio 2022
 configuration: Release
 environment:
   git_access_token:
@@ -33,6 +33,6 @@ test_script:
 - cmd: >-
     cd .\lib\PuppeteerSharp.Tests
 
-    dotnet test -f net5.0 -s test.runsettings
+    dotnet test -f net6.0 -s test.runsettings
 cache:
   - $HOME/.nuget/packages
