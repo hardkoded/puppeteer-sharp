@@ -13,9 +13,14 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest]
+    env:
+      DOTNET_VERSION: '6.0.x' # The .NET SDK version to use
 
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1.1
       
