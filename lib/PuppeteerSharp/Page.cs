@@ -1932,6 +1932,40 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
+        /// Emulates the idle state.
+        /// If no arguments set, clears idle state emulation.
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// // set idle emulation
+        /// await page.EmulateIdleStateAsync(new EmulateIdleOverrides() {IsUserActive = true, IsScreenUnlocked = false});
+        /// // do some checks here
+        /// ...
+        /// // clear idle emulation
+        /// await page.EmulateIdleStateAsync();
+        /// </code>
+        /// </example>
+        /// <param name="overrides">Overrides</param>
+        /// <returns>A task that resolves when the message has been sent to the browser.</returns>
+        public async Task EmulateIdleStateAsync(EmulateIdleOverrides overrides = null)
+        {
+            if (overrides != null)
+            {
+                await Client.SendAsync(
+                    "Emulation.setIdleOverride",
+                    new EmulationSetIdleOverrideRequest
+                    {
+                        IsUserActive = overrides.IsUserActive,
+                        IsScreenUnlocked = overrides.IsScreenUnlocked,
+                    }).ConfigureAwait(false);
+            }
+            else
+            {
+                await Client.SendAsync("Emulation.clearIdleOverride").ConfigureAwait(false);
+            }
+        }
+
+        /// <summary>
         /// Enables CPU throttling to emulate slow CPUs.
         /// </summary>
         /// <param name="factor">Throttling rate as a slowdown factor (1 is no throttle, 2 is 2x slowdown, etc).</param>

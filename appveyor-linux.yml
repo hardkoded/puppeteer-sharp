@@ -9,9 +9,9 @@ environment:
   git_access_token:
     secure: FxcQ9C8a/NgcQB5dFdZts6ZWEDT4zMhA4qPQAYwWc7huMmhmTIl1sbFEIaAWQMTL
   matrix:
-    - framework: net5.0
+    - framework: net6.0
       PRODUCT: CHROMIUM
-    - framework: net5.0
+    - framework: net6.0
       PRODUCT: FIREFOX
 
 before_build:

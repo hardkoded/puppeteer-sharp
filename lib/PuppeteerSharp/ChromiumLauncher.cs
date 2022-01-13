@@ -38,7 +38,8 @@ namespace PuppeteerSharp
             "--no-first-run",
             "--enable-automation",
             "--password-store=basic",
-            "--use-mock-keychain"
+            "--use-mock-keychain",
+            "--enable-blink-features=IdleDetection",
         };
 
         private const string UserDataDirArgument = "--user-data-dir";
