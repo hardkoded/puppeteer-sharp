@@ -15,6 +15,7 @@ jobs:
         os: [windows-latest]
 
     steps:
+    - uses: actions/checkout@v2
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1.1
       
