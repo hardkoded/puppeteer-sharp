@@ -23,7 +23,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        cd demos/PuppeteerSharpPdfDemo
+        cd ../demos/PuppeteerSharpPdfDemo
         nuget restore PuppeteerSharpDemos-Local.sln
       
     - name: Build
