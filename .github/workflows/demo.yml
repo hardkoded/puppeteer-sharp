@@ -16,7 +16,7 @@ jobs:
 
     steps:
     - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v1
+      uses: warrenbuckley/Setup-MSBuild@v1
       with:
         dotnet-version: 4.7.1
     - name: Setup NuGet
@@ -24,7 +24,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        dotnet restore demos/PuppeteerSharpDemos-Local.sln
+        nuget restore demos/PuppeteerSharpDemos-Local.sln
       
     - name: Build
       run: dotnet build -f net471 demos/PuppeteerSharpDemos-Local.sln
