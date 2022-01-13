@@ -28,10 +28,10 @@ jobs:
       
     - name: Build
       run: |
-         cd demos/PuppeteerSharpPdfDemo
+         cd ../demos/PuppeteerSharpPdfDemo
          msbuild PuppeteerSharpDemos-Local.sln
     
     - name: Run Project
       run: |
-          cd demos/PuppeteerSharpPdfDemo
+          cd ../demos/PuppeteerSharpPdfDemo
           dotnet run -p PuppeteerSharpPdfDemo-Local.csproj -f net471 auto-exit
