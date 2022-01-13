@@ -24,7 +24,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        nuget restore demos/PuppeteerSharpDemos-Local.sln
+        dotnet restore demos/PuppeteerSharpDemos-Local.sln
       
     - name: Build
       run: dotnet build -f net471 demos/PuppeteerSharpDemos-Local.sln
