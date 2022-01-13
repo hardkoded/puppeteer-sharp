@@ -26,7 +26,7 @@ jobs:
       run: |
         cd demos
         dir
-        nuget restore PuppeteerSharpDemos-Local.sln
+        dotnet restore PuppeteerSharpDemos-Local.sln
       
     - name: Build
       run: |
