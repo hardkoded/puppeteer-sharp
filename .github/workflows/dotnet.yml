@@ -34,10 +34,8 @@ jobs:
         dotnet dev-certs https -ep lib/PuppeteerSharp.TestServer/testCert.cer
         sudo openssl x509 -inform der -in lib/PuppeteerSharp.TestServer/testCert.cer -out /usr/local/share/ca-certificates/testCert.crt -outform pem
         sudo update-ca-certificates
-      
     - name: Build
       run: dotnet build lib/PuppeteerSharp.sln
-    
     - name: Test
       run: |
           Xvfb :1 -screen 5 1024x768x8 &
