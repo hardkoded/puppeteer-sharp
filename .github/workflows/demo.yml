@@ -12,7 +12,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest]
+        os: [windows-2022]
     env:
       DOTNET_VERSION: '6.0.x' # The .NET SDK version to use
 
