@@ -30,7 +30,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        dotnet restore lib/PuppeteerSharp.sln
+        dotnet restore -f net6.0 lib/PuppeteerSharp.sln
         dotnet dev-certs https -ep lib/PuppeteerSharp.TestServer/testCert.cer
         sudo openssl x509 -inform der -in lib/PuppeteerSharp.TestServer/testCert.cer -out /usr/local/share/ca-certificates/testCert.crt -outform pem
         sudo update-ca-certificates
