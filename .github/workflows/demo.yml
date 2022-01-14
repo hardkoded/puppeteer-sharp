@@ -29,14 +29,16 @@ jobs:
 
     - name: Install dependencies
       run: |
-        cd demos
+        cd demos/PuppeteerSharpPdfDemo
         dir
-        dotnet restore PuppeteerSharpDemos-Local.sln
+        dotnet restore PuppeteerSharpPdfDemo-Local.csproj
       
     - name: Build
       run: |
-         msbuild PuppeteerSharpDemos-Local.sln
+         cd demos/PuppeteerSharpPdfDemo
+         msbuild PuppeteerSharpPdfDemo-Local.csproj
     
     - name: Run Project
       run: |
+          cd demos/PuppeteerSharpPdfDemo
           dotnet run -p PuppeteerSharpPdfDemo-Local.csproj auto-exit
