@@ -41,4 +41,4 @@ jobs:
     - name: Run Project
       run: |
           cd demos/PuppeteerSharpPdfDemo
-          dotnet run -p PuppeteerSharpPdfDemo-Local.csproj auto-exit
+          dotnet run -p PuppeteerSharpPdfDemo-Local.csproj -f net6.0 auto-exit
