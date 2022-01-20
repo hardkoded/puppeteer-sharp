@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace CefSharp.Puppeteer
 {
     /// <summary>
-    /// <see cref="Page.Dialog"/> arguments.
+    /// <see cref="DevToolsContext.Dialog"/> arguments.
     /// </summary>
     public class DialogEventArgs : EventArgs
     {

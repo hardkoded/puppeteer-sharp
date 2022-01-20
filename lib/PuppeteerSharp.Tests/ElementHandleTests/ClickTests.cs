@@ -18,28 +18,28 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         [PuppeteerFact]
         public async Task ShouldWork()
         {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
-            var button = await Page.QuerySelectorAsync("button");
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
+            var button = await DevToolsContext.QuerySelectorAsync("button");
             await button.ClickAsync();
-            Assert.Equal("Clicked", await Page.EvaluateExpressionAsync<string>("result"));
+            Assert.Equal("Clicked", await DevToolsContext.EvaluateExpressionAsync<string>("result"));
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.click", "should work for Shadow DOM v1")]
         [PuppeteerFact]
         public async Task ShouldWorkForShadowDomV1()
         {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/shadow.html");
-            var buttonHandle = (ElementHandle)await Page.EvaluateExpressionHandleAsync("button");
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/shadow.html");
+            var buttonHandle = (ElementHandle)await DevToolsContext.EvaluateExpressionHandleAsync("button");
             await buttonHandle.ClickAsync();
-            Assert.True(await Page.EvaluateExpressionAsync<bool>("clicked"));
+            Assert.True(await DevToolsContext.EvaluateExpressionAsync<bool>("clicked"));
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.click", "should work for TextNodes")]
         [PuppeteerFact]
         public async Task ShouldWorkForTextNodes()
         {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
-            var buttonTextNode = (ElementHandle)await Page.EvaluateExpressionHandleAsync(
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
+            var buttonTextNode = (ElementHandle)await DevToolsContext.EvaluateExpressionHandleAsync(
                 "document.querySelector('button').firstChild");
             var exception = await Assert.ThrowsAsync<PuppeteerException>(async () => await buttonTextNode.ClickAsync());
             Assert.Equal("Node is not of type HTMLElement", exception.Message);
@@ -49,9 +49,9 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         [PuppeteerFact]
         public async Task ShouldThrowForDetachedNodes()
         {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
-            var button = await Page.QuerySelectorAsync("button");
-            await Page.EvaluateFunctionAsync("button => button.remove()", button);
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
+            var button = await DevToolsContext.QuerySelectorAsync("button");
+            await DevToolsContext.EvaluateFunctionAsync("button => button.remove()", button);
             var exception = await Assert.ThrowsAsync<PuppeteerException>(async () => await button.ClickAsync());
             Assert.Equal("Node is detached from document", exception.Message);
         }
@@ -60,9 +60,9 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         [PuppeteerFact]
         public async Task ShouldThrowForHiddenNodes()
         {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
-            var button = await Page.QuerySelectorAsync("button");
-            await Page.EvaluateFunctionAsync("button => button.style.display = 'none'", button);
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
+            var button = await DevToolsContext.QuerySelectorAsync("button");
+            await DevToolsContext.EvaluateFunctionAsync("button => button.style.display = 'none'", button);
             var exception = await Assert.ThrowsAsync<PuppeteerException>(async () => await button.ClickAsync());
             Assert.Equal("Node is either not visible or not an HTMLElement", exception.Message);
         }
@@ -71,9 +71,9 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         [PuppeteerFact]
         public async Task ShouldThrowForRecursivelyHiddenNodes()
         {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
-            var button = await Page.QuerySelectorAsync("button");
-            await Page.EvaluateFunctionAsync("button => button.parentElement.style.display = 'none'", button);
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
+            var button = await DevToolsContext.QuerySelectorAsync("button");
+            await DevToolsContext.EvaluateFunctionAsync("button => button.parentElement.style.display = 'none'", button);
             var exception = await Assert.ThrowsAsync<PuppeteerException>(async () => await button.ClickAsync());
             Assert.Equal("Node is either not visible or not an HTMLElement", exception.Message);
         }
@@ -82,8 +82,8 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         [PuppeteerFact]
         public async Task ShouldThrowForBrElements()
         {
-            await Page.SetContentAsync("hello<br>goodbye");
-            var br = await Page.QuerySelectorAsync("br");
+            await DevToolsContext.SetContentAsync("hello<br>goodbye");
+            var br = await DevToolsContext.QuerySelectorAsync("br");
             var exception = await Assert.ThrowsAsync<PuppeteerException>(async () => await br.ClickAsync());
             Assert.Equal("Node is either not visible or not an HTMLElement", exception.Message);
         }

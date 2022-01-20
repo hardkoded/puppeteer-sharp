@@ -19,11 +19,11 @@ namespace PuppeteerSharp.Tests.PageTests
         [PuppeteerFact]
         public async Task ShouldWork()
         {
-            await Page.SetOfflineModeAsync(true);
-            await Assert.ThrowsAsync<NavigationException>(async () => await Page.GoToAsync(TestConstants.EmptyPage));
+            await DevToolsContext.SetOfflineModeAsync(true);
+            await Assert.ThrowsAsync<NavigationException>(async () => await DevToolsContext.GoToAsync(TestConstants.EmptyPage));
 
-            await Page.SetOfflineModeAsync(false);
-            var response = await Page.ReloadAsync();
+            await DevToolsContext.SetOfflineModeAsync(false);
+            var response = await DevToolsContext.ReloadAsync();
             Assert.Equal(HttpStatusCode.OK, response.Status);
         }
 
@@ -31,13 +31,13 @@ namespace PuppeteerSharp.Tests.PageTests
         [PuppeteerFact]
         public async Task ShouldEmulateNavigatorOnLine()
         {
-            Assert.True(await Page.EvaluateExpressionAsync<bool>("window.navigator.onLine"));
+            Assert.True(await DevToolsContext.EvaluateExpressionAsync<bool>("window.navigator.onLine"));
 
-            await Page.SetOfflineModeAsync(true);
-            Assert.False(await Page.EvaluateExpressionAsync<bool>("window.navigator.onLine"));
+            await DevToolsContext.SetOfflineModeAsync(true);
+            Assert.False(await DevToolsContext.EvaluateExpressionAsync<bool>("window.navigator.onLine"));
 
-            await Page.SetOfflineModeAsync(false);
-            Assert.True(await Page.EvaluateExpressionAsync<bool>("window.navigator.onLine"));
+            await DevToolsContext.SetOfflineModeAsync(false);
+            Assert.True(await DevToolsContext.EvaluateExpressionAsync<bool>("window.navigator.onLine"));
         }
     }
 }

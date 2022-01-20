@@ -8,23 +8,20 @@ using Newtonsoft.Json.Linq;
 namespace CefSharp.Puppeteer
 {
     /// <summary>
-    /// Provides methods to interact with a single page frame in Chromium. One <see cref="Page"/> instance might have multiple <see cref="Frame"/> instances.
-    /// At every point of time, page exposes its current frame tree via the <see cref="Page.MainFrame"/> and <see cref="ChildFrames"/> properties.
+    /// Provides methods to interact with a single page frame in Chromium. One <see cref="DevToolsContext"/> instance might have multiple <see cref="Frame"/> instances.
+    /// At every point of time, page exposes its current frame tree via the <see cref="DevToolsContext.MainFrame"/> and <see cref="ChildFrames"/> properties.
     ///
     /// <see cref="Frame"/> object's lifecycle is controlled by three events, dispatched on the page object
-    /// - <see cref="Page.FrameAttached"/> - fires when the frame gets attached to the page. A Frame can be attached to the page only once
-    /// - <see cref="Page.FrameNavigated"/> - fired when the frame commits navigation to a different URL
-    /// - <see cref="Page.FrameDetached"/> - fired when the frame gets detached from the page.  A Frame can be detached from the page only once
+    /// - <see cref="DevToolsContext.FrameAttached"/> - fires when the frame gets attached to the page. A Frame can be attached to the page only once
+    /// - <see cref="DevToolsContext.FrameNavigated"/> - fired when the frame commits navigation to a different URL
+    /// - <see cref="DevToolsContext.FrameDetached"/> - fired when the frame gets detached from the page.  A Frame can be detached from the page only once
     /// </summary>
     /// <example>
     /// An example of dumping frame tree
     /// <code>
     /// <![CDATA[
-    /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions());
-    /// var page = await browser.NewPageAsync();
-    /// await page.GoToAsync("https://www.google.com/chrome/browser/canary.html");
-    /// dumpFrameTree(page.MainFrame, string.Empty);
-    /// await browser.CloseAsync();
+    /// await devToolsContext.GoToAsync("https://www.google.com/chrome/browser/canary.html");
+    /// dumpFrameTree(devToolsContext.MainFrame, string.Empty);
     ///
     /// void dumpFrameTree(Frame frame, string indent)
     /// {
@@ -146,7 +143,7 @@ namespace CefSharp.Puppeteer
         /// </summary>
         /// <param name="url">URL to navigate page to. The url should include scheme, e.g. https://.</param>
         /// <param name="timeout">maximum navigation time in milliseconds. Defaults to 30 seconds. Pass 0
-        /// to disable timeout. The default value can be changed by using the <see cref="Page.DefaultNavigationTimeout"/>
+        /// to disable timeout. The default value can be changed by using the <see cref="DevToolsContext.DefaultNavigationTimeout"/>
         /// property.</param>
         /// <param name="waitUntil">When to consider navigation succeeded, defaults to <see cref="WaitUntilNavigation.Load"/>. Given an array of <see cref="WaitUntilNavigation"/>, navigation is considered to be successful after all events have been fired</param>
         /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect</returns>
@@ -168,7 +165,7 @@ namespace CefSharp.Puppeteer
         /// <example>
         /// <code>
         /// <![CDATA[
-        /// var navigationTask =frame.page.WaitForNavigationAsync();
+        /// var navigationTask = devToolsContext.WaitForNavigationAsync();
         /// await frame.ClickAsync("a.my-link");
         /// await navigationTask;
         /// ]]>
@@ -185,7 +182,7 @@ namespace CefSharp.Puppeteer
         /// </remarks>
         /// <returns>Task which resolves to script return value</returns>
         /// <seealso cref="EvaluateFunctionAsync{T}(string, object[])"/>
-        /// <seealso cref="Page.EvaluateExpressionAsync{T}(string)"/>
+        /// <seealso cref="DevToolsContext.EvaluateExpressionAsync{T}(string)"/>
         public Task<JToken> EvaluateExpressionAsync(string script) => MainWorld.EvaluateExpressionAsync(script);
 
         /// <summary>
@@ -198,7 +195,7 @@ namespace CefSharp.Puppeteer
         /// </remarks>
         /// <returns>Task which resolves to script return value</returns>
         /// <seealso cref="EvaluateFunctionAsync{T}(string, object[])"/>
-        /// <seealso cref="Page.EvaluateExpressionAsync{T}(string)"/>
+        /// <seealso cref="DevToolsContext.EvaluateExpressionAsync{T}(string)"/>
         public Task<T> EvaluateExpressionAsync<T>(string script) => MainWorld.EvaluateExpressionAsync<T>(script);
 
         /// <summary>
@@ -212,7 +209,7 @@ namespace CefSharp.Puppeteer
         /// </remarks>
         /// <returns>Task which resolves to script return value</returns>
         /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
-        /// <seealso cref="Page.EvaluateFunctionAsync{T}(string, object[])"/>
+        /// <seealso cref="DevToolsContext.EvaluateFunctionAsync{T}(string, object[])"/>
         public Task<JToken> EvaluateFunctionAsync(string script, params object[] args) => MainWorld.EvaluateFunctionAsync(script, args);
 
         /// <summary>
@@ -227,7 +224,7 @@ namespace CefSharp.Puppeteer
         /// </remarks>
         /// <returns>Task which resolves to script return value</returns>
         /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
-        /// <seealso cref="Page.EvaluateFunctionAsync{T}(string, object[])"/>
+        /// <seealso cref="DevToolsContext.EvaluateFunctionAsync{T}(string, object[])"/>
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args) => MainWorld.EvaluateFunctionAsync<T>(script, args);
 
         /// <summary>
@@ -235,8 +232,8 @@ namespace CefSharp.Puppeteer
         /// </summary>
         /// <example>
         /// <code>
-        /// var frame = page.MainFrame;
-        /// const handle = Page.MainFrame.EvaluateExpressionHandleAsync("1 + 2");
+        /// var frame = devToolsContext.MainFrame;
+        /// const handle = devToolsContext.MainFrame.EvaluateExpressionHandleAsync("1 + 2");
         /// </code>
         /// </example>
         /// <returns>Resolves to the return value of <paramref name="script"/></returns>
@@ -248,14 +245,14 @@ namespace CefSharp.Puppeteer
         /// </summary>
         /// <example>
         /// <code>
-        /// var frame = page.MainFrame;
-        /// const handle = Page.MainFrame.EvaluateFunctionHandleAsync("() => Promise.resolve(self)");
+        /// var frame = devToolsContext.MainFrame;
+        /// const handle = devToolsContext.MainFrame.EvaluateFunctionHandleAsync("() => Promise.resolve(self)");
         /// return handle; // Handle for the global object.
         /// </code>
         /// <see cref="JSHandle"/> instances can be passed as arguments to the <see cref="ExecutionContext.EvaluateFunctionAsync(string, object[])"/>:
         ///
-        /// const handle = await Page.MainFrame.EvaluateExpressionHandleAsync("document.body");
-        /// const resultHandle = await Page.MainFrame.EvaluateFunctionHandleAsync("body => body.innerHTML", handle);
+        /// const handle = await devToolsContext.MainFrame.EvaluateExpressionHandleAsync("document.body");
+        /// const resultHandle = await devToolsContext.MainFrame.EvaluateFunctionHandleAsync("body => body.innerHTML", handle);
         /// return await resultHandle.JsonValueAsync(); // prints body's innerHTML
         /// </example>
         /// <returns>Resolves to the return value of <paramref name="function"/></returns>
@@ -277,7 +274,7 @@ namespace CefSharp.Puppeteer
         /// <returns>A task that resolves when element specified by selector string is added to DOM.
         /// Resolves to `null` if waiting for `hidden: true` and selector is not found in DOM.</returns>
         /// <seealso cref="WaitForXPathAsync(string, WaitForSelectorOptions)"/>
-        /// <seealso cref="Page.WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
+        /// <seealso cref="DevToolsContext.WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
         /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
         public async Task<ElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
         {
@@ -302,23 +299,20 @@ namespace CefSharp.Puppeteer
         /// <example>
         /// <code>
         /// <![CDATA[
-        /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions());
-        /// var page = await browser.NewPageAsync();
         /// string currentURL = null;
-        /// page.MainFrame
+        /// devToolsContext.MainFrame
         ///     .WaitForXPathAsync("//img")
         ///     .ContinueWith(_ => Console.WriteLine("First URL with image: " + currentURL));
         /// foreach (var current in new[] { "https://example.com", "https://google.com", "https://bbc.com" })
         /// {
         ///     currentURL = current;
-        ///     await page.GoToAsync(currentURL);
+        ///     await devToolsContext.GoToAsync(currentURL);
         /// }
-        /// await browser.CloseAsync();
         /// ]]>
         /// </code>
         /// </example>
         /// <seealso cref="WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
-        /// <seealso cref="Page.WaitForXPathAsync(string, WaitForSelectorOptions)"/>
+        /// <seealso cref="DevToolsContext.WaitForXPathAsync(string, WaitForSelectorOptions)"/>
         /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
         public async Task<ElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
         {
@@ -338,7 +332,7 @@ namespace CefSharp.Puppeteer
         /// </summary>
         /// <param name="milliseconds">The amount of time to wait.</param>
         /// <returns>A task that resolves when after the timeout</returns>
-        /// <seealso cref="Page.WaitForTimeoutAsync(int)"/>
+        /// <seealso cref="DevToolsContext.WaitForTimeoutAsync(int)"/>
         /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
         public Task WaitForTimeoutAsync(int milliseconds) => Task.Delay(milliseconds);
 
@@ -349,7 +343,7 @@ namespace CefSharp.Puppeteer
         /// <param name="options">Optional waiting parameters</param>
         /// <param name="args">Arguments to pass to <c>script</c></param>
         /// <returns>A task that resolves when the <c>script</c> returns a truthy value</returns>
-        /// <seealso cref="Page.WaitForFunctionAsync(string, WaitForFunctionOptions, object[])"/>
+        /// <seealso cref="DevToolsContext.WaitForFunctionAsync(string, WaitForFunctionOptions, object[])"/>
         /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
         public Task<JSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args)
         {
@@ -367,7 +361,7 @@ namespace CefSharp.Puppeteer
         /// <param name="script">Expression to be evaluated in browser context</param>
         /// <param name="options">Optional waiting parameters</param>
         /// <returns>A task that resolves when the <c>script</c> returns a truthy value</returns>
-        /// <seealso cref="Page.WaitForExpressionAsync(string, WaitForFunctionOptions)"/>
+        /// <seealso cref="DevToolsContext.WaitForExpressionAsync(string, WaitForFunctionOptions)"/>
         /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
         public Task<JSHandle> WaitForExpressionAsync(string script, WaitForFunctionOptions options)
         {
@@ -388,7 +382,7 @@ namespace CefSharp.Puppeteer
         /// <param name="values">Values of options to select. If the <![CDATA[<select>]]> has the multiple attribute,
         /// all values are considered, otherwise only the first one is taken into account.</param>
         /// <returns>Returns an array of option values that have been successfully selected.</returns>
-        /// <seealso cref="Page.SelectAsync(string, string[])"/>
+        /// <seealso cref="DevToolsContext.SelectAsync(string, string[])"/>
         public Task<string[]> SelectAsync(string selector, params string[] values) => SecondaryWorld.SelectAsync(selector, values);
 
         /// <summary>
@@ -396,7 +390,7 @@ namespace CefSharp.Puppeteer
         /// </summary>
         /// <param name="selector">Selector to query frame for</param>
         /// <returns>Task which resolves to <see cref="ElementHandle"/> pointing to the frame element</returns>
-        /// <seealso cref="Page.QuerySelectorAsync(string)"/>
+        /// <seealso cref="DevToolsContext.QuerySelectorAsync(string)"/>
         public Task<ElementHandle> QuerySelectorAsync(string selector) => MainWorld.QuerySelectorAsync(selector);
 
         /// <summary>
@@ -404,7 +398,7 @@ namespace CefSharp.Puppeteer
         /// </summary>
         /// <param name="selector">A selector to query frame for</param>
         /// <returns>Task which resolves to ElementHandles pointing to the frame elements</returns>
-        /// <seealso cref="Page.QuerySelectorAllAsync(string)"/>
+        /// <seealso cref="DevToolsContext.QuerySelectorAllAsync(string)"/>
         public Task<ElementHandle[]> QuerySelectorAllAsync(string selector) => MainWorld.QuerySelectorAllAsync(selector);
 
         /// <summary>
@@ -412,7 +406,7 @@ namespace CefSharp.Puppeteer
         /// </summary>
         /// <param name="expression">Expression to evaluate <see href="https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate"/></param>
         /// <returns>Task which resolves to an array of <see cref="ElementHandle"/></returns>
-        /// <seealso cref="Page.XPathAsync(string)"/>
+        /// <seealso cref="DevToolsContext.XPathAsync(string)"/>
         public Task<ElementHandle[]> XPathAsync(string expression) => MainWorld.XPathAsync(expression);
 
         /// <summary>
@@ -420,8 +414,8 @@ namespace CefSharp.Puppeteer
         /// </summary>
         /// <param name="options">add style tag options</param>
         /// <returns>Task which resolves to the added tag when the stylesheet's onload fires or when the CSS content was injected into frame</returns>
-        /// <seealso cref="Page.AddStyleTagAsync(AddTagOptions)"/>
-        /// <seealso cref="Page.AddStyleTagAsync(string)"/>
+        /// <seealso cref="DevToolsContext.AddStyleTagAsync(AddTagOptions)"/>
+        /// <seealso cref="DevToolsContext.AddStyleTagAsync(string)"/>
         public Task<ElementHandle> AddStyleTagAsync(AddTagOptions options)
         {
             if (options == null)
@@ -437,8 +431,8 @@ namespace CefSharp.Puppeteer
         /// </summary>
         /// <param name="options">add script tag options</param>
         /// <returns>Task which resolves to the added tag when the script's onload fires or when the script content was injected into frame</returns>
-        /// <seealso cref="Page.AddScriptTagAsync(AddTagOptions)"/>
-        /// <seealso cref="Page.AddScriptTagAsync(string)"/>
+        /// <seealso cref="DevToolsContext.AddScriptTagAsync(AddTagOptions)"/>
+        /// <seealso cref="DevToolsContext.AddScriptTagAsync(string)"/>
         public Task<ElementHandle> AddScriptTagAsync(AddTagOptions options)
         {
             if (options == null)
@@ -453,7 +447,7 @@ namespace CefSharp.Puppeteer
         /// Gets the full HTML contents of the page, including the doctype.
         /// </summary>
         /// <returns>Task which resolves to the HTML content.</returns>
-        /// <seealso cref="Page.GetContentAsync"/>
+        /// <seealso cref="DevToolsContext.GetContentAsync"/>
         public Task<string> GetContentAsync() => SecondaryWorld.GetContentAsync();
 
         /// <summary>
@@ -462,7 +456,7 @@ namespace CefSharp.Puppeteer
         /// <param name="html">HTML markup to assign to the page.</param>
         /// <param name="options">The options</param>
         /// <returns>Task.</returns>
-        /// <seealso cref="Page.SetContentAsync(string, NavigationOptions)"/>
+        /// <seealso cref="DevToolsContext.SetContentAsync(string, NavigationOptions)"/>
         public Task SetContentAsync(string html, NavigationOptions options = null)
             => SecondaryWorld.SetContentAsync(html, options);
 
@@ -470,11 +464,11 @@ namespace CefSharp.Puppeteer
         /// Returns page's title
         /// </summary>
         /// <returns>page's title</returns>
-        /// <seealso cref="Page.GetTitleAsync"/>
+        /// <seealso cref="DevToolsContext.GetTitleAsync"/>
         public Task<string> GetTitleAsync() => SecondaryWorld.GetTitleAsync();
 
         /// <summary>
-        /// Fetches an element with <paramref name="selector"/>, scrolls it into view if needed, and then uses <see cref="Page.Mouse"/> to click in the center of the element.
+        /// Fetches an element with <paramref name="selector"/>, scrolls it into view if needed, and then uses <see cref="DevToolsContext.Mouse"/> to click in the center of the element.
         /// </summary>
         /// <param name="selector">A selector to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.</param>
         /// <param name="options">click options</param>
@@ -484,7 +478,7 @@ namespace CefSharp.Puppeteer
             => SecondaryWorld.ClickAsync(selector, options);
 
         /// <summary>
-        /// Fetches an element with <paramref name="selector"/>, scrolls it into view if needed, and then uses <see cref="Page.Mouse"/> to hover over the center of the element.
+        /// Fetches an element with <paramref name="selector"/>, scrolls it into view if needed, and then uses <see cref="DevToolsContext.Mouse"/> to hover over the center of the element.
         /// </summary>
         /// <param name="selector">A selector to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered.</param>
         /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>

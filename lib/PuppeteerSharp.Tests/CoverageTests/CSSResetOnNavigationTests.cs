@@ -21,13 +21,13 @@ namespace PuppeteerSharp.Tests.CSSCoverageTests
         [PuppeteerFact]
         public async Task ShouldReportStylesheetsAcrossNavigationsWhenDisabled()
         {
-            await Page.Coverage.StartCSSCoverageAsync(new CoverageStartOptions
+            await DevToolsContext.Coverage.StartCSSCoverageAsync(new CoverageStartOptions
             {
                 ResetOnNavigation = false
             });
-            await Page.GoToAsync(TestConstants.ServerUrl + "/csscoverage/multiple.html");
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            var coverage = await Page.Coverage.StopCSSCoverageAsync();
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/csscoverage/multiple.html");
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            var coverage = await DevToolsContext.Coverage.StopCSSCoverageAsync();
             Assert.Equal(2, coverage.Length);
         }
 
@@ -35,10 +35,10 @@ namespace PuppeteerSharp.Tests.CSSCoverageTests
         [PuppeteerFact]
         public async Task ShouldNotReportScriptsAcrossNavigationsWhenEnabled()
         {
-            await Page.Coverage.StartCSSCoverageAsync();
-            await Page.GoToAsync(TestConstants.ServerUrl + "/csscoverage/multiple.html");
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            var coverage = await Page.Coverage.StopCSSCoverageAsync();
+            await DevToolsContext.Coverage.StartCSSCoverageAsync();
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/csscoverage/multiple.html");
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            var coverage = await DevToolsContext.Coverage.StopCSSCoverageAsync();
             Assert.Empty(coverage);
         }
     }

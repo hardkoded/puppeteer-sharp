@@ -18,13 +18,13 @@ namespace PuppeteerSharp.Tests.NetworkTests
         [PuppeteerFact]
         public async Task ShouldWork()
         {
-            await Page.SetExtraHttpHeadersAsync(new Dictionary<string, string>
+            await DevToolsContext.SetExtraHttpHeadersAsync(new Dictionary<string, string>
             {
                 ["Foo"] = "Bar"
             });
 
             var headerTask = Server.WaitForRequest("/empty.html", request => request.Headers["Foo"]);
-            await Task.WhenAll(Page.GoToAsync(TestConstants.EmptyPage), headerTask);
+            await Task.WhenAll(DevToolsContext.GoToAsync(TestConstants.EmptyPage), headerTask);
 
             Assert.Equal("Bar", headerTask.Result);
         }

@@ -18,8 +18,8 @@ namespace PuppeteerSharp.Tests.FrameTests
         [PuppeteerFact]
         public async Task ShouldWork()
         {
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            var windowHandle = await Page.MainFrame.EvaluateExpressionHandleAsync("window");
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            var windowHandle = await DevToolsContext.MainFrame.EvaluateExpressionHandleAsync("window");
             Assert.NotNull(windowHandle);
         }
     }

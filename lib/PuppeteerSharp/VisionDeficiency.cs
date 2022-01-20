@@ -5,7 +5,7 @@ using Newtonsoft.Json.Converters;
 namespace CefSharp.Puppeteer
 {
     /// <summary>
-    /// Types of vision deficiency to emulate using <see cref="Page.EmulateVisionDeficiencyAsync(VisionDeficiency)"/>
+    /// Types of vision deficiency to emulate using <see cref="DevToolsContext.EmulateVisionDeficiencyAsync(VisionDeficiency)"/>
     /// </summary>
     [JsonConverter(typeof(StringEnumConverter))]
     public enum VisionDeficiency

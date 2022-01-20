@@ -18,10 +18,10 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         [PuppeteerFact]
         public async Task ShouldQueryExistingElements()
         {
-            await Page.SetContentAsync("<div>A</div><br/><div>B</div>");
-            var elements = await Page.QuerySelectorAllAsync("div");
+            await DevToolsContext.SetContentAsync("<div>A</div><br/><div>B</div>");
+            var elements = await DevToolsContext.QuerySelectorAllAsync("div");
             Assert.Equal(2, elements.Length);
-            var tasks = elements.Select(element => Page.EvaluateFunctionAsync<string>("e => e.textContent", element));
+            var tasks = elements.Select(element => DevToolsContext.EvaluateFunctionAsync<string>("e => e.textContent", element));
             Assert.Equal(new[] { "A", "B" }, await Task.WhenAll(tasks));
         }
 
@@ -29,8 +29,8 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         [PuppeteerFact]
         public async Task ShouldReturnEmptyArrayIfNothingIsFound()
         {
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            var elements = await Page.QuerySelectorAllAsync("div");
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            var elements = await DevToolsContext.QuerySelectorAllAsync("div");
             Assert.Empty(elements);
         }
     }

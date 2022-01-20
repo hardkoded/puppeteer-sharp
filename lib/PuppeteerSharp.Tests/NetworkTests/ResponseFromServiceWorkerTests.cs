@@ -21,7 +21,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         [PuppeteerFact]
         public async Task ShouldReturnFalseForNonServiceWorkerContent()
         {
-            var response = await Page.GoToAsync(TestConstants.EmptyPage);
+            var response = await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
             Assert.False(response.FromServiceWorker);
         }
 
@@ -30,11 +30,11 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ResponseFromServiceWorker()
         {
             var responses = new Dictionary<string, Response>();
-            Page.Response += (_, e) => responses[e.Response.Url.Split('/').Last()] = e.Response;
-            await Page.GoToAsync(TestConstants.ServerUrl + "/serviceworkers/fetch/sw.html",
+            DevToolsContext.Response += (_, e) => responses[e.Response.Url.Split('/').Last()] = e.Response;
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/serviceworkers/fetch/sw.html",
                 waitUntil: new[] { WaitUntilNavigation.Networkidle2 });
-            await Page.EvaluateFunctionAsync("async () => await window.activationPromise");
-            await Page.ReloadAsync();
+            await DevToolsContext.EvaluateFunctionAsync("async () => await window.activationPromise");
+            await DevToolsContext.ReloadAsync();
 
             Assert.Equal(2, responses.Count);
             Assert.Equal(HttpStatusCode.OK, responses["sw.html"].Status);

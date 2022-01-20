@@ -22,14 +22,14 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task PageEventsRequest()
         {
             var requests = new List<Request>();
-            Page.Request += (_, e) => requests.Add(e.Request);
-            await Page.GoToAsync(TestConstants.EmptyPage);
+            DevToolsContext.Request += (_, e) => requests.Add(e.Request);
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
             Assert.Single(requests);
             Assert.Equal(TestConstants.EmptyPage, requests[0].Url);
             Assert.Equal(ResourceType.Document, requests[0].ResourceType);
             Assert.Equal(HttpMethod.Get, requests[0].Method);
             Assert.NotNull(requests[0].Response);
-            Assert.Equal(Page.MainFrame, requests[0].Frame);
+            Assert.Equal(DevToolsContext.MainFrame, requests[0].Frame);
             Assert.Equal(TestConstants.EmptyPage, requests[0].Frame.Url);
         }
 
@@ -38,8 +38,8 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task PageEventsResponse()
         {
             var responses = new List<Response>();
-            Page.Response += (_, e) => responses.Add(e.Response);
-            await Page.GoToAsync(TestConstants.EmptyPage);
+            DevToolsContext.Response += (_, e) => responses.Add(e.Response);
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
             Assert.Single(responses);
             Assert.Equal(TestConstants.EmptyPage, responses[0].Url);
             Assert.Equal(HttpStatusCode.OK, responses[0].Status);
@@ -57,8 +57,8 @@ namespace PuppeteerSharp.Tests.NetworkTests
         [PuppeteerFact]
         public async Task PageEventsRequestFailed()
         {
-            await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (_, e) =>
+            await DevToolsContext.SetRequestInterceptionAsync(true);
+            DevToolsContext.Request += async (_, e) =>
             {
                 if (e.Request.Url.EndsWith("css"))
                 {
@@ -70,8 +70,8 @@ namespace PuppeteerSharp.Tests.NetworkTests
                 }
             };
             var failedRequests = new List<Request>();
-            Page.RequestFailed += (_, e) => failedRequests.Add(e.Request);
-            await Page.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
+            DevToolsContext.RequestFailed += (_, e) => failedRequests.Add(e.Request);
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
 
             Assert.Single(failedRequests);
             Assert.Contains("one-style.css", failedRequests[0].Url);
@@ -86,13 +86,13 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task PageEventsRequestFinished()
         {
             var requests = new List<Request>();
-            Page.RequestFinished += (_, e) => requests.Add(e.Request);
-            await Page.GoToAsync(TestConstants.EmptyPage);
+            DevToolsContext.RequestFinished += (_, e) => requests.Add(e.Request);
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
             Assert.Single(requests);
             Assert.Equal(TestConstants.EmptyPage, requests[0].Url);
             Assert.NotNull(requests[0].Response);
             Assert.Equal(HttpMethod.Get, requests[0].Method);
-            Assert.Equal(Page.MainFrame, requests[0].Frame);
+            Assert.Equal(DevToolsContext.MainFrame, requests[0].Frame);
             Assert.Equal(TestConstants.EmptyPage, requests[0].Frame.Url);
         }
 
@@ -101,10 +101,10 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldFireEventsInProperOrder()
         {
             var events = new List<string>();
-            Page.Request += (_, _) => events.Add("request");
-            Page.Response += (_, _) => events.Add("response");
-            Page.RequestFinished += (_, _) => events.Add("requestfinished");
-            await Page.GoToAsync(TestConstants.EmptyPage);
+            DevToolsContext.Request += (_, _) => events.Add("request");
+            DevToolsContext.Response += (_, _) => events.Add("response");
+            DevToolsContext.RequestFinished += (_, _) => events.Add("requestfinished");
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
             Assert.Equal(new[] { "request", "response", "requestfinished" }, events);
         }
 
@@ -113,13 +113,13 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldSupportRedirects()
         {
             var events = new List<string>();
-            Page.Request += (_, e) => events.Add($"{e.Request.Method} {e.Request.Url}");
-            Page.Response += (_, e) => events.Add($"{(int)e.Response.Status} {e.Response.Url}");
-            Page.RequestFinished += (_, e) => events.Add($"DONE {e.Request.Url}");
-            Page.RequestFailed += (_, e) => events.Add($"FAIL {e.Request.Url}");
+            DevToolsContext.Request += (_, e) => events.Add($"{e.Request.Method} {e.Request.Url}");
+            DevToolsContext.Response += (_, e) => events.Add($"{(int)e.Response.Status} {e.Response.Url}");
+            DevToolsContext.RequestFinished += (_, e) => events.Add($"DONE {e.Request.Url}");
+            DevToolsContext.RequestFailed += (_, e) => events.Add($"FAIL {e.Request.Url}");
             Server.SetRedirect("/foo.html", "/empty.html");
             const string FOO_URL = TestConstants.ServerUrl + "/foo.html";
-            var response = await Page.GoToAsync(FOO_URL);
+            var response = await DevToolsContext.GoToAsync(FOO_URL);
             Assert.Equal(new[] {
                 $"GET {FOO_URL}",
                 $"302 {FOO_URL}",

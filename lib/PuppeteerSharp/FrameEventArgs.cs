@@ -1,7 +1,7 @@
 namespace CefSharp.Puppeteer
 {
     /// <summary>
-    /// <see cref="Page.FrameAttached"/>, <see cref="Page.FrameDetached"/> and <see cref="Page.FrameNavigated"/> arguments.
+    /// <see cref="DevToolsContext.FrameAttached"/>, <see cref="DevToolsContext.FrameDetached"/> and <see cref="DevToolsContext.FrameNavigated"/> arguments.
     /// </summary>
     public class FrameEventArgs
     {

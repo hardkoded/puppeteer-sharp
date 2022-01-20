@@ -20,11 +20,11 @@ namespace PuppeteerSharp.Tests.PageTests
         [PuppeteerFact]
         public async Task ShouldWork()
         {
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            var waitForNavigationResult = Page.WaitForNavigationAsync();
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            var waitForNavigationResult = DevToolsContext.WaitForNavigationAsync();
             await Task.WhenAll(
                 waitForNavigationResult,
-                Page.EvaluateFunctionAsync("url => window.location.href = url", TestConstants.ServerUrl + "/grid.html")
+                DevToolsContext.EvaluateFunctionAsync("url => window.location.href = url", TestConstants.ServerUrl + "/grid.html")
             );
             var response = await waitForNavigationResult;
             Assert.Equal(HttpStatusCode.OK, response.Status);
@@ -42,14 +42,14 @@ namespace PuppeteerSharp.Tests.PageTests
             });
 
             var waitForRequestTask = Server.WaitForRequest("/one-style.css");
-            var navigationTask = Page.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
-            var domContentLoadedTask = Page.WaitForNavigationAsync(new NavigationOptions
+            var navigationTask = DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
+            var domContentLoadedTask = DevToolsContext.WaitForNavigationAsync(new NavigationOptions
             {
                 WaitUntil = new[] { WaitUntilNavigation.DOMContentLoaded }
             });
 
             var bothFired = false;
-            var bothFiredTask = Page.WaitForNavigationAsync(new NavigationOptions
+            var bothFiredTask = DevToolsContext.WaitForNavigationAsync(new NavigationOptions
             {
                 WaitUntil = new[]
                 {
@@ -70,63 +70,63 @@ namespace PuppeteerSharp.Tests.PageTests
         [PuppeteerFact]
         public async Task ShouldWorkWithClickingOnAnchorLinks()
         {
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            await Page.SetContentAsync("<a href='#foobar'>foobar</a>");
-            var navigationTask = Page.WaitForNavigationAsync();
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            await DevToolsContext.SetContentAsync("<a href='#foobar'>foobar</a>");
+            var navigationTask = DevToolsContext.WaitForNavigationAsync();
             await Task.WhenAll(
                 navigationTask,
-                Page.ClickAsync("a")
+                DevToolsContext.ClickAsync("a")
             );
             Assert.Null(await navigationTask);
-            Assert.Equal(TestConstants.EmptyPage + "#foobar", Page.Url);
+            Assert.Equal(TestConstants.EmptyPage + "#foobar", DevToolsContext.Url);
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.waitForNavigation", "should work with history.pushState()")]
         [PuppeteerFact]
         public async Task ShouldWorkWithHistoryPushState()
         {
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            await Page.SetContentAsync(@"
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            await DevToolsContext.SetContentAsync(@"
               <a onclick='javascript:pushState()'>SPA</a>
               <script>
                 function pushState() { history.pushState({}, '', 'wow.html') }
               </script>
             ");
-            var navigationTask = Page.WaitForNavigationAsync();
+            var navigationTask = DevToolsContext.WaitForNavigationAsync();
             await Task.WhenAll(
                 navigationTask,
-                Page.ClickAsync("a")
+                DevToolsContext.ClickAsync("a")
             );
             Assert.Null(await navigationTask);
-            Assert.Equal(TestConstants.ServerUrl + "/wow.html", Page.Url);
+            Assert.Equal(TestConstants.ServerUrl + "/wow.html", DevToolsContext.Url);
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.waitForNavigation", "should work with history.replaceState()")]
         [PuppeteerFact]
         public async Task ShouldWorkWithHistoryReplaceState()
         {
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            await Page.SetContentAsync(@"
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            await DevToolsContext.SetContentAsync(@"
               <a onclick='javascript:pushState()'>SPA</a>
               <script>
                 function pushState() { history.pushState({}, '', 'replaced.html') }
               </script>
             ");
-            var navigationTask = Page.WaitForNavigationAsync();
+            var navigationTask = DevToolsContext.WaitForNavigationAsync();
             await Task.WhenAll(
                 navigationTask,
-                Page.ClickAsync("a")
+                DevToolsContext.ClickAsync("a")
             );
             Assert.Null(await navigationTask);
-            Assert.Equal(TestConstants.ServerUrl + "/replaced.html", Page.Url);
+            Assert.Equal(TestConstants.ServerUrl + "/replaced.html", DevToolsContext.Url);
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.waitForNavigation", "should work with DOM history.back()/history.forward()")]
         [PuppeteerFact]
         public async Task ShouldWorkWithDOMHistoryBackAndHistoryForward()
         {
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            await Page.SetContentAsync(@"
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            await DevToolsContext.SetContentAsync(@"
               <a id=back onclick='javascript:goBack()'>back</a>
               <a id=forward onclick='javascript:goForward()'>forward</a>
               <script>
@@ -136,21 +136,21 @@ namespace PuppeteerSharp.Tests.PageTests
                 history.pushState({}, '', '/second.html');
               </script>
             ");
-            Assert.Equal(TestConstants.ServerUrl + "/second.html", Page.Url);
-            var navigationTask = Page.WaitForNavigationAsync();
+            Assert.Equal(TestConstants.ServerUrl + "/second.html", DevToolsContext.Url);
+            var navigationTask = DevToolsContext.WaitForNavigationAsync();
             await Task.WhenAll(
                 navigationTask,
-                Page.ClickAsync("a#back")
+                DevToolsContext.ClickAsync("a#back")
             );
             Assert.Null(await navigationTask);
-            Assert.Equal(TestConstants.ServerUrl + "/first.html", Page.Url);
-            navigationTask = Page.WaitForNavigationAsync();
+            Assert.Equal(TestConstants.ServerUrl + "/first.html", DevToolsContext.Url);
+            navigationTask = DevToolsContext.WaitForNavigationAsync();
             await Task.WhenAll(
                 navigationTask,
-                Page.ClickAsync("a#forward")
+                DevToolsContext.ClickAsync("a#forward")
             );
             Assert.Null(await navigationTask);
-            Assert.Equal(TestConstants.ServerUrl + "/second.html", Page.Url);
+            Assert.Equal(TestConstants.ServerUrl + "/second.html", DevToolsContext.Url);
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.waitForNavigation", "should work when subframe issues window.stop()")]
@@ -158,16 +158,16 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldWorkWhenSubframeIssuesWindowStop()
         {
             Server.SetRoute("/frames/style.css", _ => Task.CompletedTask);
-            var navigationTask = Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
+            var navigationTask = DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
             var frameAttachedTaskSource = new TaskCompletionSource<Frame>();
-            Page.FrameAttached += (_, e) =>
+            DevToolsContext.FrameAttached += (_, e) =>
             {
                 frameAttachedTaskSource.SetResult(e.Frame);
             };
 
             var frame = await frameAttachedTaskSource.Task;
             var frameNavigatedTaskSource = new TaskCompletionSource<bool>();
-            Page.FrameNavigated += (_, e) =>
+            DevToolsContext.FrameNavigated += (_, e) =>
             {
                 if (e.Frame == frame)
                 {

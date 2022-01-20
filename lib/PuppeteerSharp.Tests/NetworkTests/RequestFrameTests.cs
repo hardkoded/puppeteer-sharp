@@ -22,7 +22,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldWorkForMainFrameNavigationRequests()
         {
             var requests = new List<Request>();
-            Page.Request += (_, e) =>
+            DevToolsContext.Request += (_, e) =>
             {
                 if (!TestUtils.IsFavicon(e.Request))
                 {
@@ -30,9 +30,9 @@ namespace PuppeteerSharp.Tests.NetworkTests
                 }
             };
 
-            await Page.GoToAsync(TestConstants.EmptyPage);
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
             Assert.Single(requests);
-            Assert.Equal(Page.MainFrame, requests[0].Frame);
+            Assert.Equal(DevToolsContext.MainFrame, requests[0].Frame);
         }
 
         [PuppeteerTest("network.spec.ts", "Request.Frame", "should work for subframe navigation request")]
@@ -40,7 +40,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldWorkForSubframeNavigationRequest()
         {
             var requests = new List<Request>();
-            Page.Request += (_, e) =>
+            DevToolsContext.Request += (_, e) =>
             {
                 if (!TestUtils.IsFavicon(e.Request))
                 {
@@ -48,11 +48,11 @@ namespace PuppeteerSharp.Tests.NetworkTests
                 }
             };
 
-            await Page.GoToAsync(TestConstants.EmptyPage);
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
 
-            await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
+            await FrameUtils.AttachFrameAsync(DevToolsContext, "frame1", TestConstants.EmptyPage);
             Assert.Equal(2, requests.Count);
-            Assert.Equal(Page.FirstChildFrame(), requests[1].Frame);
+            Assert.Equal(DevToolsContext.FirstChildFrame(), requests[1].Frame);
         }
 
         [PuppeteerTest("network.spec.ts", "Request.Frame", "should work for fetch requests")]
@@ -60,7 +60,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldWorkForFetchRequests()
         {
             var requests = new List<Request>();
-            Page.Request += (_, e) =>
+            DevToolsContext.Request += (_, e) =>
             {
                 if (!TestUtils.IsFavicon(e.Request))
                 {
@@ -68,10 +68,10 @@ namespace PuppeteerSharp.Tests.NetworkTests
                 }
             };
 
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            await Page.EvaluateExpressionAsync("fetch('/empty.html')");
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            await DevToolsContext.EvaluateExpressionAsync("fetch('/empty.html')");
             Assert.Equal(2, requests.Count);
-            Assert.Equal(Page.MainFrame, requests[0].Frame);
+            Assert.Equal(DevToolsContext.MainFrame, requests[0].Frame);
         }
     }
 }

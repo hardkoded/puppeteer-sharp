@@ -20,39 +20,39 @@ namespace PuppeteerSharp.Tests.ClickTests
         [PuppeteerFact]
         public async Task ShouldClickTheButton()
         {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
-            await Page.ClickAsync("button");
-            Assert.Equal("Clicked", await Page.EvaluateExpressionAsync<string>("result"));
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
+            await DevToolsContext.ClickAsync("button");
+            Assert.Equal("Clicked", await DevToolsContext.EvaluateExpressionAsync<string>("result"));
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click svg")]
         [PuppeteerFact]
         public async Task ShouldClickSvg()
         {
-            await Page.SetContentAsync($@"
+            await DevToolsContext.SetContentAsync($@"
                 <svg height=""100"" width=""100"">
                   <circle onclick=""javascript:window.__CLICKED=42"" cx=""50"" cy=""50"" r=""40"" stroke=""black"" stroke-width=""3"" fill=""red""/>
                 </svg>
             ");
-            await Page.ClickAsync("circle");
-            Assert.Equal(42, await Page.EvaluateFunctionAsync<int>("() => window.__CLICKED"));
+            await DevToolsContext.ClickAsync("circle");
+            Assert.Equal(42, await DevToolsContext.EvaluateFunctionAsync<int>("() => window.__CLICKED"));
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click the button if window.Node is removed")]
         [PuppeteerFact]
         public async Task ShouldClickTheButtonIfWindowNodeIsRemoved()
         {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
-            await Page.EvaluateExpressionAsync("delete window.Node");
-            await Page.ClickAsync("button");
-            Assert.Equal("Clicked", await Page.EvaluateExpressionAsync("result"));
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
+            await DevToolsContext.EvaluateExpressionAsync("delete window.Node");
+            await DevToolsContext.ClickAsync("button");
+            Assert.Equal("Clicked", await DevToolsContext.EvaluateExpressionAsync("result"));
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click on a span with an inline element inside")]
         [PuppeteerFact(Skip = "See https://github.com/GoogleChrome/puppeteer/issues/4281")]
         public async Task ShouldClickOnASpanWithAnInlineElementInside()
         {
-            await Page.SetContentAsync($@"
+            await DevToolsContext.SetContentAsync($@"
                 <style>
                 span::before {{
                     content: 'q';
@@ -60,39 +60,39 @@ namespace PuppeteerSharp.Tests.ClickTests
                 </style>
                 <span onclick='javascript:window.CLICKED=42'></span>
             ");
-            await Page.ClickAsync("span");
-            Assert.Equal(42, await Page.EvaluateFunctionAsync<int>("() => window.CLICKED"));
+            await DevToolsContext.ClickAsync("span");
+            Assert.Equal(42, await DevToolsContext.EvaluateFunctionAsync<int>("() => window.CLICKED"));
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click the button after navigation ")]
         [PuppeteerFact]
         public async Task ShouldClickTheButtonAfterNavigation()
         {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
-            await Page.ClickAsync("button");
-            await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
-            await Page.ClickAsync("button");
-            Assert.Equal("Clicked", await Page.EvaluateExpressionAsync<string>("result"));
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
+            await DevToolsContext.ClickAsync("button");
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
+            await DevToolsContext.ClickAsync("button");
+            Assert.Equal("Clicked", await DevToolsContext.EvaluateExpressionAsync<string>("result"));
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click with disabled javascript")]
         [PuppeteerFact]
         public async Task ShouldClickWithDisabledJavascript()
         {
-            await Page.SetJavaScriptEnabledAsync(false);
-            await Page.GoToAsync(TestConstants.ServerUrl + "/wrappedlink.html");
+            await DevToolsContext.SetJavaScriptEnabledAsync(false);
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/wrappedlink.html");
             await Task.WhenAll(
-                Page.ClickAsync("a"),
-                Page.WaitForNavigationAsync()
+                DevToolsContext.ClickAsync("a"),
+                DevToolsContext.WaitForNavigationAsync()
             );
-            Assert.Equal(TestConstants.ServerUrl + "/wrappedlink.html#clicked", Page.Url);
+            Assert.Equal(TestConstants.ServerUrl + "/wrappedlink.html#clicked", DevToolsContext.Url);
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click when one of inline box children is outside of viewport")]
         [PuppeteerFact]
         public async Task ShouldClickWhenOneOfInlineBoxChildrenIsOutsideOfViewport()
         {
-            await Page.SetContentAsync($@"
+            await DevToolsContext.SetContentAsync($@"
             <style>
             i {{
                 position: absolute;
@@ -102,22 +102,22 @@ namespace PuppeteerSharp.Tests.ClickTests
             <span onclick='javascript:window.CLICKED = 42;'><i>woof</i><b>doggo</b></span>
             ");
 
-            await Page.ClickAsync("span");
-            Assert.Equal(42, await Page.EvaluateFunctionAsync<int>("() => window.CLICKED"));
+            await DevToolsContext.ClickAsync("span");
+            Assert.Equal(42, await DevToolsContext.EvaluateFunctionAsync<int>("() => window.CLICKED"));
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should select the text by triple clicking")]
         [PuppeteerFact]
         public async Task ShouldSelectTheTextByTripleClicking()
         {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
-            await Page.FocusAsync("textarea");
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
+            await DevToolsContext.FocusAsync("textarea");
             const string text = "This is the text that we are going to try to select. Let's see how it goes.";
-            await Page.Keyboard.TypeAsync(text);
-            await Page.ClickAsync("textarea");
-            await Page.ClickAsync("textarea", new ClickOptions { ClickCount = 2 });
-            await Page.ClickAsync("textarea", new ClickOptions { ClickCount = 3 });
-            Assert.Equal(text, await Page.EvaluateFunctionAsync<string>(@"() => {
+            await DevToolsContext.Keyboard.TypeAsync(text);
+            await DevToolsContext.ClickAsync("textarea");
+            await DevToolsContext.ClickAsync("textarea", new ClickOptions { ClickCount = 2 });
+            await DevToolsContext.ClickAsync("textarea", new ClickOptions { ClickCount = 3 });
+            Assert.Equal(text, await DevToolsContext.EvaluateFunctionAsync<string>(@"() => {
                 const textarea = document.querySelector('textarea');
                 return textarea.value.substring(
                     textarea.selectionStart,
@@ -130,15 +130,15 @@ namespace PuppeteerSharp.Tests.ClickTests
         [PuppeteerFact]
         public async Task ShouldClickOffscreenButtons()
         {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/offscreenbuttons.html");
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/offscreenbuttons.html");
             var messages = new List<string>();
-            Page.Console += (_, e) => messages.Add(e.Message.Text);
+            DevToolsContext.Console += (_, e) => messages.Add(e.Message.Text);
 
             for (var i = 0; i < 11; ++i)
             {
                 // We might've scrolled to click a button - reset to (0, 0).
-                await Page.EvaluateFunctionAsync("() => window.scrollTo(0, 0)");
-                await Page.ClickAsync($"#btn{i}");
+                await DevToolsContext.EvaluateFunctionAsync("() => window.scrollTo(0, 0)");
+                await DevToolsContext.ClickAsync($"#btn{i}");
             }
             Assert.Equal(new List<string>
             {
@@ -160,19 +160,19 @@ namespace PuppeteerSharp.Tests.ClickTests
         [PuppeteerFact]
         public async Task ShouldClickWrappedLinks()
         {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/wrappedlink.html");
-            await Page.ClickAsync("a");
-            Assert.True(await Page.EvaluateExpressionAsync<bool>("window.__clicked"));
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/wrappedlink.html");
+            await DevToolsContext.ClickAsync("a");
+            Assert.True(await DevToolsContext.EvaluateExpressionAsync<bool>("window.__clicked"));
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click on checkbox input and toggle")]
         [PuppeteerFact]
         public async Task ShouldClickOnCheckboxInputAndToggle()
         {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/input/checkbox.html");
-            Assert.Null(await Page.EvaluateExpressionAsync("result.check"));
-            await Page.ClickAsync("input#agree");
-            Assert.True(await Page.EvaluateExpressionAsync<bool>("result.check"));
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/checkbox.html");
+            Assert.Null(await DevToolsContext.EvaluateExpressionAsync("result.check"));
+            await DevToolsContext.ClickAsync("input#agree");
+            Assert.True(await DevToolsContext.EvaluateExpressionAsync<bool>("result.check"));
             Assert.Equal(new[] {
                 "mouseover",
                 "mouseenter",
@@ -182,35 +182,35 @@ namespace PuppeteerSharp.Tests.ClickTests
                 "click",
                 "input",
                 "change"
-            }, await Page.EvaluateExpressionAsync<string[]>("result.events"));
-            await Page.ClickAsync("input#agree");
-            Assert.False(await Page.EvaluateExpressionAsync<bool>("result.check"));
+            }, await DevToolsContext.EvaluateExpressionAsync<string[]>("result.events"));
+            await DevToolsContext.ClickAsync("input#agree");
+            Assert.False(await DevToolsContext.EvaluateExpressionAsync<bool>("result.check"));
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click on checkbox label and toggle")]
         [PuppeteerFact]
         public async Task ShouldClickOnCheckboxLabelAndToggle()
         {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/input/checkbox.html");
-            Assert.Null(await Page.EvaluateExpressionAsync("result.check"));
-            await Page.ClickAsync("label[for=\"agree\"]");
-            Assert.True(await Page.EvaluateExpressionAsync<bool>("result.check"));
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/checkbox.html");
+            Assert.Null(await DevToolsContext.EvaluateExpressionAsync("result.check"));
+            await DevToolsContext.ClickAsync("label[for=\"agree\"]");
+            Assert.True(await DevToolsContext.EvaluateExpressionAsync<bool>("result.check"));
             Assert.Equal(new[] {
                 "click",
                 "input",
                 "change"
-            }, await Page.EvaluateExpressionAsync<string[]>("result.events"));
-            await Page.ClickAsync("label[for=\"agree\"]");
-            Assert.False(await Page.EvaluateExpressionAsync<bool>("result.check"));
+            }, await DevToolsContext.EvaluateExpressionAsync<string[]>("result.events"));
+            await DevToolsContext.ClickAsync("label[for=\"agree\"]");
+            Assert.False(await DevToolsContext.EvaluateExpressionAsync<bool>("result.check"));
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should fail to click a missing button")]
         [PuppeteerFact]
         public async Task ShouldFailToClickAMissingButton()
         {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
             var exception = await Assert.ThrowsAsync<SelectorException>(()
-                => Page.ClickAsync("button.does-not-exist"));
+                => DevToolsContext.ClickAsync("button.does-not-exist"));
             Assert.Equal("No node found for selector: button.does-not-exist", exception.Message);
             Assert.Equal("button.does-not-exist", exception.Selector);
         }
@@ -220,72 +220,72 @@ namespace PuppeteerSharp.Tests.ClickTests
         [PuppeteerFact]
         public async Task ShouldNotHangWithTouchEnabledViewports()
         {
-            await Page.SetViewportAsync(TestConstants.IPhone.ViewPort);
-            await Page.Mouse.DownAsync();
-            await Page.Mouse.MoveAsync(100, 10);
-            await Page.Mouse.UpAsync();
+            await DevToolsContext.SetViewportAsync(TestConstants.IPhone.ViewPort);
+            await DevToolsContext.Mouse.DownAsync();
+            await DevToolsContext.Mouse.MoveAsync(100, 10);
+            await DevToolsContext.Mouse.UpAsync();
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should scroll and click the button")]
         [PuppeteerFact]
         public async Task ShouldScrollAndClickTheButton()
         {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
-            await Page.ClickAsync("#button-5");
-            Assert.Equal("clicked", await Page.EvaluateExpressionAsync<string>("document.querySelector(\"#button-5\").textContent"));
-            await Page.ClickAsync("#button-80");
-            Assert.Equal("clicked", await Page.EvaluateExpressionAsync<string>("document.querySelector(\"#button-80\").textContent"));
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
+            await DevToolsContext.ClickAsync("#button-5");
+            Assert.Equal("clicked", await DevToolsContext.EvaluateExpressionAsync<string>("document.querySelector(\"#button-5\").textContent"));
+            await DevToolsContext.ClickAsync("#button-80");
+            Assert.Equal("clicked", await DevToolsContext.EvaluateExpressionAsync<string>("document.querySelector(\"#button-80\").textContent"));
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should double click the button")]
         [PuppeteerFact]
         public async Task ShouldDoubleClickTheButton()
         {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
-            await Page.EvaluateExpressionAsync(@"{
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
+            await DevToolsContext.EvaluateExpressionAsync(@"{
                window.double = false;
                const button = document.querySelector('button');
                button.addEventListener('dblclick', event => {
                  window.double = true;
                });
             }");
-            var button = await Page.QuerySelectorAsync("button");
+            var button = await DevToolsContext.QuerySelectorAsync("button");
             await button.ClickAsync(new ClickOptions { ClickCount = 2 });
-            Assert.True(await Page.EvaluateExpressionAsync<bool>("double"));
-            Assert.Equal("Clicked", await Page.EvaluateExpressionAsync<string>("result"));
+            Assert.True(await DevToolsContext.EvaluateExpressionAsync<bool>("double"));
+            Assert.Equal("Clicked", await DevToolsContext.EvaluateExpressionAsync<string>("result"));
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click a partially obscured button")]
         [PuppeteerFact]
         public async Task ShouldClickAPartiallyObscuredButton()
         {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
-            await Page.EvaluateExpressionAsync(@"{
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
+            await DevToolsContext.EvaluateExpressionAsync(@"{
                 const button = document.querySelector('button');
                 button.textContent = 'Some really long text that will go offscreen';
                 button.style.position = 'absolute';
                 button.style.left = '368px';
             }");
-            await Page.ClickAsync("button");
-            Assert.Equal("Clicked", await Page.EvaluateExpressionAsync<string>("result"));
+            await DevToolsContext.ClickAsync("button");
+            Assert.Equal("Clicked", await DevToolsContext.EvaluateExpressionAsync<string>("result"));
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click a rotated button")]
         [PuppeteerFact]
         public async Task ShouldClickARotatedButton()
         {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/input/rotatedButton.html");
-            await Page.ClickAsync("button");
-            Assert.Equal("Clicked", await Page.EvaluateExpressionAsync<string>("result"));
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/rotatedButton.html");
+            await DevToolsContext.ClickAsync("button");
+            Assert.Equal("Clicked", await DevToolsContext.EvaluateExpressionAsync<string>("result"));
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should fire contextmenu event on right click")]
         [PuppeteerFact]
         public async Task ShouldFireContextmenuEventOnRightClick()
         {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
-            await Page.ClickAsync("#button-8", new ClickOptions { Button = MouseButton.Right });
-            Assert.Equal("context menu", await Page.EvaluateExpressionAsync<string>("document.querySelector('#button-8').textContent"));
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
+            await DevToolsContext.ClickAsync("#button-8", new ClickOptions { Button = MouseButton.Right });
+            Assert.Equal("context menu", await DevToolsContext.EvaluateExpressionAsync<string>("document.querySelector('#button-8').textContent"));
         }
 
         // @see https://github.com/GoogleChrome/puppeteer/issues/206
@@ -293,19 +293,19 @@ namespace PuppeteerSharp.Tests.ClickTests
         [PuppeteerFact]
         public async Task ShouldClickLinksWhichCauseNavigation()
         {
-            await Page.SetContentAsync($"<a href=\"{TestConstants.EmptyPage}\">empty.html</a>");
+            await DevToolsContext.SetContentAsync($"<a href=\"{TestConstants.EmptyPage}\">empty.html</a>");
             // This await should not hang.
-            await Page.ClickAsync("a");
+            await DevToolsContext.ClickAsync("a");
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click the button inside an iframe")]
         [PuppeteerFact]
         public async Task ShouldClickTheButtonInsideAnIframe()
         {
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            await Page.SetContentAsync("<div style=\"width:100px;height:100px\">spacer</div>");
-            await FrameUtils.AttachFrameAsync(Page, "button-test", TestConstants.ServerUrl + "/input/button.html");
-            var frame = Page.FirstChildFrame();
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            await DevToolsContext.SetContentAsync("<div style=\"width:100px;height:100px\">spacer</div>");
+            await FrameUtils.AttachFrameAsync(DevToolsContext, "button-test", TestConstants.ServerUrl + "/input/button.html");
+            var frame = DevToolsContext.FirstChildFrame();
             var button = await frame.QuerySelectorAsync("button");
             await button.ClickAsync();
             Assert.Equal("Clicked", await frame.EvaluateExpressionAsync<string>("window.result"));
@@ -315,15 +315,15 @@ namespace PuppeteerSharp.Tests.ClickTests
         [PuppeteerFact(Skip = "see https://github.com/GoogleChrome/puppeteer/issues/4110")]
         public async Task ShouldClickTheButtonWithFixedPositionInsideAnIframe()
         {
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            await Page.SetViewportAsync(new ViewPortOptions
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            await DevToolsContext.SetViewportAsync(new ViewPortOptions
             {
                 Width = 500,
                 Height = 500
             });
-            await Page.SetContentAsync("<div style=\"width:100px;height:2000px\">spacer</div>");
-            await FrameUtils.AttachFrameAsync(Page, "button-test", TestConstants.ServerUrl + "/input/button.html");
-            var frame = Page.FirstChildFrame();
+            await DevToolsContext.SetContentAsync("<div style=\"width:100px;height:2000px\">spacer</div>");
+            await FrameUtils.AttachFrameAsync(DevToolsContext, "button-test", TestConstants.ServerUrl + "/input/button.html");
+            var frame = DevToolsContext.FirstChildFrame();
             await frame.QuerySelectorAsync("button").EvaluateFunctionAsync("button => button.style.setProperty('position', 'fixed')");
             await frame.ClickAsync("button");
             Assert.Equal("Clicked", await frame.EvaluateExpressionAsync<string>("window.result"));
@@ -333,11 +333,11 @@ namespace PuppeteerSharp.Tests.ClickTests
         [PuppeteerFact(Skip = "TODO: Fix this if possible")]
         public async Task ShouldClickTheButtonWithDeviceScaleFactorSet()
         {
-            await Page.SetViewportAsync(new ViewPortOptions { Width = 400, Height = 400, DeviceScaleFactor = 5 });
-            Assert.Equal(5, await Page.EvaluateExpressionAsync<int>("window.devicePixelRatio"));
-            await Page.SetContentAsync("<div style=\"width:100px;height:100px\">spacer</div>");
-            await FrameUtils.AttachFrameAsync(Page, "button-test", TestConstants.ServerUrl + "/input/button.html");
-            var frame = Page.FirstChildFrame();
+            await DevToolsContext.SetViewportAsync(new ViewPortOptions { Width = 400, Height = 400, DeviceScaleFactor = 5 });
+            Assert.Equal(5, await DevToolsContext.EvaluateExpressionAsync<int>("window.devicePixelRatio"));
+            await DevToolsContext.SetContentAsync("<div style=\"width:100px;height:100px\">spacer</div>");
+            await FrameUtils.AttachFrameAsync(DevToolsContext, "button-test", TestConstants.ServerUrl + "/input/button.html");
+            var frame = DevToolsContext.FirstChildFrame();
             var button = await frame.QuerySelectorAsync("button");
             await button.ClickAsync();
             Assert.Equal("Clicked", await frame.EvaluateExpressionAsync<string>("window.result"));

@@ -15,8 +15,8 @@ namespace PuppeteerSharp.Tests.EmulationTests
         [PuppeteerTest("emulation.spec.ts", "Page.emulateCPUThrottling", "should change the CPU throttling rate successfully")]
         public async Task ShouldChangeTheCPUThrottlingRateSuccessfully()
         {
-            await Page.EmulateCPUThrottlingAsync(100);
-            await Page.EmulateCPUThrottlingAsync();
+            await DevToolsContext.EmulateCPUThrottlingAsync(100);
+            await DevToolsContext.EmulateCPUThrottlingAsync();
         }
     }
 }

@@ -23,19 +23,19 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         [PuppeteerFact]
         public async Task ShouldSupportSomeFancyXpath()
         {
-            await Page.SetContentAsync("<p>red herring</p><p>hello  world  </p>");
-            var waitForXPath = Page.WaitForXPathAsync("//p[normalize-space(.)=\"hello world\"]");
-            Assert.Equal("hello  world  ", await Page.EvaluateFunctionAsync<string>("x => x.textContent", await waitForXPath));
+            await DevToolsContext.SetContentAsync("<p>red herring</p><p>hello  world  </p>");
+            var waitForXPath = DevToolsContext.WaitForXPathAsync("//p[normalize-space(.)=\"hello world\"]");
+            Assert.Equal("hello  world  ", await DevToolsContext.EvaluateFunctionAsync<string>("x => x.textContent", await waitForXPath));
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForXPath", "should run in specified frame")]
         [PuppeteerFact(Skip = "BUG: OOPIFs aren't working correct")]
         public async Task ShouldRunInSpecifiedFrame()
         {
-            await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
-            await FrameUtils.AttachFrameAsync(Page, "frame2", TestConstants.EmptyPage);
-            var frame1 = Page.Frames.First(f => f.Name == "frame1");
-            var frame2 = Page.Frames.First(f => f.Name == "frame2");
+            await FrameUtils.AttachFrameAsync(DevToolsContext, "frame1", TestConstants.EmptyPage);
+            await FrameUtils.AttachFrameAsync(DevToolsContext, "frame2", TestConstants.EmptyPage);
+            var frame1 = DevToolsContext.Frames.First(f => f.Name == "frame1");
+            var frame2 = DevToolsContext.Frames.First(f => f.Name == "frame2");
             var waitForXPathPromise = frame2.WaitForXPathAsync("//div");
             await frame1.EvaluateFunctionAsync(addElement, "div");
             await frame2.EvaluateFunctionAsync(addElement, "div");
@@ -47,10 +47,10 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         [PuppeteerFact(Skip = "BUG: OOPIFs aren't working correct")]
         public async Task ShouldThrowWhenFrameIsDetached()
         {
-            await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
-            var frame = Page.FirstChildFrame();
+            await FrameUtils.AttachFrameAsync(DevToolsContext, "frame1", TestConstants.EmptyPage);
+            var frame = DevToolsContext.FirstChildFrame();
             var waitPromise = frame.WaitForXPathAsync("//*[@class=\"box\"]");
-            await FrameUtils.DetachFrameAsync(Page, "frame1");
+            await FrameUtils.DetachFrameAsync(DevToolsContext, "frame1");
             var exception = await Assert.ThrowsAnyAsync<Exception>(() => waitPromise);
             Assert.Contains("waitForFunction failed: frame got detached.", exception.Message);
         }
@@ -60,12 +60,12 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         public async Task HiddenShouldWaitForDisplayNone()
         {
             var divHidden = false;
-            await Page.SetContentAsync("<div style='display: block;'></div>");
-            var waitForXPath = Page.WaitForXPathAsync("//div", new WaitForSelectorOptions { Hidden = true })
+            await DevToolsContext.SetContentAsync("<div style='display: block;'></div>");
+            var waitForXPath = DevToolsContext.WaitForXPathAsync("//div", new WaitForSelectorOptions { Hidden = true })
                 .ContinueWith(_ => divHidden = true);
-            await Page.WaitForXPathAsync("//div"); // do a round trip
+            await DevToolsContext.WaitForXPathAsync("//div"); // do a round trip
             Assert.False(divHidden);
-            await Page.EvaluateExpressionAsync("document.querySelector('div').style.setProperty('display', 'none')");
+            await DevToolsContext.EvaluateExpressionAsync("document.querySelector('div').style.setProperty('display', 'none')");
             Assert.True(await waitForXPath.WithTimeout());
             Assert.True(divHidden);
         }
@@ -74,17 +74,17 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         [PuppeteerFact]
         public async Task ShouldReturnTheElementHandle()
         {
-            var waitForXPath = Page.WaitForXPathAsync("//*[@class=\"zombo\"]");
-            await Page.SetContentAsync("<div class='zombo'>anything</div>");
-            Assert.Equal("anything", await Page.EvaluateFunctionAsync<string>("x => x.textContent", await waitForXPath));
+            var waitForXPath = DevToolsContext.WaitForXPathAsync("//*[@class=\"zombo\"]");
+            await DevToolsContext.SetContentAsync("<div class='zombo'>anything</div>");
+            Assert.Equal("anything", await DevToolsContext.EvaluateFunctionAsync<string>("x => x.textContent", await waitForXPath));
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForXPath", "should allow you to select a text node")]
         [PuppeteerFact]
         public async Task ShouldAllowYouToSelectATextNode()
         {
-            await Page.SetContentAsync("<div>some text</div>");
-            var text = await Page.WaitForXPathAsync("//div/text()");
+            await DevToolsContext.SetContentAsync("<div>some text</div>");
+            var text = await DevToolsContext.WaitForXPathAsync("//div/text()");
             Assert.Equal(3 /* Node.TEXT_NODE */, await (await text.GetPropertyAsync("nodeType")).JsonValueAsync<int>());
         }
 
@@ -92,9 +92,9 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         [PuppeteerFact]
         public async Task ShouldAllowYouToSelectAnElementWithSingleSlash()
         {
-            await Page.SetContentAsync("<div>some text</div>");
-            var waitForXPath = Page.WaitForXPathAsync("/html/body/div");
-            Assert.Equal("some text", await Page.EvaluateFunctionAsync<string>("x => x.textContent", await waitForXPath));
+            await DevToolsContext.SetContentAsync("<div>some text</div>");
+            var waitForXPath = DevToolsContext.WaitForXPathAsync("/html/body/div");
+            Assert.Equal("some text", await DevToolsContext.EvaluateFunctionAsync<string>("x => x.textContent", await waitForXPath));
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForXPath", "should respect timeout")]
@@ -102,7 +102,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         public async Task ShouldRespectTimeout()
         {
             var exception = await Assert.ThrowsAsync<WaitTaskTimeoutException>(()
-                    => Page.WaitForXPathAsync("//div", new WaitForSelectorOptions { Timeout = 10 }));
+                    => DevToolsContext.WaitForXPathAsync("//div", new WaitForSelectorOptions { Timeout = 10 }));
 
             Assert.Contains("waiting for XPath '//div' failed: timeout", exception.Message);
         }

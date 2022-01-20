@@ -3,7 +3,7 @@ using System;
 namespace CefSharp.Puppeteer
 {
     /// <summary>
-    /// <see cref="Page.Console"/> data.
+    /// <see cref="DevToolsContext.Console"/> data.
     /// </summary>
     public class ConsoleEventArgs : EventArgs
     {

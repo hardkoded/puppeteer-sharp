@@ -21,11 +21,11 @@ namespace PuppeteerSharp.Tests.NetworkTests
         [PuppeteerFact]
         public async Task ShouldWork()
         {
-            await Page.GoToAsync(TestConstants.EmptyPage);
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
             Server.SetRoute("/post", _ => Task.CompletedTask);
             Request request = null;
-            Page.Request += (_, e) => request = e.Request;
-            await Page.EvaluateExpressionHandleAsync("fetch('./post', { method: 'POST', body: JSON.stringify({ foo: 'bar'})})");
+            DevToolsContext.Request += (_, e) => request = e.Request;
+            await DevToolsContext.EvaluateExpressionHandleAsync("fetch('./post', { method: 'POST', body: JSON.stringify({ foo: 'bar'})})");
             Assert.NotNull(request);
             Assert.Equal("{\"foo\":\"bar\"}", request.PostData);
         }
@@ -34,7 +34,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         [PuppeteerFact]
         public async Task ShouldBeUndefinedWhenThereIsNoPostData()
         {
-            var response = await Page.GoToAsync(TestConstants.EmptyPage);
+            var response = await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
             Assert.Null(response.Request.PostData);
         }
     }

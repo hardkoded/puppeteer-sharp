@@ -23,20 +23,20 @@ namespace PuppeteerSharp.Tests.NavigationTests
         [PuppeteerFact]
         public async Task ShouldWork()
         {
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Equal(TestConstants.EmptyPage, Page.Url);
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            Assert.Equal(TestConstants.EmptyPage, DevToolsContext.Url);
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should work with anchor navigation")]
         [PuppeteerFact]
         public async Task ShouldWorkWithAnchorNavigation()
         {
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Equal(TestConstants.EmptyPage, Page.Url);
-            await Page.GoToAsync($"{TestConstants.EmptyPage}#foo");
-            Assert.Equal($"{TestConstants.EmptyPage}#foo", Page.Url);
-            await Page.GoToAsync($"{TestConstants.EmptyPage}#bar");
-            Assert.Equal($"{TestConstants.EmptyPage}#bar", Page.Url);
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            Assert.Equal(TestConstants.EmptyPage, DevToolsContext.Url);
+            await DevToolsContext.GoToAsync($"{TestConstants.EmptyPage}#foo");
+            Assert.Equal($"{TestConstants.EmptyPage}#foo", DevToolsContext.Url);
+            await DevToolsContext.GoToAsync($"{TestConstants.EmptyPage}#bar");
+            Assert.Equal($"{TestConstants.EmptyPage}#bar", DevToolsContext.Url);
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should work with redirects")]
@@ -46,15 +46,15 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Server.SetRedirect("/redirect/1.html", "/redirect/2.html");
             Server.SetRedirect("/redirect/2.html", "/empty.html");
 
-            await Page.GoToAsync(TestConstants.ServerUrl + "/redirect/1.html");
-            await Page.GoToAsync(TestConstants.EmptyPage);
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/redirect/1.html");
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should navigate to about:blank")]
         [PuppeteerFact]
         public async Task ShouldNavigateToAboutBlank()
         {
-            var response = await Page.GoToAsync(TestConstants.AboutBlank);
+            var response = await DevToolsContext.GoToAsync(TestConstants.AboutBlank);
             Assert.Null(response);
         }
 
@@ -62,7 +62,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         [PuppeteerFact]
         public async Task ShouldReturnResponseWhenPageChangesItsURLAfterLoad()
         {
-            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/historyapi.html");
+            var response = await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/historyapi.html");
             Assert.Equal(HttpStatusCode.OK, response.Status);
         }
 
@@ -75,7 +75,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
                 context.Response.StatusCode = 204;
                 return Task.CompletedTask;
             });
-            await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should fail when server returns 204")]
@@ -88,7 +88,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
                 return Task.CompletedTask;
             });
             var exception = await Assert.ThrowsAnyAsync<PuppeteerException>(
-                () => Page.GoToAsync(TestConstants.EmptyPage));
+                () => DevToolsContext.GoToAsync(TestConstants.EmptyPage));
 
             Assert.Contains("net::ERR_ABORTED", exception.Message);
         }
@@ -97,7 +97,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         [PuppeteerFact]
         public async Task ShouldNavigateToEmptyPageWithDOMContentLoaded()
         {
-            var response = await Page.GoToAsync(TestConstants.EmptyPage, waitUntil: new[]
+            var response = await DevToolsContext.GoToAsync(TestConstants.EmptyPage, waitUntil: new[]
             {
                 WaitUntilNavigation.DOMContentLoaded
             });
@@ -109,12 +109,12 @@ namespace PuppeteerSharp.Tests.NavigationTests
         [PuppeteerFact]
         public async Task ShouldWorkWhenPageCallsHistoryAPIInBeforeunload()
         {
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            await Page.EvaluateFunctionAsync(@"() =>
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            await DevToolsContext.EvaluateFunctionAsync(@"() =>
             {
                 window.addEventListener('beforeunload', () => history.replaceState(null, 'initial', window.location.href), false);
             }");
-            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+            var response = await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             Assert.Equal(HttpStatusCode.OK, response.Status);
         }
 
@@ -122,7 +122,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         [PuppeteerFact]
         public async Task ShouldNavigateToEmptyPageWithNetworkidle0()
         {
-            var response = await Page.GoToAsync(TestConstants.EmptyPage, new NavigationOptions { WaitUntil = new[] { WaitUntilNavigation.Networkidle0 } });
+            var response = await DevToolsContext.GoToAsync(TestConstants.EmptyPage, new NavigationOptions { WaitUntil = new[] { WaitUntilNavigation.Networkidle0 } });
             Assert.Equal(HttpStatusCode.OK, response.Status);
         }
 
@@ -130,7 +130,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         [PuppeteerFact]
         public async Task ShouldNavigateToEmptyPageWithNetworkidle2()
         {
-            var response = await Page.GoToAsync(TestConstants.EmptyPage, new NavigationOptions { WaitUntil = new[] { WaitUntilNavigation.Networkidle2 } });
+            var response = await DevToolsContext.GoToAsync(TestConstants.EmptyPage, new NavigationOptions { WaitUntil = new[] { WaitUntilNavigation.Networkidle2 } });
             Assert.Equal(HttpStatusCode.OK, response.Status);
         }
 
@@ -138,7 +138,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         [PuppeteerFact]
         public async Task ShouldFailWhenNavigatingToBadUrl()
         {
-            var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await Page.GoToAsync("asdfasdf"));
+            var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await DevToolsContext.GoToAsync("asdfasdf"));
 
             Assert.Contains("Cannot navigate to invalid URL", exception.Message);
         }
@@ -147,11 +147,11 @@ namespace PuppeteerSharp.Tests.NavigationTests
         [PuppeteerFact]
         public async Task ShouldFailWhenNavigatingToBadSSL()
         {
-            Page.Request += (_, e) => Assert.NotNull(e.Request);
-            Page.RequestFinished += (_, e) => Assert.NotNull(e.Request);
-            Page.RequestFailed += (_, e) => Assert.NotNull(e.Request);
+            DevToolsContext.Request += (_, e) => Assert.NotNull(e.Request);
+            DevToolsContext.RequestFinished += (_, e) => Assert.NotNull(e.Request);
+            DevToolsContext.RequestFailed += (_, e) => Assert.NotNull(e.Request);
 
-            var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await Page.GoToAsync(TestConstants.HttpsPrefix + "/empty.html"));
+            var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await DevToolsContext.GoToAsync(TestConstants.HttpsPrefix + "/empty.html"));
 
             Assert.Contains("net::ERR_CERT_AUTHORITY_INVALID", exception.Message);
         }
@@ -160,7 +160,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         [PuppeteerFact]
         public async Task ShouldFailWhenNavigatingToBadSSLAfterRedirects()
         {
-            var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await Page.GoToAsync(TestConstants.HttpsPrefix + "/redirect/2.html"));
+            var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await DevToolsContext.GoToAsync(TestConstants.HttpsPrefix + "/redirect/2.html"));
 
             Assert.Contains("net::ERR_CERT_AUTHORITY_INVALID", exception.Message);
         }
@@ -169,7 +169,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         [PuppeteerFact]
         public async Task ShouldFailWhenMainResourcesFailedToLoad()
         {
-            var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await Page.GoToAsync("http://localhost:44123/non-existing-url"));
+            var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await DevToolsContext.GoToAsync("http://localhost:44123/non-existing-url"));
 
             Assert.Contains("net::ERR_CONNECTION_REFUSED", exception.Message);
         }
@@ -181,7 +181,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Server.SetRoute("/empty.html", _ => Task.Delay(-1));
 
             var exception = await Assert.ThrowsAnyAsync<Exception>(async ()
-                => await Page.GoToAsync(TestConstants.EmptyPage, new NavigationOptions { Timeout = 1 }));
+                => await DevToolsContext.GoToAsync(TestConstants.EmptyPage, new NavigationOptions { Timeout = 1 }));
             Assert.Contains("Timeout of 1 ms exceeded", exception.Message);
         }
 
@@ -191,8 +191,8 @@ namespace PuppeteerSharp.Tests.NavigationTests
         {
             Server.SetRoute("/empty.html", _ => Task.Delay(-1));
 
-            Page.DefaultNavigationTimeout = 1;
-            var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await Page.GoToAsync(TestConstants.EmptyPage));
+            DevToolsContext.DefaultNavigationTimeout = 1;
+            var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await DevToolsContext.GoToAsync(TestConstants.EmptyPage));
             Assert.Contains("Timeout of 1 ms exceeded", exception.Message);
         }
 
@@ -202,8 +202,8 @@ namespace PuppeteerSharp.Tests.NavigationTests
         {
             // Hang for request to the empty.html
             Server.SetRoute("/empty.html", _ => Task.Delay(-1));
-            Page.DefaultTimeout = 1;
-            var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await Page.GoToAsync(TestConstants.EmptyPage));
+            DevToolsContext.DefaultTimeout = 1;
+            var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await DevToolsContext.GoToAsync(TestConstants.EmptyPage));
             Assert.Contains("Timeout of 1 ms exceeded", exception.Message);
         }
 
@@ -213,9 +213,9 @@ namespace PuppeteerSharp.Tests.NavigationTests
         {
             // Hang for request to the empty.html
             Server.SetRoute("/empty.html", _ => Task.Delay(-1));
-            Page.DefaultTimeout = 0;
-            Page.DefaultNavigationTimeout = 1;
-            var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await Page.GoToAsync(TestConstants.EmptyPage));
+            DevToolsContext.DefaultTimeout = 0;
+            DevToolsContext.DefaultNavigationTimeout = 1;
+            var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await DevToolsContext.GoToAsync(TestConstants.EmptyPage));
             Assert.Contains("Timeout of 1 ms exceeded", exception.Message);
         }
 
@@ -227,11 +227,11 @@ namespace PuppeteerSharp.Tests.NavigationTests
             void OnLoad(object sender, EventArgs e)
             {
                 loaded = true;
-                Page.Load -= OnLoad;
+                DevToolsContext.Load -= OnLoad;
             }
-            Page.Load += OnLoad;
+            DevToolsContext.Load += OnLoad;
 
-            await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html", new NavigationOptions { Timeout = 0, WaitUntil = new[] { WaitUntilNavigation.Load } });
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/grid.html", new NavigationOptions { Timeout = 0, WaitUntil = new[] { WaitUntilNavigation.Load } });
             Assert.True(loaded);
         }
 
@@ -239,7 +239,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         [PuppeteerFact]
         public async Task ShouldWorkWhenNavigatingToValidUrl()
         {
-            var response = await Page.GoToAsync(TestConstants.EmptyPage);
+            var response = await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
             Assert.Equal(HttpStatusCode.OK, response.Status);
         }
 
@@ -247,7 +247,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         [PuppeteerFact]
         public async Task ShouldWorkWhenNavigatingToDataUrl()
         {
-            var response = await Page.GoToAsync("data:text/html,hello");
+            var response = await DevToolsContext.GoToAsync("data:text/html,hello");
             Assert.Equal(HttpStatusCode.OK, response.Status);
         }
 
@@ -255,7 +255,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         [PuppeteerFact]
         public async Task ShouldWorkWhenNavigatingTo404()
         {
-            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/not-found");
+            var response = await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/not-found");
             Assert.Equal(HttpStatusCode.NotFound, response.Status);
         }
 
@@ -267,7 +267,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Server.SetRedirect("/redirect/2.html", "/redirect/3.html");
             Server.SetRedirect("/redirect/3.html", TestConstants.EmptyPage);
 
-            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/redirect/1.html");
+            var response = await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/redirect/1.html");
             Assert.Equal(HttpStatusCode.OK, response.Status);
             Assert.Equal(TestConstants.EmptyPage, response.Url);
         }
@@ -306,12 +306,12 @@ namespace PuppeteerSharp.Tests.NavigationTests
             void WaitPageLoad(object sender, EventArgs e)
             {
                 pageLoaded.SetResult(true);
-                Page.Load -= WaitPageLoad;
+                DevToolsContext.Load -= WaitPageLoad;
             }
-            Page.Load += WaitPageLoad;
+            DevToolsContext.Load += WaitPageLoad;
 
             var navigationFinished = false;
-            var navigationTask = Page.GoToAsync(TestConstants.ServerUrl + "/networkidle.html",
+            var navigationTask = DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/networkidle.html",
                 new NavigationOptions { WaitUntil = new[] { WaitUntilNavigation.Networkidle0 } })
                 .ContinueWith(res =>
                 {
@@ -367,7 +367,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         public async Task ShouldNavigateToDataURLAndFireDataURLRequests()
         {
             var requests = new List<Request>();
-            Page.Request += (_, e) =>
+            DevToolsContext.Request += (_, e) =>
             {
                 if (!TestUtils.IsFavicon(e.Request))
                 {
@@ -375,7 +375,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
                 }
             };
             var dataUrl = "data:text/html,<div>yo</div>";
-            var response = await Page.GoToAsync(dataUrl);
+            var response = await DevToolsContext.GoToAsync(dataUrl);
             Assert.Equal(HttpStatusCode.OK, response.Status);
             Assert.Single(requests);
             Assert.Equal(dataUrl, requests[0].Url);
@@ -386,14 +386,14 @@ namespace PuppeteerSharp.Tests.NavigationTests
         public async Task ShouldNavigateToURLWithHashAndFireRequestsWithoutHash()
         {
             var requests = new List<Request>();
-            Page.Request += (_, e) =>
+            DevToolsContext.Request += (_, e) =>
             {
                 if (!TestUtils.IsFavicon(e.Request))
                 {
                     requests.Add(e.Request);
                 }
             };
-            var response = await Page.GoToAsync(TestConstants.EmptyPage + "#hash");
+            var response = await DevToolsContext.GoToAsync(TestConstants.EmptyPage + "#hash");
             Assert.Equal(HttpStatusCode.OK, response.Status);
             Assert.Equal(TestConstants.EmptyPage, response.Url);
             Assert.Single(requests);
@@ -404,7 +404,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         [PuppeteerFact]
         public async Task ShouldWorkWithSelfRequestingPage()
         {
-            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/self-request.html");
+            var response = await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/self-request.html");
             Assert.Equal(HttpStatusCode.OK, response.Status);
             Assert.Contains("self-request.html", response.Url);
         }
@@ -414,7 +414,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         public async Task ShouldFailWhenNavigatingAndShowTheUrlAtTheErrorMessage()
         {
             var url = TestConstants.HttpsPrefix + "/redirect/1.html";
-            var exception = await Assert.ThrowsAnyAsync<NavigationException>(async () => await Page.GoToAsync(url));
+            var exception = await Assert.ThrowsAnyAsync<NavigationException>(async () => await DevToolsContext.GoToAsync(url));
             Assert.Contains(url, exception.Message);
             Assert.Contains(url, exception.Url);
         }
@@ -423,15 +423,15 @@ namespace PuppeteerSharp.Tests.NavigationTests
         [PuppeteerFact]
         public async Task ShouldSendReferer()
         {
-            await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (_, e) => await e.Request.ContinueAsync();
+            await DevToolsContext.SetRequestInterceptionAsync(true);
+            DevToolsContext.Request += async (_, e) => await e.Request.ContinueAsync();
             string referer1 = null;
             string referer2 = null;
 
             await Task.WhenAll(
                 Server.WaitForRequest("/grid.html", r => referer1 = r.Headers["Referer"]),
                 Server.WaitForRequest("/digits/1.png", r => referer2 = r.Headers["Referer"]),
-                Page.GoToAsync(TestConstants.ServerUrl + "/grid.html", new NavigationOptions
+                DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/grid.html", new NavigationOptions
                 {
                     Referer = "http://google.com/"
                 })

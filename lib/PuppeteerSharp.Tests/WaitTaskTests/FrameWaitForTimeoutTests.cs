@@ -18,9 +18,9 @@ namespace PuppeteerSharp.Tests.WaitForTests
         [PuppeteerFact]
         public async Task WaitsForTheGivenTimeoutBeforeResolving()
         {
-            await Page.GoToAsync(TestConstants.EmptyPage);
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
             var startTime = DateTime.Now;
-            await Page.MainFrame.WaitForTimeoutAsync(1000);
+            await DevToolsContext.MainFrame.WaitForTimeoutAsync(1000);
             Assert.True((DateTime.Now - startTime).TotalMilliseconds > 700);
             Assert.True((DateTime.Now - startTime).TotalMilliseconds < 1300);
         }

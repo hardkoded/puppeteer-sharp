@@ -18,16 +18,16 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         [PuppeteerFact]
         public async Task ShouldWork()
         {
-            await Page.SetContentAsync("<section id='testAttribute'>43543</section>");
-            var idAttribute = await Page.QuerySelectorAsync("section").EvaluateFunctionAsync<string>("e => e.id");
+            await DevToolsContext.SetContentAsync("<section id='testAttribute'>43543</section>");
+            var idAttribute = await DevToolsContext.QuerySelectorAsync("section").EvaluateFunctionAsync<string>("e => e.id");
             Assert.Equal("testAttribute", idAttribute);
         }
 
         [PuppeteerFact]
         public async Task ShouldWorkWithAwaitedElements()
         {
-            await Page.SetContentAsync("<section id='testAttribute'>43543</section>");
-            var section = await Page.QuerySelectorAsync("section");
+            await DevToolsContext.SetContentAsync("<section id='testAttribute'>43543</section>");
+            var section = await DevToolsContext.QuerySelectorAsync("section");
             var idAttribute = await section.EvaluateFunctionAsync<string>("e => e.id");
             Assert.Equal("testAttribute", idAttribute);
         }
@@ -36,8 +36,8 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         [PuppeteerFact]
         public async Task ShouldAcceptArguments()
         {
-            await Page.SetContentAsync("<section>hello</section>");
-            var text = await Page.QuerySelectorAsync("section").EvaluateFunctionAsync<string>("(e, suffix) => e.textContent + suffix", " world!");
+            await DevToolsContext.SetContentAsync("<section>hello</section>");
+            var text = await DevToolsContext.QuerySelectorAsync("section").EvaluateFunctionAsync<string>("(e, suffix) => e.textContent + suffix", " world!");
             Assert.Equal("hello world!", text);
         }
 
@@ -45,9 +45,9 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         [PuppeteerFact]
         public async Task ShouldAcceptElementHandlesAsArguments()
         {
-            await Page.SetContentAsync("<section>hello</section><div> world</div>");
-            var divHandle = await Page.QuerySelectorAsync("div");
-            var text = await Page.QuerySelectorAsync("section").EvaluateFunctionAsync<string>("(e, div) => e.textContent + div.textContent", divHandle);
+            await DevToolsContext.SetContentAsync("<section>hello</section><div> world</div>");
+            var divHandle = await DevToolsContext.QuerySelectorAsync("div");
+            var text = await DevToolsContext.QuerySelectorAsync("section").EvaluateFunctionAsync<string>("(e, div) => e.textContent + div.textContent", divHandle);
             Assert.Equal("hello world", text);
         }
 
@@ -56,7 +56,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         public async Task ShouldThrowErrorIfNoElementIsFound()
         {
             var exception = await Assert.ThrowsAsync<SelectorException>(()
-                => Page.QuerySelectorAsync("section").EvaluateFunctionAsync<string>("e => e.id"));
+                => DevToolsContext.QuerySelectorAsync("section").EvaluateFunctionAsync<string>("e => e.id"));
             Assert.Contains("failed to find element matching selector", exception.Message);
         }
     }

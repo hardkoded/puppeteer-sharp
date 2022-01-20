@@ -21,9 +21,9 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldWork()
         {
             var requests = new Dictionary<string, Request>();
-            Page.Request += (_, e) => requests[e.Request.Url.Split('/').Last()] = e.Request;
+            DevToolsContext.Request += (_, e) => requests[e.Request.Url.Split('/').Last()] = e.Request;
             Server.SetRedirect("/rrredirect", "/frames/one-frame.html");
-            await Page.GoToAsync(TestConstants.ServerUrl + "/rrredirect");
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/rrredirect");
             Assert.True(requests["rrredirect"].IsNavigationRequest);
             Assert.True(requests["one-frame.html"].IsNavigationRequest);
             Assert.True(requests["frame.html"].IsNavigationRequest);
@@ -36,15 +36,15 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldWorkWithRequestInterception()
         {
             var requests = new Dictionary<string, Request>();
-            Page.Request += async (_, e) =>
+            DevToolsContext.Request += async (_, e) =>
             {
                 requests[e.Request.Url.Split('/').Last()] = e.Request;
                 await e.Request.ContinueAsync();
             };
 
-            await Page.SetRequestInterceptionAsync(true);
+            await DevToolsContext.SetRequestInterceptionAsync(true);
             Server.SetRedirect("/rrredirect", "/frames/one-frame.html");
-            await Page.GoToAsync(TestConstants.ServerUrl + "/rrredirect");
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/rrredirect");
             Assert.True(requests["rrredirect"].IsNavigationRequest);
             Assert.True(requests["one-frame.html"].IsNavigationRequest);
             Assert.True(requests["frame.html"].IsNavigationRequest);
@@ -57,8 +57,8 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldWorkWhenNavigatingToImage()
         {
             var requests = new List<Request>();
-            Page.Request += (_, e) => requests.Add(e.Request);
-            await Page.GoToAsync(TestConstants.ServerUrl + "/pptr.png");
+            DevToolsContext.Request += (_, e) => requests.Add(e.Request);
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/pptr.png");
             Assert.True(requests[0].IsNavigationRequest);
         }
     }

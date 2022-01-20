@@ -23,9 +23,9 @@ namespace PuppeteerSharp.Tests.CoverageTests
         [PuppeteerFact]
         public async Task ShouldWork()
         {
-            await Page.Coverage.StartCSSCoverageAsync();
-            await Page.GoToAsync(TestConstants.ServerUrl + "/csscoverage/simple.html");
-            var coverage = await Page.Coverage.StopCSSCoverageAsync();
+            await DevToolsContext.Coverage.StartCSSCoverageAsync();
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/csscoverage/simple.html");
+            var coverage = await DevToolsContext.Coverage.StopCSSCoverageAsync();
             Assert.Single(coverage);
             Assert.Contains("/csscoverage/simple.html", coverage[0].Url);
             Assert.Equal(new CoverageEntryRange[]
@@ -44,9 +44,9 @@ namespace PuppeteerSharp.Tests.CoverageTests
         [PuppeteerFact]
         public async Task ShouldReportSourceUrls()
         {
-            await Page.Coverage.StartCSSCoverageAsync();
-            await Page.GoToAsync(TestConstants.ServerUrl + "/csscoverage/sourceurl.html");
-            var coverage = await Page.Coverage.StopCSSCoverageAsync();
+            await DevToolsContext.Coverage.StartCSSCoverageAsync();
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/csscoverage/sourceurl.html");
+            var coverage = await DevToolsContext.Coverage.StopCSSCoverageAsync();
             Assert.Single(coverage);
             Assert.Equal("nicename.css", coverage[0].Url);
         }
@@ -55,9 +55,9 @@ namespace PuppeteerSharp.Tests.CoverageTests
         [PuppeteerFact]
         public async Task ShouldReportMultipleStylesheets()
         {
-            await Page.Coverage.StartCSSCoverageAsync();
-            await Page.GoToAsync(TestConstants.ServerUrl + "/csscoverage/multiple.html");
-            var coverage = await Page.Coverage.StopCSSCoverageAsync();
+            await DevToolsContext.Coverage.StartCSSCoverageAsync();
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/csscoverage/multiple.html");
+            var coverage = await DevToolsContext.Coverage.StopCSSCoverageAsync();
             Assert.Equal(2, coverage.Length);
             var orderedList = coverage.OrderBy(c => c.Url);
             Assert.Contains("/csscoverage/stylesheet1.css", orderedList.ElementAt(0).Url);
@@ -68,9 +68,9 @@ namespace PuppeteerSharp.Tests.CoverageTests
         [PuppeteerFact]
         public async Task ShouldReportStylesheetsThatHaveNoCoverage()
         {
-            await Page.Coverage.StartCSSCoverageAsync();
-            await Page.GoToAsync(TestConstants.ServerUrl + "/csscoverage/unused.html");
-            var coverage = await Page.Coverage.StopCSSCoverageAsync();
+            await DevToolsContext.Coverage.StartCSSCoverageAsync();
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/csscoverage/unused.html");
+            var coverage = await DevToolsContext.Coverage.StopCSSCoverageAsync();
             Assert.Single(coverage);
             var entry = coverage[0];
             Assert.Contains("unused.css", entry.Url);
@@ -81,9 +81,9 @@ namespace PuppeteerSharp.Tests.CoverageTests
         [PuppeteerFact]
         public async Task ShouldWorkWithMediaQueries()
         {
-            await Page.Coverage.StartCSSCoverageAsync();
-            await Page.GoToAsync(TestConstants.ServerUrl + "/csscoverage/media.html");
-            var coverage = await Page.Coverage.StopCSSCoverageAsync();
+            await DevToolsContext.Coverage.StartCSSCoverageAsync();
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/csscoverage/media.html");
+            var coverage = await DevToolsContext.Coverage.StopCSSCoverageAsync();
             Assert.Single(coverage);
             var entry = coverage[0];
             Assert.Contains("/csscoverage/media.html", entry.Url);
@@ -117,9 +117,9 @@ namespace PuppeteerSharp.Tests.CoverageTests
                 ""Text"": ""\n @charset \""utf - 8\"";\n@namespace svg url(http://www.w3.org/2000/svg);\n@font-face {\n  font-family: \""Example Font\"";\n src: url(\""./Dosis-Regular.ttf\"");\n}\n\n#fluffy {\n  border: 1px solid black;\n  z-index: 1;\n  /* -webkit-disabled-property: rgb(1, 2, 3) */\n  -lol-cats: \""dogs\"" /* non-existing property */\n}\n\n@media (min-width: 1px) {\n  span {\n    -webkit-border-radius: 10px;\n    font-family: \""Example Font\"";\n    animation: 1s identifier;\n  }\n}\n""
               }
             ]";
-            await Page.Coverage.StartCSSCoverageAsync();
-            await Page.GoToAsync(TestConstants.ServerUrl + "/csscoverage/involved.html");
-            var coverage = await Page.Coverage.StopCSSCoverageAsync();
+            await DevToolsContext.Coverage.StartCSSCoverageAsync();
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/csscoverage/involved.html");
+            var coverage = await DevToolsContext.Coverage.StopCSSCoverageAsync();
             Assert.Equal(
                 TestUtils.CompressText(involved),
                 Regex.Replace(TestUtils.CompressText(JsonConvert.SerializeObject(coverage)), @":\d{4}\/", ":<PORT>/"));
@@ -129,15 +129,15 @@ namespace PuppeteerSharp.Tests.CoverageTests
         [PuppeteerFact]
         public async Task ShouldIgnoreInjectedStylesheets()
         {
-            await Page.Coverage.StartCSSCoverageAsync();
-            await Page.AddStyleTagAsync(new AddTagOptions
+            await DevToolsContext.Coverage.StartCSSCoverageAsync();
+            await DevToolsContext.AddStyleTagAsync(new AddTagOptions
             {
                 Content = "body { margin: 10px;}"
             });
             // trigger style recalc
-            var margin = await Page.EvaluateExpressionAsync<string>("window.getComputedStyle(document.body).margin");
+            var margin = await DevToolsContext.EvaluateExpressionAsync<string>("window.getComputedStyle(document.body).margin");
             Assert.Equal("10px", margin);
-            var coverage = await Page.Coverage.StopCSSCoverageAsync();
+            var coverage = await DevToolsContext.Coverage.StopCSSCoverageAsync();
             Assert.Empty(coverage);
         }
 
@@ -145,8 +145,8 @@ namespace PuppeteerSharp.Tests.CoverageTests
         [PuppeteerFact]
         public async Task ShouldWorkWithArRecentlyLoadedStylesheet()
         {
-            await Page.Coverage.StartCSSCoverageAsync();
-            await Page.EvaluateFunctionAsync(@"async url => {
+            await DevToolsContext.Coverage.StartCSSCoverageAsync();
+            await DevToolsContext.EvaluateFunctionAsync(@"async url => {
                 document.body.textContent = 'hello, world';
 
                 const link = document.createElement('link');
@@ -155,7 +155,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
                 document.head.appendChild(link);
                 await new Promise(x => link.onload = x);
             }", TestConstants.ServerUrl + "/csscoverage/stylesheet1.css");
-            var coverage = await Page.Coverage.StopCSSCoverageAsync();
+            var coverage = await DevToolsContext.Coverage.StopCSSCoverageAsync();
             Assert.Single(coverage);
         }
     }

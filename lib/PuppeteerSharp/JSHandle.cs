@@ -10,7 +10,7 @@ using Newtonsoft.Json.Linq;
 namespace CefSharp.Puppeteer
 {
     /// <summary>
-    /// JSHandle represents an in-page JavaScript object. JSHandles can be created with the <see cref="Page.EvaluateExpressionHandleAsync(string)"/> and <see cref="Page.EvaluateFunctionHandleAsync(string, object[])"/> methods.
+    /// JSHandle represents an in-page JavaScript object. JSHandles can be created with the <see cref="DevToolsContext.EvaluateExpressionHandleAsync(string)"/> and <see cref="DevToolsContext.EvaluateFunctionHandleAsync(string, object[])"/> methods.
     /// </summary>
     [JsonConverter(typeof(JSHandleMethodConverter))]
     public class JSHandle

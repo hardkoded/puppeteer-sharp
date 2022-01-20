@@ -17,7 +17,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         [PuppeteerFact]
         public async Task ShouldWork()
         {
-            var aHandle = await Page.EvaluateExpressionHandleAsync(@"({
+            var aHandle = await DevToolsContext.EvaluateExpressionHandleAsync(@"({
               foo: 'bar'
             })");
             var properties = await aHandle.GetPropertiesAsync();
@@ -30,7 +30,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         [PuppeteerFact]
         public async Task ShouldReturnEvenNonOwnProperties()
         {
-            var aHandle = await Page.EvaluateFunctionHandleAsync(@"() => {
+            var aHandle = await DevToolsContext.EvaluateFunctionHandleAsync(@"() => {
               class A {
                 constructor() {
                   this.a = '1';

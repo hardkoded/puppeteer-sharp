@@ -20,15 +20,15 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         public async Task ShouldWork()
         {
             #region SetViewportAsync
-            await Page.SetViewportAsync(new ViewPortOptions
+            await DevToolsContext.SetViewportAsync(new ViewPortOptions
             {
                 Width = 500,
                 Height = 500
             });
             #endregion
-            await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
-            await Page.EvaluateExpressionAsync("window.scrollBy(50, 100)");
-            var elementHandle = await Page.QuerySelectorAsync(".box:nth-of-type(3)");
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+            await DevToolsContext.EvaluateExpressionAsync("window.scrollBy(50, 100)");
+            var elementHandle = await DevToolsContext.QuerySelectorAsync(".box:nth-of-type(3)");
             var screenshot = await elementHandle.ScreenshotDataAsync();
             Assert.True(ScreenshotHelper.PixelMatch("screenshot-element-bounding-box.png", screenshot));
         }
@@ -37,12 +37,12 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         [PuppeteerFact]
         public async Task ShouldTakeIntoAccountPaddingAndBorder()
         {
-            await Page.SetViewportAsync(new ViewPortOptions
+            await DevToolsContext.SetViewportAsync(new ViewPortOptions
             {
                 Width = 500,
                 Height = 500
             });
-            await Page.SetContentAsync(@"
+            await DevToolsContext.SetContentAsync(@"
                 something above
                 <style> div {
                     border: 2px solid blue;
@@ -53,7 +53,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
                 </style>
                 <div></div>
             ");
-            var elementHandle = await Page.QuerySelectorAsync("div");
+            var elementHandle = await DevToolsContext.QuerySelectorAsync("div");
             var screenshot = await elementHandle.ScreenshotDataAsync();
             Assert.True(ScreenshotHelper.PixelMatch("screenshot-element-padding-border.png", screenshot));
         }
@@ -62,12 +62,12 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         [PuppeteerFact(Skip = "TODO: CEF")]
         public async Task ShouldCaptureFullElementWhenLargerThanViewport()
         {
-            await Page.SetViewportAsync(new ViewPortOptions
+            await DevToolsContext.SetViewportAsync(new ViewPortOptions
             {
                 Width = 500,
                 Height = 500
             });
-            await Page.SetContentAsync(@"
+            await DevToolsContext.SetContentAsync(@"
                 something above
                 <style>
                 div.to-screenshot {
@@ -82,22 +82,22 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
                 </style>
                 <div class='to-screenshot'></div>"
             );
-            var elementHandle = await Page.QuerySelectorAsync("div.to-screenshot");
+            var elementHandle = await DevToolsContext.QuerySelectorAsync("div.to-screenshot");
             var screenshot = await elementHandle.ScreenshotDataAsync();
             Assert.True(ScreenshotHelper.PixelMatch("screenshot-element-larger-than-viewport.png", screenshot));
             Assert.Equal(JToken.FromObject(new { w = 500, h = 500 }),
-                await Page.EvaluateExpressionAsync("({ w: window.innerWidth, h: window.innerHeight })"));
+                await DevToolsContext.EvaluateExpressionAsync("({ w: window.innerWidth, h: window.innerHeight })"));
         }
 
         [PuppeteerFact]
         public async Task ShouldScrollElementIntoView()
         {
-            await Page.SetViewportAsync(new ViewPortOptions
+            await DevToolsContext.SetViewportAsync(new ViewPortOptions
             {
                 Width = 500,
                 Height = 500
             });
-            await Page.SetContentAsync(@"
+            await DevToolsContext.SetContentAsync(@"
                 something above
                 <style> div.above {
                     border: 2px solid blue;
@@ -114,7 +114,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
                 <div class='above'></div>
                 <div class='to-screenshot'></div>
             ");
-            var elementHandle = await Page.QuerySelectorAsync("div.to-screenshot");
+            var elementHandle = await DevToolsContext.QuerySelectorAsync("div.to-screenshot");
             var screenshot = await elementHandle.ScreenshotDataAsync();
             Assert.True(ScreenshotHelper.PixelMatch("screenshot-element-scrolled-into-view.png", screenshot));
         }
@@ -122,12 +122,12 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         [PuppeteerFact]
         public async Task ShouldWorkWithARotatedElement()
         {
-            await Page.SetViewportAsync(new ViewPortOptions
+            await DevToolsContext.SetViewportAsync(new ViewPortOptions
             {
                 Width = 500,
                 Height = 500
             });
-            await Page.SetContentAsync(@"
+            await DevToolsContext.SetContentAsync(@"
                 <div style='position: absolute;
                 top: 100px;
                 left: 100px;
@@ -136,7 +136,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
                 background: green;
                 transform: rotateZ(200deg); '>&nbsp;</div>
             ");
-            var elementHandle = await Page.QuerySelectorAsync("div");
+            var elementHandle = await DevToolsContext.QuerySelectorAsync("div");
             var screenshot = await elementHandle.ScreenshotDataAsync();
             Assert.True(ScreenshotHelper.PixelMatch("screenshot-element-rotate.png", screenshot));
         }
@@ -144,9 +144,9 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         [PuppeteerFact]
         public async Task ShouldFailToScreenshotADetachedElement()
         {
-            await Page.SetContentAsync("<h1>remove this</h1>");
-            var elementHandle = await Page.QuerySelectorAsync("h1");
-            await Page.EvaluateFunctionAsync("element => element.remove()", elementHandle);
+            await DevToolsContext.SetContentAsync("<h1>remove this</h1>");
+            var elementHandle = await DevToolsContext.QuerySelectorAsync("h1");
+            await DevToolsContext.EvaluateFunctionAsync("element => element.remove()", elementHandle);
 
             var exception = await Assert.ThrowsAsync<PuppeteerException>(elementHandle.ScreenshotStreamAsync);
             Assert.Equal("Node is either not visible or not an HTMLElement", exception.Message);
@@ -155,8 +155,8 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         [PuppeteerFact]
         public async Task ShouldNotHangWithZeroWidthHeightElement()
         {
-            await Page.SetContentAsync(@"<div style='width: 50px; height: 0'></div>");
-            var elementHandle = await Page.QuerySelectorAsync("div");
+            await DevToolsContext.SetContentAsync(@"<div style='width: 50px; height: 0'></div>");
+            var elementHandle = await DevToolsContext.QuerySelectorAsync("div");
             var exception = await Assert.ThrowsAsync<PuppeteerException>(elementHandle.ScreenshotDataAsync);
             Assert.Equal("Node has 0 height.", exception.Message);
         }
@@ -164,8 +164,8 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         [PuppeteerFact]
         public async Task ShouldWorkForAnElementWithFractionalDimensions()
         {
-            await Page.SetContentAsync("<div style=\"width:48.51px;height:19.8px;border:1px solid black;\"></div>");
-            var elementHandle = await Page.QuerySelectorAsync("div");
+            await DevToolsContext.SetContentAsync("<div style=\"width:48.51px;height:19.8px;border:1px solid black;\"></div>");
+            var elementHandle = await DevToolsContext.QuerySelectorAsync("div");
             var screenshot = await elementHandle.ScreenshotDataAsync();
             Assert.True(ScreenshotHelper.PixelMatch("screenshot-element-fractional.png", screenshot));
         }
@@ -173,8 +173,8 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         [PuppeteerFact]
         public async Task ShouldWorkForAnElementWithAnOffset()
         {
-            await Page.SetContentAsync("<div style=\"position:absolute; top: 10.3px; left: 20.4px;width:50.3px;height:20.2px;border:1px solid black;\"></div>");
-            var elementHandle = await Page.QuerySelectorAsync("div");
+            await DevToolsContext.SetContentAsync("<div style=\"position:absolute; top: 10.3px; left: 20.4px;width:50.3px;height:20.2px;border:1px solid black;\"></div>");
+            var elementHandle = await DevToolsContext.QuerySelectorAsync("div");
             var screenshot = await elementHandle.ScreenshotDataAsync();
             Assert.True(ScreenshotHelper.PixelMatch("screenshot-element-fractional-offset.png", screenshot));
         }

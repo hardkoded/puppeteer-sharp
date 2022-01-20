@@ -22,11 +22,11 @@ namespace PuppeteerSharp.Tests.EvaluationTests
         [PuppeteerFact]
         public async Task ShouldEvaluateBeforeAnythingElseOnThePage()
         {
-            await Page.EvaluateFunctionOnNewDocumentAsync(@"function(){
+            await DevToolsContext.EvaluateFunctionOnNewDocumentAsync(@"function(){
                 window.injected = 123;
             }");
-            await Page.GoToAsync(TestConstants.ServerUrl + "/tamperable.html");
-            Assert.Equal(123, await Page.EvaluateExpressionAsync<int>("window.result"));
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/tamperable.html");
+            Assert.Equal(123, await DevToolsContext.EvaluateExpressionAsync<int>("window.result"));
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluateOnNewDocument", "should work with CSP")]
@@ -34,26 +34,26 @@ namespace PuppeteerSharp.Tests.EvaluationTests
         public async Task ShouldWorkWithCSP()
         {
             Server.SetCSP("/empty.html", "script-src " + TestConstants.ServerUrl);
-            await Page.EvaluateFunctionOnNewDocumentAsync(@"function(){
+            await DevToolsContext.EvaluateFunctionOnNewDocumentAsync(@"function(){
                 window.injected = 123;
             }");
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Equal(123, await Page.EvaluateExpressionAsync<int>("window.injected"));
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            Assert.Equal(123, await DevToolsContext.EvaluateExpressionAsync<int>("window.injected"));
 
             // Make sure CSP works.
-            await Page.AddScriptTagAsync(new AddTagOptions
+            await DevToolsContext.AddScriptTagAsync(new AddTagOptions
             {
                 Content = "window.e = 10;"
             }).ContinueWith(_ => Task.CompletedTask);
-            Assert.Null(await Page.EvaluateExpressionAsync("window.e"));
+            Assert.Null(await DevToolsContext.EvaluateExpressionAsync("window.e"));
         }
 
         [PuppeteerFact]
         public async Task ShouldWorkWithExpressions()
         {
-            await Page.EvaluateExpressionOnNewDocumentAsync("window.injected = 123;");
-            await Page.GoToAsync(TestConstants.ServerUrl + "/tamperable.html");
-            Assert.Equal(123, await Page.EvaluateExpressionAsync<int>("window.result"));
+            await DevToolsContext.EvaluateExpressionOnNewDocumentAsync("window.injected = 123;");
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/tamperable.html");
+            Assert.Equal(123, await DevToolsContext.EvaluateExpressionAsync<int>("window.result"));
         }
     }
 }

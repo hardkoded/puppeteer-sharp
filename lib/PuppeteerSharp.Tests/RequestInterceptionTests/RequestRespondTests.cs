@@ -21,8 +21,8 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         [PuppeteerFact]
         public async Task ShouldWork()
         {
-            await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (_, e) =>
+            await DevToolsContext.SetRequestInterceptionAsync(true);
+            DevToolsContext.Request += async (_, e) =>
             {
                 await e.Request.RespondAsync(new ResponseData
                 {
@@ -35,10 +35,10 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                 });
             };
 
-            var response = await Page.GoToAsync(TestConstants.EmptyPage);
+            var response = await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
             Assert.Equal(HttpStatusCode.Created, response.Status);
             Assert.Equal("bar", response.Headers["foo"]);
-            Assert.Equal("Yo, page!", await Page.EvaluateExpressionAsync<string>("document.body.textContent"));
+            Assert.Equal("Yo, page!", await DevToolsContext.EvaluateExpressionAsync<string>("document.body.textContent"));
         }
 
         /// <summary>
@@ -50,8 +50,8 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         [PuppeteerFact]
         public async Task ShouldWorkReturnStatusPhrases()
         {
-            await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (_, e) =>
+            await DevToolsContext.SetRequestInterceptionAsync(true);
+            DevToolsContext.Request += async (_, e) =>
             {
                 await e.    Request.RespondAsync(new ResponseData
                 {
@@ -60,19 +60,19 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                 });
             };
 
-            var response = await Page.GoToAsync(TestConstants.EmptyPage);
+            var response = await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
             Assert.Equal(HttpStatusCode.UpgradeRequired, response.Status);
             Assert.Equal("Upgrade Required", response.StatusText);
-            Assert.Equal("Yo, page!", await Page.EvaluateExpressionAsync<string>("document.body.textContent"));
+            Assert.Equal("Yo, page!", await DevToolsContext.EvaluateExpressionAsync<string>("document.body.textContent"));
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Request.respond", "should redirect")]
         [PuppeteerFact]
         public async Task ShouldRedirect()
         {
-            await Page.SetRequestInterceptionAsync(true);
+            await DevToolsContext.SetRequestInterceptionAsync(true);
 
-            Page.Request += async (_, e) =>
+            DevToolsContext.Request += async (_, e) =>
             {
                 if (!e.Request.Url.Contains("rrredirect"))
                 {
@@ -90,7 +90,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                 });
             };
 
-            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/rrredirect");
+            var response = await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/rrredirect");
 
             Assert.Single(response.Request.RedirectChain);
             Assert.Equal(TestConstants.ServerUrl + "/rrredirect", response.Request.RedirectChain[0].Url);
@@ -101,8 +101,8 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         [PuppeteerFact]
         public async Task ShouldAllowMockingBinaryResponses()
         {
-            await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (_, e) =>
+            await DevToolsContext.SetRequestInterceptionAsync(true);
+            DevToolsContext.Request += async (_, e) =>
             {
                 var imageData = File.ReadAllBytes("./Assets/pptr.png");
                 await e.Request.RespondAsync(new ResponseData
@@ -112,14 +112,14 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                 });
             };
 
-            await Page.EvaluateFunctionAsync(@"PREFIX =>
+            await DevToolsContext.EvaluateFunctionAsync(@"PREFIX =>
             {
                 const img = document.createElement('img');
                 img.src = PREFIX + '/does-not-exist.png';
                 document.body.appendChild(img);
                 return new Promise(fulfill => img.onload = fulfill);
             }", TestConstants.ServerUrl);
-            var img = await Page.QuerySelectorAsync("img");
+            var img = await DevToolsContext.QuerySelectorAsync("img");
             Assert.True(ScreenshotHelper.PixelMatch("mock-binary-response.png", await img.ScreenshotDataAsync()));
         }
 
@@ -127,8 +127,8 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         [PuppeteerFact]
         public async Task ShouldStringifyInterceptedRequestResponseHeaders()
         {
-            await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (_, e) =>
+            await DevToolsContext.SetRequestInterceptionAsync(true);
+            DevToolsContext.Request += async (_, e) =>
             {
                 await e.Request.RespondAsync(new ResponseData
                 {
@@ -141,17 +141,17 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                 });
             };
 
-            var response = await Page.GoToAsync(TestConstants.EmptyPage);
+            var response = await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
             Assert.Equal(HttpStatusCode.OK, response.Status);
             Assert.Equal("True", response.Headers["foo"]);
-            Assert.Equal("Yo, page!", await Page.EvaluateExpressionAsync<string>("document.body.textContent"));
+            Assert.Equal("Yo, page!", await DevToolsContext.EvaluateExpressionAsync<string>("document.body.textContent"));
         }
 
         [PuppeteerFact]
         public async Task ShouldAllowMultipleInterceptedRequestResponseHeaders()
         {
-            await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (_, e) =>
+            await DevToolsContext.SetRequestInterceptionAsync(true);
+            DevToolsContext.Request += async (_, e) =>
             {
                 await e.Request.RespondAsync(new ResponseData
                 {
@@ -165,12 +165,12 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                 });
             };
 
-            var response = await Page.GoToAsync(TestConstants.EmptyPage);
-            var cookies = await Page.GetCookiesAsync(TestConstants.EmptyPage);
+            var response = await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            var cookies = await DevToolsContext.GetCookiesAsync(TestConstants.EmptyPage);
 
             Assert.Equal(HttpStatusCode.OK, response.Status);
             Assert.Equal("True\nFalse", response.Headers["foo"]);
-            Assert.Equal("Yo, page!", await Page.EvaluateExpressionAsync<string>("document.body.textContent"));
+            Assert.Equal("Yo, page!", await DevToolsContext.EvaluateExpressionAsync<string>("document.body.textContent"));
             Assert.Equal("specialId", cookies[0].Name);
             Assert.Equal("123456", cookies[0].Value);
             Assert.Equal("sessionId", cookies[1].Name);

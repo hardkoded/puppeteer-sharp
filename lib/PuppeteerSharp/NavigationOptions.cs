@@ -1,7 +1,7 @@
 namespace CefSharp.Puppeteer
 {
     /// <summary>
-    /// Navigation options used by <see cref="Page.WaitForNavigationAsync(NavigationOptions)"/> and <see cref="Page.SetContentAsync(string, NavigationOptions)"/>
+    /// Navigation options used by <see cref="DevToolsContext.WaitForNavigationAsync(NavigationOptions)"/> and <see cref="DevToolsContext.SetContentAsync(string, NavigationOptions)"/>
     /// </summary>
     public class NavigationOptions
     {
@@ -9,7 +9,7 @@ namespace CefSharp.Puppeteer
         /// Maximum navigation time in milliseconds, defaults to 30 seconds, pass <c>0</c> to disable timeout.
         /// </summary>
         /// <remarks>
-        /// The default value can be changed by setting the <see cref="Page.DefaultNavigationTimeout"/> or <see cref="Page.DefaultTimeout"/> property.
+        /// The default value can be changed by setting the <see cref="DevToolsContext.DefaultNavigationTimeout"/> or <see cref="DevToolsContext.DefaultTimeout"/> property.
         /// </remarks>
         public int? Timeout { get; set; }
 
@@ -19,7 +19,7 @@ namespace CefSharp.Puppeteer
         public WaitUntilNavigation[] WaitUntil { get; set; }
 
         /// <summary>
-        /// Referer header value. If provided it will take prefrence over the referer header value set by <see cref="Page.SetExtraHttpHeadersAsync(System.Collections.Generic.Dictionary{string, string})"/>
+        /// Referer header value. If provided it will take prefrence over the referer header value set by <see cref="DevToolsContext.SetExtraHttpHeadersAsync(System.Collections.Generic.Dictionary{string, string})"/>
         /// </summary>
         /// <value>The referer.</value>
         public string Referer { get; set; }

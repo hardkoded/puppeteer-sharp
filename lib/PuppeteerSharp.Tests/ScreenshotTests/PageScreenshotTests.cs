@@ -24,20 +24,20 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             var outputFile = Path.Combine(BaseDirectory, "output.png");
             var fileInfo = new FileInfo(outputFile);
 
-            await Page.SetViewportAsync(new ViewPortOptions
+            await DevToolsContext.SetViewportAsync(new ViewPortOptions
             {
                 Width = 500,
                 Height = 500
             });
 
-            await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/grid.html");
 
             if (fileInfo.Exists)
             {
                 fileInfo.Delete();
             }
 
-            await Page.ScreenshotAsync(outputFile);
+            await DevToolsContext.ScreenshotAsync(outputFile);
 
             fileInfo = new FileInfo(outputFile);
             Assert.True(new FileInfo(outputFile).Length > 0);
@@ -53,13 +53,13 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         [PuppeteerFact]
         public async Task ShouldWork()
         {
-            await Page.SetViewportAsync(new ViewPortOptions
+            await DevToolsContext.SetViewportAsync(new ViewPortOptions
             {
                 Width = 500,
                 Height = 500
             });
-            await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
-            var screenshot = await Page.ScreenshotDataAsync();
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+            var screenshot = await DevToolsContext.ScreenshotDataAsync();
             Assert.True(ScreenshotHelper.PixelMatch("screenshot-sanity.png", screenshot));
         }
 
@@ -67,13 +67,13 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         [PuppeteerFact]
         public async Task ShouldClipRect()
         {
-            await Page.SetViewportAsync(new ViewPortOptions
+            await DevToolsContext.SetViewportAsync(new ViewPortOptions
             {
                 Width = 500,
                 Height = 500
             });
-            await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
-            var screenshot = await Page.ScreenshotDataAsync(new ScreenshotOptions
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+            var screenshot = await DevToolsContext.ScreenshotDataAsync(new ScreenshotOptions
             {
                 Clip = new Clip
                 {
@@ -89,13 +89,13 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         [PuppeteerFact]
         public async Task ShouldClipScale()
         {
-            await Page.SetViewportAsync(new ViewPortOptions
+            await DevToolsContext.SetViewportAsync(new ViewPortOptions
             {
                 Width = 500,
                 Height = 500
             });
-            await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
-            var screenshot = await Page.ScreenshotDataAsync(new ScreenshotOptions
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+            var screenshot = await DevToolsContext.ScreenshotDataAsync(new ScreenshotOptions
             {
                 Clip = new Clip
                 {
@@ -112,9 +112,9 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         [PuppeteerFact]
         public async Task ShouldClipElementsToTheViewport()
         {
-            await Page.SetViewportAsync(new ViewPortOptions { Width = 500, Height = 500 });
-            await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
-            var screenshot = await Page.ScreenshotDataAsync(new ScreenshotOptions
+            await DevToolsContext.SetViewportAsync(new ViewPortOptions { Width = 500, Height = 500 });
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+            var screenshot = await DevToolsContext.ScreenshotDataAsync(new ScreenshotOptions
             {
                 Clip = new Clip
                 {
@@ -164,13 +164,13 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         [PuppeteerFact]
         public async Task ShouldTakeFullPageScreenshots()
         {
-            await Page.SetViewportAsync(new ViewPortOptions
+            await DevToolsContext.SetViewportAsync(new ViewPortOptions
             {
                 Width = 500,
                 Height = 500
             });
-            await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
-            var screenshot = await Page.ScreenshotDataAsync(new ScreenshotOptions
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+            var screenshot = await DevToolsContext.ScreenshotDataAsync(new ScreenshotOptions
             {
                 FullPage = true
             });
@@ -232,13 +232,13 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         [PuppeteerFact]
         public async Task ShouldAllowTransparency()
         {
-            await Page.SetViewportAsync(new ViewPortOptions
+            await DevToolsContext.SetViewportAsync(new ViewPortOptions
             {
                 Width = 100,
                 Height = 100
             });
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            var screenshot = await Page.ScreenshotDataAsync(new ScreenshotOptions
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            var screenshot = await DevToolsContext.ScreenshotDataAsync(new ScreenshotOptions
             {
                 OmitBackground = true
             });
@@ -249,13 +249,13 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         [PuppeteerFact]
         public async Task ShouldReturnBase64()
         {
-            await Page.SetViewportAsync(new ViewPortOptions
+            await DevToolsContext.SetViewportAsync(new ViewPortOptions
             {
                 Width = 500,
                 Height = 500
             });
-            await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
-            var screenshot = await Page.ScreenshotBase64Async();
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+            var screenshot = await DevToolsContext.ScreenshotBase64Async();
 
             Assert.True(ScreenshotHelper.PixelMatch("screenshot-sanity.png", Convert.FromBase64String(screenshot)));
         }
@@ -273,13 +273,13 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         [PuppeteerFact]
         public async Task ShouldWorkWithQuality()
         {
-            await Page.SetViewportAsync(new ViewPortOptions
+            await DevToolsContext.SetViewportAsync(new ViewPortOptions
             {
                 Width = 500,
                 Height = 500
             });
-            await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
-            var screenshot = await Page.ScreenshotDataAsync(new ScreenshotOptions
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+            var screenshot = await DevToolsContext.ScreenshotDataAsync(new ScreenshotOptions
             {
                 Type = ScreenshotType.Jpeg,
                 FullPage = true,

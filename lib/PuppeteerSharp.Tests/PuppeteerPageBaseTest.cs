@@ -16,7 +16,7 @@ namespace PuppeteerSharp.Tests
             _ignoreHTTPSerrors = ignoreHTTPSerrors;
         }
 
-        protected Page Page { get; set; }
+        protected DevToolsContext DevToolsContext { get; set; }
         protected ChromiumWebBrowser ChromiumWebBrowser { get; private set; }
 
         public async Task InitializeAsync()
@@ -26,8 +26,8 @@ namespace PuppeteerSharp.Tests
 
             await ChromiumWebBrowser.WaitForInitialLoadAsync();
 
-            Page = await ChromiumWebBrowser.GetPuppeteerPageAsync(_ignoreHTTPSerrors);;
-            Page.DefaultTimeout = System.Diagnostics.Debugger.IsAttached ? TestConstants.DebuggerAttachedTestTimeout : TestConstants.DefaultPuppeteerTimeout;
+            DevToolsContext = await ChromiumWebBrowser.GetDevToolsContextAsync(_ignoreHTTPSerrors);;
+            DevToolsContext.DefaultTimeout = System.Diagnostics.Debugger.IsAttached ? TestConstants.DebuggerAttachedTestTimeout : TestConstants.DefaultPuppeteerTimeout;
         }
 
         public virtual Task DisposeAsync()
@@ -44,10 +44,10 @@ namespace PuppeteerSharp.Tests
             void errorEvent(object sender, ErrorEventArgs e)
             {
                 wrapper.TrySetResult(true);
-                Page.Error -= errorEvent;
+                DevToolsContext.Error -= errorEvent;
             }
 
-            Page.Error += errorEvent;
+            DevToolsContext.Error += errorEvent;
 
             return wrapper.Task;
         }

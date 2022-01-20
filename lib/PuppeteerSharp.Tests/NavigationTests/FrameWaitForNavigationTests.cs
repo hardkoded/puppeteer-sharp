@@ -20,8 +20,8 @@ namespace PuppeteerSharp.Tests.NavigationTests
         [PuppeteerFact]
         public async Task ShouldWork()
         {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
-            var frame = Page.FirstChildFrame();
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
+            var frame = DevToolsContext.FirstChildFrame();
             var waitForNavigationResult = frame.WaitForNavigationAsync();
 
             await Task.WhenAll(
@@ -32,22 +32,22 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Assert.Equal(HttpStatusCode.OK, response.Status);
             Assert.Contains("grid.html", response.Url);
             Assert.Same(frame, response.Frame);
-            Assert.Contains("/frames/one-frame.html", Page.Url);
+            Assert.Contains("/frames/one-frame.html", DevToolsContext.Url);
         }
 
         [PuppeteerTest("navigation.spec.ts", "Frame.waitForNavigation", "should fail when frame detaches")]
         [PuppeteerFact]
         public async Task ShouldFailWhenFrameDetaches()
         {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
-            var frame = Page.FirstChildFrame();
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
+            var frame = DevToolsContext.FirstChildFrame();
             Server.SetRoute("/empty.html", _ => Task.Delay(10000));
             var waitForNavigationResult = frame.WaitForNavigationAsync();
             await Task.WhenAll(
                 Server.WaitForRequest("/empty.html"),
                 frame.EvaluateFunctionAsync($"() => window.location = '{TestConstants.EmptyPage}'"));
 
-            await Page.QuerySelectorAsync("iframe").EvaluateFunctionAsync("frame => frame.remove()");
+            await DevToolsContext.QuerySelectorAsync("iframe").EvaluateFunctionAsync("frame => frame.remove()");
             var exception = await Assert.ThrowsAsync<PuppeteerException>(() => waitForNavigationResult);
             Assert.Equal("Navigating frame was detached", exception.Message);
         }

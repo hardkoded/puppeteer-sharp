@@ -188,7 +188,7 @@ namespace CefSharp.Puppeteer
 
         internal JSHandle CreateJSHandle(RemoteObject remoteObject)
             => remoteObject.Subtype == RemoteObjectSubtype.Node && Frame != null
-                ? new ElementHandle(this, _client, remoteObject, Frame.FrameManager.Page, Frame.FrameManager)
+                ? new ElementHandle(this, _client, remoteObject, Frame.FrameManager.DevToolsContext, Frame.FrameManager)
                 : new JSHandle(this, _client, remoteObject);
 
         private object FormatArgument(object arg)

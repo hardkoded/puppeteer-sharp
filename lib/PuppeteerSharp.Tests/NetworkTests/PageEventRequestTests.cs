@@ -22,7 +22,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldFireForNavigationRequests()
         {
             var requests = new List<Request>();
-            Page.Request += (_, e) =>
+            DevToolsContext.Request += (_, e) =>
             {
                 if (!TestUtils.IsFavicon(e.Request))
                 {
@@ -30,7 +30,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
                 }
             };
 
-            await Page.GoToAsync(TestConstants.EmptyPage);
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
             Assert.Single(requests);
         }
 
@@ -39,7 +39,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldFireForIframes()
         {
             var requests = new List<Request>();
-            Page.Request += (_, e) =>
+            DevToolsContext.Request += (_, e) =>
             {
                 if (!TestUtils.IsFavicon(e.Request))
                 {
@@ -47,9 +47,9 @@ namespace PuppeteerSharp.Tests.NetworkTests
                 }
             };
 
-            await Page.GoToAsync(TestConstants.EmptyPage);
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
 
-            await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
+            await FrameUtils.AttachFrameAsync(DevToolsContext, "frame1", TestConstants.EmptyPage);
             Assert.Equal(2, requests.Count);
         }
 
@@ -58,7 +58,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldFireForFetches()
         {
             var requests = new List<Request>();
-            Page.Request += (_, e) =>
+            DevToolsContext.Request += (_, e) =>
             {
                 if (!TestUtils.IsFavicon(e.Request))
                 {
@@ -66,8 +66,8 @@ namespace PuppeteerSharp.Tests.NetworkTests
                 }
             };
 
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            await Page.EvaluateExpressionAsync("fetch('/empty.html')");
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            await DevToolsContext.EvaluateExpressionAsync("fetch('/empty.html')");
             Assert.Equal(2, requests.Count);
         }
     }

@@ -33,10 +33,10 @@ namespace PuppeteerSharp.Tests.ChromiumSpecificTests
                 return context.Response.WriteAsync("console.log(1);");
             });
 
-            await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (_, e) => await e.Request.ContinueAsync();
+            await DevToolsContext.SetRequestInterceptionAsync(true);
+            DevToolsContext.Request += async (_, e) => await e.Request.ContinueAsync();
 
-            await Page.GoToAsync(TestConstants.ServerUrl + "/intervention");
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/intervention");
 
             Assert.Contains("feature/5718547946799104", interventionHeader);
         }

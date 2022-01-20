@@ -19,19 +19,19 @@ namespace PuppeteerSharp.Tests.CookiesTests
         [PuppeteerFact]
         public async Task ShouldReturnNoCookiesInPristineBrowserContext()
         {
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Empty(await Page.GetCookiesAsync());
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            Assert.Empty(await DevToolsContext.GetCookiesAsync());
         }
 
         [PuppeteerTest("cookies.spec.ts", "Page.cookies", "should get a cookie")]
         [PuppeteerFact]
         public async Task ShouldGetACookie()
         {
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Empty(await Page.GetCookiesAsync());
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            Assert.Empty(await DevToolsContext.GetCookiesAsync());
 
-            await Page.EvaluateExpressionAsync("document.cookie = 'username=John Doe'");
-            var cookie = Assert.Single(await Page.GetCookiesAsync());
+            await DevToolsContext.EvaluateExpressionAsync("document.cookie = 'username=John Doe'");
+            var cookie = Assert.Single(await DevToolsContext.GetCookiesAsync());
             Assert.Equal("username", cookie.Name);
             Assert.Equal("John Doe", cookie.Value);
             Assert.Equal("localhost", cookie.Domain);
@@ -52,8 +52,8 @@ namespace PuppeteerSharp.Tests.CookiesTests
                 context.Response.Headers["Set-Cookie"] = "a=b; HttpOnly; Path=/";
                 return Task.CompletedTask;
             });
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            var cookies = await Page.GetCookiesAsync();
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            var cookies = await DevToolsContext.GetCookiesAsync();
             Assert.Single(cookies);
             Assert.True(cookies[0].HttpOnly);
         }
@@ -67,8 +67,8 @@ namespace PuppeteerSharp.Tests.CookiesTests
                 context.Response.Headers["Set-Cookie"] = "a=b; SameSite=Strict";
                 return Task.CompletedTask;
             });
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            var cookies = await Page.GetCookiesAsync();
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            var cookies = await DevToolsContext.GetCookiesAsync();
             Assert.Single(cookies);
             Assert.Equal(SameSite.Strict, cookies[0].SameSite);
         }
@@ -82,8 +82,8 @@ namespace PuppeteerSharp.Tests.CookiesTests
                 context.Response.Headers["Set-Cookie"] = "a=b; SameSite=Lax";
                 return Task.CompletedTask;
             });
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            var cookies = await Page.GetCookiesAsync();
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            var cookies = await DevToolsContext.GetCookiesAsync();
             Assert.Single(cookies);
             Assert.Equal(SameSite.Lax, cookies[0].SameSite);
         }
@@ -92,15 +92,15 @@ namespace PuppeteerSharp.Tests.CookiesTests
         [PuppeteerFact]
         public async Task ShouldGetMultipleCookies()
         {
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Empty(await Page.GetCookiesAsync());
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            Assert.Empty(await DevToolsContext.GetCookiesAsync());
 
-            await Page.EvaluateFunctionAsync(@"() => {
+            await DevToolsContext.EvaluateFunctionAsync(@"() => {
                 document.cookie = 'username=John Doe';
                 document.cookie = 'password=1234';
             }");
 
-            var cookies = (await Page.GetCookiesAsync()).OrderBy(c => c.Name).ToList();
+            var cookies = (await DevToolsContext.GetCookiesAsync()).OrderBy(c => c.Name).ToList();
 
             var cookie = cookies[0];
             Assert.Equal("password", cookie.Name);
@@ -129,7 +129,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
         [PuppeteerFact]
         public async Task ShouldGetCookiesFromMultipleUrls()
         {
-            await Page.SetCookieAsync(
+            await DevToolsContext.SetCookieAsync(
                 new CookieParam
                 {
                     Url = "https://foo.com",
@@ -149,7 +149,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
                     Value = "tweets"
                 }
             );
-            var cookies = (await Page.GetCookiesAsync("https://foo.com", "https://baz.com")).OrderBy(c => c.Name).ToList();
+            var cookies = (await DevToolsContext.GetCookiesAsync("https://foo.com", "https://baz.com")).OrderBy(c => c.Name).ToList();
 
             Assert.Equal(2, cookies.Count);
 

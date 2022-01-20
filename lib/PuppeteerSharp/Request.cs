@@ -13,13 +13,13 @@ namespace CefSharp.Puppeteer
 {
     /// <summary>
     /// Whenever the page sends a request, the following events are emitted by puppeteer's page:
-    /// <see cref="Page.Request"/> emitted when the request is issued by the page.
-    /// <see cref="Page.Response"/> emitted when/if the response is received for the request.
-    /// <see cref="Page.RequestFinished"/> emitted when the response body is downloaded and the request is complete.
+    /// <see cref="DevToolsContext.Request"/> emitted when the request is issued by the page.
+    /// <see cref="DevToolsContext.Response"/> emitted when/if the response is received for the request.
+    /// <see cref="DevToolsContext.RequestFinished"/> emitted when the response body is downloaded and the request is complete.
     ///
-    /// If request fails at some point, then instead of <see cref="Page.RequestFinished"/> event (and possibly instead of <see cref="Page.Response"/> event), the <see cref="Page.RequestFailed"/> event is emitted.
+    /// If request fails at some point, then instead of <see cref="DevToolsContext.RequestFinished"/> event (and possibly instead of <see cref="DevToolsContext.Response"/> event), the <see cref="DevToolsContext.RequestFailed"/> event is emitted.
     ///
-    /// If request gets a 'redirect' response, the request is successfully finished with the <see cref="Page.RequestFinished"/> event, and a new request is issued to a redirected url.
+    /// If request gets a 'redirect' response, the request is successfully finished with the <see cref="DevToolsContext.RequestFinished"/> event, and a new request is issued to a redirected url.
     /// </summary>
     public class Request
     {
@@ -150,7 +150,7 @@ namespace CefSharp.Puppeteer
         #region Public Methods
 
         /// <summary>
-        /// Continues request with optional request overrides. To use this, request interception should be enabled with <see cref="Page.SetRequestInterceptionAsync(bool)"/>. Exception is immediately thrown if the request interception is not enabled.
+        /// Continues request with optional request overrides. To use this, request interception should be enabled with <see cref="DevToolsContext.SetRequestInterceptionAsync(bool)"/>. Exception is immediately thrown if the request interception is not enabled.
         /// If the URL is set it won't perform a redirect. The request will be silently forwarded to the new url. For example, the address bar will show the original url.
         /// </summary>
         /// <param name="overrides">Optional request overwrites.</param>
@@ -210,7 +210,7 @@ namespace CefSharp.Puppeteer
         }
 
         /// <summary>
-        /// Fulfills request with given response. To use this, request interception should be enabled with <see cref="Page.SetRequestInterceptionAsync(bool)"/>. Exception is thrown if request interception is not enabled.
+        /// Fulfills request with given response. To use this, request interception should be enabled with <see cref="DevToolsContext.SetRequestInterceptionAsync(bool)"/>. Exception is thrown if request interception is not enabled.
         /// </summary>
         /// <param name="response">Response that will fulfill this request</param>
         /// <returns>Task</returns>
@@ -286,7 +286,7 @@ namespace CefSharp.Puppeteer
         }
 
         /// <summary>
-        /// Aborts request. To use this, request interception should be enabled with <see cref="Page.SetRequestInterceptionAsync(bool)"/>.
+        /// Aborts request. To use this, request interception should be enabled with <see cref="DevToolsContext.SetRequestInterceptionAsync(bool)"/>.
         /// Exception is immediately thrown if the request interception is not enabled.
         /// </summary>
         /// <param name="errorCode">Optional error code. Defaults to <see cref="RequestAbortErrorCode.Failed"/></param>

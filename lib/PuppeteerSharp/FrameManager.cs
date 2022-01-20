@@ -22,10 +22,10 @@ namespace CefSharp.Puppeteer
         private const string RefererHeaderName = "referer";
         private const string UtilityWorldName = "__puppeteer_utility_world__";
 
-        private FrameManager(Connection client, Page page, bool ignoreHTTPSErrors, TimeoutSettings timeoutSettings)
+        private FrameManager(Connection client, DevToolsContext devToolsContext, bool ignoreHTTPSErrors, TimeoutSettings timeoutSettings)
         {
             Client = client;
-            Page = page;
+            DevToolsContext = devToolsContext;
             _frames = new ConcurrentDictionary<string, Frame>();
             _contextIdToContext = new ConcurrentDictionary<int, ExecutionContext>();
             _logger = Client.LoggerFactory.CreateLogger<FrameManager>();
@@ -54,7 +54,7 @@ namespace CefSharp.Puppeteer
 
         internal Frame MainFrame { get; set; }
 
-        internal Page Page { get; }
+        internal DevToolsContext DevToolsContext { get; }
 
         internal TimeoutSettings TimeoutSettings { get; }
         #endregion
@@ -62,11 +62,11 @@ namespace CefSharp.Puppeteer
         #region Public Methods
         internal static async Task<FrameManager> CreateFrameManagerAsync(
             Connection client,
-            Page page,
+            DevToolsContext devToolsContext,
             bool ignoreHTTPSErrors,
             TimeoutSettings timeoutSettings)
         {
-            var frameManager = new FrameManager(client, page, ignoreHTTPSErrors, timeoutSettings);
+            var frameManager = new FrameManager(client, devToolsContext, ignoreHTTPSErrors, timeoutSettings);
             var getFrameTreeTask = client.SendAsync<PageGetFrameTreeResponse>("Page.getFrameTree");
 
             await Task.WhenAll(

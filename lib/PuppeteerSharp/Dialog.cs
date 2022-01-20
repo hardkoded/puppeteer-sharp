@@ -11,11 +11,11 @@ namespace CefSharp.Puppeteer
     /// An example of using Dialog class:
     ///<code>
     ///<![CDATA[
-    /// Page.Dialog += async (sender, e) =>
+    /// DevToolsContext.Dialog += async (sender, e) =>
     /// {
     ///     await e.Dialog.Accept();
     /// }
-    /// await Page.EvaluateExpressionAsync("alert('yo');");
+    /// await DevToolsContext.EvaluateExpressionAsync("alert('yo');");
     /// ]]>
     /// </code>
     /// </example>

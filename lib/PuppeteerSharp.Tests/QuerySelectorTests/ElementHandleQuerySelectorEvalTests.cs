@@ -19,7 +19,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         async Task Usage(IWebBrowser chromiumWebBrowser)
         {
             #region Evaluate
-            await using var page = await chromiumWebBrowser.GetPuppeteerPageAsync();
+            await using var page = await chromiumWebBrowser.GetDevToolsContextAsync();
             var seven = await page.EvaluateExpressionAsync<int>("4 + 3");
             var someObject = await page.EvaluateFunctionAsync<dynamic>("(value) => ({a: value})", 5);
             Console.WriteLine(someObject.a);
@@ -30,8 +30,8 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         [PuppeteerFact]
         public async Task QuerySelectorShouldWork()
         {
-            await Page.SetContentAsync("<html><body><div class='tweet'><div class='like'>100</div><div class='retweets'>10</div></div></body></html>");
-            var tweet = await Page.QuerySelectorAsync(".tweet");
+            await DevToolsContext.SetContentAsync("<html><body><div class='tweet'><div class='like'>100</div><div class='retweets'>10</div></div></body></html>");
+            var tweet = await DevToolsContext.QuerySelectorAsync(".tweet");
             var content = await tweet.QuerySelectorAsync(".like")
                 .EvaluateFunctionAsync<string>("node => node.innerText");
             Assert.Equal("100", content);
@@ -42,8 +42,8 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         public async Task QuerySelectorShouldRetrieveContentFromSubtree()
         {
             var htmlContent = "<div class='a'>not-a-child-div</div><div id='myId'><div class='a'>a-child-div</div></div>";
-            await Page.SetContentAsync(htmlContent);
-            var elementHandle = await Page.QuerySelectorAsync("#myId");
+            await DevToolsContext.SetContentAsync(htmlContent);
+            var elementHandle = await DevToolsContext.QuerySelectorAsync("#myId");
             var content = await elementHandle.QuerySelectorAsync(".a")
                 .EvaluateFunctionAsync<string>("node => node.innerText");
             Assert.Equal("a-child-div", content);
@@ -54,8 +54,8 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         public async Task QuerySelectorShouldThrowInCaseOfMissingSelector()
         {
             var htmlContent = "<div class=\"a\">not-a-child-div</div><div id=\"myId\"></div>";
-            await Page.SetContentAsync(htmlContent);
-            var elementHandle = await Page.QuerySelectorAsync("#myId");
+            await DevToolsContext.SetContentAsync(htmlContent);
+            var elementHandle = await DevToolsContext.QuerySelectorAsync("#myId");
             var exception = await Assert.ThrowsAsync<SelectorException>(
                 () => elementHandle.QuerySelectorAsync(".a").EvaluateFunctionAsync<string>("node => node.innerText")
             );

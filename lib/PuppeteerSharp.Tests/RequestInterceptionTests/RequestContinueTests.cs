@@ -27,17 +27,17 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         [PuppeteerFact]
         public async Task ShouldWork()
         {
-            await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (_, e) => await e.Request.ContinueAsync();
-            await Page.GoToAsync(TestConstants.EmptyPage);
+            await DevToolsContext.SetRequestInterceptionAsync(true);
+            DevToolsContext.Request += async (_, e) => await e.Request.ContinueAsync();
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Request.continue", "should amend HTTP headers")]
         [PuppeteerFact]
         public async Task ShouldAmendHTTPHeaders()
         {
-            await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (_, e) =>
+            await DevToolsContext.SetRequestInterceptionAsync(true);
+            DevToolsContext.Request += async (_, e) =>
             {
                 var headers = new Dictionary<string, string>(e.Request.Headers)
                 {
@@ -45,11 +45,11 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                 };
                 await e.Request.ContinueAsync(new Payload { Headers = headers });
             };
-            await Page.GoToAsync(TestConstants.EmptyPage);
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
             var requestTask = Server.WaitForRequest("/sleep.zzz", request => request.Headers["foo"].ToString());
             await Task.WhenAll(
                 requestTask,
-                Page.EvaluateExpressionAsync("fetch('/sleep.zzz')")
+                DevToolsContext.EvaluateExpressionAsync("fetch('/sleep.zzz')")
             );
             Assert.Equal("bar", requestTask.Result);
         }
@@ -58,8 +58,8 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         [PuppeteerFact]
         public async Task ShouldRedirectInAWayNonObservableToPage()
         {
-            await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (_, e) =>
+            await DevToolsContext.SetRequestInterceptionAsync(true);
+            DevToolsContext.Request += async (_, e) =>
             {
                 var redirectURL = e.Request.Url.Contains("/empty.html")
                     ? TestConstants.ServerUrl + "/consolelog.html" :
@@ -67,9 +67,9 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                 await e.Request.ContinueAsync(new Payload { Url = redirectURL });
             };
             string consoleMessage = null;
-            Page.Console += (_, e) => consoleMessage = e.Message.Text;
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Equal(TestConstants.EmptyPage, Page.Url);
+            DevToolsContext.Console += (_, e) => consoleMessage = e.Message.Text;
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            Assert.Equal(TestConstants.EmptyPage, DevToolsContext.Url);
             Assert.Equal("yellow", consoleMessage);
         }
 
@@ -77,9 +77,9 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         [PuppeteerFact]
         public async Task ShouldAmendMethodData()
         {
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (_, e) =>
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            await DevToolsContext.SetRequestInterceptionAsync(true);
+            DevToolsContext.Request += async (_, e) =>
             {
                 await e.Request.ContinueAsync(new Payload { Method = HttpMethod.Post });
             };
@@ -88,7 +88,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
 
             await Task.WhenAll(
                 requestTask,
-                Page.EvaluateExpressionAsync("fetch('/sleep.zzz')")
+                DevToolsContext.EvaluateExpressionAsync("fetch('/sleep.zzz')")
             );
 
             Assert.Equal("POST", requestTask.Result);
@@ -98,8 +98,8 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         [PuppeteerFact]
         public async Task ShouldAmendPostData()
         {
-            await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (_, e) =>
+            await DevToolsContext.SetRequestInterceptionAsync(true);
+            DevToolsContext.Request += async (_, e) =>
             {
                 await e.Request.ContinueAsync(new Payload
                 {
@@ -117,7 +117,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
 
             await Task.WhenAll(
                 requestTask,
-                Page.GoToAsync(TestConstants.ServerUrl + "/sleep.zzz")
+                DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/sleep.zzz")
             );
 
             Assert.Equal("doggo", await requestTask.Result);
@@ -127,8 +127,8 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         [PuppeteerFact]
         public async Task ShouldAmendBothPostDataAndMethodOnNavigation()
         {
-            await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (_, e) => await e.Request.ContinueAsync(new Payload
+            await DevToolsContext.SetRequestInterceptionAsync(true);
+            DevToolsContext.Request += async (_, e) => await e.Request.ContinueAsync(new Payload
             {
                 Method = HttpMethod.Post,
                 PostData = "doggo"
@@ -136,7 +136,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             var serverRequest = Server.WaitForRequest("/empty.html", req => new { req.Method, Body = new StreamReader(req.Body).ReadToEnd() });
             await Task.WhenAll(
                 serverRequest,
-                Page.GoToAsync(TestConstants.EmptyPage)
+                DevToolsContext.GoToAsync(TestConstants.EmptyPage)
             );
             Assert.Equal(HttpMethod.Post.Method, serverRequest.Result.Method);
             Assert.Equal("doggo", serverRequest.Result.Body);

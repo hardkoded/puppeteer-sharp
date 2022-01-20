@@ -22,14 +22,14 @@ namespace PuppeteerSharp.Tests.PageTests
             void EventHandler(object sender, PageErrorEventArgs e)
             {
                 error = e.Message;
-                Page.PageError -= EventHandler;
+                DevToolsContext.PageError -= EventHandler;
             }
 
-            Page.PageError += EventHandler;
+            DevToolsContext.PageError += EventHandler;
 
             await Task.WhenAll(
-                Page.GoToAsync(TestConstants.ServerUrl + "/error.html"),
-                WaitEvent(Page.Client, "Runtime.exceptionThrown")
+                DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/error.html"),
+                WaitEvent(DevToolsContext.Client, "Runtime.exceptionThrown")
             );
 
             Assert.Contains("Fancy", error);

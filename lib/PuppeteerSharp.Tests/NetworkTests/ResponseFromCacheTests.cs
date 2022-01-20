@@ -21,7 +21,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         [PuppeteerFact]
         public async Task ShouldReturnFalseForNonCachedContent()
         {
-            var response = await Page.GoToAsync(TestConstants.EmptyPage);
+            var response = await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
             Assert.False(response.FromCache);
         }
 
@@ -30,9 +30,9 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldWork()
         {
             var responses = new Dictionary<string, Response>();
-            Page.Response += (_, e) => responses[e.Response.Url.Split('/').Last()] = e.Response;
-            await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
-            await Page.ReloadAsync();
+            DevToolsContext.Response += (_, e) => responses[e.Response.Url.Split('/').Last()] = e.Response;
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
+            await DevToolsContext.ReloadAsync();
 
             Assert.Equal(2, responses.Count);
             Assert.Equal(HttpStatusCode.NotModified, responses["one-style.html"].Status);

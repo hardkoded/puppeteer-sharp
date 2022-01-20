@@ -17,7 +17,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         [PuppeteerFact]
         public async Task ShouldWork()
         {
-            var aHandle = await Page.EvaluateExpressionHandleAsync(@"({
+            var aHandle = await DevToolsContext.EvaluateExpressionHandleAsync(@"({
               one: 1,
               two: 2,
               three: 3

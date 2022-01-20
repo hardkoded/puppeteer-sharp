@@ -29,7 +29,7 @@ namespace CefSharp.Puppeteer.Input
         /// <param name="x">The touch X location.</param>
         /// <param name="y">The touch Y location.</param>
         /// <returns>Task</returns>
-        /// <seealso cref="Page.TapAsync(string)"/>
+        /// <seealso cref="DevToolsContext.TapAsync(string)"/>
         public async Task TapAsync(decimal x, decimal y)
         {
             // Touches appear to be lost during the first frame after navigation.

@@ -3,7 +3,7 @@ using System;
 namespace CefSharp.Puppeteer
 {
     /// <summary>
-    /// <see cref="Page.Response"/> arguments.
+    /// <see cref="DevToolsContext.Response"/> arguments.
     /// </summary>
     public class ResponseCreatedEventArgs : EventArgs
     {

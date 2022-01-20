@@ -22,12 +22,12 @@ namespace PuppeteerSharp.Tests.PageTests
             var slow3G = Emulation.NetworkConditions[NetworkConditions.Slow3G];
             var fast3G = Emulation.NetworkConditions[NetworkConditions.Fast3G];
 
-            Assert.Equal("4g", await Page.EvaluateExpressionAsync<string>("window.navigator.connection.effectiveType").ConfigureAwait(false));
-            await Page.EmulateNetworkConditionsAsync(fast3G);
-            Assert.Equal("3g", await Page.EvaluateExpressionAsync<string>("window.navigator.connection.effectiveType").ConfigureAwait(false));
-            await Page.EmulateNetworkConditionsAsync(slow3G);
-            Assert.Equal("2g", await Page.EvaluateExpressionAsync<string>("window.navigator.connection.effectiveType").ConfigureAwait(false));
-            await Page.EmulateNetworkConditionsAsync(null);
+            Assert.Equal("4g", await DevToolsContext.EvaluateExpressionAsync<string>("window.navigator.connection.effectiveType").ConfigureAwait(false));
+            await DevToolsContext.EmulateNetworkConditionsAsync(fast3G);
+            Assert.Equal("3g", await DevToolsContext.EvaluateExpressionAsync<string>("window.navigator.connection.effectiveType").ConfigureAwait(false));
+            await DevToolsContext.EmulateNetworkConditionsAsync(slow3G);
+            Assert.Equal("2g", await DevToolsContext.EvaluateExpressionAsync<string>("window.navigator.connection.effectiveType").ConfigureAwait(false));
+            await DevToolsContext.EmulateNetworkConditionsAsync(null);
         }
     }
 }

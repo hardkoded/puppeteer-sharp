@@ -17,17 +17,17 @@ namespace PuppeteerSharp.Tests.FrameTests
         [PuppeteerFact]
         public async Task ShouldWork()
         {
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
-            Assert.Equal(2, Page.Frames.Length);
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            await FrameUtils.AttachFrameAsync(DevToolsContext, "frame1", TestConstants.EmptyPage);
+            Assert.Equal(2, DevToolsContext.Frames.Length);
 
-            var context1 = await Page.MainFrame.GetExecutionContextAsync();
-            var context2 = await Page.FirstChildFrame().GetExecutionContextAsync();
+            var context1 = await DevToolsContext.MainFrame.GetExecutionContextAsync();
+            var context2 = await DevToolsContext.FirstChildFrame().GetExecutionContextAsync();
             Assert.NotNull(context1);
             Assert.NotNull(context2);
             Assert.NotEqual(context1, context2);
-            Assert.Equal(Page.MainFrame, context1.Frame);
-            Assert.Equal(Page.FirstChildFrame(), context2.Frame);
+            Assert.Equal(DevToolsContext.MainFrame, context1.Frame);
+            Assert.Equal(DevToolsContext.FirstChildFrame(), context2.Frame);
 
             await Task.WhenAll(
                 context1.EvaluateExpressionAsync("window.a = 1"),

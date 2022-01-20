@@ -19,7 +19,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         [PuppeteerFact]
         public async Task ShouldWork()
         {
-            var aHandle = await Page.EvaluateExpressionHandleAsync("({ foo: 'bar'})");
+            var aHandle = await DevToolsContext.EvaluateExpressionHandleAsync("({ foo: 'bar'})");
             var json = await aHandle.JsonValueAsync();
             Assert.Equal(JObject.Parse("{ foo: 'bar' }"), json);
         }
@@ -28,7 +28,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         [PuppeteerFact]
         public async Task WorksWithJsonValuesThatAreNotObjects()
         {
-            var aHandle = await Page.EvaluateFunctionHandleAsync("() => ['a', 'b']");
+            var aHandle = await DevToolsContext.EvaluateFunctionHandleAsync("() => ['a', 'b']");
             var json = await aHandle.JsonValueAsync<string[]>();
             Assert.Equal(new[] {"a","b" }, json);
         }
@@ -37,7 +37,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         [PuppeteerFact]
         public async Task WorksWithJsonValuesThatArePrimitives()
         {
-            var aHandle = await Page.EvaluateFunctionHandleAsync("() => 'foo'");
+            var aHandle = await DevToolsContext.EvaluateFunctionHandleAsync("() => 'foo'");
             var json = await aHandle.JsonValueAsync<string>();
             Assert.Equal("foo", json);
         }
@@ -46,7 +46,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         [PuppeteerFact]
         public async Task ShouldNotWorkWithDates()
         {
-            var dateHandle = await Page.EvaluateExpressionHandleAsync("new Date('2017-09-26T00:00:00.000Z')");
+            var dateHandle = await DevToolsContext.EvaluateExpressionHandleAsync("new Date('2017-09-26T00:00:00.000Z')");
             var json = await dateHandle.JsonValueAsync();
             Assert.Equal(JObject.Parse("{}"), json);
         }
@@ -55,7 +55,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         [PuppeteerFact]
         public async Task ShouldThrowForCircularObjects()
         {
-            var windowHandle = await Page.EvaluateExpressionHandleAsync("window");
+            var windowHandle = await DevToolsContext.EvaluateExpressionHandleAsync("window");
             var exception = await Assert.ThrowsAsync<MessageException>(()
                 => windowHandle.JsonValueAsync());
 

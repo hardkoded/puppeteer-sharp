@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace CefSharp.Puppeteer
 {
     /// <summary>
-    /// Options to be used in <see cref="Page.EmulateNetworkConditionsAsync(NetworkConditions)"/>
+    /// Options to be used in <see cref="DevToolsContext.EmulateNetworkConditionsAsync(NetworkConditions)"/>
     /// </summary>
     public class NetworkConditions
     {

@@ -17,7 +17,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         [PuppeteerFact]
         public async Task ShouldWork()
         {
-            var response = await Page.GoToAsync(TestConstants.EmptyPage);
+            var response = await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
 
             Assert.Contains("Chrome", response.Request.Headers["User-Agent"]);
         }

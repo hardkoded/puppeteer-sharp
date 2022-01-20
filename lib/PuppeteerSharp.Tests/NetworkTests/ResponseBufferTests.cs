@@ -19,7 +19,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         [PuppeteerFact]
         public async Task ShouldWork()
         {
-            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/pptr.png");
+            var response = await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/pptr.png");
             var imageBuffer = File.ReadAllBytes("./Assets/pptr.png");
             Assert.Equal(imageBuffer, await response.BufferAsync());
         }
@@ -29,7 +29,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldWorkWithCompression()
         {
             Server.EnableGzip("/pptr.png");
-            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/pptr.png");
+            var response = await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/pptr.png");
             var imageBuffer = File.ReadAllBytes("./Assets/pptr.png");
             Assert.Equal(imageBuffer, await response.BufferAsync());
         }

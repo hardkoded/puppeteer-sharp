@@ -7,16 +7,16 @@ using CefSharp.Puppeteer.Messaging;
 namespace CefSharp.Puppeteer
 {
     /// <summary>
-    /// <see cref="FileChooser"/> objects are returned via the <seealso cref="Page.WaitForFileChooserAsync(WaitForFileChooserOptions)"/> method.
+    /// <see cref="FileChooser"/> objects are returned via the <seealso cref="DevToolsContext.WaitForFileChooserAsync(WaitForFileChooserOptions)"/> method.
     /// File choosers let you react to the page requesting for a file.
     /// </summary>
     /// <example>
     /// <code>
     /// <![CDATA[
-    /// var waitTask = page.WaitForFileChooserAsync();
+    /// var waitTask = devToolsContext.WaitForFileChooserAsync();
     /// await Task.WhenAll(
     ///     waitTask,
-    ///     page.ClickAsync("#upload-file-button")); // some button that triggers file selection
+    ///     devToolsContext.ClickAsync("#upload-file-button")); // some button that triggers file selection
     ///
     /// await waitTask.Result.AcceptAsync('/tmp/myfile.pdf');
     /// ]]>

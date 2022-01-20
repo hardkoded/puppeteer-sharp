@@ -5,6 +5,6 @@ namespace PuppeteerSharp.Tests
 {
     public static class PageExtensions
     {
-        public static Frame FirstChildFrame(this Page page) => page.Frames.FirstOrDefault(f => f.ParentFrame == page.MainFrame);
+        public static Frame FirstChildFrame(this DevToolsContext devToolsContext) => devToolsContext.Frames.FirstOrDefault(f => f.ParentFrame == devToolsContext.MainFrame);
     }
 }

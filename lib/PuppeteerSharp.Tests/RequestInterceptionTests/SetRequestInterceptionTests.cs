@@ -27,8 +27,8 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         [PuppeteerFact (Skip = "TODO: CEF")]
         public async Task ShouldIntercept()
         {
-            await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (_, e) =>
+            await DevToolsContext.SetRequestInterceptionAsync(true);
+            DevToolsContext.Request += async (_, e) =>
             {
                 if (TestUtils.IsFavicon(e.Request))
                 {
@@ -41,11 +41,11 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                 Assert.Null(e.Request.PostData);
                 Assert.True(e.Request.IsNavigationRequest);
                 Assert.Equal(ResourceType.Document, e.Request.ResourceType);
-                Assert.Equal(Page.MainFrame, e.Request.Frame);
+                Assert.Equal(DevToolsContext.MainFrame, e.Request.Frame);
                 Assert.Equal(TestConstants.AboutBlank, e.Request.Frame.Url);
                 await e.Request.ContinueAsync();
             };
-            var response = await Page.GoToAsync(TestConstants.EmptyPage);
+            var response = await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
             Assert.True(response.Ok);
 
             Assert.Equal(TestConstants.Port, response.RemoteAddress.Port);
@@ -56,18 +56,18 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         public async Task ShouldWorkWhenPostIsEedirectedWith302()
         {
             Server.SetRedirect("/rredirect", "/empty.html");
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (_, e) => await e.Request.ContinueAsync();
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            await DevToolsContext.SetRequestInterceptionAsync(true);
+            DevToolsContext.Request += async (_, e) => await e.Request.ContinueAsync();
 
-            await Page.SetContentAsync(@"
+            await DevToolsContext.SetContentAsync(@"
                 <form action='/rredirect' method='post'>
                     <input type='hidden' id='foo' name='foo' value='FOOBAR'>
                 </form>
             ");
             await Task.WhenAll(
-                Page.QuerySelectorAsync("form").EvaluateFunctionAsync("form => form.submit()"),
-                Page.WaitForNavigationAsync()
+                DevToolsContext.QuerySelectorAsync("form").EvaluateFunctionAsync("form => form.submit()"),
+                DevToolsContext.WaitForNavigationAsync()
             );
         }
 
@@ -76,24 +76,24 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         public async Task ShouldWorkWhenHeaderManipulationHeadersWithRedirect()
         {
             Server.SetRedirect("/rredirect", "/empty.html");
-            await Page.SetRequestInterceptionAsync(true);
+            await DevToolsContext.SetRequestInterceptionAsync(true);
 
-            Page.Request += async (_, e) =>
+            DevToolsContext.Request += async (_, e) =>
             {
                 var headers = e.Request.Headers.Clone();
                 headers["foo"] = "bar";
                 await e.Request.ContinueAsync(new Payload { Headers = headers });
             };
 
-            await Page.GoToAsync(TestConstants.ServerUrl + "/rrredirect");
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/rrredirect");
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should be able to remove headers")]
         [PuppeteerFact]
         public async Task ShouldBeAbleToRemoveHeaders()
         {
-            await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (_, e) =>
+            await DevToolsContext.SetRequestInterceptionAsync(true);
+            DevToolsContext.Request += async (_, e) =>
             {
                 var headers = e.Request.Headers.Clone();
                 headers["foo"] = "bar";
@@ -104,7 +104,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             var requestTask = Server.WaitForRequest("/empty.html", request => request.Headers["origin"]);
             await Task.WhenAll(
                 requestTask,
-                Page.GoToAsync(TestConstants.ServerUrl + "/empty.html")
+                DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/empty.html")
             );
             Assert.True(string.IsNullOrEmpty(requestTask.Result));
         }
@@ -113,11 +113,11 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         [PuppeteerFact]
         public async Task ShouldContainRefererHeader()
         {
-            await Page.SetRequestInterceptionAsync(true);
+            await DevToolsContext.SetRequestInterceptionAsync(true);
             var requests = new List<Request>();
             var requestsReadyTcs = new TaskCompletionSource<bool>();
 
-            Page.Request += async (_, e) =>
+            DevToolsContext.Request += async (_, e) =>
             {
                 if (!TestUtils.IsFavicon(e.Request))
                 {
@@ -131,7 +131,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                 await e.Request.ContinueAsync();
             };
 
-            await Page.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
             await requestsReadyTcs.Task.WithTimeout();
             Assert.Contains("/one-style.css", requests[1].Url);
             Assert.Contains("/one-style.html", requests[1].Headers["Referer"]);
@@ -142,17 +142,17 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         public async Task ShouldProperlyReturnNavigationResponseWhenURLHasCookies()
         {
             // Setup cookie.
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            await Page.SetCookieAsync(new CookieParam
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            await DevToolsContext.SetCookieAsync(new CookieParam
             {
                 Name = "foo",
                 Value = "bar"
             });
 
             // Setup request interception.
-            await Page.SetRequestInterceptionAsync(true);
-            Page.Request += (sender, e) => _ = e.Request.ContinueAsync();
-            var response = await Page.ReloadAsync();
+            await DevToolsContext.SetRequestInterceptionAsync(true);
+            DevToolsContext.Request += (sender, e) => _ = e.Request.ContinueAsync();
+            var response = await DevToolsContext.ReloadAsync();
             Assert.Equal(HttpStatusCode.OK, response.Status);
         }
 
@@ -160,33 +160,33 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         [PuppeteerFact]
         public async Task ShouldStopIntercepting()
         {
-            await Page.SetRequestInterceptionAsync(true);
+            await DevToolsContext.SetRequestInterceptionAsync(true);
             async void EventHandler(object sender, RequestEventArgs e)
             {
                 await e.Request.ContinueAsync();
-                Page.Request -= EventHandler;
+                DevToolsContext.Request -= EventHandler;
             }
-            Page.Request += EventHandler;
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            await Page.SetRequestInterceptionAsync(false);
-            await Page.GoToAsync(TestConstants.EmptyPage);
+            DevToolsContext.Request += EventHandler;
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            await DevToolsContext.SetRequestInterceptionAsync(false);
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should show custom HTTP headers")]
         [PuppeteerFact]
         public async Task ShouldShowCustomHTTPHeaders()
         {
-            await Page.SetExtraHttpHeadersAsync(new Dictionary<string, string>
+            await DevToolsContext.SetExtraHttpHeadersAsync(new Dictionary<string, string>
             {
                 ["foo"] = "bar"
             });
-            await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (_, e) =>
+            await DevToolsContext.SetRequestInterceptionAsync(true);
+            DevToolsContext.Request += async (_, e) =>
             {
                 Assert.Equal("bar", e.Request.Headers["foo"]);
                 await e.Request.ContinueAsync();
             };
-            var response = await Page.GoToAsync(TestConstants.EmptyPage);
+            var response = await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
             Assert.True(response.Ok);
         }
 
@@ -194,12 +194,12 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         [PuppeteerFact]
         public async Task ShouldWorkWithRedirectInsideSyncXHR()
         {
-            await Page.GoToAsync(TestConstants.EmptyPage);
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
             Server.SetRedirect("/logo.png", "/pptr.png");
-            await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (_, e) => await e.Request.ContinueAsync();
+            await DevToolsContext.SetRequestInterceptionAsync(true);
+            DevToolsContext.Request += async (_, e) => await e.Request.ContinueAsync();
 
-            var status = await Page.EvaluateFunctionAsync<int>(@"async () =>
+            var status = await DevToolsContext.EvaluateFunctionAsync<int>(@"async () =>
             {
                 const request = new XMLHttpRequest();
                 request.open('GET', '/logo.png', false);  // `false` makes the request synchronous
@@ -213,17 +213,17 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         [PuppeteerFact]
         public async Task ShouldWorkWithCustomRefererHeaders()
         {
-            await Page.SetExtraHttpHeadersAsync(new Dictionary<string, string>
+            await DevToolsContext.SetExtraHttpHeadersAsync(new Dictionary<string, string>
             {
                 ["referer"] = TestConstants.EmptyPage
             });
-            await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (_, e) =>
+            await DevToolsContext.SetRequestInterceptionAsync(true);
+            DevToolsContext.Request += async (_, e) =>
             {
                 Assert.Equal(TestConstants.EmptyPage, e.Request.Headers["referer"]);
                 await e.Request.ContinueAsync();
             };
-            var response = await Page.GoToAsync(TestConstants.EmptyPage);
+            var response = await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
             Assert.True(response.Ok);
         }
 
@@ -231,8 +231,8 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         [PuppeteerFact]
         public async Task ShouldBeAbortable()
         {
-            await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (_, e) =>
+            await DevToolsContext.SetRequestInterceptionAsync(true);
+            DevToolsContext.Request += async (_, e) =>
             {
                 if (e.Request.Url.EndsWith(".css"))
                 {
@@ -244,8 +244,8 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                 }
             };
             var failedRequests = 0;
-            Page.RequestFailed += (_, _) => failedRequests++;
-            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
+            DevToolsContext.RequestFailed += (_, _) => failedRequests++;
+            var response = await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
             Assert.True(response.Ok);
             Assert.Null(response.Request.Failure);
             Assert.Equal(1, failedRequests);
@@ -255,14 +255,14 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         [PuppeteerFact]
         public async Task ShouldBeAbortableWithCustomErrorCodes()
         {
-            await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (_, e) =>
+            await DevToolsContext.SetRequestInterceptionAsync(true);
+            DevToolsContext.Request += async (_, e) =>
             {
                 await e.Request.AbortAsync(RequestAbortErrorCode.InternetDisconnected);
             };
             Request failedRequest = null;
-            Page.RequestFailed += (_, e) => failedRequest = e.Request;
-            await Page.GoToAsync(TestConstants.EmptyPage).ContinueWith(_ => { });
+            DevToolsContext.RequestFailed += (_, e) => failedRequest = e.Request;
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage).ContinueWith(_ => { });
             Assert.NotNull(failedRequest);
             Assert.Equal("net::ERR_INTERNET_DISCONNECTED", failedRequest.Failure);
         }
@@ -271,16 +271,16 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         [PuppeteerFact]
         public async Task ShouldSendReferer()
         {
-            await Page.SetExtraHttpHeadersAsync(new Dictionary<string, string>
+            await DevToolsContext.SetExtraHttpHeadersAsync(new Dictionary<string, string>
             {
                 ["referer"] = "http://google.com/"
             });
-            await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (_, e) => await e.Request.ContinueAsync();
+            await DevToolsContext.SetRequestInterceptionAsync(true);
+            DevToolsContext.Request += async (_, e) => await e.Request.ContinueAsync();
             var requestTask = Server.WaitForRequest("/grid.html", request => request.Headers["referer"].ToString());
             await Task.WhenAll(
                 requestTask,
-                Page.GoToAsync(TestConstants.ServerUrl + "/grid.html")
+                DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/grid.html")
             );
             Assert.Equal("http://google.com/", requestTask.Result);
         }
@@ -289,10 +289,10 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         [PuppeteerFact]
         public async Task ShouldFailNavigationWhenAbortingMainResource()
         {
-            await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (_, e) => await e.Request.AbortAsync();
+            await DevToolsContext.SetRequestInterceptionAsync(true);
+            DevToolsContext.Request += async (_, e) => await e.Request.AbortAsync();
             var exception = await Assert.ThrowsAsync<NavigationException>(
-                () => Page.GoToAsync(TestConstants.EmptyPage));
+                () => DevToolsContext.GoToAsync(TestConstants.EmptyPage));
 
             Assert.Contains("net::ERR_FAILED", exception.Message);
         }
@@ -301,9 +301,9 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         [PuppeteerFact]
         public async Task ShouldWorkWithRedirects()
         {
-            await Page.SetRequestInterceptionAsync(true);
+            await DevToolsContext.SetRequestInterceptionAsync(true);
             var requests = new List<Request>();
-            Page.Request += async (_, e) =>
+            DevToolsContext.Request += async (_, e) =>
             {
                 await e.Request.ContinueAsync();
                 requests.Add(e.Request);
@@ -313,7 +313,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Server.SetRedirect("/non-existing-page-2.html", "/non-existing-page-3.html");
             Server.SetRedirect("/non-existing-page-3.html", "/non-existing-page-4.html");
             Server.SetRedirect("/non-existing-page-4.html", "/empty.html");
-            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/non-existing-page.html");
+            var response = await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/non-existing-page.html");
             Assert.Equal(HttpStatusCode.OK, response.Status);
             Assert.Contains("empty.html", response.Url);
             Assert.Equal(5, requests.Count);
@@ -337,9 +337,9 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         [PuppeteerFact]
         public async Task ShouldWorkWithRedirectsForSubresources()
         {
-            await Page.SetRequestInterceptionAsync(true);
+            await DevToolsContext.SetRequestInterceptionAsync(true);
             var requests = new List<Request>();
-            Page.Request += async (_, e) =>
+            DevToolsContext.Request += async (_, e) =>
             {
                 if (!TestUtils.IsFavicon(e.Request))
                 {
@@ -357,7 +357,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                 await context.Response.WriteAsync("body {box-sizing: border-box; }");
             });
 
-            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
+            var response = await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
             Assert.Equal(HttpStatusCode.OK, response.Status);
             Assert.Contains("one-style.html", response.Url);
             Assert.Equal(5, requests.Count);
@@ -375,10 +375,10 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         [PuppeteerFact]
         public async Task ShouldBeAbleToAbortRedirects()
         {
-            await Page.SetRequestInterceptionAsync(true);
+            await DevToolsContext.SetRequestInterceptionAsync(true);
             Server.SetRedirect("/non-existing.json", "/non-existing-2.json");
             Server.SetRedirect("/non-existing-2.json", "/simple.html");
-            Page.Request += async (_, e) =>
+            DevToolsContext.Request += async (_, e) =>
             {
                 if (e.Request.Url.Contains("non-existing-2"))
                 {
@@ -389,8 +389,8 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                     await e.Request.ContinueAsync();
                 }
             };
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            var result = await Page.EvaluateFunctionAsync<string>(@"async () => {
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            var result = await DevToolsContext.EvaluateFunctionAsync<string>(@"async () => {
                 try
                 {
                     await fetch('/non-existing.json');
@@ -408,14 +408,14 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         [PuppeteerFact]
         public async Task ShouldWorkWithEqualRequests()
         {
-            await Page.GoToAsync(TestConstants.EmptyPage);
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
             var responseCount = 1;
             Server.SetRoute("/zzz", context => context.Response.WriteAsync(((responseCount++) * 11) + string.Empty));
-            await Page.SetRequestInterceptionAsync(true);
+            await DevToolsContext.SetRequestInterceptionAsync(true);
 
             var spinner = false;
             // Cancel 2nd request.
-            Page.Request += async (_, e) =>
+            DevToolsContext.Request += async (_, e) =>
             {
                 if (TestUtils.IsFavicon(e.Request))
                 {
@@ -434,7 +434,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                     await e.Request.ContinueAsync();
                 }
             };
-            var results = await Page.EvaluateExpressionAsync<string[]>(@"Promise.all([
+            var results = await DevToolsContext.EvaluateExpressionAsync<string[]>(@"Promise.all([
               fetch('/zzz').then(response => response.text()).catch(e => 'FAILED'),
               fetch('/zzz').then(response => response.text()).catch(e => 'FAILED'),
               fetch('/zzz').then(response => response.text()).catch(e => 'FAILED'),
@@ -446,15 +446,15 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         [PuppeteerFact]
         public async Task ShouldNavigateToDataURLAndFireDataURLRequests()
         {
-            await Page.SetRequestInterceptionAsync(true);
+            await DevToolsContext.SetRequestInterceptionAsync(true);
             var requests = new List<Request>();
-            Page.Request += async (_, e) =>
+            DevToolsContext.Request += async (_, e) =>
             {
                 requests.Add(e.Request);
                 await e.Request.ContinueAsync();
             };
             var dataURL = "data:text/html,<div>yo</div>";
-            var response = await Page.GoToAsync(dataURL);
+            var response = await DevToolsContext.GoToAsync(dataURL);
             Assert.Equal(HttpStatusCode.OK, response.Status);
             Assert.Single(requests);
             Assert.Equal(dataURL, requests[0].Url);
@@ -464,16 +464,16 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         [PuppeteerFact]
         public async Task ShouldBeAbleToFetchDataURLAndFireDataURLRequests()
         {
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            await Page.SetRequestInterceptionAsync(true);
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            await DevToolsContext.SetRequestInterceptionAsync(true);
             var requests = new List<Request>();
-            Page.Request += async (_, e) =>
+            DevToolsContext.Request += async (_, e) =>
             {
                 requests.Add(e.Request);
                 await e.Request.ContinueAsync();
             };
             var dataURL = "data:text/html,<div>yo</div>";
-            var text = await Page.EvaluateFunctionAsync<string>("url => fetch(url).then(r => r.text())", dataURL);
+            var text = await DevToolsContext.EvaluateFunctionAsync<string>("url => fetch(url).then(r => r.text())", dataURL);
 
             Assert.Equal("<div>yo</div>", text);
             Assert.Single(requests);
@@ -484,14 +484,14 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         [PuppeteerFact]
         public async Task ShouldNavigateToURLWithHashAndAndFireRequestsWithoutHash()
         {
-            await Page.SetRequestInterceptionAsync(true);
+            await DevToolsContext.SetRequestInterceptionAsync(true);
             var requests = new List<Request>();
-            Page.Request += async (_, e) =>
+            DevToolsContext.Request += async (_, e) =>
             {
                 requests.Add(e.Request);
                 await e.Request.ContinueAsync();
             };
-            var response = await Page.GoToAsync(TestConstants.EmptyPage + "#hash");
+            var response = await DevToolsContext.GoToAsync(TestConstants.EmptyPage + "#hash");
             Assert.Equal(HttpStatusCode.OK, response.Status);
             Assert.Equal(TestConstants.EmptyPage, response.Url);
             Assert.Single(requests);
@@ -504,9 +504,9 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         {
             // The requestWillBeSent will report encoded URL, whereas interception will
             // report URL as-is. @see crbug.com/759388
-            await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (_, e) => await e.Request.ContinueAsync();
-            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/some nonexisting page");
+            await DevToolsContext.SetRequestInterceptionAsync(true);
+            DevToolsContext.Request += async (_, e) => await e.Request.ContinueAsync();
+            var response = await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/some nonexisting page");
             Assert.Equal(HttpStatusCode.NotFound, response.Status);
         }
 
@@ -514,10 +514,10 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         [PuppeteerFact]
         public async Task ShouldWorkWithBadlyEncodedServer()
         {
-            await Page.SetRequestInterceptionAsync(true);
+            await DevToolsContext.SetRequestInterceptionAsync(true);
             Server.SetRoute("/malformed?rnd=%911", _ => Task.CompletedTask);
-            Page.Request += async (_, e) => await e.Request.ContinueAsync();
-            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/malformed?rnd=%911");
+            DevToolsContext.Request += async (_, e) => await e.Request.ContinueAsync();
+            var response = await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/malformed?rnd=%911");
             Assert.Equal(HttpStatusCode.OK, response.Status);
         }
 
@@ -527,14 +527,14 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         {
             // The requestWillBeSent will report URL as-is, whereas interception will
             // report encoded URL for stylesheet. @see crbug.com/759388
-            await Page.SetRequestInterceptionAsync(true);
+            await DevToolsContext.SetRequestInterceptionAsync(true);
             var requests = new List<Request>();
-            Page.Request += async (_, e) =>
+            DevToolsContext.Request += async (_, e) =>
             {
                 requests.Add(e.Request);
                 await e.Request.ContinueAsync();
             };
-            var response = await Page.GoToAsync($"data:text/html,<link rel=\"stylesheet\" href=\"{TestConstants.ServerUrl}/fonts?helvetica|arial\"/>");
+            var response = await DevToolsContext.GoToAsync($"data:text/html,<link rel=\"stylesheet\" href=\"{TestConstants.ServerUrl}/fonts?helvetica|arial\"/>");
             Assert.Equal(HttpStatusCode.OK, response.Status);
             Assert.Equal(2, requests.Count);
             Assert.Equal(HttpStatusCode.NotFound, requests[1].Response.Status);
@@ -544,21 +544,21 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         [PuppeteerFact]
         public async Task ShouldNotThrowInvalidInterceptionIdIfTheRequestWasCancelled()
         {
-            await Page.SetContentAsync("<iframe></iframe>");
-            await Page.SetRequestInterceptionAsync(true);
+            await DevToolsContext.SetContentAsync("<iframe></iframe>");
+            await DevToolsContext.SetRequestInterceptionAsync(true);
             Request request = null;
             var requestIntercepted = new TaskCompletionSource<bool>();
-            Page.Request += (_, e) =>
+            DevToolsContext.Request += (_, e) =>
             {
                 request = e.Request;
                 requestIntercepted.SetResult(true);
             };
 
-            var _ = Page.QuerySelectorAsync("iframe").EvaluateFunctionAsync<object>("(frame, url) => frame.src = url", TestConstants.ServerUrl);
+            var _ = DevToolsContext.QuerySelectorAsync("iframe").EvaluateFunctionAsync<object>("(frame, url) => frame.src = url", TestConstants.ServerUrl);
             // Wait for request interception.
             await requestIntercepted.Task;
             // Delete frame to cause request to be canceled.
-            _ = Page.QuerySelectorAsync("iframe").EvaluateFunctionAsync<object>("frame => frame.remove()");
+            _ = DevToolsContext.QuerySelectorAsync("iframe").EvaluateFunctionAsync<object>("frame => frame.remove()");
             await request.ContinueAsync();
         }
 
@@ -567,7 +567,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         public async Task ShouldThrowIfInterceptionIsNotEnabled()
         {
             Exception exception = null;
-            Page.Request += async (_, e) =>
+            DevToolsContext.Request += async (_, e) =>
             {
                 try
                 {
@@ -578,7 +578,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                     exception = ex;
                 }
             };
-            await Page.GoToAsync(TestConstants.EmptyPage);
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
             Assert.Contains("Request Interception is not enabled", exception.Message);
         }
 
@@ -586,16 +586,16 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         [PuppeteerFact]
         public async Task ShouldWorkWithFileURLs()
         {
-            await Page.SetRequestInterceptionAsync(true);
+            await DevToolsContext.SetRequestInterceptionAsync(true);
             var urls = new List<string>();
-            Page.Request += async (_, e) =>
+            DevToolsContext.Request += async (_, e) =>
             {
                 urls.Add(e.Request.Url.Split('/').Last());
                 await e.Request.ContinueAsync();
             };
 
             var uri = new Uri(Path.Combine(Directory.GetCurrentDirectory(), "Assets", "one-style.html")).AbsoluteUri;
-            await Page.GoToAsync(uri);
+            await DevToolsContext.GoToAsync(uri);
             Assert.Equal(2, urls.Count);
             Assert.Contains("one-style.html", urls);
             Assert.Contains("one-style.css", urls);
@@ -605,16 +605,16 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         [PuppeteerFact]
         public async Task ShouldNotCacheIfCacheDisabled()
         {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
-            await Page.SetRequestInterceptionAsync(true);
-            await Page.SetCacheEnabledAsync(false);
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
+            await DevToolsContext.SetRequestInterceptionAsync(true);
+            await DevToolsContext.SetCacheEnabledAsync(false);
             var urls = new List<string>();
-            Page.Request += (_, e) => _ = e.Request.ContinueAsync();
+            DevToolsContext.Request += (_, e) => _ = e.Request.ContinueAsync();
 
             var cached = new List<Request>();
-            Page.RequestServedFromCache += (_, e) => cached.Add(e.Request);
+            DevToolsContext.RequestServedFromCache += (_, e) => cached.Add(e.Request);
 
-            await Page.ReloadAsync();
+            await DevToolsContext.ReloadAsync();
             Assert.Empty(cached);
         }
 
@@ -622,16 +622,16 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         [PuppeteerFact]
         public async Task ShouldNotCacheIfCacheEnabled()
         {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
-            await Page.SetRequestInterceptionAsync(true);
-            await Page.SetCacheEnabledAsync(true);
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
+            await DevToolsContext.SetRequestInterceptionAsync(true);
+            await DevToolsContext.SetCacheEnabledAsync(true);
             var urls = new List<string>();
-            Page.Request += (_, e) => _ = e.Request.ContinueAsync();
+            DevToolsContext.Request += (_, e) => _ = e.Request.ContinueAsync();
 
             var cached = new List<Request>();
-            Page.RequestServedFromCache += (_, e) => cached.Add(e.Request);
+            DevToolsContext.RequestServedFromCache += (_, e) => cached.Add(e.Request);
 
-            await Page.ReloadAsync();
+            await DevToolsContext.ReloadAsync();
             Assert.Single(cached);
         }
 
@@ -639,13 +639,13 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         [PuppeteerFact]
         public async Task ShouldLoadFontsIfCacheEnabled()
         {
-            await Page.SetRequestInterceptionAsync(true);
-            await Page.SetCacheEnabledAsync(true);
+            await DevToolsContext.SetRequestInterceptionAsync(true);
+            await DevToolsContext.SetCacheEnabledAsync(true);
             var urls = new List<string>();
-            Page.Request += (_, e) => _ = e.Request.ContinueAsync();
+            DevToolsContext.Request += (_, e) => _ = e.Request.ContinueAsync();
 
-            var waitTask = Page.WaitForResponseAsync(response => response.Url.EndsWith("/one-style.woff"));
-            await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style-font.html");
+            var waitTask = DevToolsContext.WaitForResponseAsync(response => response.Url.EndsWith("/one-style.woff"));
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/cached/one-style-font.html");
             await waitTask;
         }
     }

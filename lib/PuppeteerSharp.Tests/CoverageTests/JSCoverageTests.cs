@@ -23,9 +23,9 @@ namespace PuppeteerSharp.Tests.CoverageTests
         [PuppeteerFact]
         public async Task ShouldWork()
         {
-            await Page.Coverage.StartJSCoverageAsync();
-            await Page.GoToAsync(TestConstants.ServerUrl + "/jscoverage/simple.html", WaitUntilNavigation.Networkidle0);
-            var coverage = await Page.Coverage.StopJSCoverageAsync();
+            await DevToolsContext.Coverage.StartJSCoverageAsync();
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/jscoverage/simple.html", WaitUntilNavigation.Networkidle0);
+            var coverage = await DevToolsContext.Coverage.StopJSCoverageAsync();
             Assert.Single(coverage);
             Assert.Contains("/jscoverage/simple.html", coverage[0].Url);
             Assert.Equal(new CoverageEntryRange[]
@@ -47,9 +47,9 @@ namespace PuppeteerSharp.Tests.CoverageTests
         [PuppeteerFact]
         public async Task ShouldReportSourceUrls()
         {
-            await Page.Coverage.StartJSCoverageAsync();
-            await Page.GoToAsync(TestConstants.ServerUrl + "/jscoverage/sourceurl.html");
-            var coverage = await Page.Coverage.StopJSCoverageAsync();
+            await DevToolsContext.Coverage.StartJSCoverageAsync();
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/jscoverage/sourceurl.html");
+            var coverage = await DevToolsContext.Coverage.StopJSCoverageAsync();
             Assert.Single(coverage);
             Assert.Equal("nicename.js", coverage[0].Url);
         }
@@ -58,9 +58,9 @@ namespace PuppeteerSharp.Tests.CoverageTests
         [PuppeteerFact]
         public async Task ShouldIgnoreEvalScriptsByDefault()
         {
-            await Page.Coverage.StartJSCoverageAsync();
-            await Page.GoToAsync(TestConstants.ServerUrl + "/jscoverage/eval.html");
-            var coverage = await Page.Coverage.StopJSCoverageAsync();
+            await DevToolsContext.Coverage.StartJSCoverageAsync();
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/jscoverage/eval.html");
+            var coverage = await DevToolsContext.Coverage.StopJSCoverageAsync();
             Assert.Single(coverage);
         }
 
@@ -68,12 +68,12 @@ namespace PuppeteerSharp.Tests.CoverageTests
         [PuppeteerFact]
         public async Task ShouldntIgnoreEvalScriptsIfReportAnonymousScriptsIsTrue()
         {
-            await Page.Coverage.StartJSCoverageAsync(new CoverageStartOptions
+            await DevToolsContext.Coverage.StartJSCoverageAsync(new CoverageStartOptions
             {
                 ReportAnonymousScripts = true
             });
-            await Page.GoToAsync(TestConstants.ServerUrl + "/jscoverage/eval.html");
-            var coverage = await Page.Coverage.StopJSCoverageAsync();
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/jscoverage/eval.html");
+            var coverage = await DevToolsContext.Coverage.StopJSCoverageAsync();
             Assert.NotNull(coverage.FirstOrDefault(entry => entry.Url.StartsWith("debugger://", StringComparison.Ordinal)));
             Assert.Equal(2, coverage.Count());
         }
@@ -82,14 +82,14 @@ namespace PuppeteerSharp.Tests.CoverageTests
         [PuppeteerFact]
         public async Task ShouldIgnorePptrInternalScriptsIfReportAnonymousScriptsIsTrue()
         {
-            await Page.Coverage.StartJSCoverageAsync(new CoverageStartOptions
+            await DevToolsContext.Coverage.StartJSCoverageAsync(new CoverageStartOptions
             {
                 ReportAnonymousScripts = true
             });
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            await Page.EvaluateExpressionAsync("console.log('foo')");
-            await Page.EvaluateFunctionAsync("() => console.log('bar')");
-            var coverage = await Page.Coverage.StopJSCoverageAsync();
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            await DevToolsContext.EvaluateExpressionAsync("console.log('foo')");
+            await DevToolsContext.EvaluateFunctionAsync("() => console.log('bar')");
+            var coverage = await DevToolsContext.Coverage.StopJSCoverageAsync();
             Assert.Empty(coverage);
         }
 
@@ -97,9 +97,9 @@ namespace PuppeteerSharp.Tests.CoverageTests
         [PuppeteerFact]
         public async Task ShouldReportMultipleScripts()
         {
-            await Page.Coverage.StartJSCoverageAsync();
-            await Page.GoToAsync(TestConstants.ServerUrl + "/jscoverage/multiple.html");
-            var coverage = await Page.Coverage.StopJSCoverageAsync();
+            await DevToolsContext.Coverage.StartJSCoverageAsync();
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/jscoverage/multiple.html");
+            var coverage = await DevToolsContext.Coverage.StopJSCoverageAsync();
             Assert.Equal(2, coverage.Length);
             var orderedList = coverage.OrderBy(c => c.Url);
             Assert.Contains("/jscoverage/script1.js", orderedList.ElementAt(0).Url);
@@ -110,9 +110,9 @@ namespace PuppeteerSharp.Tests.CoverageTests
         [PuppeteerFact]
         public async Task ShouldReportRightRanges()
         {
-            await Page.Coverage.StartJSCoverageAsync();
-            await Page.GoToAsync(TestConstants.ServerUrl + "/jscoverage/ranges.html");
-            var coverage = await Page.Coverage.StopJSCoverageAsync();
+            await DevToolsContext.Coverage.StartJSCoverageAsync();
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/jscoverage/ranges.html");
+            var coverage = await DevToolsContext.Coverage.StopJSCoverageAsync();
             Assert.Single(coverage);
             var entry = coverage[0];
             Assert.Single(entry.Ranges);
@@ -124,9 +124,9 @@ namespace PuppeteerSharp.Tests.CoverageTests
         [PuppeteerFact]
         public async Task ShouldReportScriptsThatHaveNoCoverage()
         {
-            await Page.Coverage.StartJSCoverageAsync();
-            await Page.GoToAsync(TestConstants.ServerUrl + "/jscoverage/unused.html");
-            var coverage = await Page.Coverage.StopJSCoverageAsync();
+            await DevToolsContext.Coverage.StartJSCoverageAsync();
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/jscoverage/unused.html");
+            var coverage = await DevToolsContext.Coverage.StopJSCoverageAsync();
             Assert.Single(coverage);
             var entry = coverage[0];
             Assert.Contains("unused.html", entry.Url);
@@ -165,9 +165,9 @@ namespace PuppeteerSharp.Tests.CoverageTests
                 ""Text"": ""\nfunction foo() {\n  if (1 > 2)\n    console.log(1);\n  if (1 < 2)\n    console.log(2);\n  let x = 1 > 2 ? 'foo' : 'bar';\n  let y = 1 < 2 ? 'foo' : 'bar';\n  let z = () => {};\n  let q = () => {};\n  q();\n}\n\nfoo();\n""
               }
             ]";
-            await Page.Coverage.StartJSCoverageAsync();
-            await Page.GoToAsync(TestConstants.ServerUrl + "/jscoverage/involved.html");
-            var coverage = await Page.Coverage.StopJSCoverageAsync();
+            await DevToolsContext.Coverage.StartJSCoverageAsync();
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/jscoverage/involved.html");
+            var coverage = await DevToolsContext.Coverage.StopJSCoverageAsync();
             Assert.Equal(
                 TestUtils.CompressText(involved),
                 Regex.Replace(TestUtils.CompressText(JsonConvert.SerializeObject(coverage)), @"\d{4}\/", "<PORT>/"));
@@ -177,12 +177,12 @@ namespace PuppeteerSharp.Tests.CoverageTests
         [PuppeteerFact(Skip = "Skipped in puppeteer")]
         public async Task ShouldNotHangWhenThereIsADebuggerStatement()
         {
-            await Page.Coverage.StartJSCoverageAsync();
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            await Page.EvaluateFunctionAsync(@"() => {
+            await DevToolsContext.Coverage.StartJSCoverageAsync();
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            await DevToolsContext.EvaluateFunctionAsync(@"() => {
                 debugger;
             }");
-            await Page.Coverage.StopJSCoverageAsync();
+            await DevToolsContext.Coverage.StopJSCoverageAsync();
         }
     }
 }

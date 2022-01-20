@@ -22,7 +22,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         [PuppeteerFact]
         public async Task ShouldWork()
         {
-            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/simple.json");
+            var response = await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/simple.json");
             Assert.Equal("{\"foo\": \"bar\"}", (await response.TextAsync()).Trim());
         }
 
@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldReturnUncompressedText()
         {
             Server.EnableGzip("/simple.json");
-            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/simple.json");
+            var response = await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/simple.json");
             Assert.Equal("gzip", response.Headers["Content-Encoding"]);
             Assert.Equal("{\"foo\": \"bar\"}", (await response.TextAsync()).Trim());
         }
@@ -41,7 +41,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldThrowWhenRequestingBodyOfRedirectedResponse()
         {
             Server.SetRedirect("/foo.html", "/empty.html");
-            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/foo.html");
+            var response = await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/foo.html");
             var redirectChain = response.Request.RedirectChain;
             Assert.Single(redirectChain);
             var redirected = redirectChain[0].Response;
@@ -55,7 +55,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         [PuppeteerFact]
         public async Task ShouldWaitUntilResponseCompletes()
         {
-            await Page.GoToAsync(TestConstants.EmptyPage);
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
             // Setup server to trap request.
             var serverResponseCompletion = new TaskCompletionSource<bool>();
             HttpResponse serverResponse = null;
@@ -68,13 +68,13 @@ namespace PuppeteerSharp.Tests.NetworkTests
             // Setup page to trap response.
             Response pageResponse = null;
             var requestFinished = false;
-            Page.Response += (_, e) => pageResponse = e.Response;
-            Page.RequestFinished += (_, _) => requestFinished = true;
+            DevToolsContext.Response += (_, e) => pageResponse = e.Response;
+            DevToolsContext.RequestFinished += (_, _) => requestFinished = true;
             // send request and wait for server response
             Task WaitForPageResponseEvent()
             {
                 var completion = new TaskCompletionSource<bool>();
-                Page.Response += (_, e) =>
+                DevToolsContext.Response += (_, e) =>
                 {
                     if (!TestUtils.IsFavicon(e.Response.Request))
                     {
@@ -86,7 +86,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
 
             await Task.WhenAll(
                 Server.WaitForRequest("/get"),
-                Page.EvaluateExpressionAsync("fetch('/get', { method: 'GET'})"),
+                DevToolsContext.EvaluateExpressionAsync("fetch('/get', { method: 'GET'})"),
                 WaitForPageResponseEvent()
             );
 

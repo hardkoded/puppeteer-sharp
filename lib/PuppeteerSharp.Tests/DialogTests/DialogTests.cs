@@ -21,7 +21,7 @@ namespace PuppeteerSharp.Tests.DialogTests
         [PuppeteerFact]
         public async Task ShouldFire()
         {
-            Page.Dialog += async (_, e) =>
+            DevToolsContext.Dialog += async (_, e) =>
             {
                 Assert.Equal(DialogType.Alert, e.Dialog.DialogType);
                 Assert.Equal(string.Empty, e.Dialog.DefaultValue);
@@ -30,14 +30,14 @@ namespace PuppeteerSharp.Tests.DialogTests
                 await e.Dialog.Accept();
             };
 
-            await Page.EvaluateExpressionAsync("alert('yo');");
+            await DevToolsContext.EvaluateExpressionAsync("alert('yo');");
         }
 
         [PuppeteerTest("dialog.spec.ts", "Page.Events.Dialog", "should allow accepting prompts")]
         [PuppeteerFact]
         public async Task ShouldAllowAcceptingPrompts()
         {
-            Page.Dialog += async (_, e) =>
+            DevToolsContext.Dialog += async (_, e) =>
             {
                 Assert.Equal(DialogType.Prompt, e.Dialog.DialogType);
                 Assert.Equal("yes.", e.Dialog.DefaultValue);
@@ -46,7 +46,7 @@ namespace PuppeteerSharp.Tests.DialogTests
                 await e.Dialog.Accept("answer!");
             };
 
-            var result = await Page.EvaluateExpressionAsync<string>("prompt('question?', 'yes.')");
+            var result = await DevToolsContext.EvaluateExpressionAsync<string>("prompt('question?', 'yes.')");
             Assert.Equal("answer!", result);
         }
 
@@ -54,12 +54,12 @@ namespace PuppeteerSharp.Tests.DialogTests
         [PuppeteerFact]
         public async Task ShouldDismissThePrompt()
         {
-            Page.Dialog += async (_, e) =>
+            DevToolsContext.Dialog += async (_, e) =>
             {
                 await e.Dialog.Dismiss();
             };
 
-            var result = await Page.EvaluateExpressionAsync<string>("prompt('question?')");
+            var result = await DevToolsContext.EvaluateExpressionAsync<string>("prompt('question?')");
             Assert.Null(result);
         }
     }

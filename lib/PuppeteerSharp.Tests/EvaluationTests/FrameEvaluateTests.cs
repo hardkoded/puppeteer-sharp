@@ -18,12 +18,12 @@ namespace PuppeteerSharp.Tests.EvaluationTests
         [PuppeteerFact]
         public async Task ShouldHaveDifferentExecutionContexts()
         {
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
-            Assert.Equal(2, Page.Frames.Count());
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            await FrameUtils.AttachFrameAsync(DevToolsContext, "frame1", TestConstants.EmptyPage);
+            Assert.Equal(2, DevToolsContext.Frames.Count());
 
-            var frame1 = Page.MainFrame;
-            var frame2 = Page.FirstChildFrame();
+            var frame1 = DevToolsContext.MainFrame;
+            var frame2 = DevToolsContext.FirstChildFrame();
 
             await frame1.EvaluateExpressionAsync("window.FOO = 'foo'");
             await frame2.EvaluateExpressionAsync("window.FOO = 'bar'");
@@ -36,11 +36,11 @@ namespace PuppeteerSharp.Tests.EvaluationTests
         [PuppeteerFact]
         public async Task ShouldExecuteAfterCrossSiteNavigation()
         {
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            var mainFrame = Page.MainFrame;
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            var mainFrame = DevToolsContext.MainFrame;
             Assert.Contains("localhost", await mainFrame.EvaluateExpressionAsync<string>("window.location.href"));
 
-            await Page.GoToAsync(TestConstants.CrossProcessHttpPrefix + "/empty.html");
+            await DevToolsContext.GoToAsync(TestConstants.CrossProcessHttpPrefix + "/empty.html");
             Assert.Contains("127", await mainFrame.EvaluateExpressionAsync<string>("window.location.href"));
         }
     }

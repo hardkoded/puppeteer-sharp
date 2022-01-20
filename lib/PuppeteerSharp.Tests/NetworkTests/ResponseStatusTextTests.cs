@@ -28,7 +28,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
                 context.Features.Get<IHttpResponseFeature>().ReasonPhrase = "cool!";
                 return Task.CompletedTask;
             });
-            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/cool");
+            var response = await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/cool");
             Assert.Equal("cool!", response.StatusText);
         }
     }

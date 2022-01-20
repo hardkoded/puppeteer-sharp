@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Tests.MouseTests
         [PuppeteerFact]
         public async Task ShouldClickTheDocument()
         {
-            await Page.EvaluateFunctionAsync(@"() => {
+            await DevToolsContext.EvaluateFunctionAsync(@"() => {
                 globalThis.clickPromise = new Promise((resolve) => {
                     document.addEventListener('click', (event) => {
                     resolve({
@@ -45,8 +45,8 @@ namespace PuppeteerSharp.Tests.MouseTests
                     });
                 });
             }");
-            await Page.Mouse.ClickAsync(50, 60);
-            var e = await Page.EvaluateFunctionAsync<MouseEvent>("() => globalThis.clickPromise");
+            await DevToolsContext.Mouse.ClickAsync(50, 60);
+            var e = await DevToolsContext.EvaluateFunctionAsync<MouseEvent>("() => globalThis.clickPromise");
 
             Assert.Equal("click", e.Type);
             Assert.Equal(1, e.Detail);
@@ -60,14 +60,14 @@ namespace PuppeteerSharp.Tests.MouseTests
         [PuppeteerFact]
         public async Task ShouldResizeTheTextarea()
         {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
-            var dimensions = await Page.EvaluateFunctionAsync<Dimensions>(Dimensions);
-            var mouse = Page.Mouse;
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
+            var dimensions = await DevToolsContext.EvaluateFunctionAsync<Dimensions>(Dimensions);
+            var mouse = DevToolsContext.Mouse;
             await mouse.MoveAsync(dimensions.X + dimensions.Width - 4, dimensions.Y + dimensions.Height - 4);
             await mouse.DownAsync();
             await mouse.MoveAsync(dimensions.X + dimensions.Width + 100, dimensions.Y + dimensions.Height + 100);
             await mouse.UpAsync();
-            var newDimensions = await Page.EvaluateFunctionAsync<Dimensions>(Dimensions);
+            var newDimensions = await DevToolsContext.EvaluateFunctionAsync<Dimensions>(Dimensions);
             Assert.Equal(Math.Round(dimensions.Width + 104, MidpointRounding.AwayFromZero), newDimensions.Width);
             Assert.Equal(Math.Round(dimensions.Height + 104, MidpointRounding.AwayFromZero), newDimensions.Height);
         }
@@ -76,17 +76,17 @@ namespace PuppeteerSharp.Tests.MouseTests
         [PuppeteerFact]
         public async Task ShouldSelectTheTextWithMouse()
         {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
-            await Page.FocusAsync("textarea");
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
+            await DevToolsContext.FocusAsync("textarea");
             const string expectedText = "This is the text that we are going to try to select. Let's see how it goes.";
-            await Page.Keyboard.TypeAsync(expectedText);
-            await Page.EvaluateExpressionAsync("document.querySelector('textarea').scrollTop = 0");
-            var dimensions = await Page.EvaluateFunctionAsync<Dimensions>(Dimensions);
-            await Page.Mouse.MoveAsync(dimensions.X + 2, dimensions.Y + 2);
-            await Page.Mouse.DownAsync();
-            await Page.Mouse.MoveAsync(dimensions.Width, dimensions.Height + 20);
-            await Page.Mouse.UpAsync();
-            var actualTest = await Page.EvaluateFunctionAsync<string>(@"() => {
+            await DevToolsContext.Keyboard.TypeAsync(expectedText);
+            await DevToolsContext.EvaluateExpressionAsync("document.querySelector('textarea').scrollTop = 0");
+            var dimensions = await DevToolsContext.EvaluateFunctionAsync<Dimensions>(Dimensions);
+            await DevToolsContext.Mouse.MoveAsync(dimensions.X + 2, dimensions.Y + 2);
+            await DevToolsContext.Mouse.DownAsync();
+            await DevToolsContext.Mouse.MoveAsync(dimensions.Width, dimensions.Height + 20);
+            await DevToolsContext.Mouse.UpAsync();
+            var actualTest = await DevToolsContext.EvaluateFunctionAsync<string>(@"() => {
                 const textarea = document.querySelector('textarea');
                 return textarea.value.substring(textarea.selectionStart, textarea.selectionEnd);
             }");
@@ -97,47 +97,47 @@ namespace PuppeteerSharp.Tests.MouseTests
         [PuppeteerFact]
         public async Task ShouldTriggerHoverState()
         {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
-            await Page.HoverAsync("#button-6");
-            Assert.Equal("button-6", await Page.EvaluateExpressionAsync<string>("document.querySelector('button:hover').id"));
-            await Page.HoverAsync("#button-2");
-            Assert.Equal("button-2", await Page.EvaluateExpressionAsync<string>("document.querySelector('button:hover').id"));
-            await Page.HoverAsync("#button-91");
-            Assert.Equal("button-91", await Page.EvaluateExpressionAsync<string>("document.querySelector('button:hover').id"));
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
+            await DevToolsContext.HoverAsync("#button-6");
+            Assert.Equal("button-6", await DevToolsContext.EvaluateExpressionAsync<string>("document.querySelector('button:hover').id"));
+            await DevToolsContext.HoverAsync("#button-2");
+            Assert.Equal("button-2", await DevToolsContext.EvaluateExpressionAsync<string>("document.querySelector('button:hover').id"));
+            await DevToolsContext.HoverAsync("#button-91");
+            Assert.Equal("button-91", await DevToolsContext.EvaluateExpressionAsync<string>("document.querySelector('button:hover').id"));
         }
 
         [PuppeteerTest("mouse.spec.ts", "Mouse", "should trigger hover state with removed window.Node")]
         [PuppeteerFact]
         public async Task ShouldTriggerHoverStateWithRemovedWindowNode()
         {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
-            await Page.EvaluateExpressionAsync("delete window.Node");
-            await Page.HoverAsync("#button-6");
-            Assert.Equal("button-6", await Page.EvaluateExpressionAsync("document.querySelector('button:hover').id"));
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
+            await DevToolsContext.EvaluateExpressionAsync("delete window.Node");
+            await DevToolsContext.HoverAsync("#button-6");
+            Assert.Equal("button-6", await DevToolsContext.EvaluateExpressionAsync("document.querySelector('button:hover').id"));
         }
 
         [PuppeteerTest("mouse.spec.ts", "Mouse", "should set modifier keys on click")]
         [PuppeteerFact]
         public async Task ShouldSetModifierKeysOnClick()
         {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
-            await Page.EvaluateExpressionAsync("document.querySelector('#button-3').addEventListener('mousedown', e => window.lastEvent = e, true)");
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
+            await DevToolsContext.EvaluateExpressionAsync("document.querySelector('#button-3').addEventListener('mousedown', e => window.lastEvent = e, true)");
             var modifiers = new Dictionary<string, string> { ["Shift"] = "shiftKey", ["Control"] = "ctrlKey", ["Alt"] = "altKey", ["Meta"] = "metaKey" };
             foreach (var modifier in modifiers)
             {
-                await Page.Keyboard.DownAsync(modifier.Key);
-                await Page.ClickAsync("#button-3");
-                if (!(await Page.EvaluateFunctionAsync<bool>("mod => window.lastEvent[mod]", modifier.Value)))
+                await DevToolsContext.Keyboard.DownAsync(modifier.Key);
+                await DevToolsContext.ClickAsync("#button-3");
+                if (!(await DevToolsContext.EvaluateFunctionAsync<bool>("mod => window.lastEvent[mod]", modifier.Value)))
                 {
                     Assert.True(false, $"{modifier.Value} should be true");
                 }
 
-                await Page.Keyboard.UpAsync(modifier.Key);
+                await DevToolsContext.Keyboard.UpAsync(modifier.Key);
             }
-            await Page.ClickAsync("#button-3");
+            await DevToolsContext.ClickAsync("#button-3");
             foreach (var modifier in modifiers)
             {
-                if (await Page.EvaluateFunctionAsync<bool>("mod => window.lastEvent[mod]", modifier.Value))
+                if (await DevToolsContext.EvaluateFunctionAsync<bool>("mod => window.lastEvent[mod]", modifier.Value))
                 {
                     Assert.False(true, $"{modifiers.Values} should be false");
                 }
@@ -148,18 +148,18 @@ namespace PuppeteerSharp.Tests.MouseTests
         [PuppeteerFact]
         public async Task ShouldSendMouseWheelEvents()
         {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/input/wheel.html");
-            var elem = await Page.QuerySelectorAsync("div");
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/wheel.html");
+            var elem = await DevToolsContext.QuerySelectorAsync("div");
             var boundingBoxBefore = await elem.BoundingBoxAsync();
             Assert.Equal(115, boundingBoxBefore.Width);
             Assert.Equal(115, boundingBoxBefore.Height);
 
-            await Page.Mouse.MoveAsync(
+            await DevToolsContext.Mouse.MoveAsync(
                 boundingBoxBefore.X + (boundingBoxBefore.Width / 2),
                 boundingBoxBefore.Y + (boundingBoxBefore.Height / 2)
             );
 
-            await Page.Mouse.WheelAsync(0, -100);
+            await DevToolsContext.Mouse.WheelAsync(0, -100);
             var boundingBoxAfter = await elem.BoundingBoxAsync();
             Assert.Equal(230, boundingBoxAfter.Width);
             Assert.Equal(230, boundingBoxAfter.Height);
@@ -169,48 +169,48 @@ namespace PuppeteerSharp.Tests.MouseTests
         [PuppeteerFact]
         public async Task ShouldTweenMouseMovement()
         {
-            await Page.Mouse.MoveAsync(100, 100);
-            await Page.EvaluateExpressionAsync(@"{
+            await DevToolsContext.Mouse.MoveAsync(100, 100);
+            await DevToolsContext.EvaluateExpressionAsync(@"{
                 window.result = [];
                 document.addEventListener('mousemove', event => {
                     window.result.push([event.clientX, event.clientY]);
                 });
             }");
-            await Page.Mouse.MoveAsync(200, 300, new MoveOptions { Steps = 5 });
+            await DevToolsContext.Mouse.MoveAsync(200, 300, new MoveOptions { Steps = 5 });
             Assert.Equal(new[] {
                 new[]{ 120, 140 },
                 new[]{ 140, 180 },
                 new[]{ 160, 220 },
                 new[]{ 180, 260 },
                 new[]{ 200, 300 }
-            }, await Page.EvaluateExpressionAsync<int[][]>("result"));
+            }, await DevToolsContext.EvaluateExpressionAsync<int[][]>("result"));
         }
 
         [PuppeteerTest("mouse.spec.ts", "Mouse", "should work with mobile viewports and cross process navigations")]
         [PuppeteerFact]
         public async Task ShouldWorkWithMobileViewportsAndCrossProcessNavigations()
         {
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            await Page.SetViewportAsync(new ViewPortOptions
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            await DevToolsContext.SetViewportAsync(new ViewPortOptions
             {
                 Width = 360,
                 Height = 640,
                 IsMobile = true
             });
-            await Page.GoToAsync(TestConstants.CrossProcessUrl + "/mobile.html");
-            await Page.EvaluateFunctionAsync(@"() => {
+            await DevToolsContext.GoToAsync(TestConstants.CrossProcessUrl + "/mobile.html");
+            await DevToolsContext.EvaluateFunctionAsync(@"() => {
                 document.addEventListener('click', event => {
                     window.result = { x: event.clientX, y: event.clientY };
                 });
             }");
 
-            await Page.Mouse.ClickAsync(30, 40);
+            await DevToolsContext.Mouse.ClickAsync(30, 40);
 
             Assert.Equal(new DomPointInternal()
             {
                 X = 30,
                 Y = 40
-            }, await Page.EvaluateExpressionAsync<DomPointInternal>("result"));
+            }, await DevToolsContext.EvaluateExpressionAsync<DomPointInternal>("result"));
         }
 
         internal struct WheelEventInternal

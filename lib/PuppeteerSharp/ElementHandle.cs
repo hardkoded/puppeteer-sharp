@@ -14,7 +14,7 @@ namespace CefSharp.Puppeteer
 {
     /// <summary>
     /// Inherits from <see cref="JSHandle"/>. It represents an in-page DOM element.
-    /// ElementHandles can be created by <see cref="Page.QuerySelectorAsync(string)"/> or <see cref="Page.QuerySelectorAllAsync(string)"/>.
+    /// ElementHandles can be created by <see cref="DevToolsContext.QuerySelectorAsync(string)"/> or <see cref="DevToolsContext.QuerySelectorAllAsync(string)"/>.
     /// </summary>
     public class ElementHandle : JSHandle
     {
@@ -25,18 +25,18 @@ namespace CefSharp.Puppeteer
             ExecutionContext context,
             Connection client,
             RemoteObject remoteObject,
-            Page page,
+            DevToolsContext devToolsContext,
             FrameManager frameManager) : base(context, client, remoteObject)
         {
-            Page = page;
+            DevToolsContext = devToolsContext;
             _frameManager = frameManager;
             _logger = client.LoggerFactory.CreateLogger<ElementHandle>();
         }
 
-        internal Page Page { get; }
+        internal DevToolsContext DevToolsContext { get; }
 
         /// <summary>
-        /// This method scrolls element into view if needed, and then uses <seealso cref="Page.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
+        /// This method scrolls element into view if needed, and then uses <seealso cref="DevToolsContext.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
         /// If the element is detached from DOM, the method throws an error.
         /// </summary>
         /// <returns>The task</returns>
@@ -46,7 +46,7 @@ namespace CefSharp.Puppeteer
         public Task ScreenshotAsync(string file) => ScreenshotAsync(file, new ScreenshotOptions());
 
         /// <summary>
-        /// This method scrolls element into view if needed, and then uses <seealso cref="Page.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
+        /// This method scrolls element into view if needed, and then uses <seealso cref="DevToolsContext.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
         /// If the element is detached from DOM, the method throws an error.
         /// </summary>
         /// <returns>The task</returns>
@@ -75,14 +75,14 @@ namespace CefSharp.Puppeteer
         }
 
         /// <summary>
-        /// This method scrolls element into view if needed, and then uses <seealso cref="Page.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
+        /// This method scrolls element into view if needed, and then uses <seealso cref="DevToolsContext.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
         /// If the element is detached from DOM, the method throws an error.
         /// </summary>
         /// <returns>Task which resolves to a <see cref="Stream"/> containing the image data.</returns>
         public Task<Stream> ScreenshotStreamAsync() => ScreenshotStreamAsync(new ScreenshotOptions());
 
         /// <summary>
-        /// This method scrolls element into view if needed, and then uses <seealso cref="Page.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
+        /// This method scrolls element into view if needed, and then uses <seealso cref="DevToolsContext.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
         /// If the element is detached from DOM, the method throws an error.
         /// </summary>
         /// <returns>Task which resolves to a <see cref="Stream"/> containing the image data.</returns>
@@ -91,14 +91,14 @@ namespace CefSharp.Puppeteer
             => new MemoryStream(await ScreenshotDataAsync(options).ConfigureAwait(false));
 
         /// <summary>
-        /// This method scrolls element into view if needed, and then uses <seealso cref="Page.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
+        /// This method scrolls element into view if needed, and then uses <seealso cref="DevToolsContext.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
         /// If the element is detached from DOM, the method throws an error.
         /// </summary>
         /// <returns>Task which resolves to a <see cref="byte"/>[] containing the image data.</returns>
         public Task<byte[]> ScreenshotDataAsync() => ScreenshotDataAsync(new ScreenshotOptions());
 
         /// <summary>
-        /// This method scrolls element into view if needed, and then uses <seealso cref="Page.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
+        /// This method scrolls element into view if needed, and then uses <seealso cref="DevToolsContext.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
         /// If the element is detached from DOM, the method throws an error.
         /// </summary>
         /// <returns>Task which resolves to a <see cref="byte"/>[] containing the image data.</returns>
@@ -107,14 +107,14 @@ namespace CefSharp.Puppeteer
             => Convert.FromBase64String(await ScreenshotBase64Async(options).ConfigureAwait(false));
 
         /// <summary>
-        /// This method scrolls element into view if needed, and then uses <seealso cref="Page.ScreenshotBase64Async(ScreenshotOptions)"/> to take a screenshot of the element.
+        /// This method scrolls element into view if needed, and then uses <seealso cref="DevToolsContext.ScreenshotBase64Async(ScreenshotOptions)"/> to take a screenshot of the element.
         /// If the element is detached from DOM, the method throws an error.
         /// </summary>
         /// <returns>Task which resolves to a <see cref="string"/> containing the image data as base64.</returns>
         public Task<string> ScreenshotBase64Async() => ScreenshotBase64Async(new ScreenshotOptions());
 
         /// <summary>
-        /// This method scrolls element into view if needed, and then uses <seealso cref="Page.ScreenshotBase64Async(ScreenshotOptions)"/> to take a screenshot of the element.
+        /// This method scrolls element into view if needed, and then uses <seealso cref="DevToolsContext.ScreenshotBase64Async(ScreenshotOptions)"/> to take a screenshot of the element.
         /// If the element is detached from DOM, the method throws an error.
         /// </summary>
         /// <returns>Task which resolves to a <see cref="string"/> containing the image data as base64.</returns>
@@ -134,7 +134,7 @@ namespace CefSharp.Puppeteer
                 throw new PuppeteerException("Node is either not visible or not an HTMLElement");
             }
 
-            var viewport = Page.Viewport;
+            var viewport = DevToolsContext.Viewport;
             if (viewport != null && (boundingBox.Width > viewport.Width || boundingBox.Height > viewport.Height))
             {
                 var newRawViewport = JObject.FromObject(viewport);
@@ -143,7 +143,7 @@ namespace CefSharp.Puppeteer
                     Width = (int)Math.Max(viewport.Width, Math.Ceiling(boundingBox.Width)),
                     Height = (int)Math.Max(viewport.Height, Math.Ceiling(boundingBox.Height))
                 });
-                await Page.SetViewportAsync(newRawViewport.ToObject<ViewPortOptions>(true)).ConfigureAwait(false);
+                await DevToolsContext.SetViewportAsync(newRawViewport.ToObject<ViewPortOptions>(true)).ConfigureAwait(false);
                 needsViewportReset = true;
             }
             await ExecutionContext.EvaluateFunctionAsync(
@@ -174,29 +174,29 @@ namespace CefSharp.Puppeteer
             clip.Y += getLayoutMetricsResponse.LayoutViewport.PageY;
 
             options.Clip = boundingBox.ToClip();
-            var imageData = await Page.ScreenshotBase64Async(options).ConfigureAwait(false);
+            var imageData = await DevToolsContext.ScreenshotBase64Async(options).ConfigureAwait(false);
 
             if (needsViewportReset)
             {
-                await Page.SetViewportAsync(viewport).ConfigureAwait(false);
+                await DevToolsContext.SetViewportAsync(viewport).ConfigureAwait(false);
             }
 
             return imageData;
         }
 
         /// <summary>
-        /// Scrolls element into view if needed, and then uses <see cref="Page.Mouse"/> to hover over the center of the element.
+        /// Scrolls element into view if needed, and then uses <see cref="DevToolsContext.Mouse"/> to hover over the center of the element.
         /// </summary>
         /// <returns>Task which resolves when the element is successfully hovered</returns>
         public async Task HoverAsync()
         {
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
             var (x, y) = await ClickablePointAsync().ConfigureAwait(false);
-            await Page.Mouse.MoveAsync(x, y).ConfigureAwait(false);
+            await DevToolsContext.Mouse.MoveAsync(x, y).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Scrolls element into view if needed, and then uses <see cref="Page.Mouse"/> to click in the center of the element.
+        /// Scrolls element into view if needed, and then uses <see cref="DevToolsContext.Mouse"/> to click in the center of the element.
         /// </summary>
         /// <param name="options">click options</param>
         /// <exception cref="PuppeteerException">if the element is detached from DOM</exception>
@@ -205,7 +205,7 @@ namespace CefSharp.Puppeteer
         {
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
             var (x, y) = await ClickablePointAsync().ConfigureAwait(false);
-            await Page.Mouse.ClickAsync(x, y, options).ConfigureAwait(false);
+            await DevToolsContext.Mouse.ClickAsync(x, y, options).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -286,7 +286,7 @@ namespace CefSharp.Puppeteer
         {
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
             var (x, y) = await ClickablePointAsync().ConfigureAwait(false);
-            await Page.Touchscreen.TapAsync(x, y).ConfigureAwait(false);
+            await DevToolsContext.Touchscreen.TapAsync(x, y).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -319,7 +319,7 @@ namespace CefSharp.Puppeteer
         public async Task TypeAsync(string text, TypeOptions options = null)
         {
             await FocusAsync().ConfigureAwait(false);
-            await Page.Keyboard.TypeAsync(text, options).ConfigureAwait(false);
+            await DevToolsContext.Keyboard.TypeAsync(text, options).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -334,7 +334,7 @@ namespace CefSharp.Puppeteer
         public async Task PressAsync(string key, PressOptions options = null)
         {
             await FocusAsync().ConfigureAwait(false);
-            await Page.Keyboard.PressAsync(key, options).ConfigureAwait(false);
+            await DevToolsContext.Keyboard.PressAsync(key, options).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -535,14 +535,14 @@ namespace CefSharp.Puppeteer
         /// <returns>A Task that resolves when the message was confirmed by the browser with the drag data</returns>
         public async Task<DragData> DragAsync(decimal x, decimal y)
         {
-            if (!Page.IsDragInterceptionEnabled)
+            if (!DevToolsContext.IsDragInterceptionEnabled)
             {
                 throw new PuppeteerException("Drag Interception is not enabled!");
             }
 
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
             var start = await ClickablePointAsync().ConfigureAwait(false);
-            return await Page.Mouse.DragAsync(start.x, start.y, x, y).ConfigureAwait(false);
+            return await DevToolsContext.Mouse.DragAsync(start.x, start.y, x, y).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -552,14 +552,14 @@ namespace CefSharp.Puppeteer
         /// <returns>A Task that resolves when the message was confirmed by the browser</returns>
         public async Task DragEnterAsync(DragData data)
         {
-            if (!Page.IsDragInterceptionEnabled)
+            if (!DevToolsContext.IsDragInterceptionEnabled)
             {
                 throw new PuppeteerException("Drag Interception is not enabled!");
             }
 
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
             var (x, y) = await ClickablePointAsync().ConfigureAwait(false);
-            await Page.Mouse.DragEnterAsync(x, y, data).ConfigureAwait(false);
+            await DevToolsContext.Mouse.DragEnterAsync(x, y, data).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -569,14 +569,14 @@ namespace CefSharp.Puppeteer
         /// <returns>A Task that resolves when the message was confirmed by the browser</returns>
         public async Task DragOverAsync(DragData data)
         {
-            if (!Page.IsDragInterceptionEnabled)
+            if (!DevToolsContext.IsDragInterceptionEnabled)
             {
                 throw new PuppeteerException("Drag Interception is not enabled!");
             }
 
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
             var (x, y) = await ClickablePointAsync().ConfigureAwait(false);
-            await Page.Mouse.DragOverAsync(x, y, data).ConfigureAwait(false);
+            await DevToolsContext.Mouse.DragOverAsync(x, y, data).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -586,14 +586,14 @@ namespace CefSharp.Puppeteer
         /// <returns>A Task that resolves when the message was confirmed by the browser</returns>
         public async Task DropAsync(DragData data)
         {
-            if (!Page.IsDragInterceptionEnabled)
+            if (!DevToolsContext.IsDragInterceptionEnabled)
             {
                 throw new PuppeteerException("Drag Interception is not enabled!");
             }
 
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
             var (x, y) = await ClickablePointAsync().ConfigureAwait(false);
-            await Page.Mouse.DropAsync(x, y, data).ConfigureAwait(false);
+            await DevToolsContext.Mouse.DropAsync(x, y, data).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -609,7 +609,7 @@ namespace CefSharp.Puppeteer
                 throw new ArgumentException("Target cannot be null", nameof(target));
             }
 
-            if (!Page.IsDragInterceptionEnabled)
+            if (!DevToolsContext.IsDragInterceptionEnabled)
             {
                 throw new PuppeteerException("Drag Interception is not enabled!");
             }
@@ -617,7 +617,7 @@ namespace CefSharp.Puppeteer
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
             var (x, y) = await ClickablePointAsync().ConfigureAwait(false);
             var targetPoint = await target.ClickablePointAsync().ConfigureAwait(false);
-            await Page.Mouse.DragAndDropAsync(x, y, targetPoint.x, targetPoint.y, delay).ConfigureAwait(false);
+            await DevToolsContext.Mouse.DragAndDropAsync(x, y, targetPoint.x, targetPoint.y, delay).ConfigureAwait(false);
         }
 
         private async Task<(decimal x, decimal y)> ClickablePointAsync()
@@ -703,7 +703,7 @@ namespace CefSharp.Puppeteer
                         element.scrollIntoView({block: 'center', inline: 'center', behavior: 'instant'});
                     return null;
                 }",
-                Page.JavascriptEnabled).ConfigureAwait(false);
+                DevToolsContext.JavascriptEnabled).ConfigureAwait(false);
 
             if (errorMessage != null)
             {

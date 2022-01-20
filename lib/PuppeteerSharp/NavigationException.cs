@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace CefSharp.Puppeteer
 {
     /// <summary>
-    /// Exception thrown when a <see cref="Page"/> fails to navigate an URL.
+    /// Exception thrown when a <see cref="DevToolsContext"/> fails to navigate an URL.
     /// </summary>
     [Serializable]
     public class NavigationException : PuppeteerException

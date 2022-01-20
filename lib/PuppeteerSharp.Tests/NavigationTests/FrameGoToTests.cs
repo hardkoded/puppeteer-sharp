@@ -21,10 +21,10 @@ namespace PuppeteerSharp.Tests.NavigationTests
         [PuppeteerFact]
         public async Task ShouldNavigateSubFrames()
         {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
-            Assert.Single(Page.Frames.Where(f => f.Url.Contains("/frames/one-frame.html")));
-            Assert.Single(Page.Frames.Where(f => f.Url.Contains("/frames/frame.html")));
-            var childFrame = Page.FirstChildFrame();
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
+            Assert.Single(DevToolsContext.Frames.Where(f => f.Url.Contains("/frames/one-frame.html")));
+            Assert.Single(DevToolsContext.Frames.Where(f => f.Url.Contains("/frames/frame.html")));
+            var childFrame = DevToolsContext.FirstChildFrame();
             var response = await childFrame.GoToAsync(TestConstants.EmptyPage);
             Assert.Equal(HttpStatusCode.OK, response.Status);
             Assert.Same(response.Frame, childFrame);
@@ -34,12 +34,12 @@ namespace PuppeteerSharp.Tests.NavigationTests
         [PuppeteerFact]
         public async Task ShouldRejectWhenFrameDetaches()
         {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
             Server.SetRoute("/empty.html", _ => Task.Delay(10000));
             var waitForRequestTask = Server.WaitForRequest("/empty.html");
-            var navigationTask = Page.FirstChildFrame().GoToAsync(TestConstants.EmptyPage);
+            var navigationTask = DevToolsContext.FirstChildFrame().GoToAsync(TestConstants.EmptyPage);
             await waitForRequestTask;
-            await Page.QuerySelectorAsync("iframe").EvaluateFunctionAsync("frame => frame.remove()");
+            await DevToolsContext.QuerySelectorAsync("iframe").EvaluateFunctionAsync("frame => frame.remove()");
             var exception = await Assert.ThrowsAsync<NavigationException>(async () => await navigationTask);
             Assert.Equal("Navigating frame was detached", exception.Message);
         }
@@ -49,14 +49,14 @@ namespace PuppeteerSharp.Tests.NavigationTests
         public async Task ShouldReturnMatchingResponses()
         {
             // Disable cache: otherwise, chromium will cache similar requests.
-            await Page.SetCacheEnabledAsync(false);
-            await Page.GoToAsync(TestConstants.EmptyPage);
+            await DevToolsContext.SetCacheEnabledAsync(false);
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
             // Attach three frames.
             var matchingData = new MatchingResponseData[]
             {
-                new MatchingResponseData{ FrameTask =  FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage)},
-                new MatchingResponseData{ FrameTask =  FrameUtils.AttachFrameAsync(Page, "frame2", TestConstants.EmptyPage)},
-                new MatchingResponseData{ FrameTask =  FrameUtils.AttachFrameAsync(Page, "frame3", TestConstants.EmptyPage)}
+                new MatchingResponseData{ FrameTask =  FrameUtils.AttachFrameAsync(DevToolsContext, "frame1", TestConstants.EmptyPage)},
+                new MatchingResponseData{ FrameTask =  FrameUtils.AttachFrameAsync(DevToolsContext, "frame2", TestConstants.EmptyPage)},
+                new MatchingResponseData{ FrameTask =  FrameUtils.AttachFrameAsync(DevToolsContext, "frame3", TestConstants.EmptyPage)}
             };
 
             await Task.WhenAll(matchingData.Select(m => m.FrameTask));

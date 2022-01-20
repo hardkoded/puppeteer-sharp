@@ -29,7 +29,7 @@ You can also change the view port before generating the screenshot when using Wi
 <!-- snippet: SetViewportAsync -->
 <a id='snippet-setviewportasync'></a>
 ```cs
-await Page.SetViewportAsync(new ViewPortOptions
+await DevToolsContext.SetViewportAsync(new ViewPortOptions
 {
     Width = 500,
     Height = 500
@@ -47,7 +47,7 @@ Currently not supported via CefSharp Puppeteer, use ChromiumWebBrowser.PrintToPd
 <!-- snippet: SetContentAsync -->
 <a id='snippet-setcontentasync'></a>
 ```cs
-await using var page = await chromiumWebBrowser.GetPuppeteerPageAsync();
+await using var page = await chromiumWebBrowser.GetDevToolsContextAsync();
 await page.SetContentAsync("<div>My Receipt</div>");
 var result = await page.GetContentAsync();
 ```
@@ -59,7 +59,7 @@ var result = await page.GetContentAsync();
 <!-- snippet: Evaluate -->
 <a id='snippet-evaluate'></a>
 ```cs
-await using var page = await chromiumWebBrowser.GetPuppeteerPageAsync();
+await using var page = await chromiumWebBrowser.GetDevToolsContextAsync();
 var seven = await page.EvaluateExpressionAsync<int>("4 + 3");
 var someObject = await page.EvaluateFunctionAsync<dynamic>("(value) => ({a: value})", 5);
 Console.WriteLine(someObject.a);

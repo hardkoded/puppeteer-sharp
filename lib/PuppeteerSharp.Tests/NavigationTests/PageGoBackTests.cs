@@ -18,18 +18,18 @@ namespace PuppeteerSharp.Tests.NavigationTests
         [PuppeteerFact]
         public async Task ShouldWork()
         {
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/grid.html");
 
-            var response = await Page.GoBackAsync();
+            var response = await DevToolsContext.GoBackAsync();
             Assert.True(response.Ok);
             Assert.Equal(TestConstants.EmptyPage, response.Url);
 
-            response = await Page.GoForwardAsync();
+            response = await DevToolsContext.GoForwardAsync();
             Assert.True(response.Ok);
             Assert.Contains("grid", response.Url);
 
-            response = await Page.GoForwardAsync();
+            response = await DevToolsContext.GoForwardAsync();
             Assert.Null(response);
         }
 
@@ -37,19 +37,19 @@ namespace PuppeteerSharp.Tests.NavigationTests
         [PuppeteerFact]
         public async Task ShouldWorkWithHistoryAPI()
         {
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            await Page.EvaluateExpressionAsync(@"
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            await DevToolsContext.EvaluateExpressionAsync(@"
               history.pushState({ }, '', '/first.html');
               history.pushState({ }, '', '/second.html');
             ");
-            Assert.Equal(TestConstants.ServerUrl + "/second.html", Page.Url);
+            Assert.Equal(TestConstants.ServerUrl + "/second.html", DevToolsContext.Url);
 
-            await Page.GoBackAsync();
-            Assert.Equal(TestConstants.ServerUrl + "/first.html", Page.Url);
-            await Page.GoBackAsync();
-            Assert.Equal(TestConstants.EmptyPage, Page.Url);
-            await Page.GoForwardAsync();
-            Assert.Equal(TestConstants.ServerUrl + "/first.html", Page.Url);
+            await DevToolsContext.GoBackAsync();
+            Assert.Equal(TestConstants.ServerUrl + "/first.html", DevToolsContext.Url);
+            await DevToolsContext.GoBackAsync();
+            Assert.Equal(TestConstants.EmptyPage, DevToolsContext.Url);
+            await DevToolsContext.GoForwardAsync();
+            Assert.Equal(TestConstants.ServerUrl + "/first.html", DevToolsContext.Url);
         }
     }
 }

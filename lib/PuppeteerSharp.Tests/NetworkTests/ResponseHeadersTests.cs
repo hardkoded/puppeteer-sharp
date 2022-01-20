@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
                 return Task.CompletedTask;
             });
 
-            var response = await Page.GoToAsync(TestConstants.EmptyPage);
+            var response = await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
             Assert.Contains("bar", response.Headers["foo"]);
         }
     }

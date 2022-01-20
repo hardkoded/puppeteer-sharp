@@ -18,11 +18,11 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         [PuppeteerFact]
         public async Task ShouldWork()
         {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/resetcss.html");
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/resetcss.html");
 
             // Step 1: Add Frame and position it absolutely.
-            await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.ServerUrl + "/resetcss.html");
-            await Page.EvaluateExpressionAsync(@"
+            await FrameUtils.AttachFrameAsync(DevToolsContext, "frame1", TestConstants.ServerUrl + "/resetcss.html");
+            await DevToolsContext.EvaluateExpressionAsync(@"
               const frame = document.querySelector('#frame1');
               frame.style = `
                 position: absolute;
@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
               `;");
 
             // Step 2: Add div and position it absolutely inside frame.
-            var frame = Page.FirstChildFrame();
+            var frame = DevToolsContext.FirstChildFrame();
             var divHandle = (ElementHandle)await frame.EvaluateFunctionHandleAsync(@"() => {
               const div = document.createElement('div');
               document.body.appendChild(div);
@@ -79,8 +79,8 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         [PuppeteerFact]
         public async Task ShouldReturnNullForInvisibleElements()
         {
-            await Page.SetContentAsync("<div style='display:none'>hi</div>");
-            var elementHandle = await Page.QuerySelectorAsync("div");
+            await DevToolsContext.SetContentAsync("<div style='display:none'>hi</div>");
+            var elementHandle = await DevToolsContext.QuerySelectorAsync("div");
             Assert.Null(await elementHandle.BoxModelAsync());
         }
     }

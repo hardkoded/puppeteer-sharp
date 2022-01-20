@@ -25,12 +25,12 @@ namespace PuppeteerSharp.Tests.PageTests.Events
             void EventHandler(object sender, ConsoleEventArgs e)
             {
                 message = e.Message;
-                Page.Console -= EventHandler;
+                DevToolsContext.Console -= EventHandler;
             }
 
-            Page.Console += EventHandler;
+            DevToolsContext.Console += EventHandler;
 
-            await Page.EvaluateExpressionAsync("console.log('hello', 5, {foo: 'bar'})");
+            await DevToolsContext.EvaluateExpressionAsync("console.log('hello', 5, {foo: 'bar'})");
 
             var obj = new Dictionary<string, object> { { "foo", "bar" } };
 
@@ -49,9 +49,9 @@ namespace PuppeteerSharp.Tests.PageTests.Events
         {
             var messages = new List<ConsoleMessage>();
 
-            Page.Console += (_, e) => messages.Add(e.Message);
+            DevToolsContext.Console += (_, e) => messages.Add(e.Message);
 
-            await Page.EvaluateFunctionAsync(@"() => {
+            await DevToolsContext.EvaluateFunctionAsync(@"() => {
               // A pair of time/timeEnd generates only one Console API call.
               console.time('calling console.time');
               console.timeEnd('calling console.time');
@@ -98,14 +98,14 @@ namespace PuppeteerSharp.Tests.PageTests.Events
             void EventHandler(object sender, ConsoleEventArgs e)
             {
                 consoleTcs.TrySetResult(e.Message.Text);
-                Page.Console -= EventHandler;
+                DevToolsContext.Console -= EventHandler;
             }
 
-            Page.Console += EventHandler;
+            DevToolsContext.Console += EventHandler;
 
             await Task.WhenAll(
                 consoleTcs.Task,
-                Page.EvaluateExpressionAsync("console.error(window)")
+                DevToolsContext.EvaluateExpressionAsync("console.error(window)")
             );
 
             Assert.Equal("JSHandle@object", await consoleTcs.Task);
@@ -115,12 +115,12 @@ namespace PuppeteerSharp.Tests.PageTests.Events
         [PuppeteerFact]
         public async Task ShouldTriggerCorrectLog()
         {
-            await Page.GoToAsync(TestConstants.AboutBlank);
+            await DevToolsContext.GoToAsync(TestConstants.AboutBlank);
             var messageTask = new TaskCompletionSource<ConsoleMessage>();
 
-            Page.Console += (_, e) => messageTask.TrySetResult(e.Message);
+            DevToolsContext.Console += (_, e) => messageTask.TrySetResult(e.Message);
 
-            await Page.EvaluateFunctionAsync("async url => fetch(url).catch(e => {})", TestConstants.EmptyPage);
+            await DevToolsContext.EvaluateFunctionAsync("async url => fetch(url).catch(e => {})", TestConstants.EmptyPage);
             var message = await messageTask.Task;
             Assert.Contains("No 'Access-Control-Allow-Origin'", message.Text);
 
@@ -131,13 +131,13 @@ namespace PuppeteerSharp.Tests.PageTests.Events
         [PuppeteerFact]
         public async Task ShouldHaveLocationWhenFetchFails()
         {
-            await Page.GoToAsync(TestConstants.EmptyPage);
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
             var consoleTask = new TaskCompletionSource<ConsoleEventArgs>();
-            Page.Console += (_, e) => consoleTask.TrySetResult(e);
+            DevToolsContext.Console += (_, e) => consoleTask.TrySetResult(e);
 
             await Task.WhenAll(
                 consoleTask.Task,
-                Page.SetContentAsync("<script>fetch('http://wat');</script>"));
+                DevToolsContext.SetContentAsync("<script>fetch('http://wat');</script>"));
 
             var args = await consoleTask.Task;
             Assert.Contains("ERR_NAME", args.Message.Text);
@@ -152,13 +152,13 @@ namespace PuppeteerSharp.Tests.PageTests.Events
         [PuppeteerFact]
         public async Task ShouldHaveLocationForConsoleAPICalls()
         {
-            await Page.GoToAsync(TestConstants.EmptyPage);
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
             var consoleTask = new TaskCompletionSource<ConsoleEventArgs>();
-            Page.Console += (_, e) => consoleTask.TrySetResult(e);
+            DevToolsContext.Console += (_, e) => consoleTask.TrySetResult(e);
 
             await Task.WhenAll(
                 consoleTask.Task,
-                Page.GoToAsync(TestConstants.ServerUrl + "/consolelog.html"));
+                DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/consolelog.html"));
 
             var args = await consoleTask.Task;
             Assert.Equal("yellow", args.Message.Text);

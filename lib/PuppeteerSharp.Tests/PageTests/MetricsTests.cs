@@ -20,8 +20,8 @@ namespace PuppeteerSharp.Tests.PageTests
         [PuppeteerFact]
         public async Task ShouldGetMetricsFromPage()
         {
-            await Page.GoToAsync("about:blank");
-            var metrics = await Page.MetricsAsync();
+            await DevToolsContext.GoToAsync("about:blank");
+            var metrics = await DevToolsContext.MetricsAsync();
             CheckMetrics(metrics);
         }
 
@@ -30,9 +30,9 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task MetricsEventFiredOnConsoleTimespan()
         {
             var metricsTaskWrapper = new TaskCompletionSource<MetricEventArgs>();
-            Page.Metrics += (_, e) => metricsTaskWrapper.SetResult(e);
+            DevToolsContext.Metrics += (_, e) => metricsTaskWrapper.SetResult(e);
 
-            await Page.EvaluateExpressionAsync("console.timeStamp('test42')");
+            await DevToolsContext.EvaluateExpressionAsync("console.timeStamp('test42')");
             var result = await metricsTaskWrapper.Task;
 
             Assert.Equal("test42", result.Title);
@@ -41,7 +41,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
         private void CheckMetrics(Dictionary<string, decimal> metrics)
         {
-            var metricsToCheck = Page.SupportedMetrics.ToList();
+            var metricsToCheck = DevToolsContext.SupportedMetrics.ToList();
 
             foreach (var name in metrics.Keys)
             {

@@ -18,11 +18,11 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         [PuppeteerFact]
         public async Task ShouldWork()
         {
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
-            var elementHandle = await Page.QuerySelectorAsync("#frame1");
+            await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            await FrameUtils.AttachFrameAsync(DevToolsContext, "frame1", TestConstants.EmptyPage);
+            var elementHandle = await DevToolsContext.QuerySelectorAsync("#frame1");
             var frame = await elementHandle.ContentFrameAsync();
-            Assert.Equal(Page.FirstChildFrame(), frame);
+            Assert.Equal(DevToolsContext.FirstChildFrame(), frame);
         }
     }
 }

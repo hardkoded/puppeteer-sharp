@@ -18,14 +18,14 @@ namespace PuppeteerSharp.Tests.EmulationTests
         [PuppeteerFact]
         public async Task ShouldWork()
         {
-            Assert.True(await Page.EvaluateExpressionAsync<bool>("matchMedia('screen').matches"));
-            Assert.False(await Page.EvaluateExpressionAsync<bool>("matchMedia('print').matches"));
-            await Page.EmulateMediaTypeAsync(MediaType.Print);
-            Assert.False(await Page.EvaluateExpressionAsync<bool>("matchMedia('screen').matches"));
-            Assert.True(await Page.EvaluateExpressionAsync<bool>("matchMedia('print').matches"));
-            await Page.EmulateMediaTypeAsync(MediaType.None);
-            Assert.True(await Page.EvaluateExpressionAsync<bool>("matchMedia('screen').matches"));
-            Assert.False(await Page.EvaluateExpressionAsync<bool>("matchMedia('print').matches"));
+            Assert.True(await DevToolsContext.EvaluateExpressionAsync<bool>("matchMedia('screen').matches"));
+            Assert.False(await DevToolsContext.EvaluateExpressionAsync<bool>("matchMedia('print').matches"));
+            await DevToolsContext.EmulateMediaTypeAsync(MediaType.Print);
+            Assert.False(await DevToolsContext.EvaluateExpressionAsync<bool>("matchMedia('screen').matches"));
+            Assert.True(await DevToolsContext.EvaluateExpressionAsync<bool>("matchMedia('print').matches"));
+            await DevToolsContext.EmulateMediaTypeAsync(MediaType.None);
+            Assert.True(await DevToolsContext.EvaluateExpressionAsync<bool>("matchMedia('screen').matches"));
+            Assert.False(await DevToolsContext.EvaluateExpressionAsync<bool>("matchMedia('print').matches"));
         }
     }
 }

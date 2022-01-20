@@ -58,13 +58,13 @@ namespace PuppeteerSharp.Tests.TracingTests
         [PuppeteerFact]
         public async Task ShouldOutputATrace()
         {
-            await Page.Tracing.StartAsync(new TracingOptions
+            await DevToolsContext.Tracing.StartAsync(new TracingOptions
             {
                 Screenshots = true,
                 Path = _file
             });
-            await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
-            await Page.Tracing.StopAsync();
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+            await DevToolsContext.Tracing.StopAsync();
 
             Assert.True(File.Exists(_file));
         }
@@ -73,7 +73,7 @@ namespace PuppeteerSharp.Tests.TracingTests
         [PuppeteerFact]
         public async Task ShouldRunWithCustomCategoriesProvided()
         {
-            await Page.Tracing.StartAsync(new TracingOptions
+            await DevToolsContext.Tracing.StartAsync(new TracingOptions
             {
                 Screenshots = true,
                 Path = _file,
@@ -83,7 +83,7 @@ namespace PuppeteerSharp.Tests.TracingTests
                 }
             });
 
-            await Page.Tracing.StopAsync();
+            await DevToolsContext.Tracing.StopAsync();
 
             using (var file = File.OpenText(_file))
             using (var reader = new JsonTextReader(file))
@@ -118,13 +118,13 @@ namespace PuppeteerSharp.Tests.TracingTests
         [PuppeteerFact]
         public async Task ShouldReturnABuffer()
         {
-            await Page.Tracing.StartAsync(new TracingOptions
+            await DevToolsContext.Tracing.StartAsync(new TracingOptions
             {
                 Screenshots = true,
                 Path = _file
             });
-            await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
-            var trace = await Page.Tracing.StopAsync();
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+            var trace = await DevToolsContext.Tracing.StopAsync();
             var buf = File.ReadAllText(_file);
             Assert.Equal(trace, buf);
         }
@@ -133,9 +133,9 @@ namespace PuppeteerSharp.Tests.TracingTests
         [PuppeteerFact]
         public async Task ShouldWorkWithoutOptions()
         {
-            await Page.Tracing.StartAsync();
-            await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
-            var trace = await Page.Tracing.StopAsync();
+            await DevToolsContext.Tracing.StartAsync();
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+            var trace = await DevToolsContext.Tracing.StopAsync();
             Assert.NotNull(trace);
         }
 
@@ -143,12 +143,12 @@ namespace PuppeteerSharp.Tests.TracingTests
         [PuppeteerFact]
         public async Task ShouldSupportABufferWithoutAPath()
         {
-            await Page.Tracing.StartAsync(new TracingOptions
+            await DevToolsContext.Tracing.StartAsync(new TracingOptions
             {
                 Screenshots = true
             });
-            await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
-            var trace = await Page.Tracing.StopAsync();
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+            var trace = await DevToolsContext.Tracing.StopAsync();
             Assert.Contains("screenshot", trace);
         }
     }
