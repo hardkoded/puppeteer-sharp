@@ -56,10 +56,9 @@ namespace PuppeteerSharp
             TargetsMap = new ConcurrentDictionary<string, Target>();
             ScreenshotTaskQueue = new TaskQueue();
             DefaultContext = new BrowserContext(Connection, this, null);
-            _contexts = contextIds.ToDictionary(
+            _contexts = new ConcurrentDictionary<string, BrowserContext>(contextIds.ToDictionary(
                 contextId => contextId,
-                contextId => new BrowserContext(Connection, this, contextId));
-
+                contextId => new BrowserContext(Connection, this, contextId)));
             Connection.Disconnected += Connection_Disconnected;
             Connection.MessageReceived += Connect_MessageReceived;
 
@@ -72,7 +71,7 @@ namespace PuppeteerSharp
 
         internal IDictionary<string, Target> TargetsMap { get; }
 
-        private readonly Dictionary<string, BrowserContext> _contexts;
+        private readonly ConcurrentDictionary<string, BrowserContext> _contexts;
         private readonly ILogger<Browser> _logger;
         private readonly Func<TargetInfo, bool> _targetFilterCallback;
         private Task _closeTask;
@@ -212,7 +211,7 @@ namespace PuppeteerSharp
         {
             var response = await Connection.SendAsync<CreateBrowserContextResponse>("Target.createBrowserContext", null).ConfigureAwait(false);
             var context = new BrowserContext(Connection, this, response.BrowserContextId);
-            _contexts[response.BrowserContextId] = context;
+            _contexts.TryAdd(response.BrowserContextId, context);
             return context;
         }
 
@@ -403,7 +402,7 @@ namespace PuppeteerSharp
             {
                 BrowserContextId = contextId
             }).ConfigureAwait(false);
-            _contexts.Remove(contextId);
+            _contexts.TryRemove(contextId, out var _);
         }
 
         private async void Connection_Disconnected(object sender, EventArgs e)
