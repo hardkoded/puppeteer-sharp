@@ -19,7 +19,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        browser: [firefox,chromium]
+        browser: [FIREFOX,CHROME]
 
     steps:
     - uses: actions/checkout@v2
@@ -37,6 +37,8 @@ jobs:
     - name: Build
       run: dotnet build lib/PuppeteerSharp.sln
     - name: Test
+      env:
+        PRODUCT: ${{ matrix.browser }}
       run: |
           Xvfb :1 -screen 5 1024x768x8 &
           export DISPLAY=:1.5
