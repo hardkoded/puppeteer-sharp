@@ -33,6 +33,18 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.Equal(TestConstants.EmptyPage, requests[0].Frame.Url);
         }
 
+        [PuppeteerTest("network.spec.ts", "Network Events", "Page.Events.RequestServedFromCache")]
+        [SkipBrowserFact(skipFirefox: true)]
+        public async Task PageEventsRequestServedFromCache()
+        {
+            var cached= new List<string>();
+            Page.RequestServedFromCache += (_, e) => cached.Add(e.Request.Url.Split('/').Last());
+            await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
+            Assert.Empty(cached);
+            await Page.ReloadAsync();
+            Assert.Equal(new[] { "one-style.css" }, cached);
+        }
+
         [PuppeteerTest("network.spec.ts", "Network Events", "Page.Events.Response")]
         [PuppeteerFact]
         public async Task PageEventsResponse()

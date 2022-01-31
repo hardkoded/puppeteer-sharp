@@ -13,7 +13,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
-        [PuppeteerTest("network.spec.ts", "Request.headers", "should work")]
+        [PuppeteerTest("network.spec.ts", "Response.headers", "should work")]
         [PuppeteerFact]
         public async Task ShouldWork()
         {

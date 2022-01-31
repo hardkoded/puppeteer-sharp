@@ -44,6 +44,7 @@ namespace PuppeteerSharp.Tests
         [PuppeteerTest("waittask.spec.ts", "Page.waitFor", "should log a deprecation warning")]
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForFunction", "should accept a string")]
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForFunction", "should throw on bad polling value")]
+        [PuppeteerTest("network.spec.ts", "Page.setExtraHTTPHeaders", "should throw for non-string header values")]
         [PuppeteerFact]
         public void TheseTesstWontBeImplemented()
         {
