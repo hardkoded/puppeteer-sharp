@@ -6,7 +6,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using CefSharp.Puppeteer.Helpers;
 using CefSharp.Puppeteer.Helpers.Json;
@@ -530,10 +529,19 @@ namespace CefSharp.Puppeteer
         /// If URLs are specified, only cookies for those URLs are returned.
         /// </remarks>
         public async Task<CookieParam[]> GetCookiesAsync(params string[] urls)
-            => (await Client.SendAsync<NetworkGetCookiesResponse>("Network.getCookies", new NetworkGetCookiesRequest
+        {
+            if (urls == null)
+            {
+                throw new ArgumentNullException(nameof(urls));
+            }
+
+            var response = await Client.SendAsync<NetworkGetCookiesResponse>("Network.getCookies", new NetworkGetCookiesRequest
             {
                 Urls = urls.Length > 0 ? urls : new string[] { Url }
-            }).ConfigureAwait(false)).Cookies;
+            }).ConfigureAwait(false);
+
+            return response.Cookies;
+        }
 
         /// <summary>
         /// Clears all of the current cookies and then sets the cookies for the page
@@ -542,6 +550,11 @@ namespace CefSharp.Puppeteer
         /// <returns>Task</returns>
         public async Task SetCookieAsync(params CookieParam[] cookies)
         {
+            if (cookies == null)
+            {
+                throw new ArgumentNullException(nameof(cookies));
+            }
+
             foreach (var cookie in cookies)
             {
                 if (string.IsNullOrEmpty(cookie.Url) && Url.StartsWith("http", StringComparison.Ordinal))
@@ -572,6 +585,11 @@ namespace CefSharp.Puppeteer
         /// <returns>Task</returns>
         public async Task DeleteCookieAsync(params CookieParam[] cookies)
         {
+            if (cookies == null)
+            {
+                throw new ArgumentNullException(nameof(cookies));
+            }
+
             var pageURL = Url;
             foreach (var cookie in cookies)
             {
@@ -2369,6 +2387,8 @@ namespace CefSharp.Puppeteer
         /// <returns>ValueTask</returns>
         public ValueTask DisposeAsync()
         {
+            GC.SuppressFinalize(this);
+
             return default(ValueTask);
         }
     }

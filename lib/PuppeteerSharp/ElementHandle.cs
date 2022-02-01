@@ -225,6 +225,11 @@ namespace CefSharp.Puppeteer
         /// <returns>Task</returns>
         public async Task UploadFileAsync(bool resolveFilePaths, params string[] filePaths)
         {
+            if (filePaths == null)
+            {
+                throw new ArgumentNullException(nameof(filePaths));
+            }
+
             var isMultiple = await EvaluateFunctionAsync<bool>("element => element.multiple").ConfigureAwait(false);
 
             if (!isMultiple && filePaths.Length > 1)

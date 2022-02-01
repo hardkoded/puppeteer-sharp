@@ -24,11 +24,14 @@
 	  <None Remove="Screenshots\**" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="MarkdownSnippets.MsBuild" Version="23.1.1" PrivateAssets="All" />
+		<PackageReference Include="MarkdownSnippets.MsBuild" Version="24.2.2" PrivateAssets="All" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
 		<PackageReference Include="xunit" Version="2.4.1" />
-		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
-		<PackageReference Include="SixLabors.ImageSharp" Version="1.0.3" />
+		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="SixLabors.ImageSharp" Version="1.0.4" />
     <PackageReference Include="Nito.AsyncEx.Context" Version="5.1.2" />
     <PackageReference Include="CefSharp.OffScreen.NETCore" Version="97.1.61" />
 	</ItemGroup>
