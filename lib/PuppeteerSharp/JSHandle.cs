@@ -85,7 +85,7 @@ namespace CefSharp.Puppeteer
                 throw new PuppeteerException($"Property {propertyName} was not found.");
             }
 
-            return await property.JsonValueAsync<T>().ConfigureAwait(true);
+            return await property.JsonValueAsync<T>().ConfigureAwait(false);
         }
 
         /// <summary>
