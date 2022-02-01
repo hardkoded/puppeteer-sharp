@@ -20,11 +20,17 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         [PuppeteerFact]
         public async Task ShouldTypeIntoTheTextarea()
         {
+            const string expected = "Type in this text!";
+
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
 
             var textarea = await DevToolsContext.QuerySelectorAsync("textarea");
-            await textarea.TypeAsync("Type in this text!");
-            Assert.Equal("Type in this text!", await DevToolsContext.EvaluateExpressionAsync<string>("result"));
+
+            await textarea.TypeAsync(expected);
+
+            var actual = await DevToolsContext.EvaluateExpressionAsync<string>("result");
+
+            Assert.Equal(expected, actual);
         }
 
         [PuppeteerTest("keyboard.spec.ts", "Keyboard", "should move with the arrow keys")]
@@ -144,16 +150,26 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         public async Task ShouldSendProperCodesWhileTyping()
         {
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/keyboard.html");
-            await DevToolsContext.Keyboard.TypeAsync("!");
+
+            var element = await DevToolsContext.QuerySelectorAsync("textarea");
+
+            await element.TypeAsync("!");
+
+            var actual = await DevToolsContext.EvaluateExpressionAsync<string>("getResult()");
+
             Assert.Equal(string.Join("\n", new[] {
                 "Keydown: ! Digit1 49 []",
                 "Keypress: ! Digit1 33 33 []",
-                "Keyup: ! Digit1 49 []" }), await DevToolsContext.EvaluateExpressionAsync<string>("getResult()"));
-            await DevToolsContext.Keyboard.TypeAsync("^");
+                "Keyup: ! Digit1 49 []" }), actual);
+
+            await element.TypeAsync("^");
+
+            actual = await DevToolsContext.EvaluateExpressionAsync<string>("getResult()");
+
             Assert.Equal(string.Join("\n", new[] {
                 "Keydown: ^ Digit6 54 []",
                 "Keypress: ^ Digit6 94 94 []",
-                "Keyup: ^ Digit6 54 []" }), await DevToolsContext.EvaluateExpressionAsync<string>("getResult()"));
+                "Keyup: ^ Digit6 54 []" }), actual);
         }
 
         [PuppeteerTest("keyboard.spec.ts", "Keyboard", "should send proper codes while typing with shift")]
@@ -300,6 +316,9 @@ namespace PuppeteerSharp.Tests.KeyboardTests
             const int code = 1;
             const int metaKey = 2;
             var result = await DevToolsContext.EvaluateExpressionAsync<object[]>("result");
+
+            Assert.NotNull(result);
+
             Assert.Equal("Meta", result[key]);
             Assert.Equal("MetaLeft", result[code]);
             Assert.Equal(true, result[metaKey]);
