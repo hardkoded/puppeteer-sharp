@@ -48,5 +48,35 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             Assert.Equal("1", await properties["a"].JsonValueAsync<string>());
             Assert.Equal("2", await properties["b"].JsonValueAsync<string>());
         }
+
+        [PuppeteerFact]
+        public async Task ShouldReturnPropertyValue()
+        {
+            const int expected = 2;
+
+            var aHandle = await Page.EvaluateExpressionHandleAsync(@"({
+              one: 1,
+              two: 2,
+              three: 3
+            })");
+
+            var actual = await aHandle.GetPropertyValueAsync<int>("two");
+
+            Assert.Equal(expected, actual);
+        }
+
+        [PuppeteerFact]
+        public async Task ShouldReturnElementHandlePropertyValue()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/playground.html");
+
+            const string expected = "A text area";
+
+            var aHandle = await Page.QuerySelectorAsync("textarea");
+
+            var actual = await aHandle.GetPropertyValueAsync<string>("value");
+
+            Assert.Equal(expected, actual);
+        }
     }
 }

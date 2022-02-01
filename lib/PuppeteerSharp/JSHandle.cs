@@ -70,6 +70,25 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
+        /// Gets the property value for a single property
+        /// </summary>
+        /// <typeparam name="T">Property Value Type e.g. string, int</typeparam>
+        /// <param name="propertyName">property to get</param>
+        /// <returns>Task of <typeparamref name="T"/></returns>
+        /// <exception cref="PuppeteerException">Thrown if no matching property is found</exception>
+        public async Task<T> GetPropertyValueAsync<T>(string propertyName)
+        {
+            var property = await GetPropertyAsync(propertyName).ConfigureAwait(false);
+
+            if (property.RemoteObject.Type == RemoteObjectType.Undefined)
+            {
+                throw new PuppeteerException($"Property {propertyName} was not found.");
+            }
+
+            return await property.JsonValueAsync<T>().ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Returns a <see cref="Dictionary{TKey, TValue}"/> with property names as keys and <see cref="JSHandle"/> instances for the property values.
         /// </summary>
         /// <returns>Task which resolves to a <see cref="Dictionary{TKey, TValue}"/></returns>
