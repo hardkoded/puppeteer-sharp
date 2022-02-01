@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
@@ -9,7 +8,7 @@ namespace CefSharp.Puppeteer
         internal MessageTask(string method)
         {
             Method = method;
-            TaskWrapper = new TaskCompletionSource<JObject>(TaskContinuationOptions.RunContinuationsAsynchronously);
+            TaskWrapper = new TaskCompletionSource<JObject>(TaskCreationOptions.RunContinuationsAsynchronously);
         }
 
         #region public Properties
