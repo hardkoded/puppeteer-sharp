@@ -528,6 +528,17 @@ namespace CefSharp.Puppeteer
                 new[] { values });
 
         /// <summary>
+        /// Set DOM Element Property. e.g innerText
+        /// </summary>
+        /// <param name="propertyName">property name</param>
+        /// <param name="val">value</param>
+        /// <returns>Task</returns>
+        public Task SetPropertyValue(string propertyName, object val)
+        {
+            return EvaluateFunctionAsync("(element, v) => { element." + propertyName + " = v; }", val);
+        }
+
+        /// <summary>
         /// This method creates and captures a dragevent from the element.
         /// </summary>
         /// <param name="x">X coordinate</param>

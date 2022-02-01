@@ -110,20 +110,28 @@ namespace PuppeteerSharp.Tests.ClickTests
         [PuppeteerFact]
         public async Task ShouldSelectTheTextByTripleClicking()
         {
+            const string expected = "This is the text that we are going to try to select. Let's see how it goes.";
+
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
-            await DevToolsContext.FocusAsync("textarea");
-            const string text = "This is the text that we are going to try to select. Let's see how it goes.";
-            await DevToolsContext.Keyboard.TypeAsync(text);
-            await DevToolsContext.ClickAsync("textarea");
-            await DevToolsContext.ClickAsync("textarea", new ClickOptions { ClickCount = 2 });
-            await DevToolsContext.ClickAsync("textarea", new ClickOptions { ClickCount = 3 });
-            Assert.Equal(text, await DevToolsContext.EvaluateFunctionAsync<string>(@"() => {
+
+            var element = await DevToolsContext.QuerySelectorAsync("textarea");
+
+            await element.FocusAsync();
+            
+            await element.SetPropertyValue("value", expected);
+            await element.ClickAsync();
+            await element.ClickAsync(new ClickOptions { ClickCount = 2 });
+            await element.ClickAsync(new ClickOptions { ClickCount = 3 });
+
+            var actual = await DevToolsContext.EvaluateFunctionAsync<string>(@"() => {
                 const textarea = document.querySelector('textarea');
                 return textarea.value.substring(
                     textarea.selectionStart,
                     textarea.selectionEnd
                 );
-            }"));
+            }");
+
+            Assert.Equal(expected, actual);
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click offscreen buttons")]
