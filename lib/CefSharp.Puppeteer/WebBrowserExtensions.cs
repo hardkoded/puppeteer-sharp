@@ -12,12 +12,19 @@ namespace CefSharp.Puppeteer
         /// <summary>
         /// Asynchronously creates a new instance of <see cref="DevToolsContext"/>
         /// </summary>
-        /// <param name="chromiumWebBrowser">ChromiumWebBrowser</param>
+        /// <param name="chromiumWebBrowser">ChromiumWebBrowser/ChromiumHostControl instance</param>
         /// <param name="ignoreHTTPSerrors">ignore HTTPS errors</param>
         /// <returns>A Task</returns>
-        public static Task<DevToolsContext> GetDevToolsContextAsync(this IWebBrowser chromiumWebBrowser, bool ignoreHTTPSerrors = false)
+        public static Task<DevToolsContext> GetDevToolsContextAsync(this IChromiumWebBrowserBase chromiumWebBrowser, bool ignoreHTTPSerrors = false)
         {
-            var connection = Connection.Attach(new CefSharpConnectionTransport(chromiumWebBrowser.GetBrowserHost()));
+            var browserHost = chromiumWebBrowser.GetBrowserHost();
+
+            if(browserHost == null)
+            {
+                CefSharp.WebBrowserExtensions.ThrowExceptionIfBrowserHostNull(browserHost);
+            }
+
+            var connection = Connection.Attach(new CefSharpConnectionTransport(browserHost));
 
             return DevToolsContext.GetDevToolsContextAsync(connection, ignoreHTTPSerrors: ignoreHTTPSerrors);
         }
@@ -28,7 +35,7 @@ namespace CefSharp.Puppeteer
         /// <param name="chromiumWebBrowser">ChromiumWebBrowser</param>
         /// <param name="ignoreHTTPSerrors">ignore HTTPS errors</param>
         /// <returns>A Task</returns>
-        [Obsolete]
+        [Obsolete("Use GetDevToolsContextAsync instead")]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static Task<Page> GetPuppeteerPageAsync(this IWebBrowser chromiumWebBrowser, bool ignoreHTTPSerrors = false)
         {
