@@ -70,6 +70,53 @@ namespace CefSharp.Puppeteer
         }
 
         /// <summary>
+        /// Gets the property value for a single property
+        /// </summary>
+        /// <typeparam name="T">Property Value Type e.g. string, int</typeparam>
+        /// <param name="propertyName">property to get</param>
+        /// <returns>Task of <typeparamref name="T"/></returns>
+        /// <exception cref="PuppeteerException">Thrown if no matching property is found</exception>
+        public async Task<T> GetPropertyValueAsync<T>(string propertyName)
+        {
+            var property = await GetPropertyAsync(propertyName).ConfigureAwait(false);
+
+            if (property.RemoteObject.Type == RemoteObjectType.Undefined)
+            {
+                throw new PuppeteerException($"Property {propertyName} was not found.");
+            }
+
+            return await property.JsonValueAsync<T>().ConfigureAwait(true);
+        }
+
+        /// <summary>
+        /// Returns the corrosponding value of the object
+        /// </summary>
+        /// <typeparam name="T">A strongly typed object to parse to</typeparam>
+        /// <returns>Task</returns>
+        /// <remarks>
+        /// The method will return default(T) if the referenced object is not stringifiable. It will throw an error if the object has circular references
+        /// </remarks>
+        public async Task<T> GetValueAsync<T>()
+        {
+            var objectId = RemoteObject.ObjectId;
+
+            if (objectId != null)
+            {
+                var response = await Client.SendAsync<RuntimeCallFunctionOnResponse>("Runtime.callFunctionOn", new RuntimeCallFunctionOnRequest
+                {
+                    FunctionDeclaration = "function() { return this; }",
+                    ObjectId = objectId,
+                    ReturnByValue = true,
+                    AwaitPromise = true
+                }).ConfigureAwait(false);
+
+                return (T)RemoteObjectHelper.ValueFromRemoteObject<T>(response.Result);
+            }
+
+            return (T)RemoteObjectHelper.ValueFromRemoteObject<T>(RemoteObject);
+        }
+
+        /// <summary>
         /// Returns a <see cref="Dictionary{TKey, TValue}"/> with property names as keys and <see cref="JSHandle"/> instances for the property values.
         /// </summary>
         /// <returns>Task which resolves to a <see cref="Dictionary{TKey, TValue}"/></returns>
@@ -121,23 +168,9 @@ namespace CefSharp.Puppeteer
         /// <remarks>
         /// The method will return an empty JSON if the referenced object is not stringifiable. It will throw an error if the object has circular references
         /// </remarks>
-        public async Task<T> JsonValueAsync<T>()
+        public Task<T> JsonValueAsync<T>()
         {
-            var objectId = RemoteObject.ObjectId;
-
-            if (objectId != null)
-            {
-                var response = await Client.SendAsync<RuntimeCallFunctionOnResponse>("Runtime.callFunctionOn", new RuntimeCallFunctionOnRequest
-                {
-                    FunctionDeclaration = "function() { return this; }",
-                    ObjectId = objectId,
-                    ReturnByValue = true,
-                    AwaitPromise = true
-                }).ConfigureAwait(false);
-                return (T)RemoteObjectHelper.ValueFromRemoteObject<T>(response.Result);
-            }
-
-            return (T)RemoteObjectHelper.ValueFromRemoteObject<T>(RemoteObject);
+            return GetValueAsync<T>();
         }
 
         /// <summary>
