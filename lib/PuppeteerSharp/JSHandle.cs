@@ -256,7 +256,7 @@ namespace CefSharp.Puppeteer
 
         internal object FormatArgument(ExecutionContext context)
         {
-            if (ExecutionContext != context)
+            if (ExecutionContext.Id != context.Id)
             {
                 throw new PuppeteerException("JSHandles can be evaluated only in the context they were created!");
             }

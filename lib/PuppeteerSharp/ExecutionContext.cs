@@ -37,6 +37,11 @@ namespace CefSharp.Puppeteer
         }
 
         /// <summary>
+        /// Execution Context Id
+        /// </summary>
+        public int Id => _contextId;
+
+        /// <summary>
         /// Frame associated with this execution context.
         /// </summary>
         /// <remarks>
