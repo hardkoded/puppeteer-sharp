@@ -25,6 +25,7 @@
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="MarkdownSnippets.MsBuild" Version="24.2.2" PrivateAssets="All" />
+		<PackageReference Include="Serilog.Extensions.Logging.File" Version="2.0.0" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
 		<PackageReference Include="xunit" Version="2.4.1" />
 		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
@@ -33,7 +34,7 @@
 		</PackageReference>
 		<PackageReference Include="SixLabors.ImageSharp" Version="1.0.4" />
     <PackageReference Include="Nito.AsyncEx.Context" Version="5.1.2" />
-    <PackageReference Include="CefSharp.OffScreen.NETCore" Version="97.1.61" />
+    <PackageReference Include="CefSharp.OffScreen.NETCore" Version="98.1.120-CI4394" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\CefSharp.Puppeteer\CefSharp.Puppeteer.csproj" />

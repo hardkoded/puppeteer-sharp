@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1;net472</TargetFrameworks>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">true</GeneratePackageOnBuild>
     <Authors>Alex Maitland, Darío Kondratiuk</Authors>
     <Owners>amaitland</Owners>
     <PackageProjectUrl>https://github.com/cefsharp/Puppeteer</PackageProjectUrl>
@@ -27,11 +27,11 @@
   <Import Project="../Common/SignAssembly.props" />
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
-    <PackageReference Include="CefSharp.Common" Version="97.1.61"/>
+    <PackageReference Include="CefSharp.Common" Version="98.1.120-CI4394"/>
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' != 'net472'">
-    <PackageReference Include="CefSharp.Common.NETCore" Version="97.1.61"/>
+    <PackageReference Include="CefSharp.Common.NETCore" Version="98.1.120-CI4394"/>
   </ItemGroup>
 
   <ItemGroup>

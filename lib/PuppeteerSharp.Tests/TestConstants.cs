@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Microsoft.Extensions.Logging;
 using CefSharp.Puppeteer;
 using CefSharp.Puppeteer.Mobile;
 
@@ -26,7 +25,6 @@ namespace PuppeteerSharp.Tests
         public static readonly DeviceDescriptor IPhone = Emulation.Devices[DeviceDescriptorName.IPhone6];
         public static readonly DeviceDescriptor IPhone6Landscape = Emulation.Devices[DeviceDescriptorName.IPhone6Landscape];
 
-        public static ILoggerFactory LoggerFactory { get; private set; }
         public static string FileToUpload => Path.Combine(AppContext.BaseDirectory, "Assets", "file-to-upload.txt");
 
         public static readonly IEnumerable<string> NestedFramesDumpResult = new List<string>()

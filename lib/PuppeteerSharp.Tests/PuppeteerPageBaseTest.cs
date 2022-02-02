@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using CefSharp;
 using CefSharp.OffScreen;
 using CefSharp.Puppeteer;
+using Microsoft.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -26,7 +27,9 @@ namespace PuppeteerSharp.Tests
 
             await ChromiumWebBrowser.WaitForInitialLoadAsync();
 
-            DevToolsContext = await ChromiumWebBrowser.GetDevToolsContextAsync(_ignoreHTTPSerrors);;
+            var loggerFactory = new LoggerFactory().AddFile("Logs/tests-{Date}.txt", LogLevel.Trace);
+
+            DevToolsContext = await ChromiumWebBrowser.GetDevToolsContextAsync(_ignoreHTTPSerrors, loggerFactory);;
             DevToolsContext.DefaultTimeout = System.Diagnostics.Debugger.IsAttached ? TestConstants.DebuggerAttachedTestTimeout : TestConstants.DefaultPuppeteerTimeout;
         }
 

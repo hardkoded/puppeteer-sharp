@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace CefSharp.Puppeteer
 {
@@ -14,8 +15,9 @@ namespace CefSharp.Puppeteer
         /// </summary>
         /// <param name="chromiumWebBrowser">ChromiumWebBrowser/ChromiumHostControl instance</param>
         /// <param name="ignoreHTTPSerrors">ignore HTTPS errors</param>
+        /// <param name="factory">Logger factory</param>
         /// <returns>A Task</returns>
-        public static Task<DevToolsContext> GetDevToolsContextAsync(this IChromiumWebBrowserBase chromiumWebBrowser, bool ignoreHTTPSerrors = false)
+        public static Task<DevToolsContext> GetDevToolsContextAsync(this IChromiumWebBrowserBase chromiumWebBrowser, bool ignoreHTTPSerrors = false, ILoggerFactory factory = null)
         {
             var browserHost = chromiumWebBrowser.GetBrowserHost();
 
@@ -24,7 +26,7 @@ namespace CefSharp.Puppeteer
                 CefSharp.WebBrowserExtensions.ThrowExceptionIfBrowserHostNull(browserHost);
             }
 
-            var connection = Connection.Attach(new CefSharpConnectionTransport(browserHost));
+            var connection = Connection.Attach(new CefSharpConnectionTransport(browserHost), factory);
 
             return DevToolsContext.GetDevToolsContextAsync(connection, ignoreHTTPSerrors: ignoreHTTPSerrors);
         }
