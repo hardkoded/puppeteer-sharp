@@ -252,16 +252,28 @@ namespace PuppeteerSharp.Tests.KeyboardTests
             var textarea = await DevToolsContext.QuerySelectorAsync("textarea");
 
             await textarea.PressAsync("Digit5");
-            Assert.Equal(0, await DevToolsContext.EvaluateExpressionAsync<int>("keyLocation"));
+
+            var actual = await DevToolsContext.EvaluateExpressionAsync<int>("keyLocation");
+
+            Assert.Equal(0, actual);
 
             await textarea.PressAsync("ControlLeft");
-            Assert.Equal(1, await DevToolsContext.EvaluateExpressionAsync<int>("keyLocation"));
+
+            actual = await DevToolsContext.EvaluateExpressionAsync<int>("keyLocation");
+
+            Assert.Equal(1, actual);
 
             await textarea.PressAsync("ControlRight");
-            Assert.Equal(2, await DevToolsContext.EvaluateExpressionAsync<int>("keyLocation"));
+
+            actual = await DevToolsContext.EvaluateExpressionAsync<int>("keyLocation");
+
+            Assert.Equal(2, actual);
 
             await textarea.PressAsync("NumpadSubtract");
-            Assert.Equal(3, await DevToolsContext.EvaluateExpressionAsync<int>("keyLocation"));
+
+            actual = await DevToolsContext.EvaluateExpressionAsync<int>("keyLocation");
+
+            Assert.Equal(3, actual);
         }
 
         [PuppeteerTest("keyboard.spec.ts", "Keyboard", "should throw on unknown keys")]
