@@ -234,11 +234,16 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         [PuppeteerFact]
         public async Task ShouldTypeAllKindsOfCharacters()
         {
+            const string expected = "This text goes onto two lines.\nThis character is 嗨.";
+
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
             await DevToolsContext.FocusAsync("textarea");
-            const string text = "This text goes onto two lines.\nThis character is 嗨.";
-            await DevToolsContext.Keyboard.TypeAsync(text);
-            Assert.Equal(text, await DevToolsContext.EvaluateExpressionAsync<string>("result"));
+            
+            await DevToolsContext.Keyboard.TypeAsync(expected);
+
+            var actual = await DevToolsContext.EvaluateExpressionAsync<string>("result");
+
+            Assert.Equal(expected, actual);
         }
 
         [PuppeteerTest("keyboard.spec.ts", "Keyboard", "should specify location")]
@@ -291,25 +296,35 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         [PuppeteerFact]
         public async Task ShouldTypeEmoji()
         {
+            const string expected = "👹 Tokyo street Japan \uD83C\uDDEF\uD83C\uDDF5";
+
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
-            await DevToolsContext.TypeAsync("textarea", "👹 Tokyo street Japan \uD83C\uDDEF\uD83C\uDDF5");
-            Assert.Equal(
-                "👹 Tokyo street Japan \uD83C\uDDEF\uD83C\uDDF5",
-                await DevToolsContext.QuerySelectorAsync("textarea").EvaluateFunctionAsync<string>("t => t.value"));
+
+            var textArea = await DevToolsContext.QuerySelectorAsync("textarea");
+
+            await textArea.TypeAsync(expected);
+
+            var actual = await textArea.GetPropertyValueAsync<string>("value");
+
+            Assert.Equal(expected, actual);
         }
 
         [PuppeteerTest("keyboard.spec.ts", "Keyboard", "should type emoji into an iframe")]
         [PuppeteerFact]
         public async Task ShouldTypeEmojiIntoAniframe()
         {
+            const string expected = "👹 Tokyo street Japan \uD83C\uDDEF\uD83C\uDDF5";
+
             await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
             await FrameUtils.AttachFrameAsync(DevToolsContext, "emoji-test", TestConstants.ServerUrl + "/input/textarea.html");
+
             var frame = DevToolsContext.FirstChildFrame();
             var textarea = await frame.QuerySelectorAsync("textarea");
-            await textarea.TypeAsync("👹 Tokyo street Japan \uD83C\uDDEF\uD83C\uDDF5");
-            Assert.Equal(
-                "👹 Tokyo street Japan \uD83C\uDDEF\uD83C\uDDF5",
-                await frame.QuerySelectorAsync("textarea").EvaluateFunctionAsync<string>("t => t.value"));
+            await textarea.TypeAsync(expected);
+
+            var actual = await textarea.GetPropertyValueAsync<string>("value");
+
+            Assert.Equal(expected, actual);
         }
 
         [PuppeteerTest("keyboard.spec.ts", "Keyboard", "should press the metaKey")]
