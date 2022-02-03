@@ -36,7 +36,6 @@ namespace CefSharp.Puppeteer
     /// </example>
     public class Frame
     {
-        private readonly Connection _client;
         private readonly List<Frame> _childFrames = new List<Frame>();
 
         internal string Id { get; set; }
@@ -56,7 +55,6 @@ namespace CefSharp.Puppeteer
         internal Frame(FrameManager frameManager, Connection client, Frame parentFrame, string frameId, bool isMainFrame)
         {
             FrameManager = frameManager;
-            _client = client;
             ParentFrame = parentFrame;
             Id = frameId;
             IsMainFrame = isMainFrame;
