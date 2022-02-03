@@ -301,6 +301,30 @@ namespace CefSharp.Puppeteer
         public Task FocusAsync() => EvaluateFunctionAsync("element => element.focus()");
 
         /// <summary>
+        /// Get element attribute value
+        /// </summary>
+        /// <typeparam name="T">The type to deserialize the result to</typeparam>
+        /// <param name="attribute">attribute</param>
+        /// <returns>Task which resolves to the attributes value.</returns>
+        public async Task<T> GetAttributeValueAsync<T>(string attribute)
+        {
+            var attr = await EvaluateFunctionHandleAsync("(element, attr) => element.getAttribute(attr)", attribute).ConfigureAwait(false);
+
+            return await attr.GetValueAsync<T>().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Set element attribute value
+        /// </summary>
+        /// <param name="attribute">attribute name</param>
+        /// <param name="value">attribute value</param>
+        /// <returns>Task which resolves when the attribute value has been set.</returns>
+        public Task SetAttributeValueAsync(string attribute, object value)
+        {
+            return EvaluateFunctionHandleAsync("(element, attr, val) => element.setAttribute(attr, val)", attribute, value);
+        }
+
+        /// <summary>
         /// Focuses the element, and sends a <c>keydown</c>, <c>keypress</c>/<c>input</c>, and <c>keyup</c> event for each character in the text.
         /// </summary>
         /// <param name="text">A text to type into a focused element</param>
