@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Threading.Tasks;
 
 namespace CefSharp.Puppeteer
@@ -21,6 +22,7 @@ namespace CefSharp.Puppeteer
         /// <param name="ignoreHTTPSerrors">ignore certificate errors</param>
         /// <returns>Task</returns>
         [Obsolete("Use DevToolsContext.GetDevToolsContextAsync instead")]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public static async Task<Page> GetPageAsync(Connection connection, bool ignoreHTTPSerrors = false)
         {
             if (connection == null)
@@ -30,7 +32,12 @@ namespace CefSharp.Puppeteer
 
             var page = new Page(connection);
 
-            await page.InitializeAsync(ignoreHTTPSerrors).ConfigureAwait(false);
+            await page.InitializeAsync().ConfigureAwait(false);
+
+            if (ignoreHTTPSerrors)
+            {
+                await page.IgnoreCertificateErrorsAsync().ConfigureAwait(false);
+            }
 
             return page;
         }

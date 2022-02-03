@@ -27,7 +27,6 @@ namespace CefSharp.Puppeteer
 
         private readonly ILogger _logger;
         private readonly ConcurrentSet<string> _attemptedAuthentications = new ConcurrentSet<string>();
-        private readonly bool _ignoreHTTPSErrors;
         private readonly InternalNetworkConditions _emulatedNetworkConditions = new InternalNetworkConditions
         {
             Offline = false,
@@ -43,11 +42,10 @@ namespace CefSharp.Puppeteer
         private bool _userCacheDisabled;
         #endregion
 
-        internal NetworkManager(Connection client, bool ignoreHTTPSErrors, FrameManager frameManager)
+        internal NetworkManager(Connection client, FrameManager frameManager)
         {
             FrameManager = frameManager;
             _client = client;
-            _ignoreHTTPSErrors = ignoreHTTPSErrors;
             _client.MessageReceived += Client_MessageReceived;
             _logger = _client.LoggerFactory.CreateLogger<NetworkManager>();
         }
@@ -69,18 +67,6 @@ namespace CefSharp.Puppeteer
         #endregion
 
         #region Public Methods
-
-        internal async Task InitializeAsync()
-        {
-            await _client.SendAsync("Network.enable").ConfigureAwait(false);
-            if (_ignoreHTTPSErrors)
-            {
-                await _client.SendAsync("Security.setIgnoreCertificateErrors", new SecuritySetIgnoreCertificateErrorsRequest
-                {
-                    Ignore = true
-                }).ConfigureAwait(false);
-            }
-        }
 
         internal Task AuthenticateAsync(Credentials credentials)
         {

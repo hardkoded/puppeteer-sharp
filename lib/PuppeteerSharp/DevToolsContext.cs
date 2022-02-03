@@ -1742,6 +1742,19 @@ namespace CefSharp.Puppeteer
         public Task BringToFrontAsync() => Client.SendAsync("Page.bringToFront");
 
         /// <summary>
+        /// Enable/disable whether all certificate errors should be ignored.
+        /// </summary>
+        /// <param name="ignore">if true all certificate errors will be ignored</param>
+        /// <returns>A task that resolves when the command has executed.</returns>
+        public Task IgnoreCertificateErrorsAsync(bool ignore = true)
+        {
+            return Client.SendAsync("Security.setIgnoreCertificateErrors", new SecuritySetIgnoreCertificateErrorsRequest
+            {
+                Ignore = ignore
+            });
+        }
+
+        /// <summary>
         /// Simulates the given vision deficiency on the page.
         /// </summary>
         /// <example>
@@ -1819,30 +1832,44 @@ namespace CefSharp.Puppeteer
         {
             var devToolsContext = new DevToolsContext(client);
 
-            await devToolsContext.InitializeAsync(ignoreHTTPSErrors).ConfigureAwait(false);
+            await devToolsContext.InitializeAsync().ConfigureAwait(false);
+
+            if (ignoreHTTPSErrors)
+            {
+                await devToolsContext.IgnoreCertificateErrorsAsync().ConfigureAwait(false);
+            }
 
             return devToolsContext;
         }
 
-        internal async Task InitializeAsync(bool ignoreHTTPSErrors)
+        internal async Task InitializeAsync()
         {
-            FrameManager = await FrameManager.CreateFrameManagerAsync(Client, this, ignoreHTTPSErrors, _timeoutSettings).ConfigureAwait(false);
-            var networkManager = FrameManager.NetworkManager;
+            FrameManager = new FrameManager(Client, this, _timeoutSettings);
 
             Client.MessageReceived += Client_MessageReceived;
             FrameManager.FrameAttached += (_, e) => FrameAttached?.Invoke(this, e);
             FrameManager.FrameDetached += (_, e) => FrameDetached?.Invoke(this, e);
             FrameManager.FrameNavigated += (_, e) => FrameNavigated?.Invoke(this, e);
 
-            networkManager.Request += (_, e) => Request?.Invoke(this, e);
-            networkManager.RequestFailed += (_, e) => RequestFailed?.Invoke(this, e);
-            networkManager.Response += (_, e) => Response?.Invoke(this, e);
-            networkManager.RequestFinished += (_, e) => RequestFinished?.Invoke(this, e);
-            networkManager.RequestServedFromCache += (_, e) => RequestServedFromCache?.Invoke(this, e);
+            FrameManager.NetworkManager.Request += (_, e) => Request?.Invoke(this, e);
+            FrameManager.NetworkManager.RequestFailed += (_, e) => RequestFailed?.Invoke(this, e);
+            FrameManager.NetworkManager.Response += (_, e) => Response?.Invoke(this, e);
+            FrameManager.NetworkManager.RequestFinished += (_, e) => RequestFinished?.Invoke(this, e);
+            FrameManager.NetworkManager.RequestServedFromCache += (_, e) => RequestServedFromCache?.Invoke(this, e);
 
             await Task.WhenAll(
+               Client.SendAsync("Page.enable"),
+               Client.SendAsync("Page.setLifecycleEventsEnabled", new PageSetLifecycleEventsEnabledRequest { Enabled = true }),
+               Client.SendAsync("Runtime.enable"),
+               Client.SendAsync("Network.enable"),
                Client.SendAsync("Performance.enable"),
                Client.SendAsync("Log.enable")).ConfigureAwait(false);
+
+            var frameTreeResponse = await Client.SendAsync<PageGetFrameTreeResponse>("Page.getFrameTree").ConfigureAwait(false);
+
+            await FrameManager.HandleFrameTreeAsync(new FrameTree(frameTreeResponse.FrameTree)).ConfigureAwait(false);
+
+            await FrameManager.EnsureIsolatedWorldAsync(FrameManager.UtilityWorldName).ConfigureAwait(false);
         }
 
         private async Task<Response> GoAsync(int delta, NavigationOptions options)

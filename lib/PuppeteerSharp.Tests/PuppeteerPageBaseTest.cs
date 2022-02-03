@@ -29,8 +29,11 @@ namespace PuppeteerSharp.Tests
 
             var loggerFactory = new LoggerFactory().AddFile("Logs/tests-{Date}.txt", LogLevel.Trace);
 
-            DevToolsContext = await ChromiumWebBrowser.GetDevToolsContextAsync(_ignoreHTTPSerrors, loggerFactory);;
+            DevToolsContext = await ChromiumWebBrowser.GetDevToolsContextAsync(_ignoreHTTPSerrors, loggerFactory).ConfigureAwait(false);
             DevToolsContext.DefaultTimeout = System.Diagnostics.Debugger.IsAttached ? TestConstants.DebuggerAttachedTestTimeout : TestConstants.DefaultPuppeteerTimeout;
+
+            await DevToolsContext.SetViewportAsync(ViewPortOptions.Default).ConfigureAwait(false);
+            
         }
 
         public virtual Task DisposeAsync()

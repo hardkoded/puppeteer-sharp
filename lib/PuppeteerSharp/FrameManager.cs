@@ -20,16 +20,16 @@ namespace CefSharp.Puppeteer
         private readonly List<string> _isolatedWorlds = new List<string>();
         private bool _ensureNewDocumentNavigation;
         private const string RefererHeaderName = "referer";
-        private const string UtilityWorldName = "__puppeteer_utility_world__";
+        public const string UtilityWorldName = "__puppeteer_utility_world__";
 
-        private FrameManager(Connection client, DevToolsContext devToolsContext, bool ignoreHTTPSErrors, TimeoutSettings timeoutSettings)
+        internal FrameManager(Connection client, DevToolsContext devToolsContext, TimeoutSettings timeoutSettings)
         {
             Client = client;
             DevToolsContext = devToolsContext;
             _frames = new ConcurrentDictionary<string, Frame>();
             _contextIdToContext = new ConcurrentDictionary<int, ExecutionContext>();
             _logger = Client.LoggerFactory.CreateLogger<FrameManager>();
-            NetworkManager = new NetworkManager(client, ignoreHTTPSErrors, this);
+            NetworkManager = new NetworkManager(client, this);
             TimeoutSettings = timeoutSettings;
             _asyncFrames = new AsyncDictionaryHelper<string, Frame>(_frames, "Frame {0} not found");
 
@@ -60,31 +60,6 @@ namespace CefSharp.Puppeteer
         #endregion
 
         #region Public Methods
-        internal static async Task<FrameManager> CreateFrameManagerAsync(
-            Connection client,
-            DevToolsContext devToolsContext,
-            bool ignoreHTTPSErrors,
-            TimeoutSettings timeoutSettings)
-        {
-            var frameManager = new FrameManager(client, devToolsContext, ignoreHTTPSErrors, timeoutSettings);
-            var getFrameTreeTask = client.SendAsync<PageGetFrameTreeResponse>("Page.getFrameTree");
-
-            await Task.WhenAll(
-                client.SendAsync("Page.enable"),
-                getFrameTreeTask).ConfigureAwait(false);
-
-            await frameManager.HandleFrameTreeAsync(new FrameTree(getFrameTreeTask.Result.FrameTree)).ConfigureAwait(false);
-
-            await Task.WhenAll(
-                client.SendAsync("Page.setLifecycleEventsEnabled", new PageSetLifecycleEventsEnabledRequest { Enabled = true }),
-                client.SendAsync("Runtime.enable"),
-                frameManager.NetworkManager.InitializeAsync()).ConfigureAwait(false);
-
-            await frameManager.EnsureIsolatedWorldAsync(UtilityWorldName).ConfigureAwait(false);
-
-            return frameManager;
-        }
-
         internal ExecutionContext ExecutionContextById(int contextId)
         {
             _contextIdToContext.TryGetValue(contextId, out var context);
@@ -387,7 +362,7 @@ namespace CefSharp.Puppeteer
             }
         }
 
-        private async Task HandleFrameTreeAsync(FrameTree frameTree)
+        internal async Task HandleFrameTreeAsync(FrameTree frameTree)
         {
             if (!string.IsNullOrEmpty(frameTree.Frame.ParentId))
             {
@@ -405,7 +380,7 @@ namespace CefSharp.Puppeteer
             }
         }
 
-        private async Task EnsureIsolatedWorldAsync(string name)
+        internal async Task EnsureIsolatedWorldAsync(string name)
         {
             if (_isolatedWorlds.Contains(name))
             {
