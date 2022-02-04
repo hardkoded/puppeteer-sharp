@@ -28,7 +28,7 @@ namespace PuppeteerSharp.Tests.MouseTests
         }
 
         [PuppeteerTest("mouse.spec.ts", "Mouse", "should click the document")]
-        [PuppeteerFact]
+        [PuppeteerFact(Skip = "Issue https://github.com/cefsharp/Puppeteer/issues/8")]
         public async Task ShouldClickTheDocument()
         {
             await DevToolsContext.EvaluateFunctionAsync(@"() => {
@@ -57,7 +57,7 @@ namespace PuppeteerSharp.Tests.MouseTests
         }
 
         [PuppeteerTest("mouse.spec.ts", "Mouse", "should resize the textarea")]
-        [PuppeteerFact]
+        [PuppeteerFact(Skip = "Issue https://github.com/cefsharp/Puppeteer/issues/8")]
         public async Task ShouldResizeTheTextarea()
         {
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -73,7 +73,7 @@ namespace PuppeteerSharp.Tests.MouseTests
         }
 
         [PuppeteerTest("mouse.spec.ts", "Mouse", "should select the text with mouse")]
-        [PuppeteerFact]
+        [PuppeteerFact(Skip = "Issue https://github.com/cefsharp/Puppeteer/issues/8")]
         public async Task ShouldSelectTheTextWithMouse()
         {
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -187,7 +187,7 @@ namespace PuppeteerSharp.Tests.MouseTests
         }
 
         [PuppeteerTest("mouse.spec.ts", "Mouse", "should work with mobile viewports and cross process navigations")]
-        [PuppeteerFact]
+        [PuppeteerFact(Skip = "Issue https://github.com/cefsharp/Puppeteer/issues/8")]
         public async Task ShouldWorkWithMobileViewportsAndCrossProcessNavigations()
         {
             await DevToolsContext.GoToAsync(TestConstants.EmptyPage);

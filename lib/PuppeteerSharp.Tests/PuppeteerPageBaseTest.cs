@@ -11,10 +11,12 @@ namespace PuppeteerSharp.Tests
     public class PuppeteerPageBaseTest : PuppeteerBaseTest, IAsyncLifetime
     {
         private readonly bool _ignoreHTTPSerrors;
+        private readonly string _initialUrl;
 
-        public PuppeteerPageBaseTest(ITestOutputHelper output, bool ignoreHTTPSerrors = true) : base(output)
+        public PuppeteerPageBaseTest(ITestOutputHelper output, bool ignoreHTTPSerrors = true, string initialUrl = TestConstants.ServerIpUrl) : base(output)
         {
             _ignoreHTTPSerrors = ignoreHTTPSerrors;
+            _initialUrl = initialUrl;
         }
 
         protected DevToolsContext DevToolsContext { get; set; }
@@ -23,7 +25,7 @@ namespace PuppeteerSharp.Tests
         public async Task InitializeAsync()
         {
             var requestContext = new RequestContext();
-            ChromiumWebBrowser = new ChromiumWebBrowser(TestConstants.ServerIpUrl, requestContext : requestContext);
+            ChromiumWebBrowser = new ChromiumWebBrowser(_initialUrl, requestContext : requestContext);
 
             await ChromiumWebBrowser.WaitForInitialLoadAsync();
 
