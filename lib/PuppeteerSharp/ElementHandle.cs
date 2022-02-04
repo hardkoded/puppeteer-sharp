@@ -325,6 +325,16 @@ namespace CefSharp.Puppeteer
         }
 
         /// <summary>
+        /// Invokes a member function (method).
+        /// </summary>
+        /// <param name="memberFunctionName">case sensitive member function name</param>
+        /// <returns>Task which resolves when member (method).</returns>
+        public Task InvokeMemberAsync(string memberFunctionName)
+        {
+            return EvaluateFunctionHandleAsync($"(element) => element.{memberFunctionName}()");
+        }
+
+        /// <summary>
         /// Focuses the element, and sends a <c>keydown</c>, <c>keypress</c>/<c>input</c>, and <c>keyup</c> event for each character in the text.
         /// </summary>
         /// <param name="text">A text to type into a focused element</param>
