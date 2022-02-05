@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -12,7 +12,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CefSharp.Puppeteer\CefSharp.Puppeteer.csproj" />
     <ProjectReference Include="..\PuppeteerSharp\CefSharp.Puppeteer.Embedded.csproj" />
-    <PackageReference Include="CefSharp.Wpf.NETCore" Version="98.1.120-CI4394" />
+    <PackageReference Include="CefSharp.Wpf.NETCore" Version="97.1.61" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.19" />
   </ItemGroup>
 
