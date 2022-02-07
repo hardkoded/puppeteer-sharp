@@ -22,36 +22,55 @@ See [this document](CONTRIBUTING.md) for information on how to contribute.
 
 # Usage
 
-## Take screenshots
-
-You can also change the view port before generating the screenshot when using WinForms
-
-<!-- snippet: SetViewportAsync -->
-<a id='snippet-setviewportasync'></a>
-```cs
-await DevToolsContext.SetViewportAsync(new ViewPortOptions
-{
-    Width = 500,
-    Height = 500
-});
-```
-<sup><a href='/lib/PuppeteerSharp.Tests/ScreenshotTests/ElementHandleScreenshotTests.cs#L22-L28' title='Snippet source file'>snippet source</a> | <a href='#snippet-setviewportasync' title='Start of snippet'>anchor</a></sup>
-<!-- endSnippet -->
-
 ## Generate PDF files
 
 Currently not supported via CefSharp Puppeteer, use ChromiumWebBrowser.PrintToPdfAsync instead.
 
-## Inject HTML
+## DOM Access
 
+Read/write to the DOM
+<!-- snippet: QuerySelector -->
+<a id='snippet-queryselector'></a>
+```cs
+// Wait for Initial page load
+await chromiumWebBrowser.WaitForInitialLoadAsync();
+
+await using var devtoolsContext = await chromiumWebBrowser.GetDevToolsContextAsync();
+
+var element = await devtoolsContext.QuerySelectorAsync("#myElementId");
+
+// Get a custom attribute value
+var customAttribute = await element.GetAttributeValueAsync<string>("data-customAttribute");
+
+await element.SetPropertyValueAsync("innerText", "Welcome!");
+
+//Click The element
+await element.ClickAsync();
+
+var divElements = await devtoolsContext.QuerySelectorAllAsync("div");
+
+foreach(var div in divElements)
+{
+    var style = await div.GetAttributeValueAsync<string>("style");
+    await div.SetAttributeValueAsync("data-customAttribute", "123");
+    await div.SetPropertyValueAsync("innerText", "Updated Div innerText");
+}
+```
+<sup><a href='/lib/PuppeteerSharp.Tests/QuerySelectorTests/PageQuerySelectorTests.cs#L22-L47' title='Snippet source file'>snippet source</a> | <a href='#snippet-queryselector' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+## Inject HTML
 <!-- snippet: SetContentAsync -->
 <a id='snippet-setcontentasync'></a>
 ```cs
-await using var page = await chromiumWebBrowser.GetDevToolsContextAsync();
-await page.SetContentAsync("<div>My Receipt</div>");
-var result = await page.GetContentAsync();
+//Wait for Initial page load
+await chromiumWebBrowser.WaitForInitialLoadAsync();
+
+await using var devtoolsContext = await chromiumWebBrowser.GetDevToolsContextAsync();
+await devtoolsContext.SetContentAsync("<div>My Receipt</div>");
+var result = await devtoolsContext.GetContentAsync();
 ```
-<sup><a href='/lib/PuppeteerSharp.Tests/PageTests/SetContentTests.cs#L23-L29' title='Snippet source file'>snippet source</a> | <a href='#snippet-setcontentasync' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/lib/PuppeteerSharp.Tests/PageTests/SetContentTests.cs#L25-L33' title='Snippet source file'>snippet source</a> | <a href='#snippet-setcontentasync' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ## Evaluate Javascript
@@ -66,3 +85,33 @@ Console.WriteLine(someObject.a);
 ```
 <sup><a href='/lib/PuppeteerSharp.Tests/QuerySelectorTests/ElementHandleQuerySelectorEvalTests.cs#L21-L26' title='Snippet source file'>snippet source</a> | <a href='#snippet-evaluate' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
+
+## Take screenshots
+
+<!-- snippet: Screenshot -->
+<a id='snippet-screenshot'></a>
+```cs
+//Wait for Initial page load
+await chromiumWebBrowser.WaitForInitialLoadAsync();
+
+await using var devToolsContext = await chromiumWebBrowser.GetDevToolsContextAsync();
+
+await devToolsContext.ScreenshotAsync("file.png");
+```
+<sup><a href='/lib/PuppeteerSharp.Tests/ScreenshotTests/ElementHandleScreenshotTests.cs#L23-L30' title='Snippet source file'>snippet source</a> | <a href='#snippet-screenshot' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+<!-- snippet: SetViewportAsync -->
+<a id='snippet-setviewportasync'></a>
+```cs
+// Set Viewport
+await DevToolsContext.SetViewportAsync(new ViewPortOptions
+{
+    Width = 500,
+    Height = 500
+});
+```
+<sup><a href='/lib/PuppeteerSharp.Tests/ScreenshotTests/ElementHandleScreenshotTests.cs#L37-L44' title='Snippet source file'>snippet source</a> | <a href='#snippet-setviewportasync' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+

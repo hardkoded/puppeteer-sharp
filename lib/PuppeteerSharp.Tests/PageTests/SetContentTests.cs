@@ -18,13 +18,17 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
+#pragma warning disable IDE0051 // Remove unused private members
         async Task Usage(IWebBrowser chromiumWebBrowser)
+#pragma warning restore IDE0051 // Remove unused private members
         {
             #region SetContentAsync
+            //Wait for Initial page load
+            await chromiumWebBrowser.WaitForInitialLoadAsync();
 
-            await using var page = await chromiumWebBrowser.GetDevToolsContextAsync();
-            await page.SetContentAsync("<div>My Receipt</div>");
-            var result = await page.GetContentAsync();
+            await using var devtoolsContext = await chromiumWebBrowser.GetDevToolsContextAsync();
+            await devtoolsContext.SetContentAsync("<div>My Receipt</div>");
+            var result = await devtoolsContext.GetContentAsync();
 
             #endregion
         }

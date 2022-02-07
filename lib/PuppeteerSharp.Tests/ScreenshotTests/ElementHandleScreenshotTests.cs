@@ -5,6 +5,7 @@ using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
+using CefSharp;
 
 namespace PuppeteerSharp.Tests.ScreenshotTests
 {
@@ -15,11 +16,26 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         {
         }
 
+#pragma warning disable IDE0051 // Remove unused private members
+        async Task Usage(IWebBrowser chromiumWebBrowser)
+#pragma warning restore IDE0051 // Remove unused private members
+        {
+            #region Screenshot
+            //Wait for Initial page load
+            await chromiumWebBrowser.WaitForInitialLoadAsync();
+
+            await using var devToolsContext = await chromiumWebBrowser.GetDevToolsContextAsync();
+
+            await devToolsContext.ScreenshotAsync("file.png");
+            #endregion
+        }
+
         [PuppeteerTest("screenshot.spec.ts", "ElementHandle.screenshot", "should work")]
         [PuppeteerFact]
         public async Task ShouldWork()
         {
             #region SetViewportAsync
+            // Set Viewport
             await DevToolsContext.SetViewportAsync(new ViewPortOptions
             {
                 Width = 500,

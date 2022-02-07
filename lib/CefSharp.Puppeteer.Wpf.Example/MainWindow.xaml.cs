@@ -55,7 +55,7 @@ namespace CefSharp.Puppeteer.Wpf.Example
 
             if(actual == 3)
             {
-                await textarea.SetPropertyValue("value", "Testing Complete");
+                await textarea.SetPropertyValueAsync("value", "Testing Complete");
             }
         }
 

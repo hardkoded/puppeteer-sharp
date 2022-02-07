@@ -118,7 +118,7 @@ namespace PuppeteerSharp.Tests.ClickTests
 
             await element.FocusAsync();
             
-            await element.SetPropertyValue("value", expected);
+            await element.SetPropertyValueAsync("value", expected);
             await element.ClickAsync();
             await element.ClickAsync(new ClickOptions { ClickCount = 2 });
             await element.ClickAsync(new ClickOptions { ClickCount = 3 });

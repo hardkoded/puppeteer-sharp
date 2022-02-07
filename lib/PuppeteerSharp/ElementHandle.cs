@@ -572,7 +572,7 @@ namespace CefSharp.Puppeteer
         /// <param name="propertyName">property name</param>
         /// <param name="val">value</param>
         /// <returns>Task</returns>
-        public Task SetPropertyValue(string propertyName, object val)
+        public Task SetPropertyValueAsync(string propertyName, object val)
         {
             return EvaluateFunctionAsync("(element, v) => { element." + propertyName + " = v; }", val);
         }
