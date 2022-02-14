@@ -90,6 +90,7 @@ await browserFetcher.DownloadAsync();
 await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions {Headless = true});
 await using var page = await browser.NewPageAsync();
 await page.GoToAsync("http://www.google.com");
+await page.EvaluateExpressionHandleAsync("document.fonts.ready");
 await page.PdfAsync(outputFile);
 ```
 <sup><a href='/lib/PuppeteerSharp.Tests/PageTests/PdfTests.cs#L29-L38' title='Snippet source file'>snippet source</a> | <a href='#snippet-pdfasync' title='Start of snippet'>anchor</a></sup>
