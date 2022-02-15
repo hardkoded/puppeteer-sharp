@@ -32,7 +32,8 @@ namespace PuppeteerSharp.Tests.PageTests
             await browserFetcher.DownloadAsync();
             await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions {Headless = true});
             await using var page = await browser.NewPageAsync();
-            await page.GoToAsync("http://www.google.com");
+            await page.GoToAsync("http://www.google.com"); // In case of fonts being loaded from a CDN, use WaitUntilNavigation.Networkidle0 as a second param.
+            await page.EvaluateExpressionHandleAsync("document.fonts.ready"); // Wait for fonts to be loaded. Omitting this might result in no text rendered in pdf.
             await page.PdfAsync(outputFile);
 
             #endregion
