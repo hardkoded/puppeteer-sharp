@@ -196,5 +196,17 @@ namespace CefSharp.Puppeteer.WinForms.Example
         {
             browser.ShowDevTools();
         }
+
+        private async void HighlightLinksToolStripMenuItemClick(object sender, EventArgs e)
+        {
+            var devToolcContext = await browser.GetDevToolsContextAsync();
+
+            var links = await devToolcContext.QuerySelectorAllAsync("a");
+
+            foreach (var link in links)
+            {
+                _ = await link.EvaluateFunctionAsync("e => e.style.backgroundColor = 'yellow'");
+            }
+        }
     }
 }
