@@ -30,7 +30,14 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             // Get a custom attribute value
             var customAttribute = await element.GetAttributeValueAsync<string>("data-customAttribute");
 
+            //Set innerText property for the element
             await element.SetPropertyValueAsync("innerText", "Welcome!");
+
+            //Get innerText property for the element
+            var innerText = await element.GetPropertyValueAsync<string>("innerText");
+
+            //Get all child elements
+            var childElements = await element.QuerySelectorAllAsync("div");
 
             //Click The element
             await element.ClickAsync();

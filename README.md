@@ -42,7 +42,14 @@ var element = await devtoolsContext.QuerySelectorAsync("#myElementId");
 // Get a custom attribute value
 var customAttribute = await element.GetAttributeValueAsync<string>("data-customAttribute");
 
+//Set innerText property for the element
 await element.SetPropertyValueAsync("innerText", "Welcome!");
+
+//Get innerText property for the element
+var innerText = await element.GetPropertyValueAsync<string>("innerText");
+
+//Get all child elements
+var childElements = await element.QuerySelectorAllAsync("div");
 
 //Click The element
 await element.ClickAsync();
@@ -56,7 +63,7 @@ foreach(var div in divElements)
     await div.SetPropertyValueAsync("innerText", "Updated Div innerText");
 }
 ```
-<sup><a href='/lib/PuppeteerSharp.Tests/QuerySelectorTests/PageQuerySelectorTests.cs#L22-L47' title='Snippet source file'>snippet source</a> | <a href='#snippet-queryselector' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/lib/PuppeteerSharp.Tests/QuerySelectorTests/PageQuerySelectorTests.cs#L22-L54' title='Snippet source file'>snippet source</a> | <a href='#snippet-queryselector' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ## Inject HTML
