@@ -36,6 +36,9 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             //Get innerText property for the element
             var innerText = await element.GetPropertyValueAsync<string>("innerText");
 
+            //Change CSS style background colour
+            _ = await element.EvaluateFunctionAsync("e => e.style.backgroundColor = 'yellow'");
+
             //Get all child elements
             var childElements = await element.QuerySelectorAllAsync("div");
 

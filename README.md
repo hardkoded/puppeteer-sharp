@@ -48,6 +48,9 @@ await element.SetPropertyValueAsync("innerText", "Welcome!");
 //Get innerText property for the element
 var innerText = await element.GetPropertyValueAsync<string>("innerText");
 
+//Change CSS style background colour
+_ = await element.EvaluateFunctionAsync("e => e.style.backgroundColor = 'yellow'");
+
 //Get all child elements
 var childElements = await element.QuerySelectorAllAsync("div");
 
@@ -63,7 +66,7 @@ foreach(var div in divElements)
     await div.SetPropertyValueAsync("innerText", "Updated Div innerText");
 }
 ```
-<sup><a href='/lib/PuppeteerSharp.Tests/QuerySelectorTests/PageQuerySelectorTests.cs#L22-L54' title='Snippet source file'>snippet source</a> | <a href='#snippet-queryselector' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/lib/PuppeteerSharp.Tests/QuerySelectorTests/PageQuerySelectorTests.cs#L22-L57' title='Snippet source file'>snippet source</a> | <a href='#snippet-queryselector' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ## Inject HTML
