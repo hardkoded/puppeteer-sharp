@@ -7,5 +7,7 @@ namespace PuppeteerSharp.Messaging
         public Payload Request { get; set; }
 
         public string NetworkId { get; set; }
+
+        public string NetworkRequestId { get; set; }
     }
 }

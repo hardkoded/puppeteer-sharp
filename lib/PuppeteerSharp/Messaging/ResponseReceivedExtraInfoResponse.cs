@@ -1,9 +1,7 @@
 namespace PuppeteerSharp.Messaging
 {
-    internal class LoadingFailedResponse
+    internal class ResponseReceivedExtraInfoResponse
     {
         public string RequestId { get; set; }
-
-        public string ErrorText { get; set; }
     }
 }

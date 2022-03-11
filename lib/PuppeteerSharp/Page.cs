@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -42,7 +43,7 @@ namespace PuppeteerSharp
         private readonly Dictionary<string, Delegate> _pageBindings;
         private readonly IDictionary<string, Worker> _workers;
         private readonly ILogger _logger;
-        private readonly TaskCompletionSource<bool> _closeCompletedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        private readonly TaskCompletionSource<bool> _closeCompletedTcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
         private readonly TimeoutSettings _timeoutSettings;
         private readonly ConcurrentDictionary<Guid, TaskCompletionSource<FileChooser>> _fileChooserInterceptors;
         private PageGetLayoutMetricsResponse _burstModeMetrics;
@@ -50,7 +51,8 @@ namespace PuppeteerSharp
         private ScreenshotOptions _screenshotBurstModeOptions;
         private TaskCompletionSource<bool> _sessionClosedTcs;
 
-        private static readonly Dictionary<string, decimal> _unitToPixels = new Dictionary<string, decimal> {
+        private static readonly Dictionary<string, decimal> _unitToPixels = new()
+        {
             { "px", 1 },
             { "in", 96 },
             { "cm", 37.8m },
@@ -1749,6 +1751,78 @@ namespace PuppeteerSharp
                 await SessionClosedTask.ConfigureAwait(false);
             }
             return await requestTcs.Task.ConfigureAwait(false);
+        }
+
+        public async Task WaitForNetworkIdleAsync(WaitForNetworkIdleOptions options = null)
+        {
+            var idleTime = options?.IdleTime ?? 500;
+            var timeout = options?.Timeout ?? _timeoutSettings.Timeout;
+
+            var networkManager = FrameManager.NetworkManager;
+
+            var idleResolvedTask = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var abortTask = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            using var token = new CancellationTokenSource();
+            Task idleTask = null;
+
+            Action evaluate = () => {
+                if (idleTask != null)
+                {
+                    token.Cancel();
+                }
+
+                if (networkManager.NumRequestsInProgress == 0)
+                {
+                    idleTask = Task.Delay(idleTime, token.Token).ContinueWith(
+                        (t, result) => idleResolvedTask.TrySetResult(true),
+                        TaskContinuationOptions.NotOnFaulted,
+                        TaskScheduler.Default);
+                }
+            };
+
+            evaluate();
+
+            try
+            {
+                await Task.WhenAll(
+                    idleResolvedTask.Task,
+                    abortTask.Task,
+                    WaitForRequestAsync(
+                    (r) =>
+                    {
+                        evaluate();
+                        return false;
+                    },
+                    new WaitForOptions
+                    {
+                        Timeout = timeout
+                    }),
+                    WaitForResponseAsync(
+                    (r) =>
+                    {
+                        evaluate();
+                        return false;
+                    },
+                    new WaitForOptions
+                    {
+                        Timeout = timeout
+                    })).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                throw new PuppeteerException(ex.Message, ex);
+            }
+            finally
+            {
+                if (idleTask != null)
+                {
+                    token.Cancel();
+                }
+
+                abortTask.TrySetException(new Exception("abort"));
+            }
+
         }
 
         /// <summary>

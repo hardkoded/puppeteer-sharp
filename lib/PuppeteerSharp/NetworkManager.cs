@@ -12,23 +12,11 @@ namespace PuppeteerSharp
 {
     internal class NetworkManager
     {
-        #region Private members
-
         private readonly CDPSession _client;
-
-        private readonly ConcurrentDictionary<string, Request> _requestIdToRequest =
-            new ConcurrentDictionary<string, Request>();
-
-        private readonly ConcurrentDictionary<string, RequestWillBeSentPayload> _requestIdToRequestWillBeSentEvent =
-            new ConcurrentDictionary<string, RequestWillBeSentPayload>();
-
-        private readonly ConcurrentDictionary<string, FetchRequestPausedResponse> _requestIdToRequestPausedEvent =
-            new ConcurrentDictionary<string, FetchRequestPausedResponse>();
-
         private readonly ILogger _logger;
-        private readonly ConcurrentSet<string> _attemptedAuthentications = new ConcurrentSet<string>();
+        private readonly ConcurrentSet<string> _attemptedAuthentications = new();
         private readonly bool _ignoreHTTPSErrors;
-        private readonly InternalNetworkConditions _emulatedNetworkConditions = new InternalNetworkConditions
+        private readonly InternalNetworkConditions _emulatedNetworkConditions = new()
         {
             Offline = false,
             Upload = -1,
@@ -36,12 +24,13 @@ namespace PuppeteerSharp
             Latency = 0,
         };
 
+        private readonly NetworkEventManager _networkEventManager = new();
+        private readonly bool _protocolRequestInterceptionEnabled;
+
         private Dictionary<string, string> _extraHTTPHeaders;
         private Credentials _credentials;
         private bool _userRequestInterceptionEnabled;
-        private bool _protocolRequestInterceptionEnabled;
         private bool _userCacheDisabled;
-        #endregion
 
         internal NetworkManager(CDPSession client, bool ignoreHTTPSErrors, FrameManager frameManager)
         {
@@ -52,7 +41,6 @@ namespace PuppeteerSharp
             _logger = _client.Connection.LoggerFactory.CreateLogger<NetworkManager>();
         }
 
-        #region Public Properties
         internal Dictionary<string, string> ExtraHTTPHeaders => _extraHTTPHeaders?.Clone();
 
         internal event EventHandler<ResponseCreatedEventArgs> Response;
@@ -66,9 +54,8 @@ namespace PuppeteerSharp
         internal event EventHandler<RequestEventArgs> RequestServedFromCache;
 
         internal FrameManager FrameManager { get; set; }
-        #endregion
 
-        #region Public Methods
+        internal int NumRequestsInProgress => _networkEventManager.NumRequestsInProgress;
 
         internal async Task InitializeAsync()
         {
@@ -143,10 +130,6 @@ namespace PuppeteerSharp
             return UpdateProtocolRequestInterceptionAsync();
         }
 
-        #endregion
-
-        #region Private Methods
-
         private Task UpdateProtocolCacheDisabledAsync()
             => _client.SendAsync("Network.setCacheDisabled", new NetworkSetCacheDisabledRequest
             {
@@ -175,10 +158,13 @@ namespace PuppeteerSharp
                         OnResponseReceived(e.MessageData.ToObject<ResponseReceivedResponse>(true));
                         break;
                     case "Network.loadingFinished":
-                        OnLoadingFinished(e.MessageData.ToObject<LoadingFinishedResponse>(true));
+                        OnLoadingFinished(e.MessageData.ToObject<LoadingFinishedEventResponse>(true));
                         break;
                     case "Network.loadingFailed":
                         OnLoadingFailed(e.MessageData.ToObject<LoadingFailedResponse>(true));
+                        break;
+                    case "Network.responseReceivedExtraInfo":
+                        OnResponseReceivedExtraInfo(e.MessageData.ToObject<ResponseReceivedExtraInfoResponse>(true));
                         break;
                 }
             }
@@ -190,7 +176,40 @@ namespace PuppeteerSharp
             }
         }
 
-        private void OnLoadingFailed(LoadingFailedResponse e)
+        private void OnResponseReceivedExtraInfo(ResponseReceivedExtraInfoResponse responseReceivedExtraInfoResponse)
+        {
+            var redirectInfo = _networkEventManager.TakeQueuedRedirectInfo(
+                responseReceivedExtraInfoResponse.RequestId);
+
+            if (redirectInfo != null) {
+                _networkEventManager.ResponseExtraInfo(responseReceivedExtraInfoResponse.RequestId).Add(responseReceivedExtraInfoResponse);
+                OnRequest(redirectInfo.Event, redirectInfo.FetchRequestId);
+                return;
+            }
+
+            // We may have skipped response and loading events because we didn't have
+            // this ExtraInfo event yet. If so, emit those events now.
+            var queuedEvents = _networkEventManager.GetQueuedEventGroup(
+              responseReceivedExtraInfoResponse.RequestId);
+
+            if (queuedEvents != null) {
+                OnResponseReceived(queuedEvents.ResponseReceivedEvent, responseReceivedExtraInfoResponse);
+
+                if (queuedEvents.LoadingFinishedEvent != null) {
+                    OnLoadingFinished(queuedEvents.LoadingFinishedEvent);
+                }
+
+                if (queuedEvents.LoadingFailedEvent != null) {
+                    OnLoadingFailed(queuedEvents.LoadingFailedEvent);
+                }
+                return;
+            }
+
+            // Wait until we get another event that can use this ExtraInfo event.
+            _networkEventManager.ResponseExtraInfo(responseReceivedExtraInfoResponse.RequestId).Add(responseReceivedExtraInfoResponse);
+        }
+
+        private void OnLoadingFailed(LoadingFailedEventResponse e)
         {
             // For certain requestIds we never receive requestWillBeSent event.
             // @see https://crbug.com/750469
@@ -208,7 +227,7 @@ namespace PuppeteerSharp
             }
         }
 
-        private void OnLoadingFinished(LoadingFinishedResponse e)
+        private void OnLoadingFinished(LoadingFinishedEventResponse e)
         {
             // For certain requestIds we never receive requestWillBeSent event.
             // @see https://crbug.com/750469
@@ -227,6 +246,8 @@ namespace PuppeteerSharp
 
         private void ForgetRequest(Request request, bool events)
         {
+            _networkEventManager.ForgetRequest(request.RequestId);
+
             _requestIdToRequest.TryRemove(request.RequestId, out _);
 
             if (request.InterceptionId != null)
@@ -236,12 +257,11 @@ namespace PuppeteerSharp
 
             if (events)
             {
-                _requestIdToRequestWillBeSentEvent.TryRemove(request.RequestId, out _);
-                _requestIdToRequestPausedEvent.TryRemove(request.RequestId, out _);
+                _networkEventManager.Forget(request.RequestId);
             }
         }
 
-        private void OnResponseReceived(ResponseReceivedResponse e)
+        private void OnResponseReceived(ResponseReceivedResponse e, ResponseReceivedExtraInfoResponse extraInfo)
         {
             // FileUpload sends a response without a matching request.
             if (_requestIdToRequest.TryGetValue(e.RequestId, out var request))
@@ -317,26 +337,25 @@ namespace PuppeteerSharp
                 return;
             }
 
-            var hasRequestWillBeSentEvent = _requestIdToRequestWillBeSentEvent.TryGetValue(requestId, out var requestWillBeSentEvent);
+            var requestWillBeSentEvent =
+              _networkEventManager.GetRequestWillBeSent(e.NetworkRequestId);
 
-            // redirect requests have the same `requestId`
+                    // redirect requests have the same `requestId`,
+                    if (
+                        requestWillBeSentEvent &&
+                        (requestWillBeSentEvent.request.url !== event.request.url ||
+                    requestWillBeSentEvent.request.method !== event.request.method)
+                ) {
+                    this._networkEventManager.forgetRequestWillBeSent(networkRequestId);
+                    return;
+                }
+                return requestWillBeSentEvent;
+       
 
-            if (hasRequestWillBeSentEvent &&
-                (requestWillBeSentEvent.Request.Url != e.Request.Url ||
-                 requestWillBeSentEvent.Request.Method != e.Request.Method))
-            {
-                _requestIdToRequestWillBeSentEvent.TryRemove(requestId, out _);
-                hasRequestWillBeSentEvent = false;
-            }
-
-            if (hasRequestWillBeSentEvent)
-            {
-                await OnRequestAsync(requestWillBeSentEvent, interceptionId).ConfigureAwait(false);
-                _requestIdToRequestWillBeSentEvent.TryRemove(requestId, out _);
-            }
-            else
-            {
-                _requestIdToRequestPausedEvent[requestId] = e;
+            if (requestWillBeSentEvent) {
+                this._onRequest(requestWillBeSentEvent, fetchRequestId);
+            } else {
+                this._networkEventManager.storeRequestPaused(networkRequestId, event);
             }
         }
 
@@ -454,7 +473,5 @@ namespace PuppeteerSharp
                     _client.SendAsync("Fetch.disable")).ConfigureAwait(false);
             }
         }
-
-        #endregion
     }
 }
