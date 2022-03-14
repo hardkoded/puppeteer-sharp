@@ -2298,6 +2298,12 @@ namespace CefSharp.Puppeteer
                 return Task.CompletedTask;
             }
             var ctx = FrameManager.ExecutionContextById(message.ExecutionContextId);
+
+            if (ctx == null)
+            {
+                return Task.CompletedTask;
+            }
+
             var values = message.Args.Select(ctx.CreateJSHandle).ToArray();
 
             return AddConsoleMessageAsync(message.Type, values, message.StackTrace);
