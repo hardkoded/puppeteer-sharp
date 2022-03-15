@@ -1738,15 +1738,8 @@ namespace PuppeteerSharp
                 }
             }
 
-            void RequestEventListener(object sender, RequestEventArgs e)
-            {
-                Evaluate();
-            }
-
-            void ResponseEventListener(object sender, ResponseCreatedEventArgs e)
-            {
-                Evaluate();
-            }
+            void RequestEventListener(object sender, RequestEventArgs e) => Evaluate();
+            void ResponseEventListener(object sender, ResponseCreatedEventArgs e) => Evaluate();
 
             void Cleanup()
             {
