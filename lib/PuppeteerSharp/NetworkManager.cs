@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Helpers;
@@ -223,6 +224,11 @@ namespace PuppeteerSharp
                     Request = request
                 });
             }
+        }
+
+        internal int NumRequestsInProgress()
+        {
+            return _requestIdToRequest.Count(x => x.Value.Response == null);
         }
 
         private void ForgetRequest(Request request, bool events)

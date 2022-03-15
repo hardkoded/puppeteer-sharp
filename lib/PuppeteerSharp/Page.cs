@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Timers;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -1690,6 +1691,91 @@ namespace PuppeteerSharp
         /// </code>
         /// </example>
         public Task<Response> WaitForNavigationAsync(NavigationOptions options = null) => FrameManager.WaitForFrameNavigationAsync(FrameManager.MainFrame, options);
+
+        /// <summary>
+        /// Waits for Network Idle
+        /// </summary>
+        /// <param name="timeout">Maximum wait time in milliseconds, defaults to 30 seconds, pass 0 to disable the timeout.
+        /// The default value can be changed by using the <see cref="Page.DefaultTimeout"/> property.</param>
+        /// <param name="idleTime">How long to wait for no network requests in milliseconds, defaults to 500 milliseconds.</param>
+        /// <returns>returns Task which resolves when network is idle</returns>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// page.EvaluateFunctionAsync("() => fetch('some-url')");
+        /// await page.WaitForNetworkIdle(); // The Task resolves after fetch above finishes
+        /// ]]>
+        /// </code>
+        /// </example>
+        public async Task WaitForNetworkIdleAsync(int? timeout = null, int idleTime = 500)
+        {
+            if (timeout == null)
+            {
+                timeout = _timeoutSettings.Timeout;
+            }
+
+            var networkIdleTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            var idleTimer = new Timer
+            {
+                Interval = idleTime
+            };
+
+            idleTimer.Elapsed += (sender, args) =>
+            {
+                networkIdleTcs.TrySetResult(true);
+            };
+
+            var networkManager = FrameManager.NetworkManager;
+
+            void Evaluate()
+            {
+                idleTimer.Stop();
+
+                if (networkManager.NumRequestsInProgress() == 0)
+                {
+                    idleTimer.Start();
+                }
+            }
+
+            void RequestEventListener(object sender, RequestEventArgs e)
+            {
+                Evaluate();
+            }
+
+            void ResponseEventListener(object sender, ResponseCreatedEventArgs e)
+            {
+                Evaluate();
+            }
+
+            void Cleanup()
+            {
+                idleTimer.Stop();
+                idleTimer.Dispose();
+
+                networkManager.Request -= RequestEventListener;
+                networkManager.Response -= ResponseEventListener;
+            }
+
+            networkManager.Request += RequestEventListener;
+            networkManager.Response += ResponseEventListener;
+
+            Evaluate();
+
+            await Task.WhenAny(networkIdleTcs.Task, SessionClosedTask).WithTimeout(timeout.Value, t =>
+            {
+                Cleanup();
+
+                return new TimeoutException($"Timeout of {t.TotalMilliseconds} ms exceeded");
+            }).ConfigureAwait(false);
+
+            Cleanup();
+
+            if (SessionClosedTask.IsFaulted)
+            {
+                await SessionClosedTask.ConfigureAwait(false);
+            }
+        }
 
         /// <summary>
         /// Waits for a request.
