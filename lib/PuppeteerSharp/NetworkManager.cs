@@ -226,10 +226,8 @@ namespace PuppeteerSharp
             }
         }
 
-        internal int NumRequestsInProgress()
-        {
-            return _requestIdToRequest.Count(x => x.Value.Response == null);
-        }
+        internal int NumRequestsInProgress
+            => _requestIdToRequest.Count(x => x.Value.Response == null);
 
         private void ForgetRequest(Request request, bool events)
         {

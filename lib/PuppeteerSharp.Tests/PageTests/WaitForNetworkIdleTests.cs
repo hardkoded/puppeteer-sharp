@@ -50,7 +50,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             var exception = await Assert.ThrowsAnyAsync<TimeoutException>(async () =>
-                await Page.WaitForNetworkIdleAsync(timeout:1));
+                await Page.WaitForNetworkIdleAsync(new WaitForNetworkIdleOptions { Timeout = 1 }));
 
             Assert.Contains("Timeout of 1 ms exceeded", exception.Message);
         }
@@ -63,7 +63,7 @@ namespace PuppeteerSharp.Tests.PageTests
             var t2 = DateTime.Now;
 
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var task = Page.WaitForNetworkIdleAsync(idleTime: 10).ContinueWith(x => t1 = DateTime.Now);
+            var task = Page.WaitForNetworkIdleAsync(new WaitForNetworkIdleOptions { IdleTime = 10 }).ContinueWith(x => t1 = DateTime.Now);
 
             await Task.WhenAll(
                 task,
@@ -96,7 +96,7 @@ namespace PuppeteerSharp.Tests.PageTests
             };
 
             await Task.WhenAll(
-                Page.WaitForNetworkIdleAsync(timeout: 0),
+                Page.WaitForNetworkIdleAsync(new WaitForNetworkIdleOptions { Timeout = 0 }),
                 Page.EvaluateFunctionAsync(@"() => setTimeout(() => {
                         fetch('/digits/1.png');
                         fetch('/digits/2.png');

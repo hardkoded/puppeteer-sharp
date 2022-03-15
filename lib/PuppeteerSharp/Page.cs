@@ -1695,9 +1695,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Waits for Network Idle
         /// </summary>
-        /// <param name="timeout">Maximum wait time in milliseconds, defaults to 30 seconds, pass 0 to disable the timeout.
-        /// The default value can be changed by using the <see cref="Page.DefaultTimeout"/> property.</param>
-        /// <param name="idleTime">How long to wait for no network requests in milliseconds, defaults to 500 milliseconds.</param>
+        /// <param name="options">Optional waiting parameters</param>
         /// <returns>returns Task which resolves when network is idle</returns>
         /// <example>
         /// <code>
@@ -1707,12 +1705,10 @@ namespace PuppeteerSharp
         /// ]]>
         /// </code>
         /// </example>
-        public async Task WaitForNetworkIdleAsync(int? timeout = null, int idleTime = 500)
+        public async Task WaitForNetworkIdleAsync(WaitForNetworkIdleOptions options = null)
         {
-            if (timeout == null)
-            {
-                timeout = _timeoutSettings.Timeout;
-            }
+            var timeout = options?.Timeout ?? DefaultTimeout;
+            var idleTime = options?.IdleTime ?? 500;
 
             var networkIdleTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
@@ -1732,7 +1728,7 @@ namespace PuppeteerSharp
             {
                 idleTimer.Stop();
 
-                if (networkManager.NumRequestsInProgress() == 0)
+                if (networkManager.NumRequestsInProgress == 0)
                 {
                     idleTimer.Start();
                 }
@@ -1755,7 +1751,7 @@ namespace PuppeteerSharp
 
             Evaluate();
 
-            await Task.WhenAny(networkIdleTcs.Task, SessionClosedTask).WithTimeout(timeout.Value, t =>
+            await Task.WhenAny(networkIdleTcs.Task, SessionClosedTask).WithTimeout(timeout, t =>
             {
                 Cleanup();
 
