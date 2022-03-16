@@ -57,6 +57,8 @@ namespace CefSharp.Puppeteer.Wpf.Example
             {
                 await textarea.SetPropertyValueAsync("value", "Testing Complete");
             }
+
+            await devToolsContext.DisposeAsync();
         }
 
         private void ShowDevToolsClick(object sender, RoutedEventArgs e)
