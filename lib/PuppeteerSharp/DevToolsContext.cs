@@ -1863,7 +1863,7 @@ namespace CefSharp.Puppeteer
         {
             FrameManager = new FrameManager(Client, this, _timeoutSettings);
 
-            Client.MessageReceived += Client_MessageReceived;
+            Client.MessageReceived += ClientMessageReceived;
             FrameManager.FrameAttached += (_, e) => FrameAttached?.Invoke(this, e);
             FrameManager.FrameDetached += (_, e) => FrameDetached?.Invoke(this, e);
             FrameManager.FrameNavigated += (_, e) => FrameNavigated?.Invoke(this, e);
@@ -2098,7 +2098,7 @@ namespace CefSharp.Puppeteer
             return pixels / 96;
         }
 
-        private async void Client_MessageReceived(object sender, MessageEventArgs e)
+        private async void ClientMessageReceived(object sender, MessageEventArgs e)
         {
             try
             {
@@ -2435,11 +2435,19 @@ namespace CefSharp.Puppeteer
         /// calling <see cref="DisposeAsync"/>, you must release all references to the <see cref="DevToolsContext"/> so
         /// the garbage collector can reclaim the memory that the <see cref="DevToolsContext"/> was occupying.</remarks>
         /// <returns>ValueTask</returns>
-        public ValueTask DisposeAsync()
+        public async ValueTask DisposeAsync()
         {
             GC.SuppressFinalize(this);
 
-            return default(ValueTask);
+            Client.MessageReceived -= ClientMessageReceived;
+
+            await Task.WhenAll(
+               Client.SendAsync("Log.disable"),
+               Client.SendAsync("Performance.disable"),
+               Client.SendAsync("Network.disable"),
+               Client.SendAsync("Runtime.disable"),
+               Client.SendAsync("Page.setLifecycleEventsEnabled", new PageSetLifecycleEventsEnabledRequest { Enabled = false }),
+               Client.SendAsync("Page.disable")).ConfigureAwait(false);
         }
     }
 }
