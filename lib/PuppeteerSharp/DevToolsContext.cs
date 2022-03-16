@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -1811,19 +1812,35 @@ namespace CefSharp.Puppeteer
         internal void OnPopup(DevToolsContext popupPage) => Popup?.Invoke(this, new PopupEventArgs { PopupPage = popupPage });
 
         /// <summary>
-        /// Attach to connection
+        /// Create a new <see cref="DevToolsContext"/> instance. It's reccommended that you only
+        /// create a single <see cref="DevToolsContext"/> per ChromiumWebBrowser instance. Store and reuse a single reference.
+        /// If you need to create multiple, make sure to Dispose of the previous instance before creating a new instance.
         /// </summary>
         /// <param name="connection">connection</param>
         /// <param name="ignoreHTTPSerrors">ignore certificate errors</param>
         /// <returns>Task that can be awaited to obtain the DevToolsContext</returns>
-        public static Task<DevToolsContext> GetDevToolsContextAsync(Connection connection, bool ignoreHTTPSerrors = false)
+        public static Task<DevToolsContext> CreateDevToolsContextAsync(Connection connection, bool ignoreHTTPSerrors = false)
         {
             if (connection == null)
             {
                 throw new ArgumentNullException(nameof(connection));
             }
 
-            return DevToolsContext.CreateAsync(connection, ignoreHTTPSerrors);
+            return CreateAsync(connection, ignoreHTTPSerrors);
+        }
+
+        /// <summary>
+        /// Create a new <see cref="DevToolsContext"/> instance. It's reccommended that you only
+        /// create a single <see cref="DevToolsContext"/> per ChromiumWebBrowser instance. Store and reuse a single reference.
+        /// If you need to create multiple, make sure to Dispose of the previous instance before creating a new instance.
+        /// </summary>
+        /// <param name="connection">connection</param>
+        /// <param name="ignoreHTTPSerrors">ignore certificate errors</param>
+        /// <returns>Task that can be awaited to obtain the DevToolsContext</returns>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static Task<DevToolsContext> GetDevToolsContextAsync(Connection connection, bool ignoreHTTPSerrors = false)
+        {
+            return CreateDevToolsContextAsync(connection, ignoreHTTPSerrors);
         }
 
         internal static async Task<DevToolsContext> CreateAsync(

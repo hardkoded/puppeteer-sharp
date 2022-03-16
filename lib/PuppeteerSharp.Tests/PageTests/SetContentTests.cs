@@ -26,7 +26,7 @@ namespace PuppeteerSharp.Tests.PageTests
             //Wait for Initial page load
             await chromiumWebBrowser.WaitForInitialLoadAsync();
 
-            await using var devtoolsContext = await chromiumWebBrowser.GetDevToolsContextAsync();
+            await using var devtoolsContext = await chromiumWebBrowser.CreateDevToolsContextAsync();
             await devtoolsContext.SetContentAsync("<div>My Receipt</div>");
             var result = await devtoolsContext.GetContentAsync();
 

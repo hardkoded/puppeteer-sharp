@@ -199,7 +199,7 @@ namespace CefSharp.Puppeteer.WinForms.Example
 
         private async void HighlightLinksToolStripMenuItemClick(object sender, EventArgs e)
         {
-            var devToolcContext = await browser.GetDevToolsContextAsync();
+            var devToolcContext = await browser.CreateDevToolsContextAsync();
 
             var links = await devToolcContext.QuerySelectorAllAsync("a");
 

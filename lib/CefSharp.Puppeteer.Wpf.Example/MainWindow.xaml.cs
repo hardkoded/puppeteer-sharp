@@ -20,7 +20,7 @@ namespace CefSharp.Puppeteer.Wpf.Example
         {
             await Browser.WaitForInitialLoadAsync();
 
-            var devToolsContext = await Browser.GetDevToolsContextAsync(ignoreHTTPSerrors:true);
+            var devToolsContext = await Browser.CreateDevToolsContextAsync(ignoreHTTPSerrors:true);
 
             await devToolsContext.GoToAsync("https://cefsharp.test/textarea.html");
 

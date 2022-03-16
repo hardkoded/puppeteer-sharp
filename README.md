@@ -35,7 +35,7 @@ Read/write to the DOM
 // Wait for Initial page load
 await chromiumWebBrowser.WaitForInitialLoadAsync();
 
-await using var devtoolsContext = await chromiumWebBrowser.GetDevToolsContextAsync();
+await using var devtoolsContext = await chromiumWebBrowser.CreateDevToolsContextAsync();
 
 var element = await devtoolsContext.QuerySelectorAsync("#myElementId");
 
@@ -76,7 +76,7 @@ foreach(var div in divElements)
 //Wait for Initial page load
 await chromiumWebBrowser.WaitForInitialLoadAsync();
 
-await using var devtoolsContext = await chromiumWebBrowser.GetDevToolsContextAsync();
+await using var devtoolsContext = await chromiumWebBrowser.CreateDevToolsContextAsync();
 await devtoolsContext.SetContentAsync("<div>My Receipt</div>");
 var result = await devtoolsContext.GetContentAsync();
 ```
@@ -88,7 +88,7 @@ var result = await devtoolsContext.GetContentAsync();
 <!-- snippet: Evaluate -->
 <a id='snippet-evaluate'></a>
 ```cs
-await using var page = await chromiumWebBrowser.GetDevToolsContextAsync();
+await using var page = await chromiumWebBrowser.CreateDevToolsContextAsync();
 var seven = await page.EvaluateExpressionAsync<int>("4 + 3");
 var someObject = await page.EvaluateFunctionAsync<dynamic>("(value) => ({a: value})", 5);
 Console.WriteLine(someObject.a);
@@ -104,7 +104,7 @@ Console.WriteLine(someObject.a);
 //Wait for Initial page load
 await chromiumWebBrowser.WaitForInitialLoadAsync();
 
-await using var devToolsContext = await chromiumWebBrowser.GetDevToolsContextAsync();
+await using var devToolsContext = await chromiumWebBrowser.CreateDevToolsContextAsync();
 
 await devToolsContext.ScreenshotAsync("file.png");
 ```

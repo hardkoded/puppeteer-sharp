@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             // Wait for Initial page load
             await chromiumWebBrowser.WaitForInitialLoadAsync();
 
-            await using var devtoolsContext = await chromiumWebBrowser.GetDevToolsContextAsync();
+            await using var devtoolsContext = await chromiumWebBrowser.CreateDevToolsContextAsync();
 
             var element = await devtoolsContext.QuerySelectorAsync("#myElementId");
 

@@ -24,7 +24,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             //Wait for Initial page load
             await chromiumWebBrowser.WaitForInitialLoadAsync();
 
-            await using var devToolsContext = await chromiumWebBrowser.GetDevToolsContextAsync();
+            await using var devToolsContext = await chromiumWebBrowser.CreateDevToolsContextAsync();
 
             await devToolsContext.ScreenshotAsync("file.png");
             #endregion
