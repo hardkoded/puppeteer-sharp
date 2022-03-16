@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using CefSharp.Puppeteer.Helpers;
 using CefSharp.Puppeteer.Helpers.Json;
@@ -175,6 +176,9 @@ namespace CefSharp.Puppeteer
                 _client.Close(message);
             }
         }
+
+        internal int NumRequestsInProgress
+            => _requestIdToRequest.Count(x => x.Value.Response == null);
 
         private void OnLoadingFailed(LoadingFailedResponse e)
         {

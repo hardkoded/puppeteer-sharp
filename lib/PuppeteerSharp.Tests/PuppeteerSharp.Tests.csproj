@@ -111,6 +111,7 @@
 	  <Compile Include="PageTests\SetUserAgentTests.cs" />
 	  <Compile Include="PageTests\TitleTests.cs" />
 	  <Compile Include="PageTests\UrlTests.cs" />
+	  <Compile Include="PageTests\WaitForNetworkIdleTests.cs" />
 	  <Compile Include="PageTests\WaitForRequestTests.cs" />
 	  <Compile Include="PageTests\WaitForResponseTests.cs" />
 	</ItemGroup>
