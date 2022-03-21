@@ -28,9 +28,11 @@ namespace PuppeteerSharp.Tests.MouseTests
         }
 
         [PuppeteerTest("mouse.spec.ts", "Mouse", "should click the document")]
-        [PuppeteerFact(Skip = "Issue https://github.com/cefsharp/Puppeteer/issues/8")]
+        [PuppeteerFact]
         public async Task ShouldClickTheDocument()
         {
+            await ChromiumWebBrowser.WaitForRenderIdle();
+
             await DevToolsContext.EvaluateFunctionAsync(@"() => {
                 globalThis.clickPromise = new Promise((resolve) => {
                     document.addEventListener('click', (event) => {
@@ -57,10 +59,12 @@ namespace PuppeteerSharp.Tests.MouseTests
         }
 
         [PuppeteerTest("mouse.spec.ts", "Mouse", "should resize the textarea")]
-        [PuppeteerFact(Skip = "Issue https://github.com/cefsharp/Puppeteer/issues/8")]
+        [PuppeteerFact]
         public async Task ShouldResizeTheTextarea()
         {
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
+            await ChromiumWebBrowser.WaitForRenderIdle();
+
             var dimensions = await DevToolsContext.EvaluateFunctionAsync<Dimensions>(Dimensions);
             var mouse = DevToolsContext.Mouse;
             await mouse.MoveAsync(dimensions.X + dimensions.Width - 4, dimensions.Y + dimensions.Height - 4);
@@ -73,10 +77,12 @@ namespace PuppeteerSharp.Tests.MouseTests
         }
 
         [PuppeteerTest("mouse.spec.ts", "Mouse", "should select the text with mouse")]
-        [PuppeteerFact(Skip = "Issue https://github.com/cefsharp/Puppeteer/issues/8")]
+        [PuppeteerFact]
         public async Task ShouldSelectTheTextWithMouse()
         {
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
+            await ChromiumWebBrowser.WaitForRenderIdle();
+
             await DevToolsContext.FocusAsync("textarea");
             const string expectedText = "This is the text that we are going to try to select. Let's see how it goes.";
             await DevToolsContext.Keyboard.TypeAsync(expectedText);
@@ -98,6 +104,8 @@ namespace PuppeteerSharp.Tests.MouseTests
         public async Task ShouldTriggerHoverState()
         {
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
+            await ChromiumWebBrowser.WaitForRenderIdle();
+
             await DevToolsContext.HoverAsync("#button-6");
             Assert.Equal("button-6", await DevToolsContext.EvaluateExpressionAsync<string>("document.querySelector('button:hover').id"));
             await DevToolsContext.HoverAsync("#button-2");
@@ -111,6 +119,8 @@ namespace PuppeteerSharp.Tests.MouseTests
         public async Task ShouldTriggerHoverStateWithRemovedWindowNode()
         {
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
+            await ChromiumWebBrowser.WaitForRenderIdle();
+
             await DevToolsContext.EvaluateExpressionAsync("delete window.Node");
             await DevToolsContext.HoverAsync("#button-6");
             Assert.Equal("button-6", await DevToolsContext.EvaluateExpressionAsync("document.querySelector('button:hover').id"));
@@ -121,6 +131,8 @@ namespace PuppeteerSharp.Tests.MouseTests
         public async Task ShouldSetModifierKeysOnClick()
         {
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
+            await ChromiumWebBrowser.WaitForRenderIdle();
+
             await DevToolsContext.EvaluateExpressionAsync("document.querySelector('#button-3').addEventListener('mousedown', e => window.lastEvent = e, true)");
             var modifiers = new Dictionary<string, string> { ["Shift"] = "shiftKey", ["Control"] = "ctrlKey", ["Alt"] = "altKey", ["Meta"] = "metaKey" };
             foreach (var modifier in modifiers)
@@ -149,6 +161,8 @@ namespace PuppeteerSharp.Tests.MouseTests
         public async Task ShouldSendMouseWheelEvents()
         {
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/wheel.html");
+            await ChromiumWebBrowser.WaitForRenderIdle();
+
             var elem = await DevToolsContext.QuerySelectorAsync("div");
             var boundingBoxBefore = await elem.BoundingBoxAsync();
             Assert.Equal(115, boundingBoxBefore.Width);
@@ -187,7 +201,7 @@ namespace PuppeteerSharp.Tests.MouseTests
         }
 
         [PuppeteerTest("mouse.spec.ts", "Mouse", "should work with mobile viewports and cross process navigations")]
-        [PuppeteerFact(Skip = "Issue https://github.com/cefsharp/Puppeteer/issues/8")]
+        [PuppeteerFact]
         public async Task ShouldWorkWithMobileViewportsAndCrossProcessNavigations()
         {
             await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
@@ -198,6 +212,8 @@ namespace PuppeteerSharp.Tests.MouseTests
                 IsMobile = true
             });
             await DevToolsContext.GoToAsync(TestConstants.CrossProcessUrl + "/mobile.html");
+            await ChromiumWebBrowser.WaitForRenderIdle();
+
             await DevToolsContext.EvaluateFunctionAsync(@"() => {
                 document.addEventListener('click', event => {
                     window.result = { x: event.clientX, y: event.clientY };

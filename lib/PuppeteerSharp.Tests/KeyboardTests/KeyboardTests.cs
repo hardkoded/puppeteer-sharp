@@ -17,10 +17,12 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         }
 
         [PuppeteerTest("keyboard.spec.ts", "Keyboard", "should type into a textarea")]
-        [PuppeteerFact(Skip = "Issue https://github.com/cefsharp/Puppeteer/issues/8")]
+        [PuppeteerFact]
         public async Task ShouldTypeIntoTheTextarea()
         {
             const string expected = "Type in this text!";
+
+            await ChromiumWebBrowser.WaitForRenderIdle();
 
             var textarea = await DevToolsContext.QuerySelectorAsync("textarea");
 
@@ -32,9 +34,11 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         }
 
         [PuppeteerTest("keyboard.spec.ts", "Keyboard", "should move with the arrow keys")]
-        [PuppeteerFact(Skip = "Issue https://github.com/cefsharp/Puppeteer/issues/8")]
+        [PuppeteerFact]
         public async Task ShouldMoveWithTheArrowKeys()
         {
+            await ChromiumWebBrowser.WaitForRenderIdle();
+
             await DevToolsContext.TypeAsync("textarea", "Hello World!");
             Assert.Equal("Hello World!", await DevToolsContext.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
             for (var i = 0; i < "World!".Length; i++)
@@ -56,9 +60,11 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         }
 
         [PuppeteerTest("keyboard.spec.ts", "Keyboard", "should send a character with ElementHandle.press")]
-        [PuppeteerFact(Skip = "Issue https://github.com/cefsharp/Puppeteer/issues/8")]
+        [PuppeteerFact]
         public async Task ShouldSendACharacterWithElementHandlePress()
         {
+            await ChromiumWebBrowser.WaitForRenderIdle();
+
             var textarea = await DevToolsContext.QuerySelectorAsync("textarea");
             await textarea.PressAsync("a");
             Assert.Equal("a", await DevToolsContext.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
@@ -70,9 +76,11 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         }
 
         [PuppeteerTest("keyboard.spec.ts", "Keyboard", "ElementHandle.press should support |text| option")]
-        [PuppeteerFact(Skip = "Issue https://github.com/cefsharp/Puppeteer/issues/8")]
+        [PuppeteerFact]
         public async Task ElementHandlePressShouldSupportTextOption()
         {
+            await ChromiumWebBrowser.WaitForRenderIdle();
+
             var textarea = await DevToolsContext.QuerySelectorAsync("textarea");
             await textarea.PressAsync("a", new PressOptions { Text = "ё" });
             Assert.Equal("ё", await DevToolsContext.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
@@ -82,6 +90,8 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         [PuppeteerFact]
         public async Task ShouldSendACharacterWithSendCharacter()
         {
+            await ChromiumWebBrowser.WaitForRenderIdle();
+
             await DevToolsContext.FocusAsync("textarea");
             await DevToolsContext.Keyboard.SendCharacterAsync("嗨");
             Assert.Equal("嗨", await DevToolsContext.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
@@ -91,10 +101,12 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         }
 
         [PuppeteerTest("keyboard.spec.ts", "Keyboard", "should report shiftKey")]
-        [PuppeteerFact(Skip = "Issue https://github.com/cefsharp/Puppeteer/issues/8")]
+        [PuppeteerFact]
         public async Task ShouldReportShiftKey()
         {
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/keyboard.html");
+            await ChromiumWebBrowser.WaitForRenderIdle();
+
             var keyboard = DevToolsContext.Keyboard;
             var codeForKey = new Dictionary<string, int> { ["Shift"] = 16, ["Alt"] = 18, ["Control"] = 17 };
             foreach (var modifier in codeForKey)
@@ -120,10 +132,12 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         }
 
         [PuppeteerTest("keyboard.spec.ts", "Keyboard", "should report multiple modifiers")]
-        [PuppeteerFact(Skip = "Issue https://github.com/cefsharp/Puppeteer/issues/8")]
+        [PuppeteerFact]
         public async Task ShouldReportMultipleModifiers()
         {
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/keyboard.html");
+            await ChromiumWebBrowser.WaitForRenderIdle();
+
             var keyboard = DevToolsContext.Keyboard;
             await keyboard.DownAsync("Control");
             Assert.Equal("Keydown: Control ControlLeft 17 [Control]", await DevToolsContext.EvaluateExpressionAsync<string>("getResult()"));
@@ -140,10 +154,11 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         }
 
         [PuppeteerTest("keyboard.spec.ts", "Keyboard", "should send proper codes while typing")]
-        [PuppeteerFact(Skip = "Issue https://github.com/cefsharp/Puppeteer/issues/8")]
+        [PuppeteerFact]
         public async Task ShouldSendProperCodesWhileTyping()
         {
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/keyboard.html");
+            await ChromiumWebBrowser.WaitForRenderIdle();
 
             var element = await DevToolsContext.QuerySelectorAsync("textarea");
 
@@ -167,10 +182,12 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         }
 
         [PuppeteerTest("keyboard.spec.ts", "Keyboard", "should send proper codes while typing with shift")]
-        [PuppeteerFact(Skip = "Issue https://github.com/cefsharp/Puppeteer/issues/8")]
+        [PuppeteerFact]
         public async Task ShouldSendProperCodesWhileTypingWithShift()
         {
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/keyboard.html");
+            await ChromiumWebBrowser.WaitForRenderIdle();
+
             var keyboard = DevToolsContext.Keyboard;
             await keyboard.DownAsync("Shift");
             await DevToolsContext.Keyboard.TypeAsync("~");
@@ -183,9 +200,11 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         }
 
         [PuppeteerTest("keyboard.spec.ts", "Keyboard", "should not type canceled events")]
-        [PuppeteerFact(Skip = "Issue https://github.com/cefsharp/Puppeteer/issues/8")]
+        [PuppeteerFact]
         public async Task ShouldNotTypeCanceledEvents()
         {
+            await ChromiumWebBrowser.WaitForRenderIdle();
+
             await DevToolsContext.FocusAsync("textarea");
             await DevToolsContext.EvaluateExpressionAsync(@"{
               window.addEventListener('keydown', event => {
@@ -202,9 +221,11 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         }
 
         [PuppeteerTest("keyboard.spec.ts", "Keyboard", "should specify repeat property")]
-        [PuppeteerFact(Skip = "Issue https://github.com/cefsharp/Puppeteer/issues/8")]
+        [PuppeteerFact]
         public async Task ShouldSpecifyRepeatProperty()
         {
+            await ChromiumWebBrowser.WaitForRenderIdle();
+
             await DevToolsContext.FocusAsync("textarea");
             await DevToolsContext.EvaluateExpressionAsync("document.querySelector('textarea').addEventListener('keydown', e => window.lastEvent = e, true)");
             await DevToolsContext.Keyboard.DownAsync("a");
@@ -223,10 +244,12 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         }
 
         [PuppeteerTest("keyboard.spec.ts", "Keyboard", "should type all kinds of characters")]
-        [PuppeteerFact(Skip = "Issue https://github.com/cefsharp/Puppeteer/issues/8")]
+        [PuppeteerFact]
         public async Task ShouldTypeAllKindsOfCharacters()
         {
             const string expected = "This text goes onto two lines.\nThis character is 嗨.";
+
+            await ChromiumWebBrowser.WaitForRenderIdle();
 
             var textarea = await DevToolsContext.QuerySelectorAsync("textarea");
 
@@ -240,9 +263,11 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         }
 
         [PuppeteerTest("keyboard.spec.ts", "Keyboard", "should specify location")]
-        [PuppeteerFact(Skip = "Issue https://github.com/cefsharp/Puppeteer/issues/8")]
+        [PuppeteerFact]
         public async Task ShouldSpecifyLocation()
         {
+            await ChromiumWebBrowser.WaitForRenderIdle();
+
             await DevToolsContext.EvaluateExpressionAsync(@"{
               window.addEventListener('keydown', event => window.keyLocation = event.location, true);
             }");
@@ -277,6 +302,8 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         [PuppeteerFact]
         public async Task ShouldThrowOnUnknownKeys()
         {
+            await ChromiumWebBrowser.WaitForRenderIdle();
+
             await Assert.ThrowsAsync<KeyNotFoundException>(() => DevToolsContext.Keyboard.PressAsync("NotARealKey"));
 
             await Assert.ThrowsAsync<KeyNotFoundException>(() => DevToolsContext.Keyboard.PressAsync("ё"));
@@ -285,10 +312,12 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         }
 
         [PuppeteerTest("keyboard.spec.ts", "Keyboard", "should type emoji")]
-        [PuppeteerFact(Skip = "Issue https://github.com/cefsharp/Puppeteer/issues/8")]
+        [PuppeteerFact]
         public async Task ShouldTypeEmoji()
         {
             const string expected = "👹 Tokyo street Japan \uD83C\uDDEF\uD83C\uDDF5";
+
+            await ChromiumWebBrowser.WaitForRenderIdle();
 
             var textArea = await DevToolsContext.QuerySelectorAsync("textarea");
 
@@ -300,12 +329,14 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         }
 
         [PuppeteerTest("keyboard.spec.ts", "Keyboard", "should type emoji into an iframe")]
-        [PuppeteerFact(Skip = "Issue https://github.com/cefsharp/Puppeteer/issues/8")]
+        [PuppeteerFact]
         public async Task ShouldTypeEmojiIntoAniframe()
         {
             const string expected = "👹 Tokyo street Japan \uD83C\uDDEF\uD83C\uDDF5";
 
             await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+            await ChromiumWebBrowser.WaitForRenderIdle();
+
             await FrameUtils.AttachFrameAsync(DevToolsContext, "emoji-test", TestConstants.ServerUrl + "/input/textarea.html");
 
             var frame = DevToolsContext.FirstChildFrame();
@@ -318,9 +349,11 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         }
 
         [PuppeteerTest("keyboard.spec.ts", "Keyboard", "should press the metaKey")]
-        [PuppeteerFact(Skip = "Issue https://github.com/cefsharp/Puppeteer/issues/8")]
+        [PuppeteerFact]
         public async Task ShouldPressTheMetaKey()
         {
+            await ChromiumWebBrowser.WaitForRenderIdle();
+
             await DevToolsContext.EvaluateFunctionAsync(@"() =>
             {
                 window.result = null;
