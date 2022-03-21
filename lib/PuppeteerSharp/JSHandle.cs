@@ -82,7 +82,7 @@ namespace CefSharp.Puppeteer
 
             if (property.RemoteObject.Type == RemoteObjectType.Undefined)
             {
-                throw new PuppeteerException($"Property {propertyName} was not found.");
+                throw new PuppeteerException($"Property {propertyName} was not found. Property names are case sensitive e.g. innerText not innertext. Make sure to check your spelling.");
             }
 
             return await property.JsonValueAsync<T>().ConfigureAwait(false);
