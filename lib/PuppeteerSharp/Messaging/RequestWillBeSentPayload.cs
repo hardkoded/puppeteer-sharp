@@ -15,5 +15,7 @@ namespace PuppeteerSharp.Messaging
         public ResourceType Type { get; set; }
 
         public string FrameId { get; set; }
+
+        public bool RedirectHasExtraInfo { get; set; }
     }
 }

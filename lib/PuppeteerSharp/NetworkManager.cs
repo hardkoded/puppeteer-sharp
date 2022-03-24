@@ -26,12 +26,12 @@ namespace PuppeteerSharp
         };
 
         private readonly NetworkEventManager _networkEventManager = new();
-        private readonly bool _protocolRequestInterceptionEnabled;
 
         private Dictionary<string, string> _extraHTTPHeaders;
         private Credentials _credentials;
         private bool _userRequestInterceptionEnabled;
         private bool _userCacheDisabled;
+        private bool _protocolRequestInterceptionEnabled;
 
         internal NetworkManager(CDPSession client, bool ignoreHTTPSErrors, FrameManager frameManager)
         {
@@ -162,10 +162,10 @@ namespace PuppeteerSharp
                         OnLoadingFinished(e.MessageData.ToObject<LoadingFinishedEventResponse>(true));
                         break;
                     case "Network.loadingFailed":
-                        OnLoadingFailed(e.MessageData.ToObject<LoadingFailedResponse>(true));
+                        OnLoadingFailed(e.MessageData.ToObject<LoadingFailedEventResponse>(true));
                         break;
                     case "Network.responseReceivedExtraInfo":
-                        OnResponseReceivedExtraInfo(e.MessageData.ToObject<ResponseReceivedExtraInfoResponse>(true));
+                        await OnResponseReceivedExtraInfoAsync(e.MessageData.ToObject<ResponseReceivedExtraInfoResponse>(true)).ConfigureAwait(false);
                         break;
                 }
             }
@@ -177,14 +177,14 @@ namespace PuppeteerSharp
             }
         }
 
-        private void OnResponseReceivedExtraInfo(ResponseReceivedExtraInfoResponse responseReceivedExtraInfoResponse)
+        private async Task OnResponseReceivedExtraInfoAsync(ResponseReceivedExtraInfoResponse responseReceivedExtraInfoResponse)
         {
             var redirectInfo = _networkEventManager.TakeQueuedRedirectInfo(
                 responseReceivedExtraInfoResponse.RequestId);
 
             if (redirectInfo != null) {
                 _networkEventManager.ResponseExtraInfo(responseReceivedExtraInfoResponse.RequestId).Add(responseReceivedExtraInfoResponse);
-                OnRequest(redirectInfo.Event, redirectInfo.FetchRequestId);
+                await OnRequestAsync(redirectInfo.Event, redirectInfo.FetchRequestId).ConfigureAwait(false);
                 return;
             }
 
@@ -194,7 +194,7 @@ namespace PuppeteerSharp
               responseReceivedExtraInfoResponse.RequestId);
 
             if (queuedEvents != null) {
-                OnResponseReceived(queuedEvents.ResponseReceivedEvent, responseReceivedExtraInfoResponse);
+                EmitResponseEvent(queuedEvents.ResponseReceivedEvent, responseReceivedExtraInfoResponse);
 
                 if (queuedEvents.LoadingFinishedEvent != null) {
                     OnLoadingFinished(queuedEvents.LoadingFinishedEvent);
@@ -212,47 +212,72 @@ namespace PuppeteerSharp
 
         private void OnLoadingFailed(LoadingFailedEventResponse e)
         {
-            // For certain requestIds we never receive requestWillBeSent event.
-            // @see https://crbug.com/750469
-            if (_requestIdToRequest.TryGetValue(e.RequestId, out var request))
+            var queuedEvents = _networkEventManager.GetQueuedEventGroup(e.RequestId);
+
+            if (queuedEvents != null)
             {
-                request.Failure = e.ErrorText;
-                request.Response?.BodyLoadedTaskWrapper.TrySetResult(true);
-
-                ForgetRequest(request, true);
-
-                RequestFailed?.Invoke(this, new RequestEventArgs
-                {
-                    Request = request
-                });
+                queuedEvents.LoadingFailedEvent = e;
             }
+            else
+            {
+                EmitLoadingFailed(e);
+            }
+        }
+
+        private void EmitLoadingFailed(LoadingFailedEventResponse e)
+        {
+            var request = _networkEventManager.GetRequest(e.RequestId);
+            if (request == null)
+            {
+                return;
+            }
+
+            request.Failure = e.ErrorText;
+            request.Response?.BodyLoadedTaskWrapper.TrySetResult(true);
+
+            ForgetRequest(request, true);
+
+            RequestFailed?.Invoke(this, new RequestEventArgs
+            {
+                Request = request
+            });
         }
 
         private void OnLoadingFinished(LoadingFinishedEventResponse e)
         {
-            // For certain requestIds we never receive requestWillBeSent event.
-            // @see https://crbug.com/750469
-            if (_requestIdToRequest.TryGetValue(e.RequestId, out var request))
+            var queuedEvents = _networkEventManager.GetQueuedEventGroup(e.RequestId);
+
+            if (queuedEvents != null)
             {
-                request.Response?.BodyLoadedTaskWrapper.TrySetResult(true);
-
-                ForgetRequest(request, true);
-
-                RequestFinished?.Invoke(this, new RequestEventArgs
-                {
-                    Request = request
-                });
+                queuedEvents.LoadingFinishedEvent = e;
+            }
+            else
+            {
+                EmitLoadingFinished(e);
             }
         }
 
-        internal int NumRequestsInProgress
-            => _requestIdToRequest.Count(x => x.Value.Response == null);
+        private void EmitLoadingFinished(LoadingFinishedEventResponse e)
+        {
+            var request = _networkEventManager.GetRequest(e.RequestId);
+            if (request == null)
+            {
+                return;
+            }
+
+            request.Response?.BodyLoadedTaskWrapper.TrySetResult(true);
+
+            ForgetRequest(request, true);
+
+            RequestFinished?.Invoke(this, new RequestEventArgs
+            {
+                Request = request
+            });
+        }
 
         private void ForgetRequest(Request request, bool events)
         {
             _networkEventManager.ForgetRequest(request.RequestId);
-
-            _requestIdToRequest.TryRemove(request.RequestId, out _);
 
             if (request.InterceptionId != null)
             {
@@ -265,23 +290,51 @@ namespace PuppeteerSharp
             }
         }
 
-        private void OnResponseReceived(ResponseReceivedResponse e, ResponseReceivedExtraInfoResponse extraInfo)
+        private void OnResponseReceived(ResponseReceivedResponse e)
         {
-            // FileUpload sends a response without a matching request.
-            if (_requestIdToRequest.TryGetValue(e.RequestId, out var request))
+            var request = _networkEventManager.GetRequest(e.RequestId);
+            ResponseReceivedExtraInfoResponse extraInfo = null;
+
+            if (request != null && !request.FromMemoryCache && e.HasExtraInfo)
             {
-                var response = new Response(
-                    _client,
-                    request,
-                    e.Response);
+                extraInfo = _networkEventManager.ShiftResponseExtraInfo(e.RequestId);
 
-                request.Response = response;
-
-                Response?.Invoke(this, new ResponseCreatedEventArgs
+                if (extraInfo == null)
                 {
-                    Response = response
-                });
+                    _networkEventManager.QueuedEventGroup(e.RequestId, new()
+                    {
+                        ResponseReceivedEvent = e
+                    });
+                    return;
+                }
             }
+
+            EmitResponseEvent(e, extraInfo);
+        }
+
+        private void EmitResponseEvent(ResponseReceivedResponse e, ResponseReceivedExtraInfoResponse extraInfo)
+        {
+            var request = _networkEventManager.GetRequest(e.RequestId);
+
+            // FileUpload sends a response without a matching request.
+
+            if (request == null)
+            {
+                return;
+            }
+
+            var response = new Response(
+                _client,
+                request,
+                e.Response,
+                extraInfo);
+
+            request.Response = response;
+
+            Response?.Invoke(this, new ResponseCreatedEventArgs
+            {
+                Response = response
+            });
         }
 
         private async Task OnAuthRequiredAsync(FetchAuthRequiredResponse e)
@@ -333,48 +386,61 @@ namespace PuppeteerSharp
                 }
             }
 
-            var requestId = e.NetworkId;
-            var interceptionId = e.RequestId;
-
-            if (string.IsNullOrEmpty(requestId))
+            if (string.IsNullOrEmpty(e.NetworkId))
             {
                 return;
             }
 
             var requestWillBeSentEvent =
-              _networkEventManager.GetRequestWillBeSent(e.NetworkRequestId);
+              _networkEventManager.GetRequestWillBeSent(e.NetworkId);
 
-                    // redirect requests have the same `requestId`,
-                    if (
-                        requestWillBeSentEvent &&
-                        (requestWillBeSentEvent.request.url !== event.request.url ||
-                    requestWillBeSentEvent.request.method !== event.request.method)
-                ) {
-                    this._networkEventManager.forgetRequestWillBeSent(networkRequestId);
-                    return;
-                }
-                return requestWillBeSentEvent;
-       
+            // redirect requests have the same `requestId`,
+            if (
+                requestWillBeSentEvent != null &&
+                (requestWillBeSentEvent.Request.Url != e.Request.Url ||
+                requestWillBeSentEvent.Request.Method != e.Request.Method))
+            {
+                _networkEventManager.ForgetRequestWillBeSent(e.NetworkId);
+                requestWillBeSentEvent = null;
+            }
 
-            if (requestWillBeSentEvent) {
-                this._onRequest(requestWillBeSentEvent, fetchRequestId);
-            } else {
-                this._networkEventManager.storeRequestPaused(networkRequestId, event);
+            if (requestWillBeSentEvent != null)
+            {
+                await OnRequestAsync(requestWillBeSentEvent, e.RequestId).ConfigureAwait(false);
+            }
+            else
+            {
+                _networkEventManager.StoreRequestPaused(e.NetworkId, e);
             }
         }
 
-        private async Task OnRequestAsync(RequestWillBeSentPayload e, string interceptionId)
+        private async Task OnRequestAsync(RequestWillBeSentPayload e, string fetchRequestId)
         {
             Request request;
             var redirectChain = new List<Request>();
             if (e.RedirectResponse != null)
             {
-                _requestIdToRequest.TryGetValue(e.RequestId, out request);
+                ResponseReceivedExtraInfoResponse redirectResponseExtraInfo = null;
+                if (e.RedirectHasExtraInfo)
+                {
+                    redirectResponseExtraInfo = _networkEventManager.ShiftResponseExtraInfo(e.RequestId);
+                    if (redirectResponseExtraInfo == null)
+                    {
+                        _networkEventManager.QueueRedirectInfo(e.RequestId, new()
+                        {
+                            Event = e,
+                            FetchRequestId = fetchRequestId,
+                        });
+                        return;
+                    }
+                }
+
+                request = _networkEventManager.GetRequest(e.RequestId);
 
                 // If we connect late to the target, we could have missed the requestWillBeSent event.
                 if (request != null)
                 {
-                    HandleRequestRedirect(request, e.RedirectResponse);
+                    HandleRequestRedirect(request, e.RedirectResponse, redirectResponseExtraInfo);
                     redirectChain = request.RedirectChainList;
                 }
             }
@@ -384,12 +450,12 @@ namespace PuppeteerSharp
             request = new Request(
                 _client,
                 frame,
-                interceptionId,
+                fetchRequestId,
                 _userRequestInterceptionEnabled,
                 e,
                 redirectChain);
 
-            _requestIdToRequest[e.RequestId] = request;
+            _networkEventManager.StoreRequest(e.RequestId, request);
 
             Request?.Invoke(this, new RequestEventArgs
             {
@@ -399,19 +465,22 @@ namespace PuppeteerSharp
 
         private void OnRequestServedFromCache(RequestServedFromCacheResponse response)
         {
-            if (_requestIdToRequest.TryGetValue(response.RequestId, out var request))
+            var request = _networkEventManager.GetRequest(response.RequestId);
+
+            if (request != null)
             {
                 request.FromMemoryCache = true;
             }
             RequestServedFromCache?.Invoke(this, new RequestEventArgs { Request = request });
         }
 
-        private void HandleRequestRedirect(Request request, ResponsePayload responseMessage)
+        private void HandleRequestRedirect(Request request, ResponsePayload responseMessage, ResponseReceivedExtraInfoResponse extraInfo)
         {
             var response = new Response(
                 _client,
                 request,
-                responseMessage);
+                responseMessage,
+                extraInfo);
 
             request.Response = response;
             request.RedirectChainList.Add(request);
@@ -436,14 +505,13 @@ namespace PuppeteerSharp
             // Request interception doesn't happen for data URLs with Network Service.
             if (_userRequestInterceptionEnabled && !e.Request.Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase))
             {
-                var hasRequestPausedEvent = _requestIdToRequestPausedEvent.TryGetValue(e.RequestId, out var requestPausedEvent);
-                _requestIdToRequestWillBeSentEvent[e.RequestId] = e;
-
-                if (hasRequestPausedEvent)
+                _networkEventManager.StoreRequestWillBeSent(e.RequestId, e);
+                var requestPausedEvent = _networkEventManager.GetRequestPaused(e.RequestId);
+                if (requestPausedEvent != null)
                 {
                     var interceptionId = requestPausedEvent.RequestId;
                     await OnRequestAsync(e, interceptionId).ConfigureAwait(false);
-                    _requestIdToRequestPausedEvent.TryRemove(e.RequestId, out _);
+                    _networkEventManager.ForgetRequestPaused(interceptionId);
                 }
 
                 return;

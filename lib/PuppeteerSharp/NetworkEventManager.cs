@@ -8,8 +8,7 @@ namespace PuppeteerSharp
 {
     internal class NetworkEventManager
     {
-        private readonly ConcurrentDictionary<string, Request> _requestIdToRequest = new();
-        private readonly ConcurrentDictionary<string, RequestWillBeSentPayload> _requestIdToRequestWillBeSentEvent = new();
+        private readonly ConcurrentDictionary<string, RequestWillBeSentPayload> _requestWillBeSentMap = new();
         private readonly ConcurrentDictionary<string, FetchRequestPausedResponse> _requestPausedMap = new();
         private readonly ConcurrentDictionary<string, Request> _httpRequestsMap = new();
         private readonly ConcurrentDictionary<string, QueuedEventGroup> _queuedEventGroupMap = new();
@@ -20,11 +19,11 @@ namespace PuppeteerSharp
             => _httpRequestsMap.Values.Where(r => r.Response == null).Count();
 
         internal void ForgetRequest(string requestId)
-            => _requestIdToRequestWillBeSentEvent.TryRemove(requestId, out _);
+            => _requestWillBeSentMap.TryRemove(requestId, out _);
 
         internal void Forget(string requestId)
         {
-            _requestIdToRequestWillBeSentEvent.TryRemove(requestId, out _);
+            _requestWillBeSentMap.TryRemove(requestId, out _);
             _requestPausedMap.TryRemove(requestId, out _);
             _queuedEventGroupMap.TryRemove(requestId, out _);
             _queuedRedirectInfoMap.TryRemove(requestId, out _);
@@ -40,11 +39,78 @@ namespace PuppeteerSharp
             return result;
         }
 
-        internal FetchRequestPausedResponse GetRequestWillBeSent(string networkRequestId)
+        internal ResponseReceivedExtraInfoResponse ShiftResponseExtraInfo(string networkRequestId)
+        {
+            if (!_responseReceivedExtraInfoMap.ContainsKey(networkRequestId))
+            {
+                _responseReceivedExtraInfoMap.TryAdd(networkRequestId, new List<ResponseReceivedExtraInfoResponse>());
+            }
+
+            lock (_responseReceivedExtraInfoMap)
+            {
+                _responseReceivedExtraInfoMap.TryGetValue(networkRequestId, out var list);
+                var result = list.FirstOrDefault();
+
+                if (result != null)
+                {
+                    list.Remove(result);
+                }
+
+                return result;
+            }
+        }
+
+        internal RequestWillBeSentPayload GetRequestWillBeSent(string networkRequestId)
+        {
+            _requestWillBeSentMap.TryGetValue(networkRequestId, out var result);
+            return result;
+        }
+
+        internal void QueueRedirectInfo(string requestId, RedirectInfo redirectInfo)
+        {
+            if (!_queuedRedirectInfoMap.ContainsKey(requestId))
+            {
+                _queuedRedirectInfoMap.TryAdd(requestId, new List<RedirectInfo>());
+            }
+            _queuedRedirectInfoMap.TryGetValue(requestId, out var list);
+            list.Add(redirectInfo);
+        }
+
+        internal RedirectInfo TakeQueuedRedirectInfo(string fetchRequestId)
+            => QueuedRedirectInfo(fetchRequestId).FirstOrDefault();
+
+        internal QueuedEventGroup GetQueuedEventGroup(string networkRequestId)
+        {
+            _queuedEventGroupMap.TryGetValue(networkRequestId, out var result);
+            return result;
+        }
+
+        internal void QueuedEventGroup(string networkRequestId, QueuedEventGroup group)
+            => _queuedEventGroupMap.TryAdd(networkRequestId, group);
+
+        internal Request GetRequest(string networkRequestId)
+        {
+            _httpRequestsMap.TryGetValue(networkRequestId, out var result);
+            return result;
+        }
+
+        internal void ForgetRequestWillBeSent(string networkRequestId)
+            => _requestPausedMap.TryRemove(networkRequestId, out _);
+
+        internal void StoreRequestWillBeSent(string networkRequestId, RequestWillBeSentPayload e)
+            => _requestWillBeSentMap.TryAdd(networkRequestId, e);
+
+        internal void StoreRequestPaused(string networkRequestId, FetchRequestPausedResponse e)
+            => _requestPausedMap.TryAdd(networkRequestId, e);
+
+        internal FetchRequestPausedResponse GetRequestPaused(string networkRequestId)
         {
             _requestPausedMap.TryGetValue(networkRequestId, out var result);
             return result;
         }
+
+        internal void ForgetRequestPaused(string networkRequestId)
+            => _requestPausedMap.TryRemove(networkRequestId, out _);
 
         private RedirectInfo[] QueuedRedirectInfo(string fetchRequestId)
         {
@@ -56,13 +122,7 @@ namespace PuppeteerSharp
             return result.ToArray();
         }
 
-        internal RedirectInfo TakeQueuedRedirectInfo(string fetchRequestId)
-            => QueuedRedirectInfo(fetchRequestId).FirstOrDefault();
-
-        internal QueuedEventGroup GetQueuedEventGroup(string networkRequestId)
-        {
-            _queuedEventGroupMap.TryGetValue(networkRequestId, out var result);
-            return result;
-        }
+        internal void StoreRequest(string networkRequestId, Request request)
+            => _httpRequestsMap.TryAdd(networkRequestId, request);
     }
 }

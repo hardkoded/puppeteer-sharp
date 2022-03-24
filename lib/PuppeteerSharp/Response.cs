@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers.Json;
@@ -22,22 +23,25 @@ namespace PuppeteerSharp
         private readonly CDPSession _client;
         private readonly bool _fromDiskCache;
         private byte[] _buffer;
+        private static readonly Regex ExtraInfoLines = new(@"[^ ]* [^ ]* (.*)", RegexOptions.Multiline);
 
         internal Response(
             CDPSession client,
             Request request,
-            ResponsePayload responseMessage)
+            ResponsePayload responseMessage,
+            ResponseReceivedExtraInfoResponse extraInfo)
         {
             _client = client;
             Request = request;
-            Status = responseMessage.Status;
-            StatusText = responseMessage.StatusText;
+            Status = extraInfo != null ? extraInfo.StatusCode : responseMessage.Status;
+            StatusText = ParseStatusTextFromExtrInfo(extraInfo) ?? responseMessage.StatusText;
             Url = request.Url;
             _fromDiskCache = responseMessage.FromDiskCache;
             FromServiceWorker = responseMessage.FromServiceWorker;
 
             Headers = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
-            if (responseMessage.Headers != null)
+            var headers = extraInfo != null ? extraInfo.Headers : responseMessage.Headers;
+            if (headers != null)
             {
                 foreach (var keyValue in responseMessage.Headers)
                 {
@@ -54,7 +58,28 @@ namespace PuppeteerSharp
             BodyLoadedTaskWrapper = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         }
 
-        #region Properties
+        private string ParseStatusTextFromExtrInfo(ResponseReceivedExtraInfoResponse extraInfo)
+        {
+            if (extraInfo == null || extraInfo.HeadersText == null)
+            {
+                return null;
+            }
+
+            var lines = extraInfo.HeadersText.Split('\r');
+            if (lines.Length == 0)
+            {
+                return null;
+            }
+            var firstLine = extraInfo.HeadersText.Split('\r')[0];
+
+            var match = ExtraInfoLines.Match(firstLine);
+            if (!match.Success)
+            {
+                return null;
+            }
+            var statusText = match.Value;
+            return statusText;
+        }
 
         /// <summary>
         /// Contains the URL of the response.
@@ -111,10 +136,6 @@ namespace PuppeteerSharp
         /// </summary>
         public Frame Frame => Request.Frame;
 
-        #endregion
-
-        #region Public Methods
-
         /// <summary>
         /// Returns a Task which resolves to a buffer with response body
         /// </summary>
@@ -165,7 +186,5 @@ namespace PuppeteerSharp
         /// <seealso cref="JsonAsync"/>
         /// <returns>A Task which resolves to a <typeparamref name="T"/> representation of response body</returns>
         public async Task<T> JsonAsync<T>() => (await JsonAsync().ConfigureAwait(false)).ToObject<T>(true);
-
-        #endregion
     }
 }

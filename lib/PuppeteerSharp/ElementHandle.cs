@@ -535,7 +535,7 @@ namespace PuppeteerSharp
 
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
             var start = await ClickablePointAsync().ConfigureAwait(false);
-            return await Page.Mouse.DragAsync(start.x, start.y, x, y).ConfigureAwait(false);
+            return await Page.Mouse.DragAsync(start.X, start.Y, x, y).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -610,10 +610,10 @@ namespace PuppeteerSharp
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
             var (x, y) = await ClickablePointAsync().ConfigureAwait(false);
             var targetPoint = await target.ClickablePointAsync().ConfigureAwait(false);
-            await Page.Mouse.DragAndDropAsync(x, y, targetPoint.x, targetPoint.y, delay).ConfigureAwait(false);
+            await Page.Mouse.DragAndDropAsync(x, y, targetPoint.X, targetPoint.Y, delay).ConfigureAwait(false);
         }
 
-        private async Task<(decimal x, decimal y)> ClickablePointAsync()
+        private async Task<(decimal X, decimal Y)> ClickablePointAsync()
         {
             GetContentQuadsResponse result = null;
 
@@ -661,8 +661,8 @@ namespace PuppeteerSharp
             }
 
             return (
-                x: x / 4,
-                y: y / 4);
+                X: x / 4,
+                Y: y / 4);
         }
 
         private IEnumerable<BoxModelPoint> IntersectQuadWithViewport(IEnumerable<BoxModelPoint> quad, PageGetLayoutMetricsResponse viewport)

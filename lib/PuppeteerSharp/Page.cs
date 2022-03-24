@@ -20,6 +20,7 @@ using PuppeteerSharp.Messaging;
 using PuppeteerSharp.Mobile;
 using PuppeteerSharp.PageAccessibility;
 using PuppeteerSharp.PageCoverage;
+using Timer = System.Timers.Timer;
 
 namespace PuppeteerSharp
 {
@@ -1826,78 +1827,6 @@ namespace PuppeteerSharp
                 await SessionClosedTask.ConfigureAwait(false);
             }
             return await requestTcs.Task.ConfigureAwait(false);
-        }
-
-        public async Task WaitForNetworkIdleAsync(WaitForNetworkIdleOptions options = null)
-        {
-            var idleTime = options?.IdleTime ?? 500;
-            var timeout = options?.Timeout ?? _timeoutSettings.Timeout;
-
-            var networkManager = FrameManager.NetworkManager;
-
-            var idleResolvedTask = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-            var abortTask = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-            using var token = new CancellationTokenSource();
-            Task idleTask = null;
-
-            Action evaluate = () => {
-                if (idleTask != null)
-                {
-                    token.Cancel();
-                }
-
-                if (networkManager.NumRequestsInProgress == 0)
-                {
-                    idleTask = Task.Delay(idleTime, token.Token).ContinueWith(
-                        (t, result) => idleResolvedTask.TrySetResult(true),
-                        TaskContinuationOptions.NotOnFaulted,
-                        TaskScheduler.Default);
-                }
-            };
-
-            evaluate();
-
-            try
-            {
-                await Task.WhenAll(
-                    idleResolvedTask.Task,
-                    abortTask.Task,
-                    WaitForRequestAsync(
-                    (r) =>
-                    {
-                        evaluate();
-                        return false;
-                    },
-                    new WaitForOptions
-                    {
-                        Timeout = timeout
-                    }),
-                    WaitForResponseAsync(
-                    (r) =>
-                    {
-                        evaluate();
-                        return false;
-                    },
-                    new WaitForOptions
-                    {
-                        Timeout = timeout
-                    })).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                throw new PuppeteerException(ex.Message, ex);
-            }
-            finally
-            {
-                if (idleTask != null)
-                {
-                    token.Cancel();
-                }
-
-                abortTask.TrySetException(new Exception("abort"));
-            }
-
         }
 
         /// <summary>

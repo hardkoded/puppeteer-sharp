@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using PuppeteerSharp.Helpers;
 
@@ -38,7 +37,7 @@ namespace PuppeteerSharp
         /// <inheritdoc />
         public override string ToString() => $"Firefox process; EndPoint={EndPoint}; State={CurrentState}";
 
-        private static (List<string> firefoxArgs, TempDirectory tempUserDataDirectory) PrepareFirefoxArgs(LaunchOptions options)
+        private static (List<string> FirefoxArgs, TempDirectory TempUserDataDirectory) PrepareFirefoxArgs(LaunchOptions options)
         {
             var firefoxArgs = new List<string>();
 
