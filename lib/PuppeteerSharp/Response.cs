@@ -70,7 +70,7 @@ namespace PuppeteerSharp
             {
                 return null;
             }
-            var firstLine = extraInfo.HeadersText.Split('\r')[0];
+            var firstLine = lines[0];
 
             var match = ExtraInfoLines.Match(firstLine);
             if (!match.Success)
