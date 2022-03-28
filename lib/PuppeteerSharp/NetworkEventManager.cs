@@ -33,7 +33,10 @@ namespace PuppeteerSharp
         internal List<ResponseReceivedExtraInfoResponse> ResponseExtraInfo(string networkRequestId)
         {
             if (!_responseReceivedExtraInfoMap.ContainsKey(networkRequestId)) {
-              _responseReceivedExtraInfoMap.TryAdd(networkRequestId, new List<ResponseReceivedExtraInfoResponse>());
+              _responseReceivedExtraInfoMap.AddOrUpdate(
+                  networkRequestId,
+                  new List<ResponseReceivedExtraInfoResponse>(),
+                  (_, __) => new List<ResponseReceivedExtraInfoResponse>());
             }
             _responseReceivedExtraInfoMap.TryGetValue(networkRequestId, out var result);
             return result;
@@ -86,7 +89,7 @@ namespace PuppeteerSharp
         }
 
         internal void QueuedEventGroup(string networkRequestId, QueuedEventGroup group)
-            => _queuedEventGroupMap.TryAdd(networkRequestId, group);
+            => _queuedEventGroupMap.AddOrUpdate(networkRequestId, group, (_, __) => group);
 
         internal Request GetRequest(string networkRequestId)
         {
@@ -98,10 +101,10 @@ namespace PuppeteerSharp
             => _requestPausedMap.TryRemove(networkRequestId, out _);
 
         internal void StoreRequestWillBeSent(string networkRequestId, RequestWillBeSentPayload e)
-            => _requestWillBeSentMap.TryAdd(networkRequestId, e);
+            => _requestWillBeSentMap.AddOrUpdate(networkRequestId, e, (_, __) => e);
 
         internal void StoreRequestPaused(string networkRequestId, FetchRequestPausedResponse e)
-            => _requestPausedMap.TryAdd(networkRequestId, e);
+            => _requestPausedMap.AddOrUpdate(networkRequestId, e, (_, __) => e);
 
         internal FetchRequestPausedResponse GetRequestPaused(string networkRequestId)
         {
@@ -123,6 +126,6 @@ namespace PuppeteerSharp
         }
 
         internal void StoreRequest(string networkRequestId, Request request)
-            => _httpRequestsMap.TryAdd(networkRequestId, request);
+            => _httpRequestsMap.AddOrUpdate(networkRequestId, request, (_, __) => request);
     }
 }
