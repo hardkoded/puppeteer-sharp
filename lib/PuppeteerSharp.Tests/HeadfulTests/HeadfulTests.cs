@@ -72,7 +72,7 @@ namespace PuppeteerSharp.Tests.HeadfulTests
         }
 
         [PuppeteerTest("headful.spec.ts", "HEADFUL", "headless should be able to read cookies written by headful")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact(Skip = "Puppeteer ignores this in windows we do not have a platform filter yet")]
         public async Task HeadlessShouldBeAbleToReadCookiesWrittenByHeadful()
         {
             using (var userDataDir = new TempDirectory())
