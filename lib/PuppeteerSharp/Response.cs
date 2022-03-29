@@ -23,7 +23,7 @@ namespace PuppeteerSharp
         private readonly CDPSession _client;
         private readonly bool _fromDiskCache;
         private byte[] _buffer;
-        private static readonly Regex ExtraInfoLines = new(@"[^ ]* [^ ]* (.*)", RegexOptions.Multiline);
+        private static readonly Regex ExtraInfoLines = new(@"[^ ]* [^ ]* (?<text>.*)", RegexOptions.Multiline);
 
         internal Response(
             CDPSession client,
@@ -77,7 +77,7 @@ namespace PuppeteerSharp
             {
                 return null;
             }
-            var statusText = match.Value;
+            var statusText = match.Groups["text"].Value;
             return statusText;
         }
 
