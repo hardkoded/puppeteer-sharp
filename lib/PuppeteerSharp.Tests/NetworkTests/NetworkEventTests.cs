@@ -129,7 +129,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Page.Response += (_, _) => events.Add("response");
             Page.RequestFinished += (_, _) => events.Add("requestfinished");
             await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Equal(new[] { "request", "response", "requestfinished" }, events);
+            Assert.Equal(new[] { "request", "response", "requestfinished" }, events.ToArray());
         }
 
         [PuppeteerTest("network.spec.ts", "Network Events", "should support redirects")]
