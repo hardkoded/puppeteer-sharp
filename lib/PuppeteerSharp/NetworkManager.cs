@@ -265,14 +265,14 @@ namespace PuppeteerSharp
                 return;
             }
 
+            request.Response?.BodyLoadedTaskWrapper.TrySetResult(true);
+
+            ForgetRequest(request, true);
+
             RequestFinished?.Invoke(this, new RequestEventArgs
             {
                 Request = request
             });
-
-            request.Response?.BodyLoadedTaskWrapper.TrySetResult(true);
-
-            ForgetRequest(request, true);
         }
 
         private void ForgetRequest(Request request, bool events)

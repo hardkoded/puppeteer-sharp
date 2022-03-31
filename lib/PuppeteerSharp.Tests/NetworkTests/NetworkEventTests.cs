@@ -151,7 +151,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
                 $"GET {TestConstants.EmptyPage}",
                 $"200 {TestConstants.EmptyPage}",
                 $"DONE {TestConstants.EmptyPage}"
-            }, events);
+            }, events.ToArray());
 
             // Check redirect chain
             var redirectChain = response.Request.RedirectChain;
