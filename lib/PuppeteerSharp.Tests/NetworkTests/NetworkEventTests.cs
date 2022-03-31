@@ -144,6 +144,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Server.SetRedirect("/foo.html", "/empty.html");
             const string FOO_URL = TestConstants.ServerUrl + "/foo.html";
             var response = await Page.GoToAsync(FOO_URL);
+            System.Console.WriteLine(string.Concat(events, ','));
             Assert.Equal(new[] {
                 $"GET {FOO_URL}",
                 $"302 {FOO_URL}",
