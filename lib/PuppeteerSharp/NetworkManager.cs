@@ -511,7 +511,7 @@ namespace PuppeteerSharp
                 {
                     var interceptionId = requestPausedEvent.RequestId;
                     await OnRequestAsync(e, interceptionId).ConfigureAwait(false);
-                    _networkEventManager.ForgetRequestPaused(interceptionId);
+                    _networkEventManager.ForgetRequestPaused(e.RequestId);
                 }
 
                 return;
