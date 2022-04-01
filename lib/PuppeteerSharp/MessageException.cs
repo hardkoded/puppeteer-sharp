@@ -31,6 +31,12 @@ namespace PuppeteerSharp
         /// <param name="innerException">Inner exception.</param>
         public MessageException(string message, Exception innerException) : base(message, innerException)
         {
+            Console.WriteLine($" Message exception: {message}");
+
+            if (innerException != null)
+            {
+                Console.WriteLine($" Message Stack: {innerException.StackTrace}");
+            }
         }
 
         internal MessageException(MessageTask callback, ConnectionError error) : base(GetCallbackMessage(callback, error))
