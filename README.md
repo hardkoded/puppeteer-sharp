@@ -22,9 +22,27 @@ See [this document](CONTRIBUTING.md) for information on how to contribute.
 
 # Usage
 
-## Generate PDF files
+## DevToolsContext
 
-Currently not supported via CefSharp Puppeteer, use ChromiumWebBrowser.PrintToPdfAsync instead.
+The **DevToolsContext** class is the main entry point into the library and can be created from a
+ChromiumWebBrowser instance.
+Only a **single** DevToolsContext should exist at any given time, when you are finished them make sure you
+dispose via DisposeAsync.
+
+```c#
+// Add using CefSharp.Puppeteer; to get access to the
+// CreateDevToolsContextAsync extension method
+var devtoolsContext = await chromiumWebBrowser.CreateDevToolsContextAsync();
+
+// Manually dispose of context (prefer DisposeAsync as the whole API is async)
+await devToolsContext.DisposeAsync();
+```
+
+```c#
+// Dispose automatically via await using
+// https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-disposeasync#using-async-disposable
+await using var devtoolsContext = await chromiumWebBrowser.CreateDevToolsContextAsync();
+```
 
 ## DOM Access
 
@@ -124,4 +142,6 @@ await DevToolsContext.SetViewportAsync(new ViewPortOptions
 <sup><a href='/lib/PuppeteerSharp.Tests/ScreenshotTests/ElementHandleScreenshotTests.cs#L37-L44' title='Snippet source file'>snippet source</a> | <a href='#snippet-setviewportasync' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
+## Generate PDF files
 
+Currently not supported via CefSharp Puppeteer, use ChromiumWebBrowser.PrintToPdfAsync instead.
