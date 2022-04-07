@@ -1,6 +1,4 @@
-using System;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using PuppeteerSharp.PageAccessibility;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
@@ -97,6 +95,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                             Role= "combobox",
                             Name= "",
                             Value= "First Option",
+                            HasPopup = "menu",
                             Children= new SerializedAXNode[]{
                                 new SerializedAXNode
                                 {
@@ -162,7 +161,8 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
         {
             await Page.SetContentAsync("<div tabIndex=-1 aria-roledescription='foo'>Hi</div>");
             var snapshot = await Page.Accessibility.SnapshotAsync();
-            Assert.Equal("foo", snapshot.Children[0].RoleDescription);
+            // See https://chromium-review.googlesource.com/c/chromium/src/+/3088862
+            Assert.Null(snapshot.Children[0].RoleDescription);
         }
 
         [PuppeteerTest("accessibility.spec.ts", "Accessibility", "orientation")]

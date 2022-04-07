@@ -60,12 +60,13 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
             ");
 
             var menu = await Page.QuerySelectorAsync("div[role=\"menu\"]");
-            Assert.Equal(
-                new SerializedAXNode
-                {
-                    Role = "menu",
-                    Name = "My Menu",
-                    Children = new[]
+            var snapshot = await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions { Root = menu });
+            var nodeToCheck = new SerializedAXNode
+            {
+                Role = "menu",
+                Name = "My Menu",
+                Orientation = "vertical",
+                Children = new[]
                     {
                         new SerializedAXNode
                         {
@@ -83,8 +84,9 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                             Name = "Third Item"
                         }
                     }
-                },
-                await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions { Root = menu }));
+            };
+
+            Assert.Equal(nodeToCheck, snapshot);
         }
 
         [PuppeteerTest("accessibility.spec.ts", "root option", "should return null when the element is no longer in DOM")]
