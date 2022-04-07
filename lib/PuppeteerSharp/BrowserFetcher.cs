@@ -39,7 +39,7 @@ namespace PuppeteerSharp
             [Product.Firefox] = "https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central",
         };
 
-        private static readonly Dictionary<(Product product, Platform platform), string> _downloadUrls = new Dictionary<(Product product, Platform platform), string>
+        private static readonly Dictionary<(Product Product, Platform Platform), string> _downloadUrls = new()
         {
             [(Product.Chrome, Platform.Linux)] = "{0}/chromium-browser-snapshots/Linux_x64/{1}/{2}.zip",
             [(Product.Chrome, Platform.MacOS)] = "{0}/chromium-browser-snapshots/Mac/{1}/{2}.zip",
