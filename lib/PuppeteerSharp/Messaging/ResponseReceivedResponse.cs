@@ -5,5 +5,7 @@ namespace PuppeteerSharp.Messaging
         public string RequestId { get; set; }
 
         public ResponsePayload Response { get; set; }
+
+        public bool HasExtraInfo { get; set; }
     }
 }
