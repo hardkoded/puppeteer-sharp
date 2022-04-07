@@ -73,7 +73,7 @@ namespace PuppeteerSharp
 
         #region Private methods
 
-        private static (List<string> chromiumArgs, TempDirectory tempUserDataDirectory) PrepareChromiumArgs(LaunchOptions options)
+        private static (List<string> ChromiumArgs, TempDirectory TempUserDataDirectory) PrepareChromiumArgs(LaunchOptions options)
         {
             var chromiumArgs = new List<string>();
 

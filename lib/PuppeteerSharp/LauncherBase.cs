@@ -142,7 +142,8 @@ namespace PuppeteerSharp
                     () =>
                     {
                         taskCompleted = false;
-                    }, timeout.Value).ConfigureAwait(false);
+                    },
+                    timeout.Value).ConfigureAwait(false);
                 return taskCompleted;
             }
 

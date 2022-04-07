@@ -38,7 +38,7 @@ namespace PuppeteerSharp
         /// <inheritdoc />
         public override string ToString() => $"Firefox process; EndPoint={EndPoint}; State={CurrentState}";
 
-        private static (List<string> firefoxArgs, TempDirectory tempUserDataDirectory) PrepareFirefoxArgs(LaunchOptions options)
+        private static (List<string> FirefoxArgs, TempDirectory TempUserDataDirectory) PrepareFirefoxArgs(LaunchOptions options)
         {
             var firefoxArgs = new List<string>();
 
