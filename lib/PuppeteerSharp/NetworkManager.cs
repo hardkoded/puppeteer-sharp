@@ -177,13 +177,13 @@ namespace PuppeteerSharp
             }
         }
 
-        private async Task OnResponseReceivedExtraInfoAsync(ResponseReceivedExtraInfoResponse responseReceivedExtraInfoResponse)
+        private async Task OnResponseReceivedExtraInfoAsync(ResponseReceivedExtraInfoResponse e)
         {
-            var redirectInfo = _networkEventManager.TakeQueuedRedirectInfo(
-                responseReceivedExtraInfoResponse.RequestId);
+            var redirectInfo = _networkEventManager.TakeQueuedRedirectInfo(e.RequestId);
 
-            if (redirectInfo != null) {
-                _networkEventManager.ResponseExtraInfo(responseReceivedExtraInfoResponse.RequestId).Add(responseReceivedExtraInfoResponse);
+            if (redirectInfo != null)
+            {
+                _networkEventManager.ResponseExtraInfo(e.RequestId).Add(e);
                 await OnRequestAsync(redirectInfo.Event, redirectInfo.FetchRequestId).ConfigureAwait(false);
                 return;
             }
@@ -191,10 +191,11 @@ namespace PuppeteerSharp
             // We may have skipped response and loading events because we didn't have
             // this ExtraInfo event yet. If so, emit those events now.
             var queuedEvents = _networkEventManager.GetQueuedEventGroup(
-              responseReceivedExtraInfoResponse.RequestId);
+              e.RequestId);
 
-            if (queuedEvents != null) {
-                EmitResponseEvent(queuedEvents.ResponseReceivedEvent, responseReceivedExtraInfoResponse);
+            if (queuedEvents != null)
+            {
+                EmitResponseEvent(queuedEvents.ResponseReceivedEvent, e);
 
                 if (queuedEvents.LoadingFinishedEvent != null) {
                     OnLoadingFinished(queuedEvents.LoadingFinishedEvent);
@@ -207,7 +208,7 @@ namespace PuppeteerSharp
             }
 
             // Wait until we get another event that can use this ExtraInfo event.
-            _networkEventManager.ResponseExtraInfo(responseReceivedExtraInfoResponse.RequestId).Add(responseReceivedExtraInfoResponse);
+            _networkEventManager.ResponseExtraInfo(e.RequestId).Add(e);
         }
 
         private void OnLoadingFailed(LoadingFailedEventResponse e)
@@ -406,6 +407,7 @@ namespace PuppeteerSharp
 
             if (requestWillBeSentEvent != null)
             {
+                PatchRequestEventHeaders(requestWillBeSentEvent, e);
                 await OnRequestAsync(requestWillBeSentEvent, e.RequestId).ConfigureAwait(false);
             }
             else
@@ -509,14 +511,23 @@ namespace PuppeteerSharp
                 var requestPausedEvent = _networkEventManager.GetRequestPaused(e.RequestId);
                 if (requestPausedEvent != null)
                 {
-                    var interceptionId = requestPausedEvent.RequestId;
-                    await OnRequestAsync(e, interceptionId).ConfigureAwait(false);
+                    var fetchRequestId = requestPausedEvent.RequestId;
+                    PatchRequestEventHeaders(e, requestPausedEvent);
+                    await OnRequestAsync(e, fetchRequestId).ConfigureAwait(false);
                     _networkEventManager.ForgetRequestPaused(e.RequestId);
                 }
 
                 return;
             }
             await OnRequestAsync(e, null).ConfigureAwait(false);
+        }
+
+        private void PatchRequestEventHeaders(RequestWillBeSentPayload requestWillBeSentEvent, FetchRequestPausedResponse requestPausedEvent)
+        {
+            foreach (var kv in requestPausedEvent.Request.Headers)
+            {
+                requestWillBeSentEvent.Request.Headers[kv.Key] = kv.Value;
+            }
         }
 
         private async Task UpdateProtocolRequestInterceptionAsync()
