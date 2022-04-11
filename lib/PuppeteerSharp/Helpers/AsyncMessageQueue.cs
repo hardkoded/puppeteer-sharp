@@ -15,11 +15,13 @@ namespace PuppeteerSharp.Helpers
     internal class AsyncMessageQueue : IDisposable
     {
         private readonly List<MessageTask> _pendingTasks;
+        private readonly bool _enqueueAsyncMessages;
         private readonly ILogger _logger;
         private bool _disposed;
 
-        public AsyncMessageQueue(ILogger logger = null)
+        public AsyncMessageQueue(bool enqueueAsyncMessages, ILogger logger = null)
         {
+            _enqueueAsyncMessages = enqueueAsyncMessages;
             _logger = logger ?? NullLogger.Instance;
             _pendingTasks = new List<MessageTask>();
         }
@@ -29,6 +31,12 @@ namespace PuppeteerSharp.Helpers
             if (_disposed)
             {
                 throw new ObjectDisposedException(GetType().FullName);
+            }
+
+            if (!_enqueueAsyncMessages)
+            {
+                HandleAsyncMessage(callback, obj);
+                return;
             }
 
             // Keep a ref to this task until it completes. If it can't finish by the time we dispose this queue,

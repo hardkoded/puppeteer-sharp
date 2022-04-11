@@ -43,6 +43,11 @@ namespace PuppeteerSharp
         bool EnqueueTransportMessages { get; set; }
 
         /// <summary>
+        /// Affects how responses to <see cref="CDPSession.SendAsync"/> are returned to the caller.
+        /// </summary>
+        bool EnqueueAsyncMessages { get; set; }
+
+        /// <summary>
         /// Callback to decide if Puppeteer should connect to a given target or not.
         /// </summary>
         public Func<TargetInfo, bool> TargetFilter { get; set; }
