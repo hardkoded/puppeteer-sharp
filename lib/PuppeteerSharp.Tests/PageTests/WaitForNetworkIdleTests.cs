@@ -62,21 +62,21 @@ namespace PuppeteerSharp.Tests.PageTests
             var t2 = DateTime.Now;
 
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var evaluateTask = Page.EvaluateFunctionAsync(@"
+            var task = Page.WaitForNetworkIdleAsync(new WaitForNetworkIdleOptions { IdleTime = 10 }).ContinueWith(x => t1 = DateTime.Now);
+
+            await Task.WhenAll(
+                task,
+                Page.EvaluateFunctionAsync(@"
                     (async () => {
                         await Promise.all([
                             fetch('/digits/1.png'),
                             fetch('/digits/2.png'),
                         ]);
                         await new Promise((resolve) => setTimeout(resolve, 250));
-                    })();").ContinueWith(x => t2 = DateTime.Now);
-            var task = Page.WaitForNetworkIdleAsync(new WaitForNetworkIdleOptions { IdleTime = 10 }).ContinueWith(x => t1 = DateTime.Now);
-            await Task.WhenAll(
-                task,
-                evaluateTask
+                    })();").ContinueWith(x => t2 = DateTime.Now)
             );
 
-            Assert.True(t1 > t2);
+            Assert.True(t2.Ticks > t1.Ticks);
         }
 
         [PuppeteerTest("page.spec.ts", "Page.waitForNetworkIdle", "should work with no timeout")]
