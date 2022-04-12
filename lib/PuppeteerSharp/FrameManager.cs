@@ -310,7 +310,7 @@ namespace CefSharp.Puppeteer
                 else
                 {
                     // Initial main frame navigation.
-                    frame = new Frame(this, Client, null, framePayload.Id, isMainFrame);
+                    frame = new Frame(this, null, framePayload.Id, isMainFrame);
                 }
                 _asyncFrames.AddItem(framePayload.Id, frame);
                 MainFrame = frame;
@@ -356,7 +356,7 @@ namespace CefSharp.Puppeteer
             {
                 var isMainFrame = string.IsNullOrEmpty(parentFrameId);
                 var parentFrame = _frames[parentFrameId];
-                var frame = new Frame(this, Client, parentFrame, frameId, isMainFrame);
+                var frame = new Frame(this, parentFrame, frameId, isMainFrame);
                 _frames[frame.Id] = frame;
                 FrameAttached?.Invoke(this, new FrameEventArgs(frame));
             }

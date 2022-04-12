@@ -19,7 +19,6 @@ namespace CefSharp.Puppeteer.PageAccessibility
         private readonly string _name;
         private readonly bool _richlyEditable;
         private readonly bool _editable;
-        private readonly bool _expanded;
         private readonly bool _hidden;
         private readonly string _role;
         private bool? _cachedHasFocusableChild;
@@ -32,11 +31,10 @@ namespace CefSharp.Puppeteer.PageAccessibility
             _name = payload.Name != null ? payload.Name.Value.ToObject<string>() : string.Empty;
             _role = payload.Role != null ? payload.Role.Value.ToObject<string>() : "Unknown";
 
-            _richlyEditable = payload.Properties.FirstOrDefault(p => p.Name == "editable")?.Value.Value.ToObject<string>() == "richtext";
+            _richlyEditable = payload.Properties?.FirstOrDefault(p => p.Name == "editable")?.Value.Value.ToObject<string>() == "richtext";
             _editable |= _richlyEditable;
-            _expanded = payload.Properties.FirstOrDefault(p => p.Name == "expanded")?.Value.Value.ToObject<bool>() == true;
-            _hidden = payload.Properties.FirstOrDefault(p => p.Name == "hidden")?.Value.Value.ToObject<bool>() == true;
-            Focusable = payload.Properties.FirstOrDefault(p => p.Name == "focusable")?.Value.Value.ToObject<bool>() == true;
+            _hidden = payload.Properties?.FirstOrDefault(p => p.Name == "hidden")?.Value.Value.ToObject<bool>() == true;
+            Focusable = payload.Properties?.FirstOrDefault(p => p.Name == "focusable")?.Value.Value.ToObject<bool>() == true;
         }
 
         internal static AXNode CreateTree(IEnumerable<AccessibilityGetFullAXTreeResponse.AXTreeNode> payloads)
@@ -198,9 +196,13 @@ namespace CefSharp.Puppeteer.PageAccessibility
         internal SerializedAXNode Serialize()
         {
             var properties = new Dictionary<string, JToken>();
-            foreach (var property in Payload.Properties)
+
+            if (Payload.Properties != null)
             {
-                properties[property.Name.ToLower(CultureInfo.CurrentCulture)] = property.Value.Value;
+                foreach (var property in Payload.Properties)
+                {
+                    properties[property.Name.ToLower(CultureInfo.CurrentCulture)] = property.Value.Value;
+                }
             }
 
             if (Payload.Name != null)

@@ -105,7 +105,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             DevToolsContext.Response += (_, _) => events.Add("response");
             DevToolsContext.RequestFinished += (_, _) => events.Add("requestfinished");
             await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
-            Assert.Equal(new[] { "request", "response", "requestfinished" }, events);
+            Assert.Equal(new[] { "request", "response", "requestfinished" }, events.ToArray());
         }
 
         [PuppeteerTest("network.spec.ts", "Network Events", "should support redirects")]
@@ -120,6 +120,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Server.SetRedirect("/foo.html", "/empty.html");
             const string FOO_URL = TestConstants.ServerUrl + "/foo.html";
             var response = await DevToolsContext.GoToAsync(FOO_URL);
+
             Assert.Equal(new[] {
                 $"GET {FOO_URL}",
                 $"302 {FOO_URL}",
@@ -127,7 +128,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
                 $"GET {TestConstants.EmptyPage}",
                 $"200 {TestConstants.EmptyPage}",
                 $"DONE {TestConstants.EmptyPage}"
-            }, events);
+            }, events.ToArray());
 
             // Check redirect chain
             var redirectChain = response.Request.RedirectChain;

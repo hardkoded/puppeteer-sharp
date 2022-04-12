@@ -52,7 +52,7 @@ namespace CefSharp.Puppeteer
 
         internal DOMWorld SecondaryWorld { get; }
 
-        internal Frame(FrameManager frameManager, Connection client, Frame parentFrame, string frameId, bool isMainFrame)
+        internal Frame(FrameManager frameManager, Frame parentFrame, string frameId, bool isMainFrame)
         {
             FrameManager = frameManager;
             ParentFrame = parentFrame;

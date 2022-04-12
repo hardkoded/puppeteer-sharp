@@ -1,6 +1,6 @@
 namespace CefSharp.Puppeteer.Messaging
 {
-    internal class LoadingFinishedResponse
+    internal class LoadingFinishedEventResponse
     {
         public string RequestId { get; set; }
     }
