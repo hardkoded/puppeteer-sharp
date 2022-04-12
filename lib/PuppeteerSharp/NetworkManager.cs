@@ -508,6 +508,7 @@ namespace PuppeteerSharp
             if (_userRequestInterceptionEnabled && !e.Request.Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase))
             {
                 _networkEventManager.StoreRequestWillBeSent(e.RequestId, e);
+
                 var requestPausedEvent = _networkEventManager.GetRequestPaused(e.RequestId);
                 if (requestPausedEvent != null)
                 {
