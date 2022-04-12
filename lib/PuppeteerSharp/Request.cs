@@ -23,12 +23,10 @@ namespace PuppeteerSharp
     /// </summary>
     public class Request
     {
-        #region Private Members
         private readonly CDPSession _client;
         private readonly bool _allowInterception;
         private readonly ILogger _logger;
         private bool _interceptionHandled;
-        #endregion
 
         internal Request(
             CDPSession client,
@@ -62,56 +60,65 @@ namespace PuppeteerSharp
             FromMemoryCache = false;
         }
 
-        #region Properties
         /// <summary>
         /// Responsed attached to the request.
         /// </summary>
         /// <value>The response.</value>
         public Response Response { get; internal set; }
+
         /// <summary>
         /// Gets the failure.
         /// </summary>
         /// <value>The failure.</value>
         public string Failure { get; internal set; }
+
         /// <summary>
         /// Gets the request identifier.
         /// </summary>
         /// <value>The request identifier.</value>
         public string RequestId { get; internal set; }
+
         /// <summary>
         /// Gets the interception identifier.
         /// </summary>
         /// <value>The interception identifier.</value>
         public string InterceptionId { get; internal set; }
+
         /// <summary>
         /// Gets the type of the resource.
         /// </summary>
         /// <value>The type of the resource.</value>
         public ResourceType ResourceType { get; internal set; }
+
         /// <summary>
         /// Gets the frame.
         /// </summary>
         /// <value>The frame.</value>
         public Frame Frame { get; }
+
         /// <summary>
         /// Gets whether this request is driving frame's navigation
         /// </summary>
         public bool IsNavigationRequest { get; }
+
         /// <summary>
         /// Gets the HTTP method.
         /// </summary>
         /// <value>HTTP method.</value>
         public HttpMethod Method { get; internal set; }
+
         /// <summary>
         /// Gets the post data.
         /// </summary>
         /// <value>The post data.</value>
         public object PostData { get; internal set; }
+
         /// <summary>
         /// Gets the HTTP headers.
         /// </summary>
         /// <value>HTTP headers.</value>
         public Dictionary<string, string> Headers { get; internal set; }
+
         /// <summary>
         /// Gets the URL.
         /// </summary>
@@ -145,9 +152,6 @@ namespace PuppeteerSharp
         internal bool FromMemoryCache { get; set; }
 
         internal List<Request> RedirectChainList { get; }
-        #endregion
-
-        #region Public Methods
 
         /// <summary>
         /// Continues request with optional request overrides. To use this, request interception should be enabled with <see cref="Page.SetRequestInterceptionAsync(bool)"/>. Exception is immediately thrown if the request interception is not enabled.
@@ -326,7 +330,6 @@ namespace PuppeteerSharp
                 _logger.LogError(ex.ToString());
             }
         }
-        #endregion
 
         private Header[] HeadersArray(Dictionary<string, string> headers)
             => headers?.Select(pair => new Header { Name = pair.Key, Value = pair.Value }).ToArray();

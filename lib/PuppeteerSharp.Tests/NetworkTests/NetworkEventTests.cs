@@ -1,6 +1,3 @@
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features;
-using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using System.Collections.Generic;
@@ -129,7 +126,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Page.Response += (_, _) => events.Add("response");
             Page.RequestFinished += (_, _) => events.Add("requestfinished");
             await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Equal(new[] { "request", "response", "requestfinished" }, events);
+            Assert.Equal(new[] { "request", "response", "requestfinished" }, events.ToArray());
         }
 
         [PuppeteerTest("network.spec.ts", "Network Events", "should support redirects")]
@@ -144,6 +141,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Server.SetRedirect("/foo.html", "/empty.html");
             const string FOO_URL = TestConstants.ServerUrl + "/foo.html";
             var response = await Page.GoToAsync(FOO_URL);
+            System.Console.WriteLine(string.Concat(events, ','));
             Assert.Equal(new[] {
                 $"GET {FOO_URL}",
                 $"302 {FOO_URL}",
@@ -151,7 +149,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
                 $"GET {TestConstants.EmptyPage}",
                 $"200 {TestConstants.EmptyPage}",
                 $"DONE {TestConstants.EmptyPage}"
-            }, events);
+            }, events.ToArray());
 
             // Check redirect chain
             var redirectChain = response.Request.RedirectChain;

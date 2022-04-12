@@ -2,8 +2,14 @@ name: Demo Project
 
 on:
   push:
+    branches:
+      - master
+      - release-*
   pull_request:
-    branches: [ master ]
+    branches: [master]
+    paths:
+      - "**.cs"
+      - "**.csproj"
 
 jobs:
   build:
