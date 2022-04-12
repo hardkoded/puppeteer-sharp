@@ -26,31 +26,25 @@ namespace PuppeteerSharp
 
         internal List<ResponseReceivedExtraInfoResponse> ResponseExtraInfo(string networkRequestId)
         {
-            lock (_responseReceivedExtraInfoMap)
+            if (!_responseReceivedExtraInfoMap.ContainsKey(networkRequestId))
             {
-                if (!_responseReceivedExtraInfoMap.ContainsKey(networkRequestId))
-                {
-                    _responseReceivedExtraInfoMap.AddOrUpdate(
-                        networkRequestId,
-                        new List<ResponseReceivedExtraInfoResponse>(),
-                        (_, __) => new List<ResponseReceivedExtraInfoResponse>());
-                }
-                _responseReceivedExtraInfoMap.TryGetValue(networkRequestId, out var result);
-                return result;
+                _responseReceivedExtraInfoMap.AddOrUpdate(
+                    networkRequestId,
+                    new List<ResponseReceivedExtraInfoResponse>(),
+                    (_, __) => new List<ResponseReceivedExtraInfoResponse>());
             }
+            _responseReceivedExtraInfoMap.TryGetValue(networkRequestId, out var result);
+            return result;
         }
 
         private List<RedirectInfo> QueuedRedirectInfo(string fetchRequestId)
         {
-            lock (_queuedRedirectInfoMap)
+            if (!_queuedRedirectInfoMap.ContainsKey(fetchRequestId))
             {
-                if (!_queuedRedirectInfoMap.ContainsKey(fetchRequestId))
-                {
-                    _queuedRedirectInfoMap.TryAdd(fetchRequestId, new List<RedirectInfo>());
-                }
-                _queuedRedirectInfoMap.TryGetValue(fetchRequestId, out var result);
-                return result;
+                _queuedRedirectInfoMap.TryAdd(fetchRequestId, new List<RedirectInfo>());
             }
+            _queuedRedirectInfoMap.TryGetValue(fetchRequestId, out var result);
+            return result;
         }
 
         internal void QueueRedirectInfo(string fetchRequestId, RedirectInfo redirectInfo)
@@ -58,18 +52,15 @@ namespace PuppeteerSharp
 
         internal RedirectInfo TakeQueuedRedirectInfo(string fetchRequestId)
         {
-            lock (_queuedRedirectInfoMap)
+            var list = QueuedRedirectInfo(fetchRequestId);
+            var result = list.FirstOrDefault();
+
+            if (result != null)
             {
-                var list = QueuedRedirectInfo(fetchRequestId);
-                var result = list.FirstOrDefault();
-
-                if (result != null)
-                {
-                    list.Remove(result);
-                }
-
-                return result;
+                list.Remove(result);
             }
+
+            return result;
         }
 
         public int NumRequestsInProgress
@@ -77,23 +68,20 @@ namespace PuppeteerSharp
 
         internal ResponseReceivedExtraInfoResponse ShiftResponseExtraInfo(string networkRequestId)
         {
-            lock (_responseReceivedExtraInfoMap)
+            if (!_responseReceivedExtraInfoMap.ContainsKey(networkRequestId))
             {
-                if (!_responseReceivedExtraInfoMap.ContainsKey(networkRequestId))
-                {
-                    _responseReceivedExtraInfoMap.TryAdd(networkRequestId, new List<ResponseReceivedExtraInfoResponse>());
-                }
-
-                _responseReceivedExtraInfoMap.TryGetValue(networkRequestId, out var list);
-                var result = list.FirstOrDefault();
-
-                if (result != null)
-                {
-                    list.Remove(result);
-                }
-
-                return result;
+                _responseReceivedExtraInfoMap.TryAdd(networkRequestId, new List<ResponseReceivedExtraInfoResponse>());
             }
+
+            _responseReceivedExtraInfoMap.TryGetValue(networkRequestId, out var list);
+            var result = list.FirstOrDefault();
+
+            if (result != null)
+            {
+                list.Remove(result);
+            }
+
+            return result;
         }
 
         internal void StoreRequestWillBeSent(string networkRequestId, RequestWillBeSentPayload e)
