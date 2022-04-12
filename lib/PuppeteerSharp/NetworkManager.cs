@@ -188,8 +188,7 @@ namespace PuppeteerSharp
 
             // We may have skipped response and loading events because we didn't have
             // this ExtraInfo event yet. If so, emit those events now.
-            var queuedEvents = _networkEventManager.GetQueuedEventGroup(
-              e.RequestId);
+            var queuedEvents = _networkEventManager.GetQueuedEventGroup(e.RequestId);
 
             if (queuedEvents != null)
             {
@@ -207,10 +206,11 @@ namespace PuppeteerSharp
                     OnLoadingFailed(queuedEvents.LoadingFailedEvent);
                 }
 
+                _networkEventManager.ForgetQueuedEventGroup(e.RequestId);
                 return;
             }
 
-            Console.WriteLine("It didnn't have queue events");
+            Console.WriteLine("It didn't have queue events");
 
             // Wait until we get another event that can use this ExtraInfo event.
             _networkEventManager.ResponseExtraInfo(e.RequestId).Add(e);
@@ -311,12 +311,15 @@ namespace PuppeteerSharp
 
                 if (extraInfo == null)
                 {
+                    Console.WriteLine("Event group added by OnResponseReceived");
                     _networkEventManager.QueuedEventGroup(e.RequestId, new()
                     {
                         ResponseReceivedEvent = e
                     });
                     return;
                 }
+
+                Console.WriteLine("Extra info found");
             }
 
             EmitResponseEvent(e, extraInfo);

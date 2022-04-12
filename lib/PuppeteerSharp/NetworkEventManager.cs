@@ -77,13 +77,13 @@ namespace PuppeteerSharp
 
         internal ResponseReceivedExtraInfoResponse ShiftResponseExtraInfo(string networkRequestId)
         {
-            if (!_responseReceivedExtraInfoMap.ContainsKey(networkRequestId))
-            {
-                _responseReceivedExtraInfoMap.TryAdd(networkRequestId, new List<ResponseReceivedExtraInfoResponse>());
-            }
-
             lock (_responseReceivedExtraInfoMap)
             {
+                if (!_responseReceivedExtraInfoMap.ContainsKey(networkRequestId))
+                {
+                    _responseReceivedExtraInfoMap.TryAdd(networkRequestId, new List<ResponseReceivedExtraInfoResponse>());
+                }
+
                 _responseReceivedExtraInfoMap.TryGetValue(networkRequestId, out var list);
                 var result = list.FirstOrDefault();
 
@@ -140,5 +140,9 @@ namespace PuppeteerSharp
             _queuedEventGroupMap.TryGetValue(networkRequestId, out var result);
             return result;
         }
+
+        // Puppeteer doesn't have this. but it seems that .NET needs this to avoid race conditions
+        internal void ForgetQueuedEventGroup(string networkRequestId)
+            => _queuedEventGroupMap.TryRemove(networkRequestId, out _);
     }
 }
