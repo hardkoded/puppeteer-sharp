@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
@@ -84,16 +83,7 @@ namespace PuppeteerSharp.Tests.PageTests
         [PuppeteerFact]
         public async Task ShouldWorkWithNoTimeout()
         {
-            var responseCount = 0;
-            var responseUrls = new List<string>(3);
-
             await Page.GoToAsync(TestConstants.EmptyPage);
-
-            Page.FrameManager.NetworkManager.Response += (sender, args) =>
-            {
-                responseCount++;
-                responseUrls.Add(args.Response.Url);
-            };
 
             await Task.WhenAll(
                 Page.WaitForNetworkIdleAsync(new WaitForNetworkIdleOptions { Timeout = 0 }),
@@ -103,13 +93,6 @@ namespace PuppeteerSharp.Tests.PageTests
                         fetch('/digits/3.png');
                     }, 50)")
             );
-
-            Assert.Equal(3, responseCount);
-            Assert.All(responseUrls, x =>
-            {
-                Assert.StartsWith(TestConstants.ServerUrl + "/digits", x);
-                Assert.EndsWith(".png", x);
-            });
         }
     }
 }
