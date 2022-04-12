@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Helpers;
@@ -195,7 +193,11 @@ namespace PuppeteerSharp
 
             if (queuedEvents != null)
             {
+                Console.WriteLine("It has queue events");
+
                 EmitResponseEvent(queuedEvents.ResponseReceivedEvent, e);
+
+                Console.WriteLine($"LoadingFinishedEvent {(queuedEvents.LoadingFinishedEvent != null ? "is not null" : "is null")}");
 
                 if (queuedEvents.LoadingFinishedEvent != null) {
                     OnLoadingFinished(queuedEvents.LoadingFinishedEvent);
@@ -204,8 +206,11 @@ namespace PuppeteerSharp
                 if (queuedEvents.LoadingFailedEvent != null) {
                     OnLoadingFailed(queuedEvents.LoadingFailedEvent);
                 }
+
                 return;
             }
+
+            Console.WriteLine("It didnn't have queue events");
 
             // Wait until we get another event that can use this ExtraInfo event.
             _networkEventManager.ResponseExtraInfo(e.RequestId).Add(e);
@@ -250,10 +255,12 @@ namespace PuppeteerSharp
 
             if (queuedEvents != null)
             {
+                Console.WriteLine("It's adding the loading to the queue");
                 queuedEvents.LoadingFinishedEvent = e;
             }
             else
             {
+                Console.WriteLine("It's emitting from OnLoadingFinished");
                 EmitLoadingFinished(e);
             }
         }
@@ -263,6 +270,7 @@ namespace PuppeteerSharp
             var request = _networkEventManager.GetRequest(e.RequestId);
             if (request == null)
             {
+                Console.WriteLine("It didn't find the request");
                 return;
             }
 
@@ -270,6 +278,7 @@ namespace PuppeteerSharp
 
             ForgetRequest(request, true);
 
+            Console.WriteLine("EMITTED");
             RequestFinished?.Invoke(this, new RequestEventArgs
             {
                 Request = request
