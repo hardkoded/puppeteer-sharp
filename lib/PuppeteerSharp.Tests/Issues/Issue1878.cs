@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.Issues
         {
         }
 
-        [PuppeteerFact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task MultiplePagesShouldNotShareSameScreenshotTaskQueue()
         {
             // 1st page

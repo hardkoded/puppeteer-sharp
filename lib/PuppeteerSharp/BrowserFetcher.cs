@@ -10,8 +10,6 @@ using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using ICSharpCode.SharpZipLib.BZip2;
-using ICSharpCode.SharpZipLib.Tar;
 using Newtonsoft.Json;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Linux;

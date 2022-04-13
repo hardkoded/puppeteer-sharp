@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
         }
 
         [PuppeteerTest("drag-and-drop.spec.ts", "Input.drag", "should throw an exception if not enabled before usage")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldThrowAnExceptionIfNotEnabledBeforeUsage()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/drag-and-drop.html");
@@ -25,7 +25,7 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
         }
 
         [PuppeteerTest("drag-and-drop.spec.ts", "Input.drag", "should emit a dragIntercepted event when dragged")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldEmitADragInterceptedEventWhenDragged()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/drag-and-drop.html");
@@ -40,7 +40,7 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
         }
 
         [PuppeteerTest("drag-and-drop.spec.ts", "Input.drag", "should emit a dragEnter")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldEmitADragEnter()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/drag-and-drop.html");
@@ -57,7 +57,7 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
         }
 
         [PuppeteerTest("drag-and-drop.spec.ts", "Input.drag", "should emit a dragOver event")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldEmitADragOver()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/drag-and-drop.html");
@@ -76,7 +76,7 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
         }
 
         [PuppeteerTest("drag-and-drop.spec.ts", "Input.drag", "can be dropped")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task CanBeDropped()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/drag-and-drop.html");
@@ -97,7 +97,7 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
         }
 
         [PuppeteerTest("drag-and-drop.spec.ts", "Input.drag", "can be dragged and dropped with a single function")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task CanBeDraggedAndDroppedWithASingleFunction()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/drag-and-drop.html");
@@ -115,7 +115,7 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
         }
 
         [PuppeteerTest("drag-and-drop.spec.ts", "Input.drag", "can be disabled")]
-        [Fact(Timeout = TestConstants.DefaultTestTimeout)]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task CanBeDisabled()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/drag-and-drop.html");
