@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class MessageException
    ">
-    <meta name="generator" content="docfx 2.56.6.0">
+    <meta name="generator" content="docfx 2.59.2.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -92,16 +92,17 @@
   <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
   <h5 id="PuppeteerSharp_MessageException_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class MessageException : PuppeteerException, _Exception, ISerializable</code></pre>
+    <pre><code class="lang-csharp hljs">[Serializable]
+public class MessageException : PuppeteerException, _Exception, ISerializable</code></pre>
   </div>
   <h3 id="constructors">Constructors
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20MessageException()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/MessageException.cs/%23L14">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20MessageException()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/MessageException.cs/%23L16">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/MessageException.cs/#L14">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/MessageException.cs/#L16">View Source</a>
   </span>
   <a id="PuppeteerSharp_MessageException__ctor_" data-uid="PuppeteerSharp.MessageException.#ctor*"></a>
   <h4 id="PuppeteerSharp_MessageException__ctor" data-uid="PuppeteerSharp.MessageException.#ctor">MessageException()</h4>
@@ -114,10 +115,50 @@
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20MessageException(String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/MessageException.cs/%23L22">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20MessageException(SerializationInfo, StreamingContext)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/MessageException.cs/%23L45">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/MessageException.cs/#L22">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/MessageException.cs/#L45">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_MessageException__ctor_" data-uid="PuppeteerSharp.MessageException.#ctor*"></a>
+  <h4 id="PuppeteerSharp_MessageException__ctor_System_Runtime_Serialization_SerializationInfo_System_Runtime_Serialization_StreamingContext_" data-uid="PuppeteerSharp.MessageException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">MessageException(SerializationInfo, StreamingContext)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="PuppeteerSharp.MessageException.html">MessageException</a> class.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected MessageException(SerializationInfo info, StreamingContext context)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Runtime.Serialization.SerializationInfo</span></td>
+        <td><span class="parametername">info</span></td>
+        <td><p>The serialization collection for custom serializations.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Runtime.Serialization.StreamingContext</span></td>
+        <td><span class="parametername">context</span></td>
+        <td><p>Provides additional caller-provided context.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20MessageException(String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/MessageException.cs/%23L24">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/MessageException.cs/#L24">View Source</a>
   </span>
   <a id="PuppeteerSharp_MessageException__ctor_" data-uid="PuppeteerSharp.MessageException.#ctor*"></a>
   <h4 id="PuppeteerSharp_MessageException__ctor_System_String_" data-uid="PuppeteerSharp.MessageException.#ctor(System.String)">MessageException(String)</h4>
@@ -148,10 +189,10 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20MessageException(String, Exception)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/MessageException.cs/%23L30">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20MessageException(String, Exception)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/MessageException.cs/%23L32">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/MessageException.cs/#L30">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/MessageException.cs/#L32">View Source</a>
   </span>
   <a id="PuppeteerSharp_MessageException__ctor_" data-uid="PuppeteerSharp.MessageException.#ctor*"></a>
   <h4 id="PuppeteerSharp_MessageException__ctor_System_String_System_Exception_" data-uid="PuppeteerSharp.MessageException.#ctor(System.String,System.Exception)">MessageException(String, Exception)</h4>
@@ -201,10 +242,10 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20MessageException&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/MessageException.cs/%23L9" class="contribution-link">Request doc improvement</a>
+                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20MessageException&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/MessageException.cs/%23L10" class="contribution-link">Request doc improvement</a>
                   </li>
                   <li>
-                    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/MessageException.cs/#L9" class="contribution-link">View Source</a>
+                    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/MessageException.cs/#L10" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

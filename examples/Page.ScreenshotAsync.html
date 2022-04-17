@@ -8,7 +8,7 @@
     <title>How to take screenshots </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="How to take screenshots ">
-    <meta name="generator" content="docfx 2.56.6.0">
+    <meta name="generator" content="docfx 2.59.2.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -74,7 +74,8 @@
 <p>You need to take an screenshot of a page.</p>
 <h2 id="solution">Solution</h2>
 <p>Use <code>Page.ScreenshotAsync</code> passing a file path as an argument.</p>
-<pre><code class="lang-cs">new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
+<pre><code class="lang-cs">using var browserFetcher = new BrowserFetcher();
+await browserFetcher.DownloadAsync(BrowserFetcher.DefaultRevision);
 
 var url = &quot;https://www.somepage.com&quot;;
 var file = &quot;.\\somepage.jpg&quot;;

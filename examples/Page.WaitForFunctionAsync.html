@@ -8,7 +8,7 @@
     <title>How to wait for a javascript expression to be true </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="How to wait for a javascript expression to be true ">
-    <meta name="generator" content="docfx 2.56.6.0">
+    <meta name="generator" content="docfx 2.59.2.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -80,10 +80,10 @@ using (var page = await browser.NewPageAsync())
 {
     await page.GoToAsync(&quot;https://www.somepage.com&quot;);
     await Page.WaitForExpressionAsync(&quot;document.queryselector('#status_info').innerText.match('^Showing ([1-9][0-9]*?) to ([1-9][0-9]*?)') of ([1-9][0-9]*?) entries') != null&quot;);
-} 
+}
 </code></pre>
 <p>If the evaluation is more complex, you could wrap it inside a function and use <code>WaitForFunctionAsync</code>:</p>
-<pre><code class="lang-cs">var waitTask = Page.WaitForFunctionAsync(@&quot;() =&gt; 
+<pre><code class="lang-cs">var waitTask = Page.WaitForFunctionAsync(@&quot;() =&gt;
 {
     return document.queryselector('#status_info').innerText.match('^Showing ([1-9][0-9]*?) to ([1-9][0-9]*?)') of ([1-9][0-9]*?) entries') != null;
 }&quot;);

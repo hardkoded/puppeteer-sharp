@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class ProcessException
    ">
-    <meta name="generator" content="docfx 2.56.6.0">
+    <meta name="generator" content="docfx 2.59.2.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -93,16 +93,17 @@
   <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
   <h5 id="PuppeteerSharp_ProcessException_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class ProcessException : ChromiumProcessException, _Exception, ISerializable</code></pre>
+    <pre><code class="lang-csharp hljs">[Serializable]
+public class ProcessException : ChromiumProcessException, _Exception, ISerializable</code></pre>
   </div>
   <h3 id="constructors">Constructors
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20ProcessException()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ProcessException.cs/%23L15">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20ProcessException()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ProcessException.cs/%23L17">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ProcessException.cs/#L15">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ProcessException.cs/#L17">View Source</a>
   </span>
   <a id="PuppeteerSharp_ProcessException__ctor_" data-uid="PuppeteerSharp.ProcessException.#ctor*"></a>
   <h4 id="PuppeteerSharp_ProcessException__ctor" data-uid="PuppeteerSharp.ProcessException.#ctor">ProcessException()</h4>
@@ -115,10 +116,50 @@
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20ProcessException(String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ProcessException.cs/%23L23">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20ProcessException(SerializationInfo, StreamingContext)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ProcessException.cs/%23L43">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ProcessException.cs/#L23">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ProcessException.cs/#L43">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_ProcessException__ctor_" data-uid="PuppeteerSharp.ProcessException.#ctor*"></a>
+  <h4 id="PuppeteerSharp_ProcessException__ctor_System_Runtime_Serialization_SerializationInfo_System_Runtime_Serialization_StreamingContext_" data-uid="PuppeteerSharp.ProcessException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">ProcessException(SerializationInfo, StreamingContext)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="PuppeteerSharp.ProcessException.html">ProcessException</a> class.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected ProcessException(SerializationInfo info, StreamingContext context)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Runtime.Serialization.SerializationInfo</span></td>
+        <td><span class="parametername">info</span></td>
+        <td><p>The serialization collection for custom serializations.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Runtime.Serialization.StreamingContext</span></td>
+        <td><span class="parametername">context</span></td>
+        <td><p>Provides additional caller-provided context.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20ProcessException(String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ProcessException.cs/%23L25">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ProcessException.cs/#L25">View Source</a>
   </span>
   <a id="PuppeteerSharp_ProcessException__ctor_" data-uid="PuppeteerSharp.ProcessException.#ctor*"></a>
   <h4 id="PuppeteerSharp_ProcessException__ctor_System_String_" data-uid="PuppeteerSharp.ProcessException.#ctor(System.String)">ProcessException(String)</h4>
@@ -149,10 +190,10 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20ProcessException(String, Exception)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ProcessException.cs/%23L32">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20ProcessException(String, Exception)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ProcessException.cs/%23L34">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ProcessException.cs/#L32">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ProcessException.cs/#L34">View Source</a>
   </span>
   <a id="PuppeteerSharp_ProcessException__ctor_" data-uid="PuppeteerSharp.ProcessException.#ctor*"></a>
   <h4 id="PuppeteerSharp_ProcessException__ctor_System_String_System_Exception_" data-uid="PuppeteerSharp.ProcessException.#ctor(System.String,System.Exception)">ProcessException(String, Exception)</h4>
@@ -202,10 +243,10 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20ProcessException&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ProcessException.cs/%23L9" class="contribution-link">Request doc improvement</a>
+                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20ProcessException&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ProcessException.cs/%23L10" class="contribution-link">Request doc improvement</a>
                   </li>
                   <li>
-                    <a href="https://github.com/kblok/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ProcessException.cs/#L9" class="contribution-link">View Source</a>
+                    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ProcessException.cs/#L10" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

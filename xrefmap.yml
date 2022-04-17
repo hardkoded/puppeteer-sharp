@@ -296,22 +296,6 @@ references:
   commentId: T:PuppeteerSharp.Browser
   fullName: PuppeteerSharp.Browser
   nameWithType: Browser
-- uid: PuppeteerSharp.Browser.#ctor(PuppeteerSharp.Connection,System.String[],System.Boolean,PuppeteerSharp.ViewPortOptions,PuppeteerSharp.LauncherBase)
-  name: Browser(Connection, String[], Boolean, ViewPortOptions, LauncherBase)
-  href: api/PuppeteerSharp.Browser.html#PuppeteerSharp_Browser__ctor_PuppeteerSharp_Connection_System_String___System_Boolean_PuppeteerSharp_ViewPortOptions_PuppeteerSharp_LauncherBase_
-  commentId: M:PuppeteerSharp.Browser.#ctor(PuppeteerSharp.Connection,System.String[],System.Boolean,PuppeteerSharp.ViewPortOptions,PuppeteerSharp.LauncherBase)
-  name.vb: Browser(Connection, String(), Boolean, ViewPortOptions, LauncherBase)
-  fullName: PuppeteerSharp.Browser.Browser(PuppeteerSharp.Connection, System.String[], System.Boolean, PuppeteerSharp.ViewPortOptions, PuppeteerSharp.LauncherBase)
-  fullName.vb: PuppeteerSharp.Browser.Browser(PuppeteerSharp.Connection, System.String(), System.Boolean, PuppeteerSharp.ViewPortOptions, PuppeteerSharp.LauncherBase)
-  nameWithType: Browser.Browser(Connection, String[], Boolean, ViewPortOptions, LauncherBase)
-  nameWithType.vb: Browser.Browser(Connection, String(), Boolean, ViewPortOptions, LauncherBase)
-- uid: PuppeteerSharp.Browser.#ctor*
-  name: Browser
-  href: api/PuppeteerSharp.Browser.html#PuppeteerSharp_Browser__ctor_
-  commentId: Overload:PuppeteerSharp.Browser.#ctor
-  isSpec: "True"
-  fullName: PuppeteerSharp.Browser.Browser
-  nameWithType: Browser.Browser
 - uid: PuppeteerSharp.Browser.BrowserContexts
   name: BrowserContexts()
   href: api/PuppeteerSharp.Browser.html#PuppeteerSharp_Browser_BrowserContexts
@@ -817,7 +801,14 @@ references:
 - uid: PuppeteerSharp.BrowserFetcher.DefaultFirefoxRevision
   name: DefaultFirefoxRevision
   href: api/PuppeteerSharp.BrowserFetcher.html#PuppeteerSharp_BrowserFetcher_DefaultFirefoxRevision
-  commentId: F:PuppeteerSharp.BrowserFetcher.DefaultFirefoxRevision
+  commentId: P:PuppeteerSharp.BrowserFetcher.DefaultFirefoxRevision
+  fullName: PuppeteerSharp.BrowserFetcher.DefaultFirefoxRevision
+  nameWithType: BrowserFetcher.DefaultFirefoxRevision
+- uid: PuppeteerSharp.BrowserFetcher.DefaultFirefoxRevision*
+  name: DefaultFirefoxRevision
+  href: api/PuppeteerSharp.BrowserFetcher.html#PuppeteerSharp_BrowserFetcher_DefaultFirefoxRevision_
+  commentId: Overload:PuppeteerSharp.BrowserFetcher.DefaultFirefoxRevision
+  isSpec: "True"
   fullName: PuppeteerSharp.BrowserFetcher.DefaultFirefoxRevision
   nameWithType: BrowserFetcher.DefaultFirefoxRevision
 - uid: PuppeteerSharp.BrowserFetcher.DefaultRevision
@@ -833,6 +824,25 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.BrowserFetcher.DefaultRevision
   nameWithType: BrowserFetcher.DefaultRevision
+- uid: PuppeteerSharp.BrowserFetcher.Dispose
+  name: Dispose()
+  href: api/PuppeteerSharp.BrowserFetcher.html#PuppeteerSharp_BrowserFetcher_Dispose
+  commentId: M:PuppeteerSharp.BrowserFetcher.Dispose
+  fullName: PuppeteerSharp.BrowserFetcher.Dispose()
+  nameWithType: BrowserFetcher.Dispose()
+- uid: PuppeteerSharp.BrowserFetcher.Dispose(System.Boolean)
+  name: Dispose(Boolean)
+  href: api/PuppeteerSharp.BrowserFetcher.html#PuppeteerSharp_BrowserFetcher_Dispose_System_Boolean_
+  commentId: M:PuppeteerSharp.BrowserFetcher.Dispose(System.Boolean)
+  fullName: PuppeteerSharp.BrowserFetcher.Dispose(System.Boolean)
+  nameWithType: BrowserFetcher.Dispose(Boolean)
+- uid: PuppeteerSharp.BrowserFetcher.Dispose*
+  name: Dispose
+  href: api/PuppeteerSharp.BrowserFetcher.html#PuppeteerSharp_BrowserFetcher_Dispose_
+  commentId: Overload:PuppeteerSharp.BrowserFetcher.Dispose
+  isSpec: "True"
+  fullName: PuppeteerSharp.BrowserFetcher.Dispose
+  nameWithType: BrowserFetcher.Dispose
 - uid: PuppeteerSharp.BrowserFetcher.DownloadAsync
   name: DownloadAsync()
   href: api/PuppeteerSharp.BrowserFetcher.html#PuppeteerSharp_BrowserFetcher_DownloadAsync
@@ -921,6 +931,19 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.BrowserFetcher.GetExecutablePath
   nameWithType: BrowserFetcher.GetExecutablePath
+- uid: PuppeteerSharp.BrowserFetcher.GetRevisionInfoAsync
+  name: GetRevisionInfoAsync()
+  href: api/PuppeteerSharp.BrowserFetcher.html#PuppeteerSharp_BrowserFetcher_GetRevisionInfoAsync
+  commentId: M:PuppeteerSharp.BrowserFetcher.GetRevisionInfoAsync
+  fullName: PuppeteerSharp.BrowserFetcher.GetRevisionInfoAsync()
+  nameWithType: BrowserFetcher.GetRevisionInfoAsync()
+- uid: PuppeteerSharp.BrowserFetcher.GetRevisionInfoAsync*
+  name: GetRevisionInfoAsync
+  href: api/PuppeteerSharp.BrowserFetcher.html#PuppeteerSharp_BrowserFetcher_GetRevisionInfoAsync_
+  commentId: Overload:PuppeteerSharp.BrowserFetcher.GetRevisionInfoAsync
+  isSpec: "True"
+  fullName: PuppeteerSharp.BrowserFetcher.GetRevisionInfoAsync
+  nameWithType: BrowserFetcher.GetRevisionInfoAsync
 - uid: PuppeteerSharp.BrowserFetcher.LocalRevisions
   name: LocalRevisions()
   href: api/PuppeteerSharp.BrowserFetcher.html#PuppeteerSharp_BrowserFetcher_LocalRevisions
@@ -979,12 +1002,6 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.BrowserFetcher.Remove
   nameWithType: BrowserFetcher.Remove
-- uid: PuppeteerSharp.BrowserFetcher.RevisionInfo
-  name: RevisionInfo()
-  href: api/PuppeteerSharp.BrowserFetcher.html#PuppeteerSharp_BrowserFetcher_RevisionInfo
-  commentId: M:PuppeteerSharp.BrowserFetcher.RevisionInfo
-  fullName: PuppeteerSharp.BrowserFetcher.RevisionInfo()
-  nameWithType: BrowserFetcher.RevisionInfo()
 - uid: PuppeteerSharp.BrowserFetcher.RevisionInfo(System.Int32)
   name: RevisionInfo(Int32)
   href: api/PuppeteerSharp.BrowserFetcher.html#PuppeteerSharp_BrowserFetcher_RevisionInfo_System_Int32_
@@ -1023,6 +1040,25 @@ references:
   commentId: T:PuppeteerSharp.BrowserFetcherOptions
   fullName: PuppeteerSharp.BrowserFetcherOptions
   nameWithType: BrowserFetcherOptions
+- uid: PuppeteerSharp.BrowserFetcherOptions.CustomFileDownload
+  name: CustomFileDownload
+  href: api/PuppeteerSharp.BrowserFetcherOptions.html#PuppeteerSharp_BrowserFetcherOptions_CustomFileDownload
+  commentId: P:PuppeteerSharp.BrowserFetcherOptions.CustomFileDownload
+  fullName: PuppeteerSharp.BrowserFetcherOptions.CustomFileDownload
+  nameWithType: BrowserFetcherOptions.CustomFileDownload
+- uid: PuppeteerSharp.BrowserFetcherOptions.CustomFileDownload*
+  name: CustomFileDownload
+  href: api/PuppeteerSharp.BrowserFetcherOptions.html#PuppeteerSharp_BrowserFetcherOptions_CustomFileDownload_
+  commentId: Overload:PuppeteerSharp.BrowserFetcherOptions.CustomFileDownload
+  isSpec: "True"
+  fullName: PuppeteerSharp.BrowserFetcherOptions.CustomFileDownload
+  nameWithType: BrowserFetcherOptions.CustomFileDownload
+- uid: PuppeteerSharp.BrowserFetcherOptions.CustomFileDownloadAction
+  name: BrowserFetcherOptions.CustomFileDownloadAction
+  href: api/PuppeteerSharp.BrowserFetcherOptions.CustomFileDownloadAction.html
+  commentId: T:PuppeteerSharp.BrowserFetcherOptions.CustomFileDownloadAction
+  fullName: PuppeteerSharp.BrowserFetcherOptions.CustomFileDownloadAction
+  nameWithType: BrowserFetcherOptions.CustomFileDownloadAction
 - uid: PuppeteerSharp.BrowserFetcherOptions.Host
   name: Host
   href: api/PuppeteerSharp.BrowserFetcherOptions.html#PuppeteerSharp_BrowserFetcherOptions_Host
@@ -1237,6 +1273,12 @@ references:
   commentId: M:PuppeteerSharp.ChromiumProcessException.#ctor
   fullName: PuppeteerSharp.ChromiumProcessException.ChromiumProcessException()
   nameWithType: ChromiumProcessException.ChromiumProcessException()
+- uid: PuppeteerSharp.ChromiumProcessException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
+  name: ChromiumProcessException(SerializationInfo, StreamingContext)
+  href: api/PuppeteerSharp.ChromiumProcessException.html#PuppeteerSharp_ChromiumProcessException__ctor_System_Runtime_Serialization_SerializationInfo_System_Runtime_Serialization_StreamingContext_
+  commentId: M:PuppeteerSharp.ChromiumProcessException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
+  fullName: PuppeteerSharp.ChromiumProcessException.ChromiumProcessException(System.Runtime.Serialization.SerializationInfo, System.Runtime.Serialization.StreamingContext)
+  nameWithType: ChromiumProcessException.ChromiumProcessException(SerializationInfo, StreamingContext)
 - uid: PuppeteerSharp.ChromiumProcessException.#ctor(System.String)
   name: ChromiumProcessException(String)
   href: api/PuppeteerSharp.ChromiumProcessException.html#PuppeteerSharp_ChromiumProcessException__ctor_System_String_
@@ -1474,6 +1516,19 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.ConnectOptions.IgnoreHTTPSErrors
   nameWithType: ConnectOptions.IgnoreHTTPSErrors
+- uid: PuppeteerSharp.ConnectOptions.InitAction
+  name: InitAction
+  href: api/PuppeteerSharp.ConnectOptions.html#PuppeteerSharp_ConnectOptions_InitAction
+  commentId: P:PuppeteerSharp.ConnectOptions.InitAction
+  fullName: PuppeteerSharp.ConnectOptions.InitAction
+  nameWithType: ConnectOptions.InitAction
+- uid: PuppeteerSharp.ConnectOptions.InitAction*
+  name: InitAction
+  href: api/PuppeteerSharp.ConnectOptions.html#PuppeteerSharp_ConnectOptions_InitAction_
+  commentId: Overload:PuppeteerSharp.ConnectOptions.InitAction
+  isSpec: "True"
+  fullName: PuppeteerSharp.ConnectOptions.InitAction
+  nameWithType: ConnectOptions.InitAction
 - uid: PuppeteerSharp.ConnectOptions.KeepAliveInterval
   name: KeepAliveInterval
   href: api/PuppeteerSharp.ConnectOptions.html#PuppeteerSharp_ConnectOptions_KeepAliveInterval
@@ -1500,6 +1555,19 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.ConnectOptions.SlowMo
   nameWithType: ConnectOptions.SlowMo
+- uid: PuppeteerSharp.ConnectOptions.TargetFilter
+  name: TargetFilter
+  href: api/PuppeteerSharp.ConnectOptions.html#PuppeteerSharp_ConnectOptions_TargetFilter
+  commentId: P:PuppeteerSharp.ConnectOptions.TargetFilter
+  fullName: PuppeteerSharp.ConnectOptions.TargetFilter
+  nameWithType: ConnectOptions.TargetFilter
+- uid: PuppeteerSharp.ConnectOptions.TargetFilter*
+  name: TargetFilter
+  href: api/PuppeteerSharp.ConnectOptions.html#PuppeteerSharp_ConnectOptions_TargetFilter_
+  commentId: Overload:PuppeteerSharp.ConnectOptions.TargetFilter
+  isSpec: "True"
+  fullName: PuppeteerSharp.ConnectOptions.TargetFilter
+  nameWithType: ConnectOptions.TargetFilter
 - uid: PuppeteerSharp.ConnectOptions.Transport
   name: Transport
   href: api/PuppeteerSharp.ConnectOptions.html#PuppeteerSharp_ConnectOptions_Transport
@@ -1850,6 +1918,12 @@ references:
   commentId: F:PuppeteerSharp.ConsoleType.TimeEnd
   fullName: PuppeteerSharp.ConsoleType.TimeEnd
   nameWithType: ConsoleType.TimeEnd
+- uid: PuppeteerSharp.ConsoleType.Timestamp
+  name: Timestamp
+  href: api/PuppeteerSharp.ConsoleType.html#PuppeteerSharp_ConsoleType_Timestamp
+  commentId: F:PuppeteerSharp.ConsoleType.Timestamp
+  fullName: PuppeteerSharp.ConsoleType.Timestamp
+  nameWithType: ConsoleType.Timestamp
 - uid: PuppeteerSharp.ConsoleType.Trace
   name: Trace
   href: api/PuppeteerSharp.ConsoleType.html#PuppeteerSharp_ConsoleType_Trace
@@ -2195,6 +2269,126 @@ references:
   commentId: F:PuppeteerSharp.DialogType.Prompt
   fullName: PuppeteerSharp.DialogType.Prompt
   nameWithType: DialogType.Prompt
+- uid: PuppeteerSharp.DragData
+  name: DragData
+  href: api/PuppeteerSharp.DragData.html
+  commentId: T:PuppeteerSharp.DragData
+  fullName: PuppeteerSharp.DragData
+  nameWithType: DragData
+- uid: PuppeteerSharp.DragData.DragOperationsMask
+  name: DragOperationsMask
+  href: api/PuppeteerSharp.DragData.html#PuppeteerSharp_DragData_DragOperationsMask
+  commentId: P:PuppeteerSharp.DragData.DragOperationsMask
+  fullName: PuppeteerSharp.DragData.DragOperationsMask
+  nameWithType: DragData.DragOperationsMask
+- uid: PuppeteerSharp.DragData.DragOperationsMask*
+  name: DragOperationsMask
+  href: api/PuppeteerSharp.DragData.html#PuppeteerSharp_DragData_DragOperationsMask_
+  commentId: Overload:PuppeteerSharp.DragData.DragOperationsMask
+  isSpec: "True"
+  fullName: PuppeteerSharp.DragData.DragOperationsMask
+  nameWithType: DragData.DragOperationsMask
+- uid: PuppeteerSharp.DragData.Items
+  name: Items
+  href: api/PuppeteerSharp.DragData.html#PuppeteerSharp_DragData_Items
+  commentId: P:PuppeteerSharp.DragData.Items
+  fullName: PuppeteerSharp.DragData.Items
+  nameWithType: DragData.Items
+- uid: PuppeteerSharp.DragData.Items*
+  name: Items
+  href: api/PuppeteerSharp.DragData.html#PuppeteerSharp_DragData_Items_
+  commentId: Overload:PuppeteerSharp.DragData.Items
+  isSpec: "True"
+  fullName: PuppeteerSharp.DragData.Items
+  nameWithType: DragData.Items
+- uid: PuppeteerSharp.DragDataItem
+  name: DragDataItem
+  href: api/PuppeteerSharp.DragDataItem.html
+  commentId: T:PuppeteerSharp.DragDataItem
+  fullName: PuppeteerSharp.DragDataItem
+  nameWithType: DragDataItem
+- uid: PuppeteerSharp.DragDataItem.BaseURL
+  name: BaseURL
+  href: api/PuppeteerSharp.DragDataItem.html#PuppeteerSharp_DragDataItem_BaseURL
+  commentId: P:PuppeteerSharp.DragDataItem.BaseURL
+  fullName: PuppeteerSharp.DragDataItem.BaseURL
+  nameWithType: DragDataItem.BaseURL
+- uid: PuppeteerSharp.DragDataItem.BaseURL*
+  name: BaseURL
+  href: api/PuppeteerSharp.DragDataItem.html#PuppeteerSharp_DragDataItem_BaseURL_
+  commentId: Overload:PuppeteerSharp.DragDataItem.BaseURL
+  isSpec: "True"
+  fullName: PuppeteerSharp.DragDataItem.BaseURL
+  nameWithType: DragDataItem.BaseURL
+- uid: PuppeteerSharp.DragDataItem.Data
+  name: Data
+  href: api/PuppeteerSharp.DragDataItem.html#PuppeteerSharp_DragDataItem_Data
+  commentId: P:PuppeteerSharp.DragDataItem.Data
+  fullName: PuppeteerSharp.DragDataItem.Data
+  nameWithType: DragDataItem.Data
+- uid: PuppeteerSharp.DragDataItem.Data*
+  name: Data
+  href: api/PuppeteerSharp.DragDataItem.html#PuppeteerSharp_DragDataItem_Data_
+  commentId: Overload:PuppeteerSharp.DragDataItem.Data
+  isSpec: "True"
+  fullName: PuppeteerSharp.DragDataItem.Data
+  nameWithType: DragDataItem.Data
+- uid: PuppeteerSharp.DragDataItem.MimeType
+  name: MimeType
+  href: api/PuppeteerSharp.DragDataItem.html#PuppeteerSharp_DragDataItem_MimeType
+  commentId: P:PuppeteerSharp.DragDataItem.MimeType
+  fullName: PuppeteerSharp.DragDataItem.MimeType
+  nameWithType: DragDataItem.MimeType
+- uid: PuppeteerSharp.DragDataItem.MimeType*
+  name: MimeType
+  href: api/PuppeteerSharp.DragDataItem.html#PuppeteerSharp_DragDataItem_MimeType_
+  commentId: Overload:PuppeteerSharp.DragDataItem.MimeType
+  isSpec: "True"
+  fullName: PuppeteerSharp.DragDataItem.MimeType
+  nameWithType: DragDataItem.MimeType
+- uid: PuppeteerSharp.DragDataItem.Title
+  name: Title
+  href: api/PuppeteerSharp.DragDataItem.html#PuppeteerSharp_DragDataItem_Title
+  commentId: P:PuppeteerSharp.DragDataItem.Title
+  fullName: PuppeteerSharp.DragDataItem.Title
+  nameWithType: DragDataItem.Title
+- uid: PuppeteerSharp.DragDataItem.Title*
+  name: Title
+  href: api/PuppeteerSharp.DragDataItem.html#PuppeteerSharp_DragDataItem_Title_
+  commentId: Overload:PuppeteerSharp.DragDataItem.Title
+  isSpec: "True"
+  fullName: PuppeteerSharp.DragDataItem.Title
+  nameWithType: DragDataItem.Title
+- uid: PuppeteerSharp.DragOperation
+  name: DragOperation
+  href: api/PuppeteerSharp.DragOperation.html
+  commentId: T:PuppeteerSharp.DragOperation
+  fullName: PuppeteerSharp.DragOperation
+  nameWithType: DragOperation
+- uid: PuppeteerSharp.DragOperation.Copy
+  name: Copy
+  href: api/PuppeteerSharp.DragOperation.html#PuppeteerSharp_DragOperation_Copy
+  commentId: F:PuppeteerSharp.DragOperation.Copy
+  fullName: PuppeteerSharp.DragOperation.Copy
+  nameWithType: DragOperation.Copy
+- uid: PuppeteerSharp.DragOperation.Link
+  name: Link
+  href: api/PuppeteerSharp.DragOperation.html#PuppeteerSharp_DragOperation_Link
+  commentId: F:PuppeteerSharp.DragOperation.Link
+  fullName: PuppeteerSharp.DragOperation.Link
+  nameWithType: DragOperation.Link
+- uid: PuppeteerSharp.DragOperation.Move
+  name: Move
+  href: api/PuppeteerSharp.DragOperation.html#PuppeteerSharp_DragOperation_Move
+  commentId: F:PuppeteerSharp.DragOperation.Move
+  fullName: PuppeteerSharp.DragOperation.Move
+  nameWithType: DragOperation.Move
+- uid: PuppeteerSharp.DragOperation.Unknown
+  name: Unknown
+  href: api/PuppeteerSharp.DragOperation.html#PuppeteerSharp_DragOperation_Unknown
+  commentId: F:PuppeteerSharp.DragOperation.Unknown
+  fullName: PuppeteerSharp.DragOperation.Unknown
+  nameWithType: DragOperation.Unknown
 - uid: PuppeteerSharp.ElementHandle
   name: ElementHandle
   href: api/PuppeteerSharp.ElementHandle.html
@@ -2253,6 +2447,71 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.ElementHandle.ContentFrameAsync
   nameWithType: ElementHandle.ContentFrameAsync
+- uid: PuppeteerSharp.ElementHandle.DragAndDropAsync(PuppeteerSharp.ElementHandle,System.Int32)
+  name: DragAndDropAsync(ElementHandle, Int32)
+  href: api/PuppeteerSharp.ElementHandle.html#PuppeteerSharp_ElementHandle_DragAndDropAsync_PuppeteerSharp_ElementHandle_System_Int32_
+  commentId: M:PuppeteerSharp.ElementHandle.DragAndDropAsync(PuppeteerSharp.ElementHandle,System.Int32)
+  fullName: PuppeteerSharp.ElementHandle.DragAndDropAsync(PuppeteerSharp.ElementHandle, System.Int32)
+  nameWithType: ElementHandle.DragAndDropAsync(ElementHandle, Int32)
+- uid: PuppeteerSharp.ElementHandle.DragAndDropAsync*
+  name: DragAndDropAsync
+  href: api/PuppeteerSharp.ElementHandle.html#PuppeteerSharp_ElementHandle_DragAndDropAsync_
+  commentId: Overload:PuppeteerSharp.ElementHandle.DragAndDropAsync
+  isSpec: "True"
+  fullName: PuppeteerSharp.ElementHandle.DragAndDropAsync
+  nameWithType: ElementHandle.DragAndDropAsync
+- uid: PuppeteerSharp.ElementHandle.DragAsync(System.Decimal,System.Decimal)
+  name: DragAsync(Decimal, Decimal)
+  href: api/PuppeteerSharp.ElementHandle.html#PuppeteerSharp_ElementHandle_DragAsync_System_Decimal_System_Decimal_
+  commentId: M:PuppeteerSharp.ElementHandle.DragAsync(System.Decimal,System.Decimal)
+  fullName: PuppeteerSharp.ElementHandle.DragAsync(System.Decimal, System.Decimal)
+  nameWithType: ElementHandle.DragAsync(Decimal, Decimal)
+- uid: PuppeteerSharp.ElementHandle.DragAsync*
+  name: DragAsync
+  href: api/PuppeteerSharp.ElementHandle.html#PuppeteerSharp_ElementHandle_DragAsync_
+  commentId: Overload:PuppeteerSharp.ElementHandle.DragAsync
+  isSpec: "True"
+  fullName: PuppeteerSharp.ElementHandle.DragAsync
+  nameWithType: ElementHandle.DragAsync
+- uid: PuppeteerSharp.ElementHandle.DragEnterAsync(PuppeteerSharp.DragData)
+  name: DragEnterAsync(DragData)
+  href: api/PuppeteerSharp.ElementHandle.html#PuppeteerSharp_ElementHandle_DragEnterAsync_PuppeteerSharp_DragData_
+  commentId: M:PuppeteerSharp.ElementHandle.DragEnterAsync(PuppeteerSharp.DragData)
+  fullName: PuppeteerSharp.ElementHandle.DragEnterAsync(PuppeteerSharp.DragData)
+  nameWithType: ElementHandle.DragEnterAsync(DragData)
+- uid: PuppeteerSharp.ElementHandle.DragEnterAsync*
+  name: DragEnterAsync
+  href: api/PuppeteerSharp.ElementHandle.html#PuppeteerSharp_ElementHandle_DragEnterAsync_
+  commentId: Overload:PuppeteerSharp.ElementHandle.DragEnterAsync
+  isSpec: "True"
+  fullName: PuppeteerSharp.ElementHandle.DragEnterAsync
+  nameWithType: ElementHandle.DragEnterAsync
+- uid: PuppeteerSharp.ElementHandle.DragOverAsync(PuppeteerSharp.DragData)
+  name: DragOverAsync(DragData)
+  href: api/PuppeteerSharp.ElementHandle.html#PuppeteerSharp_ElementHandle_DragOverAsync_PuppeteerSharp_DragData_
+  commentId: M:PuppeteerSharp.ElementHandle.DragOverAsync(PuppeteerSharp.DragData)
+  fullName: PuppeteerSharp.ElementHandle.DragOverAsync(PuppeteerSharp.DragData)
+  nameWithType: ElementHandle.DragOverAsync(DragData)
+- uid: PuppeteerSharp.ElementHandle.DragOverAsync*
+  name: DragOverAsync
+  href: api/PuppeteerSharp.ElementHandle.html#PuppeteerSharp_ElementHandle_DragOverAsync_
+  commentId: Overload:PuppeteerSharp.ElementHandle.DragOverAsync
+  isSpec: "True"
+  fullName: PuppeteerSharp.ElementHandle.DragOverAsync
+  nameWithType: ElementHandle.DragOverAsync
+- uid: PuppeteerSharp.ElementHandle.DropAsync(PuppeteerSharp.DragData)
+  name: DropAsync(DragData)
+  href: api/PuppeteerSharp.ElementHandle.html#PuppeteerSharp_ElementHandle_DropAsync_PuppeteerSharp_DragData_
+  commentId: M:PuppeteerSharp.ElementHandle.DropAsync(PuppeteerSharp.DragData)
+  fullName: PuppeteerSharp.ElementHandle.DropAsync(PuppeteerSharp.DragData)
+  nameWithType: ElementHandle.DropAsync(DragData)
+- uid: PuppeteerSharp.ElementHandle.DropAsync*
+  name: DropAsync
+  href: api/PuppeteerSharp.ElementHandle.html#PuppeteerSharp_ElementHandle_DropAsync_
+  commentId: Overload:PuppeteerSharp.ElementHandle.DropAsync
+  isSpec: "True"
+  fullName: PuppeteerSharp.ElementHandle.DropAsync
+  nameWithType: ElementHandle.DropAsync
 - uid: PuppeteerSharp.ElementHandle.FocusAsync
   name: FocusAsync()
   href: api/PuppeteerSharp.ElementHandle.html#PuppeteerSharp_ElementHandle_FocusAsync
@@ -2500,6 +2759,38 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.ElementHandle.XPathAsync
   nameWithType: ElementHandle.XPathAsync
+- uid: PuppeteerSharp.EmulateIdleOverrides
+  name: EmulateIdleOverrides
+  href: api/PuppeteerSharp.EmulateIdleOverrides.html
+  commentId: T:PuppeteerSharp.EmulateIdleOverrides
+  fullName: PuppeteerSharp.EmulateIdleOverrides
+  nameWithType: EmulateIdleOverrides
+- uid: PuppeteerSharp.EmulateIdleOverrides.IsScreenUnlocked
+  name: IsScreenUnlocked
+  href: api/PuppeteerSharp.EmulateIdleOverrides.html#PuppeteerSharp_EmulateIdleOverrides_IsScreenUnlocked
+  commentId: P:PuppeteerSharp.EmulateIdleOverrides.IsScreenUnlocked
+  fullName: PuppeteerSharp.EmulateIdleOverrides.IsScreenUnlocked
+  nameWithType: EmulateIdleOverrides.IsScreenUnlocked
+- uid: PuppeteerSharp.EmulateIdleOverrides.IsScreenUnlocked*
+  name: IsScreenUnlocked
+  href: api/PuppeteerSharp.EmulateIdleOverrides.html#PuppeteerSharp_EmulateIdleOverrides_IsScreenUnlocked_
+  commentId: Overload:PuppeteerSharp.EmulateIdleOverrides.IsScreenUnlocked
+  isSpec: "True"
+  fullName: PuppeteerSharp.EmulateIdleOverrides.IsScreenUnlocked
+  nameWithType: EmulateIdleOverrides.IsScreenUnlocked
+- uid: PuppeteerSharp.EmulateIdleOverrides.IsUserActive
+  name: IsUserActive
+  href: api/PuppeteerSharp.EmulateIdleOverrides.html#PuppeteerSharp_EmulateIdleOverrides_IsUserActive
+  commentId: P:PuppeteerSharp.EmulateIdleOverrides.IsUserActive
+  fullName: PuppeteerSharp.EmulateIdleOverrides.IsUserActive
+  nameWithType: EmulateIdleOverrides.IsUserActive
+- uid: PuppeteerSharp.EmulateIdleOverrides.IsUserActive*
+  name: IsUserActive
+  href: api/PuppeteerSharp.EmulateIdleOverrides.html#PuppeteerSharp_EmulateIdleOverrides_IsUserActive_
+  commentId: Overload:PuppeteerSharp.EmulateIdleOverrides.IsUserActive
+  isSpec: "True"
+  fullName: PuppeteerSharp.EmulateIdleOverrides.IsUserActive
+  nameWithType: EmulateIdleOverrides.IsUserActive
 - uid: PuppeteerSharp.ErrorEventArgs
   name: ErrorEventArgs
   href: api/PuppeteerSharp.ErrorEventArgs.html
@@ -2648,73 +2939,6 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.ExecutionContext.QueryObjectsAsync
   nameWithType: ExecutionContext.QueryObjectsAsync
-- uid: PuppeteerSharp.Extensions
-  name: Extensions
-  href: api/PuppeteerSharp.Extensions.html
-  commentId: T:PuppeteerSharp.Extensions
-  fullName: PuppeteerSharp.Extensions
-  nameWithType: Extensions
-- uid: PuppeteerSharp.Extensions.EvaluateFunctionAsync(System.Threading.Tasks.Task{PuppeteerSharp.ElementHandle},System.String,System.Object[])
-  name: EvaluateFunctionAsync(Task<ElementHandle>, String, Object[])
-  href: api/PuppeteerSharp.Extensions.html#PuppeteerSharp_Extensions_EvaluateFunctionAsync_System_Threading_Tasks_Task_PuppeteerSharp_ElementHandle__System_String_System_Object___
-  commentId: M:PuppeteerSharp.Extensions.EvaluateFunctionAsync(System.Threading.Tasks.Task{PuppeteerSharp.ElementHandle},System.String,System.Object[])
-  name.vb: EvaluateFunctionAsync(Task(Of ElementHandle), String, Object())
-  fullName: PuppeteerSharp.Extensions.EvaluateFunctionAsync(System.Threading.Tasks.Task<PuppeteerSharp.ElementHandle>, System.String, System.Object[])
-  fullName.vb: PuppeteerSharp.Extensions.EvaluateFunctionAsync(System.Threading.Tasks.Task(Of PuppeteerSharp.ElementHandle), System.String, System.Object())
-  nameWithType: Extensions.EvaluateFunctionAsync(Task<ElementHandle>, String, Object[])
-  nameWithType.vb: Extensions.EvaluateFunctionAsync(Task(Of ElementHandle), String, Object())
-- uid: PuppeteerSharp.Extensions.EvaluateFunctionAsync(System.Threading.Tasks.Task{PuppeteerSharp.JSHandle},System.String,System.Object[])
-  name: EvaluateFunctionAsync(Task<JSHandle>, String, Object[])
-  href: api/PuppeteerSharp.Extensions.html#PuppeteerSharp_Extensions_EvaluateFunctionAsync_System_Threading_Tasks_Task_PuppeteerSharp_JSHandle__System_String_System_Object___
-  commentId: M:PuppeteerSharp.Extensions.EvaluateFunctionAsync(System.Threading.Tasks.Task{PuppeteerSharp.JSHandle},System.String,System.Object[])
-  name.vb: EvaluateFunctionAsync(Task(Of JSHandle), String, Object())
-  fullName: PuppeteerSharp.Extensions.EvaluateFunctionAsync(System.Threading.Tasks.Task<PuppeteerSharp.JSHandle>, System.String, System.Object[])
-  fullName.vb: PuppeteerSharp.Extensions.EvaluateFunctionAsync(System.Threading.Tasks.Task(Of PuppeteerSharp.JSHandle), System.String, System.Object())
-  nameWithType: Extensions.EvaluateFunctionAsync(Task<JSHandle>, String, Object[])
-  nameWithType.vb: Extensions.EvaluateFunctionAsync(Task(Of JSHandle), String, Object())
-- uid: PuppeteerSharp.Extensions.EvaluateFunctionAsync*
-  name: EvaluateFunctionAsync
-  href: api/PuppeteerSharp.Extensions.html#PuppeteerSharp_Extensions_EvaluateFunctionAsync_
-  commentId: Overload:PuppeteerSharp.Extensions.EvaluateFunctionAsync
-  isSpec: "True"
-  fullName: PuppeteerSharp.Extensions.EvaluateFunctionAsync
-  nameWithType: Extensions.EvaluateFunctionAsync
-- uid: PuppeteerSharp.Extensions.EvaluateFunctionAsync``1(PuppeteerSharp.ElementHandle,System.String,System.Object[])
-  name: EvaluateFunctionAsync<T>(ElementHandle, String, Object[])
-  href: api/PuppeteerSharp.Extensions.html#PuppeteerSharp_Extensions_EvaluateFunctionAsync__1_PuppeteerSharp_ElementHandle_System_String_System_Object___
-  commentId: M:PuppeteerSharp.Extensions.EvaluateFunctionAsync``1(PuppeteerSharp.ElementHandle,System.String,System.Object[])
-  name.vb: EvaluateFunctionAsync(Of T)(ElementHandle, String, Object())
-  fullName: PuppeteerSharp.Extensions.EvaluateFunctionAsync<T>(PuppeteerSharp.ElementHandle, System.String, System.Object[])
-  fullName.vb: PuppeteerSharp.Extensions.EvaluateFunctionAsync(Of T)(PuppeteerSharp.ElementHandle, System.String, System.Object())
-  nameWithType: Extensions.EvaluateFunctionAsync<T>(ElementHandle, String, Object[])
-  nameWithType.vb: Extensions.EvaluateFunctionAsync(Of T)(ElementHandle, String, Object())
-- uid: PuppeteerSharp.Extensions.EvaluateFunctionAsync``1(PuppeteerSharp.JSHandle,System.String,System.Object[])
-  name: EvaluateFunctionAsync<T>(JSHandle, String, Object[])
-  href: api/PuppeteerSharp.Extensions.html#PuppeteerSharp_Extensions_EvaluateFunctionAsync__1_PuppeteerSharp_JSHandle_System_String_System_Object___
-  commentId: M:PuppeteerSharp.Extensions.EvaluateFunctionAsync``1(PuppeteerSharp.JSHandle,System.String,System.Object[])
-  name.vb: EvaluateFunctionAsync(Of T)(JSHandle, String, Object())
-  fullName: PuppeteerSharp.Extensions.EvaluateFunctionAsync<T>(PuppeteerSharp.JSHandle, System.String, System.Object[])
-  fullName.vb: PuppeteerSharp.Extensions.EvaluateFunctionAsync(Of T)(PuppeteerSharp.JSHandle, System.String, System.Object())
-  nameWithType: Extensions.EvaluateFunctionAsync<T>(JSHandle, String, Object[])
-  nameWithType.vb: Extensions.EvaluateFunctionAsync(Of T)(JSHandle, String, Object())
-- uid: PuppeteerSharp.Extensions.EvaluateFunctionAsync``1(System.Threading.Tasks.Task{PuppeteerSharp.ElementHandle},System.String,System.Object[])
-  name: EvaluateFunctionAsync<T>(Task<ElementHandle>, String, Object[])
-  href: api/PuppeteerSharp.Extensions.html#PuppeteerSharp_Extensions_EvaluateFunctionAsync__1_System_Threading_Tasks_Task_PuppeteerSharp_ElementHandle__System_String_System_Object___
-  commentId: M:PuppeteerSharp.Extensions.EvaluateFunctionAsync``1(System.Threading.Tasks.Task{PuppeteerSharp.ElementHandle},System.String,System.Object[])
-  name.vb: EvaluateFunctionAsync(Of T)(Task(Of ElementHandle), String, Object())
-  fullName: PuppeteerSharp.Extensions.EvaluateFunctionAsync<T>(System.Threading.Tasks.Task<PuppeteerSharp.ElementHandle>, System.String, System.Object[])
-  fullName.vb: PuppeteerSharp.Extensions.EvaluateFunctionAsync(Of T)(System.Threading.Tasks.Task(Of PuppeteerSharp.ElementHandle), System.String, System.Object())
-  nameWithType: Extensions.EvaluateFunctionAsync<T>(Task<ElementHandle>, String, Object[])
-  nameWithType.vb: Extensions.EvaluateFunctionAsync(Of T)(Task(Of ElementHandle), String, Object())
-- uid: PuppeteerSharp.Extensions.EvaluateFunctionAsync``1(System.Threading.Tasks.Task{PuppeteerSharp.JSHandle},System.String,System.Object[])
-  name: EvaluateFunctionAsync<T>(Task<JSHandle>, String, Object[])
-  href: api/PuppeteerSharp.Extensions.html#PuppeteerSharp_Extensions_EvaluateFunctionAsync__1_System_Threading_Tasks_Task_PuppeteerSharp_JSHandle__System_String_System_Object___
-  commentId: M:PuppeteerSharp.Extensions.EvaluateFunctionAsync``1(System.Threading.Tasks.Task{PuppeteerSharp.JSHandle},System.String,System.Object[])
-  name.vb: EvaluateFunctionAsync(Of T)(Task(Of JSHandle), String, Object())
-  fullName: PuppeteerSharp.Extensions.EvaluateFunctionAsync<T>(System.Threading.Tasks.Task<PuppeteerSharp.JSHandle>, System.String, System.Object[])
-  fullName.vb: PuppeteerSharp.Extensions.EvaluateFunctionAsync(Of T)(System.Threading.Tasks.Task(Of PuppeteerSharp.JSHandle), System.String, System.Object())
-  nameWithType: Extensions.EvaluateFunctionAsync<T>(Task<JSHandle>, String, Object[])
-  nameWithType.vb: Extensions.EvaluateFunctionAsync(Of T)(Task(Of JSHandle), String, Object())
 - uid: PuppeteerSharp.FileChooser
   name: FileChooser
   href: api/PuppeteerSharp.FileChooser.html
@@ -3546,6 +3770,19 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.IConnectionOptions.SlowMo
   nameWithType: IConnectionOptions.SlowMo
+- uid: PuppeteerSharp.IConnectionOptions.TargetFilter
+  name: TargetFilter
+  href: api/PuppeteerSharp.IConnectionOptions.html#PuppeteerSharp_IConnectionOptions_TargetFilter
+  commentId: P:PuppeteerSharp.IConnectionOptions.TargetFilter
+  fullName: PuppeteerSharp.IConnectionOptions.TargetFilter
+  nameWithType: IConnectionOptions.TargetFilter
+- uid: PuppeteerSharp.IConnectionOptions.TargetFilter*
+  name: TargetFilter
+  href: api/PuppeteerSharp.IConnectionOptions.html#PuppeteerSharp_IConnectionOptions_TargetFilter_
+  commentId: Overload:PuppeteerSharp.IConnectionOptions.TargetFilter
+  isSpec: "True"
+  fullName: PuppeteerSharp.IConnectionOptions.TargetFilter
+  nameWithType: IConnectionOptions.TargetFilter
 - uid: PuppeteerSharp.IConnectionOptions.Transport
   name: Transport
   href: api/PuppeteerSharp.IConnectionOptions.html#PuppeteerSharp_IConnectionOptions_Transport
@@ -4415,6 +4652,71 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Input.Mouse.DownAsync
   nameWithType: Mouse.DownAsync
+- uid: PuppeteerSharp.Input.Mouse.DragAndDropAsync(System.Decimal,System.Decimal,System.Decimal,System.Decimal,System.Int32)
+  name: DragAndDropAsync(Decimal, Decimal, Decimal, Decimal, Int32)
+  href: api/PuppeteerSharp.Input.Mouse.html#PuppeteerSharp_Input_Mouse_DragAndDropAsync_System_Decimal_System_Decimal_System_Decimal_System_Decimal_System_Int32_
+  commentId: M:PuppeteerSharp.Input.Mouse.DragAndDropAsync(System.Decimal,System.Decimal,System.Decimal,System.Decimal,System.Int32)
+  fullName: PuppeteerSharp.Input.Mouse.DragAndDropAsync(System.Decimal, System.Decimal, System.Decimal, System.Decimal, System.Int32)
+  nameWithType: Mouse.DragAndDropAsync(Decimal, Decimal, Decimal, Decimal, Int32)
+- uid: PuppeteerSharp.Input.Mouse.DragAndDropAsync*
+  name: DragAndDropAsync
+  href: api/PuppeteerSharp.Input.Mouse.html#PuppeteerSharp_Input_Mouse_DragAndDropAsync_
+  commentId: Overload:PuppeteerSharp.Input.Mouse.DragAndDropAsync
+  isSpec: "True"
+  fullName: PuppeteerSharp.Input.Mouse.DragAndDropAsync
+  nameWithType: Mouse.DragAndDropAsync
+- uid: PuppeteerSharp.Input.Mouse.DragAsync(System.Decimal,System.Decimal,System.Decimal,System.Decimal)
+  name: DragAsync(Decimal, Decimal, Decimal, Decimal)
+  href: api/PuppeteerSharp.Input.Mouse.html#PuppeteerSharp_Input_Mouse_DragAsync_System_Decimal_System_Decimal_System_Decimal_System_Decimal_
+  commentId: M:PuppeteerSharp.Input.Mouse.DragAsync(System.Decimal,System.Decimal,System.Decimal,System.Decimal)
+  fullName: PuppeteerSharp.Input.Mouse.DragAsync(System.Decimal, System.Decimal, System.Decimal, System.Decimal)
+  nameWithType: Mouse.DragAsync(Decimal, Decimal, Decimal, Decimal)
+- uid: PuppeteerSharp.Input.Mouse.DragAsync*
+  name: DragAsync
+  href: api/PuppeteerSharp.Input.Mouse.html#PuppeteerSharp_Input_Mouse_DragAsync_
+  commentId: Overload:PuppeteerSharp.Input.Mouse.DragAsync
+  isSpec: "True"
+  fullName: PuppeteerSharp.Input.Mouse.DragAsync
+  nameWithType: Mouse.DragAsync
+- uid: PuppeteerSharp.Input.Mouse.DragEnterAsync(System.Decimal,System.Decimal,PuppeteerSharp.DragData)
+  name: DragEnterAsync(Decimal, Decimal, DragData)
+  href: api/PuppeteerSharp.Input.Mouse.html#PuppeteerSharp_Input_Mouse_DragEnterAsync_System_Decimal_System_Decimal_PuppeteerSharp_DragData_
+  commentId: M:PuppeteerSharp.Input.Mouse.DragEnterAsync(System.Decimal,System.Decimal,PuppeteerSharp.DragData)
+  fullName: PuppeteerSharp.Input.Mouse.DragEnterAsync(System.Decimal, System.Decimal, PuppeteerSharp.DragData)
+  nameWithType: Mouse.DragEnterAsync(Decimal, Decimal, DragData)
+- uid: PuppeteerSharp.Input.Mouse.DragEnterAsync*
+  name: DragEnterAsync
+  href: api/PuppeteerSharp.Input.Mouse.html#PuppeteerSharp_Input_Mouse_DragEnterAsync_
+  commentId: Overload:PuppeteerSharp.Input.Mouse.DragEnterAsync
+  isSpec: "True"
+  fullName: PuppeteerSharp.Input.Mouse.DragEnterAsync
+  nameWithType: Mouse.DragEnterAsync
+- uid: PuppeteerSharp.Input.Mouse.DragOverAsync(System.Decimal,System.Decimal,PuppeteerSharp.DragData)
+  name: DragOverAsync(Decimal, Decimal, DragData)
+  href: api/PuppeteerSharp.Input.Mouse.html#PuppeteerSharp_Input_Mouse_DragOverAsync_System_Decimal_System_Decimal_PuppeteerSharp_DragData_
+  commentId: M:PuppeteerSharp.Input.Mouse.DragOverAsync(System.Decimal,System.Decimal,PuppeteerSharp.DragData)
+  fullName: PuppeteerSharp.Input.Mouse.DragOverAsync(System.Decimal, System.Decimal, PuppeteerSharp.DragData)
+  nameWithType: Mouse.DragOverAsync(Decimal, Decimal, DragData)
+- uid: PuppeteerSharp.Input.Mouse.DragOverAsync*
+  name: DragOverAsync
+  href: api/PuppeteerSharp.Input.Mouse.html#PuppeteerSharp_Input_Mouse_DragOverAsync_
+  commentId: Overload:PuppeteerSharp.Input.Mouse.DragOverAsync
+  isSpec: "True"
+  fullName: PuppeteerSharp.Input.Mouse.DragOverAsync
+  nameWithType: Mouse.DragOverAsync
+- uid: PuppeteerSharp.Input.Mouse.DropAsync(System.Decimal,System.Decimal,PuppeteerSharp.DragData)
+  name: DropAsync(Decimal, Decimal, DragData)
+  href: api/PuppeteerSharp.Input.Mouse.html#PuppeteerSharp_Input_Mouse_DropAsync_System_Decimal_System_Decimal_PuppeteerSharp_DragData_
+  commentId: M:PuppeteerSharp.Input.Mouse.DropAsync(System.Decimal,System.Decimal,PuppeteerSharp.DragData)
+  fullName: PuppeteerSharp.Input.Mouse.DropAsync(System.Decimal, System.Decimal, PuppeteerSharp.DragData)
+  nameWithType: Mouse.DropAsync(Decimal, Decimal, DragData)
+- uid: PuppeteerSharp.Input.Mouse.DropAsync*
+  name: DropAsync
+  href: api/PuppeteerSharp.Input.Mouse.html#PuppeteerSharp_Input_Mouse_DropAsync_
+  commentId: Overload:PuppeteerSharp.Input.Mouse.DropAsync
+  isSpec: "True"
+  fullName: PuppeteerSharp.Input.Mouse.DropAsync
+  nameWithType: Mouse.DropAsync
 - uid: PuppeteerSharp.Input.Mouse.MoveAsync(System.Decimal,System.Decimal,PuppeteerSharp.Input.MoveOptions)
   name: MoveAsync(Decimal, Decimal, MoveOptions)
   href: api/PuppeteerSharp.Input.Mouse.html#PuppeteerSharp_Input_Mouse_MoveAsync_System_Decimal_System_Decimal_PuppeteerSharp_Input_MoveOptions_
@@ -4791,19 +5093,19 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Launcher.ConnectAsync
   nameWithType: Launcher.ConnectAsync
-- uid: PuppeteerSharp.Launcher.GetExecutablePath
-  name: GetExecutablePath()
-  href: api/PuppeteerSharp.Launcher.html#PuppeteerSharp_Launcher_GetExecutablePath
-  commentId: M:PuppeteerSharp.Launcher.GetExecutablePath
-  fullName: PuppeteerSharp.Launcher.GetExecutablePath()
-  nameWithType: Launcher.GetExecutablePath()
-- uid: PuppeteerSharp.Launcher.GetExecutablePath*
-  name: GetExecutablePath
-  href: api/PuppeteerSharp.Launcher.html#PuppeteerSharp_Launcher_GetExecutablePath_
-  commentId: Overload:PuppeteerSharp.Launcher.GetExecutablePath
+- uid: PuppeteerSharp.Launcher.GetExecutablePathAsync
+  name: GetExecutablePathAsync()
+  href: api/PuppeteerSharp.Launcher.html#PuppeteerSharp_Launcher_GetExecutablePathAsync
+  commentId: M:PuppeteerSharp.Launcher.GetExecutablePathAsync
+  fullName: PuppeteerSharp.Launcher.GetExecutablePathAsync()
+  nameWithType: Launcher.GetExecutablePathAsync()
+- uid: PuppeteerSharp.Launcher.GetExecutablePathAsync*
+  name: GetExecutablePathAsync
+  href: api/PuppeteerSharp.Launcher.html#PuppeteerSharp_Launcher_GetExecutablePathAsync_
+  commentId: Overload:PuppeteerSharp.Launcher.GetExecutablePathAsync
   isSpec: "True"
-  fullName: PuppeteerSharp.Launcher.GetExecutablePath
-  nameWithType: Launcher.GetExecutablePath
+  fullName: PuppeteerSharp.Launcher.GetExecutablePathAsync
+  nameWithType: Launcher.GetExecutablePathAsync
 - uid: PuppeteerSharp.Launcher.LaunchAsync(PuppeteerSharp.LaunchOptions)
   name: LaunchAsync(LaunchOptions)
   href: api/PuppeteerSharp.Launcher.html#PuppeteerSharp_Launcher_LaunchAsync_PuppeteerSharp_LaunchOptions_
@@ -5221,6 +5523,19 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.LaunchOptions.SlowMo
   nameWithType: LaunchOptions.SlowMo
+- uid: PuppeteerSharp.LaunchOptions.TargetFilter
+  name: TargetFilter
+  href: api/PuppeteerSharp.LaunchOptions.html#PuppeteerSharp_LaunchOptions_TargetFilter
+  commentId: P:PuppeteerSharp.LaunchOptions.TargetFilter
+  fullName: PuppeteerSharp.LaunchOptions.TargetFilter
+  nameWithType: LaunchOptions.TargetFilter
+- uid: PuppeteerSharp.LaunchOptions.TargetFilter*
+  name: TargetFilter
+  href: api/PuppeteerSharp.LaunchOptions.html#PuppeteerSharp_LaunchOptions_TargetFilter_
+  commentId: Overload:PuppeteerSharp.LaunchOptions.TargetFilter
+  isSpec: "True"
+  fullName: PuppeteerSharp.LaunchOptions.TargetFilter
+  nameWithType: LaunchOptions.TargetFilter
 - uid: PuppeteerSharp.LaunchOptions.Timeout
   name: Timeout
   href: api/PuppeteerSharp.LaunchOptions.html#PuppeteerSharp_LaunchOptions_Timeout
@@ -5856,6 +6171,12 @@ references:
   commentId: M:PuppeteerSharp.MessageException.#ctor
   fullName: PuppeteerSharp.MessageException.MessageException()
   nameWithType: MessageException.MessageException()
+- uid: PuppeteerSharp.MessageException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
+  name: MessageException(SerializationInfo, StreamingContext)
+  href: api/PuppeteerSharp.MessageException.html#PuppeteerSharp_MessageException__ctor_System_Runtime_Serialization_SerializationInfo_System_Runtime_Serialization_StreamingContext_
+  commentId: M:PuppeteerSharp.MessageException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
+  fullName: PuppeteerSharp.MessageException.MessageException(System.Runtime.Serialization.SerializationInfo, System.Runtime.Serialization.StreamingContext)
+  nameWithType: MessageException.MessageException(SerializationInfo, StreamingContext)
 - uid: PuppeteerSharp.MessageException.#ctor(System.String)
   name: MessageException(String)
   href: api/PuppeteerSharp.MessageException.html#PuppeteerSharp_MessageException__ctor_System_String_
@@ -6291,6 +6612,30 @@ references:
   commentId: F:PuppeteerSharp.Mobile.DeviceDescriptorName.GalaxyS5Landscape
   fullName: PuppeteerSharp.Mobile.DeviceDescriptorName.GalaxyS5Landscape
   nameWithType: DeviceDescriptorName.GalaxyS5Landscape
+- uid: PuppeteerSharp.Mobile.DeviceDescriptorName.GalaxyS8
+  name: GalaxyS8
+  href: api/PuppeteerSharp.Mobile.DeviceDescriptorName.html#PuppeteerSharp_Mobile_DeviceDescriptorName_GalaxyS8
+  commentId: F:PuppeteerSharp.Mobile.DeviceDescriptorName.GalaxyS8
+  fullName: PuppeteerSharp.Mobile.DeviceDescriptorName.GalaxyS8
+  nameWithType: DeviceDescriptorName.GalaxyS8
+- uid: PuppeteerSharp.Mobile.DeviceDescriptorName.GalaxyS8Landscape
+  name: GalaxyS8Landscape
+  href: api/PuppeteerSharp.Mobile.DeviceDescriptorName.html#PuppeteerSharp_Mobile_DeviceDescriptorName_GalaxyS8Landscape
+  commentId: F:PuppeteerSharp.Mobile.DeviceDescriptorName.GalaxyS8Landscape
+  fullName: PuppeteerSharp.Mobile.DeviceDescriptorName.GalaxyS8Landscape
+  nameWithType: DeviceDescriptorName.GalaxyS8Landscape
+- uid: PuppeteerSharp.Mobile.DeviceDescriptorName.GalaxyS9Plus
+  name: GalaxyS9Plus
+  href: api/PuppeteerSharp.Mobile.DeviceDescriptorName.html#PuppeteerSharp_Mobile_DeviceDescriptorName_GalaxyS9Plus
+  commentId: F:PuppeteerSharp.Mobile.DeviceDescriptorName.GalaxyS9Plus
+  fullName: PuppeteerSharp.Mobile.DeviceDescriptorName.GalaxyS9Plus
+  nameWithType: DeviceDescriptorName.GalaxyS9Plus
+- uid: PuppeteerSharp.Mobile.DeviceDescriptorName.GalaxyS9PlusLandscape
+  name: GalaxyS9PlusLandscape
+  href: api/PuppeteerSharp.Mobile.DeviceDescriptorName.html#PuppeteerSharp_Mobile_DeviceDescriptorName_GalaxyS9PlusLandscape
+  commentId: F:PuppeteerSharp.Mobile.DeviceDescriptorName.GalaxyS9PlusLandscape
+  fullName: PuppeteerSharp.Mobile.DeviceDescriptorName.GalaxyS9PlusLandscape
+  nameWithType: DeviceDescriptorName.GalaxyS9PlusLandscape
 - uid: PuppeteerSharp.Mobile.DeviceDescriptorName.GalaxySIII
   name: GalaxySIII
   href: api/PuppeteerSharp.Mobile.DeviceDescriptorName.html#PuppeteerSharp_Mobile_DeviceDescriptorName_GalaxySIII
@@ -6303,6 +6648,18 @@ references:
   commentId: F:PuppeteerSharp.Mobile.DeviceDescriptorName.GalaxySIIILandscape
   fullName: PuppeteerSharp.Mobile.DeviceDescriptorName.GalaxySIIILandscape
   nameWithType: DeviceDescriptorName.GalaxySIIILandscape
+- uid: PuppeteerSharp.Mobile.DeviceDescriptorName.GalaxyTabS4
+  name: GalaxyTabS4
+  href: api/PuppeteerSharp.Mobile.DeviceDescriptorName.html#PuppeteerSharp_Mobile_DeviceDescriptorName_GalaxyTabS4
+  commentId: F:PuppeteerSharp.Mobile.DeviceDescriptorName.GalaxyTabS4
+  fullName: PuppeteerSharp.Mobile.DeviceDescriptorName.GalaxyTabS4
+  nameWithType: DeviceDescriptorName.GalaxyTabS4
+- uid: PuppeteerSharp.Mobile.DeviceDescriptorName.GalaxyTabS4Landscape
+  name: GalaxyTabS4Landscape
+  href: api/PuppeteerSharp.Mobile.DeviceDescriptorName.html#PuppeteerSharp_Mobile_DeviceDescriptorName_GalaxyTabS4Landscape
+  commentId: F:PuppeteerSharp.Mobile.DeviceDescriptorName.GalaxyTabS4Landscape
+  fullName: PuppeteerSharp.Mobile.DeviceDescriptorName.GalaxyTabS4Landscape
+  nameWithType: DeviceDescriptorName.GalaxyTabS4Landscape
 - uid: PuppeteerSharp.Mobile.DeviceDescriptorName.IPad
   name: IPad
   href: api/PuppeteerSharp.Mobile.DeviceDescriptorName.html#PuppeteerSharp_Mobile_DeviceDescriptorName_IPad
@@ -6339,6 +6696,42 @@ references:
   commentId: F:PuppeteerSharp.Mobile.DeviceDescriptorName.IPadProLandscape
   fullName: PuppeteerSharp.Mobile.DeviceDescriptorName.IPadProLandscape
   nameWithType: DeviceDescriptorName.IPadProLandscape
+- uid: PuppeteerSharp.Mobile.DeviceDescriptorName.IPhone11
+  name: IPhone11
+  href: api/PuppeteerSharp.Mobile.DeviceDescriptorName.html#PuppeteerSharp_Mobile_DeviceDescriptorName_IPhone11
+  commentId: F:PuppeteerSharp.Mobile.DeviceDescriptorName.IPhone11
+  fullName: PuppeteerSharp.Mobile.DeviceDescriptorName.IPhone11
+  nameWithType: DeviceDescriptorName.IPhone11
+- uid: PuppeteerSharp.Mobile.DeviceDescriptorName.IPhone11Landscape
+  name: IPhone11Landscape
+  href: api/PuppeteerSharp.Mobile.DeviceDescriptorName.html#PuppeteerSharp_Mobile_DeviceDescriptorName_IPhone11Landscape
+  commentId: F:PuppeteerSharp.Mobile.DeviceDescriptorName.IPhone11Landscape
+  fullName: PuppeteerSharp.Mobile.DeviceDescriptorName.IPhone11Landscape
+  nameWithType: DeviceDescriptorName.IPhone11Landscape
+- uid: PuppeteerSharp.Mobile.DeviceDescriptorName.IPhone11Pro
+  name: IPhone11Pro
+  href: api/PuppeteerSharp.Mobile.DeviceDescriptorName.html#PuppeteerSharp_Mobile_DeviceDescriptorName_IPhone11Pro
+  commentId: F:PuppeteerSharp.Mobile.DeviceDescriptorName.IPhone11Pro
+  fullName: PuppeteerSharp.Mobile.DeviceDescriptorName.IPhone11Pro
+  nameWithType: DeviceDescriptorName.IPhone11Pro
+- uid: PuppeteerSharp.Mobile.DeviceDescriptorName.IPhone11ProLandscape
+  name: IPhone11ProLandscape
+  href: api/PuppeteerSharp.Mobile.DeviceDescriptorName.html#PuppeteerSharp_Mobile_DeviceDescriptorName_IPhone11ProLandscape
+  commentId: F:PuppeteerSharp.Mobile.DeviceDescriptorName.IPhone11ProLandscape
+  fullName: PuppeteerSharp.Mobile.DeviceDescriptorName.IPhone11ProLandscape
+  nameWithType: DeviceDescriptorName.IPhone11ProLandscape
+- uid: PuppeteerSharp.Mobile.DeviceDescriptorName.IPhone11ProMax
+  name: IPhone11ProMax
+  href: api/PuppeteerSharp.Mobile.DeviceDescriptorName.html#PuppeteerSharp_Mobile_DeviceDescriptorName_IPhone11ProMax
+  commentId: F:PuppeteerSharp.Mobile.DeviceDescriptorName.IPhone11ProMax
+  fullName: PuppeteerSharp.Mobile.DeviceDescriptorName.IPhone11ProMax
+  nameWithType: DeviceDescriptorName.IPhone11ProMax
+- uid: PuppeteerSharp.Mobile.DeviceDescriptorName.IPhone11ProMaxLandscape
+  name: IPhone11ProMaxLandscape
+  href: api/PuppeteerSharp.Mobile.DeviceDescriptorName.html#PuppeteerSharp_Mobile_DeviceDescriptorName_IPhone11ProMaxLandscape
+  commentId: F:PuppeteerSharp.Mobile.DeviceDescriptorName.IPhone11ProMaxLandscape
+  fullName: PuppeteerSharp.Mobile.DeviceDescriptorName.IPhone11ProMaxLandscape
+  nameWithType: DeviceDescriptorName.IPhone11ProMaxLandscape
 - uid: PuppeteerSharp.Mobile.DeviceDescriptorName.IPhone4
   name: IPhone4
   href: api/PuppeteerSharp.Mobile.DeviceDescriptorName.html#PuppeteerSharp_Mobile_DeviceDescriptorName_IPhone4
@@ -6459,6 +6852,18 @@ references:
   commentId: F:PuppeteerSharp.Mobile.DeviceDescriptorName.IPhoneXLandscape
   fullName: PuppeteerSharp.Mobile.DeviceDescriptorName.IPhoneXLandscape
   nameWithType: DeviceDescriptorName.IPhoneXLandscape
+- uid: PuppeteerSharp.Mobile.DeviceDescriptorName.IPhoneXR
+  name: IPhoneXR
+  href: api/PuppeteerSharp.Mobile.DeviceDescriptorName.html#PuppeteerSharp_Mobile_DeviceDescriptorName_IPhoneXR
+  commentId: F:PuppeteerSharp.Mobile.DeviceDescriptorName.IPhoneXR
+  fullName: PuppeteerSharp.Mobile.DeviceDescriptorName.IPhoneXR
+  nameWithType: DeviceDescriptorName.IPhoneXR
+- uid: PuppeteerSharp.Mobile.DeviceDescriptorName.IPhoneXRLandscape
+  name: IPhoneXRLandscape
+  href: api/PuppeteerSharp.Mobile.DeviceDescriptorName.html#PuppeteerSharp_Mobile_DeviceDescriptorName_IPhoneXRLandscape
+  commentId: F:PuppeteerSharp.Mobile.DeviceDescriptorName.IPhoneXRLandscape
+  fullName: PuppeteerSharp.Mobile.DeviceDescriptorName.IPhoneXRLandscape
+  nameWithType: DeviceDescriptorName.IPhoneXRLandscape
 - uid: PuppeteerSharp.Mobile.DeviceDescriptorName.JioPhone2
   name: JioPhone2
   href: api/PuppeteerSharp.Mobile.DeviceDescriptorName.html#PuppeteerSharp_Mobile_DeviceDescriptorName_JioPhone2
@@ -6645,6 +7050,30 @@ references:
   commentId: F:PuppeteerSharp.Mobile.DeviceDescriptorName.Pixel2XLLandscape
   fullName: PuppeteerSharp.Mobile.DeviceDescriptorName.Pixel2XLLandscape
   nameWithType: DeviceDescriptorName.Pixel2XLLandscape
+- uid: PuppeteerSharp.Mobile.DeviceDescriptorName.Pixel3
+  name: Pixel3
+  href: api/PuppeteerSharp.Mobile.DeviceDescriptorName.html#PuppeteerSharp_Mobile_DeviceDescriptorName_Pixel3
+  commentId: F:PuppeteerSharp.Mobile.DeviceDescriptorName.Pixel3
+  fullName: PuppeteerSharp.Mobile.DeviceDescriptorName.Pixel3
+  nameWithType: DeviceDescriptorName.Pixel3
+- uid: PuppeteerSharp.Mobile.DeviceDescriptorName.Pixel3Landscape
+  name: Pixel3Landscape
+  href: api/PuppeteerSharp.Mobile.DeviceDescriptorName.html#PuppeteerSharp_Mobile_DeviceDescriptorName_Pixel3Landscape
+  commentId: F:PuppeteerSharp.Mobile.DeviceDescriptorName.Pixel3Landscape
+  fullName: PuppeteerSharp.Mobile.DeviceDescriptorName.Pixel3Landscape
+  nameWithType: DeviceDescriptorName.Pixel3Landscape
+- uid: PuppeteerSharp.Mobile.DeviceDescriptorName.Pixel4
+  name: Pixel4
+  href: api/PuppeteerSharp.Mobile.DeviceDescriptorName.html#PuppeteerSharp_Mobile_DeviceDescriptorName_Pixel4
+  commentId: F:PuppeteerSharp.Mobile.DeviceDescriptorName.Pixel4
+  fullName: PuppeteerSharp.Mobile.DeviceDescriptorName.Pixel4
+  nameWithType: DeviceDescriptorName.Pixel4
+- uid: PuppeteerSharp.Mobile.DeviceDescriptorName.Pixel4Landscape
+  name: Pixel4Landscape
+  href: api/PuppeteerSharp.Mobile.DeviceDescriptorName.html#PuppeteerSharp_Mobile_DeviceDescriptorName_Pixel4Landscape
+  commentId: F:PuppeteerSharp.Mobile.DeviceDescriptorName.Pixel4Landscape
+  fullName: PuppeteerSharp.Mobile.DeviceDescriptorName.Pixel4Landscape
+  nameWithType: DeviceDescriptorName.Pixel4Landscape
 - uid: PuppeteerSharp.Mobile.DeviceDescriptors
   name: DeviceDescriptors
   href: api/PuppeteerSharp.Mobile.DeviceDescriptors.html
@@ -6877,6 +7306,12 @@ references:
   commentId: F:PuppeteerSharp.OverridePermission.Geolocation
   fullName: PuppeteerSharp.OverridePermission.Geolocation
   nameWithType: OverridePermission.Geolocation
+- uid: PuppeteerSharp.OverridePermission.IdleDetection
+  name: IdleDetection
+  href: api/PuppeteerSharp.OverridePermission.html#PuppeteerSharp_OverridePermission_IdleDetection
+  commentId: F:PuppeteerSharp.OverridePermission.IdleDetection
+  fullName: PuppeteerSharp.OverridePermission.IdleDetection
+  nameWithType: OverridePermission.IdleDetection
 - uid: PuppeteerSharp.OverridePermission.Microphone
   name: Microphone
   href: api/PuppeteerSharp.OverridePermission.html#PuppeteerSharp_OverridePermission_Microphone
@@ -7191,6 +7626,35 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Page.EmulateAsync
   nameWithType: Page.EmulateAsync
+- uid: PuppeteerSharp.Page.EmulateCPUThrottlingAsync(System.Nullable{System.Decimal})
+  name: EmulateCPUThrottlingAsync(Nullable<Decimal>)
+  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_EmulateCPUThrottlingAsync_System_Nullable_System_Decimal__
+  commentId: M:PuppeteerSharp.Page.EmulateCPUThrottlingAsync(System.Nullable{System.Decimal})
+  name.vb: EmulateCPUThrottlingAsync(Nullable(Of Decimal))
+  fullName: PuppeteerSharp.Page.EmulateCPUThrottlingAsync(System.Nullable<System.Decimal>)
+  fullName.vb: PuppeteerSharp.Page.EmulateCPUThrottlingAsync(System.Nullable(Of System.Decimal))
+  nameWithType: Page.EmulateCPUThrottlingAsync(Nullable<Decimal>)
+  nameWithType.vb: Page.EmulateCPUThrottlingAsync(Nullable(Of Decimal))
+- uid: PuppeteerSharp.Page.EmulateCPUThrottlingAsync*
+  name: EmulateCPUThrottlingAsync
+  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_EmulateCPUThrottlingAsync_
+  commentId: Overload:PuppeteerSharp.Page.EmulateCPUThrottlingAsync
+  isSpec: "True"
+  fullName: PuppeteerSharp.Page.EmulateCPUThrottlingAsync
+  nameWithType: Page.EmulateCPUThrottlingAsync
+- uid: PuppeteerSharp.Page.EmulateIdleStateAsync(PuppeteerSharp.EmulateIdleOverrides)
+  name: EmulateIdleStateAsync(EmulateIdleOverrides)
+  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_EmulateIdleStateAsync_PuppeteerSharp_EmulateIdleOverrides_
+  commentId: M:PuppeteerSharp.Page.EmulateIdleStateAsync(PuppeteerSharp.EmulateIdleOverrides)
+  fullName: PuppeteerSharp.Page.EmulateIdleStateAsync(PuppeteerSharp.EmulateIdleOverrides)
+  nameWithType: Page.EmulateIdleStateAsync(EmulateIdleOverrides)
+- uid: PuppeteerSharp.Page.EmulateIdleStateAsync*
+  name: EmulateIdleStateAsync
+  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_EmulateIdleStateAsync_
+  commentId: Overload:PuppeteerSharp.Page.EmulateIdleStateAsync
+  isSpec: "True"
+  fullName: PuppeteerSharp.Page.EmulateIdleStateAsync
+  nameWithType: Page.EmulateIdleStateAsync
 - uid: PuppeteerSharp.Page.EmulateMediaAsync(PuppeteerSharp.Media.MediaType)
   name: EmulateMediaAsync(MediaType)
   href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_EmulateMediaAsync_PuppeteerSharp_Media_MediaType_
@@ -7259,6 +7723,19 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Page.EmulateTimezoneAsync
   nameWithType: Page.EmulateTimezoneAsync
+- uid: PuppeteerSharp.Page.EmulateVisionDeficiencyAsync(PuppeteerSharp.VisionDeficiency)
+  name: EmulateVisionDeficiencyAsync(VisionDeficiency)
+  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_EmulateVisionDeficiencyAsync_PuppeteerSharp_VisionDeficiency_
+  commentId: M:PuppeteerSharp.Page.EmulateVisionDeficiencyAsync(PuppeteerSharp.VisionDeficiency)
+  fullName: PuppeteerSharp.Page.EmulateVisionDeficiencyAsync(PuppeteerSharp.VisionDeficiency)
+  nameWithType: Page.EmulateVisionDeficiencyAsync(VisionDeficiency)
+- uid: PuppeteerSharp.Page.EmulateVisionDeficiencyAsync*
+  name: EmulateVisionDeficiencyAsync
+  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_EmulateVisionDeficiencyAsync_
+  commentId: Overload:PuppeteerSharp.Page.EmulateVisionDeficiencyAsync
+  isSpec: "True"
+  fullName: PuppeteerSharp.Page.EmulateVisionDeficiencyAsync
+  nameWithType: Page.EmulateVisionDeficiencyAsync
 - uid: PuppeteerSharp.Page.Error
   name: Error
   href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_Error
@@ -7610,6 +8087,19 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Page.IsClosed
   nameWithType: Page.IsClosed
+- uid: PuppeteerSharp.Page.IsDragInterceptionEnabled
+  name: IsDragInterceptionEnabled
+  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_IsDragInterceptionEnabled
+  commentId: P:PuppeteerSharp.Page.IsDragInterceptionEnabled
+  fullName: PuppeteerSharp.Page.IsDragInterceptionEnabled
+  nameWithType: Page.IsDragInterceptionEnabled
+- uid: PuppeteerSharp.Page.IsDragInterceptionEnabled*
+  name: IsDragInterceptionEnabled
+  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_IsDragInterceptionEnabled_
+  commentId: Overload:PuppeteerSharp.Page.IsDragInterceptionEnabled
+  isSpec: "True"
+  fullName: PuppeteerSharp.Page.IsDragInterceptionEnabled
+  nameWithType: Page.IsDragInterceptionEnabled
 - uid: PuppeteerSharp.Page.Keyboard
   name: Keyboard
   href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_Keyboard
@@ -7835,6 +8325,12 @@ references:
   commentId: E:PuppeteerSharp.Page.RequestFinished
   fullName: PuppeteerSharp.Page.RequestFinished
   nameWithType: Page.RequestFinished
+- uid: PuppeteerSharp.Page.RequestServedFromCache
+  name: RequestServedFromCache
+  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_RequestServedFromCache
+  commentId: E:PuppeteerSharp.Page.RequestServedFromCache
+  fullName: PuppeteerSharp.Page.RequestServedFromCache
+  nameWithType: Page.RequestServedFromCache
 - uid: PuppeteerSharp.Page.Response
   name: Response
   href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_Response
@@ -8001,6 +8497,19 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Page.SetCookieAsync
   nameWithType: Page.SetCookieAsync
+- uid: PuppeteerSharp.Page.SetDragInterceptionAsync(System.Boolean)
+  name: SetDragInterceptionAsync(Boolean)
+  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_SetDragInterceptionAsync_System_Boolean_
+  commentId: M:PuppeteerSharp.Page.SetDragInterceptionAsync(System.Boolean)
+  fullName: PuppeteerSharp.Page.SetDragInterceptionAsync(System.Boolean)
+  nameWithType: Page.SetDragInterceptionAsync(Boolean)
+- uid: PuppeteerSharp.Page.SetDragInterceptionAsync*
+  name: SetDragInterceptionAsync
+  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_SetDragInterceptionAsync_
+  commentId: Overload:PuppeteerSharp.Page.SetDragInterceptionAsync
+  isSpec: "True"
+  fullName: PuppeteerSharp.Page.SetDragInterceptionAsync
+  nameWithType: Page.SetDragInterceptionAsync
 - uid: PuppeteerSharp.Page.SetExtraHttpHeadersAsync(System.Collections.Generic.Dictionary{System.String,System.String})
   name: SetExtraHttpHeadersAsync(Dictionary<String, String>)
   href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_SetExtraHttpHeadersAsync_System_Collections_Generic_Dictionary_System_String_System_String__
@@ -8256,6 +8765,19 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.Page.WaitForNavigationAsync
   nameWithType: Page.WaitForNavigationAsync
+- uid: PuppeteerSharp.Page.WaitForNetworkIdleAsync(PuppeteerSharp.WaitForNetworkIdleOptions)
+  name: WaitForNetworkIdleAsync(WaitForNetworkIdleOptions)
+  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_WaitForNetworkIdleAsync_PuppeteerSharp_WaitForNetworkIdleOptions_
+  commentId: M:PuppeteerSharp.Page.WaitForNetworkIdleAsync(PuppeteerSharp.WaitForNetworkIdleOptions)
+  fullName: PuppeteerSharp.Page.WaitForNetworkIdleAsync(PuppeteerSharp.WaitForNetworkIdleOptions)
+  nameWithType: Page.WaitForNetworkIdleAsync(WaitForNetworkIdleOptions)
+- uid: PuppeteerSharp.Page.WaitForNetworkIdleAsync*
+  name: WaitForNetworkIdleAsync
+  href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_WaitForNetworkIdleAsync_
+  commentId: Overload:PuppeteerSharp.Page.WaitForNetworkIdleAsync
+  isSpec: "True"
+  fullName: PuppeteerSharp.Page.WaitForNetworkIdleAsync
+  nameWithType: Page.WaitForNetworkIdleAsync
 - uid: PuppeteerSharp.Page.WaitForRequestAsync(System.Func{PuppeteerSharp.Request,System.Boolean},PuppeteerSharp.WaitForOptions)
   name: WaitForRequestAsync(Func<Request, Boolean>, WaitForOptions)
   href: api/PuppeteerSharp.Page.html#PuppeteerSharp_Page_WaitForRequestAsync_System_Func_PuppeteerSharp_Request_System_Boolean__PuppeteerSharp_WaitForOptions_
@@ -9310,6 +9832,19 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.PdfOptions.MarginOptions
   nameWithType: PdfOptions.MarginOptions
+- uid: PuppeteerSharp.PdfOptions.OmitBackground
+  name: OmitBackground
+  href: api/PuppeteerSharp.PdfOptions.html#PuppeteerSharp_PdfOptions_OmitBackground
+  commentId: P:PuppeteerSharp.PdfOptions.OmitBackground
+  fullName: PuppeteerSharp.PdfOptions.OmitBackground
+  nameWithType: PdfOptions.OmitBackground
+- uid: PuppeteerSharp.PdfOptions.OmitBackground*
+  name: OmitBackground
+  href: api/PuppeteerSharp.PdfOptions.html#PuppeteerSharp_PdfOptions_OmitBackground_
+  commentId: Overload:PuppeteerSharp.PdfOptions.OmitBackground
+  isSpec: "True"
+  fullName: PuppeteerSharp.PdfOptions.OmitBackground
+  nameWithType: PdfOptions.OmitBackground
 - uid: PuppeteerSharp.PdfOptions.op_Equality(PuppeteerSharp.PdfOptions,PuppeteerSharp.PdfOptions)
   name: Equality(PdfOptions, PdfOptions)
   href: api/PuppeteerSharp.PdfOptions.html#PuppeteerSharp_PdfOptions_op_Equality_PuppeteerSharp_PdfOptions_PuppeteerSharp_PdfOptions_
@@ -9474,6 +10009,12 @@ references:
   commentId: M:PuppeteerSharp.ProcessException.#ctor
   fullName: PuppeteerSharp.ProcessException.ProcessException()
   nameWithType: ProcessException.ProcessException()
+- uid: PuppeteerSharp.ProcessException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
+  name: ProcessException(SerializationInfo, StreamingContext)
+  href: api/PuppeteerSharp.ProcessException.html#PuppeteerSharp_ProcessException__ctor_System_Runtime_Serialization_SerializationInfo_System_Runtime_Serialization_StreamingContext_
+  commentId: M:PuppeteerSharp.ProcessException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
+  fullName: PuppeteerSharp.ProcessException.ProcessException(System.Runtime.Serialization.SerializationInfo, System.Runtime.Serialization.StreamingContext)
+  nameWithType: ProcessException.ProcessException(SerializationInfo, StreamingContext)
 - uid: PuppeteerSharp.ProcessException.#ctor(System.String)
   name: ProcessException(String)
   href: api/PuppeteerSharp.ProcessException.html#PuppeteerSharp_ProcessException__ctor_System_String_
@@ -9632,6 +10173,73 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.PuppeteerException.PuppeteerException
   nameWithType: PuppeteerException.PuppeteerException
+- uid: PuppeteerSharp.PuppeteerHandleExtensions
+  name: PuppeteerHandleExtensions
+  href: api/PuppeteerSharp.PuppeteerHandleExtensions.html
+  commentId: T:PuppeteerSharp.PuppeteerHandleExtensions
+  fullName: PuppeteerSharp.PuppeteerHandleExtensions
+  nameWithType: PuppeteerHandleExtensions
+- uid: PuppeteerSharp.PuppeteerHandleExtensions.EvaluateFunctionAsync(System.Threading.Tasks.Task{PuppeteerSharp.ElementHandle},System.String,System.Object[])
+  name: EvaluateFunctionAsync(Task<ElementHandle>, String, Object[])
+  href: api/PuppeteerSharp.PuppeteerHandleExtensions.html#PuppeteerSharp_PuppeteerHandleExtensions_EvaluateFunctionAsync_System_Threading_Tasks_Task_PuppeteerSharp_ElementHandle__System_String_System_Object___
+  commentId: M:PuppeteerSharp.PuppeteerHandleExtensions.EvaluateFunctionAsync(System.Threading.Tasks.Task{PuppeteerSharp.ElementHandle},System.String,System.Object[])
+  name.vb: EvaluateFunctionAsync(Task(Of ElementHandle), String, Object())
+  fullName: PuppeteerSharp.PuppeteerHandleExtensions.EvaluateFunctionAsync(System.Threading.Tasks.Task<PuppeteerSharp.ElementHandle>, System.String, System.Object[])
+  fullName.vb: PuppeteerSharp.PuppeteerHandleExtensions.EvaluateFunctionAsync(System.Threading.Tasks.Task(Of PuppeteerSharp.ElementHandle), System.String, System.Object())
+  nameWithType: PuppeteerHandleExtensions.EvaluateFunctionAsync(Task<ElementHandle>, String, Object[])
+  nameWithType.vb: PuppeteerHandleExtensions.EvaluateFunctionAsync(Task(Of ElementHandle), String, Object())
+- uid: PuppeteerSharp.PuppeteerHandleExtensions.EvaluateFunctionAsync(System.Threading.Tasks.Task{PuppeteerSharp.JSHandle},System.String,System.Object[])
+  name: EvaluateFunctionAsync(Task<JSHandle>, String, Object[])
+  href: api/PuppeteerSharp.PuppeteerHandleExtensions.html#PuppeteerSharp_PuppeteerHandleExtensions_EvaluateFunctionAsync_System_Threading_Tasks_Task_PuppeteerSharp_JSHandle__System_String_System_Object___
+  commentId: M:PuppeteerSharp.PuppeteerHandleExtensions.EvaluateFunctionAsync(System.Threading.Tasks.Task{PuppeteerSharp.JSHandle},System.String,System.Object[])
+  name.vb: EvaluateFunctionAsync(Task(Of JSHandle), String, Object())
+  fullName: PuppeteerSharp.PuppeteerHandleExtensions.EvaluateFunctionAsync(System.Threading.Tasks.Task<PuppeteerSharp.JSHandle>, System.String, System.Object[])
+  fullName.vb: PuppeteerSharp.PuppeteerHandleExtensions.EvaluateFunctionAsync(System.Threading.Tasks.Task(Of PuppeteerSharp.JSHandle), System.String, System.Object())
+  nameWithType: PuppeteerHandleExtensions.EvaluateFunctionAsync(Task<JSHandle>, String, Object[])
+  nameWithType.vb: PuppeteerHandleExtensions.EvaluateFunctionAsync(Task(Of JSHandle), String, Object())
+- uid: PuppeteerSharp.PuppeteerHandleExtensions.EvaluateFunctionAsync*
+  name: EvaluateFunctionAsync
+  href: api/PuppeteerSharp.PuppeteerHandleExtensions.html#PuppeteerSharp_PuppeteerHandleExtensions_EvaluateFunctionAsync_
+  commentId: Overload:PuppeteerSharp.PuppeteerHandleExtensions.EvaluateFunctionAsync
+  isSpec: "True"
+  fullName: PuppeteerSharp.PuppeteerHandleExtensions.EvaluateFunctionAsync
+  nameWithType: PuppeteerHandleExtensions.EvaluateFunctionAsync
+- uid: PuppeteerSharp.PuppeteerHandleExtensions.EvaluateFunctionAsync``1(PuppeteerSharp.ElementHandle,System.String,System.Object[])
+  name: EvaluateFunctionAsync<T>(ElementHandle, String, Object[])
+  href: api/PuppeteerSharp.PuppeteerHandleExtensions.html#PuppeteerSharp_PuppeteerHandleExtensions_EvaluateFunctionAsync__1_PuppeteerSharp_ElementHandle_System_String_System_Object___
+  commentId: M:PuppeteerSharp.PuppeteerHandleExtensions.EvaluateFunctionAsync``1(PuppeteerSharp.ElementHandle,System.String,System.Object[])
+  name.vb: EvaluateFunctionAsync(Of T)(ElementHandle, String, Object())
+  fullName: PuppeteerSharp.PuppeteerHandleExtensions.EvaluateFunctionAsync<T>(PuppeteerSharp.ElementHandle, System.String, System.Object[])
+  fullName.vb: PuppeteerSharp.PuppeteerHandleExtensions.EvaluateFunctionAsync(Of T)(PuppeteerSharp.ElementHandle, System.String, System.Object())
+  nameWithType: PuppeteerHandleExtensions.EvaluateFunctionAsync<T>(ElementHandle, String, Object[])
+  nameWithType.vb: PuppeteerHandleExtensions.EvaluateFunctionAsync(Of T)(ElementHandle, String, Object())
+- uid: PuppeteerSharp.PuppeteerHandleExtensions.EvaluateFunctionAsync``1(PuppeteerSharp.JSHandle,System.String,System.Object[])
+  name: EvaluateFunctionAsync<T>(JSHandle, String, Object[])
+  href: api/PuppeteerSharp.PuppeteerHandleExtensions.html#PuppeteerSharp_PuppeteerHandleExtensions_EvaluateFunctionAsync__1_PuppeteerSharp_JSHandle_System_String_System_Object___
+  commentId: M:PuppeteerSharp.PuppeteerHandleExtensions.EvaluateFunctionAsync``1(PuppeteerSharp.JSHandle,System.String,System.Object[])
+  name.vb: EvaluateFunctionAsync(Of T)(JSHandle, String, Object())
+  fullName: PuppeteerSharp.PuppeteerHandleExtensions.EvaluateFunctionAsync<T>(PuppeteerSharp.JSHandle, System.String, System.Object[])
+  fullName.vb: PuppeteerSharp.PuppeteerHandleExtensions.EvaluateFunctionAsync(Of T)(PuppeteerSharp.JSHandle, System.String, System.Object())
+  nameWithType: PuppeteerHandleExtensions.EvaluateFunctionAsync<T>(JSHandle, String, Object[])
+  nameWithType.vb: PuppeteerHandleExtensions.EvaluateFunctionAsync(Of T)(JSHandle, String, Object())
+- uid: PuppeteerSharp.PuppeteerHandleExtensions.EvaluateFunctionAsync``1(System.Threading.Tasks.Task{PuppeteerSharp.ElementHandle},System.String,System.Object[])
+  name: EvaluateFunctionAsync<T>(Task<ElementHandle>, String, Object[])
+  href: api/PuppeteerSharp.PuppeteerHandleExtensions.html#PuppeteerSharp_PuppeteerHandleExtensions_EvaluateFunctionAsync__1_System_Threading_Tasks_Task_PuppeteerSharp_ElementHandle__System_String_System_Object___
+  commentId: M:PuppeteerSharp.PuppeteerHandleExtensions.EvaluateFunctionAsync``1(System.Threading.Tasks.Task{PuppeteerSharp.ElementHandle},System.String,System.Object[])
+  name.vb: EvaluateFunctionAsync(Of T)(Task(Of ElementHandle), String, Object())
+  fullName: PuppeteerSharp.PuppeteerHandleExtensions.EvaluateFunctionAsync<T>(System.Threading.Tasks.Task<PuppeteerSharp.ElementHandle>, System.String, System.Object[])
+  fullName.vb: PuppeteerSharp.PuppeteerHandleExtensions.EvaluateFunctionAsync(Of T)(System.Threading.Tasks.Task(Of PuppeteerSharp.ElementHandle), System.String, System.Object())
+  nameWithType: PuppeteerHandleExtensions.EvaluateFunctionAsync<T>(Task<ElementHandle>, String, Object[])
+  nameWithType.vb: PuppeteerHandleExtensions.EvaluateFunctionAsync(Of T)(Task(Of ElementHandle), String, Object())
+- uid: PuppeteerSharp.PuppeteerHandleExtensions.EvaluateFunctionAsync``1(System.Threading.Tasks.Task{PuppeteerSharp.JSHandle},System.String,System.Object[])
+  name: EvaluateFunctionAsync<T>(Task<JSHandle>, String, Object[])
+  href: api/PuppeteerSharp.PuppeteerHandleExtensions.html#PuppeteerSharp_PuppeteerHandleExtensions_EvaluateFunctionAsync__1_System_Threading_Tasks_Task_PuppeteerSharp_JSHandle__System_String_System_Object___
+  commentId: M:PuppeteerSharp.PuppeteerHandleExtensions.EvaluateFunctionAsync``1(System.Threading.Tasks.Task{PuppeteerSharp.JSHandle},System.String,System.Object[])
+  name.vb: EvaluateFunctionAsync(Of T)(Task(Of JSHandle), String, Object())
+  fullName: PuppeteerSharp.PuppeteerHandleExtensions.EvaluateFunctionAsync<T>(System.Threading.Tasks.Task<PuppeteerSharp.JSHandle>, System.String, System.Object[])
+  fullName.vb: PuppeteerSharp.PuppeteerHandleExtensions.EvaluateFunctionAsync(Of T)(System.Threading.Tasks.Task(Of PuppeteerSharp.JSHandle), System.String, System.Object())
+  nameWithType: PuppeteerHandleExtensions.EvaluateFunctionAsync<T>(Task<JSHandle>, String, Object[])
+  nameWithType.vb: PuppeteerHandleExtensions.EvaluateFunctionAsync(Of T)(Task(Of JSHandle), String, Object())
 - uid: PuppeteerSharp.RemoteAddress
   name: RemoteAddress
   href: api/PuppeteerSharp.RemoteAddress.html
@@ -10905,6 +11513,12 @@ references:
   commentId: M:PuppeteerSharp.TargetClosedException.#ctor
   fullName: PuppeteerSharp.TargetClosedException.TargetClosedException()
   nameWithType: TargetClosedException.TargetClosedException()
+- uid: PuppeteerSharp.TargetClosedException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
+  name: TargetClosedException(SerializationInfo, StreamingContext)
+  href: api/PuppeteerSharp.TargetClosedException.html#PuppeteerSharp_TargetClosedException__ctor_System_Runtime_Serialization_SerializationInfo_System_Runtime_Serialization_StreamingContext_
+  commentId: M:PuppeteerSharp.TargetClosedException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
+  fullName: PuppeteerSharp.TargetClosedException.TargetClosedException(System.Runtime.Serialization.SerializationInfo, System.Runtime.Serialization.StreamingContext)
+  nameWithType: TargetClosedException.TargetClosedException(SerializationInfo, StreamingContext)
 - uid: PuppeteerSharp.TargetClosedException.#ctor(System.String)
   name: TargetClosedException(String)
   href: api/PuppeteerSharp.TargetClosedException.html#PuppeteerSharp_TargetClosedException__ctor_System_String_
@@ -11537,6 +12151,48 @@ references:
   isSpec: "True"
   fullName: PuppeteerSharp.ViewPortOptions.Width
   nameWithType: ViewPortOptions.Width
+- uid: PuppeteerSharp.VisionDeficiency
+  name: VisionDeficiency
+  href: api/PuppeteerSharp.VisionDeficiency.html
+  commentId: T:PuppeteerSharp.VisionDeficiency
+  fullName: PuppeteerSharp.VisionDeficiency
+  nameWithType: VisionDeficiency
+- uid: PuppeteerSharp.VisionDeficiency.Achromatopsia
+  name: Achromatopsia
+  href: api/PuppeteerSharp.VisionDeficiency.html#PuppeteerSharp_VisionDeficiency_Achromatopsia
+  commentId: F:PuppeteerSharp.VisionDeficiency.Achromatopsia
+  fullName: PuppeteerSharp.VisionDeficiency.Achromatopsia
+  nameWithType: VisionDeficiency.Achromatopsia
+- uid: PuppeteerSharp.VisionDeficiency.BlurredVision
+  name: BlurredVision
+  href: api/PuppeteerSharp.VisionDeficiency.html#PuppeteerSharp_VisionDeficiency_BlurredVision
+  commentId: F:PuppeteerSharp.VisionDeficiency.BlurredVision
+  fullName: PuppeteerSharp.VisionDeficiency.BlurredVision
+  nameWithType: VisionDeficiency.BlurredVision
+- uid: PuppeteerSharp.VisionDeficiency.Deuteranopia
+  name: Deuteranopia
+  href: api/PuppeteerSharp.VisionDeficiency.html#PuppeteerSharp_VisionDeficiency_Deuteranopia
+  commentId: F:PuppeteerSharp.VisionDeficiency.Deuteranopia
+  fullName: PuppeteerSharp.VisionDeficiency.Deuteranopia
+  nameWithType: VisionDeficiency.Deuteranopia
+- uid: PuppeteerSharp.VisionDeficiency.None
+  name: None
+  href: api/PuppeteerSharp.VisionDeficiency.html#PuppeteerSharp_VisionDeficiency_None
+  commentId: F:PuppeteerSharp.VisionDeficiency.None
+  fullName: PuppeteerSharp.VisionDeficiency.None
+  nameWithType: VisionDeficiency.None
+- uid: PuppeteerSharp.VisionDeficiency.Protanopia
+  name: Protanopia
+  href: api/PuppeteerSharp.VisionDeficiency.html#PuppeteerSharp_VisionDeficiency_Protanopia
+  commentId: F:PuppeteerSharp.VisionDeficiency.Protanopia
+  fullName: PuppeteerSharp.VisionDeficiency.Protanopia
+  nameWithType: VisionDeficiency.Protanopia
+- uid: PuppeteerSharp.VisionDeficiency.Tritanopia
+  name: Tritanopia
+  href: api/PuppeteerSharp.VisionDeficiency.html#PuppeteerSharp_VisionDeficiency_Tritanopia
+  commentId: F:PuppeteerSharp.VisionDeficiency.Tritanopia
+  fullName: PuppeteerSharp.VisionDeficiency.Tritanopia
+  nameWithType: VisionDeficiency.Tritanopia
 - uid: PuppeteerSharp.WaitForFileChooserOptions
   name: WaitForFileChooserOptions
   href: api/PuppeteerSharp.WaitForFileChooserOptions.html
@@ -11619,6 +12275,38 @@ references:
   commentId: F:PuppeteerSharp.WaitForFunctionPollingOption.Raf
   fullName: PuppeteerSharp.WaitForFunctionPollingOption.Raf
   nameWithType: WaitForFunctionPollingOption.Raf
+- uid: PuppeteerSharp.WaitForNetworkIdleOptions
+  name: WaitForNetworkIdleOptions
+  href: api/PuppeteerSharp.WaitForNetworkIdleOptions.html
+  commentId: T:PuppeteerSharp.WaitForNetworkIdleOptions
+  fullName: PuppeteerSharp.WaitForNetworkIdleOptions
+  nameWithType: WaitForNetworkIdleOptions
+- uid: PuppeteerSharp.WaitForNetworkIdleOptions.IdleTime
+  name: IdleTime
+  href: api/PuppeteerSharp.WaitForNetworkIdleOptions.html#PuppeteerSharp_WaitForNetworkIdleOptions_IdleTime
+  commentId: P:PuppeteerSharp.WaitForNetworkIdleOptions.IdleTime
+  fullName: PuppeteerSharp.WaitForNetworkIdleOptions.IdleTime
+  nameWithType: WaitForNetworkIdleOptions.IdleTime
+- uid: PuppeteerSharp.WaitForNetworkIdleOptions.IdleTime*
+  name: IdleTime
+  href: api/PuppeteerSharp.WaitForNetworkIdleOptions.html#PuppeteerSharp_WaitForNetworkIdleOptions_IdleTime_
+  commentId: Overload:PuppeteerSharp.WaitForNetworkIdleOptions.IdleTime
+  isSpec: "True"
+  fullName: PuppeteerSharp.WaitForNetworkIdleOptions.IdleTime
+  nameWithType: WaitForNetworkIdleOptions.IdleTime
+- uid: PuppeteerSharp.WaitForNetworkIdleOptions.Timeout
+  name: Timeout
+  href: api/PuppeteerSharp.WaitForNetworkIdleOptions.html#PuppeteerSharp_WaitForNetworkIdleOptions_Timeout
+  commentId: P:PuppeteerSharp.WaitForNetworkIdleOptions.Timeout
+  fullName: PuppeteerSharp.WaitForNetworkIdleOptions.Timeout
+  nameWithType: WaitForNetworkIdleOptions.Timeout
+- uid: PuppeteerSharp.WaitForNetworkIdleOptions.Timeout*
+  name: Timeout
+  href: api/PuppeteerSharp.WaitForNetworkIdleOptions.html#PuppeteerSharp_WaitForNetworkIdleOptions_Timeout_
+  commentId: Overload:PuppeteerSharp.WaitForNetworkIdleOptions.Timeout
+  isSpec: "True"
+  fullName: PuppeteerSharp.WaitForNetworkIdleOptions.Timeout
+  nameWithType: WaitForNetworkIdleOptions.Timeout
 - uid: PuppeteerSharp.WaitForOptions
   name: WaitForOptions
   href: api/PuppeteerSharp.WaitForOptions.html

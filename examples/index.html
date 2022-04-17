@@ -8,7 +8,7 @@
     <title>Puppeteer Sharp - Examples </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Puppeteer Sharp - Examples ">
-    <meta name="generator" content="docfx 2.56.6.0">
+    <meta name="generator" content="docfx 2.59.2.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -72,7 +72,8 @@
 <p>Puppeteer Sharp is a .NET port of the official <a href="https://github.com/GoogleChrome/puppeteer">Node.JS Puppeteer API</a>.</p>
 <h1 id="basic-usage">Basic Usage</h1>
 <h2 id="take-screenshots">Take screenshots</h2>
-<pre><code class="lang-cs">await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
+<pre><code class="lang-cs">using var browserFetcher = new BrowserFetcher();
+await browserFetcher.DownloadAsync(BrowserFetcher.DefaultChromiumRevision);
 var browser = await Puppeteer.LaunchAsync(new LaunchOptions
 {
     Headless = true
@@ -89,7 +90,8 @@ await page.ScreenshotAsync(outputFile);
 });
 </code></pre>
 <h2 id="generate-pdf-files">Generate PDF files</h2>
-<pre><code class="lang-cs">await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
+<pre><code class="lang-cs">using var browserFetcher = new BrowserFetcher();
+await browserFetcher.DownloadAsync(BrowserFetcher.DefaultChromiumRevision);
 var browser = await Puppeteer.LaunchAsync(new LaunchOptions
 {
     Headless = true
@@ -97,6 +99,16 @@ var browser = await Puppeteer.LaunchAsync(new LaunchOptions
 var page = await browser.NewPageAsync();
 await page.GoToAsync(&quot;http://www.google.com&quot;);
 await page.PdfAsync(outputFile);
+</code></pre>
+<h2 id="get-inner-text-of-an-element">Get Inner Text of an Element</h2>
+<pre><code class="lang-cs">using (var page = await browser.NewPageAsync())
+{
+    await page.GoToAsync(&quot;https://www.hardkoded.com/blog/ui-testing-with-puppeteer-released&quot;);
+    var pageHeaderHandle = await page.QuerySelectorAsync(&quot;h1&quot;);
+    var innerTextHandle = await pageHeaderHandle.GetPropertyAsync(&quot;innerText&quot;);
+    var innerText = await innerTextHandle.JsonValueAsync();
+    // Inner Text: UI testing with Puppeteer book officially released!
+}
 </code></pre>
 <h2 id="inject-html">Inject HTML</h2>
 <pre><code class="lang-cs">using(var page = await browser.NewPageAsync())

@@ -8,7 +8,7 @@
     <title>How to test a Chrome Extension </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="How to test a Chrome Extension ">
-    <meta name="generator" content="docfx 2.56.6.0">
+    <meta name="generator" content="docfx 2.59.2.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -74,10 +74,11 @@
 <p>You need to test a chrome extension</p>
 <h2 id="solution">Solution</h2>
 <p>Use <code>Puppeteer.LaunchAsync</code> passing arguments specifying to load your extension.</p>
-<pre><code class="lang-cs">await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
+<pre><code class="lang-cs">using var browserFetcher = new BrowserFetcher();
+await browserFetcher.DownloadAsync(BrowserFetcher.DefaultRevision);
 
 var pathToExtension = &quot;path/to/extension&quot;;
-var launhcOptions = new LaunhcOptions()
+var launchOptions = new LaunchOptions()
 {
     Headless = false,
     Args = new []

@@ -8,7 +8,7 @@
     <title>How to download and reuse Chrome from a custom location </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="How to download and reuse Chrome from a custom location ">
-    <meta name="generator" content="docfx 2.56.6.0">
+    <meta name="generator" content="docfx 2.59.2.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -76,7 +76,7 @@ from a location where it was previously downloaded instead of from the default l
 <h2 id="solution">Solution</h2>
 <p>Use <code>BrowserFetcherOptions</code> to specify the full path for where to download Chrome.</p>
 <pre><code>var browserFetcherOptions = new BrowserFetcherOptions { Path = downloadPath };
-var browserFetcher = new BrowserFetcher(browserFetcherOptions);
+using var browserFetcher = new BrowserFetcher(browserFetcherOptions);
 await browserFetcher.DownloadAsync(BrowserFetcher.DefaultRevision);
 </code></pre>
 <p>Use <code>Puppeteer.LaunchAsync()</code> with <code>LaunchOptions</code> with the <code>LaunchOptions.ExecutablePath</code> property set to the

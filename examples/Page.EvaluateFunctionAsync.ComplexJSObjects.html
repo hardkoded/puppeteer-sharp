@@ -8,7 +8,7 @@
     <title>How to map a javascript object to a .NET object </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="How to map a javascript object to a .NET object ">
-    <meta name="generator" content="docfx 2.56.6.0">
+    <meta name="generator" content="docfx 2.59.2.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -80,7 +80,7 @@ public class Data
 {
     public string Title { get; set; }
     public string Url { get; set; }
-} 
+}
 
 using (var browser = await Puppeteer.LaunchAsync(options))
 using (var page = await browser.NewPageAsync())
@@ -88,7 +88,7 @@ using (var page = await browser.NewPageAsync())
     await page.GoToAsync(&quot;https://news.ycombinator.com/&quot;);
     Console.WriteLine(&quot;Get all urls from page&quot;);
     var jsCode = @&quot;() =&gt; {
-const selectors = Array.from(document.querySelectorAll('a[class=&quot;&quot;storylink&quot;&quot;]')); 
+const selectors = Array.from(document.querySelectorAll('a[class=&quot;&quot;storylink&quot;&quot;]'));
 return selectors.map( t=&gt; {return { title: t.innerHTML, url: t.href}});
 }&quot;;
     var results = await page.EvaluateFunctionAsync&lt;Data[]&gt;(jsCode);
@@ -98,7 +98,7 @@ return selectors.map( t=&gt; {return { title: t.innerHTML, url: t.href}});
     }
     Console.WriteLine(&quot;Press any key to continue...&quot;);
     Console.ReadLine();
-} 
+}
 </code></pre>
 </article>
           </div>

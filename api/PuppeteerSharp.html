@@ -8,7 +8,7 @@
     <title> </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content=" ">
-    <meta name="generator" content="docfx 2.56.6.0">
+    <meta name="generator" content="docfx 2.59.2.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -154,9 +154,18 @@ by Puppeteer and therefore must be cleaned up when no longer needed.</p>
       <h4><a class="xref" href="PuppeteerSharp.DialogEventArgs.html">DialogEventArgs</a></h4>
       <section><p><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_Dialog">Dialog</a> arguments.</p>
 </section>
+      <h4><a class="xref" href="PuppeteerSharp.DragData.html">DragData</a></h4>
+      <section><p>Data returned by the drag methods.</p>
+</section>
+      <h4><a class="xref" href="PuppeteerSharp.DragDataItem.html">DragDataItem</a></h4>
+      <section><p>Item returned by drag methods.</p>
+</section>
       <h4><a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a></h4>
       <section><p>Inherits from <a class="xref" href="PuppeteerSharp.JSHandle.html">JSHandle</a>. It represents an in-page DOM element.
 ElementHandles can be created by <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_QuerySelectorAsync_System_String_">QuerySelectorAsync(String)</a> or <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_QuerySelectorAllAsync_System_String_">QuerySelectorAllAsync(String)</a>.</p>
+</section>
+      <h4><a class="xref" href="PuppeteerSharp.EmulateIdleOverrides.html">EmulateIdleOverrides</a></h4>
+      <section><p>Options for <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_EmulateIdleStateAsync_PuppeteerSharp_EmulateIdleOverrides_">EmulateIdleStateAsync(EmulateIdleOverrides)</a></p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.ErrorEventArgs.html">ErrorEventArgs</a></h4>
       <section><p><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_Error">Error</a> arguments.</p>
@@ -168,9 +177,6 @@ ElementHandles can be created by <a class="xref" href="PuppeteerSharp.Page.html#
       <section><p>The class represents a context for JavaScript execution. Examples of JavaScript contexts are:
 Each <a class="xref" href="PuppeteerSharp.ExecutionContext.html#PuppeteerSharp_ExecutionContext_Frame">Frame</a> has a separate <a class="xref" href="PuppeteerSharp.ExecutionContext.html">ExecutionContext</a>
 All kind of web workers have their own contexts</p>
-</section>
-      <h4><a class="xref" href="PuppeteerSharp.Extensions.html">Extensions</a></h4>
-      <section><p><a class="xref" href="PuppeteerSharp.JSHandle.html">JSHandle</a> and <a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a> Extensions.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.FileChooser.html">FileChooser</a></h4>
       <section><p><a class="xref" href="PuppeteerSharp.FileChooser.html">FileChooser</a> objects are returned via the <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_WaitForFileChooserAsync_PuppeteerSharp_WaitForFileChooserOptions_">WaitForFileChooserAsync(WaitForFileChooserOptions)</a> method.
@@ -260,6 +266,9 @@ by Puppeteer and therefore must be cleaned up when no longer needed.</p>
       <h4><a class="xref" href="PuppeteerSharp.PuppeteerException.html">PuppeteerException</a></h4>
       <section><p>Base exception used to identify any exception thrown by PuppeteerSharp</p>
 </section>
+      <h4><a class="xref" href="PuppeteerSharp.PuppeteerHandleExtensions.html">PuppeteerHandleExtensions</a></h4>
+      <section><p><a class="xref" href="PuppeteerSharp.JSHandle.html">JSHandle</a> and <a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a> Extensions.</p>
+</section>
       <h4><a class="xref" href="PuppeteerSharp.RemoteAddress.html">RemoteAddress</a></h4>
       <section><p>Remote server address.</p>
 </section>
@@ -319,6 +328,9 @@ by Puppeteer and therefore must be cleaned up when no longer needed.</p>
       <h4><a class="xref" href="PuppeteerSharp.WaitForFunctionOptions.html">WaitForFunctionOptions</a></h4>
       <section><p>Optional waiting parameters.</p>
 </section>
+      <h4><a class="xref" href="PuppeteerSharp.WaitForNetworkIdleOptions.html">WaitForNetworkIdleOptions</a></h4>
+      <section><p>Optional waiting parameters.</p>
+</section>
       <h4><a class="xref" href="PuppeteerSharp.WaitForOptions.html">WaitForOptions</a></h4>
       <section><p>Optional waiting parameters.</p>
 </section>
@@ -359,6 +371,9 @@ The events <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_Wo
       <h4><a class="xref" href="PuppeteerSharp.DialogType.html">DialogType</a></h4>
       <section><p>Dialog type.</p>
 </section>
+      <h4><a class="xref" href="PuppeteerSharp.DragOperation.html">DragOperation</a></h4>
+      <section><p>Drag operations available on <a class="xref" href="PuppeteerSharp.DragData.html">DragData</a>.</p>
+</section>
       <h4><a class="xref" href="PuppeteerSharp.MediaFeature.html">MediaFeature</a></h4>
       <section><p>Meadia Feature. See <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_EmulateMediaFeaturesAsync_System_Collections_Generic_IEnumerable_PuppeteerSharp_MediaFeatureValue__">EmulateMediaFeaturesAsync(IEnumerable&lt;MediaFeatureValue&gt;)</a></p>
 </section>
@@ -386,11 +401,19 @@ The events <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_Wo
       <h4><a class="xref" href="PuppeteerSharp.TargetType.html">TargetType</a></h4>
       <section><p>Target type.</p>
 </section>
+      <h4><a class="xref" href="PuppeteerSharp.VisionDeficiency.html">VisionDeficiency</a></h4>
+      <section><p>Types of vision deficiency to emulate using <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_EmulateVisionDeficiencyAsync_PuppeteerSharp_VisionDeficiency_">EmulateVisionDeficiencyAsync(VisionDeficiency)</a></p>
+</section>
       <h4><a class="xref" href="PuppeteerSharp.WaitForFunctionPollingOption.html">WaitForFunctionPollingOption</a></h4>
       <section><p>An interval at which the <code>pageFunction</code> is executed.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.WaitUntilNavigation.html">WaitUntilNavigation</a></h4>
       <section><p>Wait until navigation.</p>
+</section>
+    <h3 id="delegates">Delegates
+  </h3>
+      <h4><a class="xref" href="PuppeteerSharp.BrowserFetcherOptions.CustomFileDownloadAction.html">BrowserFetcherOptions.CustomFileDownloadAction</a></h4>
+      <section><p>A custom download delegate</p>
 </section>
 </article>
           </div>

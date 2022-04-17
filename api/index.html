@@ -8,7 +8,7 @@
     <title>Puppeteer Sharp </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Puppeteer Sharp ">
-    <meta name="generator" content="docfx 2.56.6.0">
+    <meta name="generator" content="docfx 2.59.2.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -72,7 +72,8 @@
 <p>Puppeteer Sharp is a .NET port of the official <a href="https://github.com/GoogleChrome/puppeteer">Node.JS Puppeteer API</a>.</p>
 <h1 id="usage">Usage</h1>
 <h2 id="take-screenshots">Take screenshots</h2>
-<pre><code class="lang-cs">await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
+<pre><code class="lang-cs">using var browserFetcher = new BrowserFetcher();
+await browserFetcher.DownloadAsync(BrowserFetcher.DefaultRevision);
 var browser = await Puppeteer.LaunchAsync(new LaunchOptions
 {
     Headless = true
@@ -99,7 +100,8 @@ await page.GoToAsync(&quot;http://www.google.com&quot;);
 await page.PdfAsync(outputFile);
 </code></pre>
 <h3 id="generate-pdf-files-with-custom-options">Generate PDF files with custom options</h3>
-<pre><code class="lang-cs">await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
+<pre><code class="lang-cs">using var browserFetcher = new BrowserFetcher();
+await browserFetcher.DownloadAsync(BrowserFetcher.DefaultRevision);
 var browser = await Puppeteer.LaunchAsync(new LaunchOptions
 {
     Headless = true
