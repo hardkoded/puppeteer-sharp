@@ -10,12 +10,6 @@ namespace PuppeteerSharp.PageAccessibility
 {
     internal class AXNode
     {
-        internal AccessibilityGetFullAXTreeResponse.AXTreeNode Payload { get; }
-
-        public List<AXNode> Children { get; }
-
-        public bool Focusable { get; set; }
-
         private readonly string _name;
         private readonly bool _richlyEditable;
         private readonly bool _editable;
@@ -36,6 +30,12 @@ namespace PuppeteerSharp.PageAccessibility
             _hidden = payload.Properties?.FirstOrDefault(p => p.Name == "hidden")?.Value.Value.ToObject<bool>() == true;
             Focusable = payload.Properties?.FirstOrDefault(p => p.Name == "focusable")?.Value.Value.ToObject<bool>() == true;
         }
+
+        public List<AXNode> Children { get; }
+
+        public bool Focusable { get; set; }
+
+        internal AccessibilityGetFullAXTreeResponse.AXTreeNode Payload { get; }
 
         internal static AXNode CreateTree(IEnumerable<AccessibilityGetFullAXTreeResponse.AXTreeNode> payloads)
         {

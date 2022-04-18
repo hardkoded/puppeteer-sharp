@@ -88,6 +88,13 @@ namespace PuppeteerSharp.Media
         public static PaperFormat A6 => new PaperFormat(4.13m, 5.83m);
 
         /// <inheritdoc/>
+        public static bool operator ==(PaperFormat left, PaperFormat right)
+            => EqualityComparer<PaperFormat>.Default.Equals(left, right);
+
+        /// <inheritdoc/>
+        public static bool operator !=(PaperFormat left, PaperFormat right) => !(left == right);
+
+        /// <inheritdoc/>
         public override bool Equals(object obj)
         {
             if (obj == null || GetType() != obj.GetType())
@@ -109,12 +116,5 @@ namespace PuppeteerSharp.Media
             => 859600377
                 ^ Width.GetHashCode()
                 ^ Height.GetHashCode();
-
-        /// <inheritdoc/>
-        public static bool operator ==(PaperFormat left, PaperFormat right)
-            => EqualityComparer<PaperFormat>.Default.Equals(left, right);
-
-        /// <inheritdoc/>
-        public static bool operator !=(PaperFormat left, PaperFormat right) => !(left == right);
     }
 }

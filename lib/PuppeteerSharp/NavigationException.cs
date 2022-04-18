@@ -10,12 +10,6 @@ namespace PuppeteerSharp
     public class NavigationException : PuppeteerException
     {
         /// <summary>
-        /// Url that caused the exception
-        /// </summary>
-        /// <value>The URL.</value>
-        public string Url { get; }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="NavigationException"/> class.
         /// </summary>
         public NavigationException()
@@ -70,5 +64,11 @@ namespace PuppeteerSharp
                 return $"{base.Message} at {Url}";
             }
         }
+
+        /// <summary>
+        /// Url that caused the exception
+        /// </summary>
+        /// <value>The URL.</value>
+        public string Url { get; }
     }
 }

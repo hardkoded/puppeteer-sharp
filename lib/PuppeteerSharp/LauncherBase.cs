@@ -57,19 +57,6 @@ namespace PuppeteerSharp
             Dispose(false);
         }
 
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Disposes Base process and any temporary user directory.
-        /// </summary>
-        /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
-        protected virtual void Dispose(bool disposing) => _stateManager.CurrentState.Dispose(this);
-
         internal TaskCompletionSource<bool> ExitCompletionSource { get; } = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
         internal TaskCompletionSource<string> StartCompletionSource { get; } = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -104,6 +91,19 @@ namespace PuppeteerSharp
         /// Gets Base process current state.
         /// </summary>
         internal State CurrentState => _stateManager.CurrentState;
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Disposes Base process and any temporary user directory.
+        /// </summary>
+        /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
+        protected virtual void Dispose(bool disposing) => _stateManager.CurrentState.Dispose(this);
 
         /// <summary>
         /// Asynchronously starts Base process.

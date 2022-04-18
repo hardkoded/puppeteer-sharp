@@ -32,32 +32,6 @@ namespace PuppeteerSharp.Transport
 
         #endregion
 
-        #region Static methods
-
-        private static async Task<WebSocket> CreateDefaultWebSocket(Uri url, IConnectionOptions options, CancellationToken cancellationToken)
-        {
-            var result = new ClientWebSocket();
-            result.Options.KeepAliveInterval = TimeSpan.Zero;
-            await result.ConnectAsync(url, cancellationToken).ConfigureAwait(false);
-            return result;
-        }
-
-        private static async Task<IConnectionTransport> CreateDefaultTransport(Uri url, IConnectionOptions connectionOptions, CancellationToken cancellationToken)
-        {
-            var webSocketFactory = connectionOptions.WebSocketFactory ?? DefaultWebSocketFactory;
-            var webSocket = await webSocketFactory(url, connectionOptions, cancellationToken).ConfigureAwait(false);
-            return new WebSocketTransport(webSocket, DefaultTransportScheduler, connectionOptions.EnqueueTransportMessages);
-        }
-
-        private static void ScheduleTransportTask(Func<CancellationToken, Task> taskFactory, CancellationToken cancellationToken)
-            => Task.Factory.StartNew(
-                () => taskFactory(cancellationToken),
-                cancellationToken,
-                TaskCreationOptions.LongRunning,
-                TaskScheduler.Default);
-
-        #endregion
-
         #region Instance fields
 
         private readonly WebSocket _client;
@@ -94,12 +68,8 @@ namespace PuppeteerSharp.Transport
 
         #endregion
 
-        #region Properties
+        #region Events
 
-        /// <summary>
-        /// Gets a value indicating whether this <see cref="PuppeteerSharp.Transport.IConnectionTransport"/> is closed.
-        /// </summary>
-        public bool IsClosed { get; private set; }
         /// <summary>
         /// Occurs when the transport is closed.
         /// </summary>
@@ -108,6 +78,41 @@ namespace PuppeteerSharp.Transport
         /// Occurs when a message is received.
         /// </summary>
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets a value indicating whether this <see cref="PuppeteerSharp.Transport.IConnectionTransport"/> is closed.
+        /// </summary>
+        public bool IsClosed { get; private set; }
+
+        #endregion
+
+        #region Static methods
+
+        private static async Task<WebSocket> CreateDefaultWebSocket(Uri url, IConnectionOptions options, CancellationToken cancellationToken)
+        {
+            var result = new ClientWebSocket();
+            result.Options.KeepAliveInterval = TimeSpan.Zero;
+            await result.ConnectAsync(url, cancellationToken).ConfigureAwait(false);
+            return result;
+        }
+
+        private static async Task<IConnectionTransport> CreateDefaultTransport(Uri url, IConnectionOptions connectionOptions, CancellationToken cancellationToken)
+        {
+            var webSocketFactory = connectionOptions.WebSocketFactory ?? DefaultWebSocketFactory;
+            var webSocket = await webSocketFactory(url, connectionOptions, cancellationToken).ConfigureAwait(false);
+            return new WebSocketTransport(webSocket, DefaultTransportScheduler, connectionOptions.EnqueueTransportMessages);
+        }
+
+        private static void ScheduleTransportTask(Func<CancellationToken, Task> taskFactory, CancellationToken cancellationToken)
+            => Task.Factory.StartNew(
+                () => taskFactory(cancellationToken),
+                cancellationToken,
+                TaskCreationOptions.LongRunning,
+                TaskScheduler.Default);
 
         #endregion
 

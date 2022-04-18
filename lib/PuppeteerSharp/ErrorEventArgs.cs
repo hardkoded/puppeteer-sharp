@@ -8,12 +8,6 @@ namespace PuppeteerSharp
     public class ErrorEventArgs : EventArgs
     {
         /// <summary>
-        /// Gets the error.
-        /// </summary>
-        /// <value>The error.</value>
-        public string Error { get; }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="ErrorEventArgs"/> class.
         /// </summary>
         /// <param name="error">Error.</param>
@@ -21,5 +15,11 @@ namespace PuppeteerSharp
         {
             Error = error;
         }
+
+        /// <summary>
+        /// Gets the error.
+        /// </summary>
+        /// <value>The error.</value>
+        public string Error { get; }
     }
 }

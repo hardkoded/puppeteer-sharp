@@ -9,6 +9,14 @@ namespace PuppeteerSharp.Transport
     public interface IConnectionTransport : IDisposable
     {
         /// <summary>
+        /// Occurs when the transport is closed.
+        /// </summary>
+        event EventHandler<TransportClosedEventArgs> Closed;
+        /// <summary>
+        /// Occurs when a message is received.
+        /// </summary>
+        event EventHandler<MessageReceivedEventArgs> MessageReceived;
+        /// <summary>
         /// Gets a value indicating whether this <see cref="PuppeteerSharp.Transport.IConnectionTransport"/> is closed.
         /// </summary>
         bool IsClosed { get; }
@@ -22,13 +30,5 @@ namespace PuppeteerSharp.Transport
         /// <returns>The task.</returns>
         /// <param name="message">Message to send.</param>
         Task SendAsync(string message);
-        /// <summary>
-        /// Occurs when the transport is closed.
-        /// </summary>
-        event EventHandler<TransportClosedEventArgs> Closed;
-        /// <summary>
-        /// Occurs when a message is received.
-        /// </summary>
-        event EventHandler<MessageReceivedEventArgs> MessageReceived;
     }
 }

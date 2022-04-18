@@ -5,6 +5,8 @@ namespace PuppeteerSharp.States
 {
     internal class StateManager
     {
+        private State _currentState;
+
         public StateManager()
         {
             Initial = new InitialState(this);
@@ -16,8 +18,6 @@ namespace PuppeteerSharp.States
             Disposed = new DisposedState(this);
             CurrentState = Initial;
         }
-
-        private State _currentState;
 
         public State CurrentState
         {

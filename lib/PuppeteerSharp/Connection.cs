@@ -18,8 +18,23 @@ namespace PuppeteerSharp
     /// </summary>
     public class Connection : IDisposable
     {
+        #region Private Members
+
         private readonly ILogger _logger;
         private readonly TaskQueue _callbackQueue = new TaskQueue();
+
+        private readonly ConcurrentDictionary<int, MessageTask> _callbacks;
+        private readonly ConcurrentDictionary<string, CDPSession> _sessions;
+        private readonly AsyncDictionaryHelper<string, CDPSession> _asyncSessions;
+        private int _lastId;
+
+        #endregion
+
+        /// <summary>
+        /// Gets default web socket factory implementation.
+        /// </summary>
+        [Obsolete("Use " + nameof(WebSocketTransport) + "." + nameof(WebSocketTransport.DefaultWebSocketFactory) + " instead")]
+        public static readonly WebSocketFactory DefaultWebSocketFactory = WebSocketTransport.DefaultWebSocketFactory;
 
         internal Connection(string url, int delay, bool enqueueAsyncMessages, IConnectionTransport transport, ILoggerFactory loggerFactory = null)
         {
@@ -38,12 +53,17 @@ namespace PuppeteerSharp
             _asyncSessions = new AsyncDictionaryHelper<string, CDPSession>(_sessions, "Session {0} not found");
         }
 
-        #region Private Members
-        private readonly ConcurrentDictionary<int, MessageTask> _callbacks;
-        private readonly ConcurrentDictionary<string, CDPSession> _sessions;
-        private readonly AsyncDictionaryHelper<string, CDPSession> _asyncSessions;
-        private int _lastId;
-        #endregion
+        /// <summary>
+        /// Occurs when the connection is closed.
+        /// </summary>
+        public event EventHandler Disconnected;
+
+        /// <summary>
+        /// Occurs when a message from chromium is received.
+        /// </summary>
+        public event EventHandler<MessageEventArgs> MessageReceived;
+
+        internal event EventHandler<SessionAttachedEventArgs> SessionAttached;
 
         #region Properties
         /// <summary>
@@ -63,18 +83,6 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>Connection transport.</value>
         public IConnectionTransport Transport { get; }
-
-        /// <summary>
-        /// Occurs when the connection is closed.
-        /// </summary>
-        public event EventHandler Disconnected;
-
-        /// <summary>
-        /// Occurs when a message from chromium is received.
-        /// </summary>
-        public event EventHandler<MessageEventArgs> MessageReceived;
-
-        internal event EventHandler<SessionAttachedEventArgs> SessionAttached;
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="Connection"/> is closed.
@@ -285,12 +293,6 @@ namespace PuppeteerSharp
         #endregion
 
         #region Static Methods
-
-        /// <summary>
-        /// Gets default web socket factory implementation.
-        /// </summary>
-        [Obsolete("Use " + nameof(WebSocketTransport) + "." + nameof(WebSocketTransport.DefaultWebSocketFactory) + " instead")]
-        public static readonly WebSocketFactory DefaultWebSocketFactory = WebSocketTransport.DefaultWebSocketFactory;
 
         internal static async Task<Connection> Create(string url, IConnectionOptions connectionOptions, ILoggerFactory loggerFactory = null, CancellationToken cancellationToken = default)
         {

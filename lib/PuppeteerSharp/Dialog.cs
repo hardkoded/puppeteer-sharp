@@ -24,6 +24,21 @@ namespace PuppeteerSharp
         private readonly CDPSession _client;
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="Dialog"/> class.
+        /// </summary>
+        /// <param name="client">Client.</param>
+        /// <param name="type">Type.</param>
+        /// <param name="message">Message.</param>
+        /// <param name="defaultValue">Default value.</param>
+        public Dialog(CDPSession client, DialogType type, string message, string defaultValue)
+        {
+            _client = client;
+            DialogType = type;
+            Message = message;
+            DefaultValue = defaultValue;
+        }
+
+        /// <summary>
         /// Dialog's type, can be one of alert, beforeunload, confirm or prompt.
         /// </summary>
         /// <value>The type of the dialog.</value>
@@ -38,21 +53,6 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The message.</value>
         public string Message { get; set; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Dialog"/> class.
-        /// </summary>
-        /// <param name="client">Client.</param>
-        /// <param name="type">Type.</param>
-        /// <param name="message">Message.</param>
-        /// <param name="defaultValue">Default value.</param>
-        public Dialog(CDPSession client, DialogType type, string message, string defaultValue)
-        {
-            _client = client;
-            DialogType = type;
-            Message = message;
-            DefaultValue = defaultValue;
-        }
 
         /// <summary>
         /// Accept the Dialog.

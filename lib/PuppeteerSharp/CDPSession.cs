@@ -37,6 +37,10 @@ namespace PuppeteerSharp
     /// </summary>
     public class CDPSession
     {
+        #region Private Members
+        private readonly ConcurrentDictionary<int, MessageTask> _callbacks;
+        #endregion
+
         internal CDPSession(Connection connection, TargetType targetType, string sessionId)
         {
             Connection = connection;
@@ -46,9 +50,17 @@ namespace PuppeteerSharp
             _callbacks = new ConcurrentDictionary<int, MessageTask>();
         }
 
-        #region Private Members
-        private readonly ConcurrentDictionary<int, MessageTask> _callbacks;
-        #endregion
+        /// <summary>
+        /// Occurs when message received from Chromium.
+        /// </summary>
+        public event EventHandler<MessageEventArgs> MessageReceived;
+
+        /// <summary>
+        /// Occurs when the connection is closed.
+        /// </summary>
+        public event EventHandler Disconnected;
+
+        internal event EventHandler<SessionAttachedEventArgs> SessionAttached;
 
         #region Properties
         /// <summary>
@@ -68,18 +80,6 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The connection.</value>
         internal Connection Connection { get; private set; }
-
-        /// <summary>
-        /// Occurs when message received from Chromium.
-        /// </summary>
-        public event EventHandler<MessageEventArgs> MessageReceived;
-
-        /// <summary>
-        /// Occurs when the connection is closed.
-        /// </summary>
-        public event EventHandler Disconnected;
-
-        internal event EventHandler<SessionAttachedEventArgs> SessionAttached;
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="CDPSession"/> is closed.

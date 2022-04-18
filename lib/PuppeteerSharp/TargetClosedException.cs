@@ -9,12 +9,6 @@ namespace PuppeteerSharp
     public class TargetClosedException : PuppeteerException
     {
         /// <summary>
-        /// Close Reason.
-        /// </summary>
-        /// <value>The close reason.</value>
-        public string CloseReason { get; }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="TargetClosedException"/> class.
         /// </summary>
         public TargetClosedException()
@@ -54,5 +48,11 @@ namespace PuppeteerSharp
         protected TargetClosedException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
+
+        /// <summary>
+        /// Close Reason.
+        /// </summary>
+        /// <value>The close reason.</value>
+        public string CloseReason { get; }
     }
 }

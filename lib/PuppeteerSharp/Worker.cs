@@ -76,6 +76,8 @@ namespace PuppeteerSharp
         /// <value>Worker URL.</value>
         public string Url { get; }
 
+        internal Task<ExecutionContext> ExecutionContextTask => _executionContextCallback.Task;
+
         /// <summary>
         /// Executes a script in browser context
         /// </summary>
@@ -127,8 +129,6 @@ namespace PuppeteerSharp
         /// <seealso cref="ExecutionContext.EvaluateExpressionHandleAsync(string)"/>
         public async Task<JSHandle> EvaluateExpressionHandleAsync(string script)
             => await (await ExecutionContextTask.ConfigureAwait(false)).EvaluateExpressionHandleAsync(script).ConfigureAwait(false);
-
-        internal Task<ExecutionContext> ExecutionContextTask => _executionContextCallback.Task;
 
         internal async void OnMessageReceived(object sender, MessageEventArgs e)
         {

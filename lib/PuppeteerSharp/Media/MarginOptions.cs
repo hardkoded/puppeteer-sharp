@@ -36,6 +36,13 @@ namespace PuppeteerSharp.Media
         public string Right { get; set; }
 
         /// <inheritdoc/>
+        public static bool operator ==(MarginOptions left, MarginOptions right)
+            => EqualityComparer<MarginOptions>.Default.Equals(left, right);
+
+        /// <inheritdoc/>
+        public static bool operator !=(MarginOptions left, MarginOptions right) => !(left == right);
+
+        /// <inheritdoc/>
         public override bool Equals(object obj)
         {
             if (obj == null || GetType() != obj.GetType())
@@ -61,11 +68,5 @@ namespace PuppeteerSharp.Media
                 ^ EqualityComparer<string>.Default.GetHashCode(Left)
                 ^ EqualityComparer<string>.Default.GetHashCode(Bottom)
                 ^ EqualityComparer<string>.Default.GetHashCode(Right);
-
-        /// <inheritdoc/>
-        public static bool operator ==(MarginOptions left, MarginOptions right)
-            => EqualityComparer<MarginOptions>.Default.Equals(left, right);
-        /// <inheritdoc/>
-        public static bool operator !=(MarginOptions left, MarginOptions right) => !(left == right);
     }
 }

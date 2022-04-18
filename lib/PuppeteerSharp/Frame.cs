@@ -41,18 +41,6 @@ namespace PuppeteerSharp
     {
         private readonly List<Frame> _childFrames = new();
 
-        internal string Id { get; set; }
-
-        internal string LoaderId { get; set; }
-
-        internal List<string> LifecycleEvents { get; }
-
-        internal string NavigationURL { get; private set; }
-
-        internal DOMWorld MainWorld { get; }
-
-        internal DOMWorld SecondaryWorld { get; }
-
         internal Frame(FrameManager frameManager, Frame parentFrame, string frameId)
         {
             FrameManager = frameManager;
@@ -107,6 +95,18 @@ namespace PuppeteerSharp
         public Frame ParentFrame { get; private set; }
 
         internal FrameManager FrameManager { get; }
+
+        internal string Id { get; set; }
+
+        internal string LoaderId { get; set; }
+
+        internal List<string> LifecycleEvents { get; }
+
+        internal string NavigationURL { get; private set; }
+
+        internal DOMWorld MainWorld { get; }
+
+        internal DOMWorld SecondaryWorld { get; }
         #endregion
 
         #region Public Methods
