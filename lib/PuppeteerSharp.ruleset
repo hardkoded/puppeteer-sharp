@@ -14,7 +14,7 @@
     <Rule Id="SA1516" Action="Error" /> <!-- Error SA1516: Elements should be separated by blank line (SA1516)-->
     <Rule Id="SA1629" Action="None" /> <!-- Error SA1629: Documentation text should end with a period (SA1629)-->
     <Rule Id="SA1514" Action="None" /> <!-- Error SA1514: Element documentation header should be preceded by blank line (SA1514)-->
-    <Rule Id="SA1201" Action="Error" /> <!-- Error SA1201: A constructor should not follow a property (SA1201)-->
+    <Rule Id="SA1201" Action="Error" /> <!-- Error SA1201: Elements must appear in the correct order (SA1201)-->
     <Rule Id="SA1202" Action="None" /> <!-- Error SA1202: 'public' members should come before 'internal' members (SA1202)-->
     <Rule Id="SA1210" Action="Error" /> <!-- Error SA1210: Using directives should be ordered alphabetically by the namespaces. (SA1210)-->
     <Rule Id="SA1208" Action="Error" /> <!-- Error SA1208: Order usings-->
