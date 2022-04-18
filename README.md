@@ -1,6 +1,8 @@
 # CefSharp Puppeteer
 
 ![Nuget](https://img.shields.io/nuget/v/CefSharp.Puppeteer?style=for-the-badge)
+![AppVeyor](https://img.shields.io/appveyor/build/cefsharp/puppeteer?style=for-the-badge)
+![AppVeyor tests](https://img.shields.io/appveyor/tests/cefsharp/puppeteer?style=for-the-badge)
 
 CefSharp Puppeteer is a fork of [puppeteer-sharp by Darío Kondratiuk](https://github.com/hardkoded/puppeteer-sharp) that has been adapted specifically for use with CefSharp.
 Direct communication with the ChromiumWebBrowser instance rather than opening a web socket.
