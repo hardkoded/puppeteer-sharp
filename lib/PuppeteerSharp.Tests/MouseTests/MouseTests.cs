@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Tests.MouseTests
         [PuppeteerFact]
         public async Task ShouldClickTheDocument()
         {
-            await ChromiumWebBrowser.WaitForRenderIdle();
+            await ChromiumWebBrowser.WaitForRenderIdle(idleTime:1000);
 
             await DevToolsContext.EvaluateFunctionAsync(@"() => {
                 globalThis.clickPromise = new Promise((resolve) => {
@@ -212,7 +212,7 @@ namespace PuppeteerSharp.Tests.MouseTests
                 IsMobile = true
             });
             await DevToolsContext.GoToAsync(TestConstants.CrossProcessUrl + "/mobile.html");
-            await ChromiumWebBrowser.WaitForRenderIdle();
+            await ChromiumWebBrowser.WaitForRenderIdle(idleTime: 1000);
 
             await DevToolsContext.EvaluateFunctionAsync(@"() => {
                 document.addEventListener('click', event => {
