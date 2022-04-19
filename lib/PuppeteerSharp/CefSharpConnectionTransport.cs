@@ -12,6 +12,7 @@ namespace CefSharp.Puppeteer
         private readonly IBrowserHost _browserHost;
         private IDevToolsMessageObserver _devtoolsMessageObserver;
         private IRegistration _devtoolsRegistration;
+
         public bool IsClosed { get; private set; }
 
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
@@ -38,6 +39,7 @@ namespace CefSharp.Puppeteer
         {
             _devtoolsRegistration?.Dispose();
             _devtoolsRegistration = null;
+            _devtoolsMessageObserver?.Dispose();
             _devtoolsMessageObserver = null;
         }
 

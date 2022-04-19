@@ -6,6 +6,7 @@ namespace CefSharp.Puppeteer
     /// <summary>
     /// Device Emulation
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1724:Type names should not match namespaces", Justification = "Matches Puppeteer naming.")]
     public static class Emulation
     {
         /// <summary>

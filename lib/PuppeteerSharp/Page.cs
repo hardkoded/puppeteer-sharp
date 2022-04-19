@@ -8,6 +8,7 @@ namespace CefSharp.Puppeteer
     /// Provides methods to interact with a ChromiumWebBrowser instance
     /// </summary>
     [Obsolete("Use DevToolsContext instead")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1724:Type names should not match namespaces", Justification = "Matches Puppeteer naming.")]
     public class Page : DevToolsContext
     {
         private Page(

@@ -8,14 +8,13 @@ namespace CefSharp.Puppeteer
     {
         private Action<IBrowser, Stream> _onDevToolsMessageAction;
         private Action<IBrowser> _onDevtoolsAgentDetached;
+
         public void Dispose()
         {
-
         }
 
         void IDevToolsMessageObserver.OnDevToolsAgentAttached(IBrowser browser)
         {
-
         }
 
         public CefSharpDevMessageObserver OnDevToolsAgentDetached(Action<IBrowser> action)
@@ -28,8 +27,8 @@ namespace CefSharp.Puppeteer
         public void OnDevToolsAgentDetached(IBrowser browser)
         {
             _onDevtoolsAgentDetached?.Invoke(browser);
-
         }
+
         void IDevToolsMessageObserver.OnDevToolsEvent(IBrowser browser, string method, Stream parameters)
         {
             throw new NotImplementedException();

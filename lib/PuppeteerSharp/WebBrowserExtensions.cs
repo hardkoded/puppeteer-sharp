@@ -23,7 +23,7 @@ namespace CefSharp.Puppeteer
         {
             var browserHost = chromiumWebBrowser.GetBrowserHost();
 
-            if(browserHost == null)
+            if (browserHost == null)
             {
                 CefSharp.WebBrowserExtensions.ThrowExceptionIfBrowserHostNull(browserHost);
             }

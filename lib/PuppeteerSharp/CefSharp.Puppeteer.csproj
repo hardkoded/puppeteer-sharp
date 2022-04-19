@@ -1,7 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1;net472</TargetFrameworks>
+    <SynchReleaseVersion>false</SynchReleaseVersion>
+    <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
+    <CodeAnalysisRuleSet>../PuppeteerSharp.ruleset</CodeAnalysisRuleSet>
+    <AssemblyName>CefSharp.Puppeteer</AssemblyName>
+    <RootNamespace>CefSharp.Puppeteer</RootNamespace>
     <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">true</GeneratePackageOnBuild>
     <Authors>Alex Maitland, Darío Kondratiuk</Authors>
     <Owners>amaitland</Owners>
@@ -12,7 +17,7 @@
     <Title>CefSharp.Puppeteer</Title>
     <Description>CefSharp Puppeteer - A cutdown version of PuppeteerSharp for use with CefSharp</Description>
     <PackageId>CefSharp.Puppeteer</PackageId>
-    <PackageReleaseNotes>Initial release</PackageReleaseNotes>
+    <PackageReleaseNotes>Simplify Package structure</PackageReleaseNotes>
     <VersionPrefix>1.0.0</VersionPrefix>
     <!--<VersionSuffix>preview</VersionSuffix>-->
     <DebugType>embedded</DebugType>
@@ -22,36 +27,31 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <!-- Don't need to copy the CEF files to our output folder so set NoAction -->
     <CefSharpBuildAction>NoAction</CefSharpBuildAction>
-    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
   </PropertyGroup>
   <Import Project="../Common/SignAssembly.props" />
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
-    <PackageReference Include="CefSharp.Common" Version="100.0.230"/>
+    <PackageReference Include="CefSharp.Common" Version="100.0.230" />
+    <Reference Include="System.Net.Http"/>
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' != 'net472'">
-    <PackageReference Include="CefSharp.Common.NETCore" Version="100.0.230"/>
+    <PackageReference Include="CefSharp.Common.NETCore" Version="100.0.230" />
   </ItemGroup>
-
+  
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.2" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.1.0" />
     <PackageReference Include="SharpZipLib" Version="1.3.3" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\PuppeteerSharp\CefSharp.Puppeteer.Embedded.csproj">
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-      <IncludeAssets>CefSharp.Puppeteer.Embedded.dll</IncludeAssets>
-    </ProjectReference>
-  </ItemGroup>
-
-  <Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">
-    <ItemGroup>
-      <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths->WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))"/>
-    </ItemGroup>
-  </Target>
 </Project>

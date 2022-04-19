@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CefSharp.Puppeteer.Messaging;
@@ -15,6 +14,7 @@ namespace CefSharp.Puppeteer.PageAccessibility
     /// Most of the accessibility tree gets filtered out when converting from Blink AX Tree to Platform-specific AX-Tree or by assistive technologies themselves.
     /// By default, Puppeteer tries to approximate this filtering, exposing only the "interesting" nodes of the tree.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1724:Type names should not match namespaces", Justification = "Matches Puppeteer naming.")]
     public class Accessibility
     {
         private readonly Connection _client;

@@ -21,6 +21,7 @@ namespace CefSharp.Puppeteer.Helpers
             return dic.ToDictionary(entry => entry.Key, entry => entry.Value);
         }
 
+#if NETFRAMEWORK
         /// <summary>
         /// GetValue or default
         /// </summary>
@@ -39,5 +40,6 @@ namespace CefSharp.Puppeteer.Helpers
             dictionary.TryGetValue(key, out TValue ret);
             return ret;
         }
+#endif
     }
 }

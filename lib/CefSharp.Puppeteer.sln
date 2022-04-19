@@ -2,7 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30404.54
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CefSharp.Puppeteer.Embedded", "PuppeteerSharp\CefSharp.Puppeteer.Embedded.csproj", "{19B9B1ED-AF6C-4DAF-8B73-401570111F88}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CefSharp.Puppeteer", "PuppeteerSharp\CefSharp.Puppeteer.csproj", "{19B9B1ED-AF6C-4DAF-8B73-401570111F88}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PuppeteerSharp.Tests", "PuppeteerSharp.Tests\PuppeteerSharp.Tests.csproj", "{1682289E-5ED3-405F-8ABC-01A3ED58CBC6}"
 EndProject
@@ -19,8 +19,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PuppeteerSharp.Xunit", "PuppeteerSharp.Xunit\PuppeteerSharp.Xunit.csproj", "{EE53767C-D321-4BCF-B372-57949F38AB40}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CefSharp.Puppeteer", "CefSharp.Puppeteer\CefSharp.Puppeteer.csproj", "{2BD150CB-DEBF-4816-8F15-762BD8F23283}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CefSharp.Puppeteer.Wpf.Example", "CefSharp.Puppeteer.Wpf.Example\CefSharp.Puppeteer.Wpf.Example.csproj", "{D9163132-1A78-40A8-9E39-F2C74FB29353}"
 EndProject
@@ -96,18 +94,6 @@ Global
 		{EE53767C-D321-4BCF-B372-57949F38AB40}.Release|x64.Build.0 = Release|Any CPU
 		{EE53767C-D321-4BCF-B372-57949F38AB40}.Release|x86.ActiveCfg = Release|Any CPU
 		{EE53767C-D321-4BCF-B372-57949F38AB40}.Release|x86.Build.0 = Release|Any CPU
-		{2BD150CB-DEBF-4816-8F15-762BD8F23283}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2BD150CB-DEBF-4816-8F15-762BD8F23283}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2BD150CB-DEBF-4816-8F15-762BD8F23283}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{2BD150CB-DEBF-4816-8F15-762BD8F23283}.Debug|x64.Build.0 = Debug|Any CPU
-		{2BD150CB-DEBF-4816-8F15-762BD8F23283}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{2BD150CB-DEBF-4816-8F15-762BD8F23283}.Debug|x86.Build.0 = Debug|Any CPU
-		{2BD150CB-DEBF-4816-8F15-762BD8F23283}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2BD150CB-DEBF-4816-8F15-762BD8F23283}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2BD150CB-DEBF-4816-8F15-762BD8F23283}.Release|x64.ActiveCfg = Release|Any CPU
-		{2BD150CB-DEBF-4816-8F15-762BD8F23283}.Release|x64.Build.0 = Release|Any CPU
-		{2BD150CB-DEBF-4816-8F15-762BD8F23283}.Release|x86.ActiveCfg = Release|Any CPU
-		{2BD150CB-DEBF-4816-8F15-762BD8F23283}.Release|x86.Build.0 = Release|Any CPU
 		{D9163132-1A78-40A8-9E39-F2C74FB29353}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D9163132-1A78-40A8-9E39-F2C74FB29353}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D9163132-1A78-40A8-9E39-F2C74FB29353}.Debug|x64.ActiveCfg = Debug|Any CPU
