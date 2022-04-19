@@ -13,7 +13,9 @@
     - name: How to test a Chrome Extension
       href: ChromeExtension.md
     - name: How to wait for a javascript expression to be true
-    - href: Page.WaitForFunctionAsync.md
+      href: Page.WaitForFunctionAsync.md
+    - name: How to log network requests
+      href: Page.Request.md
 - name: Advanced
   items:
     - name: How to log CDP communication
