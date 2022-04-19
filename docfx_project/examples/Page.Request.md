@@ -7,7 +7,8 @@ You need to monitor the outgoing network requests.
 
 ## Solution
 
-Use `Page.Request` event to monitor network requests
+Use `Page.Request` event to monitor network requests.
+
 
 ```cs
 using var browser = await Puppeteer.LaunchAsync(new () { Headless = true });
