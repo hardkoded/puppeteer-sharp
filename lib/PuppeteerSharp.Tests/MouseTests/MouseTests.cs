@@ -222,11 +222,13 @@ namespace PuppeteerSharp.Tests.MouseTests
 
             await DevToolsContext.Mouse.ClickAsync(30, 40);
 
+            var actual = await DevToolsContext.EvaluateExpressionAsync<DomPointInternal>("result");
+
             Assert.Equal(new DomPointInternal()
             {
                 X = 30,
                 Y = 40
-            }, await DevToolsContext.EvaluateExpressionAsync<DomPointInternal>("result"));
+            }, actual);
         }
 
         internal struct WheelEventInternal
