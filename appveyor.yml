@@ -23,7 +23,7 @@ test_script:
 - cmd: >-
     cd .\lib\PuppeteerSharp.Tests
 
-    dotnet test -f %framework% -s test.runsettings
+    dotnet test -f %framework% -s test.runsettings --test-adapter-path:. --logger:Appveyor
     
 # Patch SDK Style `.csproj` file:
 # https://www.appveyor.com/docs/build-configuration/#net-core-csproj-files-patching

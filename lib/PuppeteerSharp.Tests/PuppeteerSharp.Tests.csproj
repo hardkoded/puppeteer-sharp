@@ -24,6 +24,7 @@
 	  <None Remove="Screenshots\**" />
 	</ItemGroup>
 	<ItemGroup>
+		<PackageReference Include="Appveyor.TestLogger" Version="2.0.0" />
 		<PackageReference Include="MarkdownSnippets.MsBuild" Version="24.2.2" PrivateAssets="All" />
 		<PackageReference Include="Serilog.Extensions.Logging.File" Version="2.0.0" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
