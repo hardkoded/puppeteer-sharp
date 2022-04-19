@@ -2,6 +2,7 @@ using CefSharp.Puppeteer;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -34,14 +35,14 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Network Events", "Page.Events.RequestServedFromCache")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact]
         public async Task PageEventsRequestServedFromCache()
         {
             var cached= new List<string>();
-            Page.RequestServedFromCache += (_, e) => cached.Add(e.Request.Url.Split('/').Last());
-            await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
+            DevToolsContext.RequestServedFromCache += (_, e) => cached.Add(e.Request.Url.Split('/').Last());
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
             Assert.Empty(cached);
-            await Page.ReloadAsync();
+            await DevToolsContext.ReloadAsync();
             Assert.Equal(new[] { "one-style.css" }, cached);
         }
 
