@@ -3,7 +3,7 @@ _Contributors: [Meir Blachman](https://github.com/meir017)_
 
 ## Problem
 
-You need to monitor the outgoing network requests
+You need to monitor the outgoing network requests.
 
 ## Solution
 
