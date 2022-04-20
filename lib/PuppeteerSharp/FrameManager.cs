@@ -36,8 +36,6 @@ namespace PuppeteerSharp
             Client.MessageReceived += Client_MessageReceived;
         }
 
-        #region Properties
-
         internal event EventHandler<FrameEventArgs> FrameAttached;
 
         internal event EventHandler<FrameEventArgs> FrameDetached;
@@ -57,9 +55,7 @@ namespace PuppeteerSharp
         internal Page Page { get; }
 
         internal TimeoutSettings TimeoutSettings { get; }
-        #endregion
 
-        #region Public Methods
         internal static async Task<FrameManager> CreateFrameManagerAsync(
             CDPSession client,
             Page page,
@@ -161,10 +157,6 @@ namespace PuppeteerSharp
                 return watcher.NavigationResponse;
             }
         }
-
-        #endregion
-
-        #region Private Methods
 
         private async void Client_MessageReceived(object sender, MessageEventArgs e)
         {
@@ -431,7 +423,5 @@ namespace PuppeteerSharp
         internal Task<Frame> GetFrameAsync(string frameId) => _asyncFrames.GetItemAsync(frameId);
 
         internal Task<Frame> TryGetFrameAsync(string frameId) => _asyncFrames.TryGetItemAsync(frameId);
-
-        #endregion
     }
 }

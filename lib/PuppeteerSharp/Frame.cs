@@ -58,7 +58,6 @@ namespace PuppeteerSharp
             }
         }
 
-        #region Properties
         /// <summary>
         /// Gets the child frames of the this frame
         /// </summary>
@@ -107,9 +106,6 @@ namespace PuppeteerSharp
         internal DOMWorld MainWorld { get; }
 
         internal DOMWorld SecondaryWorld { get; }
-        #endregion
-
-        #region Public Methods
 
         /// <summary>
         /// Navigates to an url
@@ -602,7 +598,5 @@ namespace PuppeteerSharp
             }
             ParentFrame = null;
         }
-
-        #endregion
     }
 }
