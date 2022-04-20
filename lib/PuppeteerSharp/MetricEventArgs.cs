@@ -9,16 +9,6 @@ namespace PuppeteerSharp
     public class MetricEventArgs : EventArgs
     {
         /// <summary>
-        /// Gets the title.
-        /// </summary>
-        /// <value>The title.</value>
-        public string Title { get; }
-        /// <summary>
-        /// Gets the metrics.
-        /// </summary>
-        /// <value>The metrics.</value>
-        public Dictionary<string, decimal> Metrics { get; }
-        /// <summary>
         /// Initializes a new instance of the <see cref="MetricEventArgs"/> class.
         /// </summary>
         /// <param name="title">Title.</param>
@@ -28,5 +18,15 @@ namespace PuppeteerSharp
             Title = title;
             Metrics = metrics;
         }
+        /// <summary>
+        /// Gets the title.
+        /// </summary>
+        /// <value>The title.</value>
+        public string Title { get; }
+        /// <summary>
+        /// Gets the metrics.
+        /// </summary>
+        /// <value>The metrics.</value>
+        public Dictionary<string, decimal> Metrics { get; }
     }
 }

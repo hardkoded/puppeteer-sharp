@@ -15,12 +15,12 @@ namespace PuppeteerSharp.Input
         private readonly CDPSession _client;
         private readonly HashSet<string> _pressedKeys = new HashSet<string>();
 
-        internal int Modifiers { get; set; }
-
         internal Keyboard(CDPSession client)
         {
             _client = client;
         }
+
+        internal int Modifiers { get; set; }
 
         /// <summary>
         /// Dispatches a <c>keydown</c> event

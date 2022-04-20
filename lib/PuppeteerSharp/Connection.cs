@@ -21,6 +21,17 @@ namespace PuppeteerSharp
         private readonly ILogger _logger;
         private readonly TaskQueue _callbackQueue = new TaskQueue();
 
+        private readonly ConcurrentDictionary<int, MessageTask> _callbacks;
+        private readonly ConcurrentDictionary<string, CDPSession> _sessions;
+        private readonly AsyncDictionaryHelper<string, CDPSession> _asyncSessions;
+        private int _lastId;
+
+        /// <summary>
+        /// Gets default web socket factory implementation.
+        /// </summary>
+        [Obsolete("Use " + nameof(WebSocketTransport) + "." + nameof(WebSocketTransport.DefaultWebSocketFactory) + " instead")]
+        public static readonly WebSocketFactory DefaultWebSocketFactory = WebSocketTransport.DefaultWebSocketFactory;
+
         internal Connection(string url, int delay, bool enqueueAsyncMessages, IConnectionTransport transport, ILoggerFactory loggerFactory = null)
         {
             LoggerFactory = loggerFactory ?? new LoggerFactory();
@@ -38,14 +49,18 @@ namespace PuppeteerSharp
             _asyncSessions = new AsyncDictionaryHelper<string, CDPSession>(_sessions, "Session {0} not found");
         }
 
-        #region Private Members
-        private readonly ConcurrentDictionary<int, MessageTask> _callbacks;
-        private readonly ConcurrentDictionary<string, CDPSession> _sessions;
-        private readonly AsyncDictionaryHelper<string, CDPSession> _asyncSessions;
-        private int _lastId;
-        #endregion
+        /// <summary>
+        /// Occurs when the connection is closed.
+        /// </summary>
+        public event EventHandler Disconnected;
 
-        #region Properties
+        /// <summary>
+        /// Occurs when a message from chromium is received.
+        /// </summary>
+        public event EventHandler<MessageEventArgs> MessageReceived;
+
+        internal event EventHandler<SessionAttachedEventArgs> SessionAttached;
+
         /// <summary>
         /// Gets the WebSocket URL.
         /// </summary>
@@ -65,18 +80,6 @@ namespace PuppeteerSharp
         public IConnectionTransport Transport { get; }
 
         /// <summary>
-        /// Occurs when the connection is closed.
-        /// </summary>
-        public event EventHandler Disconnected;
-
-        /// <summary>
-        /// Occurs when a message from chromium is received.
-        /// </summary>
-        public event EventHandler<MessageEventArgs> MessageReceived;
-
-        internal event EventHandler<SessionAttachedEventArgs> SessionAttached;
-
-        /// <summary>
         /// Gets a value indicating whether this <see cref="Connection"/> is closed.
         /// </summary>
         /// <value><c>true</c> if is closed; otherwise, <c>false</c>.</value>
@@ -94,10 +97,6 @@ namespace PuppeteerSharp
         public ILoggerFactory LoggerFactory { get; }
 
         internal AsyncMessageQueue MessageQueue { get; }
-
-        #endregion
-
-        #region Public Methods
 
         internal int GetMessageID() => Interlocked.Increment(ref _lastId);
 
@@ -152,7 +151,6 @@ namespace PuppeteerSharp
         }
 
         internal bool HasPendingCallbacks() => _callbacks.Count != 0;
-        #endregion
 
         internal void Close(string closeReason)
         {
@@ -190,8 +188,6 @@ namespace PuppeteerSharp
         internal CDPSession GetSession(string sessionId) => _sessions.GetValueOrDefault(sessionId);
 
         internal Task<CDPSession> GetSessionAsync(string sessionId) => _asyncSessions.GetItemAsync(sessionId);
-
-        #region Private Methods
 
         private async void Transport_MessageReceived(object sender, MessageReceivedEventArgs e)
             => await _callbackQueue.Enqueue(() => ProcessMessage(e)).ConfigureAwait(false);
@@ -282,16 +278,6 @@ namespace PuppeteerSharp
 
         private void Transport_Closed(object sender, TransportClosedEventArgs e) => Close(e.CloseReason);
 
-        #endregion
-
-        #region Static Methods
-
-        /// <summary>
-        /// Gets default web socket factory implementation.
-        /// </summary>
-        [Obsolete("Use " + nameof(WebSocketTransport) + "." + nameof(WebSocketTransport.DefaultWebSocketFactory) + " instead")]
-        public static readonly WebSocketFactory DefaultWebSocketFactory = WebSocketTransport.DefaultWebSocketFactory;
-
         internal static async Task<Connection> Create(string url, IConnectionOptions connectionOptions, ILoggerFactory loggerFactory = null, CancellationToken cancellationToken = default)
         {
 #pragma warning disable 618
@@ -331,6 +317,5 @@ namespace PuppeteerSharp
             Transport.Dispose();
             _callbackQueue.Dispose();
         }
-        #endregion
     }
 }

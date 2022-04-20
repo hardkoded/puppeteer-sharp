@@ -7,7 +7,6 @@ namespace PuppeteerSharp.Input
     {
         private readonly string _value;
 
-        private Key(string value) => _value = value;
         /// <summary>
         /// Cancel key.
         /// </summary>
@@ -413,8 +412,7 @@ namespace PuppeteerSharp.Input
         /// </summary>
         public static readonly Key ZoomOut = new Key("ZoomOut");
 
-        /// <inheritdoc />
-        public override string ToString() => _value;
+        private Key(string value) => _value = value;
 
         /// <summary>
         /// Converts the <paramref name="key"/> to its underlining string value
@@ -425,5 +423,8 @@ namespace PuppeteerSharp.Input
         {
             return key._value;
         }
+
+        /// <inheritdoc />
+        public override string ToString() => _value;
     }
 }

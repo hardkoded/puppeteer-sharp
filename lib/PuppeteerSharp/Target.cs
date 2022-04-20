@@ -19,10 +19,6 @@ namespace PuppeteerSharp
         private Task<Worker> _workerTask;
         #endregion
 
-        internal bool IsInitialized { get; set; }
-
-        internal TargetInfo TargetInfo { get; set; }
-
         internal Target(
             TargetInfo targetInfo,
             Func<Task<CDPSession>> sessionFactory,
@@ -111,6 +107,10 @@ namespace PuppeteerSharp
         internal TaskCompletionSource<bool> CloseTaskWrapper { get; }
 
         internal Task<Page> PageTask { get; set; }
+
+        internal bool IsInitialized { get; set; }
+
+        internal TargetInfo TargetInfo { get; set; }
         #endregion
 
         /// <summary>

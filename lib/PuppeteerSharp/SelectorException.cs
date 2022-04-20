@@ -17,12 +17,6 @@ namespace PuppeteerSharp
     public class SelectorException : PuppeteerException
     {
         /// <summary>
-        /// Gets the selector.
-        /// </summary>
-        /// <value>The selector.</value>
-        public string Selector { get; }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="SelectorException"/> class.
         /// </summary>
         public SelectorException()
@@ -63,5 +57,11 @@ namespace PuppeteerSharp
         protected SelectorException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
+
+        /// <summary>
+        /// Gets the selector.
+        /// </summary>
+        /// <value>The selector.</value>
+        public string Selector { get; }
     }
 }

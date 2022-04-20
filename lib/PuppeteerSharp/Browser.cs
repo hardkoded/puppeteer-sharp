@@ -42,6 +42,11 @@ namespace PuppeteerSharp
         /// </summary>
         private const int CloseTimeout = 5000;
 
+        private readonly ConcurrentDictionary<string, BrowserContext> _contexts;
+        private readonly ILogger<Browser> _logger;
+        private readonly Func<TargetInfo, bool> _targetFilterCallback;
+        private Task _closeTask;
+
         internal Browser(
             Connection connection,
             string[] contextIds,
@@ -66,19 +71,6 @@ namespace PuppeteerSharp
             _logger = Connection.LoggerFactory.CreateLogger<Browser>();
             _targetFilterCallback = targetFilter ?? ((TargetInfo _) => true);
         }
-
-        #region Private members
-
-        internal IDictionary<string, Target> TargetsMap { get; }
-
-        private readonly ConcurrentDictionary<string, BrowserContext> _contexts;
-        private readonly ILogger<Browser> _logger;
-        private readonly Func<TargetInfo, bool> _targetFilterCallback;
-        private Task _closeTask;
-
-        #endregion
-
-        #region Properties
 
         /// <summary>
         /// Raised when the <see cref="Browser"/> gets closed.
@@ -151,14 +143,6 @@ namespace PuppeteerSharp
         /// <value>The default context.</value>
         public BrowserContext DefaultContext { get; }
 
-        internal TaskQueue ScreenshotTaskQueue { get; set; }
-
-        internal Connection Connection { get; }
-
-        internal ViewPortOptions DefaultViewport { get; }
-
-        internal LauncherBase Launcher { get; set; }
-
         /// <summary>
         /// Dafault wait time in milliseconds. Defaults to 30 seconds.
         /// </summary>
@@ -167,9 +151,21 @@ namespace PuppeteerSharp
         /// Indicates that the browser is connected.
         /// </summary>
         public bool IsConnected => !Connection.IsClosed;
-        #endregion
 
-        #region Public Methods
+        /// <summary>
+        /// A target associated with the browser.
+        /// </summary>
+        public Target Target => Targets().FirstOrDefault(t => t.Type == TargetType.Browser);
+
+        internal TaskQueue ScreenshotTaskQueue { get; set; }
+
+        internal Connection Connection { get; }
+
+        internal ViewPortOptions DefaultViewport { get; }
+
+        internal LauncherBase Launcher { get; set; }
+
+        internal IDictionary<string, Target> TargetsMap { get; }
 
         /// <summary>
         /// Creates a new page
@@ -182,11 +178,6 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>An Array of all active targets</returns>
         public Target[] Targets() => TargetsMap.Values.Where(target => target.IsInitialized).ToArray();
-
-        /// <summary>
-        /// A target associated with the browser.
-        /// </summary>
-        public Target Target => Targets().FirstOrDefault(t => t.Type == TargetType.Browser);
 
         /// <summary>
         /// Creates a new incognito browser context. This won't share cookies/cache with other browser contexts.
@@ -366,10 +357,6 @@ namespace PuppeteerSharp
             Closed?.Invoke(this, new EventArgs());
         }
 
-        #endregion
-
-        #region Private Methods
-
         internal void ChangeTarget(Target target)
         {
             var args = new TargetChangedArgs { Target = target };
@@ -534,9 +521,6 @@ namespace PuppeteerSharp
 
             return browser;
         }
-        #endregion
-
-        #region IDisposable
 
         /// <inheritdoc />
         public void Dispose()
@@ -555,17 +539,11 @@ namespace PuppeteerSharp
                 _ => ScreenshotTaskQueue.DisposeAsync(),
                 TaskScheduler.Default);
 
-        #endregion
-
-        #region IAsyncDisposable
-
         /// <summary>
         /// Closes <see cref="Connection"/> and any Chromium <see cref="Process"/> that was
         /// created by Puppeteer.
         /// </summary>
         /// <returns>ValueTask</returns>
         public ValueTask DisposeAsync() => new ValueTask(CloseAsync());
-
-        #endregion
     }
 }

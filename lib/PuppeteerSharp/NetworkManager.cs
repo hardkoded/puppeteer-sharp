@@ -40,8 +40,6 @@ namespace PuppeteerSharp
             _logger = _client.Connection.LoggerFactory.CreateLogger<NetworkManager>();
         }
 
-        internal Dictionary<string, string> ExtraHTTPHeaders => _extraHTTPHeaders?.Clone();
-
         internal event EventHandler<ResponseCreatedEventArgs> Response;
 
         internal event EventHandler<RequestEventArgs> Request;
@@ -51,6 +49,8 @@ namespace PuppeteerSharp
         internal event EventHandler<RequestEventArgs> RequestFailed;
 
         internal event EventHandler<RequestEventArgs> RequestServedFromCache;
+
+        internal Dictionary<string, string> ExtraHTTPHeaders => _extraHTTPHeaders?.Clone();
 
         internal FrameManager FrameManager { get; set; }
 

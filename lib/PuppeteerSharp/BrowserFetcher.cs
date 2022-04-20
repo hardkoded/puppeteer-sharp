@@ -56,52 +56,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Default Chromium revision.
         /// </summary>
-        [Obsolete("Use DefaultChromiumRevision instead")]
-        public static int DefaultRevision { get; } = int.Parse(DefaultChromiumRevision, CultureInfo.CurrentCulture.NumberFormat);
-
-        /// <summary>
-        /// Default Chromium revision.
-        /// </summary>
         public const string DefaultChromiumRevision = "970485";
-
-        /// <summary>
-        /// Default Firefox revision.
-        /// </summary>
-        public string DefaultFirefoxRevision { get; private set; } = "latest";
-
-        /// <summary>
-        /// Gets the downloads folder.
-        /// </summary>
-        public string DownloadsFolder { get; }
-
-        /// <summary>
-        /// A download host to be used. Defaults to https://storage.googleapis.com.
-        /// </summary>
-        public string DownloadHost { get; }
-
-        /// <summary>
-        /// Gets the platform.
-        /// </summary>
-        public Platform Platform { get; }
-
-        /// <summary>
-        /// Gets the product.
-        /// </summary>
-        public Product Product { get; }
-
-        /// <summary>
-        /// Proxy used by the WebClient in <see cref="DownloadAsync(int)"/> and <see cref="CanDownloadAsync(int)"/>
-        /// </summary>
-        public IWebProxy WebProxy
-        {
-            get => _webClient.Proxy;
-            set => _webClient.Proxy = value;
-        }
-
-        /// <summary>
-        /// Occurs when download progress in <see cref="DownloadAsync(int)"/> changes.
-        /// </summary>
-        public event DownloadProgressChangedEventHandler DownloadProgressChanged;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BrowserFetcher"/> class.
@@ -141,6 +96,51 @@ namespace PuppeteerSharp
             Platform = options.Platform ?? GetCurrentPlatform();
             Product = options.Product;
             _customFileDownload = options.CustomFileDownload ?? _webClient.DownloadFileTaskAsync;
+        }
+
+        /// <summary>
+        /// Occurs when download progress in <see cref="DownloadAsync(int)"/> changes.
+        /// </summary>
+        public event DownloadProgressChangedEventHandler DownloadProgressChanged;
+
+        /// <summary>
+        /// Default Chromium revision.
+        /// </summary>
+        [Obsolete("Use DefaultChromiumRevision instead")]
+        public static int DefaultRevision { get; } = int.Parse(DefaultChromiumRevision, CultureInfo.CurrentCulture.NumberFormat);
+
+        /// <summary>
+        /// Default Firefox revision.
+        /// </summary>
+        public string DefaultFirefoxRevision { get; private set; } = "latest";
+
+        /// <summary>
+        /// Gets the downloads folder.
+        /// </summary>
+        public string DownloadsFolder { get; }
+
+        /// <summary>
+        /// A download host to be used. Defaults to https://storage.googleapis.com.
+        /// </summary>
+        public string DownloadHost { get; }
+
+        /// <summary>
+        /// Gets the platform.
+        /// </summary>
+        public Platform Platform { get; }
+
+        /// <summary>
+        /// Gets the product.
+        /// </summary>
+        public Product Product { get; }
+
+        /// <summary>
+        /// Proxy used by the WebClient in <see cref="DownloadAsync(int)"/> and <see cref="CanDownloadAsync(int)"/>
+        /// </summary>
+        public IWebProxy WebProxy
+        {
+            get => _webClient.Proxy;
+            set => _webClient.Proxy = value;
         }
 
         /// <summary>

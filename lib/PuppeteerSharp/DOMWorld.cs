@@ -17,10 +17,6 @@ namespace PuppeteerSharp
         private TaskCompletionSource<ExecutionContext> _contextResolveTaskWrapper;
         private TaskCompletionSource<ElementHandle> _documentCompletionSource;
 
-        internal ICollection<WaitTask> WaitTasks { get; set; }
-
-        internal Frame Frame { get; }
-
         public DOMWorld(FrameManager frameManager, Frame frame, TimeoutSettings timeoutSettings)
         {
             _frameManager = frameManager;
@@ -32,6 +28,12 @@ namespace PuppeteerSharp
             WaitTasks = new ConcurrentSet<WaitTask>();
             _detached = false;
         }
+
+        internal ICollection<WaitTask> WaitTasks { get; set; }
+
+        internal Frame Frame { get; }
+
+        internal bool HasContext => _contextResolveTaskWrapper?.Task.IsCompleted == true;
 
         internal void SetContext(ExecutionContext context)
         {
@@ -49,8 +51,6 @@ namespace PuppeteerSharp
                 _contextResolveTaskWrapper = new TaskCompletionSource<ExecutionContext>(TaskCreationOptions.RunContinuationsAsynchronously);
             }
         }
-
-        internal bool HasContext => _contextResolveTaskWrapper?.Task.IsCompleted == true;
 
         internal void Detach()
         {

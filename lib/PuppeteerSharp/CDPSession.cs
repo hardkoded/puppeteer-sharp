@@ -37,6 +37,8 @@ namespace PuppeteerSharp
     /// </summary>
     public class CDPSession
     {
+        private readonly ConcurrentDictionary<int, MessageTask> _callbacks;
+
         internal CDPSession(Connection connection, TargetType targetType, string sessionId)
         {
             Connection = connection;
@@ -46,11 +48,18 @@ namespace PuppeteerSharp
             _callbacks = new ConcurrentDictionary<int, MessageTask>();
         }
 
-        #region Private Members
-        private readonly ConcurrentDictionary<int, MessageTask> _callbacks;
-        #endregion
+        /// <summary>
+        /// Occurs when message received from Chromium.
+        /// </summary>
+        public event EventHandler<MessageEventArgs> MessageReceived;
 
-        #region Properties
+        /// <summary>
+        /// Occurs when the connection is closed.
+        /// </summary>
+        public event EventHandler Disconnected;
+
+        internal event EventHandler<SessionAttachedEventArgs> SessionAttached;
+
         /// <summary>
         /// Gets the target type.
         /// </summary>
@@ -70,18 +79,6 @@ namespace PuppeteerSharp
         internal Connection Connection { get; private set; }
 
         /// <summary>
-        /// Occurs when message received from Chromium.
-        /// </summary>
-        public event EventHandler<MessageEventArgs> MessageReceived;
-
-        /// <summary>
-        /// Occurs when the connection is closed.
-        /// </summary>
-        public event EventHandler Disconnected;
-
-        internal event EventHandler<SessionAttachedEventArgs> SessionAttached;
-
-        /// <summary>
         /// Gets a value indicating whether this <see cref="CDPSession"/> is closed.
         /// </summary>
         /// <value><c>true</c> if is closed; otherwise, <c>false</c>.</value>
@@ -97,9 +94,6 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The logger factory.</value>
         public ILoggerFactory LoggerFactory => Connection.LoggerFactory;
-        #endregion
-
-        #region Public Methods
 
         internal void Send(string method, object args = null)
             => _ = SendAsync(method, args, false);
@@ -185,10 +179,6 @@ namespace PuppeteerSharp
 
         internal bool HasPendingCallbacks() => _callbacks.Count != 0;
 
-        #endregion
-
-        #region Private Methods
-
         internal void OnMessage(ConnectionResponse obj)
         {
             var id = obj.Id;
@@ -232,7 +222,5 @@ namespace PuppeteerSharp
 
         internal void OnSessionAttached(CDPSession session)
             => SessionAttached?.Invoke(this, new SessionAttachedEventArgs { Session = session });
-
-        #endregion
     }
 }

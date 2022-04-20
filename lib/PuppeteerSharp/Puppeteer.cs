@@ -27,6 +27,41 @@ namespace PuppeteerSharp
         internal static string[] DefaultArgs => ChromiumLauncher.DefaultArgs;
 
         /// <summary>
+        /// Returns a list of devices to be used with <seealso cref="Page.EmulateAsync(DeviceDescriptor)"/>.
+        /// </summary>
+        /// <example>
+        /// <code>
+        ///<![CDATA[
+        /// var iPhone = Puppeteer.Devices[DeviceDescriptorName.IPhone6];
+        /// using(var page = await browser.NewPageAsync())
+        /// {
+        ///     await page.EmulateAsync(iPhone);
+        ///     await page.goto('https://www.google.com');
+        /// }
+        /// ]]>
+        /// </code>
+        /// </example>
+        public static IReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor> Devices => DeviceDescriptors.ToReadOnly();
+
+        /// <summary>
+        /// Returns a list of network conditions to be used with <seealso cref="Page.EmulateNetworkConditionsAsync(NetworkConditions)"/>.
+        /// Actual list of conditions can be found in <seealso cref="PredefinedNetworkConditions.Conditions"/>.
+        /// </summary>
+        /// <example>
+        /// <code>
+        ///<![CDATA[
+        /// var slow3G = Puppeteer.NetworkConditions["Slow 3G"];
+        /// using(var page = await browser.NewPageAsync())
+        /// {
+        ///     await page.EmulateNetworkConditionsAsync(slow3G);
+        ///     await page.goto('https://www.google.com');
+        /// }
+        /// ]]>
+        /// </code>
+        /// </example>
+        public static IReadOnlyDictionary<string, NetworkConditions> NetworkConditions => PredefinedNetworkConditions.ToReadOnly();
+
+        /// <summary>
         /// Returns an array of argument based on the options provided and the platform where the library is running
         /// </summary>
         /// <returns>Chromium arguments.</returns>
@@ -73,40 +108,5 @@ namespace PuppeteerSharp
         /// <param name="options">Options.</param>
         public static BrowserFetcher CreateBrowserFetcher(BrowserFetcherOptions options)
             => new BrowserFetcher(options);
-
-        /// <summary>
-        /// Returns a list of devices to be used with <seealso cref="Page.EmulateAsync(DeviceDescriptor)"/>.
-        /// </summary>
-        /// <example>
-        /// <code>
-        ///<![CDATA[
-        /// var iPhone = Puppeteer.Devices[DeviceDescriptorName.IPhone6];
-        /// using(var page = await browser.NewPageAsync())
-        /// {
-        ///     await page.EmulateAsync(iPhone);
-        ///     await page.goto('https://www.google.com');
-        /// }
-        /// ]]>
-        /// </code>
-        /// </example>
-        public static IReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor> Devices => DeviceDescriptors.ToReadOnly();
-
-        /// <summary>
-        /// Returns a list of network conditions to be used with <seealso cref="Page.EmulateNetworkConditionsAsync(NetworkConditions)"/>.
-        /// Actual list of conditions can be found in <seealso cref="PredefinedNetworkConditions.Conditions"/>.
-        /// </summary>
-        /// <example>
-        /// <code>
-        ///<![CDATA[
-        /// var slow3G = Puppeteer.NetworkConditions["Slow 3G"];
-        /// using(var page = await browser.NewPageAsync())
-        /// {
-        ///     await page.EmulateNetworkConditionsAsync(slow3G);
-        ///     await page.goto('https://www.google.com');
-        /// }
-        /// ]]>
-        /// </code>
-        /// </example>
-        public static IReadOnlyDictionary<string, NetworkConditions> NetworkConditions => PredefinedNetworkConditions.ToReadOnly();
     }
 }

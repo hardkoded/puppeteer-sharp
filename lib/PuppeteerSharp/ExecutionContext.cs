@@ -24,8 +24,6 @@ namespace PuppeteerSharp
         private readonly CDPSession _client;
         private readonly int _contextId;
 
-        internal DOMWorld World { get; }
-
         internal ExecutionContext(
             CDPSession client,
             ContextPayload contextPayload,
@@ -35,6 +33,8 @@ namespace PuppeteerSharp
             _contextId = contextPayload.Id;
             World = world;
         }
+
+        internal DOMWorld World { get; }
 
         /// <summary>
         /// Frame associated with this execution context.

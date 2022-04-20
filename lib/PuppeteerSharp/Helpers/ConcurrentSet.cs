@@ -116,28 +116,6 @@ namespace PuppeteerSharp.Helpers
             _dictionary.Clear();
         }
 
-        public struct KeyEnumerator
-        {
-            private readonly IEnumerator<KeyValuePair<T, byte>> _kvpEnumerator;
-
-            internal KeyEnumerator(IEnumerable<KeyValuePair<T, byte>> data)
-            {
-                _kvpEnumerator = data.GetEnumerator();
-            }
-
-            public T Current => _kvpEnumerator.Current.Key;
-
-            public bool MoveNext()
-            {
-                return _kvpEnumerator.MoveNext();
-            }
-
-            public void Reset()
-            {
-                _kvpEnumerator.Reset();
-            }
-        }
-
         /// <summary>
         /// Obtain an enumerator that iterates through the elements in the set.
         /// </summary>
@@ -184,6 +162,28 @@ namespace PuppeteerSharp.Helpers
             foreach (var element in this)
             {
                 array[arrayIndex++] = element;
+            }
+        }
+
+        public struct KeyEnumerator
+        {
+            private readonly IEnumerator<KeyValuePair<T, byte>> _kvpEnumerator;
+
+            internal KeyEnumerator(IEnumerable<KeyValuePair<T, byte>> data)
+            {
+                _kvpEnumerator = data.GetEnumerator();
+            }
+
+            public T Current => _kvpEnumerator.Current.Key;
+
+            public bool MoveNext()
+            {
+                return _kvpEnumerator.MoveNext();
+            }
+
+            public void Reset()
+            {
+                _kvpEnumerator.Reset();
             }
         }
     }

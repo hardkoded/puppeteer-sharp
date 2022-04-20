@@ -93,6 +93,13 @@ namespace PuppeteerSharp
         public bool OmitBackground { get; set; }
 
         /// <inheritdoc/>
+        public static bool operator ==(PdfOptions left, PdfOptions right)
+            => EqualityComparer<PdfOptions>.Default.Equals(left, right);
+
+        /// <inheritdoc/>
+        public static bool operator !=(PdfOptions left, PdfOptions right) => !(left == right);
+
+        /// <inheritdoc/>
         public override bool Equals(object obj)
         {
             if (obj == null || GetType() != obj.GetType())
@@ -136,12 +143,5 @@ namespace PuppeteerSharp
                 ^ EqualityComparer<object>.Default.GetHashCode(Height)
                 ^ EqualityComparer<MarginOptions>.Default.GetHashCode(MarginOptions)
                 ^ PreferCSSPageSize.GetHashCode();
-
-        /// <inheritdoc/>
-        public static bool operator ==(PdfOptions left, PdfOptions right)
-            => EqualityComparer<PdfOptions>.Default.Equals(left, right);
-
-        /// <inheritdoc/>
-        public static bool operator !=(PdfOptions left, PdfOptions right) => !(left == right);
     }
 }

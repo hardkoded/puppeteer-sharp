@@ -58,29 +58,6 @@ namespace PuppeteerSharp
             BodyLoadedTaskWrapper = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         }
 
-        private string ParseStatusTextFromExtrInfo(ResponseReceivedExtraInfoResponse extraInfo)
-        {
-            if (extraInfo == null || extraInfo.HeadersText == null)
-            {
-                return null;
-            }
-
-            var lines = extraInfo.HeadersText.Split('\r');
-            if (lines.Length == 0)
-            {
-                return null;
-            }
-            var firstLine = lines[0];
-
-            var match = ExtraInfoLines.Match(firstLine);
-            if (!match.Success)
-            {
-                return null;
-            }
-            var statusText = match.Groups["text"].Value;
-            return statusText;
-        }
-
         /// <summary>
         /// Contains the URL of the response.
         /// </summary>
@@ -135,6 +112,29 @@ namespace PuppeteerSharp
         /// A <see cref="Frame"/> that initiated this request. Or null if navigating to error pages.
         /// </summary>
         public Frame Frame => Request.Frame;
+
+        private string ParseStatusTextFromExtrInfo(ResponseReceivedExtraInfoResponse extraInfo)
+        {
+            if (extraInfo == null || extraInfo.HeadersText == null)
+            {
+                return null;
+            }
+
+            var lines = extraInfo.HeadersText.Split('\r');
+            if (lines.Length == 0)
+            {
+                return null;
+            }
+            var firstLine = lines[0];
+
+            var match = ExtraInfoLines.Match(firstLine);
+            if (!match.Success)
+            {
+                return null;
+            }
+            var statusText = match.Groups["text"].Value;
+            return statusText;
+        }
 
         /// <summary>
         /// Returns a Task which resolves to a buffer with response body

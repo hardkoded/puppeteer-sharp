@@ -61,6 +61,26 @@ namespace PuppeteerSharp
             { "mm", 3.78m }
         };
 
+        /// <summary>
+        /// List of supported metrics provided by the <see cref="Metrics"/> event.
+        /// </summary>
+        public static readonly IEnumerable<string> SupportedMetrics = new List<string>
+        {
+            "Timestamp",
+            "Documents",
+            "Frames",
+            "JSEventListeners",
+            "Nodes",
+            "LayoutCount",
+            "RecalcStyleCount",
+            "LayoutDuration",
+            "RecalcStyleDuration",
+            "ScriptDuration",
+            "TaskDuration",
+            "JSHeapUsedSize",
+            "JSHeapTotalSize"
+        };
+
         private Page(
             CDPSession client,
             Target target,
@@ -99,11 +119,6 @@ namespace PuppeteerSharp
                 },
                 TaskScheduler.Default);
         }
-
-        /// <summary>
-        /// Chrome DevTools Protocol session.
-        /// </summary>
-        public CDPSession Client { get; }
 
         /// <summary>
         /// Raised when the JavaScript <c>load</c> <see href="https://developer.mozilla.org/en-US/docs/Web/Events/load"/> event is dispatched.
@@ -237,6 +252,11 @@ namespace PuppeteerSharp
         public event EventHandler<PopupEventArgs> Popup;
 
         /// <summary>
+        /// Chrome DevTools Protocol session.
+        /// </summary>
+        public CDPSession Client { get; }
+
+        /// <summary>
         /// This setting will change the default maximum time for the following methods:
         /// - <see cref="GoToAsync(string, NavigationOptions)"/>
         /// - <see cref="GoBackAsync(NavigationOptions)"/>
@@ -331,26 +351,6 @@ namespace PuppeteerSharp
         /// Gets this page's viewport
         /// </summary>
         public ViewPortOptions Viewport { get; private set; }
-
-        /// <summary>
-        /// List of supported metrics provided by the <see cref="Metrics"/> event.
-        /// </summary>
-        public static readonly IEnumerable<string> SupportedMetrics = new List<string>
-        {
-            "Timestamp",
-            "Documents",
-            "Frames",
-            "JSEventListeners",
-            "Nodes",
-            "LayoutCount",
-            "RecalcStyleCount",
-            "LayoutDuration",
-            "RecalcStyleDuration",
-            "ScriptDuration",
-            "TaskDuration",
-            "JSHeapUsedSize",
-            "JSHeapTotalSize"
-        };
 
         /// <summary>
         /// Get the browser the page belongs to.
