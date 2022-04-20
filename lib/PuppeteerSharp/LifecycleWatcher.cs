@@ -70,7 +70,6 @@ namespace PuppeteerSharp
             CheckLifecycleComplete();
         }
 
-        #region Properties
         public Task<bool> SameDocumentNavigationTask => _sameDocumentNavigationTaskWrapper.Task;
 
         public Task<bool> NewDocumentNavigationTask => _newDocumentNavigationTaskWrapper.Task;
@@ -80,10 +79,6 @@ namespace PuppeteerSharp
         public Task TimeoutOrTerminationTask => _terminationTaskWrapper.Task.WithTimeout(_timeout, cancellationToken: _terminationCancellationToken.Token);
 
         public Task LifecycleTask => _lifecycleTaskWrapper.Task;
-
-        #endregion
-
-        #region Private methods
 
         private void OnClientDisconnected(object sender, EventArgs e)
             => Terminate(new TargetClosedException("Navigation failed because browser has disconnected!", _frameManager.Client.CloseReason));
@@ -173,7 +168,5 @@ namespace PuppeteerSharp
             _frameManager.Client.Disconnected -= OnClientDisconnected;
             _terminationCancellationToken.Cancel();
         }
-
-        #endregion
     }
 }

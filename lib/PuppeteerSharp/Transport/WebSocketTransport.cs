@@ -13,8 +13,6 @@ namespace PuppeteerSharp.Transport
     /// </summary>
     public class WebSocketTransport : IConnectionTransport
     {
-        #region Static fields
-
         /// <summary>
         /// Gets the default <see cref="WebSocketFactory"/>. This factory does not support Windows 7.
         /// </summary>
@@ -29,10 +27,6 @@ namespace PuppeteerSharp.Transport
         /// Gets the default <see cref="TransportTaskScheduler"/>
         /// </summary>
         public static readonly TransportTaskScheduler DefaultTransportScheduler = ScheduleTransportTask;
-
-        #endregion
-
-        #region Static methods
 
         private static async Task<WebSocket> CreateDefaultWebSocket(Uri url, IConnectionOptions options, CancellationToken cancellationToken)
         {
@@ -56,19 +50,11 @@ namespace PuppeteerSharp.Transport
                 TaskCreationOptions.LongRunning,
                 TaskScheduler.Default);
 
-        #endregion
-
-        #region Instance fields
-
         private readonly WebSocket _client;
         private readonly bool _queueRequests;
         private readonly TaskQueue _socketQueue = new TaskQueue();
         [SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", Justification = "False positive, as it is disposed in StopReading() method.")]
         private CancellationTokenSource _readerCancellationSource = new CancellationTokenSource();
-
-        #endregion
-
-        #region Constructor(s)
 
         /// <summary>
         /// Initialize the Transport
@@ -92,10 +78,6 @@ namespace PuppeteerSharp.Transport
             scheduler(GetResponseAsync, _readerCancellationSource.Token);
         }
 
-        #endregion
-
-        #region Properties
-
         /// <summary>
         /// Gets a value indicating whether this <see cref="PuppeteerSharp.Transport.IConnectionTransport"/> is closed.
         /// </summary>
@@ -108,10 +90,6 @@ namespace PuppeteerSharp.Transport
         /// Occurs when a message is received.
         /// </summary>
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
-
-        #endregion
-
-        #region  Public methods
 
         /// <summary>
         /// Sends a message using the transport.
@@ -160,10 +138,6 @@ namespace PuppeteerSharp.Transport
             _client?.Dispose();
             _socketQueue.Dispose();
         }
-
-        #endregion
-
-        #region Private methods
 
         /// <summary>
         /// Starts listening the socket
@@ -225,7 +199,5 @@ namespace PuppeteerSharp.Transport
                 Closed?.Invoke(this, new TransportClosedEventArgs(closeReason));
             }
         }
-
-        #endregion
     }
 }

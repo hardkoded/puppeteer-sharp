@@ -70,7 +70,6 @@ namespace PuppeteerSharp
             }
         }
 
-        #region Properties
         /// <summary>
         /// Gets the child frames of the this frame
         /// </summary>
@@ -107,9 +106,6 @@ namespace PuppeteerSharp
         public Frame ParentFrame { get; private set; }
 
         internal FrameManager FrameManager { get; }
-        #endregion
-
-        #region Public Methods
 
         /// <summary>
         /// Navigates to an url
@@ -602,7 +598,5 @@ namespace PuppeteerSharp
             }
             ParentFrame = null;
         }
-
-        #endregion
     }
 }

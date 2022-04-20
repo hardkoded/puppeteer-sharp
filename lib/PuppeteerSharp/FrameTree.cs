@@ -25,13 +25,9 @@ namespace PuppeteerSharp
             LoadChilds(this, frameTree);
         }
 
-        #region Properties
         internal FramePayload Frame { get; set; }
 
         internal List<FrameTree> Childs { get; set; }
-        #endregion
-
-        #region Private Functions
 
         private void LoadChilds(FrameTree frame, PageGetFrameTreeItem frameTree)
         {
@@ -59,7 +55,5 @@ namespace PuppeteerSharp
                 }
             }
         }
-
-        #endregion
     }
 }

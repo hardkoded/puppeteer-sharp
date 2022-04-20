@@ -13,13 +13,9 @@ namespace PuppeteerSharp
     /// </summary>
     public class Launcher
     {
-        #region Private members
-
         private readonly ILoggerFactory _loggerFactory;
         private bool _processLaunched;
         private Product _product;
-
-        #endregion
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Launcher"/> class.
@@ -27,14 +23,11 @@ namespace PuppeteerSharp
         /// <param name="loggerFactory">Logger factory.</param>
         public Launcher(ILoggerFactory loggerFactory = null) => _loggerFactory = loggerFactory ?? new LoggerFactory();
 
-        #region Properties
         /// <summary>
         /// Gets the process, if any was created by this launcher.
         /// </summary>
         public LauncherBase Process { get; private set; }
-        #endregion
 
-        #region Public methods
         /// <summary>
         /// The method launches a browser instance with given arguments. The browser will be closed when the Browser is disposed.
         /// </summary>
@@ -165,10 +158,6 @@ namespace PuppeteerSharp
         /// <returns>The executable path.</returns>
         public Task<string> GetExecutablePathAsync() => ResolveExecutablePathAsync();
 
-        #endregion
-
-        #region Private methods
-
         private void EnsureSingleLaunchOrConnect()
         {
             if (_processLaunched)
@@ -228,7 +217,5 @@ namespace PuppeteerSharp
             }
             return revisionInfo.ExecutablePath;
         }
-
-        #endregion
     }
 }
