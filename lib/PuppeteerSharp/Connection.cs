@@ -18,8 +18,6 @@ namespace PuppeteerSharp
     /// </summary>
     public class Connection : IDisposable
     {
-        #region Private Members
-
         private readonly ILogger _logger;
         private readonly TaskQueue _callbackQueue = new TaskQueue();
 
@@ -27,8 +25,6 @@ namespace PuppeteerSharp
         private readonly ConcurrentDictionary<string, CDPSession> _sessions;
         private readonly AsyncDictionaryHelper<string, CDPSession> _asyncSessions;
         private int _lastId;
-
-        #endregion
 
         /// <summary>
         /// Gets default web socket factory implementation.
@@ -65,7 +61,6 @@ namespace PuppeteerSharp
 
         internal event EventHandler<SessionAttachedEventArgs> SessionAttached;
 
-        #region Properties
         /// <summary>
         /// Gets the WebSocket URL.
         /// </summary>
@@ -102,10 +97,6 @@ namespace PuppeteerSharp
         public ILoggerFactory LoggerFactory { get; }
 
         internal AsyncMessageQueue MessageQueue { get; }
-
-        #endregion
-
-        #region Public Methods
 
         internal int GetMessageID() => Interlocked.Increment(ref _lastId);
 
@@ -160,7 +151,6 @@ namespace PuppeteerSharp
         }
 
         internal bool HasPendingCallbacks() => _callbacks.Count != 0;
-        #endregion
 
         internal void Close(string closeReason)
         {
@@ -198,8 +188,6 @@ namespace PuppeteerSharp
         internal CDPSession GetSession(string sessionId) => _sessions.GetValueOrDefault(sessionId);
 
         internal Task<CDPSession> GetSessionAsync(string sessionId) => _asyncSessions.GetItemAsync(sessionId);
-
-        #region Private Methods
 
         private async void Transport_MessageReceived(object sender, MessageReceivedEventArgs e)
             => await _callbackQueue.Enqueue(() => ProcessMessage(e)).ConfigureAwait(false);
@@ -290,10 +278,6 @@ namespace PuppeteerSharp
 
         private void Transport_Closed(object sender, TransportClosedEventArgs e) => Close(e.CloseReason);
 
-        #endregion
-
-        #region Static Methods
-
         internal static async Task<Connection> Create(string url, IConnectionOptions connectionOptions, ILoggerFactory loggerFactory = null, CancellationToken cancellationToken = default)
         {
 #pragma warning disable 618
@@ -333,6 +317,5 @@ namespace PuppeteerSharp
             Transport.Dispose();
             _callbackQueue.Dispose();
         }
-        #endregion
     }
 }

@@ -42,14 +42,10 @@ namespace PuppeteerSharp
         /// </summary>
         private const int CloseTimeout = 5000;
 
-        #region Private members
-
         private readonly ConcurrentDictionary<string, BrowserContext> _contexts;
         private readonly ILogger<Browser> _logger;
         private readonly Func<TargetInfo, bool> _targetFilterCallback;
         private Task _closeTask;
-
-        #endregion
 
         internal Browser(
             Connection connection,
@@ -75,8 +71,6 @@ namespace PuppeteerSharp
             _logger = Connection.LoggerFactory.CreateLogger<Browser>();
             _targetFilterCallback = targetFilter ?? ((TargetInfo _) => true);
         }
-
-        #region Events
 
         /// <summary>
         /// Raised when the <see cref="Browser"/> gets closed.
@@ -104,10 +98,6 @@ namespace PuppeteerSharp
         /// Raised when a target is destroyed, for example when a page is closed
         /// </summary>
         public event EventHandler<TargetChangedArgs> TargetDestroyed;
-
-        #endregion
-
-        #region Properties
 
         /// <summary>
         /// Gets the Browser websocket url
@@ -176,9 +166,6 @@ namespace PuppeteerSharp
         internal LauncherBase Launcher { get; set; }
 
         internal IDictionary<string, Target> TargetsMap { get; }
-        #endregion
-
-        #region Public Methods
 
         /// <summary>
         /// Creates a new page
@@ -370,10 +357,6 @@ namespace PuppeteerSharp
             Closed?.Invoke(this, new EventArgs());
         }
 
-        #endregion
-
-        #region Private Methods
-
         internal void ChangeTarget(Target target)
         {
             var args = new TargetChangedArgs { Target = target };
@@ -538,9 +521,6 @@ namespace PuppeteerSharp
 
             return browser;
         }
-        #endregion
-
-        #region IDisposable
 
         /// <inheritdoc />
         public void Dispose()
@@ -559,17 +539,11 @@ namespace PuppeteerSharp
                 _ => ScreenshotTaskQueue.DisposeAsync(),
                 TaskScheduler.Default);
 
-        #endregion
-
-        #region IAsyncDisposable
-
         /// <summary>
         /// Closes <see cref="Connection"/> and any Chromium <see cref="Process"/> that was
         /// created by Puppeteer.
         /// </summary>
         /// <returns>ValueTask</returns>
         public ValueTask DisposeAsync() => new ValueTask(CloseAsync());
-
-        #endregion
     }
 }
