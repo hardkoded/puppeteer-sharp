@@ -191,8 +191,8 @@ namespace CefSharp.Puppeteer
         public async Task HoverAsync()
         {
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
-            var (x, y) = await ClickablePointAsync().ConfigureAwait(false);
-            await DevToolsContext.Mouse.MoveAsync(x, y).ConfigureAwait(false);
+            var point = await ClickablePointAsync().ConfigureAwait(false);
+            await DevToolsContext.Mouse.MoveAsync(point.X, point.Y).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -204,8 +204,8 @@ namespace CefSharp.Puppeteer
         public async Task ClickAsync(ClickOptions options = null)
         {
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
-            var (x, y) = await ClickablePointAsync().ConfigureAwait(false);
-            await DevToolsContext.Mouse.ClickAsync(x, y, options).ConfigureAwait(false);
+            var point = await ClickablePointAsync().ConfigureAwait(false);
+            await DevToolsContext.Mouse.ClickAsync(point.X, point.Y, options).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -290,8 +290,8 @@ namespace CefSharp.Puppeteer
         public async Task TapAsync()
         {
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
-            var (x, y) = await ClickablePointAsync().ConfigureAwait(false);
-            await DevToolsContext.Touchscreen.TapAsync(x, y).ConfigureAwait(false);
+            var point = await ClickablePointAsync().ConfigureAwait(false);
+            await DevToolsContext.Touchscreen.TapAsync(point.X, point.Y).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -608,8 +608,8 @@ namespace CefSharp.Puppeteer
             }
 
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
-            var (x, y) = await ClickablePointAsync().ConfigureAwait(false);
-            await DevToolsContext.Mouse.DragEnterAsync(x, y, data).ConfigureAwait(false);
+            var point = await ClickablePointAsync().ConfigureAwait(false);
+            await DevToolsContext.Mouse.DragEnterAsync(point.X, point.Y, data).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -625,8 +625,8 @@ namespace CefSharp.Puppeteer
             }
 
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
-            var (x, y) = await ClickablePointAsync().ConfigureAwait(false);
-            await DevToolsContext.Mouse.DragOverAsync(x, y, data).ConfigureAwait(false);
+            var point = await ClickablePointAsync().ConfigureAwait(false);
+            await DevToolsContext.Mouse.DragOverAsync(point.X, point.Y, data).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -642,8 +642,8 @@ namespace CefSharp.Puppeteer
             }
 
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
-            var (x, y) = await ClickablePointAsync().ConfigureAwait(false);
-            await DevToolsContext.Mouse.DropAsync(x, y, data).ConfigureAwait(false);
+            var point = await ClickablePointAsync().ConfigureAwait(false);
+            await DevToolsContext.Mouse.DropAsync(point.X, point.Y, data).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -665,12 +665,16 @@ namespace CefSharp.Puppeteer
             }
 
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
-            var (x, y) = await ClickablePointAsync().ConfigureAwait(false);
+            var point = await ClickablePointAsync().ConfigureAwait(false);
             var targetPoint = await target.ClickablePointAsync().ConfigureAwait(false);
-            await DevToolsContext.Mouse.DragAndDropAsync(x, y, targetPoint.X, targetPoint.Y, delay).ConfigureAwait(false);
+            await DevToolsContext.Mouse.DragAndDropAsync(point.X, point.Y, targetPoint.X, targetPoint.Y, delay).ConfigureAwait(false);
         }
 
-        private async Task<(decimal X, decimal Y)> ClickablePointAsync()
+        /// <summary>
+        /// Gets a clickable point for the current element (currently the mid point).
+        /// </summary>
+        /// <returns>Task that resolves to the x, y point that describes the element's position.</returns>
+        public async Task<BoxModelPoint> ClickablePointAsync()
         {
             GetContentQuadsResponse result = null;
 
@@ -717,9 +721,11 @@ namespace CefSharp.Puppeteer
                 y += point.Y;
             }
 
-            return (
-                X: x / 4,
-                Y: y / 4);
+            return new BoxModelPoint
+            {
+                X = x / 4,
+                Y = y / 4
+            };
         }
 
         private IEnumerable<BoxModelPoint> IntersectQuadWithViewport(IEnumerable<BoxModelPoint> quad, PageGetLayoutMetricsResponse viewport)
