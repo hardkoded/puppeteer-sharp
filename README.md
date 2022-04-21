@@ -111,9 +111,9 @@ var result = await devtoolsContext.GetContentAsync();
 <!-- snippet: Evaluate -->
 <a id='snippet-evaluate'></a>
 ```cs
-await using var page = await chromiumWebBrowser.CreateDevToolsContextAsync();
-var seven = await page.EvaluateExpressionAsync<int>("4 + 3");
-var someObject = await page.EvaluateFunctionAsync<dynamic>("(value) => ({a: value})", 5);
+await using var devtoolsContext = await chromiumWebBrowser.CreateDevToolsContextAsync();
+var seven = await devtoolsContext.EvaluateExpressionAsync<int>("4 + 3");
+var someObject = await devtoolsContext.EvaluateFunctionAsync<dynamic>("(value) => ({a: value})", 5);
 Console.WriteLine(someObject.a);
 ```
 <sup><a href='/lib/PuppeteerSharp.Tests/QuerySelectorTests/ElementHandleQuerySelectorEvalTests.cs#L21-L26' title='Snippet source file'>snippet source</a> | <a href='#snippet-evaluate' title='Start of snippet'>anchor</a></sup>

@@ -1,6 +1,5 @@
 using System;
 using CefSharp.Puppeteer.Media;
-using Newtonsoft.Json;
 
 namespace CefSharp.Puppeteer
 {

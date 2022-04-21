@@ -19,9 +19,9 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         async Task Usage(IWebBrowser chromiumWebBrowser)
         {
             #region Evaluate
-            await using var page = await chromiumWebBrowser.CreateDevToolsContextAsync();
-            var seven = await page.EvaluateExpressionAsync<int>("4 + 3");
-            var someObject = await page.EvaluateFunctionAsync<dynamic>("(value) => ({a: value})", 5);
+            await using var devtoolsContext = await chromiumWebBrowser.CreateDevToolsContextAsync();
+            var seven = await devtoolsContext.EvaluateExpressionAsync<int>("4 + 3");
+            var someObject = await devtoolsContext.EvaluateFunctionAsync<dynamic>("(value) => ({a: value})", 5);
             Console.WriteLine(someObject.a);
             #endregion
         }
