@@ -13,8 +13,6 @@ namespace PuppeteerSharp
     /// </summary>
     public class ChromiumLauncher : LauncherBase
     {
-        #region Constants
-
         internal static readonly string[] DefaultArgs = {
             "--disable-background-networking",
             "--enable-features=NetworkService,NetworkServiceInProcess",
@@ -44,10 +42,6 @@ namespace PuppeteerSharp
 
         private const string UserDataDirArgument = "--user-data-dir";
 
-        #endregion
-
-        #region Constructor
-
         /// <summary>
         /// Creates a new <see cref="ChromiumLauncher"/> instance.
         /// </summary>
@@ -62,16 +56,8 @@ namespace PuppeteerSharp
             Process.StartInfo.Arguments = string.Join(" ", chromiumArgs);
         }
 
-        #endregion
-
-        #region Public methods
-
         /// <inheritdoc />
         public override string ToString() => $"Chromium process; EndPoint={EndPoint}; State={CurrentState}";
-
-        #endregion
-
-        #region Private methods
 
         private static (List<string> ChromiumArgs, TempDirectory TempUserDataDirectory) PrepareChromiumArgs(LaunchOptions options)
         {
@@ -138,7 +124,5 @@ namespace PuppeteerSharp
             chromiumArguments.AddRange(options.Args);
             return chromiumArguments.ToArray();
         }
-
-        #endregion
     }
 }

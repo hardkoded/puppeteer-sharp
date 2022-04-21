@@ -13,11 +13,9 @@ namespace PuppeteerSharp
     [DebuggerDisplay("Target {Type} - {Url}")]
     public class Target
     {
-        #region Private members
         private readonly Func<Task<CDPSession>> _sessionFactory;
         private readonly TaskCompletionSource<bool> _initializedTaskWrapper = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         private Task<Worker> _workerTask;
-        #endregion
 
         internal Target(
             TargetInfo targetInfo,
@@ -62,7 +60,6 @@ namespace PuppeteerSharp
             }
         }
 
-        #region Properties
         /// <summary>
         /// Gets the URL.
         /// </summary>
@@ -111,7 +108,6 @@ namespace PuppeteerSharp
         internal bool IsInitialized { get; set; }
 
         internal TargetInfo TargetInfo { get; set; }
-        #endregion
 
         /// <summary>
         /// Returns the <see cref="Page"/> associated with the target. If the target is not <c>"page"</c> or <c>"background_page"</c> returns <c>null</c>
