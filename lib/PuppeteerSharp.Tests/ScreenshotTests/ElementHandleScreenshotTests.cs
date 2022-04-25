@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
@@ -88,6 +88,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
                 await Page.EvaluateExpressionAsync("({ w: window.innerWidth, h: window.innerHeight })"));
         }
 
+        [PuppeteerTest("screenshot.spec.ts", "ElementHandle.screenshot", "should scroll element into view")]
         [PuppeteerFact]
         public async Task ShouldScrollElementIntoView()
         {
@@ -118,6 +119,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             Assert.True(ScreenshotHelper.PixelMatch("screenshot-element-scrolled-into-view.png", screenshot));
         }
 
+        [PuppeteerTest("screenshot.spec.ts", "ElementHandle.screenshot", "should work with a rotated element")]
         [PuppeteerFact]
         public async Task ShouldWorkWithARotatedElement()
         {
@@ -140,6 +142,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             Assert.True(ScreenshotHelper.PixelMatch("screenshot-element-rotate.png", screenshot));
         }
 
+        [PuppeteerTest("screenshot.spec.ts", "ElementHandle.screenshot", "should fail to screenshot a detached element")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldFailToScreenshotADetachedElement()
         {
@@ -151,6 +154,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             Assert.Equal("Node is either not visible or not an HTMLElement", exception.Message);
         }
 
+        [PuppeteerTest("screenshot.spec.ts", "ElementHandle.screenshot", "should not hang with zero width/height element")]
         [PuppeteerFact]
         public async Task ShouldNotHangWithZeroWidthHeightElement()
         {
@@ -160,6 +164,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             Assert.Equal("Node has 0 height.", exception.Message);
         }
 
+        [PuppeteerTest("screenshot.spec.ts", "ElementHandle.screenshot", "should work for an element with fractional dimensions")]
         [PuppeteerFact]
         public async Task ShouldWorkForAnElementWithFractionalDimensions()
         {
@@ -169,6 +174,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             Assert.True(ScreenshotHelper.PixelMatch("screenshot-element-fractional.png", screenshot));
         }
 
+        [PuppeteerTest("screenshot.spec.ts", "ElementHandle.screenshot", "should work for an element with an offset")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkForAnElementWithAnOffset()
         {
