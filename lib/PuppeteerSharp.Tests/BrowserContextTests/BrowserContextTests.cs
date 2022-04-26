@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -96,7 +96,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             await context.CloseAsync();
         }
 
-        [PuppeteerTest("browsercontext.spec.ts", "BrowserContext", "should isolate local storage and cookies")]
+        [PuppeteerTest("browsercontext.spec.ts", "BrowserContext", "should isolate localStorage and cookies")]
         [PuppeteerFact]
         public async Task ShouldIsolateLocalStorageAndCookies()
         {
@@ -159,7 +159,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             await context.CloseAsync();
         }
 
-        [PuppeteerTest("browsercontext.spec.ts", "BrowserContext", "should wait for target")]
+        [PuppeteerTest("browsercontext.spec.ts", "BrowserContext", "should wait for a target")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWaitForTarget()
         {
@@ -173,7 +173,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             await context.CloseAsync();
         }
 
-        [PuppeteerTest("browsercontext.spec.ts", "BrowserContext", "should timeout waiting for non existant target")]
+        [PuppeteerTest("browsercontext.spec.ts", "BrowserContext", "should timeout waiting for non-existent target")]
         [PuppeteerFact]
         public async Task ShouldTimeoutWaitingForNonExistantTarget()
         {
