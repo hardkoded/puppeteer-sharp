@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -1860,17 +1860,41 @@ namespace PuppeteerSharp
         /// <returns>A task which resolves when a matching response is received.</returns>
         /// <param name="predicate">Function which looks for a matching response.</param>
         /// <param name="options">Options.</param>
-        public async Task<Response> WaitForResponseAsync(Func<Response, bool> predicate, WaitForOptions options = null)
+        public Task<Response> WaitForResponseAsync(Func<Response, bool> predicate, WaitForOptions options = null)
+            => WaitForResponseAsync((response) => Task.FromResult(predicate(response)), options);
+
+        /// <summary>
+        /// Waits for a response.
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// var response = await page.WaitForResponseAsync(response => response.Url === "http://example.com" && response.Status === HttpStatus.Ok;
+        /// return response.Url;
+        /// ]]>
+        /// </code>
+        /// </example>
+        /// <returns>A task which resolves when a matching response is received.</returns>
+        /// <param name="predicate">Function which looks for a matching response.</param>
+        /// <param name="options">Options.</param>
+        public async Task<Response> WaitForResponseAsync(Func<Response, Task<bool>> predicate, WaitForOptions options = null)
         {
             var timeout = options?.Timeout ?? DefaultTimeout;
             var responseTcs = new TaskCompletionSource<Response>(TaskCreationOptions.RunContinuationsAsynchronously);
 
-            void responseEventListener(object sender, ResponseCreatedEventArgs e)
+            async void responseEventListener(object sender, ResponseCreatedEventArgs e)
             {
-                if (predicate(e.Response))
+                try
                 {
-                    responseTcs.TrySetResult(e.Response);
-                    FrameManager.NetworkManager.Response -= responseEventListener;
+                    if (await predicate(e.Response).ConfigureAwait(false))
+                    {
+                        responseTcs.TrySetResult(e.Response);
+                        FrameManager.NetworkManager.Response -= responseEventListener;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    responseTcs.TrySetException(new Exception("Predicated failed", ex));
                 }
             }
 

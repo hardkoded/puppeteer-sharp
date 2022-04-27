@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
@@ -45,6 +45,9 @@ namespace PuppeteerSharp.Tests
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForFunction", "should accept a string")]
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForFunction", "should throw on bad polling value")]
         [PuppeteerTest("network.spec.ts", "Page.setExtraHTTPHeaders", "should throw for non-string header values")]
+        [PuppeteerTest("page.spec.ts", "removing and adding event handlers", "should correctly fire event handlers as they are added and then removed")]
+        [PuppeteerTest("page.spec.ts", "removing and adding event handlers", "should correctly added and removed request events")]
+        [PuppeteerTest("page.spec.ts", "BrowserContext.overridePermissions", "should fail when bad permission is given")]
         [PuppeteerFact]
         public void TheseTesstWontBeImplemented()
         {
