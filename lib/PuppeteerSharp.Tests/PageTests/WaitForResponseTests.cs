@@ -99,7 +99,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Contains("Timeout of 1 ms exceeded", exception.Message);
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.waitForResponse", "should work with not timeout")]
+        [PuppeteerTest("page.spec.ts", "Page.waitForResponse", "should work with no timeout")]
         [PuppeteerFact]
         public async Task ShouldWorkWithNoTimeout()
         {
