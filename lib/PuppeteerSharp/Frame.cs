@@ -159,8 +159,8 @@ namespace PuppeteerSharp
         /// <example>
         /// <code>
         /// <![CDATA[
-        /// var navigationTask =frame.page.WaitForNavigationAsync();
-        /// await frame.ClickAsync("a.my-link");
+        /// var navigationTask = Page.WaitForNavigationAsync();
+        /// await Page.MainFrame.ClickAsync("a.my-link");
         /// await navigationTask;
         /// ]]>
         /// </code>
@@ -226,8 +226,9 @@ namespace PuppeteerSharp
         /// </summary>
         /// <example>
         /// <code>
-        /// var frame = page.MainFrame;
-        /// const handle = Page.MainFrame.EvaluateExpressionHandleAsync("1 + 2");
+        /// <![CDATA[
+        /// var handle = await Page.MainFrame.EvaluateExpressionHandleAsync("1 + 2");
+        /// ]]>
         /// </code>
         /// </example>
         /// <returns>Resolves to the return value of <paramref name="script"/></returns>
@@ -239,15 +240,19 @@ namespace PuppeteerSharp
         /// </summary>
         /// <example>
         /// <code>
-        /// var frame = page.MainFrame;
-        /// const handle = Page.MainFrame.EvaluateFunctionHandleAsync("() => Promise.resolve(self)");
+        /// <![CDATA[
+        /// var handle = await Page.MainFrame.EvaluateFunctionHandleAsync("() => Promise.resolve(self)");
         /// return handle; // Handle for the global object.
+        /// ]]>
         /// </code>
         /// <see cref="JSHandle"/> instances can be passed as arguments to the <see cref="ExecutionContext.EvaluateFunctionAsync(string, object[])"/>:
-        ///
-        /// const handle = await Page.MainFrame.EvaluateExpressionHandleAsync("document.body");
-        /// const resultHandle = await Page.MainFrame.EvaluateFunctionHandleAsync("body => body.innerHTML", handle);
+        /// <code>
+        /// <![CDATA[
+        /// var handle = await Page.MainFrame.EvaluateExpressionHandleAsync("document.body");
+        /// var resultHandle = await Page.MainFrame.EvaluateFunctionHandleAsync("body => body.innerHTML", handle);
         /// return await resultHandle.JsonValueAsync(); // prints body's innerHTML
+        /// ]]>
+        /// </code>
         /// </example>
         /// <returns>Resolves to the return value of <paramref name="function"/></returns>
         /// <param name="function">Function to be evaluated in the <see cref="ExecutionContext"/></param>
@@ -538,8 +543,10 @@ namespace PuppeteerSharp
         /// </remarks>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// await frame.TypeAsync("#mytextarea", "Hello"); // Types instantly
         /// await frame.TypeAsync("#mytextarea", "World", new TypeOptions { Delay = 100 }); // Types slower, like a user
+        /// ]]>
         /// </code>
         /// </example>
         /// <returns>Task</returns>
