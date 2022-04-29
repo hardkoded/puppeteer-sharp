@@ -1,3 +1,4 @@
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
@@ -49,6 +50,48 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.DoesNotContain("iPhone", await Page.EvaluateExpressionAsync<string>("navigator.userAgent"));
             await Page.SetUserAgentAsync(TestConstants.IPhone.UserAgent);
             Assert.Contains("iPhone", await Page.EvaluateExpressionAsync<string>("navigator.userAgent"));
+        }
+
+        [PuppeteerTest("page.spec.ts", "Page.setUserAgent", "should work with additional userAgentMetdata")]
+        [SkipBrowserFact(skipFirefox: true)]
+        public async Task ShouldWorkWithAdditionalUserAgentMetdata()
+        {
+            await Page.SetUserAgentAsync(
+                "MockBrowser",
+                new UserAgentMetadata
+                {
+                    Architecture= "Mock1",
+                    Mobile= false,
+                    Model= "Mockbook",
+                    Platform = "MockOS",
+                    PlatformVersion = "3.1",
+                });
+
+            var requestTask = Server.WaitForRequest("/empty.html", r => r.Headers["user-agent"]);
+            await Task.WhenAll(
+              requestTask,
+              Page.GoToAsync(TestConstants.EmptyPage));
+
+            Assert.False(
+              await Page.EvaluateFunctionAsync<bool>(@"() => {
+                return navigator.userAgentData.mobile;
+              }")
+            );
+
+            var uaData = await Page.EvaluateFunctionAsync<Dictionary<string, object>>(@"() => {
+                return navigator.userAgentData.getHighEntropyValues([
+                  'architecture',
+                  'model',
+                  'platform',
+                  'platformVersion',
+                ]);
+            }");
+
+            Assert.Equal("Mock1", uaData["architecture"]);
+            Assert.Equal("Mockbook", uaData["model"]);
+            Assert.Equal("MockOS", uaData["platform"]);
+            Assert.Equal("3.1", uaData["platformVersion"]);
+            Assert.Equal("MockBrowser", await requestTask);
         }
     }
 }

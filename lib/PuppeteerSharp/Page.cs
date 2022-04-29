@@ -1212,7 +1212,7 @@ namespace PuppeteerSharp
         /// <remarks>
         /// This method is a shortcut for calling two methods:
         /// <see cref="SetViewportAsync(ViewPortOptions)"/>
-        /// <see cref="SetUserAgentAsync(string)"/>
+        /// <see cref="SetUserAgentAsync(string, UserAgentMetadata)"/>
         /// To aid emulation, puppeteer provides a list of device descriptors which can be obtained via the <see cref="Puppeteer.Devices"/>.
         /// <see cref="EmulateAsync(DeviceDescriptor)"/> will resize the page. A lot of websites don't expect phones to change size, so you should emulate before navigating to the page.
         /// </remarks>
@@ -1523,9 +1523,10 @@ namespace PuppeteerSharp
         /// Sets the user agent to be used in this page
         /// </summary>
         /// <param name="userAgent">Specific user agent to use in this page</param>
+        /// <param name="userAgentData">Specific user agent client hint data to use in this page</param>
         /// <returns>Task</returns>
-        public Task SetUserAgentAsync(string userAgent)
-            => FrameManager.NetworkManager.SetUserAgentAsync(userAgent);
+        public Task SetUserAgentAsync(string userAgent, UserAgentMetadata userAgentData = null)
+            => FrameManager.NetworkManager.SetUserAgentAsync(userAgent, userAgentData);
 
         /// <summary>
         /// Sets extra HTTP headers that will be sent with every request the page initiates

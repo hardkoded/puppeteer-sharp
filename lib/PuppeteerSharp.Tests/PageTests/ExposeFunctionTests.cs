@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Tests.Attributes;
@@ -43,7 +43,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Contains("ExposeFunctionTests", result.SelectToken("stack").ToObject<string>());
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.exposeFunction", "should survive navigation")]
+        [PuppeteerTest("page.spec.ts", "Page.exposeFunction", "should be callable from-inside evaluateOnNewDocument")]
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldBeCallableFromInsideEvaluateOnNewDocument()
         {

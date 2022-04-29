@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
@@ -111,10 +111,11 @@ namespace PuppeteerSharp
                 DownloadThroughput = _emulatedNetworkConditions.Download,
             });
 
-        internal Task SetUserAgentAsync(string userAgent)
+        internal Task SetUserAgentAsync(string userAgent, UserAgentMetadata userAgentMetadata)
             => _client.SendAsync("Network.setUserAgentOverride", new NetworkSetUserAgentOverrideRequest
             {
-                UserAgent = userAgent
+                UserAgent = userAgent,
+                UserAgentMetadata = userAgentMetadata,
             });
 
         internal Task SetCacheEnabledAsync(bool enabled)
