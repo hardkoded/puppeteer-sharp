@@ -50,6 +50,7 @@ namespace PuppeteerSharp.Tests
         [PuppeteerTest("page.spec.ts", "BrowserContext.overridePermissions", "should fail when bad permission is given")]
         [PuppeteerTest("page.spec.ts", "Page.select", "should throw if passed in non-strings")]
         [PuppeteerTest("page.spec.ts", "Page.exposeFunction", "should support throwing \"null\"")]
+        [PuppeteerTest("page.spec.ts", "Page.exposeFunction", "should work with function shorthands")]
         [PuppeteerFact]
         public void TheseTesstWontBeImplemented()
         {
