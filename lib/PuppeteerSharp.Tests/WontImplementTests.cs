@@ -48,6 +48,7 @@ namespace PuppeteerSharp.Tests
         [PuppeteerTest("page.spec.ts", "removing and adding event handlers", "should correctly fire event handlers as they are added and then removed")]
         [PuppeteerTest("page.spec.ts", "removing and adding event handlers", "should correctly added and removed request events")]
         [PuppeteerTest("page.spec.ts", "BrowserContext.overridePermissions", "should fail when bad permission is given")]
+        [PuppeteerTest("page.spec.ts", "Page.select", "should throw if passed in non-strings")]
         [PuppeteerTest("page.spec.ts", "Page.exposeFunction", "should support throwing \"null\"")]
         [PuppeteerFact]
         public void TheseTesstWontBeImplemented()

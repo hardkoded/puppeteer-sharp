@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using PuppeteerSharp.Media;
@@ -58,6 +58,24 @@ namespace PuppeteerSharp.Tests.PageTests
             {
                 fileInfo.Delete();
             }
+        }
+
+        [PuppeteerTest("page.spec.ts", "printing to PDF", "can print to PDF and stream the result")]
+        [PuppeteerFact]
+        public async Task CanPrintToPDFAndStreamTheResult()
+        {
+            // We test this differently compared to puppeteer.
+            // We will compare that we can get to the same file using both PDF methods
+            var outputFile = Path.Combine(BaseDirectory, "output.pdf");
+            var fileInfo = new FileInfo(outputFile);
+            if (fileInfo.Exists)
+            {
+                fileInfo.Delete();
+            }
+            await Page.PdfAsync(outputFile);
+            
+            var stream = await Page.PdfStreamAsync();
+            Assert.Equal(new FileInfo(outputFile).Length, stream.Length);
         }
 
         [PuppeteerFact]
