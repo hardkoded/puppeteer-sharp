@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -245,7 +245,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>Task which resolves to the browser's original user agent</returns>
         /// <remarks>
-        /// Pages can override browser user agent with <see cref="Page.SetUserAgentAsync(string)"/>
+        /// Pages can override browser user agent with <see cref="Page.SetUserAgentAsync(string, UserAgentMetadata)"/>
         /// </remarks>
         public async Task<string> GetUserAgentAsync()
             => (await Connection.SendAsync<BrowserGetVersionResponse>("Browser.getVersion").ConfigureAwait(false)).UserAgent;
