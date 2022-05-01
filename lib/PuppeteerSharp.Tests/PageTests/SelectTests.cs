@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
@@ -70,7 +70,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(new string[] { "blue" }, await Page.EvaluateExpressionAsync<string[]>("result.onBubblingChange"));
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.select", "throw when element is not a <select>")]
+        [PuppeteerTest("page.spec.ts", "Page.select", "should throw when element is not a <select>")]
         [PuppeteerFact]
         public async Task ShouldThrowWhenElementIsNotASelect()
         {
