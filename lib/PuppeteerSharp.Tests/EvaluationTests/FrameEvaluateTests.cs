@@ -1,4 +1,4 @@
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
@@ -30,6 +30,20 @@ namespace PuppeteerSharp.Tests.EvaluationTests
 
             Assert.Equal("foo", await frame1.EvaluateExpressionAsync<string>("window.FOO"));
             Assert.Equal("bar", await frame2.EvaluateExpressionAsync<string>("window.FOO"));
+        }
+
+        [PuppeteerTest("evaluation.spec.ts", "Frame.evaluate", "should have correct execution contexts")]
+        [PuppeteerFact]
+        public async Task ShouldHaveCorrectExecutionContexts()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
+            Assert.Equal(2, Page.Frames.Count());
+
+            var frame1 = Page.MainFrame;
+            var frame2 = Page.FirstChildFrame();
+
+            Assert.Equal("", await frame1.EvaluateExpressionAsync<string>("document.body.textContent.trim()"));
+            Assert.Equal("Hi, I'm frame", await frame2.EvaluateExpressionAsync<string>("document.body.textContent.trim()"));
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Frame.evaluate", "should execute after cross-site navigation")]
