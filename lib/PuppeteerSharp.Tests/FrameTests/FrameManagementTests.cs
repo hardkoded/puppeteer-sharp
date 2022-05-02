@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 using System.Linq;
@@ -163,7 +163,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             Assert.Single(Page.Frames, frame => frame.Name == "theFrameName");
         }
 
-        [PuppeteerTest("frame.spec.ts", "Frame Management", "should report frame.name()")]
+        [PuppeteerTest("frame.spec.ts", "Frame Management", "should report frame.parent()")]
         [PuppeteerFact]
         public async Task ShouldReportFrameParent()
         {
@@ -190,6 +190,34 @@ namespace PuppeteerSharp.Tests.FrameTests
             var frame2 = await frame2tsc.Task;
             Assert.False(frame2.Detached);
             Assert.NotSame(frame1, frame2);
+        }
+
+        [PuppeteerTest("frame.spec.ts", "Frame Management", "should support framesets")]
+        [SkipBrowserFact(skipFirefox: true)]
+        public async Task ShouldSupportFramesets()
+        {
+            var attachedFrames = new List<Frame>();
+            var detachedFrames = new List<Frame>();
+            var navigatedFrames = new List<Frame>();
+
+            Page.FrameAttached += (_, e) => attachedFrames.Add(e.Frame);
+            Page.FrameDetached += (_, e) => detachedFrames.Add(e.Frame);
+            Page.FrameNavigated+= (_, e) => navigatedFrames.Add(e.Frame);
+
+            await Page.GoToAsync(TestConstants.ServerUrl + "/frames/frameset.html");
+
+            Assert.Equal(4, attachedFrames.Count);
+            Assert.Empty(detachedFrames);
+            Assert.Equal(5, navigatedFrames.Count);
+
+            attachedFrames.Clear();
+            detachedFrames.Clear();
+            navigatedFrames.Clear();
+
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            Assert.Empty(attachedFrames);
+            Assert.Equal(4, detachedFrames.Count);
+            Assert.Single(navigatedFrames);
         }
     }
 }
