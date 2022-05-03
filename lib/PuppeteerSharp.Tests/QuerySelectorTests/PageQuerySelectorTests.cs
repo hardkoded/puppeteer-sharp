@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 using PuppeteerSharp.Xunit;
@@ -22,7 +22,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             Assert.NotNull(element);
         }
 
-        [PuppeteerTest("queryselector.spec.ts", "Page.$", "should query existing element")]
+        [PuppeteerTest("queryselector.spec.ts", "Page.$", "should return null for non-existing element")]
         [PuppeteerFact]
         public async Task ShouldReturnNullForNonExistingElement()
         {
