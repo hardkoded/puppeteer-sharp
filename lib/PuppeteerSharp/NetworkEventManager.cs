@@ -16,7 +16,8 @@ namespace PuppeteerSharp
         private readonly ConcurrentDictionary<string, List<ResponseReceivedExtraInfoResponse>> _responseReceivedExtraInfoMap = new();
 
         public int NumRequestsInProgress
-            => _httpRequestsMap.Values.Count(r => r.Response == null);
+            => _httpRequestsMap.Values.Count(r => r.Response == null
+                                                  && string.IsNullOrWhiteSpace(r.Failure));
 
         internal void Forget(string requestId)
         {
