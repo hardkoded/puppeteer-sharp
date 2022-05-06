@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -224,6 +224,8 @@ namespace PuppeteerSharp
 
             throw new ArgumentException("Provide options with a `Url`, `Path` or `Content` property");
         }
+
+        internal Task<ElementHandle> WaitForSelectorInPageAsync(string queryOne, string selector, object options) => throw new NotImplementedException();
 
         internal async Task<ElementHandle> AddStyleTagAsync(AddTagOptions options)
         {

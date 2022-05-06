@@ -1,4 +1,6 @@
+﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Mobile;
@@ -19,7 +21,9 @@ namespace PuppeteerSharp
     /// </example>
     public static class Puppeteer
     {
+        private static readonly Regex _customQueryHandlerNameRegex = new("[a-zA-Z]+$", RegexOptions.Compiled);
         internal const int DefaultTimeout = 30_000;
+        private static readonly Dictionary<string, InternalQueryHandler> _queryHandlers = new();
 
         /// <summary>
         /// The default flags that Chromium will be launched with.
@@ -108,5 +112,82 @@ namespace PuppeteerSharp
         /// <param name="options">Options.</param>
         public static BrowserFetcher CreateBrowserFetcher(BrowserFetcherOptions options)
             => new BrowserFetcher(options);
+
+        /// <summary>
+        /// Registers a custom query handler.
+        /// After registration, the handler can be used everywhere where a selector is
+        /// expected by prepending the selection string with `name/`. The name is
+        /// only allowed to consist of lower- and upper case latin letters.
+        /// </summary>
+        /// <example>
+        /// Puppeteer.RegisterCustomQueryHandler("text", "{ … }");
+        /// var aHandle = await page.QuerySelectorAsync("text/…");
+        /// </example>
+        /// <param name="name">The name that the custom query handler will be registered under.</param>
+        /// <param name="queryHandler">The query handler to register</param>
+        internal static void RegisterCustomQueryHandler(string name, CustomQueryHandler queryHandler)
+        {
+            if (_queryHandlers.ContainsKey(name))
+            {
+                throw new PuppeteerException($"A custom query handler named \"{name}\" already exists");
+            }
+
+            var isValidName = _customQueryHandlerNameRegex.IsMatch(name);
+            if (!isValidName)
+            {
+                throw new PuppeteerException($"Custom query handler names may only contain[a-zA-Z]");
+            }
+            var internalHandler = MakeQueryHandler(queryHandler);
+
+            _queryHandlers.Add(name, internalHandler);
+        }
+
+        private static InternalQueryHandler MakeQueryHandler(CustomQueryHandler handler)
+        {
+            var internalHandler = new InternalQueryHandler();
+
+            if (!string.IsNullOrEmpty(handler.QueryOne))
+            {
+                internalHandler.QueryOne = async (ElementHandle element, string selector) =>
+                {
+                    var jsHandle = await element.EvaluateFunctionHandleAsync(handler.QueryOne, selector).ConfigureAwait(false);
+                    if (jsHandle is ElementHandle elementHandle)
+                    {
+                        return elementHandle;
+                    }
+
+                    await jsHandle.DisposeAsync().ConfigureAwait(false);
+                    return null;
+                };
+
+                internalHandler.WaitFor = (DOMWorld domWorld, string selector, WaitForSelectorOptions options)
+                    => domWorld.WaitForSelectorInPageAsync(handler.QueryOne, selector, options);
+            }
+
+            if (!string.IsNullOrEmpty(handler.QueryAll))
+            {
+                internalHandler.QueryAll = async (ElementHandle element, string selector) =>
+                {
+                    var jsHandle = await element.EvaluateFunctionHandleAsync(handler.QueryOne, selector).ConfigureAwait(false);
+                    var properties = await jsHandle.GetPropertiesAsync().ConfigureAwait(false);
+                    var result = new List<ElementHandle>();
+
+                    foreach (var property in properties.Values)
+                    {
+                        if (property is ElementHandle elementHandle)
+                        {
+                            result.Add(elementHandle);
+                        }
+                    }
+
+                    return result.ToArray();
+                };
+
+                internalHandler.WaitFor = (DOMWorld domWorld, string selector, WaitForSelectorOptions options)
+                    => domWorld.WaitForSelectorInPageAsync(handler.QueryOne, selector, options);
+            }
+
+            return internalHandler;
+        }
     }
 }
