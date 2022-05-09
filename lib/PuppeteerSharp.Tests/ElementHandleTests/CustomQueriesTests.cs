@@ -37,7 +37,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Puppeteer.UnregisterCustomQueryHandler("getById");
             try
             {
-                await page.$('getById/foo');
+                await page.,('getById/foo');
                 throw new Error('Custom query handler name not set - throw expected');
             }
             catch (error)

@@ -225,7 +225,45 @@ namespace PuppeteerSharp
             throw new ArgumentException("Provide options with a `Url`, `Path` or `Content` property");
         }
 
-        internal Task<ElementHandle> WaitForSelectorInPageAsync(string queryOne, string selector, object options) => throw new NotImplementedException();
+        internal async Task<ElementHandle> WaitForSelectorInPageAsync(string queryOne, string selector, WaitForSelectorOptions options)
+        {
+            var waitForVisible = options?.Visible ?? false;
+            var waitForHidden = options?.Hidden ?? false;
+            var timeout = options?.Timeout ?? _timeoutSettings.Timeout;
+
+            var polling = waitForVisible || waitForHidden ? WaitForFunctionPollingOption.Raf : WaitForFunctionPollingOption.Mutation;
+            var title = $"selector `{selector}`{(waitForHidden ? " to be hidden" : string.Empty)}";
+
+            var predicate = @$"async function predicate(root, selector, waitForVisible, waitForHidden) {{
+                const node = predicateQueryHandler
+                  ? ((await predicateQueryHandler(root, selector)) as Element)
+                  : root.querySelector(selector);
+                return checkWaitForOptions(node, waitForVisible, waitForHidden);
+            }}";
+
+            using var waitTask = new WaitTask(
+                this,
+                MakePredicateString(predicate, queryOne),
+                false,
+                title,
+                polling,
+                null,
+                timeout,
+                new object[]
+                {
+                    selector,
+                    waitForVisible,
+                    waitForHidden,
+                });
+
+            var jsHandle = await waitTask.Task.ConfigureAwait(false);
+            if (jsHandle is not ElementHandle elementHandle)
+            {
+                await jsHandle.DisposeAsync().ConfigureAwait(false);
+                return null;
+            }
+            return elementHandle;
+        }
 
         internal async Task<ElementHandle> AddStyleTagAsync(AddTagOptions options)
         {
@@ -320,7 +358,7 @@ namespace PuppeteerSharp
 
         internal async Task<string[]> SelectAsync(string selector, params string[] values)
         {
-            if (!((await QuerySelectorAsync(selector).ConfigureAwait(false)) is ElementHandle handle))
+            if ((await QuerySelectorAsync(selector).ConfigureAwait(false)) is not ElementHandle handle)
             {
                 throw new SelectorException($"No node found for selector: {selector}", selector);
             }
@@ -404,9 +442,46 @@ namespace PuppeteerSharp
             return await _documentCompletionSource.Task.ConfigureAwait(false);
         }
 
+        private string MakePredicateString(string predicate, string predicateQueryHandler)
+        {
+            var checkWaitForOptions = @"function checkWaitForOptions(
+                node,
+                waitForVisible,
+                waitForHidden
+              ) {
+                if (!node) return waitForHidden;
+                if (!waitForVisible && !waitForHidden) return node;
+                const element =
+                  node.nodeType === Node.TEXT_NODE
+                    ? (node.parentElement as Element)
+                    : (node as Element);
+
+                    const style = window.getComputedStyle(element);
+                    const isVisible =
+                      style && style.visibility !== 'hidden' && hasVisibleBoundingBox();
+                    const success =
+                      waitForVisible === isVisible || waitForHidden === !isVisible;
+                return success? node : null;
+
+                    function hasVisibleBoundingBox(): boolean {
+                  const rect = element.getBoundingClientRect();
+                  return !!(rect.top || rect.bottom || rect.width || rect.height);
+                }
+            }";
+            var predicateQueryHandlerDef = !string.IsNullOrEmpty(predicateQueryHandler)
+              ? $@"const predicateQueryHandler = {predicateQueryHandler};" : string.Empty;
+
+            return $@"
+                (() => {{
+                  {predicateQueryHandlerDef}
+                    const checkWaitForOptions = {checkWaitForOptions};
+                    return ({predicate})(...args)
+                }})() ";
+        }
+
         private async Task<ElementHandle> WaitForSelectorOrXPathAsync(string selectorOrXPath, bool isXPath, WaitForSelectorOptions options = null)
         {
-            options = options ?? new WaitForSelectorOptions();
+            options ??= new WaitForSelectorOptions();
             var timeout = options.Timeout ?? _timeoutSettings.Timeout;
 
             const string predicate = @"
@@ -444,7 +519,7 @@ namespace PuppeteerSharp
 
             var handle = await waitTask.Task.ConfigureAwait(false);
 
-            if (!(handle is ElementHandle elementHandle))
+            if (handle is not ElementHandle elementHandle)
             {
                 if (handle != null)
                 {

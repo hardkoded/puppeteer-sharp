@@ -10,5 +10,7 @@ namespace PuppeteerSharp
         public Func<DOMWorld, string, WaitForSelectorOptions, Task<ElementHandle>> WaitFor { get; set; }
 
         public Func<ElementHandle, string, Task<ElementHandle[]>> QueryAll { get; set; }
+
+        public Func<ElementHandle, string, Task<ElementHandle>> QueryAllArray { get; set; }
     }
 }

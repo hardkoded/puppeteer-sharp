@@ -22,6 +22,13 @@ namespace PuppeteerSharp
     public static class Puppeteer
     {
         private static readonly Regex _customQueryHandlerNameRegex = new("[a-zA-Z]+$", RegexOptions.Compiled);
+        private static readonly Regex _customQueryHandlerParserRegex = new("(?<query>^[a-zA-Z]+)\\/(?<selector>.*)", RegexOptions.Compiled);
+        private static readonly InternalQueryHandler _defaultHandler = MakeQueryHandler(new CustomQueryHandler
+        {
+            QueryOne = "(element, selector) => element.querySelector(selector)",
+            QueryAll = "(element, selector) => element.querySelectorAll(selector)",
+        });
+
         internal const int DefaultTimeout = 30_000;
         private static readonly Dictionary<string, InternalQueryHandler> _queryHandlers = new();
 
@@ -110,8 +117,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>The browser fetcher.</returns>
         /// <param name="options">Options.</param>
-        public static BrowserFetcher CreateBrowserFetcher(BrowserFetcherOptions options)
-            => new BrowserFetcher(options);
+        public static BrowserFetcher CreateBrowserFetcher(BrowserFetcherOptions options) => new(options);
 
         /// <summary>
         /// Registers a custom query handler.
@@ -183,11 +189,35 @@ namespace PuppeteerSharp
                     return result.ToArray();
                 };
 
-                internalHandler.WaitFor = (DOMWorld domWorld, string selector, WaitForSelectorOptions options)
-                    => domWorld.WaitForSelectorInPageAsync(handler.QueryOne, selector, options);
+                internalHandler.QueryAllArray = async (ElementHandle element, string selector) => {
+                    var resultHandle = await element.EvaluateFunctionHandleAsync(
+                      handler.QueryAll,
+                      selector).ConfigureAwait(false);
+                    var arrayHandle = await resultHandle.EvaluateFunctionHandleAsync("(res) => Array.from(res)").ConfigureAwait(false);
+                    return arrayHandle as ElementHandle;
+                };
             }
 
             return internalHandler;
+        }
+
+        internal static (string UpdatedSelector, InternalQueryHandler QueryHandler) GetQueryHandlerAndSelector(string selector)
+        {
+            var customQueryHandlerMatch = _customQueryHandlerParserRegex.Match(selector);
+            if (!customQueryHandlerMatch.Success)
+            {
+                return (selector, _defaultHandler);
+            }
+
+            var name = customQueryHandlerMatch.Groups["query"].Value;
+            var updatedSelector = customQueryHandlerMatch.Groups["selector"].Value;
+
+            if (!_queryHandlers.TryGetValue(name, out var queryHandler))
+            {
+                throw new PuppeteerException($"Query set to use \"{name}\", but no query handler of that name was found");
+            }
+
+            return (updatedSelector, queryHandler);
         }
     }
 }
