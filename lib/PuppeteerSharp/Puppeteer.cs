@@ -21,16 +21,7 @@ namespace PuppeteerSharp
     /// </example>
     public static class Puppeteer
     {
-        private static readonly Regex _customQueryHandlerNameRegex = new("[a-zA-Z]+$", RegexOptions.Compiled);
-        private static readonly Regex _customQueryHandlerParserRegex = new("(?<query>^[a-zA-Z]+)\\/(?<selector>.*)", RegexOptions.Compiled);
-        private static readonly InternalQueryHandler _defaultHandler = MakeQueryHandler(new CustomQueryHandler
-        {
-            QueryOne = "(element, selector) => element.querySelector(selector)",
-            QueryAll = "(element, selector) => element.querySelectorAll(selector)",
-        });
-
         internal const int DefaultTimeout = 30_000;
-        private static readonly Dictionary<string, InternalQueryHandler> _queryHandlers = new();
 
         /// <summary>
         /// The default flags that Chromium will be launched with.
@@ -131,93 +122,21 @@ namespace PuppeteerSharp
         /// </example>
         /// <param name="name">The name that the custom query handler will be registered under.</param>
         /// <param name="queryHandler">The query handler to register</param>
-        internal static void RegisterCustomQueryHandler(string name, CustomQueryHandler queryHandler)
-        {
-            if (_queryHandlers.ContainsKey(name))
-            {
-                throw new PuppeteerException($"A custom query handler named \"{name}\" already exists");
-            }
+        public static void RegisterCustomQueryHandler(string name, CustomQueryHandler queryHandler)
+            => CustomQueriesManager.RegisterCustomQueryHandler(name, queryHandler);
 
-            var isValidName = _customQueryHandlerNameRegex.IsMatch(name);
-            if (!isValidName)
-            {
-                throw new PuppeteerException($"Custom query handler names may only contain[a-zA-Z]");
-            }
-            var internalHandler = MakeQueryHandler(queryHandler);
+        /// <summary>
+        /// Returns a list with the names of all registered custom query handlers.
+        /// </summary>
+        /// <returns>The list of query handlers</returns>
+        internal static IEnumerable<string> GetCustomQueryHandlerNames()
+            => CustomQueriesManager.GetCustomQueryHandlerNames();
 
-            _queryHandlers.Add(name, internalHandler);
-        }
-
-        private static InternalQueryHandler MakeQueryHandler(CustomQueryHandler handler)
-        {
-            var internalHandler = new InternalQueryHandler();
-
-            if (!string.IsNullOrEmpty(handler.QueryOne))
-            {
-                internalHandler.QueryOne = async (ElementHandle element, string selector) =>
-                {
-                    var jsHandle = await element.EvaluateFunctionHandleAsync(handler.QueryOne, selector).ConfigureAwait(false);
-                    if (jsHandle is ElementHandle elementHandle)
-                    {
-                        return elementHandle;
-                    }
-
-                    await jsHandle.DisposeAsync().ConfigureAwait(false);
-                    return null;
-                };
-
-                internalHandler.WaitFor = (DOMWorld domWorld, string selector, WaitForSelectorOptions options)
-                    => domWorld.WaitForSelectorInPageAsync(handler.QueryOne, selector, options);
-            }
-
-            if (!string.IsNullOrEmpty(handler.QueryAll))
-            {
-                internalHandler.QueryAll = async (ElementHandle element, string selector) =>
-                {
-                    var jsHandle = await element.EvaluateFunctionHandleAsync(handler.QueryOne, selector).ConfigureAwait(false);
-                    var properties = await jsHandle.GetPropertiesAsync().ConfigureAwait(false);
-                    var result = new List<ElementHandle>();
-
-                    foreach (var property in properties.Values)
-                    {
-                        if (property is ElementHandle elementHandle)
-                        {
-                            result.Add(elementHandle);
-                        }
-                    }
-
-                    return result.ToArray();
-                };
-
-                internalHandler.QueryAllArray = async (ElementHandle element, string selector) => {
-                    var resultHandle = await element.EvaluateFunctionHandleAsync(
-                      handler.QueryAll,
-                      selector).ConfigureAwait(false);
-                    var arrayHandle = await resultHandle.EvaluateFunctionHandleAsync("(res) => Array.from(res)").ConfigureAwait(false);
-                    return arrayHandle as ElementHandle;
-                };
-            }
-
-            return internalHandler;
-        }
-
-        internal static (string UpdatedSelector, InternalQueryHandler QueryHandler) GetQueryHandlerAndSelector(string selector)
-        {
-            var customQueryHandlerMatch = _customQueryHandlerParserRegex.Match(selector);
-            if (!customQueryHandlerMatch.Success)
-            {
-                return (selector, _defaultHandler);
-            }
-
-            var name = customQueryHandlerMatch.Groups["query"].Value;
-            var updatedSelector = customQueryHandlerMatch.Groups["selector"].Value;
-
-            if (!_queryHandlers.TryGetValue(name, out var queryHandler))
-            {
-                throw new PuppeteerException($"Query set to use \"{name}\", but no query handler of that name was found");
-            }
-
-            return (updatedSelector, queryHandler);
-        }
+        /// <summary>
+        /// Unregisters a custom query handler
+        /// </summary>
+        /// <param name="name">The name of the query handler to unregistered.</param>
+        internal static void UnregisterCustomQueryHandler(string name)
+            => CustomQueriesManager.UnregisterCustomQueryHandler(name);
     }
 }

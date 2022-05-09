@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -342,19 +342,10 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="selector">A selector to query element for</param>
         /// <returns>Task which resolves to <see cref="ElementHandle"/> pointing to the frame element</returns>
-        public async Task<ElementHandle> QuerySelectorAsync(string selector)
+        public Task<ElementHandle> QuerySelectorAsync(string selector)
         {
-            var handle = await EvaluateFunctionHandleAsync(
-                "(element, selector) => element.querySelector(selector)",
-                selector).ConfigureAwait(false);
-
-            if (handle is ElementHandle element)
-            {
-                return element;
-            }
-
-            await handle.DisposeAsync().ConfigureAwait(false);
-            return null;
+            var (updatedSelector, queryHandler) = CustomQueriesManager.GetQueryHandlerAndSelector(selector);
+            return queryHandler.QueryOne(this, updatedSelector);
         }
 
         /// <summary>
@@ -362,16 +353,10 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="selector">A selector to query element for</param>
         /// <returns>Task which resolves to ElementHandles pointing to the frame elements</returns>
-        public async Task<ElementHandle[]> QuerySelectorAllAsync(string selector)
+        public Task<ElementHandle[]> QuerySelectorAllAsync(string selector)
         {
-            var arrayHandle = await EvaluateFunctionHandleAsync(
-                "(element, selector) => element.querySelectorAll(selector)",
-                selector).ConfigureAwait(false);
-
-            var properties = await arrayHandle.GetPropertiesAsync().ConfigureAwait(false);
-            await arrayHandle.DisposeAsync().ConfigureAwait(false);
-
-            return properties.Values.OfType<ElementHandle>().ToArray();
+            var (updatedSelector, queryHandler) = CustomQueriesManager.GetQueryHandlerAndSelector(selector);
+            return queryHandler.QueryAll(this, updatedSelector);
         }
 
         /// <summary>
@@ -380,8 +365,10 @@ namespace PuppeteerSharp
         /// <param name="selector">A selector to query element for</param>
         /// <returns>Task which resolves to a <see cref="JSHandle"/> of <c>document.querySelectorAll</c> result</returns>
         public Task<JSHandle> QuerySelectorAllHandleAsync(string selector)
-            => ExecutionContext.EvaluateFunctionHandleAsync(
-                "(element, selector) => Array.from(element.querySelectorAll(selector))", this, selector);
+        {
+            var (updatedSelector, queryHandler) = CustomQueriesManager.GetQueryHandlerAndSelector(selector);
+            return queryHandler.QueryAllArray(this, updatedSelector);
+        }
 
         /// <summary>
         /// Evaluates the XPath expression relative to the elementHandle. If there's no such element, the method will resolve to <c>null</c>.

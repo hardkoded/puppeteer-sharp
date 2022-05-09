@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
@@ -30,27 +31,23 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
                 @"(el) => el.id",
                 element));
 
-            var handlerNamesAfterRegistering = Puppeteer.CustomQueryHandlerNames();
-            Assert.True(handlerNamesAfterRegistering.Contains("getById"));
+            var handlerNamesAfterRegistering = Puppeteer.GetCustomQueryHandlerNames();
+            Assert.Contains("getById", handlerNamesAfterRegistering);
 
             // Unregister.
             Puppeteer.UnregisterCustomQueryHandler("getById");
             try
             {
-                await page.,('getById/foo');
-                throw new Error('Custom query handler name not set - throw expected');
+                await Page.QuerySelectorAsync("getById/foo");
+                throw new PuppeteerException("Custom query handler name not set - throw expected");
             }
-            catch (error)
+            catch (Exception ex)
             {
-                expect(error).toStrictEqual(
-                  new Error(
-                    'Query set to use "getById", but no query handler of that name was found'
-                  )
-                );
+                Assert.Equal($"Query set to use \"getById\", but no query handler of that name was found", ex.Message);
             }
-            const handlerNamesAfterUnregistering =
-              puppeteer.customQueryHandlerNames();
-            expect(handlerNamesAfterUnregistering.includes('getById')).toBeFalsy();
+
+            var handlerNamesAfterUnregistering = Puppeteer.GetCustomQueryHandlerNames();
+            Assert.DoesNotContain("getById", handlerNamesAfterUnregistering);
         }
     }
 }

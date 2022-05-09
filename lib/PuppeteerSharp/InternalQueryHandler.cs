@@ -11,6 +11,6 @@ namespace PuppeteerSharp
 
         public Func<ElementHandle, string, Task<ElementHandle[]>> QueryAll { get; set; }
 
-        public Func<ElementHandle, string, Task<ElementHandle>> QueryAllArray { get; set; }
+        public Func<ElementHandle, string, Task<JSHandle>> QueryAllArray { get; set; }
     }
 }
