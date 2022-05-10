@@ -25,7 +25,7 @@ namespace PuppeteerSharp
             var isValidName = _customQueryHandlerNameRegex.IsMatch(name);
             if (!isValidName)
             {
-                throw new PuppeteerException($"Custom query handler names may only contain[a-zA-Z]");
+                throw new PuppeteerException($"Custom query handler names may only contain [a-zA-Z]");
             }
             var internalHandler = MakeQueryHandler(queryHandler);
 

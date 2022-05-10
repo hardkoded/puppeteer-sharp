@@ -98,6 +98,33 @@ namespace PuppeteerSharp
         public Task<byte[]> ScreenshotDataAsync() => ScreenshotDataAsync(new ScreenshotOptions());
 
         /// <summary>
+        /// Waits for a selector to be added to the DOM
+        /// </summary>
+        /// <param name="selector">A selector of an element to wait for</param>
+        /// <param name="options">Optional waiting parameters</param>
+        /// <returns>A task that resolves when element specified by selector string is added to DOM.
+        /// Resolves to `null` if waiting for `hidden: true` and selector is not found in DOM.</returns>
+        public async Task<ElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
+        {
+            var frame = ExecutionContext.Frame;
+            var secondaryContext = await frame.SecondaryWorld.GetExecutionContextAsync().ConfigureAwait(false);
+            var adoptedRoot = await secondaryContext.AdoptElementHandleAsync(this).ConfigureAwait(false);
+            options ??= new WaitForSelectorOptions();
+            options.Root = adoptedRoot;
+
+            var handle = await frame.SecondaryWorld.WaitForSelectorAsync(selector, options).ConfigureAwait(false);
+            await adoptedRoot.DisposeAsync().ConfigureAwait(false);
+            if (handle == null)
+            {
+                return null;
+            }
+            var mainExecutionContext = await frame.MainWorld.GetExecutionContextAsync().ConfigureAwait(false);
+            var result = await mainExecutionContext.AdoptElementHandleAsync(handle).ConfigureAwait(false);
+            await handle.DisposeAsync().ConfigureAwait(false);
+            return result;
+        }
+
+        /// <summary>
         /// This method scrolls element into view if needed, and then uses <seealso cref="PuppeteerSharp.Page.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
         /// If the element is detached from DOM, the method throws an error.
         /// </summary>

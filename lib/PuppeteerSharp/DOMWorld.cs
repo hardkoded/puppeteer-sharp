@@ -113,6 +113,13 @@ namespace PuppeteerSharp
             return value;
         }
 
+        internal async Task<JSHandle> QuerySelectorAllHandleAsync(string selector)
+        {
+            var document = await GetDocument().ConfigureAwait(false);
+            var value = await document.QuerySelectorAllHandleAsync(selector).ConfigureAwait(false);
+            return value;
+        }
+
         internal async Task<ElementHandle[]> QuerySelectorAllAsync(string selector)
         {
             var document = await GetDocument().ConfigureAwait(false);
@@ -236,7 +243,7 @@ namespace PuppeteerSharp
 
             var predicate = @$"async function predicate(root, selector, waitForVisible, waitForHidden) {{
                 const node = predicateQueryHandler
-                  ? ((await predicateQueryHandler(root, selector)) as Element)
+                  ? ((await predicateQueryHandler(root, selector)))
                   : root.querySelector(selector);
                 return checkWaitForOptions(node, waitForVisible, waitForHidden);
             }}";
@@ -390,7 +397,10 @@ namespace PuppeteerSharp
         }
 
         internal Task<ElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
-            => WaitForSelectorOrXPathAsync(selector, false, options);
+        {
+            var (updatedSelector, queryHandler) = CustomQueriesManager.GetQueryHandlerAndSelector(selector);
+            return queryHandler.WaitFor(this, updatedSelector, options);
+        }
 
         internal Task<ElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
             => WaitForSelectorOrXPathAsync(xpath, true, options);
@@ -453,21 +463,22 @@ namespace PuppeteerSharp
                 if (!waitForVisible && !waitForHidden) return node;
                 const element =
                   node.nodeType === Node.TEXT_NODE
-                    ? (node.parentElement as Element)
-                    : (node as Element);
+                    ? node.parentElement
+                    : node;
 
-                    const style = window.getComputedStyle(element);
-                    const isVisible =
-                      style && style.visibility !== 'hidden' && hasVisibleBoundingBox();
-                    const success =
-                      waitForVisible === isVisible || waitForHidden === !isVisible;
+                const style = window.getComputedStyle(element);
+                const isVisible =
+                    style && style.visibility !== 'hidden' && hasVisibleBoundingBox();
+                const success =
+                    waitForVisible === isVisible || waitForHidden === !isVisible;
                 return success? node : null;
 
-                    function hasVisibleBoundingBox(): boolean {
+                function hasVisibleBoundingBox() {
                   const rect = element.getBoundingClientRect();
                   return !!(rect.top || rect.bottom || rect.width || rect.height);
                 }
             }";
+
             var predicateQueryHandlerDef = !string.IsNullOrEmpty(predicateQueryHandler)
               ? $@"const predicateQueryHandler = {predicateQueryHandler};" : string.Empty;
 

@@ -507,7 +507,7 @@ namespace PuppeteerSharp
         /// <param name="selector">A selector to query page for</param>
         /// <returns>Task which resolves to a <see cref="JSHandle"/> of <c>document.querySelectorAll</c> result</returns>
         public Task<JSHandle> QuerySelectorAllHandleAsync(string selector)
-            => EvaluateFunctionHandleAsync("selector => Array.from(document.querySelectorAll(selector))", selector);
+            => MainFrame.QuerySelectorAllHandleAsync(selector);
 
         /// <summary>
         /// Evaluates the XPath expression
