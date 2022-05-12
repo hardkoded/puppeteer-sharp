@@ -234,7 +234,7 @@ namespace PuppeteerSharp
             var timeout = options?.Timeout ?? _timeoutSettings.Timeout;
 
             var polling = waitForVisible || waitForHidden ? WaitForFunctionPollingOption.Raf : WaitForFunctionPollingOption.Mutation;
-            var title = $"selector `{selector}`{(waitForHidden ? " to be hidden" : string.Empty)}";
+            var title = $"selector '{selector}'{(waitForHidden ? " to be hidden" : string.Empty)}";
 
             var predicate = @$"async function predicate(root, selector, waitForVisible, waitForHidden) {{
                 const node = predicateQueryHandler
