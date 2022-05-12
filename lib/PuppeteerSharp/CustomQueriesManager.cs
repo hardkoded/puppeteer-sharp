@@ -124,4 +124,3 @@ namespace PuppeteerSharp
             => _queryHandlers.Keys.Where(k => !_builtInHandlers.ContainsKey(k));
     }
 }
-
