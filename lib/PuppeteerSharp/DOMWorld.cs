@@ -251,17 +251,19 @@ namespace PuppeteerSharp
             using var waitTask = new WaitTask(
                 this,
                 MakePredicateString(predicate, queryOne),
-                false,
+                true,
                 title,
                 polling,
                 null,
                 timeout,
+                options?.Root,
                 new object[]
                 {
                     selector,
                     waitForVisible,
                     waitForHidden,
-                });
+                },
+                true);
 
             var jsHandle = await waitTask.Task.ConfigureAwait(false);
             if (jsHandle is not ElementHandle elementHandle)
@@ -415,6 +417,7 @@ namespace PuppeteerSharp
                  options.Polling,
                  options.PollingInterval,
                  options.Timeout ?? _timeoutSettings.Timeout,
+                 null,
                  args);
 
             return await waitTask
@@ -431,7 +434,8 @@ namespace PuppeteerSharp
                 "function",
                 options.Polling,
                 options.PollingInterval,
-                options.Timeout ?? _timeoutSettings.Timeout);
+                options.Timeout ?? _timeoutSettings.Timeout,
+                null);
 
             return await waitTask
                 .Task
@@ -485,8 +489,8 @@ namespace PuppeteerSharp
             return $@"
                 (() => {{
                   {predicateQueryHandlerDef}
-                    const checkWaitForOptions = {checkWaitForOptions};
-                    return ({predicate})(...args)
+                  const checkWaitForOptions = {checkWaitForOptions};
+                  return ({predicate})(...args)
                 }})() ";
         }
 
@@ -526,6 +530,7 @@ namespace PuppeteerSharp
                 polling,
                 null,
                 timeout,
+                options.Root,
                 new object[] { selectorOrXPath, isXPath, options.Visible, options.Hidden });
 
             var handle = await waitTask.Task.ConfigureAwait(false);

@@ -138,5 +138,11 @@ namespace PuppeteerSharp
         /// <param name="name">The name of the query handler to unregistered.</param>
         internal static void UnregisterCustomQueryHandler(string name)
             => CustomQueriesManager.UnregisterCustomQueryHandler(name);
+
+        /// <summary>
+        /// Clears all registered handlers.
+        /// </summary>
+        internal static void ClearCustomQueryHandlers()
+            => CustomQueriesManager.ClearCustomQueryHandlers();
     }
 }

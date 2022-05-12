@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace PuppeteerSharp
@@ -7,6 +8,7 @@ namespace PuppeteerSharp
     internal static class CustomQueriesManager
     {
         private static readonly Dictionary<string, InternalQueryHandler> _queryHandlers = new();
+        private static readonly Dictionary<string, InternalQueryHandler> _builtInHandlers = new();
         private static readonly Regex _customQueryHandlerNameRegex = new("[a-zA-Z]+$", RegexOptions.Compiled);
         private static readonly Regex _customQueryHandlerParserRegex = new("(?<query>^[a-zA-Z]+)\\/(?<selector>.*)", RegexOptions.Compiled);
         private static readonly InternalQueryHandler _defaultHandler = MakeQueryHandler(new CustomQueryHandler
@@ -58,7 +60,7 @@ namespace PuppeteerSharp
             {
                 internalHandler.QueryAll = async (ElementHandle element, string selector) =>
                 {
-                    var jsHandle = await element.EvaluateFunctionHandleAsync(handler.QueryOne, selector).ConfigureAwait(false);
+                    var jsHandle = await element.EvaluateFunctionHandleAsync(handler.QueryAll, selector).ConfigureAwait(false);
                     var properties = await jsHandle.GetPropertiesAsync().ConfigureAwait(false);
                     var result = new List<ElementHandle>();
 
@@ -77,8 +79,7 @@ namespace PuppeteerSharp
                     var resultHandle = await element.EvaluateFunctionHandleAsync(
                       handler.QueryAll,
                       selector).ConfigureAwait(false);
-                    var arrayHandle = await resultHandle.EvaluateFunctionHandleAsync("(res) => Array.from(res)").ConfigureAwait(false);
-                    return arrayHandle as ElementHandle;
+                    return await resultHandle.EvaluateFunctionHandleAsync("(res) => Array.from(res)").ConfigureAwait(false);
                 };
             }
 
@@ -109,6 +110,17 @@ namespace PuppeteerSharp
 
         internal static void UnregisterCustomQueryHandler(string name)
             => _queryHandlers.Remove(name);
+
+        internal static void ClearCustomQueryHandlers()
+        {
+            foreach (var name in CustomQueryHandlerNames())
+            {
+                UnregisterCustomQueryHandler(name);
+            }
+        }
+
+        private static IEnumerable<string> CustomQueryHandlerNames()
+            => _queryHandlers.Keys.Where(k => !_builtInHandlers.ContainsKey(k));
     }
 }
 

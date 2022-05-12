@@ -15,6 +15,12 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         {
         }
 
+        public override Task DisposeAsync()
+        {
+            Puppeteer.ClearCustomQueryHandlers();
+            return base.DisposeAsync();
+        }
+
         [PuppeteerTest("elementhandle.spec.ts", "Custom queries", "should reguster and unregister")]
         [PuppeteerFact]
         public async Task ShouldRegisterAndUnregister()
@@ -23,7 +29,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
 
             Puppeteer.RegisterCustomQueryHandler("getById", new CustomQueryHandler
             { 
-                QueryOne = "(element, selector) => document.querySelector(`[id='${ selector}']`)",
+                QueryOne = "(element, selector) => element.querySelector(`[id='${selector}']`)",
             });
 
             var element = await Page.QuerySelectorAsync("getById/foo");
@@ -56,7 +62,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         {
             var ex = Assert.Throws<PuppeteerException>(()=> Puppeteer.RegisterCustomQueryHandler("1/2/3", new CustomQueryHandler
             {
-                QueryOne = "(element, selector) => document.querySelector(`[id='${ selector}']`)",
+                QueryOne = "(element, selector) => element.querySelector(`[id='${selector}']`)",
             }));
 
             Assert.Equal("Custom query handler names may only contain [a-zA-Z]", ex.Message);
@@ -66,11 +72,11 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         [PuppeteerFact]
         public async Task ShouldWorkForMultipleElements()
         {
-            await Page.SetContentAsync("<div id='not-foo'></div><div id='foo'></div><div class='foo baz'>Foo2</div>");
+            await Page.SetContentAsync("<div id='not-foo'></div><div class='foo'></div><div class='foo baz'>Foo2</div>");
 
             Puppeteer.RegisterCustomQueryHandler("getByClass", new CustomQueryHandler
             {
-                QueryAll = "(element, selector) => document.querySelectorAll(`.${selector}`)",
+                QueryAll = "(element, selector) => element.querySelectorAll(`.${selector}`)",
             });
 
             var elements = await Page.QuerySelectorAllAsync("getByClass/foo");
@@ -85,11 +91,11 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         [PuppeteerFact]
         public async Task ShouldEvalCorrectly()
         {
-            await Page.SetContentAsync("<div id='not-foo'></div><div id='foo'></div><div class='foo baz'>Foo2</div>");
+            await Page.SetContentAsync("<div id='not-foo'></div><div class='foo'></div><div class='foo baz'>Foo2</div>");
 
             Puppeteer.RegisterCustomQueryHandler("getByClass", new CustomQueryHandler
             {
-                QueryAll = "(element, selector) => document.querySelectorAll(`.${selector}`)",
+                QueryAll = "(element, selector) => element.querySelectorAll(`.${selector}`)",
             });
 
             var elements = await Page.QuerySelectorAllHandleAsync("getByClass/foo")
@@ -104,12 +110,12 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         {
             Puppeteer.RegisterCustomQueryHandler("getByClass", new CustomQueryHandler
             {
-                QueryAll = "(element, selector) => document.querySelectorAll(`.${selector}`)",
+                QueryOne = "(element, selector) => element.querySelector(`.${selector}`)",
             });
 
             var waitFor = Page.WaitForSelectorAsync("getByClass/foo");
 
-            await Page.SetContentAsync("<div id='not-foo'></div><div id='foo'></div>");
+            await Page.SetContentAsync("<div id='not-foo'></div><div class='foo'></div>");
 
             var element = await waitFor;
 
@@ -122,12 +128,12 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         {
             Puppeteer.RegisterCustomQueryHandler("getByClass", new CustomQueryHandler
             {
-                QueryOne = "(element, selector) => document.querySelector(`.${selector}`)",
+                QueryOne = "(element, selector) => element.querySelector(`.${selector}`)",
             });
 
             var waitFor = Page.WaitForSelectorAsync("getByClass/foo");
 
-            await Page.SetContentAsync("<div id='not-foo'></div><div id='foo'></div>");
+            await Page.SetContentAsync("<div id=\"not-foo\"></div><div class=\"bar\">bar2</div><div class=\"foo\">Foo1</div>");
 
             var element = await waitFor;
 
@@ -145,18 +151,18 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         [PuppeteerFact]
         public async Task ShouldWorkWhenBothQueryOneAndQueryAllAreRegistered()
         {
-            await Page.SetContentAsync("<div id='not-foo'></div><div id='foo'></div><div class='foo baz'>Foo2</div>");
+            await Page.SetContentAsync("<div id=\"not-foo\"></div><div class=\"foo\"><div id=\"nested-foo\" class=\"foo\"/></div><div class=\"foo baz\">Foo2</div>");
 
             Puppeteer.RegisterCustomQueryHandler("getByClass", new CustomQueryHandler
             {
-                QueryOne= "(element, selector) => document.querySelector(`.${selector}`)",
-                QueryAll = "(element, selector) => document.querySelectorAll(`.${selector}`)",
+                QueryOne= "(element, selector) => element.querySelector(`.${selector}`)",
+                QueryAll = "(element, selector) => element.querySelectorAll(`.${selector}`)",
             });
 
             var element = await Page.QuerySelectorAsync("getByClass/foo");
             Assert.NotNull(element);
             var elements = await Page.QuerySelectorAllAsync("getByClass/foo");
-            Assert.Equal(2, elements.Length);
+            Assert.Equal(3, elements.Length);
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "Custom queries", "should eval when both queryOne and queryAll are registered")]
@@ -167,12 +173,12 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
 
             Puppeteer.RegisterCustomQueryHandler("getByClass", new CustomQueryHandler
             {
-                QueryOne= "(element, selector) => document.querySelector(`.${selector}`)",
-                QueryAll = "(element, selector) => document.querySelectorAll(`.${selector}`)",
+                QueryOne= "(element, selector) => element.querySelector(`.${selector}`)",
+                QueryAll = "(element, selector) => element.querySelectorAll(`.${selector}`)",
             });
 
             var txtContent = await Page.QuerySelectorAsync("getByClass/foo")
-                .EvaluateFunctionAsync<string>("(divs) =>  div.textContent");
+                .EvaluateFunctionAsync<string>("(div) =>  div.textContent");
 
             Assert.Equal("text", txtContent);
 
