@@ -121,6 +121,6 @@ namespace PuppeteerSharp
         }
 
         private static IEnumerable<string> CustomQueryHandlerNames()
-            => _queryHandlers.Keys.Where(k => !_builtInHandlers.ContainsKey(k));
+            => _queryHandlers.Keys.ToArray().Where(k => !_builtInHandlers.ContainsKey(k));
     }
 }
