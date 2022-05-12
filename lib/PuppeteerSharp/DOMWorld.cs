@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
@@ -109,29 +108,25 @@ namespace PuppeteerSharp
         internal async Task<ElementHandle> QuerySelectorAsync(string selector)
         {
             var document = await GetDocument().ConfigureAwait(false);
-            var value = await document.QuerySelectorAsync(selector).ConfigureAwait(false);
-            return value;
+            return await document.QuerySelectorAsync(selector).ConfigureAwait(false);
         }
 
         internal async Task<JSHandle> QuerySelectorAllHandleAsync(string selector)
         {
             var document = await GetDocument().ConfigureAwait(false);
-            var value = await document.QuerySelectorAllHandleAsync(selector).ConfigureAwait(false);
-            return value;
+            return await document.QuerySelectorAllHandleAsync(selector).ConfigureAwait(false);
         }
 
         internal async Task<ElementHandle[]> QuerySelectorAllAsync(string selector)
         {
             var document = await GetDocument().ConfigureAwait(false);
-            var value = await document.QuerySelectorAllAsync(selector).ConfigureAwait(false);
-            return value;
+            return await document.QuerySelectorAllAsync(selector).ConfigureAwait(false);
         }
 
         internal async Task<ElementHandle[]> XPathAsync(string expression)
         {
             var document = await GetDocument().ConfigureAwait(false);
-            var value = await document.XPathAsync(expression).ConfigureAwait(false);
-            return value;
+            return await document.XPathAsync(expression).ConfigureAwait(false);
         }
 
         internal Task<string> GetContentAsync() => EvaluateFunctionAsync<string>(

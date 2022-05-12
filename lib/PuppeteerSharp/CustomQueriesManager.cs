@@ -75,7 +75,8 @@ namespace PuppeteerSharp
                     return result.ToArray();
                 };
 
-                internalHandler.QueryAllArray = async (ElementHandle element, string selector) => {
+                internalHandler.QueryAllArray = async (ElementHandle element, string selector) =>
+                {
                     var resultHandle = await element.EvaluateFunctionHandleAsync(
                       handler.QueryAll,
                       selector).ConfigureAwait(false);
