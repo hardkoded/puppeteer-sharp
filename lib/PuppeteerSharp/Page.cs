@@ -333,7 +333,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets this page's coverage
         /// </summary>
-        public Coverage Coverage { get; }
+        public ICoverage Coverage { get; }
 
         /// <summary>
         /// Gets this page's tracing

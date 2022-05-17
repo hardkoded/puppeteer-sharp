@@ -8,7 +8,7 @@ namespace PuppeteerSharp.PageCoverage
     /// <summary>
     /// gathers information about parts of JavaScript and CSS that were used by the page.
     /// </summary>
-    public class Coverage
+    public class Coverage : ICoverage
     {
         private readonly JSCoverage _jsCoverage;
         private readonly CSSCoverage _cssCoverage;
