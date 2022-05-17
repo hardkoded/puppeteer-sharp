@@ -7,7 +7,7 @@ namespace PuppeteerSharp.Input
     /// <summary>
     /// Provides methods to interact with the touch screen
     /// </summary>
-    public class Touchscreen
+    public class Touchscreen : ITouchscreen
     {
         private readonly CDPSession _client;
         private readonly Keyboard _keyboard;

@@ -328,7 +328,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets this page's touchscreen
         /// </summary>
-        public Touchscreen Touchscreen { get; }
+        public ITouchscreen Touchscreen { get; }
 
         /// <summary>
         /// Gets this page's coverage
