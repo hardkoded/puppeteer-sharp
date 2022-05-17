@@ -80,7 +80,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             Assert.Contains(Page, allPages);
             Assert.Contains(otherPage, allPages);
 
-            var closePageTaskCompletion = new TaskCompletionSource<Page>();
+            var closePageTaskCompletion = new TaskCompletionSource<IPage>();
             async void TargetDestroyedEventHandler(object sender, TargetChangedArgs e)
             {
                 closePageTaskCompletion.SetResult(await e.Target.PageAsync());

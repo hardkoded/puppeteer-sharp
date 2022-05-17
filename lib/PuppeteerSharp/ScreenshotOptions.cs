@@ -7,7 +7,7 @@ using PuppeteerSharp.Media;
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// Options to be used in <see cref="Page.ScreenshotAsync(string, ScreenshotOptions)"/>, <see cref="Page.ScreenshotStreamAsync(ScreenshotOptions)"/> and <see cref="Page.ScreenshotDataAsync(ScreenshotOptions)"/>
+    /// Options to be used in <see cref="IPage.ScreenshotAsync(string, ScreenshotOptions)"/>, <see cref="IPage.ScreenshotStreamAsync(ScreenshotOptions)"/> and <see cref="IPage.ScreenshotDataAsync(ScreenshotOptions)"/>
     /// </summary>
     public class ScreenshotOptions
     {
@@ -47,7 +47,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// When BurstMode is <c>true</c> the screenshot process will only execute all the screenshot setup actions (background and metrics overrides)
         /// before the first screenshot call and it will ignore the reset actions after the screenshoot is taken.
-        /// <see cref="Page.SetBurstModeOffAsync"/> needs to be called after the last screenshot is taken.
+        /// <see cref="IPage.SetBurstModeOffAsync"/> needs to be called after the last screenshot is taken.
         /// </summary>
         /// <example><![CDATA[
         /// var screenShotOptions = new ScreenshotOptions

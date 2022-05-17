@@ -3,11 +3,11 @@ using System;
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// Arguments used by <see cref="Page"/> events.
+    /// Arguments used by <see cref="IPage"/> events.
     /// </summary>
-    /// <seealso cref="Page.Request"/>
-    /// <seealso cref="Page.RequestFailed"/>
-    /// <seealso cref="Page.RequestFinished"/>
+    /// <seealso cref="IPage.Request"/>
+    /// <seealso cref="IPage.RequestFailed"/>
+    /// <seealso cref="IPage.RequestFinished"/>
     public class RequestEventArgs : EventArgs
     {
         /// <summary>

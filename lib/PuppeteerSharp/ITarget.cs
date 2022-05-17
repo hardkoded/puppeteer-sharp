@@ -51,10 +51,10 @@ namespace PuppeteerSharp
         Task<CDPSession> CreateCDPSessionAsync();
 
         /// <summary>
-        /// Returns the <see cref="Page"/> associated with the target. If the target is not <c>"page"</c> or <c>"background_page"</c> returns <c>null</c>
+        /// Returns the <see cref="IPage"/> associated with the target. If the target is not <c>"page"</c> or <c>"background_page"</c> returns <c>null</c>
         /// </summary>
-        /// <returns>a task that returns a <see cref="Page"/></returns>
-        Task<Page> PageAsync();
+        /// <returns>a task that returns a <see cref="IPage"/></returns>
+        Task<IPage> PageAsync();
 
         /// <summary>
         /// If the target is not of type `"service_worker"` or `"shared_worker"`, returns `null`.

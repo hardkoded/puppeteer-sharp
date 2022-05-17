@@ -27,7 +27,7 @@ namespace PuppeteerSharp
         internal static string[] DefaultArgs => ChromiumLauncher.DefaultArgs;
 
         /// <summary>
-        /// Returns a list of devices to be used with <seealso cref="Page.EmulateAsync(DeviceDescriptor)"/>.
+        /// Returns a list of devices to be used with <seealso cref="IPage.EmulateAsync(DeviceDescriptor)"/>.
         /// </summary>
         /// <example>
         /// <code>
@@ -44,7 +44,7 @@ namespace PuppeteerSharp
         public static IReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor> Devices => DeviceDescriptors.ToReadOnly();
 
         /// <summary>
-        /// Returns a list of network conditions to be used with <seealso cref="Page.EmulateNetworkConditionsAsync(NetworkConditions)"/>.
+        /// Returns a list of network conditions to be used with <seealso cref="IPage.EmulateNetworkConditionsAsync(NetworkConditions)"/>.
         /// Actual list of conditions can be found in <seealso cref="PredefinedNetworkConditions.Conditions"/>.
         /// </summary>
         /// <example>

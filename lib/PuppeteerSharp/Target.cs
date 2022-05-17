@@ -41,7 +41,7 @@ namespace PuppeteerSharp
                     {
                         return;
                     }
-                    var openerPage = await openerPageTask.ConfigureAwait(false);
+                    var openerPage = (Page)await openerPageTask.ConfigureAwait(false);
                     if (!openerPage.HasPopupEventListeners)
                     {
                         return;
@@ -103,24 +103,24 @@ namespace PuppeteerSharp
 
         internal TaskCompletionSource<bool> CloseTaskWrapper { get; }
 
-        internal Task<Page> PageTask { get; set; }
+        internal Task<IPage> PageTask { get; set; }
 
         internal bool IsInitialized { get; set; }
 
         internal TargetInfo TargetInfo { get; set; }
 
         /// <summary>
-        /// Returns the <see cref="Page"/> associated with the target. If the target is not <c>"page"</c> or <c>"background_page"</c> returns <c>null</c>
+        /// Returns the <see cref="IPage"/> associated with the target. If the target is not <c>"page"</c> or <c>"background_page"</c> returns <c>null</c>
         /// </summary>
-        /// <returns>a task that returns a <see cref="Page"/></returns>
-        public Task<Page> PageAsync()
+        /// <returns>a task that returns a <see cref="IPage"/></returns>
+        public Task<IPage> PageAsync()
         {
             if ((TargetInfo.Type == TargetType.Page || TargetInfo.Type == TargetType.BackgroundPage) && PageTask == null)
             {
                 PageTask = CreatePageAsync();
             }
 
-            return PageTask ?? Task.FromResult<Page>(null);
+            return PageTask ?? Task.FromResult<IPage>(null);
         }
 
         /// <summary>
@@ -151,7 +151,7 @@ namespace PuppeteerSharp
                 _ => { });
         }
 
-        private async Task<Page> CreatePageAsync()
+        private async Task<IPage> CreatePageAsync()
         {
             var session = await _sessionFactory().ConfigureAwait(false);
 

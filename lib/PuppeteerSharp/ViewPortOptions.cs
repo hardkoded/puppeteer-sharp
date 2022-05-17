@@ -1,7 +1,7 @@
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// View port options used on <see cref="Page.SetViewportAsync(ViewPortOptions)"/>.
+    /// View port options used on <see cref="IPage.SetViewportAsync(ViewPortOptions)"/>.
     /// </summary>
     public class ViewPortOptions
     {

@@ -14,7 +14,7 @@ namespace PuppeteerSharp
 {
     /// <summary>
     /// Inherits from <see cref="JSHandle"/>. It represents an in-page DOM element.
-    /// ElementHandles can be created by <see cref="PuppeteerSharp.Page.QuerySelectorAsync(string)"/> or <see cref="PuppeteerSharp.Page.QuerySelectorAllAsync(string)"/>.
+    /// ElementHandles can be created by <see cref="PuppeteerSharp.IPage.QuerySelectorAsync(string)"/> or <see cref="PuppeteerSharp.IPage.QuerySelectorAllAsync(string)"/>.
     /// </summary>
     public class ElementHandle : JSHandle, IElementHandle
     {

@@ -1,7 +1,7 @@
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// <see cref="Page.FrameAttached"/>, <see cref="Page.FrameDetached"/> and <see cref="Page.FrameNavigated"/> arguments.
+    /// <see cref="IPage.FrameAttached"/>, <see cref="IPage.FrameDetached"/> and <see cref="IPage.FrameNavigated"/> arguments.
     /// </summary>
     public class FrameEventArgs
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// ConsoleMessage is part of <see cref="ConsoleEventArgs"/> used by <see cref="Page.Console"/>.
+    /// ConsoleMessage is part of <see cref="ConsoleEventArgs"/> used by <see cref="IPage.Console"/>.
     /// </summary>
     public class ConsoleMessage
     {

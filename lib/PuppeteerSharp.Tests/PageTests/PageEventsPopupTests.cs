@@ -17,7 +17,7 @@ namespace PuppeteerSharp.Tests.PageTests
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
-            var popupTaskSource = new TaskCompletionSource<Page>();
+            var popupTaskSource = new TaskCompletionSource<IPage>();
             Page.Popup += (_, e) => popupTaskSource.TrySetResult(e.PopupPage);
 
             await Task.WhenAll(
@@ -32,7 +32,7 @@ namespace PuppeteerSharp.Tests.PageTests
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithNoopener()
         {
-            var popupTaskSource = new TaskCompletionSource<Page>();
+            var popupTaskSource = new TaskCompletionSource<IPage>();
             Page.Popup += (_, e) => popupTaskSource.TrySetResult(e.PopupPage);
 
             await Task.WhenAll(
@@ -50,7 +50,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.GoToAsync(TestConstants.EmptyPage);
             await Page.SetContentAsync("<a target=_blank href='/one-style.html'>yo</a>");
 
-            var popupTaskSource = new TaskCompletionSource<Page>();
+            var popupTaskSource = new TaskCompletionSource<IPage>();
             Page.Popup += (_, e) => popupTaskSource.TrySetResult(e.PopupPage);
 
             await Task.WhenAll(
@@ -68,7 +68,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.GoToAsync(TestConstants.EmptyPage);
             await Page.SetContentAsync("<a target=_blank rel=noopener href='/one-style.html'>yo</a>");
 
-            var popupTaskSource = new TaskCompletionSource<Page>();
+            var popupTaskSource = new TaskCompletionSource<IPage>();
             Page.Popup += (_, e) => popupTaskSource.TrySetResult(e.PopupPage);
 
             await Task.WhenAll(
@@ -86,7 +86,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.GoToAsync(TestConstants.EmptyPage);
             await Page.SetContentAsync("<a target=_blank rel=noopener href='/one-style.html'>yo</a>");
 
-            var popupTaskSource = new TaskCompletionSource<Page>();
+            var popupTaskSource = new TaskCompletionSource<IPage>();
             Page.Popup += (_, e) => popupTaskSource.TrySetResult(e.PopupPage);
 
             await Task.WhenAll(
@@ -104,7 +104,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.GoToAsync(TestConstants.EmptyPage);
             await Page.SetContentAsync("<a target=_blank rel=noopener href='/one-style.html'>yo</a>");
 
-            var popupTaskSource = new TaskCompletionSource<Page>();
+            var popupTaskSource = new TaskCompletionSource<IPage>();
             Page.Popup += (_, e) => popupTaskSource.TrySetResult(e.PopupPage);
 
             await Task.WhenAll(

@@ -78,7 +78,7 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to an array of all open pages.
         /// Non visible pages, such as <c>"background_page"</c>, will not be listed here.
         /// You can find them using <see cref="ITarget.PageAsync"/>.</returns>
-        public async Task<Page[]> PagesAsync()
+        public async Task<IPage[]> PagesAsync()
         => (await Task.WhenAll(
             Targets().Where(t => t.Type == TargetType.Page).Select(t => t.PageAsync())).ConfigureAwait(false))
             .Where(p => p != null).ToArray();
@@ -86,8 +86,8 @@ namespace PuppeteerSharp
         /// <summary>
         /// Creates a new page
         /// </summary>
-        /// <returns>Task which resolves to a new <see cref="Page"/> object</returns>
-        public Task<Page> NewPageAsync() => _browser.CreatePageInContextAsync(_id);
+        /// <returns>Task which resolves to a new <see cref="IPage"/> object</returns>
+        public Task<IPage> NewPageAsync() => _browser.CreatePageInContextAsync(_id);
 
         /// <summary>
         /// Closes the browser context. All the targets that belong to the browser context will be closed

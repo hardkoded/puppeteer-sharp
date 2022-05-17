@@ -14,10 +14,10 @@ namespace PuppeteerSharp
     /// <see cref="Response"/> class represents responses which are received by page.
     /// </summary>
     /// <seealso cref="Page.GoAsync(int, NavigationOptions)"/>
-    /// <seealso cref="Page.GoForwardAsync(NavigationOptions)"/>
-    /// <seealso cref="Page.ReloadAsync(int?, WaitUntilNavigation[])"/>
-    /// <seealso cref="Page.Response"/>
-    /// <seealso cref="Page.WaitForResponseAsync(Func{Response, bool}, WaitForOptions)"/>
+    /// <seealso cref="IPage.GoForwardAsync(NavigationOptions)"/>
+    /// <seealso cref="IPage.ReloadAsync(int?, WaitUntilNavigation[])"/>
+    /// <seealso cref="IPage.Response"/>
+    /// <seealso cref="IPage.WaitForResponseAsync(Func{Response, bool}, WaitForOptions)"/>
     public class Response
     {
         private readonly CDPSession _client;

@@ -7,7 +7,7 @@ using PuppeteerSharp.Messaging;
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// IJSHandle represents an in-page JavaScript object. JSHandles can be created with the <see cref="Page.EvaluateExpressionHandleAsync(string)"/> and <see cref="Page.EvaluateFunctionHandleAsync(string, object[])"/> methods.
+    /// IJSHandle represents an in-page JavaScript object. JSHandles can be created with the <see cref="IPage.EvaluateExpressionHandleAsync(string)"/> and <see cref="IPage.EvaluateFunctionHandleAsync(string, object[])"/> methods.
     /// </summary>
     public interface IJSHandle : IAsyncDisposable
     {

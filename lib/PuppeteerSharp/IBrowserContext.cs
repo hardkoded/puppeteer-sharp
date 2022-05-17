@@ -6,7 +6,7 @@ namespace PuppeteerSharp
 {
     /// <summary>
     /// BrowserContexts provide a way to operate multiple independent browser sessions. When a browser is launched, it has
-    /// a single <see cref="IBrowserContext"/> used by default. The method <see cref="IBrowser.NewPageAsync"/> creates a <see cref="Page"/> in the default <see cref="IBrowserContext"/>
+    /// a single <see cref="IBrowserContext"/> used by default. The method <see cref="IBrowser.NewPageAsync"/> creates a <see cref="IPage"/> in the default <see cref="IBrowserContext"/>
     /// </summary>
     public interface IBrowserContext
     {
@@ -54,8 +54,8 @@ namespace PuppeteerSharp
         /// <summary>
         /// Creates a new page
         /// </summary>
-        /// <returns>Task which resolves to a new <see cref="Page"/> object</returns>
-        Task<Page> NewPageAsync();
+        /// <returns>Task which resolves to a new <see cref="IPage"/> object</returns>
+        Task<IPage> NewPageAsync();
 
         /// <summary>
         /// Overrides the browser context permissions.
@@ -80,7 +80,7 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to an array of all open pages.
         /// Non visible pages, such as <c>"background_page"</c>, will not be listed here.
         /// You can find them using <see cref="ITarget.PageAsync"/>.</returns>
-        Task<Page[]> PagesAsync();
+        Task<IPage[]> PagesAsync();
 
         /// <summary>
         /// Gets an array of all active targets inside the browser context.

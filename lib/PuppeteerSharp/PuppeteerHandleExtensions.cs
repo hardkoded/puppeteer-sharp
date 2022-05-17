@@ -66,7 +66,7 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Runs <paramref name="pageFunction"/> within the frame and passes it the outcome of <paramref name="arrayHandleTask"/> as the first argument. Use only after <see cref="Page.QuerySelectorAllHandleAsync(string)"/>
+        /// Runs <paramref name="pageFunction"/> within the frame and passes it the outcome of <paramref name="arrayHandleTask"/> as the first argument. Use only after <see cref="IPage.QuerySelectorAllHandleAsync(string)"/>
         /// </summary>
         /// <param name="arrayHandleTask">A task that returns an <see cref="IJSHandle"/> that represents an array of <see cref="IElementHandle"/> that will be used as the first argument in <paramref name="pageFunction"/></param>
         /// <param name="pageFunction">Function to be evaluated in browser context</param>
@@ -76,7 +76,7 @@ namespace PuppeteerSharp
             => arrayHandleTask.EvaluateFunctionAsync<object>(pageFunction, args);
 
         /// <summary>
-        /// Runs <paramref name="pageFunction"/> within the frame and passes it the outcome of <paramref name="arrayHandleTask"/> as the first argument. Use only after <see cref="Page.QuerySelectorAllHandleAsync(string)"/>
+        /// Runs <paramref name="pageFunction"/> within the frame and passes it the outcome of <paramref name="arrayHandleTask"/> as the first argument. Use only after <see cref="IPage.QuerySelectorAllHandleAsync(string)"/>
         /// </summary>
         /// <typeparam name="T">The type to deserialize the result to</typeparam>
         /// <param name="arrayHandleTask">A task that returns an <see cref="IJSHandle"/> that represents an array of <see cref="IElementHandle"/> that will be used as the first argument in <paramref name="pageFunction"/></param>
@@ -94,7 +94,7 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Runs <paramref name="pageFunction"/> within the frame and passes it the outcome of <paramref name="arrayHandle"/> as the first argument. Use only after <see cref="Page.QuerySelectorAllHandleAsync(string)"/>
+        /// Runs <paramref name="pageFunction"/> within the frame and passes it the outcome of <paramref name="arrayHandle"/> as the first argument. Use only after <see cref="IPage.QuerySelectorAllHandleAsync(string)"/>
         /// </summary>
         /// <typeparam name="T">The type to deserialize the result to</typeparam>
         /// <param name="arrayHandle">An <see cref="IJSHandle"/> that represents an array of <see cref="IElementHandle"/> that will be used as the first argument in <paramref name="pageFunction"/></param>

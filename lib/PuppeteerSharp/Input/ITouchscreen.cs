@@ -13,7 +13,7 @@ namespace PuppeteerSharp.Input
         /// <param name="x">The touch X location.</param>
         /// <param name="y">The touch Y location.</param>
         /// <returns>Task</returns>
-        /// <seealso cref="Page.TapAsync(string)"/>
+        /// <seealso cref="IPage.TapAsync(string)"/>
         Task TapAsync(decimal x, decimal y);
     }
 }

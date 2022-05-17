@@ -13,7 +13,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        private Task<string> GetPermissionAsync(Page page, string name)
+        private Task<string> GetPermissionAsync(IPage page, string name)
             => page.EvaluateFunctionAsync<string>(
                 "name => navigator.permissions.query({ name }).then(result => result.state)",
                 name);

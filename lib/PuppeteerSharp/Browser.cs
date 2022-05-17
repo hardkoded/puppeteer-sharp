@@ -15,7 +15,7 @@ namespace PuppeteerSharp
     /// Provides methods to interact with a browser in Chromium.
     /// </summary>
     /// <example>
-    /// An example of using a <see cref="IBrowser"/> to create a <see cref="Page"/>:
+    /// An example of using a <see cref="IBrowser"/> to create a <see cref="IPage"/>:
     /// <code>
     /// <![CDATA[
     /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions());
@@ -24,7 +24,7 @@ namespace PuppeteerSharp
     /// await browser.CloseAsync();
     /// ]]>
     /// </code>
-    /// An example of disconnecting from and reconnecting to a <see cref="Browser"/>:
+    /// An example of disconnecting from and reconnecting to a <see cref="IBrowser"/>:
     /// <code>
     /// <![CDATA[
     /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions());
@@ -170,8 +170,8 @@ namespace PuppeteerSharp
         /// <summary>
         /// Creates a new page
         /// </summary>
-        /// <returns>Task which resolves to a new <see cref="Page"/> object</returns>
-        public Task<Page> NewPageAsync() => DefaultContext.NewPageAsync();
+        /// <returns>Task which resolves to a new <see cref="IPage"/> object</returns>
+        public Task<IPage> NewPageAsync() => DefaultContext.NewPageAsync();
 
         /// <summary>
         /// Returns An Array of all active targets
@@ -229,7 +229,7 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to an array of all open pages inside the Browser.
         /// In case of multiple browser contexts, the method will return an array with all the pages in all browser contexts.
         /// </returns>
-        public async Task<Page[]> PagesAsync()
+        public async Task<IPage[]> PagesAsync()
             => (await Task.WhenAll(
                 BrowserContexts().Select(t => t.PagesAsync())).ConfigureAwait(false))
                 .SelectMany(p => p).ToArray();
@@ -249,7 +249,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>Task which resolves to the browser's original user agent</returns>
         /// <remarks>
-        /// Pages can override browser user agent with <see cref="Page.SetUserAgentAsync(string, UserAgentMetadata)"/>
+        /// Pages can override browser user agent with <see cref="IPage.SetUserAgentAsync(string, UserAgentMetadata)"/>
         /// </remarks>
         public async Task<string> GetUserAgentAsync()
             => (await Connection.SendAsync<BrowserGetVersionResponse>("Browser.getVersion").ConfigureAwait(false)).UserAgent;
@@ -368,7 +368,7 @@ namespace PuppeteerSharp
             ((BrowserContext)target.BrowserContext).OnTargetChanged(this, args);
         }
 
-        internal async Task<Page> CreatePageInContextAsync(string contextId)
+        internal async Task<IPage> CreatePageInContextAsync(string contextId)
         {
             var createTargetRequest = new TargetCreateTargetRequest
             {

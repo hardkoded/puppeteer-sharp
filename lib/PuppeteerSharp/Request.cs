@@ -13,13 +13,13 @@ namespace PuppeteerSharp
 {
     /// <summary>
     /// Whenever the page sends a request, the following events are emitted by puppeteer's page:
-    /// <see cref="Page.Request"/> emitted when the request is issued by the page.
-    /// <see cref="Page.Response"/> emitted when/if the response is received for the request.
-    /// <see cref="Page.RequestFinished"/> emitted when the response body is downloaded and the request is complete.
+    /// <see cref="IPage.Request"/> emitted when the request is issued by the page.
+    /// <see cref="IPage.Response"/> emitted when/if the response is received for the request.
+    /// <see cref="IPage.RequestFinished"/> emitted when the response body is downloaded and the request is complete.
     ///
-    /// If request fails at some point, then instead of <see cref="Page.RequestFinished"/> event (and possibly instead of <see cref="Page.Response"/> event), the <see cref="Page.RequestFailed"/> event is emitted.
+    /// If request fails at some point, then instead of <see cref="IPage.RequestFinished"/> event (and possibly instead of <see cref="IPage.Response"/> event), the <see cref="IPage.RequestFailed"/> event is emitted.
     ///
-    /// If request gets a 'redirect' response, the request is successfully finished with the <see cref="Page.RequestFinished"/> event, and a new request is issued to a redirected url.
+    /// If request gets a 'redirect' response, the request is successfully finished with the <see cref="IPage.RequestFinished"/> event, and a new request is issued to a redirected url.
     /// </summary>
     public class Request
     {
@@ -154,7 +154,7 @@ namespace PuppeteerSharp
         internal List<Request> RedirectChainList { get; }
 
         /// <summary>
-        /// Continues request with optional request overrides. To use this, request interception should be enabled with <see cref="Page.SetRequestInterceptionAsync(bool)"/>. Exception is immediately thrown if the request interception is not enabled.
+        /// Continues request with optional request overrides. To use this, request interception should be enabled with <see cref="IPage.SetRequestInterceptionAsync(bool)"/>. Exception is immediately thrown if the request interception is not enabled.
         /// If the URL is set it won't perform a redirect. The request will be silently forwarded to the new url. For example, the address bar will show the original url.
         /// </summary>
         /// <param name="overrides">Optional request overwrites.</param>
@@ -214,7 +214,7 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Fulfills request with given response. To use this, request interception should be enabled with <see cref="Page.SetRequestInterceptionAsync(bool)"/>. Exception is thrown if request interception is not enabled.
+        /// Fulfills request with given response. To use this, request interception should be enabled with <see cref="IPage.SetRequestInterceptionAsync(bool)"/>. Exception is thrown if request interception is not enabled.
         /// </summary>
         /// <param name="response">Response that will fulfill this request</param>
         /// <returns>Task</returns>
@@ -290,7 +290,7 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Aborts request. To use this, request interception should be enabled with <see cref="Page.SetRequestInterceptionAsync(bool)"/>.
+        /// Aborts request. To use this, request interception should be enabled with <see cref="IPage.SetRequestInterceptionAsync(bool)"/>.
         /// Exception is immediately thrown if the request interception is not enabled.
         /// </summary>
         /// <param name="errorCode">Optional error code. Defaults to <see cref="RequestAbortErrorCode.Failed"/></param>

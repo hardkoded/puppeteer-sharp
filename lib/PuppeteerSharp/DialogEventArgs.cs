@@ -1,10 +1,9 @@
 using System;
-using System.Collections.Generic;
 
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// <see cref="Page.Dialog"/> arguments.
+    /// <see cref="IPage.Dialog"/> arguments.
     /// </summary>
     public class DialogEventArgs : EventArgs
     {

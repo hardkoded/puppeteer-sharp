@@ -7,13 +7,13 @@ using PuppeteerSharp.Input;
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// Provides methods to interact with a single page frame in Chromium. One <see cref="Page"/> instance might have multiple <see cref="IFrame"/> instances.
-    /// At every point of time, page exposes its current frame tree via the <see cref="Page.MainFrame"/> and <see cref="ChildFrames"/> properties.
+    /// Provides methods to interact with a single page frame in Chromium. One <see cref="IPage"/> instance might have multiple <see cref="IFrame"/> instances.
+    /// At every point of time, page exposes its current frame tree via the <see cref="IPage.MainFrame"/> and <see cref="ChildFrames"/> properties.
     ///
     /// <see cref="IFrame"/> object's lifecycle is controlled by three events, dispatched on the page object
-    /// - <see cref="Page.FrameAttached"/> - fires when the frame gets attached to the page. A Frame can be attached to the page only once
-    /// - <see cref="Page.FrameNavigated"/> - fired when the frame commits navigation to a different URL
-    /// - <see cref="Page.FrameDetached"/> - fired when the frame gets detached from the page.  A Frame can be detached from the page only once
+    /// - <see cref="IPage.FrameAttached"/> - fires when the frame gets attached to the page. A Frame can be attached to the page only once
+    /// - <see cref="IPage.FrameNavigated"/> - fired when the frame commits navigation to a different URL
+    /// - <see cref="IPage.FrameDetached"/> - fired when the frame gets detached from the page.  A Frame can be detached from the page only once
     /// </summary>
     /// <example>
     /// An example of dumping frame tree
@@ -74,8 +74,8 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="options">add script tag options</param>
         /// <returns>Task which resolves to the added tag when the script's onload fires or when the script content was injected into frame</returns>
-        /// <seealso cref="Page.AddScriptTagAsync(AddTagOptions)"/>
-        /// <seealso cref="Page.AddScriptTagAsync(string)"/>
+        /// <seealso cref="IPage.AddScriptTagAsync(AddTagOptions)"/>
+        /// <seealso cref="IPage.AddScriptTagAsync(string)"/>
         Task<IElementHandle> AddScriptTagAsync(AddTagOptions options);
 
         /// <summary>
@@ -83,12 +83,12 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="options">add style tag options</param>
         /// <returns>Task which resolves to the added tag when the stylesheet's onload fires or when the CSS content was injected into frame</returns>
-        /// <seealso cref="Page.AddStyleTagAsync(AddTagOptions)"/>
-        /// <seealso cref="Page.AddStyleTagAsync(string)"/>
+        /// <seealso cref="IPage.AddStyleTagAsync(AddTagOptions)"/>
+        /// <seealso cref="IPage.AddStyleTagAsync(string)"/>
         Task<IElementHandle> AddStyleTagAsync(AddTagOptions options);
 
         /// <summary>
-        /// Fetches an element with <paramref name="selector"/>, scrolls it into view if needed, and then uses <see cref="Page.Mouse"/> to click in the center of the element.
+        /// Fetches an element with <paramref name="selector"/>, scrolls it into view if needed, and then uses <see cref="IPage.Mouse"/> to click in the center of the element.
         /// </summary>
         /// <param name="selector">A selector to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.</param>
         /// <param name="options">click options</param>
@@ -105,7 +105,7 @@ namespace PuppeteerSharp
         /// </remarks>
         /// <returns>Task which resolves to script return value</returns>
         /// <seealso cref="EvaluateFunctionAsync{T}(string, object[])"/>
-        /// <seealso cref="Page.EvaluateExpressionAsync{T}(string)"/>
+        /// <seealso cref="IPage.EvaluateExpressionAsync{T}(string)"/>
         Task<JToken> EvaluateExpressionAsync(string script);
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace PuppeteerSharp
         /// </remarks>
         /// <returns>Task which resolves to script return value</returns>
         /// <seealso cref="EvaluateFunctionAsync{T}(string, object[])"/>
-        /// <seealso cref="Page.EvaluateExpressionAsync{T}(string)"/>
+        /// <seealso cref="IPage.EvaluateExpressionAsync{T}(string)"/>
         Task<T> EvaluateExpressionAsync<T>(string script);
 
         /// <summary>
@@ -146,7 +146,7 @@ namespace PuppeteerSharp
         /// </remarks>
         /// <returns>Task which resolves to script return value</returns>
         /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
-        /// <seealso cref="Page.EvaluateFunctionAsync{T}(string, object[])"/>
+        /// <seealso cref="IPage.EvaluateFunctionAsync{T}(string, object[])"/>
         Task<JToken> EvaluateFunctionAsync(string script, params object[] args);
 
         /// <summary>
@@ -161,7 +161,7 @@ namespace PuppeteerSharp
         /// </remarks>
         /// <returns>Task which resolves to script return value</returns>
         /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
-        /// <seealso cref="Page.EvaluateFunctionAsync{T}(string, object[])"/>
+        /// <seealso cref="IPage.EvaluateFunctionAsync{T}(string, object[])"/>
         Task<T> EvaluateFunctionAsync<T>(string script, params object[] args);
 
         /// <summary>
@@ -200,7 +200,7 @@ namespace PuppeteerSharp
         /// Gets the full HTML contents of the page, including the doctype.
         /// </summary>
         /// <returns>Task which resolves to the HTML content.</returns>
-        /// <seealso cref="Page.GetContentAsync"/>
+        /// <seealso cref="IPage.GetContentAsync"/>
         Task<string> GetContentAsync();
 
         /// <summary>
@@ -213,7 +213,7 @@ namespace PuppeteerSharp
         /// Returns page's title
         /// </summary>
         /// <returns>page's title</returns>
-        /// <seealso cref="Page.GetTitleAsync"/>
+        /// <seealso cref="IPage.GetTitleAsync"/>
         Task<string> GetTitleAsync();
 
         /// <summary>
@@ -221,7 +221,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="url">URL to navigate page to. The url should include scheme, e.g. https://.</param>
         /// <param name="timeout">maximum navigation time in milliseconds. Defaults to 30 seconds. Pass 0
-        /// to disable timeout. The default value can be changed by using the <see cref="Page.DefaultNavigationTimeout"/>
+        /// to disable timeout. The default value can be changed by using the <see cref="IPage.DefaultNavigationTimeout"/>
         /// property.</param>
         /// <param name="waitUntil">When to consider navigation succeeded, defaults to <see cref="WaitUntilNavigation.Load"/>. Given an array of <see cref="WaitUntilNavigation"/>, navigation is considered to be successful after all events have been fired</param>
         /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect</returns>
@@ -253,7 +253,7 @@ namespace PuppeteerSharp
         Task<Response> GoToAsync(string url, NavigationOptions options);
 
         /// <summary>
-        /// Fetches an element with <paramref name="selector"/>, scrolls it into view if needed, and then uses <see cref="Page.Mouse"/> to hover over the center of the element.
+        /// Fetches an element with <paramref name="selector"/>, scrolls it into view if needed, and then uses <see cref="IPage.Mouse"/> to hover over the center of the element.
         /// </summary>
         /// <param name="selector">A selector to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered.</param>
         /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
@@ -265,7 +265,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="selector">A selector to query frame for</param>
         /// <returns>Task which resolves to ElementHandles pointing to the frame elements</returns>
-        /// <seealso cref="Page.QuerySelectorAllAsync(string)"/>
+        /// <seealso cref="IPage.QuerySelectorAllAsync(string)"/>
         Task<IElementHandle[]> QuerySelectorAllAsync(string selector);
 
         /// <summary>
@@ -273,7 +273,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="selector">Selector to query frame for</param>
         /// <returns>Task which resolves to <see cref="IElementHandle"/> pointing to the frame element</returns>
-        /// <seealso cref="Page.QuerySelectorAsync(string)"/>
+        /// <seealso cref="IPage.QuerySelectorAsync(string)"/>
         Task<IElementHandle> QuerySelectorAsync(string selector);
 
         /// <summary>
@@ -285,7 +285,7 @@ namespace PuppeteerSharp
         /// <param name="values">Values of options to select. If the <![CDATA[<select>]]> has the multiple attribute,
         /// all values are considered, otherwise only the first one is taken into account.</param>
         /// <returns>Returns an array of option values that have been successfully selected.</returns>
-        /// <seealso cref="Page.SelectAsync(string, string[])"/>
+        /// <seealso cref="IPage.SelectAsync(string, string[])"/>
         Task<string[]> SelectAsync(string selector, params string[] values);
 
         /// <summary>
@@ -294,7 +294,7 @@ namespace PuppeteerSharp
         /// <param name="html">HTML markup to assign to the page.</param>
         /// <param name="options">The options</param>
         /// <returns>Task.</returns>
-        /// <seealso cref="Page.SetContentAsync(string, NavigationOptions)"/>
+        /// <seealso cref="IPage.SetContentAsync(string, NavigationOptions)"/>
         Task SetContentAsync(string html, NavigationOptions options = null);
 
         /// <summary>
@@ -324,7 +324,7 @@ namespace PuppeteerSharp
         /// <param name="script">Expression to be evaluated in browser context</param>
         /// <param name="options">Optional waiting parameters</param>
         /// <returns>A task that resolves when the <c>script</c> returns a truthy value</returns>
-        /// <seealso cref="Page.WaitForExpressionAsync(string, WaitForFunctionOptions)"/>
+        /// <seealso cref="IPage.WaitForExpressionAsync(string, WaitForFunctionOptions)"/>
         /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
         Task<IJSHandle> WaitForExpressionAsync(string script, WaitForFunctionOptions options);
 
@@ -335,7 +335,7 @@ namespace PuppeteerSharp
         /// <param name="options">Optional waiting parameters</param>
         /// <param name="args">Arguments to pass to <c>script</c></param>
         /// <returns>A task that resolves when the <c>script</c> returns a truthy value</returns>
-        /// <seealso cref="Page.WaitForFunctionAsync(string, WaitForFunctionOptions, object[])"/>
+        /// <seealso cref="IPage.WaitForFunctionAsync(string, WaitForFunctionOptions, object[])"/>
         /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
         Task<IJSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args);
 
@@ -370,7 +370,7 @@ namespace PuppeteerSharp
         /// <returns>A task that resolves when element specified by selector string is added to DOM.
         /// Resolves to `null` if waiting for `hidden: true` and selector is not found in DOM.</returns>
         /// <seealso cref="WaitForXPathAsync(string, WaitForSelectorOptions)"/>
-        /// <seealso cref="Page.WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
+        /// <seealso cref="IPage.WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
         /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
         Task<IElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null);
 
@@ -379,7 +379,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="milliseconds">The amount of time to wait.</param>
         /// <returns>A task that resolves when after the timeout</returns>
-        /// <seealso cref="Page.WaitForTimeoutAsync(int)"/>
+        /// <seealso cref="IPage.WaitForTimeoutAsync(int)"/>
         /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
         Task WaitForTimeoutAsync(int milliseconds);
 
@@ -409,7 +409,7 @@ namespace PuppeteerSharp
         /// </code>
         /// </example>
         /// <seealso cref="WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
-        /// <seealso cref="Page.WaitForXPathAsync(string, WaitForSelectorOptions)"/>
+        /// <seealso cref="IPage.WaitForXPathAsync(string, WaitForSelectorOptions)"/>
         /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
         Task<IElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null);
 
@@ -418,7 +418,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="expression">Expression to evaluate <see href="https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate"/></param>
         /// <returns>Task which resolves to an array of <see cref="IElementHandle"/></returns>
-        /// <seealso cref="Page.XPathAsync(string)"/>
+        /// <seealso cref="IPage.XPathAsync(string)"/>
         Task<IElementHandle[]> XPathAsync(string expression);
     }
 }

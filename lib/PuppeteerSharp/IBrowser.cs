@@ -9,7 +9,7 @@ namespace PuppeteerSharp
     /// Provides methods to interact with a browser in Chromium.
     /// </summary>
     /// <example>
-    /// An example of using a <see cref="IBrowser"/> to create a <see cref="Page"/>:
+    /// An example of using a <see cref="IBrowser"/> to create a <see cref="IPage"/>:
     /// <code>
     /// <![CDATA[
     /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions());
@@ -149,7 +149,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>Task which resolves to the browser's original user agent</returns>
         /// <remarks>
-        /// Pages can override browser user agent with <see cref="Page.SetUserAgentAsync(string, UserAgentMetadata)"/>
+        /// Pages can override browser user agent with <see cref="IPage.SetUserAgentAsync(string, UserAgentMetadata)"/>
         /// </remarks>
         Task<string> GetUserAgentAsync();
 
@@ -165,8 +165,8 @@ namespace PuppeteerSharp
         /// <summary>
         /// Creates a new page
         /// </summary>
-        /// <returns>Task which resolves to a new <see cref="Page"/> object</returns>
-        Task<Page> NewPageAsync();
+        /// <returns>Task which resolves to a new <see cref="IPage"/> object</returns>
+        Task<IPage> NewPageAsync();
 
         /// <summary>
         /// Returns a Task which resolves to an array of all open pages.
@@ -175,7 +175,7 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to an array of all open pages inside the Browser.
         /// In case of multiple browser contexts, the method will return an array with all the pages in all browser contexts.
         /// </returns>
-        Task<Page[]> PagesAsync();
+        Task<IPage[]> PagesAsync();
 
         /// <summary>
         /// Returns An Array of all active targets

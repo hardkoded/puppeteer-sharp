@@ -23,7 +23,7 @@ using Timer = System.Timers.Timer;
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// Provides methods to interact with a single tab in Chromium. One <see cref="Browser"/> instance might have multiple <see cref="Page"/> instances.
+    /// Provides methods to interact with a single tab in Chromium. One <see cref="IBrowser"/> instance might have multiple <see cref="IPage"/> instances.
     /// </summary>
     /// <example>
     /// This example creates a page, navigates it to a URL, and then saves a screenshot:
@@ -36,7 +36,7 @@ namespace PuppeteerSharp
     /// </code>
     /// </example>
     [DebuggerDisplay("Page {Url}")]
-    public class Page : IDisposable, IAsyncDisposable
+    public class Page : IPage
     {
         private readonly TaskQueue _screenshotTaskQueue;
         private readonly EmulationManager _emulationManager;
@@ -2084,7 +2084,7 @@ namespace PuppeteerSharp
             });
         }
 
-        internal void OnPopup(Page popupPage) => Popup?.Invoke(this, new PopupEventArgs { PopupPage = popupPage });
+        internal void OnPopup(IPage popupPage) => Popup?.Invoke(this, new PopupEventArgs { PopupPage = popupPage });
 
         internal static async Task<Page> CreateAsync(
             CDPSession client,
@@ -2703,23 +2703,23 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Releases all resource used by the <see cref="Page"/> object by calling the <see cref="CloseAsync"/> method.
+        /// Releases all resource used by the <see cref="IPage"/> object by calling the <see cref="CloseAsync"/> method.
         /// </summary>
-        /// <remarks>Call <see cref="Dispose()"/> when you are finished using the <see cref="Page"/>. The
-        /// <see cref="Dispose()"/> method leaves the <see cref="Page"/> in an unusable state. After
-        /// calling <see cref="Dispose()"/>, you must release all references to the <see cref="Page"/> so
-        /// the garbage collector can reclaim the memory that the <see cref="Page"/> was occupying.</remarks>
+        /// <remarks>Call <see cref="Dispose()"/> when you are finished using the <see cref="IPage"/>. The
+        /// <see cref="Dispose()"/> method leaves the <see cref="IPage"/> in an unusable state. After
+        /// calling <see cref="Dispose()"/>, you must release all references to the <see cref="IPage"/> so
+        /// the garbage collector can reclaim the memory that the <see cref="IPage"/> was occupying.</remarks>
         /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
         protected virtual void Dispose(bool disposing)
             => _ = DisposeAsync();
 
         /// <summary>
-        /// Releases all resource used by the <see cref="Page"/> object by calling the <see cref="CloseAsync"/> method.
+        /// Releases all resource used by the <see cref="IPage"/> object by calling the <see cref="CloseAsync"/> method.
         /// </summary>
-        /// <remarks>Call <see cref="DisposeAsync"/> when you are finished using the <see cref="Page"/>. The
-        /// <see cref="DisposeAsync"/> method leaves the <see cref="Page"/> in an unusable state. After
-        /// calling <see cref="DisposeAsync"/>, you must release all references to the <see cref="Page"/> so
-        /// the garbage collector can reclaim the memory that the <see cref="Page"/> was occupying.</remarks>
+        /// <remarks>Call <see cref="DisposeAsync"/> when you are finished using the <see cref="IPage"/>. The
+        /// <see cref="DisposeAsync"/> method leaves the <see cref="IPage"/> in an unusable state. After
+        /// calling <see cref="DisposeAsync"/>, you must release all references to the <see cref="IPage"/> so
+        /// the garbage collector can reclaim the memory that the <see cref="IPage"/> was occupying.</remarks>
         /// <returns>ValueTask</returns>
         public ValueTask DisposeAsync() => new ValueTask(CloseAsync());
     }
