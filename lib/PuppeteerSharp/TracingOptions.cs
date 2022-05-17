@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// Tracing options used on <see cref="Tracing.StartAsync(TracingOptions)"/>.
+    /// Tracing options used on <see cref="ITracing.StartAsync(TracingOptions)"/>.
     /// </summary>
     public class TracingOptions
     {

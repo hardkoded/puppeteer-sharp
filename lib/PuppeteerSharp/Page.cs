@@ -338,7 +338,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets this page's tracing
         /// </summary>
-        public Tracing Tracing { get; }
+        public ITracing Tracing { get; }
 
         /// <summary>
         /// Gets this page's mouse
