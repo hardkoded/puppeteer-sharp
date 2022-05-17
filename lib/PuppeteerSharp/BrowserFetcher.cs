@@ -17,19 +17,8 @@ using static PuppeteerSharp.BrowserFetcherOptions;
 
 namespace PuppeteerSharp
 {
-    /// <summary>
-    /// BrowserFetcher can download and manage different versions of Chromium.
-    /// BrowserFetcher operates on revision strings that specify a precise version of Chromium, e.g. 533271. Revision strings can be obtained from omahaproxy.appspot.com.
-    /// </summary>
-    /// <example>
-    /// Example on how to use BrowserFetcher to download a specific version of Chromium and run Puppeteer against it:
-    /// <code>
-    /// var browserFetcher = Puppeteer.CreateBrowserFetcher();
-    /// var revisionInfo = await browserFetcher.DownloadAsync(533271);
-    /// var browser = await await Puppeteer.LaunchAsync(new LaunchOptions { ExecutablePath = revisionInfo.ExecutablePath});
-    /// </code>
-    /// </example>
-    public class BrowserFetcher : IDisposable
+    /// <inheritdoc/>
+    public class BrowserFetcher : IBrowserFetcher
     {
         private static readonly Dictionary<Product, string> _hosts = new Dictionary<Product, string>
         {
@@ -98,9 +87,7 @@ namespace PuppeteerSharp
             _customFileDownload = options.CustomFileDownload ?? _webClient.DownloadFileTaskAsync;
         }
 
-        /// <summary>
-        /// Occurs when download progress in <see cref="DownloadAsync(int)"/> changes.
-        /// </summary>
+        /// <inheritdoc/>
         public event DownloadProgressChangedEventHandler DownloadProgressChanged;
 
         /// <summary>
@@ -109,34 +96,22 @@ namespace PuppeteerSharp
         [Obsolete("Use DefaultChromiumRevision instead")]
         public static int DefaultRevision { get; } = int.Parse(DefaultChromiumRevision, CultureInfo.CurrentCulture.NumberFormat);
 
-        /// <summary>
-        /// Default Firefox revision.
-        /// </summary>
+        /// <inheritdoc/>
         public string DefaultFirefoxRevision { get; private set; } = "latest";
 
-        /// <summary>
-        /// Gets the downloads folder.
-        /// </summary>
+        /// <inheritdoc/>
         public string DownloadsFolder { get; }
 
-        /// <summary>
-        /// A download host to be used. Defaults to https://storage.googleapis.com.
-        /// </summary>
+        /// <inheritdoc/>
         public string DownloadHost { get; }
 
-        /// <summary>
-        /// Gets the platform.
-        /// </summary>
+        /// <inheritdoc/>
         public Platform Platform { get; }
 
-        /// <summary>
-        /// Gets the product.
-        /// </summary>
+        /// <inheritdoc/>
         public Product Product { get; }
 
-        /// <summary>
-        /// Proxy used by the WebClient in <see cref="DownloadAsync(int)"/> and <see cref="CanDownloadAsync(int)"/>
-        /// </summary>
+        /// <inheritdoc/>
         public IWebProxy WebProxy
         {
             get => _webClient.Proxy;
@@ -151,11 +126,7 @@ namespace PuppeteerSharp
         [Obsolete("Use CanDownloadAsync(string revision) instead")]
         public Task<bool> CanDownloadAsync(int revision) => CanDownloadAsync(revision.ToString(CultureInfo.CurrentCulture.NumberFormat));
 
-        /// <summary>
-        /// The method initiates a HEAD request to check if the revision is available.
-        /// </summary>
-        /// <returns>Whether the version is available or not.</returns>
-        /// <param name="revision">A revision to check availability.</param>
+        /// <inheritdoc/>
         public async Task<bool> CanDownloadAsync(string revision)
         {
             try
@@ -176,10 +147,7 @@ namespace PuppeteerSharp
             }
         }
 
-        /// <summary>
-        /// A list of all revisions available locally on disk.
-        /// </summary>
-        /// <returns>The available revisions.</returns>
+        /// <inheritdoc/>
         public IEnumerable<string> LocalRevisions()
         {
             var directoryInfo = new DirectoryInfo(DownloadsFolder);
@@ -199,10 +167,7 @@ namespace PuppeteerSharp
         [Obsolete("Use remove(string revision) instead")]
         public void Remove(int revision) => Remove(revision.ToString(CultureInfo.CurrentCulture.NumberFormat));
 
-        /// <summary>
-        /// Removes a downloaded revision.
-        /// </summary>
-        /// <param name="revision">Revision to remove.</param>
+        /// <inheritdoc/>
         public void Remove(string revision)
         {
             var directory = new DirectoryInfo(GetFolderPath(revision));
@@ -220,18 +185,11 @@ namespace PuppeteerSharp
         [Obsolete("Use RevisionInfo(string revision) instead")]
         public RevisionInfo RevisionInfo(int revision) => RevisionInfo(revision.ToString(CultureInfo.CurrentCulture.NumberFormat));
 
-        /// <summary>
-        /// Gets the revision info.
-        /// </summary>
-        /// <returns>Revision info.</returns>
+        /// <inheritdoc/>
         public async Task<RevisionInfo> GetRevisionInfoAsync()
             => RevisionInfo(Product == Product.Chrome ? DefaultChromiumRevision : await GetDefaultFirefoxRevisionAsync().ConfigureAwait(false));
 
-        /// <summary>
-        /// Gets the revision info.
-        /// </summary>
-        /// <returns>Revision info.</returns>
-        /// <param name="revision">A revision to get info for.</param>
+        /// <inheritdoc/>
         public RevisionInfo RevisionInfo(string revision)
         {
             var result = new RevisionInfo
@@ -255,21 +213,14 @@ namespace PuppeteerSharp
         [Obsolete("Use DownloadAsync(string revision) instead")]
         public Task<RevisionInfo> DownloadAsync(int revision) => DownloadAsync(revision.ToString(CultureInfo.CurrentCulture.NumberFormat));
 
-        /// <summary>
-        /// Downloads the revision.
-        /// </summary>
-        /// <returns>Task which resolves to the completed download.</returns>
+        /// <inheritdoc/>
         public async Task<RevisionInfo> DownloadAsync()
             => await DownloadAsync(
                 Product == Product.Chrome
                 ? DefaultChromiumRevision
                 : await GetDefaultFirefoxRevisionAsync().ConfigureAwait(false)).ConfigureAwait(false);
 
-        /// <summary>
-        /// Downloads the revision.
-        /// </summary>
-        /// <returns>Task which resolves to the completed download.</returns>
-        /// <param name="revision">Revision.</param>
+        /// <inheritdoc/>
         public async Task<RevisionInfo> DownloadAsync(string revision)
         {
             var url = GetDownloadURL(Product, Platform, DownloadHost, revision);
@@ -453,11 +404,7 @@ namespace PuppeteerSharp
         [Obsolete("Use GetExecutablePath(string revision) instead")]
         public string GetExecutablePath(int revision) => GetExecutablePath(revision.ToString(CultureInfo.CurrentCulture.NumberFormat));
 
-        /// <summary>
-        /// Gets the executable path for a revision.
-        /// </summary>
-        /// <returns>The executable path.</returns>
-        /// <param name="revision">Revision.</param>
+        /// <inheritdoc/>
         public string GetExecutablePath(string revision)
             => GetExecutablePath(Product, Platform, revision, GetFolderPath(revision));
 
