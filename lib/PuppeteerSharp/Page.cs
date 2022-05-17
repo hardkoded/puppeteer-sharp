@@ -343,7 +343,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets this page's mouse
         /// </summary>
-        public Mouse Mouse { get; }
+        public IMouse Mouse { get; }
 
         /// <summary>
         /// Gets this page's viewport

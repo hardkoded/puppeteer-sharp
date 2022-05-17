@@ -7,7 +7,7 @@ namespace PuppeteerSharp.Input
     /// <summary>
     /// Provides methods to interact with the mouse
     /// </summary>
-    public class Mouse
+    public class Mouse : IMouse
     {
         private readonly CDPSession _client;
         private readonly Keyboard _keyboard;
