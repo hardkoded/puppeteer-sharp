@@ -368,7 +368,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets the accessibility.
         /// </summary>
-        public Accessibility Accessibility { get; }
+        public IAccessibility Accessibility { get; }
 
         /// <summary>
         /// `true` if drag events are being intercepted, `false` otherwise.
