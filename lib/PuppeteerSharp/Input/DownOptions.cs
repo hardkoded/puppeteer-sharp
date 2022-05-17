@@ -1,7 +1,7 @@
 namespace PuppeteerSharp.Input
 {
     /// <summary>
-    /// options to use with <see cref="Keyboard.DownAsync(string, DownOptions)"/>
+    /// options to use with <see cref="IKeyboard.DownAsync(string, DownOptions)"/>
     /// </summary>
     public class DownOptions
     {

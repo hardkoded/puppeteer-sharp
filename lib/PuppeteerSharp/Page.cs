@@ -87,8 +87,8 @@ namespace PuppeteerSharp
             Client = client;
             Target = target;
             Keyboard = new Keyboard(client);
-            Mouse = new Mouse(client, Keyboard);
-            Touchscreen = new Touchscreen(client, Keyboard);
+            Mouse = new Mouse(client, (Keyboard)Keyboard);
+            Touchscreen = new Touchscreen(client, (Keyboard)Keyboard);
             Tracing = new Tracing(client);
             Coverage = new Coverage(client);
 
@@ -323,7 +323,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets this page's keyboard
         /// </summary>
-        public Keyboard Keyboard { get; }
+        public IKeyboard Keyboard { get; }
 
         /// <summary>
         /// Gets this page's touchscreen
@@ -1435,7 +1435,7 @@ namespace PuppeteerSharp
         /// <param name="options">The options to apply to the type operation.</param>
         /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
         /// <remarks>
-        /// To press a special key, like <c>Control</c> or <c>ArrowDown</c> use <see cref="PuppeteerSharp.Input.Keyboard.PressAsync(string, PressOptions)"/>
+        /// To press a special key, like <c>Control</c> or <c>ArrowDown</c> use <see cref="IKeyboard.PressAsync(string, PressOptions)"/>
         /// </remarks>
         /// <example>
         /// <code>

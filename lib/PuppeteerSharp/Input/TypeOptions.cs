@@ -5,7 +5,7 @@ namespace PuppeteerSharp.Input
     /// </summary>
     /// <seealso cref="Page.TypeAsync(string, string, TypeOptions)"/>
     /// <seealso cref="IElementHandle.TypeAsync(string, TypeOptions)"/>
-    /// <seealso cref="Keyboard.TypeAsync(string, TypeOptions)"/>
+    /// <seealso cref="IKeyboard.TypeAsync(string, TypeOptions)"/>
     public class TypeOptions
     {
         /// <summary>
