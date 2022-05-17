@@ -353,7 +353,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Get the browser the page belongs to.
         /// </summary>
-        public Browser Browser => Target.Browser;
+        public IBrowser Browser => Target.Browser;
 
         /// <summary>
         /// Get the browser context that the page belongs to.

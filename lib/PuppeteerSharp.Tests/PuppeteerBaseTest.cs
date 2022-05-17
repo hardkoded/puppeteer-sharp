@@ -49,7 +49,7 @@ namespace PuppeteerSharp.Tests
             return completion.Task;
         }
 
-        protected static Task WaitForBrowserDisconnect(Browser browser)
+        protected static Task WaitForBrowserDisconnect(IBrowser browser)
         {
             var disconnectedTask = new TaskCompletionSource<bool>();
             browser.Disconnected += (_, _) => disconnectedTask.TrySetResult(true);

@@ -92,8 +92,8 @@ namespace PuppeteerSharp
         public Func<TargetInfo, bool> TargetFilter { get; set; }
 
         /// <summary>
-        /// Optional callback to initialize properties as soon as the <see cref="Browser"/> instance is created, i.e., set up event handlers.
+        /// Optional callback to initialize properties as soon as the <see cref="IBrowser"/> instance is created, i.e., set up event handlers.
         /// </summary>
-        public Action<Browser> InitAction { get; set; }
+        public Action<IBrowser> InitAction { get; set; }
     }
 }

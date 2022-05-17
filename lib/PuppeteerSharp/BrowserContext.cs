@@ -11,11 +11,12 @@ namespace PuppeteerSharp
     {
         private readonly Connection _connection;
         private readonly string _id;
+        private readonly Browser _browser;
 
         internal BrowserContext(Connection connection, Browser browser, string contextId)
         {
             _connection = connection;
-            Browser = browser;
+            _browser = browser;
             _id = contextId;
         }
 
@@ -46,7 +47,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets the browser this browser context belongs to
         /// </summary>
-        public Browser Browser { get; }
+        public IBrowser Browser => _browser;
 
         /// <summary>
         /// Gets an array of all active targets inside the browser context.
@@ -86,7 +87,7 @@ namespace PuppeteerSharp
         /// Creates a new page
         /// </summary>
         /// <returns>Task which resolves to a new <see cref="Page"/> object</returns>
-        public Task<Page> NewPageAsync() => Browser.CreatePageInContextAsync(_id);
+        public Task<Page> NewPageAsync() => _browser.CreatePageInContextAsync(_id);
 
         /// <summary>
         /// Closes the browser context. All the targets that belong to the browser context will be closed
@@ -99,7 +100,7 @@ namespace PuppeteerSharp
                 throw new PuppeteerException("Non-incognito profiles cannot be closed!");
             }
 
-            return Browser.DisposeContextAsync(_id);
+            return _browser.DisposeContextAsync(_id);
         }
 
         /// <summary>

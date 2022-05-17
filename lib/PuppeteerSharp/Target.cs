@@ -85,12 +85,12 @@ namespace PuppeteerSharp
         /// Top-level targets return <c>null</c>.
         /// </remarks>
         public ITarget Opener => TargetInfo.OpenerId != null ?
-            Browser.TargetsMap.GetValueOrDefault(TargetInfo.OpenerId) : null;
+            ((Browser)Browser).TargetsMap.GetValueOrDefault(TargetInfo.OpenerId) : null;
 
         /// <summary>
         /// Get the browser the target belongs to.
         /// </summary>
-        public Browser Browser => BrowserContext.Browser;
+        public IBrowser Browser => BrowserContext.Browser;
 
         /// <summary>
         /// Get the browser context the target belongs to.
@@ -154,7 +154,10 @@ namespace PuppeteerSharp
         private async Task<Page> CreatePageAsync()
         {
             var session = await _sessionFactory().ConfigureAwait(false);
-            return await Page.CreateAsync(session, this, Browser.IgnoreHTTPSErrors, Browser.DefaultViewport, Browser.ScreenshotTaskQueue).ConfigureAwait(false);
+
+            var borwser = (Browser)Browser;
+
+            return await Page.CreateAsync(session, this, borwser.IgnoreHTTPSErrors, borwser.DefaultViewport, borwser.ScreenshotTaskQueue).ConfigureAwait(false);
         }
 
         internal void TargetInfoChanged(TargetInfo targetInfo)
@@ -171,7 +174,7 @@ namespace PuppeteerSharp
 
             if (previousUrl != targetInfo.Url)
             {
-                Browser.ChangeTarget(this);
+                ((Browser)Browser).ChangeTarget(this);
             }
         }
 
@@ -179,6 +182,6 @@ namespace PuppeteerSharp
         /// Creates a Chrome Devtools Protocol session attached to the target.
         /// </summary>
         /// <returns>A task that returns a <see cref="CDPSession"/></returns>
-        public Task<CDPSession> CreateCDPSessionAsync() => Browser.Connection.CreateSessionAsync(TargetInfo);
+        public Task<CDPSession> CreateCDPSessionAsync() => ((Browser)Browser).Connection.CreateSessionAsync(TargetInfo);
     }
 }

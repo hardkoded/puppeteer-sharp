@@ -3,9 +3,9 @@ namespace PuppeteerSharp
     /// <summary>
     ///  Event arguments used by target related events.
     /// </summary>
-    /// <seealso cref="Browser.TargetChanged"/>
-    /// <seealso cref="Browser.TargetCreated"/>
-    /// <seealso cref="Browser.TargetDestroyed"/>
+    /// <seealso cref="IBrowser.TargetChanged"/>
+    /// <seealso cref="IBrowser.TargetCreated"/>
+    /// <seealso cref="IBrowser.TargetDestroyed"/>
     public class TargetChangedArgs
     {
         /// <summary>

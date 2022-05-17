@@ -6,7 +6,7 @@ namespace PuppeteerSharp
 {
     /// <summary>
     /// BrowserContexts provide a way to operate multiple independent browser sessions. When a browser is launched, it has
-    /// a single <see cref="IBrowserContext"/> used by default. The method <see cref="Browser.NewPageAsync"/> creates a <see cref="Page"/> in the default <see cref="IBrowserContext"/>
+    /// a single <see cref="IBrowserContext"/> used by default. The method <see cref="IBrowser.NewPageAsync"/> creates a <see cref="Page"/> in the default <see cref="IBrowserContext"/>
     /// </summary>
     public interface IBrowserContext
     {
@@ -28,7 +28,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets the browser this browser context belongs to
         /// </summary>
-        Browser Browser { get; }
+        IBrowser Browser { get; }
 
         /// <summary>
         /// Returns whether BrowserContext is incognito

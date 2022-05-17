@@ -15,7 +15,7 @@ namespace PuppeteerSharp
     /// Provides methods to interact with a browser in Chromium.
     /// </summary>
     /// <example>
-    /// An example of using a <see cref="Browser"/> to create a <see cref="Page"/>:
+    /// An example of using a <see cref="IBrowser"/> to create a <see cref="Page"/>:
     /// <code>
     /// <![CDATA[
     /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions());
@@ -35,7 +35,7 @@ namespace PuppeteerSharp
     /// ]]>
     /// </code>
     /// </example>
-    public class Browser : IDisposable, IAsyncDisposable
+    public class Browser : IBrowser
     {
         /// <summary>
         /// Time in milliseconds for process to exit gracefully.
@@ -73,7 +73,7 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Raised when the <see cref="Browser"/> gets closed.
+        /// Raised when the <see cref="IBrowser"/> gets closed.
         /// </summary>
         public event EventHandler Closed;
 
@@ -512,7 +512,7 @@ namespace PuppeteerSharp
             ViewPortOptions defaultViewPort,
             LauncherBase launcher,
             Func<TargetInfo, bool> targetFilter,
-            Action<Browser> initAction = null)
+            Action<IBrowser> initAction = null)
         {
             var browser = new Browser(connection, contextIds, ignoreHTTPSErrors, defaultViewPort, launcher, targetFilter);
 

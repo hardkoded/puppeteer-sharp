@@ -10,7 +10,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Get the browser the target belongs to.
         /// </summary>
-        Browser Browser { get; }
+        IBrowser Browser { get; }
 
         /// <summary>
         /// Get the browser context the target belongs to.
