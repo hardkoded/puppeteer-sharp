@@ -6,7 +6,7 @@ namespace PuppeteerSharp
     /// <summary>
     /// Exception thrown when an element selector returns null.
     /// </summary>
-    /// <seealso cref="PuppeteerHandleExtensions.EvaluateFunctionAsync{T}(System.Threading.Tasks.Task{ElementHandle}, string, object[])"/>
+    /// <seealso cref="PuppeteerHandleExtensions.EvaluateFunctionAsync{T}(System.Threading.Tasks.Task{IElementHandle}, string, object[])"/>
     /// <seealso cref="Frame.SelectAsync(string, string[])"/>
     /// <seealso cref="Page.ClickAsync(string, Input.ClickOptions)"/>
     /// <seealso cref="Page.TapAsync(string)"/>

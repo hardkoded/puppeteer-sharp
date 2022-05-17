@@ -5,7 +5,7 @@ using PuppeteerSharp.Media;
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// Bounding box data returned by <see cref="ElementHandle.BoundingBoxAsync"/>.
+    /// Bounding box data returned by <see cref="IElementHandle.BoundingBoxAsync"/>.
     /// </summary>
     public class BoundingBox : IEquatable<BoundingBox>
     {

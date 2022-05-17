@@ -199,7 +199,7 @@ namespace PuppeteerSharp
         /// <param name="args">Arguments to pass to script</param>
         /// <remarks>
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
-        /// <see cref="JSHandle"/> instances can be passed as arguments
+        /// <see cref="IJSHandle"/> instances can be passed as arguments
         /// </remarks>
         /// <returns>Task which resolves to script return value</returns>
         /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
@@ -214,7 +214,7 @@ namespace PuppeteerSharp
         /// <param name="args">Arguments to pass to script</param>
         /// <remarks>
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
-        /// <see cref="JSHandle"/> instances can be passed as arguments
+        /// <see cref="IJSHandle"/> instances can be passed as arguments
         /// </remarks>
         /// <returns>Task which resolves to script return value</returns>
         /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
@@ -233,7 +233,7 @@ namespace PuppeteerSharp
         /// </example>
         /// <returns>Resolves to the return value of <paramref name="script"/></returns>
         /// <param name="script">Expression to be evaluated in the <seealso cref="ExecutionContext"/></param>
-        public Task<JSHandle> EvaluateExpressionHandleAsync(string script) => MainWorld.EvaluateExpressionHandleAsync(script);
+        public Task<IJSHandle> EvaluateExpressionHandleAsync(string script) => MainWorld.EvaluateExpressionHandleAsync(script);
 
         /// <summary>
         /// Passes a function to the <see cref="ExecutionContext.EvaluateFunctionAsync(string, object[])"/>, returns a <see cref="Task"/>, then <see cref="ExecutionContext.EvaluateFunctionHandleAsync(string, object[])"/> would wait for the <see cref="Task"/> to resolve and return its value.
@@ -245,7 +245,7 @@ namespace PuppeteerSharp
         /// return handle; // Handle for the global object.
         /// ]]>
         /// </code>
-        /// <see cref="JSHandle"/> instances can be passed as arguments to the <see cref="ExecutionContext.EvaluateFunctionAsync(string, object[])"/>:
+        /// <see cref="IJSHandle"/> instances can be passed as arguments to the <see cref="ExecutionContext.EvaluateFunctionAsync(string, object[])"/>:
         /// <code>
         /// <![CDATA[
         /// var handle = await Page.MainFrame.EvaluateExpressionHandleAsync("document.body");
@@ -257,7 +257,7 @@ namespace PuppeteerSharp
         /// <returns>Resolves to the return value of <paramref name="function"/></returns>
         /// <param name="function">Function to be evaluated in the <see cref="ExecutionContext"/></param>
         /// <param name="args">Arguments to pass to <paramref name="function"/></param>
-        public Task<JSHandle> EvaluateFunctionHandleAsync(string function, params object[] args) => MainWorld.EvaluateFunctionHandleAsync(function, args);
+        public Task<IJSHandle> EvaluateFunctionHandleAsync(string function, params object[] args) => MainWorld.EvaluateFunctionHandleAsync(function, args);
 
         /// <summary>
         /// Gets the <see cref="ExecutionContext"/> associated with the frame.
@@ -275,7 +275,7 @@ namespace PuppeteerSharp
         /// <seealso cref="WaitForXPathAsync(string, WaitForSelectorOptions)"/>
         /// <seealso cref="Page.WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
         /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
-        public async Task<ElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
+        public async Task<IElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
         {
             var handle = await SecondaryWorld.WaitForSelectorAsync(selector, options).ConfigureAwait(false);
             if (handle == null)
@@ -316,7 +316,7 @@ namespace PuppeteerSharp
         /// <seealso cref="WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
         /// <seealso cref="Page.WaitForXPathAsync(string, WaitForSelectorOptions)"/>
         /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
-        public async Task<ElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
+        public async Task<IElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
         {
             var handle = await SecondaryWorld.WaitForXPathAsync(xpath, options).ConfigureAwait(false);
             if (handle == null)
@@ -347,7 +347,7 @@ namespace PuppeteerSharp
         /// <returns>A task that resolves when the <c>script</c> returns a truthy value</returns>
         /// <seealso cref="Page.WaitForFunctionAsync(string, WaitForFunctionOptions, object[])"/>
         /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
-        public Task<JSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args)
+        public Task<IJSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args)
         {
             if (options == null)
             {
@@ -365,7 +365,7 @@ namespace PuppeteerSharp
         /// <returns>A task that resolves when the <c>script</c> returns a truthy value</returns>
         /// <seealso cref="Page.WaitForExpressionAsync(string, WaitForFunctionOptions)"/>
         /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
-        public Task<JSHandle> WaitForExpressionAsync(string script, WaitForFunctionOptions options)
+        public Task<IJSHandle> WaitForExpressionAsync(string script, WaitForFunctionOptions options)
         {
             if (options == null)
             {
@@ -391,9 +391,9 @@ namespace PuppeteerSharp
         /// Queries frame for the selector. If there's no such element within the frame, the method will resolve to <c>null</c>.
         /// </summary>
         /// <param name="selector">Selector to query frame for</param>
-        /// <returns>Task which resolves to <see cref="ElementHandle"/> pointing to the frame element</returns>
+        /// <returns>Task which resolves to <see cref="IElementHandle"/> pointing to the frame element</returns>
         /// <seealso cref="Page.QuerySelectorAsync(string)"/>
-        public Task<ElementHandle> QuerySelectorAsync(string selector) => MainWorld.QuerySelectorAsync(selector);
+        public Task<IElementHandle> QuerySelectorAsync(string selector) => MainWorld.QuerySelectorAsync(selector);
 
         /// <summary>
         /// Queries frame for the selector. If no elements match the selector, the return value resolve to <see cref="Array.Empty{T}"/>.
@@ -401,15 +401,15 @@ namespace PuppeteerSharp
         /// <param name="selector">A selector to query frame for</param>
         /// <returns>Task which resolves to ElementHandles pointing to the frame elements</returns>
         /// <seealso cref="Page.QuerySelectorAllAsync(string)"/>
-        public Task<ElementHandle[]> QuerySelectorAllAsync(string selector) => MainWorld.QuerySelectorAllAsync(selector);
+        public Task<IElementHandle[]> QuerySelectorAllAsync(string selector) => MainWorld.QuerySelectorAllAsync(selector);
 
         /// <summary>
         /// Evaluates the XPath expression
         /// </summary>
         /// <param name="expression">Expression to evaluate <see href="https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate"/></param>
-        /// <returns>Task which resolves to an array of <see cref="ElementHandle"/></returns>
+        /// <returns>Task which resolves to an array of <see cref="IElementHandle"/></returns>
         /// <seealso cref="Page.XPathAsync(string)"/>
-        public Task<ElementHandle[]> XPathAsync(string expression) => MainWorld.XPathAsync(expression);
+        public Task<IElementHandle[]> XPathAsync(string expression) => MainWorld.XPathAsync(expression);
 
         /// <summary>
         /// Adds a <c><![CDATA[<link rel="stylesheet">]]></c> tag into the page with the desired url or a <c><![CDATA[<link rel="stylesheet">]]></c> tag with the content
@@ -419,7 +419,7 @@ namespace PuppeteerSharp
         /// <seealso cref="Page.AddStyleTagAsync(AddTagOptions)"/>
         /// <seealso cref="Page.AddStyleTagAsync(string)"/>
         [Obsolete("Use AddStyleTagAsync instead")]
-        public Task<ElementHandle> AddStyleTag(AddTagOptions options)
+        public Task<IElementHandle> AddStyleTag(AddTagOptions options)
         {
             if (options == null)
             {
@@ -437,7 +437,7 @@ namespace PuppeteerSharp
         /// <seealso cref="Page.AddScriptTagAsync(AddTagOptions)"/>
         /// <seealso cref="Page.AddScriptTagAsync(string)"/>
         [Obsolete("Use AddScriptTagAsync instead")]
-        public Task<ElementHandle> AddScriptTag(AddTagOptions options)
+        public Task<IElementHandle> AddScriptTag(AddTagOptions options)
         {
             if (options == null)
             {
@@ -454,7 +454,7 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to the added tag when the stylesheet's onload fires or when the CSS content was injected into frame</returns>
         /// <seealso cref="Page.AddStyleTagAsync(AddTagOptions)"/>
         /// <seealso cref="Page.AddStyleTagAsync(string)"/>
-        public Task<ElementHandle> AddStyleTagAsync(AddTagOptions options)
+        public Task<IElementHandle> AddStyleTagAsync(AddTagOptions options)
         {
             if (options == null)
             {
@@ -471,7 +471,7 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to the added tag when the script's onload fires or when the script content was injected into frame</returns>
         /// <seealso cref="Page.AddScriptTagAsync(AddTagOptions)"/>
         /// <seealso cref="Page.AddScriptTagAsync(string)"/>
-        public Task<ElementHandle> AddScriptTagAsync(AddTagOptions options)
+        public Task<IElementHandle> AddScriptTagAsync(AddTagOptions options)
         {
             if (options == null)
             {

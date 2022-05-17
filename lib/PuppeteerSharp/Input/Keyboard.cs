@@ -135,7 +135,7 @@ namespace PuppeteerSharp.Input
         /// <param name="options">press options</param>
         /// <remarks>
         /// If <paramref name="key"/> is a single character and no modifier keys besides <c>Shift</c> are being held down, a <c>keypress</c>/<c>input</c> event will also generated. The <see cref="DownOptions.Text"/> option can be specified to force an input event to be generated.
-        /// Modifier keys DO effect <see cref="ElementHandle.PressAsync(string, PressOptions)"/>. Holding down <c>Shift</c> will type the text in upper case.
+        /// Modifier keys DO effect <see cref="IElementHandle.PressAsync(string, PressOptions)"/>. Holding down <c>Shift</c> will type the text in upper case.
         /// </remarks>
         /// <returns>Task</returns>
         public async Task PressAsync(string key, PressOptions options = null)

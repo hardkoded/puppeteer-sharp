@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -484,12 +484,12 @@ namespace PuppeteerSharp
         /// The method runs <c>document.querySelector</c> within the page. If no element matches the selector, the return value resolve to <c>null</c>.
         /// </summary>
         /// <param name="selector">A selector to query page for</param>
-        /// <returns>Task which resolves to <see cref="ElementHandle"/> pointing to the frame element</returns>
+        /// <returns>Task which resolves to <see cref="IElementHandle"/> pointing to the frame element</returns>
         /// <remarks>
         /// Shortcut for <c>page.MainFrame.QuerySelectorAsync(selector)</c>
         /// </remarks>
         /// <seealso cref="Frame.QuerySelectorAsync(string)"/>
-        public Task<ElementHandle> QuerySelectorAsync(string selector)
+        public Task<IElementHandle> QuerySelectorAsync(string selector)
             => MainFrame.QuerySelectorAsync(selector);
 
         /// <summary>
@@ -498,27 +498,27 @@ namespace PuppeteerSharp
         /// <param name="selector">A selector to query page for</param>
         /// <returns>Task which resolves to ElementHandles pointing to the frame elements</returns>
         /// <seealso cref="Frame.QuerySelectorAllAsync(string)"/>
-        public Task<ElementHandle[]> QuerySelectorAllAsync(string selector)
+        public Task<IElementHandle[]> QuerySelectorAllAsync(string selector)
             => MainFrame.QuerySelectorAllAsync(selector);
 
         /// <summary>
-        /// A utility function to be used with <see cref="PuppeteerHandleExtensions.EvaluateFunctionAsync{T}(Task{JSHandle}, string, object[])"/>
+        /// A utility function to be used with <see cref="PuppeteerHandleExtensions.EvaluateFunctionAsync{T}(Task{IJSHandle}, string, object[])"/>
         /// </summary>
         /// <param name="selector">A selector to query page for</param>
-        /// <returns>Task which resolves to a <see cref="JSHandle"/> of <c>document.querySelectorAll</c> result</returns>
-        public Task<JSHandle> QuerySelectorAllHandleAsync(string selector)
+        /// <returns>Task which resolves to a <see cref="IJSHandle"/> of <c>document.querySelectorAll</c> result</returns>
+        public Task<IJSHandle> QuerySelectorAllHandleAsync(string selector)
             => EvaluateFunctionHandleAsync("selector => Array.from(document.querySelectorAll(selector))", selector);
 
         /// <summary>
         /// Evaluates the XPath expression
         /// </summary>
         /// <param name="expression">Expression to evaluate <see href="https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate"/></param>
-        /// <returns>Task which resolves to an array of <see cref="ElementHandle"/></returns>
+        /// <returns>Task which resolves to an array of <see cref="IElementHandle"/></returns>
         /// <remarks>
         /// Shortcut for <c>page.MainFrame.XPathAsync(expression)</c>
         /// </remarks>
         /// <seealso cref="Frame.XPathAsync(string)"/>
-        public Task<ElementHandle[]> XPathAsync(string expression) => MainFrame.XPathAsync(expression);
+        public Task<IElementHandle[]> XPathAsync(string expression) => MainFrame.XPathAsync(expression);
 
         /// <summary>
         /// Executes a script in browser context
@@ -528,7 +528,7 @@ namespace PuppeteerSharp
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
         /// </remarks>
         /// <returns>Task which resolves to script return value</returns>
-        public async Task<JSHandle> EvaluateExpressionHandleAsync(string script)
+        public async Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
         {
             var context = await MainFrame.GetExecutionContextAsync().ConfigureAwait(false);
             return await context.EvaluateExpressionHandleAsync(script).ConfigureAwait(false);
@@ -541,10 +541,10 @@ namespace PuppeteerSharp
         /// <param name="args">Function arguments</param>
         /// <remarks>
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
-        /// <see cref="JSHandle"/> instances can be passed as arguments
+        /// <see cref="IJSHandle"/> instances can be passed as arguments
         /// </remarks>
         /// <returns>Task which resolves to script return value</returns>
-        public async Task<JSHandle> EvaluateFunctionHandleAsync(string pageFunction, params object[] args)
+        public async Task<IJSHandle> EvaluateFunctionHandleAsync(string pageFunction, params object[] args)
         {
             var context = await MainFrame.GetExecutionContextAsync().ConfigureAwait(false);
             return await context.EvaluateFunctionHandleAsync(pageFunction, args).ConfigureAwait(false);
@@ -625,7 +625,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>A task which resolves to a handle to an array of objects with this prototype.</returns>
         /// <param name="prototypeHandle">A handle to the object prototype.</param>
-        public async Task<JSHandle> QueryObjectsAsync(JSHandle prototypeHandle)
+        public async Task<IJSHandle> QueryObjectsAsync(IJSHandle prototypeHandle)
         {
             var context = await MainFrame.GetExecutionContextAsync().ConfigureAwait(false);
             return await context.QueryObjectsAsync(prototypeHandle).ConfigureAwait(false);
@@ -729,7 +729,7 @@ namespace PuppeteerSharp
         /// </remarks>
         /// <returns>Task which resolves to the added tag when the script's onload fires or when the script content was injected into frame</returns>
         /// <seealso cref="Frame.AddScriptTagAsync(AddTagOptions)"/>
-        public Task<ElementHandle> AddScriptTagAsync(AddTagOptions options) => MainFrame.AddScriptTagAsync(options);
+        public Task<IElementHandle> AddScriptTagAsync(AddTagOptions options) => MainFrame.AddScriptTagAsync(options);
 
         /// <summary>
         /// Adds a <c><![CDATA[<script>]]></c> tag into the page with the desired url or content
@@ -739,7 +739,7 @@ namespace PuppeteerSharp
         /// Shortcut for <c>page.MainFrame.AddScriptTagAsync(new AddTagOptions { Url = url })</c>
         /// </remarks>
         /// <returns>Task which resolves to the added tag when the script's onload fires or when the script content was injected into frame</returns>
-        public Task<ElementHandle> AddScriptTagAsync(string url) => AddScriptTagAsync(new AddTagOptions { Url = url });
+        public Task<IElementHandle> AddScriptTagAsync(string url) => AddScriptTagAsync(new AddTagOptions { Url = url });
 
         /// <summary>
         /// Adds a <c><![CDATA[<link rel="stylesheet">]]></c> tag into the page with the desired url or a <c><![CDATA[<link rel="stylesheet">]]></c> tag with the content
@@ -750,7 +750,7 @@ namespace PuppeteerSharp
         /// </remarks>
         /// <returns>Task which resolves to the added tag when the stylesheet's onload fires or when the CSS content was injected into frame</returns>
         /// <seealso cref="Frame.AddStyleTag(AddTagOptions)"/>
-        public Task<ElementHandle> AddStyleTagAsync(AddTagOptions options) => MainFrame.AddStyleTagAsync(options);
+        public Task<IElementHandle> AddStyleTagAsync(AddTagOptions options) => MainFrame.AddStyleTagAsync(options);
 
         /// <summary>
         /// Adds a <c><![CDATA[<link rel="stylesheet">]]></c> tag into the page with the desired url or a <c><![CDATA[<link rel="stylesheet">]]></c> tag with the content
@@ -760,7 +760,7 @@ namespace PuppeteerSharp
         /// Shortcut for <c>page.MainFrame.AddStyleTagAsync(new AddTagOptions { Url = url })</c>
         /// </remarks>
         /// <returns>Task which resolves to the added tag when the stylesheet's onload fires or when the CSS content was injected into frame</returns>
-        public Task<ElementHandle> AddStyleTagAsync(string url) => AddStyleTagAsync(new AddTagOptions { Url = url });
+        public Task<IElementHandle> AddStyleTagAsync(string url) => AddStyleTagAsync(new AddTagOptions { Url = url });
 
         /// <summary>
         /// Adds a function called <c>name</c> on the page's <c>window</c> object.
@@ -1497,7 +1497,7 @@ namespace PuppeteerSharp
         /// <param name="args">Arguments to pass to script</param>
         /// <remarks>
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
-        /// <see cref="JSHandle"/> instances can be passed as arguments
+        /// <see cref="IJSHandle"/> instances can be passed as arguments
         /// </remarks>
         /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
         /// <returns>Task which resolves to script return value</returns>
@@ -1512,7 +1512,7 @@ namespace PuppeteerSharp
         /// <param name="args">Arguments to pass to script</param>
         /// <remarks>
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
-        /// <see cref="JSHandle"/> instances can be passed as arguments
+        /// <see cref="IJSHandle"/> instances can be passed as arguments
         /// </remarks>
         /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
         /// <returns>Task which resolves to script return value</returns>
@@ -1610,7 +1610,7 @@ namespace PuppeteerSharp
         /// <param name="args">Arguments to pass to <c>script</c></param>
         /// <returns>A task that resolves when the <c>script</c> returns a truthy value</returns>
         /// <seealso cref="Frame.WaitForFunctionAsync(string, WaitForFunctionOptions, object[])"/>
-        public Task<JSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options = null, params object[] args)
+        public Task<IJSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options = null, params object[] args)
             => MainFrame.WaitForFunctionAsync(script, options ?? new WaitForFunctionOptions(), args);
 
         /// <summary>
@@ -1619,7 +1619,7 @@ namespace PuppeteerSharp
         /// <param name="script">Function to be evaluated in browser context</param>
         /// <param name="args">Arguments to pass to <c>script</c></param>
         /// <returns>A task that resolves when the <c>script</c> returns a truthy value</returns>
-        public Task<JSHandle> WaitForFunctionAsync(string script, params object[] args) => WaitForFunctionAsync(script, null, args);
+        public Task<IJSHandle> WaitForFunctionAsync(string script, params object[] args) => WaitForFunctionAsync(script, null, args);
 
         /// <summary>
         /// Waits for an expression to be evaluated to a truthy value
@@ -1628,7 +1628,7 @@ namespace PuppeteerSharp
         /// <param name="options">Optional waiting parameters</param>
         /// <returns>A task that resolves when the <c>script</c> returns a truthy value</returns>
         /// <seealso cref="Frame.WaitForExpressionAsync(string, WaitForFunctionOptions)"/>
-        public Task<JSHandle> WaitForExpressionAsync(string script, WaitForFunctionOptions options = null)
+        public Task<IJSHandle> WaitForExpressionAsync(string script, WaitForFunctionOptions options = null)
             => MainFrame.WaitForExpressionAsync(script, options ?? new WaitForFunctionOptions());
 
         /// <summary>
@@ -1640,7 +1640,7 @@ namespace PuppeteerSharp
         /// Resolves to `null` if waiting for `hidden: true` and selector is not found in DOM.</returns>
         /// <seealso cref="WaitForXPathAsync(string, WaitForSelectorOptions)"/>
         /// <seealso cref="Frame.WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
-        public Task<ElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
+        public Task<IElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
             => MainFrame.WaitForSelectorAsync(selector, options ?? new WaitForSelectorOptions());
 
         /// <summary>
@@ -1670,7 +1670,7 @@ namespace PuppeteerSharp
         /// </example>
         /// <seealso cref="WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
         /// <seealso cref="Frame.WaitForXPathAsync(string, WaitForSelectorOptions)"/>
-        public Task<ElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
+        public Task<IElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
             => MainFrame.WaitForXPathAsync(xpath, options ?? new WaitForSelectorOptions());
 
         /// <summary>
@@ -2614,7 +2614,7 @@ namespace PuppeteerSharp
             return AddConsoleMessageAsync(message.Type, values, message.StackTrace);
         }
 
-        private async Task AddConsoleMessageAsync(ConsoleType type, JSHandle[] values, Messaging.StackTrace stackTrace)
+        private async Task AddConsoleMessageAsync(ConsoleType type, IJSHandle[] values, Messaging.StackTrace stackTrace)
         {
             if (Console?.GetInvocationList().Length == 0)
             {

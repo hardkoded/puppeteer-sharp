@@ -13,6 +13,6 @@ namespace PuppeteerSharp.PageAccessibility
         /// <summary>
         /// The root DOM element for the snapshot. Defaults to the whole page.
         /// </summary>
-        public ElementHandle Root { get; set; }
+        public IElementHandle Root { get; set; }
     }
 }

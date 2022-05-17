@@ -28,10 +28,10 @@ namespace PuppeteerSharp
     /// </remarks>
     public class FileChooser
     {
-        private readonly ElementHandle _element;
+        private readonly IElementHandle _element;
         private bool _handled;
 
-        internal FileChooser(ElementHandle element, PageFileChooserOpenedResponse e)
+        internal FileChooser(IElementHandle element, PageFileChooserOpenedResponse e)
         {
             _element = element;
             IsMultiple = e.Mode != "selectSingle";

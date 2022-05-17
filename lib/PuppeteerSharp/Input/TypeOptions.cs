@@ -4,7 +4,7 @@ namespace PuppeteerSharp.Input
     /// Options to use when typing
     /// </summary>
     /// <seealso cref="Page.TypeAsync(string, string, TypeOptions)"/>
-    /// <seealso cref="ElementHandle.TypeAsync(string, TypeOptions)"/>
+    /// <seealso cref="IElementHandle.TypeAsync(string, TypeOptions)"/>
     /// <seealso cref="Keyboard.TypeAsync(string, TypeOptions)"/>
     public class TypeOptions
     {

@@ -70,7 +70,7 @@ namespace PuppeteerSharp
         public Task<T> EvaluateExpressionAsync<T>(string script)
             => RemoteObjectTaskToObject<T>(EvaluateExpressionInternalAsync(true, script));
 
-        internal async Task<JSHandle> EvaluateExpressionHandleAsync(string script)
+        internal async Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
             => CreateJSHandle(await EvaluateExpressionInternalAsync(false, script).ConfigureAwait(false));
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace PuppeteerSharp
         /// <param name="args">Arguments to pass to script</param>
         /// <remarks>
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
-        /// <see cref="JSHandle"/> instances can be passed as arguments
+        /// <see cref="IJSHandle"/> instances can be passed as arguments
         /// </remarks>
         /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
         /// <returns>Task which resolves to script return value</returns>
@@ -94,14 +94,14 @@ namespace PuppeteerSharp
         /// <param name="args">Arguments to pass to script</param>
         /// <remarks>
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
-        /// <see cref="JSHandle"/> instances can be passed as arguments
+        /// <see cref="IJSHandle"/> instances can be passed as arguments
         /// </remarks>
         /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
         /// <returns>Task which resolves to script return value</returns>
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
             => RemoteObjectTaskToObject<T>(EvaluateFunctionInternalAsync(true, script, args));
 
-        internal async Task<JSHandle> EvaluateFunctionHandleAsync(string script, params object[] args)
+        internal async Task<IJSHandle> EvaluateFunctionHandleAsync(string script, params object[] args)
             => CreateJSHandle(await EvaluateFunctionInternalAsync(false, script, args).ConfigureAwait(false));
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>A task which resolves to a handle to an array of objects with this prototype.</returns>
         /// <param name="prototypeHandle">A handle to the object prototype.</param>
-        public async Task<JSHandle> QueryObjectsAsync(JSHandle prototypeHandle)
+        public async Task<IJSHandle> QueryObjectsAsync(IJSHandle prototypeHandle)
         {
             if (prototypeHandle == null)
             {
@@ -186,7 +186,7 @@ namespace PuppeteerSharp
             }
         }
 
-        internal JSHandle CreateJSHandle(RemoteObject remoteObject)
+        internal IJSHandle CreateJSHandle(RemoteObject remoteObject)
             => remoteObject.Subtype == RemoteObjectSubtype.Node && Frame != null
                 ? new ElementHandle(this, _client, remoteObject, Frame.FrameManager.Page, Frame.FrameManager)
                 : new JSHandle(this, _client, remoteObject);
@@ -247,7 +247,7 @@ namespace PuppeteerSharp
             return message;
         }
 
-        internal async Task<ElementHandle> AdoptBackendNodeAsync(object backendNodeId)
+        internal async Task<IElementHandle> AdoptBackendNodeAsync(object backendNodeId)
         {
             var obj = await _client.SendAsync<DomResolveNodeResponse>("DOM.resolveNode", new DomResolveNodeRequest
             {
@@ -255,10 +255,10 @@ namespace PuppeteerSharp
                 ExecutionContextId = _contextId
             }).ConfigureAwait(false);
 
-            return CreateJSHandle(obj.Object) as ElementHandle;
+            return CreateJSHandle(obj.Object) as IElementHandle;
         }
 
-        internal async Task<ElementHandle> AdoptElementHandleAsync(ElementHandle elementHandle)
+        internal async Task<IElementHandle> AdoptElementHandleAsync(IElementHandle elementHandle)
         {
             if (elementHandle.ExecutionContext == this)
             {
@@ -280,7 +280,7 @@ namespace PuppeteerSharp
                 ExecutionContextId = _contextId
             }).ConfigureAwait(false);
 
-            return CreateJSHandle(obj.Object) as ElementHandle;
+            return CreateJSHandle(obj.Object) as IElementHandle;
         }
     }
 }

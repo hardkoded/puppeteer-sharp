@@ -4,7 +4,7 @@ namespace PuppeteerSharp.Input
     /// options to use when pressing a key.
     /// </summary>
     /// <seealso cref="Keyboard.PressAsync(string, PressOptions)"/>
-    /// <seealso cref="ElementHandle.PressAsync(string, PressOptions)"/>
+    /// <seealso cref="IElementHandle.PressAsync(string, PressOptions)"/>
     public class PressOptions : DownOptions
     {
         /// <summary>
