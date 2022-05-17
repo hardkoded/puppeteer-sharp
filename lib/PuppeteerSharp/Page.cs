@@ -6,9 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Timers;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -299,13 +297,13 @@ namespace PuppeteerSharp
         /// <remarks>
         /// Page is guaranteed to have a main frame which persists during navigations.
         /// </remarks>
-        public Frame MainFrame => FrameManager.MainFrame;
+        public IFrame MainFrame => FrameManager.MainFrame;
 
         /// <summary>
         /// Gets all frames attached to the page.
         /// </summary>
         /// <value>An array of all frames attached to the page.</value>
-        public Frame[] Frames => FrameManager.GetFrames();
+        public IFrame[] Frames => FrameManager.GetFrames();
 
         /// <summary>
         /// Gets all workers in the page.
@@ -488,7 +486,7 @@ namespace PuppeteerSharp
         /// <remarks>
         /// Shortcut for <c>page.MainFrame.QuerySelectorAsync(selector)</c>
         /// </remarks>
-        /// <seealso cref="Frame.QuerySelectorAsync(string)"/>
+        /// <seealso cref="IFrame.QuerySelectorAsync(string)"/>
         public Task<IElementHandle> QuerySelectorAsync(string selector)
             => MainFrame.QuerySelectorAsync(selector);
 
@@ -497,7 +495,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="selector">A selector to query page for</param>
         /// <returns>Task which resolves to ElementHandles pointing to the frame elements</returns>
-        /// <seealso cref="Frame.QuerySelectorAllAsync(string)"/>
+        /// <seealso cref="IFrame.QuerySelectorAllAsync(string)"/>
         public Task<IElementHandle[]> QuerySelectorAllAsync(string selector)
             => MainFrame.QuerySelectorAllAsync(selector);
 
@@ -517,7 +515,7 @@ namespace PuppeteerSharp
         /// <remarks>
         /// Shortcut for <c>page.MainFrame.XPathAsync(expression)</c>
         /// </remarks>
-        /// <seealso cref="Frame.XPathAsync(string)"/>
+        /// <seealso cref="IFrame.XPathAsync(string)"/>
         public Task<IElementHandle[]> XPathAsync(string expression) => MainFrame.XPathAsync(expression);
 
         /// <summary>
@@ -728,7 +726,7 @@ namespace PuppeteerSharp
         /// Shortcut for <c>page.MainFrame.AddScriptTagAsync(options)</c>
         /// </remarks>
         /// <returns>Task which resolves to the added tag when the script's onload fires or when the script content was injected into frame</returns>
-        /// <seealso cref="Frame.AddScriptTagAsync(AddTagOptions)"/>
+        /// <seealso cref="IFrame.AddScriptTagAsync(AddTagOptions)"/>
         public Task<IElementHandle> AddScriptTagAsync(AddTagOptions options) => MainFrame.AddScriptTagAsync(options);
 
         /// <summary>
@@ -749,7 +747,7 @@ namespace PuppeteerSharp
         /// Shortcut for <c>page.MainFrame.AddStyleTagAsync(options)</c>
         /// </remarks>
         /// <returns>Task which resolves to the added tag when the stylesheet's onload fires or when the CSS content was injected into frame</returns>
-        /// <seealso cref="Frame.AddStyleTag(AddTagOptions)"/>
+        /// <seealso cref="IFrame.AddStyleTagAsync(AddTagOptions)"/>
         public Task<IElementHandle> AddStyleTagAsync(AddTagOptions options) => MainFrame.AddStyleTagAsync(options);
 
         /// <summary>
@@ -865,7 +863,7 @@ namespace PuppeteerSharp
         /// Gets the full HTML contents of the page, including the doctype.
         /// </summary>
         /// <returns>Task which resolves to the HTML content.</returns>
-        /// <seealso cref="Frame.GetContentAsync"/>
+        /// <seealso cref="IFrame.GetContentAsync"/>
         public Task<string> GetContentAsync() => FrameManager.MainFrame.GetContentAsync();
 
         /// <summary>
@@ -874,7 +872,7 @@ namespace PuppeteerSharp
         /// <param name="html">HTML markup to assign to the page.</param>
         /// <param name="options">The navigations options</param>
         /// <returns>Task.</returns>
-        /// <seealso cref="Frame.SetContentAsync(string, NavigationOptions)"/>
+        /// <seealso cref="IFrame.SetContentAsync(string, NavigationOptions)"/>
         public Task SetContentAsync(string html, NavigationOptions options = null) => FrameManager.MainFrame.SetContentAsync(html, options);
 
         /// <summary>
@@ -896,7 +894,7 @@ namespace PuppeteerSharp
         ///
         /// > **NOTE** Headless mode doesn't support navigation to a PDF document. See the <see fref="https://bugs.chromium.org/p/chromium/issues/detail?id=761295">upstream issue</see>.
         ///
-        /// Shortcut for <seealso cref="Frame.GoToAsync(string, int?, WaitUntilNavigation[])"/>
+        /// Shortcut for <seealso cref="IFrame.GoToAsync(string, int?, WaitUntilNavigation[])"/>
         /// </remarks>
         /// <param name="url">URL to navigate page to. The url should include scheme, e.g. https://.</param>
         /// <param name="options">Navigation parameters.</param>
@@ -1367,7 +1365,7 @@ namespace PuppeteerSharp
         /// Returns page's title
         /// </summary>
         /// <returns>page's title</returns>
-        /// <see cref="Frame.GetTitleAsync"/>
+        /// <see cref="IFrame.GetTitleAsync"/>
         public Task<string> GetTitleAsync() => MainFrame.GetTitleAsync();
 
         /// <summary>
@@ -1589,7 +1587,7 @@ namespace PuppeteerSharp
         /// <param name="values">Values of options to select. If the <![CDATA[<select>]]> has the multiple attribute,
         /// all values are considered, otherwise only the first one is taken into account.</param>
         /// <returns>Returns an array of option values that have been successfully selected.</returns>
-        /// <seealso cref="Frame.SelectAsync(string, string[])"/>
+        /// <seealso cref="IFrame.SelectAsync(string, string[])"/>
         public Task<string[]> SelectAsync(string selector, params string[] values)
             => MainFrame.SelectAsync(selector, values);
 
@@ -1598,7 +1596,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="milliseconds">The amount of time to wait.</param>
         /// <returns>A task that resolves when after the timeout</returns>
-        /// <seealso cref="Frame.WaitForTimeoutAsync(int)"/>
+        /// <seealso cref="IFrame.WaitForTimeoutAsync(int)"/>
         public Task WaitForTimeoutAsync(int milliseconds)
             => MainFrame.WaitForTimeoutAsync(milliseconds);
 
@@ -1609,7 +1607,7 @@ namespace PuppeteerSharp
         /// <param name="options">Optional waiting parameters</param>
         /// <param name="args">Arguments to pass to <c>script</c></param>
         /// <returns>A task that resolves when the <c>script</c> returns a truthy value</returns>
-        /// <seealso cref="Frame.WaitForFunctionAsync(string, WaitForFunctionOptions, object[])"/>
+        /// <seealso cref="IFrame.WaitForFunctionAsync(string, WaitForFunctionOptions, object[])"/>
         public Task<IJSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options = null, params object[] args)
             => MainFrame.WaitForFunctionAsync(script, options ?? new WaitForFunctionOptions(), args);
 
@@ -1627,7 +1625,7 @@ namespace PuppeteerSharp
         /// <param name="script">Expression to be evaluated in browser context</param>
         /// <param name="options">Optional waiting parameters</param>
         /// <returns>A task that resolves when the <c>script</c> returns a truthy value</returns>
-        /// <seealso cref="Frame.WaitForExpressionAsync(string, WaitForFunctionOptions)"/>
+        /// <seealso cref="IFrame.WaitForExpressionAsync(string, WaitForFunctionOptions)"/>
         public Task<IJSHandle> WaitForExpressionAsync(string script, WaitForFunctionOptions options = null)
             => MainFrame.WaitForExpressionAsync(script, options ?? new WaitForFunctionOptions());
 
@@ -1639,7 +1637,7 @@ namespace PuppeteerSharp
         /// <returns>A task that resolves when element specified by selector string is added to DOM.
         /// Resolves to `null` if waiting for `hidden: true` and selector is not found in DOM.</returns>
         /// <seealso cref="WaitForXPathAsync(string, WaitForSelectorOptions)"/>
-        /// <seealso cref="Frame.WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
+        /// <seealso cref="IFrame.WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
         public Task<IElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
             => MainFrame.WaitForSelectorAsync(selector, options ?? new WaitForSelectorOptions());
 
@@ -1669,7 +1667,7 @@ namespace PuppeteerSharp
         /// </code>
         /// </example>
         /// <seealso cref="WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
-        /// <seealso cref="Frame.WaitForXPathAsync(string, WaitForSelectorOptions)"/>
+        /// <seealso cref="IFrame.WaitForXPathAsync(string, WaitForSelectorOptions)"/>
         public Task<IElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
             => MainFrame.WaitForXPathAsync(xpath, options ?? new WaitForSelectorOptions());
 

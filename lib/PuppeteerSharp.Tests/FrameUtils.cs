@@ -6,7 +6,7 @@ namespace PuppeteerSharp.Tests
 {
     public static class FrameUtils
     {
-        public static async Task<Frame> AttachFrameAsync(Page page, string frameId, string url)
+        public static async Task<IFrame> AttachFrameAsync(Page page, string frameId, string url)
         {
             var handle = (IElementHandle)await page.EvaluateFunctionHandleAsync(@" async (frameId, url) => {
               const frame = document.createElement('iframe');
@@ -27,7 +27,7 @@ namespace PuppeteerSharp.Tests
             }", frameId);
         }
 
-        public static IEnumerable<string> DumpFrames(Frame frame, string indentation = "")
+        public static IEnumerable<string> DumpFrames(IFrame frame, string indentation = "")
         {
             var description = indentation + Regex.Replace(frame.Url, @":\d{4}", ":<PORT>");
             if (!string.IsNullOrEmpty(frame.Name))

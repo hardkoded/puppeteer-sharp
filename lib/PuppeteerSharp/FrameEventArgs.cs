@@ -9,7 +9,7 @@ namespace PuppeteerSharp
         /// Initializes a new instance of the <see cref="FrameEventArgs"/> class.
         /// </summary>
         /// <param name="frame">Frame.</param>
-        public FrameEventArgs(Frame frame)
+        public FrameEventArgs(IFrame frame)
         {
             Frame = frame;
         }
@@ -18,6 +18,6 @@ namespace PuppeteerSharp
         /// Gets or sets the frame.
         /// </summary>
         /// <value>The frame.</value>
-        public Frame Frame { get; set; }
+        public IFrame Frame { get; set; }
     }
 }

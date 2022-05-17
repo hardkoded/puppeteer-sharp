@@ -7,39 +7,10 @@ using PuppeteerSharp.Input;
 
 namespace PuppeteerSharp
 {
-    /// <summary>
-    /// Provides methods to interact with a single page frame in Chromium. One <see cref="Page"/> instance might have multiple <see cref="Frame"/> instances.
-    /// At every point of time, page exposes its current frame tree via the <see cref="Page.MainFrame"/> and <see cref="ChildFrames"/> properties.
-    ///
-    /// <see cref="Frame"/> object's lifecycle is controlled by three events, dispatched on the page object
-    /// - <see cref="Page.FrameAttached"/> - fires when the frame gets attached to the page. A Frame can be attached to the page only once
-    /// - <see cref="Page.FrameNavigated"/> - fired when the frame commits navigation to a different URL
-    /// - <see cref="Page.FrameDetached"/> - fired when the frame gets detached from the page.  A Frame can be detached from the page only once
-    /// </summary>
-    /// <example>
-    /// An example of dumping frame tree
-    /// <code>
-    /// <![CDATA[
-    /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions());
-    /// var page = await browser.NewPageAsync();
-    /// await page.GoToAsync("https://www.google.com/chrome/browser/canary.html");
-    /// dumpFrameTree(page.MainFrame, string.Empty);
-    /// await browser.CloseAsync();
-    ///
-    /// void dumpFrameTree(Frame frame, string indent)
-    /// {
-    ///     Console.WriteLine(indent + frame.Url);
-    ///     foreach (var child in frame.ChildFrames)
-    ///     {
-    ///         dumpFrameTree(child, indent + "  ");
-    ///     }
-    /// }
-    /// ]]>
-    /// </code>
-    /// </example>
-    public class Frame
+    /// <inheritdoc/>
+    public class Frame : IFrame
     {
-        private readonly List<Frame> _childFrames = new();
+        private readonly List<IFrame> _childFrames = new();
 
         internal Frame(FrameManager frameManager, Frame parentFrame, string frameId)
         {
@@ -54,14 +25,14 @@ namespace PuppeteerSharp
 
             if (parentFrame != null)
             {
-                ParentFrame.AddChildFrame(this);
+                parentFrame.AddChildFrame(this);
             }
         }
 
         /// <summary>
         /// Gets the child frames of the this frame
         /// </summary>
-        public List<Frame> ChildFrames
+        public List<IFrame> ChildFrames
         {
             get
             {
@@ -91,11 +62,14 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets the parent frame, if any. Detached frames and main frames return <c>null</c>
         /// </summary>
-        public Frame ParentFrame { get; private set; }
+        public IFrame ParentFrame { get; private set; }
 
         internal FrameManager FrameManager { get; }
 
-        internal string Id { get; set; }
+        /// <summary>
+        /// Frame Id
+        /// </summary>
+        public string Id { get; internal set; }
 
         internal string LoaderId { get; set; }
 
@@ -604,7 +578,7 @@ namespace PuppeteerSharp
             SecondaryWorld.Detach();
             if (ParentFrame != null)
             {
-                ParentFrame.RemoveChildFrame(this);
+                ((Frame)ParentFrame).RemoveChildFrame(this);
             }
             ParentFrame = null;
         }

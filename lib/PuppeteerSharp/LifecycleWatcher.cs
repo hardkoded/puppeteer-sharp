@@ -151,7 +151,7 @@ namespace PuppeteerSharp
             }
             foreach (var child in frame.ChildFrames)
             {
-                if (!CheckLifecycle(child, expectedLifecycle))
+                if (!CheckLifecycle((Frame)child, expectedLifecycle))
                 {
                     return false;
                 }

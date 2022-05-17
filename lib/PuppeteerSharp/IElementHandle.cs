@@ -42,7 +42,7 @@ namespace PuppeteerSharp
         ///Content frame for element handles referencing iframe nodes, or null otherwise.
         /// </summary>
         /// <returns>Resolves to the content frame</returns>
-        Task<Frame> ContentFrameAsync();
+        Task<IFrame> ContentFrameAsync();
 
         /// <summary>
         /// Performs a drag, dragenter, dragover, and drop in sequence.

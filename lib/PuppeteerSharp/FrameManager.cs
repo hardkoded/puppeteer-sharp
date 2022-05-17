@@ -302,7 +302,7 @@ namespace PuppeteerSharp
             {
                 while (frame.ChildFrames.Count > 0)
                 {
-                    RemoveFramesRecursively(frame.ChildFrames[0]);
+                    RemoveFramesRecursively((Frame)frame.ChildFrames[0]);
                 }
             }
 
@@ -351,7 +351,7 @@ namespace PuppeteerSharp
         {
             while (frame.ChildFrames.Count > 0)
             {
-                RemoveFramesRecursively(frame.ChildFrames[0]);
+                RemoveFramesRecursively((Frame)frame.ChildFrames[0]);
             }
             frame.Detach();
             _frames.TryRemove(frame.Id, out _);

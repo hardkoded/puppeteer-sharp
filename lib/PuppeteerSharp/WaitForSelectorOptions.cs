@@ -4,7 +4,7 @@ namespace PuppeteerSharp
     /// Optional waiting parameters.
     /// </summary>
     /// <seealso cref="Page.WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
-    /// <seealso cref="Frame.WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
+    /// <seealso cref="IFrame.WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
     public class WaitForSelectorOptions
     {
         /// <summary>

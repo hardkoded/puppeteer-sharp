@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 using System.Linq;
@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             // validate frameattached events
-            var attachedFrames = new List<Frame>();
+            var attachedFrames = new List<IFrame>();
 
             Page.FrameAttached += (_, e) => attachedFrames.Add(e.Frame);
 
@@ -41,7 +41,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             Assert.Contains("/Assets/frame.html", attachedFrames[0].Url);
 
             // validate framenavigated events
-            var navigatedFrames = new List<Frame>();
+            var navigatedFrames = new List<IFrame>();
             Page.FrameNavigated += (_, e) => navigatedFrames.Add(e.Frame);
 
             await FrameUtils.NavigateFrameAsync(Page, "frame1", "./empty.html");
@@ -49,7 +49,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             Assert.Equal(TestConstants.EmptyPage, navigatedFrames[0].Url);
 
             // validate framedetached events
-            var detachedFrames = new List<Frame>();
+            var detachedFrames = new List<IFrame>();
             Page.FrameDetached += (_, e) => detachedFrames.Add(e.Frame);
 
             await FrameUtils.DetachFrameAsync(Page, "frame1");
@@ -106,9 +106,9 @@ namespace PuppeteerSharp.Tests.FrameTests
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldDetachChildFramesOnNavigation()
         {
-            var attachedFrames = new List<Frame>();
-            var detachedFrames = new List<Frame>();
-            var navigatedFrames = new List<Frame>();
+            var attachedFrames = new List<IFrame>();
+            var detachedFrames = new List<IFrame>();
+            var navigatedFrames = new List<IFrame>();
 
             Page.FrameAttached += (_, e) => attachedFrames.Add(e.Frame);
             Page.FrameDetached += (_, e) => detachedFrames.Add(e.Frame);
@@ -184,7 +184,7 @@ namespace PuppeteerSharp.Tests.FrameTests
                 window.frame.remove();
             }");
             Assert.True(frame1.Detached);
-            var frame2tsc = new TaskCompletionSource<Frame>();
+            var frame2tsc = new TaskCompletionSource<IFrame>();
             Page.FrameAttached += (_, e) => frame2tsc.TrySetResult(e.Frame);
             await Page.EvaluateExpressionAsync("document.body.appendChild(window.frame)");
             var frame2 = await frame2tsc.Task;
@@ -196,9 +196,9 @@ namespace PuppeteerSharp.Tests.FrameTests
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldSupportFramesets()
         {
-            var attachedFrames = new List<Frame>();
-            var detachedFrames = new List<Frame>();
-            var navigatedFrames = new List<Frame>();
+            var attachedFrames = new List<IFrame>();
+            var detachedFrames = new List<IFrame>();
+            var navigatedFrames = new List<IFrame>();
 
             Page.FrameAttached += (_, e) => attachedFrames.Add(e.Frame);
             Page.FrameDetached += (_, e) => detachedFrames.Add(e.Frame);

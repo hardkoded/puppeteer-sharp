@@ -42,7 +42,7 @@ namespace PuppeteerSharp
         /// <remarks>
         /// NOTE Not every execution context is associated with a frame. For example, workers and extensions have execution contexts that are not associated with frames.
         /// </remarks>
-        public Frame Frame => World?.Frame;
+        public IFrame Frame => World?.Frame;
 
         /// <summary>
         /// Executes a script in browser context
@@ -190,7 +190,7 @@ namespace PuppeteerSharp
 
         internal IJSHandle CreateJSHandle(RemoteObject remoteObject)
             => remoteObject.Subtype == RemoteObjectSubtype.Node && Frame != null
-                ? new ElementHandle(this, _client, remoteObject, Frame.FrameManager.Page, Frame.FrameManager)
+                ? new ElementHandle(this, _client, remoteObject, Frame)
                 : new JSHandle(this, _client, remoteObject);
 
         private object FormatArgument(object arg)

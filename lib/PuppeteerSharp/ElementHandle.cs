@@ -25,15 +25,13 @@ namespace PuppeteerSharp
             ExecutionContext context,
             CDPSession client,
             RemoteObject remoteObject,
-            Page page,
-            FrameManager frameManager) : base(context, client, remoteObject)
+            IFrame frame) : base(context, client, remoteObject)
         {
-            Page = page;
-            _frameManager = frameManager;
+            _frameManager = ((Frame)frame).FrameManager;
             _logger = client.LoggerFactory.CreateLogger<ElementHandle>();
         }
 
-        internal Page Page { get; }
+        internal Page Page => _frameManager.Page;
 
         /// <inheritdoc/>
         public Task ScreenshotAsync(string file) => ScreenshotAsync(file, new ScreenshotOptions());
@@ -335,7 +333,7 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
-        public async Task<Frame> ContentFrameAsync()
+        public async Task<IFrame> ContentFrameAsync()
         {
             var nodeInfo = await Client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
             {
