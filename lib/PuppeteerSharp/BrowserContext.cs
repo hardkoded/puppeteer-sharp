@@ -52,7 +52,7 @@ namespace PuppeteerSharp
         /// Gets an array of all active targets inside the browser context.
         /// </summary>
         /// <returns>An array of all active targets inside the browser context</returns>
-        public Target[] Targets() => Array.FindAll(Browser.Targets(), target => target.BrowserContext == this);
+        public ITarget[] Targets() => Array.FindAll(Browser.Targets(), target => target.BrowserContext == this);
 
         /// <summary>
         /// This searches for a target in this specific browser context.
@@ -68,7 +68,7 @@ namespace PuppeteerSharp
         /// <param name="predicate">A function to be run for every target</param>
         /// <param name="options">options</param>
         /// <returns>Resolves to the first target found that matches the predicate function.</returns>
-        public Task<Target> WaitForTargetAsync(Func<Target, bool> predicate, WaitForOptions options = null)
+        public Task<ITarget> WaitForTargetAsync(Func<ITarget, bool> predicate, WaitForOptions options = null)
             => Browser.WaitForTargetAsync((target) => target.BrowserContext == this && predicate(target), options);
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>Task which resolves to an array of all open pages.
         /// Non visible pages, such as <c>"background_page"</c>, will not be listed here.
-        /// You can find them using <see cref="Target.PageAsync"/>.</returns>
+        /// You can find them using <see cref="ITarget.PageAsync"/>.</returns>
         public async Task<Page[]> PagesAsync()
         => (await Task.WhenAll(
             Targets().Where(t => t.Type == TargetType.Page).Select(t => t.PageAsync())).ConfigureAwait(false))

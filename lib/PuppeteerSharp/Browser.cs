@@ -155,7 +155,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// A target associated with the browser.
         /// </summary>
-        public Target Target => Targets().FirstOrDefault(t => t.Type == TargetType.Browser);
+        public ITarget Target => Targets().FirstOrDefault(t => t.Type == TargetType.Browser);
 
         internal TaskQueue ScreenshotTaskQueue { get; set; }
 
@@ -177,7 +177,7 @@ namespace PuppeteerSharp
         /// Returns An Array of all active targets
         /// </summary>
         /// <returns>An Array of all active targets</returns>
-        public Target[] Targets() => TargetsMap.Values.Where(target => target.IsInitialized).ToArray();
+        public ITarget[] Targets() => TargetsMap.Values.Where(target => target.IsInitialized).ToArray();
 
         /// <summary>
         /// Creates a new incognito browser context. This won't share cookies/cache with other browser contexts.
@@ -279,7 +279,7 @@ namespace PuppeteerSharp
         /// <param name="predicate">A function to be run for every target</param>
         /// <param name="options">options</param>
         /// <returns>Resolves to the first target found that matches the predicate function.</returns>
-        public async Task<Target> WaitForTargetAsync(Func<Target, bool> predicate, WaitForOptions options = null)
+        public async Task<ITarget> WaitForTargetAsync(Func<ITarget, bool> predicate, WaitForOptions options = null)
         {
             var timeout = options?.Timeout ?? DefaultWaitForTimeout;
             var existingTarget = Targets().FirstOrDefault(predicate);
@@ -288,7 +288,7 @@ namespace PuppeteerSharp
                 return existingTarget;
             }
 
-            var targetCompletionSource = new TaskCompletionSource<Target>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var targetCompletionSource = new TaskCompletionSource<ITarget>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             void TargetHandler(object sender, TargetChangedArgs e)
             {

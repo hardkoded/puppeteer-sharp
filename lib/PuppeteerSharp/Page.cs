@@ -318,7 +318,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets that target this page was created from.
         /// </summary>
-        public Target Target { get; }
+        public ITarget Target { get; }
 
         /// <summary>
         /// Gets this page's keyboard
@@ -1387,7 +1387,7 @@ namespace PuppeteerSharp
                 return Client.Connection.SendAsync("Target.closeTarget", new TargetCloseTargetRequest
                 {
                     TargetId = Target.TargetId
-                }).ContinueWith(task => Target.CloseTask, TaskScheduler.Default);
+                }).ContinueWith(task => ((Target)Target).CloseTask, TaskScheduler.Default);
             }
 
             _logger.LogWarning("Protocol error: Connection closed. Most likely the page has been closed.");

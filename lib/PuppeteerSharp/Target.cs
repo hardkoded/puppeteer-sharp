@@ -2,8 +2,6 @@ using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
-using PuppeteerSharp.Helpers.Json;
-using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
@@ -11,7 +9,7 @@ namespace PuppeteerSharp
     /// Target.
     /// </summary>
     [DebuggerDisplay("Target {Type} - {Url}")]
-    public class Target
+    public class Target : ITarget
     {
         private readonly Func<Task<CDPSession>> _sessionFactory;
         private readonly TaskCompletionSource<bool> _initializedTaskWrapper = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -36,7 +34,9 @@ namespace PuppeteerSharp
                         return;
                     }
 
-                    var openerPageTask = Opener?.PageTask;
+                    var opener = Opener as Target;
+
+                    var openerPageTask = opener?.PageTask;
                     if (openerPageTask == null || Type != TargetType.Page)
                     {
                         return;
@@ -84,7 +84,7 @@ namespace PuppeteerSharp
         /// <remarks>
         /// Top-level targets return <c>null</c>.
         /// </remarks>
-        public Target Opener => TargetInfo.OpenerId != null ?
+        public ITarget Opener => TargetInfo.OpenerId != null ?
             Browser.TargetsMap.GetValueOrDefault(TargetInfo.OpenerId) : null;
 
         /// <summary>

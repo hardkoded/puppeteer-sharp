@@ -17,6 +17,6 @@ namespace PuppeteerSharp
         /// Gets the target.
         /// </summary>
         /// <value>The target.</value>
-        public Target Target { get; internal set; }
+        public ITarget Target { get; internal set; }
     }
 }

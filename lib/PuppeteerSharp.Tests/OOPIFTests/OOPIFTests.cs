@@ -36,6 +36,6 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             Assert.Single(Oopifs);
         }
 
-        private IEnumerable<Target> Oopifs => Context.Targets().Where(target => target.TargetInfo.Type == TargetType.iFrame);
+        private IEnumerable<ITarget> Oopifs => Context.Targets().Where(target => target.Type == TargetType.iFrame);
     }
 }
