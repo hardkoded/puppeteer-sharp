@@ -16,7 +16,7 @@ namespace PuppeteerSharp
         /// <remarks>
         /// NOTE Not every execution context is associated with a frame. For example, workers and extensions have execution contexts that are not associated with frames.
         /// </remarks>
-        Frame Frame { get; }
+        IFrame Frame { get; }
 
         /// <summary>
         /// Executes a script in browser context

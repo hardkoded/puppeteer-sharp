@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -141,7 +141,7 @@ namespace PuppeteerSharp
         /// Returns the default browser context. The default browser context can not be closed.
         /// </summary>
         /// <value>The default context.</value>
-        public BrowserContext DefaultContext { get; }
+        public IBrowserContext DefaultContext { get; }
 
         /// <summary>
         /// Dafault wait time in milliseconds. Defaults to 30 seconds.
@@ -198,7 +198,7 @@ namespace PuppeteerSharp
         /// ]]>
         /// </code>
         /// </example>
-        public async Task<BrowserContext> CreateIncognitoBrowserContextAsync()
+        public async Task<IBrowserContext> CreateIncognitoBrowserContextAsync()
         {
             var response = await Connection.SendAsync<CreateBrowserContextResponse>("Target.createBrowserContext", null).ConfigureAwait(false);
             var context = new BrowserContext(Connection, this, response.BrowserContextId);
@@ -210,12 +210,16 @@ namespace PuppeteerSharp
         /// Returns an array of all open <see cref="BrowserContext"/>. In a newly created browser, this will return a single instance of <see cref="BrowserContext"/>
         /// </summary>
         /// <returns>An array of <see cref="BrowserContext"/> objects</returns>
-        public BrowserContext[] BrowserContexts()
+        public IBrowserContext[] BrowserContexts()
         {
-            var allContexts = new BrowserContext[_contexts.Count + 1];
-            allContexts[0] = DefaultContext;
-            _contexts.Values.CopyTo(allContexts, 1);
-            return allContexts;
+            var allContexts = new List<IBrowserContext>(_contexts.Count + 1)
+            {
+                DefaultContext
+            };
+
+            allContexts.AddRange(_contexts.Values.OfType<IBrowserContext>());
+
+            return allContexts.ToArray();
         }
 
         /// <summary>
@@ -361,7 +365,7 @@ namespace PuppeteerSharp
         {
             var args = new TargetChangedArgs { Target = target };
             TargetChanged?.Invoke(this, args);
-            target.BrowserContext.OnTargetChanged(this, args);
+            ((BrowserContext)target.BrowserContext).OnTargetChanged(this, args);
         }
 
         internal async Task<Page> CreatePageInContextAsync(string contextId)
@@ -461,7 +465,7 @@ namespace PuppeteerSharp
             {
                 var args = new TargetChangedArgs { Target = target };
                 TargetDestroyed?.Invoke(this, args);
-                target.BrowserContext.OnTargetDestroyed(this, args);
+                ((BrowserContext)target.BrowserContext).OnTargetDestroyed(this, args);
             }
         }
 
@@ -478,7 +482,7 @@ namespace PuppeteerSharp
 
             if (!(browserContextId != null && _contexts.TryGetValue(browserContextId, out var context)))
             {
-                context = DefaultContext;
+                context = (BrowserContext)DefaultContext;
             }
 
             var target = new Target(

@@ -6,11 +6,8 @@ using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
-    /// <summary>
-    /// BrowserContexts provide a way to operate multiple independent browser sessions. When a browser is launched, it has
-    /// a single <see cref="BrowserContext"/> used by default. The method <see cref="PuppeteerSharp.Browser.NewPageAsync"/> creates a <see cref="Page"/> in the default <see cref="BrowserContext"/>
-    /// </summary>
-    public class BrowserContext
+    /// <inheritdoc/>
+    public class BrowserContext : IBrowserContext
     {
         private readonly Connection _connection;
         private readonly string _id;

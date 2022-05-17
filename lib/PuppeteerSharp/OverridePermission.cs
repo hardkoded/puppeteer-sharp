@@ -7,7 +7,7 @@ namespace PuppeteerSharp
     /// <summary>
     /// Override permission.
     /// </summary>
-    /// <seealso cref="BrowserContext.OverridePermissionsAsync(string, System.Collections.Generic.IEnumerable{OverridePermission})"/>
+    /// <seealso cref="IBrowserContext.OverridePermissionsAsync(string, System.Collections.Generic.IEnumerable{OverridePermission})"/>
     [JsonConverter(typeof(StringEnumConverter))]
     public enum OverridePermission
     {

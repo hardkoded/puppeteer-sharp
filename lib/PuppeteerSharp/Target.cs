@@ -95,7 +95,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Get the browser context the target belongs to.
         /// </summary>
-        public BrowserContext BrowserContext { get; }
+        public IBrowserContext BrowserContext { get; }
 
         internal Task<bool> InitializedTask => _initializedTaskWrapper.Task;
 

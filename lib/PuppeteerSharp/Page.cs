@@ -358,7 +358,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Get the browser context that the page belongs to.
         /// </summary>
-        public BrowserContext BrowserContext => Target.BrowserContext;
+        public IBrowserContext BrowserContext => Target.BrowserContext;
 
         /// <summary>
         /// Get an indication that the page has been closed.
@@ -407,7 +407,7 @@ namespace PuppeteerSharp
         /// <returns>The task.</returns>
         /// <param name="options">Geolocation options.</param>
         /// <remarks>
-        /// Consider using <seealso cref="PuppeteerSharp.BrowserContext.OverridePermissionsAsync(string, IEnumerable{OverridePermission})"/> to grant permissions for the page to read its geolocation.
+        /// Consider using <seealso cref="IBrowserContext.OverridePermissionsAsync(string, IEnumerable{OverridePermission})"/> to grant permissions for the page to read its geolocation.
         /// </remarks>
         public Task SetGeolocationAsync(GeolocationOption options)
         {
