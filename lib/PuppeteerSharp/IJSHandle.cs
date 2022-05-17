@@ -20,7 +20,7 @@ namespace PuppeteerSharp
         /// Gets the execution context.
         /// </summary>
         /// <value>The execution context.</value>
-        ExecutionContext ExecutionContext { get; }
+        IExecutionContext ExecutionContext { get; }
         /// <summary>
         /// Gets or sets the remote object.
         /// </summary>

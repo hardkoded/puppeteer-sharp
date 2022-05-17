@@ -13,16 +13,18 @@ namespace PuppeteerSharp
     [JsonConverter(typeof(JSHandleMethodConverter))]
     public class JSHandle : IJSHandle
     {
+        private readonly ExecutionContext _executionContext;
+
         internal JSHandle(ExecutionContext context, CDPSession client, RemoteObject remoteObject)
         {
-            ExecutionContext = context;
+            _executionContext = context;
             Client = client;
             Logger = Client.Connection.LoggerFactory.CreateLogger(GetType());
             RemoteObject = remoteObject;
         }
 
         /// <inheritdoc/>
-        public ExecutionContext ExecutionContext { get; }
+        public IExecutionContext ExecutionContext => _executionContext;
         /// <inheritdoc/>
         public bool Disposed { get; private set; }
         /// <inheritdoc/>
@@ -72,7 +74,7 @@ namespace PuppeteerSharp
                     continue;
                 }
 
-                result.Add(property.Name, ExecutionContext.CreateJSHandle(property.Value));
+                result.Add(property.Name, _executionContext.CreateJSHandle(property.Value));
             }
             return result;
         }
@@ -134,7 +136,7 @@ namespace PuppeteerSharp
         {
             var list = new List<object>(args);
             list.Insert(0, this);
-            return ExecutionContext.EvaluateFunctionHandleAsync(pageFunction, list.ToArray());
+            return _executionContext.EvaluateFunctionHandleAsync(pageFunction, list.ToArray());
         }
 
         /// <inheritdoc/>
@@ -142,7 +144,7 @@ namespace PuppeteerSharp
         {
             var list = new List<object>(args);
             list.Insert(0, this);
-            return ExecutionContext.EvaluateFunctionAsync<JToken>(script, list.ToArray());
+            return _executionContext.EvaluateFunctionAsync<JToken>(script, list.ToArray());
         }
 
         /// <inheritdoc/>
@@ -150,12 +152,12 @@ namespace PuppeteerSharp
         {
             var list = new List<object>(args);
             list.Insert(0, this);
-            return ExecutionContext.EvaluateFunctionAsync<T>(script, list.ToArray());
+            return _executionContext.EvaluateFunctionAsync<T>(script, list.ToArray());
         }
 
         internal object FormatArgument(ExecutionContext context)
         {
-            if (ExecutionContext != context)
+            if (_executionContext != context)
             {
                 throw new PuppeteerException("JSHandles can be evaluated only in the context they were created!");
             }

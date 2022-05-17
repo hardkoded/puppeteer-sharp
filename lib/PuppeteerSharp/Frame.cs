@@ -236,7 +236,7 @@ namespace PuppeteerSharp
         public Task<IJSHandle> EvaluateExpressionHandleAsync(string script) => MainWorld.EvaluateExpressionHandleAsync(script);
 
         /// <summary>
-        /// Passes a function to the <see cref="ExecutionContext.EvaluateFunctionAsync(string, object[])"/>, returns a <see cref="Task"/>, then <see cref="ExecutionContext.EvaluateFunctionHandleAsync(string, object[])"/> would wait for the <see cref="Task"/> to resolve and return its value.
+        /// Passes a function to the <see cref="IExecutionContext.EvaluateFunctionAsync(string, object[])"/>, returns a <see cref="Task"/>, then <see cref="ExecutionContext.EvaluateFunctionHandleAsync(string, object[])"/> would wait for the <see cref="Task"/> to resolve and return its value.
         /// </summary>
         /// <example>
         /// <code>
@@ -245,7 +245,7 @@ namespace PuppeteerSharp
         /// return handle; // Handle for the global object.
         /// ]]>
         /// </code>
-        /// <see cref="IJSHandle"/> instances can be passed as arguments to the <see cref="ExecutionContext.EvaluateFunctionAsync(string, object[])"/>:
+        /// <see cref="IJSHandle"/> instances can be passed as arguments to the <see cref="IExecutionContext.EvaluateFunctionAsync(string, object[])"/>:
         /// <code>
         /// <![CDATA[
         /// var handle = await Page.MainFrame.EvaluateExpressionHandleAsync("document.body");
@@ -260,10 +260,13 @@ namespace PuppeteerSharp
         public Task<IJSHandle> EvaluateFunctionHandleAsync(string function, params object[] args) => MainWorld.EvaluateFunctionHandleAsync(function, args);
 
         /// <summary>
-        /// Gets the <see cref="ExecutionContext"/> associated with the frame.
+        /// Gets the <see cref="IExecutionContext"/> associated with the frame.
         /// </summary>
-        /// <returns><see cref="ExecutionContext"/> associated with the frame.</returns>
-        public Task<ExecutionContext> GetExecutionContextAsync() => MainWorld.GetExecutionContextAsync();
+        /// <returns><see cref="IExecutionContext"/> associated with the frame.</returns>
+        public async Task<IExecutionContext> GetExecutionContextAsync()
+        {
+            return await MainWorld.GetExecutionContextAsync().ConfigureAwait(false);
+        }
 
         /// <summary>
         /// Waits for a selector to be added to the DOM

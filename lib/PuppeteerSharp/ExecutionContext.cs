@@ -12,10 +12,10 @@ namespace PuppeteerSharp
 {
     /// <summary>
     /// The class represents a context for JavaScript execution. Examples of JavaScript contexts are:
-    /// Each <see cref="Frame"/> has a separate <see cref="ExecutionContext"/>
+    /// Each <see cref="Frame"/> has a separate <see cref="IExecutionContext"/>
     /// All kind of web workers have their own contexts
     /// </summary>
-    public class ExecutionContext
+    public class ExecutionContext : IExecutionContext
     {
         internal const string EvaluationScriptUrl = "__puppeteer_evaluation_script__";
 
@@ -70,8 +70,13 @@ namespace PuppeteerSharp
         public Task<T> EvaluateExpressionAsync<T>(string script)
             => RemoteObjectTaskToObject<T>(EvaluateExpressionInternalAsync(true, script));
 
-        internal async Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
+        /// <inheritdoc/>
+        public async Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
             => CreateJSHandle(await EvaluateExpressionInternalAsync(false, script).ConfigureAwait(false));
+
+        /// <inheritdoc/>
+        public async Task<IJSHandle> EvaluateFunctionHandleAsync(string script, params object[] args)
+            => CreateJSHandle(await EvaluateFunctionInternalAsync(false, script, args).ConfigureAwait(false));
 
         /// <summary>
         /// Executes a function in browser context
@@ -100,9 +105,6 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to script return value</returns>
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
             => RemoteObjectTaskToObject<T>(EvaluateFunctionInternalAsync(true, script, args));
-
-        internal async Task<IJSHandle> EvaluateFunctionHandleAsync(string script, params object[] args)
-            => CreateJSHandle(await EvaluateFunctionInternalAsync(false, script, args).ConfigureAwait(false));
 
         /// <summary>
         /// The method iterates JavaScript heap and finds all the objects with the given prototype.
