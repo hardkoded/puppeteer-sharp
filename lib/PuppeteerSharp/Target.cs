@@ -181,7 +181,10 @@ namespace PuppeteerSharp
         /// <summary>
         /// Creates a Chrome Devtools Protocol session attached to the target.
         /// </summary>
-        /// <returns>A task that returns a <see cref="CDPSession"/></returns>
-        public Task<CDPSession> CreateCDPSessionAsync() => ((Browser)Browser).Connection.CreateSessionAsync(TargetInfo);
+        /// <returns>A task that returns a <see cref="ICDPSession"/></returns>
+        public async Task<ICDPSession> CreateCDPSessionAsync()
+        {
+            return await ((Browser)Browser).Connection.CreateSessionAsync(TargetInfo).ConfigureAwait(false);
+        }
     }
 }

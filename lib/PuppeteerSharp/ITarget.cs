@@ -47,8 +47,8 @@ namespace PuppeteerSharp
         /// <summary>
         /// Creates a Chrome Devtools Protocol session attached to the target.
         /// </summary>
-        /// <returns>A task that returns a <see cref="CDPSession"/></returns>
-        Task<CDPSession> CreateCDPSessionAsync();
+        /// <returns>A task that returns a <see cref="ICDPSession"/></returns>
+        Task<ICDPSession> CreateCDPSessionAsync();
 
         /// <summary>
         /// Returns the <see cref="IPage"/> associated with the target. If the target is not <c>"page"</c> or <c>"background_page"</c> returns <c>null</c>

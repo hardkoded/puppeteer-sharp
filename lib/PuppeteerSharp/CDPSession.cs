@@ -11,8 +11,8 @@ namespace PuppeteerSharp
 {
     /// <summary>
     /// The CDPSession instances are used to talk raw Chrome Devtools Protocol:
-    ///  * Protocol methods can be called with <see cref="CDPSession.SendAsync(string, object, bool)"/> method.
-    ///  * Protocol events, using the <see cref="CDPSession.MessageReceived"/> event.
+    ///  * Protocol methods can be called with <see cref="ICDPSession.SendAsync(string, object, bool)"/> method.
+    ///  * Protocol events, using the <see cref="ICDPSession.MessageReceived"/> event.
     ///
     /// Documentation on DevTools Protocol can be found here: <see href="https://chromedevtools.github.io/devtools-protocol/"/>.
     ///
@@ -35,7 +35,7 @@ namespace PuppeteerSharp
     /// });
     /// ]]></code>
     /// </summary>
-    public class CDPSession
+    public class CDPSession : ICDPSession
     {
         private readonly ConcurrentDictionary<int, MessageTask> _callbacks;
 
@@ -79,7 +79,7 @@ namespace PuppeteerSharp
         internal Connection Connection { get; private set; }
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="CDPSession"/> is closed.
+        /// Gets a value indicating whether this <see cref="ICDPSession"/> is closed.
         /// </summary>
         /// <value><c>true</c> if is closed; otherwise, <c>false</c>.</value>
         public bool IsClosed { get; internal set; }

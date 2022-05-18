@@ -32,7 +32,7 @@ namespace PuppeteerSharp.Tests
             HttpsServer.Reset();
         }
 
-        protected static Task<JToken> WaitEvent(CDPSession emitter, string eventName)
+        protected static Task<JToken> WaitEvent(ICDPSession emitter, string eventName)
         {
             var completion = new TaskCompletionSource<JToken>();
             void handler(object sender, MessageEventArgs e)
