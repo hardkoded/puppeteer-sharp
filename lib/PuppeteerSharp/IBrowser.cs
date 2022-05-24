@@ -107,9 +107,9 @@ namespace PuppeteerSharp
         string WebSocketEndpoint { get; }
 
         /// <summary>
-        /// Returns an array of all open <see cref="BrowserContext"/>. In a newly created browser, this will return a single instance of <see cref="BrowserContext"/>
+        /// Returns an array of all open <see cref="IBrowserContext"/>. In a newly created browser, this will return a single instance of <see cref="IBrowserContext"/>
         /// </summary>
-        /// <returns>An array of <see cref="BrowserContext"/> objects</returns>
+        /// <returns>An array of <see cref="IBrowserContext"/> objects</returns>
         IBrowserContext[] BrowserContexts();
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Creates a new incognito browser context. This won't share cookies/cache with other browser contexts.
         /// </summary>
-        /// <returns>Task which resolves to a new <see cref="BrowserContext"/> object</returns>
+        /// <returns>Task which resolves to a new <see cref="IBrowserContext"/> object</returns>
         /// <example>
         /// <code>
         /// <![CDATA[

@@ -183,7 +183,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Creates a new incognito browser context. This won't share cookies/cache with other browser contexts.
         /// </summary>
-        /// <returns>Task which resolves to a new <see cref="BrowserContext"/> object</returns>
+        /// <returns>Task which resolves to a new <see cref="IBrowserContext"/> object</returns>
         /// <example>
         /// <code>
         /// <![CDATA[
