@@ -45,6 +45,7 @@ namespace PuppeteerSharp
         private readonly ConcurrentDictionary<string, BrowserContext> _contexts;
         private readonly ILogger<Browser> _logger;
         private readonly Func<TargetInfo, bool> _targetFilterCallback;
+        private readonly BrowserContext _defaultContext;
         private Task _closeTask;
 
         internal Browser(
@@ -60,7 +61,7 @@ namespace PuppeteerSharp
             DefaultViewport = defaultViewport;
             TargetsMap = new ConcurrentDictionary<string, Target>();
             ScreenshotTaskQueue = new TaskQueue();
-            DefaultContext = new BrowserContext(Connection, this, null);
+            _defaultContext = new BrowserContext(Connection, this, null);
             _contexts = new ConcurrentDictionary<string, BrowserContext>(contextIds.ToDictionary(
                 contextId => contextId,
                 contextId => new BrowserContext(Connection, this, contextId)));
@@ -141,7 +142,7 @@ namespace PuppeteerSharp
         /// Returns the default browser context. The default browser context can not be closed.
         /// </summary>
         /// <value>The default context.</value>
-        public IBrowserContext DefaultContext { get; }
+        public IBrowserContext DefaultContext => _defaultContext;
 
         /// <summary>
         /// Dafault wait time in milliseconds. Defaults to 30 seconds.
@@ -171,7 +172,7 @@ namespace PuppeteerSharp
         /// Creates a new page
         /// </summary>
         /// <returns>Task which resolves to a new <see cref="IPage"/> object</returns>
-        public Task<IPage> NewPageAsync() => DefaultContext.NewPageAsync();
+        public Task<IPage> NewPageAsync() => _defaultContext.NewPageAsync();
 
         /// <summary>
         /// Returns An Array of all active targets
@@ -214,7 +215,7 @@ namespace PuppeteerSharp
         {
             var allContexts = new List<IBrowserContext>(_contexts.Count + 1)
             {
-                DefaultContext
+                _defaultContext
             };
 
             allContexts.AddRange(_contexts.Values.OfType<IBrowserContext>());
@@ -482,7 +483,7 @@ namespace PuppeteerSharp
 
             if (!(browserContextId != null && _contexts.TryGetValue(browserContextId, out var context)))
             {
-                context = (BrowserContext)DefaultContext;
+                context = _defaultContext;
             }
 
             var target = new Target(
