@@ -208,19 +208,17 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Returns an array of all open <see cref="BrowserContext"/>. In a newly created browser, this will return a single instance of <see cref="BrowserContext"/>
+        /// Returns an array of all open <see cref="IBrowserContext"/>. In a newly created browser, this will return a single instance of <see cref="IBrowserContext"/>
         /// </summary>
-        /// <returns>An array of <see cref="BrowserContext"/> objects</returns>
+        /// <returns>An array of <see cref="IBrowserContext"/> objects</returns>
         public IBrowserContext[] BrowserContexts()
         {
-            var allContexts = new List<IBrowserContext>(_contexts.Count + 1)
-            {
-                _defaultContext
-            };
+            var contexts = _contexts.Values.ToArray<IBrowserContext>();
 
-            allContexts.AddRange(_contexts.Values.OfType<IBrowserContext>());
-
-            return allContexts.ToArray();
+            var allContexts = new IBrowserContext[contexts.Length + 1];
+            allContexts[0] = _defaultContext;
+            contexts.CopyTo(allContexts, 1);
+            return allContexts;
         }
 
         /// <summary>
