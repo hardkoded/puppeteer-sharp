@@ -28,6 +28,8 @@ namespace PuppeteerSharp
             _detached = false;
         }
 
+        private CustomQueriesManager CustomQueriesManager => _frameManager.Page.Browser.CustomQueriesManager;
+
         internal ICollection<WaitTask> WaitTasks { get; set; }
 
         internal Frame Frame { get; }

@@ -17,7 +17,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
 
         public override Task DisposeAsync()
         {
-            Puppeteer.ClearCustomQueryHandlers();
+            Browser.ClearCustomQueryHandlers();
             return base.DisposeAsync();
         }
 
@@ -27,7 +27,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         {
             await Page.SetContentAsync("<div id='not-foo'></div><div id='foo'></div>");
 
-            Puppeteer.RegisterCustomQueryHandler("getById", new CustomQueryHandler
+            Browser.RegisterCustomQueryHandler("getById", new CustomQueryHandler
             { 
                 QueryOne = "(element, selector) => element.querySelector(`[id='${selector}']`)",
             });
@@ -37,11 +37,11 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
                 @"(el) => el.id",
                 element));
 
-            var handlerNamesAfterRegistering = Puppeteer.GetCustomQueryHandlerNames();
+            var handlerNamesAfterRegistering = Browser.GetCustomQueryHandlerNames();
             Assert.Contains("getById", handlerNamesAfterRegistering);
 
             // Unregister.
-            Puppeteer.UnregisterCustomQueryHandler("getById");
+            Browser.UnregisterCustomQueryHandler("getById");
             try
             {
                 await Page.QuerySelectorAsync("getById/foo");
@@ -52,7 +52,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
                 Assert.Equal($"Query set to use \"getById\", but no query handler of that name was found", ex.Message);
             }
 
-            var handlerNamesAfterUnregistering = Puppeteer.GetCustomQueryHandlerNames();
+            var handlerNamesAfterUnregistering = Browser.GetCustomQueryHandlerNames();
             Assert.DoesNotContain("getById", handlerNamesAfterUnregistering);
         }
 
@@ -60,7 +60,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         [PuppeteerFact]
         public void ShouldThrowWithInvalidQueryNames()
         {
-            var ex = Assert.Throws<PuppeteerException>(()=> Puppeteer.RegisterCustomQueryHandler("1/2/3", new CustomQueryHandler
+            var ex = Assert.Throws<PuppeteerException>(()=> Browser.RegisterCustomQueryHandler("1/2/3", new CustomQueryHandler
             {
                 QueryOne = "(element, selector) => element.querySelector(`[id='${selector}']`)",
             }));
@@ -74,7 +74,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         {
             await Page.SetContentAsync("<div id='not-foo'></div><div class='foo'></div><div class='foo baz'>Foo2</div>");
 
-            Puppeteer.RegisterCustomQueryHandler("getByClass", new CustomQueryHandler
+            Browser.RegisterCustomQueryHandler("getByClass", new CustomQueryHandler
             {
                 QueryAll = "(element, selector) => element.querySelectorAll(`.${selector}`)",
             });
@@ -93,7 +93,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         {
             await Page.SetContentAsync("<div id='not-foo'></div><div class='foo'></div><div class='foo baz'>Foo2</div>");
 
-            Puppeteer.RegisterCustomQueryHandler("getByClass", new CustomQueryHandler
+            Browser.RegisterCustomQueryHandler("getByClass", new CustomQueryHandler
             {
                 QueryAll = "(element, selector) => element.querySelectorAll(`.${selector}`)",
             });
@@ -108,7 +108,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         [PuppeteerFact]
         public async Task ShouldWaitCorrectlyWithWaitForSelector()
         {
-            Puppeteer.RegisterCustomQueryHandler("getByClass", new CustomQueryHandler
+            Browser.RegisterCustomQueryHandler("getByClass", new CustomQueryHandler
             {
                 QueryOne = "(element, selector) => element.querySelector(`.${selector}`)",
             });
@@ -126,7 +126,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         [PuppeteerFact]
         public async Task ShouldWaitCorrectlyWithWaitForSelectorOnAnElement()
         {
-            Puppeteer.RegisterCustomQueryHandler("getByClass", new CustomQueryHandler
+            Browser.RegisterCustomQueryHandler("getByClass", new CustomQueryHandler
             {
                 QueryOne = "(element, selector) => element.querySelector(`.${selector}`)",
             });
@@ -153,7 +153,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         {
             await Page.SetContentAsync("<div id=\"not-foo\"></div><div class=\"foo\"><div id=\"nested-foo\" class=\"foo\"/></div><div class=\"foo baz\">Foo2</div>");
 
-            Puppeteer.RegisterCustomQueryHandler("getByClass", new CustomQueryHandler
+            Browser.RegisterCustomQueryHandler("getByClass", new CustomQueryHandler
             {
                 QueryOne= "(element, selector) => element.querySelector(`.${selector}`)",
                 QueryAll = "(element, selector) => element.querySelectorAll(`.${selector}`)",
@@ -171,7 +171,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         {
             await Page.SetContentAsync("<div id=\"not-foo\"></div><div class=\"foo\">text</div><div class=\"foo baz\">content</div>");
 
-            Puppeteer.RegisterCustomQueryHandler("getByClass", new CustomQueryHandler
+            Browser.RegisterCustomQueryHandler("getByClass", new CustomQueryHandler
             {
                 QueryOne= "(element, selector) => element.querySelector(`.${selector}`)",
                 QueryAll = "(element, selector) => element.querySelectorAll(`.${selector}`)",

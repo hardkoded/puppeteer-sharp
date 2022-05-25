@@ -109,40 +109,5 @@ namespace PuppeteerSharp
         /// <returns>The browser fetcher.</returns>
         /// <param name="options">Options.</param>
         public static BrowserFetcher CreateBrowserFetcher(BrowserFetcherOptions options) => new(options);
-
-        /// <summary>
-        /// Registers a custom query handler.
-        /// After registration, the handler can be used everywhere where a selector is
-        /// expected by prepending the selection string with `name/`. The name is
-        /// only allowed to consist of lower- and upper case latin letters.
-        /// </summary>
-        /// <example>
-        /// Puppeteer.RegisterCustomQueryHandler("text", "{ … }");
-        /// var aHandle = await page.QuerySelectorAsync("text/…");
-        /// </example>
-        /// <param name="name">The name that the custom query handler will be registered under.</param>
-        /// <param name="queryHandler">The query handler to register</param>
-        public static void RegisterCustomQueryHandler(string name, CustomQueryHandler queryHandler)
-            => CustomQueriesManager.RegisterCustomQueryHandler(name, queryHandler);
-
-        /// <summary>
-        /// Returns a list with the names of all registered custom query handlers.
-        /// </summary>
-        /// <returns>The list of query handlers</returns>
-        internal static IEnumerable<string> GetCustomQueryHandlerNames()
-            => CustomQueriesManager.GetCustomQueryHandlerNames();
-
-        /// <summary>
-        /// Unregisters a custom query handler
-        /// </summary>
-        /// <param name="name">The name of the query handler to unregistered.</param>
-        internal static void UnregisterCustomQueryHandler(string name)
-            => CustomQueriesManager.UnregisterCustomQueryHandler(name);
-
-        /// <summary>
-        /// Clears all registered handlers.
-        /// </summary>
-        internal static void ClearCustomQueryHandlers()
-            => CustomQueriesManager.ClearCustomQueryHandlers();
     }
 }

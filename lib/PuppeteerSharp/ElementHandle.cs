@@ -35,6 +35,8 @@ namespace PuppeteerSharp
 
         internal Page Page { get; }
 
+        internal CustomQueriesManager CustomQueriesManager => Page.Browser.CustomQueriesManager;
+
         /// <summary>
         /// This method scrolls element into view if needed, and then uses <seealso cref="PuppeteerSharp.Page.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
         /// If the element is detached from DOM, the method throws an error.

@@ -5,19 +5,19 @@ using System.Text.RegularExpressions;
 
 namespace PuppeteerSharp
 {
-    internal static class CustomQueriesManager
+    internal class CustomQueriesManager
     {
-        private static readonly Dictionary<string, InternalQueryHandler> _queryHandlers = new();
-        private static readonly Dictionary<string, InternalQueryHandler> _builtInHandlers = new();
-        private static readonly Regex _customQueryHandlerNameRegex = new("[a-zA-Z]+$", RegexOptions.Compiled);
-        private static readonly Regex _customQueryHandlerParserRegex = new("(?<query>^[a-zA-Z]+)\\/(?<selector>.*)", RegexOptions.Compiled);
-        private static readonly InternalQueryHandler _defaultHandler = MakeQueryHandler(new CustomQueryHandler
+        private readonly Dictionary<string, InternalQueryHandler> _queryHandlers = new();
+        private readonly Dictionary<string, InternalQueryHandler> _builtInHandlers = new();
+        private readonly Regex _customQueryHandlerNameRegex = new("[a-zA-Z]+$", RegexOptions.Compiled);
+        private readonly Regex _customQueryHandlerParserRegex = new("(?<query>^[a-zA-Z]+)\\/(?<selector>.*)", RegexOptions.Compiled);
+        private readonly InternalQueryHandler _defaultHandler = MakeQueryHandler(new CustomQueryHandler
         {
             QueryOne = "(element, selector) => element.querySelector(selector)",
             QueryAll = "(element, selector) => element.querySelectorAll(selector)",
         });
 
-        internal static void RegisterCustomQueryHandler(string name, CustomQueryHandler queryHandler)
+        internal void RegisterCustomQueryHandler(string name, CustomQueryHandler queryHandler)
         {
             if (_queryHandlers.ContainsKey(name))
             {
@@ -87,7 +87,7 @@ namespace PuppeteerSharp
             return internalHandler;
         }
 
-        internal static (string UpdatedSelector, InternalQueryHandler QueryHandler) GetQueryHandlerAndSelector(string selector)
+        internal (string UpdatedSelector, InternalQueryHandler QueryHandler) GetQueryHandlerAndSelector(string selector)
         {
             var customQueryHandlerMatch = _customQueryHandlerParserRegex.Match(selector);
             if (!customQueryHandlerMatch.Success)
@@ -106,13 +106,13 @@ namespace PuppeteerSharp
             return (updatedSelector, queryHandler);
         }
 
-        internal static IEnumerable<string> GetCustomQueryHandlerNames()
+        internal IEnumerable<string> GetCustomQueryHandlerNames()
             => _queryHandlers.Keys;
 
-        internal static void UnregisterCustomQueryHandler(string name)
+        internal void UnregisterCustomQueryHandler(string name)
             => _queryHandlers.Remove(name);
 
-        internal static void ClearCustomQueryHandlers()
+        internal void ClearCustomQueryHandlers()
         {
             foreach (var name in CustomQueryHandlerNames())
             {
@@ -120,7 +120,7 @@ namespace PuppeteerSharp
             }
         }
 
-        private static IEnumerable<string> CustomQueryHandlerNames()
+        private IEnumerable<string> CustomQueryHandlerNames()
             => _queryHandlers.Keys.ToArray().Where(k => !_builtInHandlers.ContainsKey(k));
     }
 }
