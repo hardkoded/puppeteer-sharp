@@ -3,10 +3,18 @@ using Newtonsoft.Json.Linq;
 namespace CefSharp.Puppeteer.Messaging
 {
     /// <summary>
-    /// Remote object.
+    /// Remote object is a mirror object referencing original JavaScript object.
     /// </summary>
     public class RemoteObject
     {
+        /// <summary>
+        /// Gets or sets String representation of the object. (Optional)
+        /// </summary>
+        public string Description { get; set; }
+        /// <summary>
+        ///Gets or sets the Object class (constructor) name. Specified for object type values only. (Optional)
+        /// </summary>
+        public string ClassName { get; set; }
         /// <summary>
         /// Gets or sets the type.
         /// </summary>

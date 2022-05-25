@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,6 +17,7 @@ namespace CefSharp.Puppeteer
     /// Inherits from <see cref="JSHandle"/>. It represents an in-page DOM element.
     /// ElementHandles can be created by <see cref="DevToolsContext.QuerySelectorAsync(string)"/> or <see cref="DevToolsContext.QuerySelectorAllAsync(string)"/>.
     /// </summary>
+    [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class ElementHandle : JSHandle
     {
         private readonly FrameManager _frameManager;
@@ -34,6 +36,9 @@ namespace CefSharp.Puppeteer
         }
 
         internal DevToolsContext DevToolsContext { get; }
+
+        private string DebuggerDisplay =>
+            string.IsNullOrEmpty(RemoteObject.ClassName) ? ToString() : $"{RemoteObject.ClassName}@{RemoteObject.Description}";
 
         /// <summary>
         /// This method scrolls element into view if needed, and then uses <seealso cref="DevToolsContext.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
