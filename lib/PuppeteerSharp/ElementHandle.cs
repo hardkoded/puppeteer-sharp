@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,6 +17,7 @@ namespace PuppeteerSharp
     /// Inherits from <see cref="JSHandle"/>. It represents an in-page DOM element.
     /// ElementHandles can be created by <see cref="PuppeteerSharp.IPage.QuerySelectorAsync(string)"/> or <see cref="PuppeteerSharp.IPage.QuerySelectorAllAsync(string)"/>.
     /// </summary>
+    [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class ElementHandle : JSHandle, IElementHandle
     {
         private readonly FrameManager _frameManager;
@@ -32,6 +34,10 @@ namespace PuppeteerSharp
         }
 
         internal Page Page => _frameManager.Page;
+
+        private string DebuggerDisplay =>
+            string.IsNullOrEmpty(RemoteObject.ClassName) ? ToString() : $"{RemoteObject.ClassName}@{RemoteObject.Description}";
+
 
         /// <inheritdoc/>
         public Task ScreenshotAsync(string file) => ScreenshotAsync(file, new ScreenshotOptions());
