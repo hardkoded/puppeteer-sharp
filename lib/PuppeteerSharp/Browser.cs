@@ -45,6 +45,8 @@ namespace PuppeteerSharp
         private readonly ConcurrentDictionary<string, BrowserContext> _contexts;
         private readonly ILogger<Browser> _logger;
         private readonly Func<TargetInfo, bool> _targetFilterCallback;
+        private readonly CustomQueriesManager _customQueriesManager = new();
+
         private Task _closeTask;
 
         internal Browser(
@@ -167,7 +169,7 @@ namespace PuppeteerSharp
 
         internal IDictionary<string, Target> TargetsMap { get; }
 
-        internal CustomQueriesManager CustomQueriesManager => new();
+        internal CustomQueriesManager CustomQueriesManager => _customQueriesManager;
 
         /// <summary>
         /// Creates a new page
