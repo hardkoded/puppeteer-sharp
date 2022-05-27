@@ -1197,7 +1197,7 @@ namespace PuppeteerSharp
                 throw new ArgumentNullException(nameof(viewport));
             }
 
-            var needsReload = await _emulationManager.EmulateViewport(viewport).ConfigureAwait(false);
+            var needsReload = await _emulationManager.EmulateViewportAsync(viewport).ConfigureAwait(false);
             Viewport = viewport;
 
             if (needsReload)

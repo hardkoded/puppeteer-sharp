@@ -15,9 +15,8 @@ namespace PuppeteerSharp
     /// </summary>
     public class FirefoxLauncher : LauncherBase
     {
-        internal static readonly string[] DefaultArgs = {
+        internal static readonly string[] _defaultArgs = {
           "--no-remote",
-          "--foreground"
         };
 
         /// <summary>
@@ -310,7 +309,12 @@ namespace PuppeteerSharp
 
         internal static string[] GetDefaultArgs(LaunchOptions options)
         {
-            var firefoxArguments = new List<string>(DefaultArgs);
+            var firefoxArguments = new List<string>(_defaultArgs);
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                firefoxArguments.Add("--foreground");
+            }
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
