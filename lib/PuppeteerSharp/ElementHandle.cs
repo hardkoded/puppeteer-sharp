@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -39,6 +39,8 @@ namespace PuppeteerSharp
             string.IsNullOrEmpty(RemoteObject.ClassName) ? ToString() : $"{RemoteObject.ClassName}@{RemoteObject.Description}";
 
         internal Page Page { get; }
+
+        internal CustomQueriesManager CustomQueriesManager => Page.Browser.CustomQueriesManager;
 
         /// <summary>
         /// This method scrolls element into view if needed, and then uses <seealso cref="PuppeteerSharp.Page.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
@@ -101,6 +103,33 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>Task which resolves to a <see cref="byte"/>[] containing the image data.</returns>
         public Task<byte[]> ScreenshotDataAsync() => ScreenshotDataAsync(new ScreenshotOptions());
+
+        /// <summary>
+        /// Waits for a selector to be added to the DOM
+        /// </summary>
+        /// <param name="selector">A selector of an element to wait for</param>
+        /// <param name="options">Optional waiting parameters</param>
+        /// <returns>A task that resolves when element specified by selector string is added to DOM.
+        /// Resolves to `null` if waiting for `hidden: true` and selector is not found in DOM.</returns>
+        public async Task<ElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
+        {
+            var frame = ExecutionContext.Frame;
+            var secondaryContext = await frame.SecondaryWorld.GetExecutionContextAsync().ConfigureAwait(false);
+            var adoptedRoot = await secondaryContext.AdoptElementHandleAsync(this).ConfigureAwait(false);
+            options ??= new WaitForSelectorOptions();
+            options.Root = adoptedRoot;
+
+            var handle = await frame.SecondaryWorld.WaitForSelectorAsync(selector, options).ConfigureAwait(false);
+            await adoptedRoot.DisposeAsync().ConfigureAwait(false);
+            if (handle == null)
+            {
+                return null;
+            }
+            var mainExecutionContext = await frame.MainWorld.GetExecutionContextAsync().ConfigureAwait(false);
+            var result = await mainExecutionContext.AdoptElementHandleAsync(handle).ConfigureAwait(false);
+            await handle.DisposeAsync().ConfigureAwait(false);
+            return result;
+        }
 
         /// <summary>
         /// This method scrolls element into view if needed, and then uses <seealso cref="PuppeteerSharp.Page.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
@@ -347,19 +376,10 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="selector">A selector to query element for</param>
         /// <returns>Task which resolves to <see cref="ElementHandle"/> pointing to the frame element</returns>
-        public async Task<ElementHandle> QuerySelectorAsync(string selector)
+        public Task<ElementHandle> QuerySelectorAsync(string selector)
         {
-            var handle = await EvaluateFunctionHandleAsync(
-                "(element, selector) => element.querySelector(selector)",
-                selector).ConfigureAwait(false);
-
-            if (handle is ElementHandle element)
-            {
-                return element;
-            }
-
-            await handle.DisposeAsync().ConfigureAwait(false);
-            return null;
+            var (updatedSelector, queryHandler) = CustomQueriesManager.GetQueryHandlerAndSelector(selector);
+            return queryHandler.QueryOne(this, updatedSelector);
         }
 
         /// <summary>
@@ -367,16 +387,10 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="selector">A selector to query element for</param>
         /// <returns>Task which resolves to ElementHandles pointing to the frame elements</returns>
-        public async Task<ElementHandle[]> QuerySelectorAllAsync(string selector)
+        public Task<ElementHandle[]> QuerySelectorAllAsync(string selector)
         {
-            var arrayHandle = await EvaluateFunctionHandleAsync(
-                "(element, selector) => element.querySelectorAll(selector)",
-                selector).ConfigureAwait(false);
-
-            var properties = await arrayHandle.GetPropertiesAsync().ConfigureAwait(false);
-            await arrayHandle.DisposeAsync().ConfigureAwait(false);
-
-            return properties.Values.OfType<ElementHandle>().ToArray();
+            var (updatedSelector, queryHandler) = CustomQueriesManager.GetQueryHandlerAndSelector(selector);
+            return queryHandler.QueryAll(this, updatedSelector);
         }
 
         /// <summary>
@@ -385,8 +399,10 @@ namespace PuppeteerSharp
         /// <param name="selector">A selector to query element for</param>
         /// <returns>Task which resolves to a <see cref="JSHandle"/> of <c>document.querySelectorAll</c> result</returns>
         public Task<JSHandle> QuerySelectorAllHandleAsync(string selector)
-            => ExecutionContext.EvaluateFunctionHandleAsync(
-                "(element, selector) => Array.from(element.querySelectorAll(selector))", this, selector);
+        {
+            var (updatedSelector, queryHandler) = CustomQueriesManager.GetQueryHandlerAndSelector(selector);
+            return queryHandler.QueryAllArray(this, updatedSelector);
+        }
 
         /// <summary>
         /// Evaluates the XPath expression relative to the elementHandle. If there's no such element, the method will resolve to <c>null</c>.

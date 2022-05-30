@@ -51,6 +51,7 @@ namespace PuppeteerSharp.Tests
         [PuppeteerTest("page.spec.ts", "Page.select", "should throw if passed in non-strings")]
         [PuppeteerTest("page.spec.ts", "Page.exposeFunction", "should support throwing \"null\"")]
         [PuppeteerTest("page.spec.ts", "Page.exposeFunction", "should work with function shorthands")]
+        [PuppeteerTest("elementhandle.spec.ts", "Custom queries", "should wait correctly with waitFor")]
         [PuppeteerFact]
         public void TheseTesstWontBeImplemented()
         {

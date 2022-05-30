@@ -16,7 +16,7 @@ namespace PuppeteerSharp
             _client = client;
         }
 
-        internal async Task<bool> EmulateViewport(ViewPortOptions viewport)
+        internal async Task<bool> EmulateViewportAsync(ViewPortOptions viewport)
         {
             var mobile = viewport.IsMobile;
             var width = viewport.Width;
@@ -47,7 +47,6 @@ namespace PuppeteerSharp
                 _client.SendAsync("Emulation.setTouchEmulationEnabled", new EmulationSetTouchEmulationEnabledRequest
                 {
                     Enabled = hasTouch,
-                    Configuration = viewport.IsMobile ? "mobile" : "desktop"
                 })
             }).ConfigureAwait(false);
 
