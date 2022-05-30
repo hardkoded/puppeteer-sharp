@@ -195,7 +195,15 @@ namespace PuppeteerSharp.Tests.LauncherTests
             else
             {
                 Assert.Contains("--no-remote", Puppeteer.GetDefaultArgs(TestConstants.DefaultBrowserOptions()));
-                Assert.Contains("--foreground", Puppeteer.GetDefaultArgs(TestConstants.DefaultBrowserOptions()));
+
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
+                    Assert.Contains("--foreground", Puppeteer.GetDefaultArgs(TestConstants.DefaultBrowserOptions()));
+                }
+                else
+                {
+                    Assert.DoesNotContain("--foreground", Puppeteer.GetDefaultArgs(TestConstants.DefaultBrowserOptions()));
+                }
                 Assert.Contains("--profile", Puppeteer.GetDefaultArgs(new LaunchOptions
                 {
                     UserDataDir = "foo",
