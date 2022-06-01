@@ -15,6 +15,24 @@ namespace PuppeteerSharp.Tests.DevToolsContextTests
         {
         }
 
+        [PuppeteerFact]
+        public async Task ShouldReturnSameContextForMultipleCallsWhenNotDisposed()
+        {
+            var ctx = await ChromiumWebBrowser.CreateDevToolsContextAsync();
+
+            Assert.Equal(DevToolsContext, ctx);
+        }
+
+        [PuppeteerFact]
+        public async Task ShouldReturnDiffContextForMultipleCallsWhenDisposed()
+        {
+            DevToolsContext.Dispose();
+
+            var ctx = await ChromiumWebBrowser.CreateDevToolsContextAsync();
+
+            Assert.NotEqual(DevToolsContext, ctx);
+        }
+
         [PuppeteerTest("chromiumonly.spec.ts", "Chromium-Specific Page Tests", "Page.setRequestInterception should work with intervention headers")]
         [PuppeteerFact]
         public async Task ShouldWorkWithInterventionHeaders()
