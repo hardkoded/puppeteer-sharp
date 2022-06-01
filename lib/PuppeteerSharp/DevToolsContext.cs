@@ -72,6 +72,11 @@ namespace CefSharp.Puppeteer
         }
 
         /// <summary>
+        /// Is Disposed
+        /// </summary>
+        public bool IsDisposed { get; private set; }
+
+        /// <summary>
         /// Chrome DevTools Protocol session.
         /// </summary>
         public Connection Client { get; }
@@ -2508,6 +2513,8 @@ namespace CefSharp.Puppeteer
         public async ValueTask DisposeAsync()
         {
             GC.SuppressFinalize(this);
+
+            IsDisposed = true;
 
             Client.MessageReceived -= ClientMessageReceived;
 

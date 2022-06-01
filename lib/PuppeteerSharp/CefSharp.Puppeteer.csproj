@@ -18,7 +18,7 @@
     <Description>CefSharp Puppeteer - A cutdown version of PuppeteerSharp for use with CefSharp</Description>
     <PackageId>CefSharp.Puppeteer</PackageId>
     <PackageReleaseNotes>Simplify Package structure</PackageReleaseNotes>
-    <VersionPrefix>1.0.0</VersionPrefix>
+    <VersionPrefix>2.0.0</VersionPrefix>
     <!--<VersionSuffix>preview</VersionSuffix>-->
     <DebugType>embedded</DebugType>
     <DebugSymbols>true</DebugSymbols>
@@ -31,12 +31,12 @@
   <Import Project="../Common/SignAssembly.props" />
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
-    <PackageReference Include="CefSharp.Common" Version="100.0.230" />
-    <Reference Include="System.Net.Http"/>
+    <PackageReference Include="CefSharp.Common" Version="102.0.90" />
+    <Reference Include="System.Net.Http" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' != 'net472'">
-    <PackageReference Include="CefSharp.Common.NETCore" Version="100.0.230" />
+    <PackageReference Include="CefSharp.Common.NETCore" Version="102.0.90" />
   </ItemGroup>
   
   <ItemGroup>

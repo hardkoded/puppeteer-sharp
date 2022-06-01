@@ -19,8 +19,34 @@ namespace CefSharp.Puppeteer
         /// <param name="ignoreHTTPSerrors">ignore HTTPS errors</param>
         /// <param name="factory">Logger factory</param>
         /// <returns>A Task</returns>
-        public static Task<DevToolsContext> CreateDevToolsContextAsync(this IChromiumWebBrowserBase chromiumWebBrowser, bool ignoreHTTPSerrors = false, ILoggerFactory factory = null)
+        public static async Task<DevToolsContext> CreateDevToolsContextAsync(this IChromiumWebBrowserBase chromiumWebBrowser, bool ignoreHTTPSerrors = false, ILoggerFactory factory = null)
         {
+            if (chromiumWebBrowser == null)
+            {
+                throw new ArgumentNullException(nameof(chromiumWebBrowser));
+            }
+
+            if (chromiumWebBrowser.IsDisposed)
+            {
+                throw new ObjectDisposedException(chromiumWebBrowser.GetType().Name);
+            }
+
+            DevToolsContext ctx;
+
+            var internalWebBrowser = chromiumWebBrowser as Internals.IWebBrowserInternal;
+
+            if (internalWebBrowser != null)
+            {
+                ctx = internalWebBrowser.DevToolsContext as DevToolsContext;
+
+                if (ctx != null && !ctx.IsDisposed)
+                {
+                    // We already have an existing DevToolsContext, reuse it as having
+                    // multiple concurrent isn't supported.
+                    return ctx;
+                }
+            }
+
             var browserHost = chromiumWebBrowser.GetBrowserHost();
 
             if (browserHost == null)
@@ -30,7 +56,14 @@ namespace CefSharp.Puppeteer
 
             var connection = Connection.Attach(new CefSharpConnectionTransport(browserHost), factory);
 
-            return DevToolsContext.CreateDevToolsContextAsync(connection, ignoreHTTPSerrors: ignoreHTTPSerrors);
+            ctx = await DevToolsContext.CreateDevToolsContextAsync(connection, ignoreHTTPSerrors: ignoreHTTPSerrors).ConfigureAwait(false);
+
+            if (internalWebBrowser != null)
+            {
+                internalWebBrowser.DevToolsContext = ctx;
+            }
+
+            return ctx;
         }
 
         /// <summary>

@@ -35,7 +35,7 @@
 		</PackageReference>
 		<PackageReference Include="SixLabors.ImageSharp" Version="2.1.0" />
     <PackageReference Include="Nito.AsyncEx.Context" Version="5.1.2" />
-    <PackageReference Include="CefSharp.OffScreen.NETCore" Version="100.0.230" />
+    <PackageReference Include="CefSharp.OffScreen.NETCore" Version="102.0.90" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\PuppeteerSharp.TestServer\PuppeteerSharp.TestServer.csproj" />

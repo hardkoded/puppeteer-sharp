@@ -13,7 +13,8 @@ namespace PuppeteerSharp.Tests
 
             var idleTimer = new Timer
             {
-                Interval = idleTime
+                Interval = idleTime,
+                AutoReset = false
             };
 
             EventHandler<OnPaintEventArgs> handler = null;

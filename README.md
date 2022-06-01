@@ -33,6 +33,10 @@ The **DevToolsContext** class is the main entry point into the library and can b
 ChromiumWebBrowser instance.
 Only a **single** DevToolsContext should exist at any given time, when you are finished them make sure you
 dispose via DisposeAsync.
+Starting in version 2.x the **DevToolsContext** multiple calls to CreateDevToolsContextAsync will return the same
+instance per ChromiumWebBrowser and will be Disposed when the ChromiumWebBrowser is Disposed. If you need to use
+the DevToolsContext in multiple places in your code, calling CreateDevToolsContextAsync is now supported without dispoing.
+If the DevToolsContext is disposed then calls to CreateDevToolsContextAsync will create a new instance.
 
 ```c#
 // Add using CefSharp.Puppeteer; to get access to the
