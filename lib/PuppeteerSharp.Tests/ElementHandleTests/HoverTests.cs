@@ -8,7 +8,7 @@ using Xunit.Abstractions;
 namespace PuppeteerSharp.Tests.ElementHandleTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class HoverTests : PuppeteerPageBaseTest
+    public class HoverTests : DevToolsContextBaseTest
     {
         public HoverTests(ITestOutputHelper output) : base(output)
         {

@@ -8,7 +8,7 @@ using Xunit.Abstractions;
 namespace PuppeteerSharp.Tests.NetworkTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class PageSetExtraHttpHeadersTests : PuppeteerPageBaseTest
+    public class PageSetExtraHttpHeadersTests : DevToolsContextBaseTest
     {
         public PageSetExtraHttpHeadersTests(ITestOutputHelper output) : base(output)
         {

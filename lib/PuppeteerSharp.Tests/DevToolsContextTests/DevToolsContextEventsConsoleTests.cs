@@ -10,7 +10,7 @@ using CefSharp.Puppeteer;
 namespace PuppeteerSharp.Tests.DevToolsContextTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class DevToolsContextEventsConsoleTests : PuppeteerPageBaseTest
+    public class DevToolsContextEventsConsoleTests : DevToolsContextBaseTest
     {
         public DevToolsContextEventsConsoleTests(ITestOutputHelper output) : base(output)
         {

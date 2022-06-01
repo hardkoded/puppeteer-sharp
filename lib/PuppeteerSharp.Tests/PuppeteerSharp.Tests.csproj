@@ -95,6 +95,7 @@
 	<ItemGroup>
 	  <Compile Include="DevToolsContextTests\AddScriptTagTests.cs" />
 	  <Compile Include="DevToolsContextTests\AddStyleTagTests.cs" />
+	  <Compile Include="DevToolsContextTests\DevToolsContextTests.cs" />
 	  <Compile Include="DevToolsContextTests\ExposeFunctionTests.cs" />
 	  <Compile Include="DevToolsContextTests\MetricsTests.cs" />
 	  <Compile Include="DevToolsContextTests\OfflineModeTests.cs" />

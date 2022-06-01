@@ -9,7 +9,7 @@ using Xunit.Abstractions;
 namespace PuppeteerSharp.Tests.TouchScreenTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class TouchScreenTests : PuppeteerPageBaseTest
+    public class TouchScreenTests : DevToolsContextBaseTest
     {
         private readonly DeviceDescriptor _iPhone = Emulation.Devices[DeviceDescriptorName.IPhone6];
 

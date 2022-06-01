@@ -10,7 +10,7 @@ using CefSharp.Puppeteer;
 namespace PuppeteerSharp.Tests.DevToolsContextTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class AddStyleTagTests : PuppeteerPageBaseTest
+    public class AddStyleTagTests : DevToolsContextBaseTest
     {
         public AddStyleTagTests(ITestOutputHelper output) : base(output)
         {

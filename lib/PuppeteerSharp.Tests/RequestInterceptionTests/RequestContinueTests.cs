@@ -17,7 +17,7 @@ using CefSharp.Puppeteer;
 namespace PuppeteerSharp.Tests.RequestInterceptionTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class RequestContinueTests : PuppeteerPageBaseTest
+    public class RequestContinueTests : DevToolsContextBaseTest
     {
         public RequestContinueTests(ITestOutputHelper output) : base(output)
         {

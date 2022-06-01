@@ -10,7 +10,7 @@ using Xunit.Abstractions;
 namespace PuppeteerSharp.Tests.ClickTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class ClickTests : PuppeteerPageBaseTest
+    public class ClickTests : DevToolsContextBaseTest
     {
         public ClickTests(ITestOutputHelper output) : base(output)
         {

@@ -8,7 +8,7 @@ using Xunit.Abstractions;
 namespace PuppeteerSharp.Tests.EmulationTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class EmulateMediaTypeTests : PuppeteerPageBaseTest
+    public class EmulateMediaTypeTests : DevToolsContextBaseTest
     {
         public EmulateMediaTypeTests(ITestOutputHelper output) : base(output)
         {

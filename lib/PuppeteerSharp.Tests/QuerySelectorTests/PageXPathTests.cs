@@ -7,7 +7,7 @@ using Xunit.Abstractions;
 namespace PuppeteerSharp.Tests.QuerySelectorTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class PageXPathTests : PuppeteerPageBaseTest
+    public class PageXPathTests : DevToolsContextBaseTest
     {
         public PageXPathTests(ITestOutputHelper output) : base(output)
         {

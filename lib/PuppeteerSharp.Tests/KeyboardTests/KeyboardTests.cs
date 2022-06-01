@@ -10,7 +10,7 @@ using Xunit.Abstractions;
 namespace PuppeteerSharp.Tests.KeyboardTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class KeyboardTests : PuppeteerPageBaseTest
+    public class KeyboardTests : DevToolsContextBaseTest
     {
         public KeyboardTests(ITestOutputHelper output) : base(output, initialUrl: TestConstants.ServerUrl + "/input/textarea.html")
         {

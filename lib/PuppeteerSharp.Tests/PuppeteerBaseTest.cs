@@ -11,8 +11,8 @@ namespace PuppeteerSharp.Tests
     {
         protected string BaseDirectory { get; set; }
 
-        protected SimpleServer Server => PuppeteerLoaderFixture.Server;
-        protected SimpleServer HttpsServer => PuppeteerLoaderFixture.HttpsServer;
+        protected SimpleServer Server => DevToolsContextLoaderFixture.Server;
+        protected SimpleServer HttpsServer => DevToolsContextLoaderFixture.HttpsServer;
 
         public PuppeteerBaseTest(ITestOutputHelper output)
         {

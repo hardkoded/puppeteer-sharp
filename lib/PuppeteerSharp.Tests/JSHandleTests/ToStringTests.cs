@@ -7,7 +7,7 @@ using Xunit.Abstractions;
 namespace PuppeteerSharp.Tests.JSHandleTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class ToStringTests : PuppeteerPageBaseTest
+    public class ToStringTests : DevToolsContextBaseTest
     {
         public ToStringTests(ITestOutputHelper output) : base(output)
         {

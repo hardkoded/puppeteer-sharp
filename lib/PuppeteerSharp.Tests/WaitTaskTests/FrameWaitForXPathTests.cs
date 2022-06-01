@@ -11,7 +11,7 @@ using PuppeteerSharp.Tests.Attributes;
 namespace PuppeteerSharp.Tests.WaitTaskTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class FrameWaitForXPathTests : PuppeteerPageBaseTest
+    public class FrameWaitForXPathTests : DevToolsContextBaseTest
     {
         const string addElement = "tag => document.body.appendChild(document.createElement(tag))";
 

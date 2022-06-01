@@ -10,7 +10,7 @@ using Xunit.Abstractions;
 namespace PuppeteerSharp.Tests.DevToolsContextTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class AddScriptTagTests : PuppeteerPageBaseTest
+    public class AddScriptTagTests : DevToolsContextBaseTest
     {
         public AddScriptTagTests(ITestOutputHelper output) : base(output)
         {

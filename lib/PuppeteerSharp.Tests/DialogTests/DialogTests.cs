@@ -11,7 +11,7 @@ using CefSharp.Puppeteer;
 namespace PuppeteerSharp.Tests.DialogTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class DialogTests : PuppeteerPageBaseTest
+    public class DialogTests : DevToolsContextBaseTest
     {
         public DialogTests(ITestOutputHelper output) : base(output)
         {

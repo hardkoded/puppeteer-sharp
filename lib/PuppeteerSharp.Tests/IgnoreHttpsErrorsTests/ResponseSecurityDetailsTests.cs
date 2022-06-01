@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Http;
 namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class ResponseSecurityDetailsTests : PuppeteerPageBaseTest
+    public class ResponseSecurityDetailsTests : DevToolsContextBaseTest
     {
         public ResponseSecurityDetailsTests(ITestOutputHelper output) : base(output)
         {

@@ -9,14 +9,14 @@ using PuppeteerSharp.TestServer;
 
 namespace PuppeteerSharp.Tests
 {
-    public class PuppeteerLoaderFixture : IDisposable, IAsyncLifetime
+    public class DevToolsContextLoaderFixture : IDisposable, IAsyncLifetime
     {
         private readonly AsyncContextThread contextThread;
 
         public static SimpleServer Server { get; private set; }
         public static SimpleServer HttpsServer { get; private set; }
 
-        public PuppeteerLoaderFixture()
+        public DevToolsContextLoaderFixture()
         {
             contextThread = new AsyncContextThread();
 

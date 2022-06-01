@@ -10,7 +10,7 @@ using Xunit.Abstractions;
 namespace PuppeteerSharp.Tests.ElementHandleTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class InvokeMemberTests : PuppeteerPageBaseTest
+    public class InvokeMemberTests : DevToolsContextBaseTest
     {
         public InvokeMemberTests(ITestOutputHelper output) : base(output)
         {

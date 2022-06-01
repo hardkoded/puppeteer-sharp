@@ -8,7 +8,7 @@ using Xunit.Abstractions;
 namespace PuppeteerSharp.Tests.DevToolsContextTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class DevToolsContextEventsErrorTests : PuppeteerPageBaseTest
+    public class DevToolsContextEventsErrorTests : DevToolsContextBaseTest
     {
         public DevToolsContextEventsErrorTests(ITestOutputHelper output) : base(output)
         {

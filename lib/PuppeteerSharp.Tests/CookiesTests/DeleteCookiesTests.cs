@@ -8,7 +8,7 @@ using Xunit.Abstractions;
 namespace PuppeteerSharp.Tests.CookiesTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class DeleteCookiesTests : PuppeteerPageBaseTest
+    public class DeleteCookiesTests : DevToolsContextBaseTest
     {
         public DeleteCookiesTests(ITestOutputHelper output) : base(output)
         {

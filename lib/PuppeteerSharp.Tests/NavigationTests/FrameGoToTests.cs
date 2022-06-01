@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Http;
 namespace PuppeteerSharp.Tests.NavigationTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class FrameGoToTests : PuppeteerPageBaseTest
+    public class FrameGoToTests : DevToolsContextBaseTest
     {
         public FrameGoToTests(ITestOutputHelper output) : base(output)
         {

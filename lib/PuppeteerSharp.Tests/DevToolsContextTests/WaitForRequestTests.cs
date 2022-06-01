@@ -10,7 +10,7 @@ using PuppeteerSharp.Tests.Attributes;
 namespace PuppeteerSharp.Tests.DevToolsContextTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class WaitForRequestTests : PuppeteerPageBaseTest
+    public class WaitForRequestTests : DevToolsContextBaseTest
     {
         public WaitForRequestTests(ITestOutputHelper output) : base(output)
         {

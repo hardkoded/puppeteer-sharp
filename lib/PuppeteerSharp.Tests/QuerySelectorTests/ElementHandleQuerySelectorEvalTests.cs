@@ -10,7 +10,7 @@ using Xunit.Abstractions;
 namespace PuppeteerSharp.Tests.QuerySelectorTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class ElementHandleQuerySelectorEvalTests : PuppeteerPageBaseTest
+    public class ElementHandleQuerySelectorEvalTests : DevToolsContextBaseTest
     {
         public ElementHandleQuerySelectorEvalTests(ITestOutputHelper output) : base(output)
         {

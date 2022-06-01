@@ -9,7 +9,7 @@ using Xunit.Abstractions;
 namespace PuppeteerSharp.Tests.DevToolsContextTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class EmulateNetworkConditionsTests : PuppeteerPageBaseTest
+    public class EmulateNetworkConditionsTests : DevToolsContextBaseTest
     {
         public EmulateNetworkConditionsTests(ITestOutputHelper output) : base(output)
         {

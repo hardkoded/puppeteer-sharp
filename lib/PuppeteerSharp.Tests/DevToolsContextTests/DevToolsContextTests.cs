@@ -6,12 +6,12 @@ using Xunit;
 using Xunit.Abstractions;
 using Microsoft.AspNetCore.Http;
 
-namespace PuppeteerSharp.Tests.ChromiumSpecificTests
+namespace PuppeteerSharp.Tests.DevToolsContextTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class PageTests : PuppeteerPageBaseTest
+    public class DevToolsContextTests : DevToolsContextBaseTest
     {
-        public PageTests(ITestOutputHelper output) : base(output)
+        public DevToolsContextTests(ITestOutputHelper output) : base(output)
         {
         }
 

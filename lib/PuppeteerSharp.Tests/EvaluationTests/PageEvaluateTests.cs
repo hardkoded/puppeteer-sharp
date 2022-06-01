@@ -11,7 +11,7 @@ using PuppeteerSharp.Xunit;
 namespace PuppeteerSharp.Tests.DevToolsContextTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class EvaluateTests : PuppeteerPageBaseTest
+    public class EvaluateTests : DevToolsContextBaseTest
     {
         public EvaluateTests(ITestOutputHelper output) : base(output)
         {

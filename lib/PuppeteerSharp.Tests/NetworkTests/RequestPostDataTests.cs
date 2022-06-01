@@ -11,7 +11,7 @@ using PuppeteerSharp.Xunit;
 namespace PuppeteerSharp.Tests.NetworkTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class RequestPostDataTests : PuppeteerPageBaseTest
+    public class RequestPostDataTests : DevToolsContextBaseTest
     {
         public RequestPostDataTests(ITestOutputHelper output) : base(output)
         {

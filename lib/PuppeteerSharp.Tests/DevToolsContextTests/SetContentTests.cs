@@ -10,7 +10,7 @@ using Xunit.Abstractions;
 namespace PuppeteerSharp.Tests.DevToolsContextTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class SetContentTests : PuppeteerPageBaseTest
+    public class SetContentTests : DevToolsContextBaseTest
     {
         const string ExpectedOutput = "<html><head></head><body><div>hello</div></body></html>";
 

@@ -7,7 +7,7 @@ using Xunit.Abstractions;
 namespace PuppeteerSharp.Tests.EmulationTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class PageEmulateVisionDeficiencyTests : PuppeteerPageBaseTest
+    public class PageEmulateVisionDeficiencyTests : DevToolsContextBaseTest
     {
         public PageEmulateVisionDeficiencyTests(ITestOutputHelper output) : base(output)
         {

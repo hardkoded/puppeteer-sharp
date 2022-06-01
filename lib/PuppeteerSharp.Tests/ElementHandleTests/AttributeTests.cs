@@ -11,7 +11,7 @@ using Xunit.Abstractions;
 namespace PuppeteerSharp.Tests.ElementHandleTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class AttributeTests : PuppeteerPageBaseTest
+    public class AttributeTests : DevToolsContextBaseTest
     {
         public AttributeTests(ITestOutputHelper output) : base(output)
         {

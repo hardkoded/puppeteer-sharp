@@ -11,7 +11,7 @@ using Xunit.Abstractions;
 namespace PuppeteerSharp.Tests.MouseTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class MouseTests : PuppeteerPageBaseTest
+    public class MouseTests : DevToolsContextBaseTest
     {
         private const string Dimensions = @"function dimensions() {
             const rect = document.querySelector('textarea').getBoundingClientRect();

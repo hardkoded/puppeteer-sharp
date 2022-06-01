@@ -10,7 +10,7 @@ using Xunit.Abstractions;
 namespace PuppeteerSharp.Tests.DevToolsContextTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class WaitForResponseTests : PuppeteerPageBaseTest
+    public class WaitForResponseTests : DevToolsContextBaseTest
     {
         public WaitForResponseTests(ITestOutputHelper output) : base(output)
         {

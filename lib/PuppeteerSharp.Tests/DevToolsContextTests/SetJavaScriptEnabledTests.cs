@@ -8,7 +8,7 @@ using Xunit.Abstractions;
 namespace PuppeteerSharp.Tests.DevToolsContextTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class SetJavaScriptEnabledTests : PuppeteerPageBaseTest
+    public class SetJavaScriptEnabledTests : DevToolsContextBaseTest
     {
         public SetJavaScriptEnabledTests(ITestOutputHelper output) : base(output)
         {

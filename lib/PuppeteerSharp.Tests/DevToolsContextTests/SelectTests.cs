@@ -9,7 +9,7 @@ using Xunit.Abstractions;
 namespace PuppeteerSharp.Tests.DevToolsContextTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class SelectTests : PuppeteerPageBaseTest
+    public class SelectTests : DevToolsContextBaseTest
     {
         public SelectTests(ITestOutputHelper output) : base(output)
         {

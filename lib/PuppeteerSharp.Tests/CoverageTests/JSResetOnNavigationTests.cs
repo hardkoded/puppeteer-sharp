@@ -11,7 +11,7 @@ using Xunit.Abstractions;
 namespace PuppeteerSharp.Tests.CoverageTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class JSResetOnNavigationTests : PuppeteerPageBaseTest
+    public class JSResetOnNavigationTests : DevToolsContextBaseTest
     {
         public JSResetOnNavigationTests(ITestOutputHelper output) : base(output)
         {

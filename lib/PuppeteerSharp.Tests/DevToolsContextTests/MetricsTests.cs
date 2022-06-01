@@ -10,7 +10,7 @@ using PuppeteerSharp.Xunit;
 namespace PuppeteerSharp.Tests.DevToolsContextTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class MetricsTests : PuppeteerPageBaseTest
+    public class MetricsTests : DevToolsContextBaseTest
     {
         public MetricsTests(ITestOutputHelper output) : base(output)
         {

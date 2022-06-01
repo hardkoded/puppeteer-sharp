@@ -10,7 +10,7 @@ using CefSharp.Puppeteer;
 namespace PuppeteerSharp.Tests.FrameTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class FrameManagementTests : PuppeteerPageBaseTest
+    public class FrameManagementTests : DevToolsContextBaseTest
     {
         public FrameManagementTests(ITestOutputHelper output) : base(output)
         {

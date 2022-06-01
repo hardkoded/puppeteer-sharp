@@ -10,7 +10,7 @@ using Xunit.Abstractions;
 namespace PuppeteerSharp.Tests.NetworkTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class RequestIsNavigationRequestTests : PuppeteerPageBaseTest
+    public class RequestIsNavigationRequestTests : DevToolsContextBaseTest
     {
         public RequestIsNavigationRequestTests(ITestOutputHelper output) : base(output)
         {

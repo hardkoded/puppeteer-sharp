@@ -8,12 +8,12 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests
 {
-    public class PuppeteerPageBaseTest : PuppeteerBaseTest, IAsyncLifetime
+    public class DevToolsContextBaseTest : PuppeteerBaseTest, IAsyncLifetime
     {
         private readonly bool _ignoreHTTPSerrors;
         private readonly string _initialUrl;
 
-        public PuppeteerPageBaseTest(ITestOutputHelper output, bool ignoreHTTPSerrors = true, string initialUrl = TestConstants.ServerIpUrl) : base(output)
+        public DevToolsContextBaseTest(ITestOutputHelper output, bool ignoreHTTPSerrors = true, string initialUrl = TestConstants.ServerIpUrl) : base(output)
         {
             _ignoreHTTPSerrors = ignoreHTTPSerrors;
             _initialUrl = initialUrl;

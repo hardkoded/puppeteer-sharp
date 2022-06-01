@@ -8,7 +8,7 @@ using Xunit.Abstractions;
 namespace PuppeteerSharp.Tests.DevToolsContextTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class SetBypassCSPTests : PuppeteerPageBaseTest
+    public class SetBypassCSPTests : DevToolsContextBaseTest
     {
         public SetBypassCSPTests(ITestOutputHelper output) : base(output)
         {

@@ -9,7 +9,7 @@ using Xunit.Abstractions;
 namespace PuppeteerSharp.Tests.EmulationTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class EmulateMediaFeaturesAsyncTests : PuppeteerPageBaseTest
+    public class EmulateMediaFeaturesAsyncTests : DevToolsContextBaseTest
     {
         public EmulateMediaFeaturesAsyncTests(ITestOutputHelper output) : base(output)
         {

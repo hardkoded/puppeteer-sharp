@@ -10,7 +10,7 @@ using Xunit.Abstractions;
 namespace PuppeteerSharp.Tests.NavigationTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class FrameWaitForNavigationTests : PuppeteerPageBaseTest
+    public class FrameWaitForNavigationTests : DevToolsContextBaseTest
     {
         public FrameWaitForNavigationTests(ITestOutputHelper output) : base(output)
         {

@@ -11,7 +11,7 @@ using Xunit.Abstractions;
 namespace PuppeteerSharp.Tests.RequestInterceptionTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class RequestRespondTests : PuppeteerPageBaseTest
+    public class RequestRespondTests : DevToolsContextBaseTest
     {
         public RequestRespondTests(ITestOutputHelper output) : base(output)
         {
