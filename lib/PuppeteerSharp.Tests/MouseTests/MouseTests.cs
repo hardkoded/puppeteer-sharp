@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Tests.MouseTests
         [PuppeteerFact]
         public async Task ShouldClickTheDocument()
         {
-            await ChromiumWebBrowser.WaitForRenderIdle(idleTime:1000);
+            await ChromiumWebBrowser.WaitForRenderIdleAsync(idleTimeInMs:1000);
 
             await DevToolsContext.EvaluateFunctionAsync(@"() => {
                 globalThis.clickPromise = new Promise((resolve) => {
@@ -63,7 +63,7 @@ namespace PuppeteerSharp.Tests.MouseTests
         public async Task ShouldResizeTheTextarea()
         {
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
-            await ChromiumWebBrowser.WaitForRenderIdle();
+            await ChromiumWebBrowser.WaitForRenderIdleAsync();
 
             var dimensions = await DevToolsContext.EvaluateFunctionAsync<Dimensions>(Dimensions);
             var mouse = DevToolsContext.Mouse;
@@ -81,7 +81,7 @@ namespace PuppeteerSharp.Tests.MouseTests
         public async Task ShouldSelectTheTextWithMouse()
         {
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
-            await ChromiumWebBrowser.WaitForRenderIdle();
+            await ChromiumWebBrowser.WaitForRenderIdleAsync();
 
             await DevToolsContext.FocusAsync("textarea");
             const string expectedText = "This is the text that we are going to try to select. Let's see how it goes.";
@@ -104,7 +104,7 @@ namespace PuppeteerSharp.Tests.MouseTests
         public async Task ShouldTriggerHoverState()
         {
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
-            await ChromiumWebBrowser.WaitForRenderIdle();
+            await ChromiumWebBrowser.WaitForRenderIdleAsync();
 
             await DevToolsContext.HoverAsync("#button-6");
             Assert.Equal("button-6", await DevToolsContext.EvaluateExpressionAsync<string>("document.querySelector('button:hover').id"));
@@ -119,7 +119,7 @@ namespace PuppeteerSharp.Tests.MouseTests
         public async Task ShouldTriggerHoverStateWithRemovedWindowNode()
         {
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
-            await ChromiumWebBrowser.WaitForRenderIdle();
+            await ChromiumWebBrowser.WaitForRenderIdleAsync();
 
             await DevToolsContext.EvaluateExpressionAsync("delete window.Node");
             await DevToolsContext.HoverAsync("#button-6");
@@ -131,7 +131,7 @@ namespace PuppeteerSharp.Tests.MouseTests
         public async Task ShouldSetModifierKeysOnClick()
         {
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
-            await ChromiumWebBrowser.WaitForRenderIdle();
+            await ChromiumWebBrowser.WaitForRenderIdleAsync();
 
             await DevToolsContext.EvaluateExpressionAsync("document.querySelector('#button-3').addEventListener('mousedown', e => window.lastEvent = e, true)");
             var modifiers = new Dictionary<string, string> { ["Shift"] = "shiftKey", ["Control"] = "ctrlKey", ["Alt"] = "altKey", ["Meta"] = "metaKey" };
@@ -161,7 +161,7 @@ namespace PuppeteerSharp.Tests.MouseTests
         public async Task ShouldSendMouseWheelEvents()
         {
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/wheel.html");
-            await ChromiumWebBrowser.WaitForRenderIdle();
+            await ChromiumWebBrowser.WaitForRenderIdleAsync();
 
             var elem = await DevToolsContext.QuerySelectorAsync("div");
             var boundingBoxBefore = await elem.BoundingBoxAsync();
@@ -212,7 +212,7 @@ namespace PuppeteerSharp.Tests.MouseTests
                 IsMobile = true
             });
             await DevToolsContext.GoToAsync(TestConstants.CrossProcessUrl + "/mobile.html");
-            await ChromiumWebBrowser.WaitForRenderIdle(idleTime: 1000);
+            await ChromiumWebBrowser.WaitForRenderIdleAsync(idleTimeInMs: 1000);
 
             await DevToolsContext.EvaluateFunctionAsync(@"() => {
                 document.addEventListener('click', event => {

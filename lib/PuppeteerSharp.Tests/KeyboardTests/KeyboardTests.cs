@@ -22,7 +22,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         {
             const string expected = "Type in this text!";
 
-            await ChromiumWebBrowser.WaitForRenderIdle();
+            await ChromiumWebBrowser.WaitForRenderIdleAsync();
 
             var textarea = await DevToolsContext.QuerySelectorAsync("textarea");
 
@@ -37,7 +37,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         [PuppeteerFact]
         public async Task ShouldMoveWithTheArrowKeys()
         {
-            await ChromiumWebBrowser.WaitForRenderIdle();
+            await ChromiumWebBrowser.WaitForRenderIdleAsync();
 
             await DevToolsContext.TypeAsync("textarea", "Hello World!");
             Assert.Equal("Hello World!", await DevToolsContext.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
@@ -63,7 +63,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         [PuppeteerFact]
         public async Task ShouldSendACharacterWithElementHandlePress()
         {
-            await ChromiumWebBrowser.WaitForRenderIdle();
+            await ChromiumWebBrowser.WaitForRenderIdleAsync();
 
             var textarea = await DevToolsContext.QuerySelectorAsync("textarea");
             await textarea.PressAsync("a");
@@ -79,7 +79,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         [PuppeteerFact]
         public async Task ElementHandlePressShouldSupportTextOption()
         {
-            await ChromiumWebBrowser.WaitForRenderIdle();
+            await ChromiumWebBrowser.WaitForRenderIdleAsync();
 
             var textarea = await DevToolsContext.QuerySelectorAsync("textarea");
             await textarea.PressAsync("a", new PressOptions { Text = "ё" });
@@ -90,7 +90,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         [PuppeteerFact]
         public async Task ShouldSendACharacterWithSendCharacter()
         {
-            await ChromiumWebBrowser.WaitForRenderIdle();
+            await ChromiumWebBrowser.WaitForRenderIdleAsync();
 
             await DevToolsContext.FocusAsync("textarea");
             await DevToolsContext.Keyboard.SendCharacterAsync("嗨");
@@ -105,7 +105,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         public async Task ShouldReportShiftKey()
         {
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/keyboard.html");
-            await ChromiumWebBrowser.WaitForRenderIdle();
+            await ChromiumWebBrowser.WaitForRenderIdleAsync();
 
             var keyboard = DevToolsContext.Keyboard;
             var codeForKey = new Dictionary<string, int> { ["Shift"] = 16, ["Alt"] = 18, ["Control"] = 17 };
@@ -136,7 +136,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         public async Task ShouldReportMultipleModifiers()
         {
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/keyboard.html");
-            await ChromiumWebBrowser.WaitForRenderIdle();
+            await ChromiumWebBrowser.WaitForRenderIdleAsync();
 
             var keyboard = DevToolsContext.Keyboard;
             await keyboard.DownAsync("Control");
@@ -158,7 +158,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         public async Task ShouldSendProperCodesWhileTyping()
         {
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/keyboard.html");
-            await ChromiumWebBrowser.WaitForRenderIdle();
+            await ChromiumWebBrowser.WaitForRenderIdleAsync();
 
             var element = await DevToolsContext.QuerySelectorAsync("textarea");
 
@@ -186,7 +186,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         public async Task ShouldSendProperCodesWhileTypingWithShift()
         {
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/keyboard.html");
-            await ChromiumWebBrowser.WaitForRenderIdle();
+            await ChromiumWebBrowser.WaitForRenderIdleAsync();
 
             var keyboard = DevToolsContext.Keyboard;
             await keyboard.DownAsync("Shift");
@@ -203,7 +203,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         [PuppeteerFact]
         public async Task ShouldNotTypeCanceledEvents()
         {
-            await ChromiumWebBrowser.WaitForRenderIdle();
+            await ChromiumWebBrowser.WaitForRenderIdleAsync();
 
             await DevToolsContext.FocusAsync("textarea");
             await DevToolsContext.EvaluateExpressionAsync(@"{
@@ -224,7 +224,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         [PuppeteerFact]
         public async Task ShouldSpecifyRepeatProperty()
         {
-            await ChromiumWebBrowser.WaitForRenderIdle();
+            await ChromiumWebBrowser.WaitForRenderIdleAsync();
 
             await DevToolsContext.FocusAsync("textarea");
             await DevToolsContext.EvaluateExpressionAsync("document.querySelector('textarea').addEventListener('keydown', e => window.lastEvent = e, true)");
@@ -249,7 +249,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         {
             const string expected = "This text goes onto two lines.\nThis character is 嗨.";
 
-            await ChromiumWebBrowser.WaitForRenderIdle();
+            await ChromiumWebBrowser.WaitForRenderIdleAsync();
 
             var textarea = await DevToolsContext.QuerySelectorAsync("textarea");
 
@@ -266,7 +266,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         [PuppeteerFact]
         public async Task ShouldSpecifyLocation()
         {
-            await ChromiumWebBrowser.WaitForRenderIdle();
+            await ChromiumWebBrowser.WaitForRenderIdleAsync();
 
             await DevToolsContext.EvaluateExpressionAsync(@"{
               window.addEventListener('keydown', event => window.keyLocation = event.location, true);
@@ -302,7 +302,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         [PuppeteerFact]
         public async Task ShouldThrowOnUnknownKeys()
         {
-            await ChromiumWebBrowser.WaitForRenderIdle();
+            await ChromiumWebBrowser.WaitForRenderIdleAsync();
 
             await Assert.ThrowsAsync<KeyNotFoundException>(() => DevToolsContext.Keyboard.PressAsync("NotARealKey"));
 
@@ -317,7 +317,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         {
             const string expected = "👹 Tokyo street Japan \uD83C\uDDEF\uD83C\uDDF5";
 
-            await ChromiumWebBrowser.WaitForRenderIdle();
+            await ChromiumWebBrowser.WaitForRenderIdleAsync();
 
             var textArea = await DevToolsContext.QuerySelectorAsync("textarea");
 
@@ -335,7 +335,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
             const string expected = "👹 Tokyo street Japan \uD83C\uDDEF\uD83C\uDDF5";
 
             await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
-            await ChromiumWebBrowser.WaitForRenderIdle();
+            await ChromiumWebBrowser.WaitForRenderIdleAsync();
 
             await FrameUtils.AttachFrameAsync(DevToolsContext, "emoji-test", TestConstants.ServerUrl + "/input/textarea.html");
 
@@ -352,7 +352,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         [PuppeteerFact]
         public async Task ShouldPressTheMetaKey()
         {
-            await ChromiumWebBrowser.WaitForRenderIdle();
+            await ChromiumWebBrowser.WaitForRenderIdleAsync();
 
             await DevToolsContext.EvaluateFunctionAsync(@"() =>
             {
