@@ -12,15 +12,15 @@
 	<ItemGroup>
 	  <Compile Remove="AccessibilityTests\**" />
 	  <Compile Remove="InputTests\**" />
-	  <Compile Remove="PageTests\**" />
+	  <Compile Remove="DevToolsContextTests\**" />
 	  <Compile Remove="Screenshots\**" />
 	  <EmbeddedResource Remove="AccessibilityTests\**" />
 	  <EmbeddedResource Remove="InputTests\**" />
-	  <EmbeddedResource Remove="PageTests\**" />
+	  <EmbeddedResource Remove="DevToolsContextTests\**" />
 	  <EmbeddedResource Remove="Screenshots\**" />
 	  <None Remove="AccessibilityTests\**" />
 	  <None Remove="InputTests\**" />
-	  <None Remove="PageTests\**" />
+	  <None Remove="DevToolsContextTests\**" />
 	  <None Remove="Screenshots\**" />
 	</ItemGroup>
 	<ItemGroup>
@@ -84,7 +84,7 @@
 		<None Remove="HeadfulTests\" />
 	</ItemGroup>
 	<ItemGroup>
-	  <CustomAdditionalCompileInputs Remove="PageTests\**" />
+	  <CustomAdditionalCompileInputs Remove="DevToolsContextTests\**" />
 	</ItemGroup>
 	<ItemGroup>
 	  <CustomAdditionalCompileInputs Remove="AccessibilityTests\**" />
@@ -93,27 +93,26 @@
 	  <CustomAdditionalCompileInputs Remove="Screenshots\**" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Compile Include="PageTests\AddScriptTagTests.cs" />
-	  <Compile Include="PageTests\AddStyleTagTests.cs" />
-	  <Compile Include="PageTests\ExposeFunctionTests.cs" />
-	  <Compile Include="PageTests\MetricsTests.cs" />
-	  <Compile Include="PageTests\OfflineModeTests.cs" />
-	  <Compile Include="PageTests\PageEventsConsoleTests.cs" />
-	  <Compile Include="PageTests\PageEventsDOMContentLoadedTests.cs" />
-	  <Compile Include="PageTests\PageEventsErrorTests.cs" />
-	  <Compile Include="PageTests\PageEventsPageErrorTests.cs" />
-	  <Compile Include="PageTests\QueryObjectsTests.cs" />
-	  <Compile Include="PageTests\SelectTests.cs" />
-	  <Compile Include="PageTests\SetBypassCSPTests.cs" />
-	  <Compile Include="PageTests\SetCacheEnabledTests.cs" />
-	  <Compile Include="PageTests\SetContentTests.cs" />
-	  <Compile Include="PageTests\SetJavaScriptEnabledTests.cs" />
-	  <Compile Include="PageTests\SetUserAgentTests.cs" />
-	  <Compile Include="PageTests\TitleTests.cs" />
-	  <Compile Include="PageTests\UrlTests.cs" />
-	  <Compile Include="PageTests\WaitForNetworkIdleTests.cs" />
-	  <Compile Include="PageTests\WaitForRequestTests.cs" />
-	  <Compile Include="PageTests\WaitForResponseTests.cs" />
+	  <Compile Include="DevToolsContextTests\AddScriptTagTests.cs" />
+	  <Compile Include="DevToolsContextTests\AddStyleTagTests.cs" />
+	  <Compile Include="DevToolsContextTests\ExposeFunctionTests.cs" />
+	  <Compile Include="DevToolsContextTests\MetricsTests.cs" />
+	  <Compile Include="DevToolsContextTests\OfflineModeTests.cs" />
+	  <Compile Include="DevToolsContextTests\DevToolsContextEventsConsoleTests.cs" />
+	  <Compile Include="DevToolsContextTests\DevToolsContextEventsDOMContentLoadedTests.cs" />
+	  <Compile Include="DevToolsContextTests\DevToolsContextEventsErrorTests.cs" />
+	  <Compile Include="DevToolsContextTests\QueryObjectsTests.cs" />
+	  <Compile Include="DevToolsContextTests\SelectTests.cs" />
+	  <Compile Include="DevToolsContextTests\SetBypassCSPTests.cs" />
+	  <Compile Include="DevToolsContextTests\SetCacheEnabledTests.cs" />
+	  <Compile Include="DevToolsContextTests\SetContentTests.cs" />
+	  <Compile Include="DevToolsContextTests\SetJavaScriptEnabledTests.cs" />
+	  <Compile Include="DevToolsContextTests\SetUserAgentTests.cs" />
+	  <Compile Include="DevToolsContextTests\TitleTests.cs" />
+	  <Compile Include="DevToolsContextTests\UrlTests.cs" />
+	  <Compile Include="DevToolsContextTests\WaitForNetworkIdleTests.cs" />
+	  <Compile Include="DevToolsContextTests\WaitForRequestTests.cs" />
+	  <Compile Include="DevToolsContextTests\WaitForResponseTests.cs" />
 	</ItemGroup>
 	<ItemGroup>
 	  <CustomAdditionalCompileInputs Remove="InputTests\**" />

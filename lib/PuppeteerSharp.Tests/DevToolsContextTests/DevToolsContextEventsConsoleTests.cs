@@ -7,12 +7,12 @@ using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using CefSharp.Puppeteer;
 
-namespace PuppeteerSharp.Tests.PageTests.Events
+namespace PuppeteerSharp.Tests.DevToolsContextTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class PageEventsConsoleTests : PuppeteerPageBaseTest
+    public class DevToolsContextEventsConsoleTests : PuppeteerPageBaseTest
     {
-        public PageEventsConsoleTests(ITestOutputHelper output) : base(output)
+        public DevToolsContextEventsConsoleTests(ITestOutputHelper output) : base(output)
         {
         }
 

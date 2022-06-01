@@ -5,12 +5,12 @@ using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace PuppeteerSharp.Tests.PageTests
+namespace PuppeteerSharp.Tests.DevToolsContextTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class PageEventsPageErrorTests : PuppeteerPageBaseTest
+    public class DevToolsContextEventsErrorTests : PuppeteerPageBaseTest
     {
-        public PageEventsPageErrorTests(ITestOutputHelper output) : base(output)
+        public DevToolsContextEventsErrorTests(ITestOutputHelper output) : base(output)
         {
         }
 
@@ -33,6 +33,18 @@ namespace PuppeteerSharp.Tests.PageTests
             );
 
             Assert.Contains("Fancy", error);
+        }
+
+        [PuppeteerTest("page.spec.ts", "Page.Events.Error", "should throw when page crashes")]
+        [PuppeteerFact]
+        public async Task ShouldThrowWhenPageCrashes()
+        {
+            string error = null;
+            DevToolsContext.Error += (_, e) => error = e.Error;
+            var gotoTask = DevToolsContext.GoToAsync("chrome://crash");
+
+            await WaitForError();
+            Assert.Equal("Page crashed!", error);
         }
     }
 }

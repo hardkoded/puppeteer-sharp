@@ -107,7 +107,7 @@ await using var devtoolsContext = await chromiumWebBrowser.CreateDevToolsContext
 await devtoolsContext.SetContentAsync("<div>My Receipt</div>");
 var result = await devtoolsContext.GetContentAsync();
 ```
-<sup><a href='/lib/PuppeteerSharp.Tests/PageTests/SetContentTests.cs#L25-L33' title='Snippet source file'>snippet source</a> | <a href='#snippet-setcontentasync' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/lib/PuppeteerSharp.Tests/DevToolsContextTests/SetContentTests.cs#L25-L33' title='Snippet source file'>snippet source</a> | <a href='#snippet-setcontentasync' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ## Evaluate Javascript

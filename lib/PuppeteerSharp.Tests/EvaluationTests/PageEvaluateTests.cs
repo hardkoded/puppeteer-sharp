@@ -8,7 +8,7 @@ using System.Numerics;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 
-namespace PuppeteerSharp.Tests.PageTests
+namespace PuppeteerSharp.Tests.DevToolsContextTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class EvaluateTests : PuppeteerPageBaseTest

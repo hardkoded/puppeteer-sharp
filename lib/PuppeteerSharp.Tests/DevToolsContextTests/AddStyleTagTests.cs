@@ -7,7 +7,7 @@ using Xunit;
 using Xunit.Abstractions;
 using CefSharp.Puppeteer;
 
-namespace PuppeteerSharp.Tests.PageTests
+namespace PuppeteerSharp.Tests.DevToolsContextTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class AddStyleTagTests : PuppeteerPageBaseTest

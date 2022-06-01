@@ -7,7 +7,7 @@ using CefSharp.Puppeteer.Helpers;
 using PuppeteerSharp.Xunit;
 using PuppeteerSharp.Tests.Attributes;
 
-namespace PuppeteerSharp.Tests.PageTests
+namespace PuppeteerSharp.Tests.DevToolsContextTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class WaitForRequestTests : PuppeteerPageBaseTest
