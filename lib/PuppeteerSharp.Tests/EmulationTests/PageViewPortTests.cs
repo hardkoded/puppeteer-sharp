@@ -83,6 +83,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
         [PuppeteerFact]
         public async Task ShouldDetectTouchWhenApplyingViewportWithTouches()
         {
+            await Page.GoToAsync(TestConstants.EmptyPage);
             await Page.SetViewportAsync(new ViewPortOptions
             {
                 Width = 800,
@@ -93,7 +94,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
             {
                 Url = TestConstants.ServerUrl + "/modernizr.js"
             });
-            Assert.True(await Page.EvaluateFunctionAsync<bool>("() => Modernizr.touchevents"));
+            Assert.True(await Page.EvaluateFunctionAsync<bool>("() => globalThis.Modernizr.touchevents"));
         }
 
         [PuppeteerTest("emulation.spec.ts", "Page.viewport", "should support landscape emulation")]

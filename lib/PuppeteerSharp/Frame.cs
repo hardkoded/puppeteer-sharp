@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -363,6 +363,14 @@ namespace PuppeteerSharp
         /// <returns>Returns an array of option values that have been successfully selected.</returns>
         /// <seealso cref="IPage.SelectAsync(string, string[])"/>
         public Task<string[]> SelectAsync(string selector, params string[] values) => SecondaryWorld.SelectAsync(selector, values);
+
+        /// <summary>
+        /// A utility function to be used with <see cref="PuppeteerHandleExtensions.EvaluateFunctionAsync{T}(Task{JSHandle}, string, object[])"/>
+        /// </summary>
+        /// <param name="selector">A selector to query page for</param>
+        /// <returns>Task which resolves to a <see cref="JSHandle"/> of <c>document.querySelectorAll</c> result</returns>
+        public Task<JSHandle> QuerySelectorAllHandleAsync(string selector)
+            => MainWorld.QuerySelectorAllHandleAsync(selector);
 
         /// <summary>
         /// Queries frame for the selector. If there's no such element within the frame, the method will resolve to <c>null</c>.

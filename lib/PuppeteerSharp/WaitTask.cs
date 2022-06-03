@@ -15,7 +15,8 @@ namespace PuppeteerSharp
         private readonly object[] _args;
         private readonly string _title;
         private readonly Task _timeoutTimer;
-
+        private readonly ElementHandle _root;
+        private readonly bool _predicateAcceptsContextElement;
         private readonly CancellationTokenSource _cts;
         private readonly TaskCompletionSource<IJSHandle> _taskCompletion;
 
@@ -24,80 +25,92 @@ namespace PuppeteerSharp
         private bool _isDisposing;
 
         private const string WaitForPredicatePageFunction = @"
-async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...args) {
-    const predicate = new Function('...args', predicateBody);
-    let timedOut = false;
-    if (timeout)
-        setTimeout(() => (timedOut = true), timeout);
-    if (polling === 'raf')
-        return await pollRaf();
-    if (polling === 'mutation')
-        return await pollMutation();
-    if (typeof polling === 'number')
-        return await pollInterval(polling);
-    /**
-     * @return {!Promise<*>}
-     */
-    async function pollMutation() {
-        const success = await predicate(...args);
-        if (success)
-            return Promise.resolve(success);
-        let fulfill;
-        const result = new Promise((x) => (fulfill = x));
-        const observer = new MutationObserver(async () => {
-            if (timedOut) {
-                observer.disconnect();
-                fulfill();
-            }
-            const success = await predicate(...args);
-            if (success) {
-                observer.disconnect();
-                fulfill(success);
-            }
-        });
-        observer.observe(document, {
-            childList: true,
-            subtree: true,
-            attributes: true,
-        });
-        return result;
+async function waitForPredicatePageFunction(
+  root,
+  predicateBody,
+  predicateAcceptsContextElement,
+  polling,
+  timeout,
+  ...args
+) {
+  root = root || document;
+  const predicate = new Function('...args', predicateBody);
+  let timedOut = false;
+  if (timeout) setTimeout(() => (timedOut = true), timeout);
+  if (polling === 'raf') return await pollRaf();
+  if (polling === 'mutation') return await pollMutation();
+  if (typeof polling === 'number') return await pollInterval(polling);
+
+  /**
+   * @returns {!Promise<*>}
+   */
+  async function pollMutation() {
+    const success = predicateAcceptsContextElement
+      ? await predicate(root, ...args)
+      : await predicate(...args);
+    if (success) return Promise.resolve(success);
+
+    let fulfill;
+    const result = new Promise((x) => (fulfill = x));
+    const observer = new MutationObserver(async () => {
+      if (timedOut) {
+        observer.disconnect();
+        fulfill();
+      }
+      const success = predicateAcceptsContextElement
+        ? await predicate(root, ...args)
+        : await predicate(...args);
+      if (success) {
+        observer.disconnect();
+        fulfill(success);
+      }
+    });
+    observer.observe(root, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+    });
+    return result;
+  }
+
+  async function pollRaf() {
+    let fulfill;
+    const result = new Promise((x) => (fulfill = x));
+    await onRaf();
+    return result;
+
+    async function onRaf() {
+      if (timedOut) {
+        fulfill();
+        return;
+      }
+      const success = predicateAcceptsContextElement
+        ? await predicate(root, ...args)
+        : await predicate(...args);
+      if (success) fulfill(success);
+      else requestAnimationFrame(onRaf);
     }
-    async function pollRaf() {
-        let fulfill;
-        const result = new Promise((x) => (fulfill = x));
-        await onRaf();
-        return result;
-        async function onRaf() {
-            if (timedOut) {
-                fulfill();
-                return;
-            }
-            const success = await predicate(...args);
-            if (success)
-                fulfill(success);
-            else
-                requestAnimationFrame(onRaf);
-        }
+  }
+
+  async function pollInterval(pollInterval) {
+    let fulfill;
+    const result = new Promise((x) => (fulfill = x));
+    await onTimeout();
+    return result;
+
+    async function onTimeout() {
+      if (timedOut) {
+        fulfill();
+        return;
+      }
+      const success = predicateAcceptsContextElement
+        ? await predicate(root, ...args)
+        : await predicate(...args);
+      if (success) fulfill(success);
+      else setTimeout(onTimeout, pollInterval);
     }
-    async function pollInterval(pollInterval) {
-        let fulfill;
-        const result = new Promise((x) => (fulfill = x));
-        await onTimeout();
-        return result;
-        async function onTimeout() {
-            if (timedOut) {
-                fulfill();
-                return;
-            }
-            const success = await predicate(...args);
-            if (success)
-                fulfill(success);
-            else
-                setTimeout(onTimeout, pollInterval);
-        }
-    }
-}
-";
+  }
+}";
 
         internal WaitTask(
             DOMWorld world,
@@ -107,7 +120,9 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
             WaitForFunctionPollingOption polling,
             int? pollingInterval,
             int timeout,
-            object[] args = null)
+            ElementHandle root,
+            object[] args = null,
+            bool predicateAcceptsContextElement = false)
         {
             if (string.IsNullOrEmpty(predicateBody))
             {
@@ -125,9 +140,9 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
             _timeout = timeout;
             _args = args ?? Array.Empty<object>();
             _title = title;
-
+            _root = root;
             _cts = new CancellationTokenSource();
-
+            _predicateAcceptsContextElement = predicateAcceptsContextElement;
             _taskCompletion = new TaskCompletionSource<IJSHandle>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             _world.WaitTasks.Add(this);
@@ -156,7 +171,13 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
             {
                 success = await context.EvaluateFunctionHandleAsync(
                     WaitForPredicatePageFunction,
-                    new object[] { _predicateBody, _pollingInterval ?? (object)_polling, _timeout }.Concat(_args).ToArray()).ConfigureAwait(false);
+                    new object[] {
+                        _root,
+                        _predicateBody,
+                        _predicateAcceptsContextElement,
+                        _pollingInterval ?? (object)_polling,
+                        _timeout
+                    }.Concat(_args).ToArray()).ConfigureAwait(false);
             }
             catch (Exception ex)
             {

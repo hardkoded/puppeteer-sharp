@@ -25,7 +25,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
         }
 
         [PuppeteerTest("emulation.spec.ts", "Page.emulate", "should support clicking")]
-        [PuppeteerFact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldSupportClicking()
         {
             await Page.EmulateAsync(TestConstants.IPhone);

@@ -1,4 +1,4 @@
-namespace PuppeteerSharp
+﻿namespace PuppeteerSharp
 {
     /// <summary>
     /// Optional waiting parameters.
@@ -23,5 +23,10 @@ namespace PuppeteerSharp
         /// Wait for element to not be found in the DOM or to be hidden.
         /// </summary>
         public bool Hidden { get; set; }
+
+        /// <summary>
+        /// Root element
+        /// </summary>
+        public ElementHandle Root { get; set; }
     }
 }

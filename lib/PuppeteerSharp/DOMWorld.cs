@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
@@ -28,6 +27,8 @@ namespace PuppeteerSharp
             WaitTasks = new ConcurrentSet<WaitTask>();
             _detached = false;
         }
+
+        private CustomQueriesManager CustomQueriesManager => _frameManager.Page.Browser.CustomQueriesManager;
 
         internal ICollection<WaitTask> WaitTasks { get; set; }
 
@@ -109,22 +110,25 @@ namespace PuppeteerSharp
         internal async Task<IElementHandle> QuerySelectorAsync(string selector)
         {
             var document = await GetDocument().ConfigureAwait(false);
-            var value = await document.QuerySelectorAsync(selector).ConfigureAwait(false);
-            return value;
+            return await document.QuerySelectorAsync(selector).ConfigureAwait(false);
+        }
+
+        internal async Task<IJSHandle> QuerySelectorAllHandleAsync(string selector)
+        {
+            var document = await GetDocument().ConfigureAwait(false);
+            return await document.QuerySelectorAllHandleAsync(selector).ConfigureAwait(false);
         }
 
         internal async Task<IElementHandle[]> QuerySelectorAllAsync(string selector)
         {
             var document = await GetDocument().ConfigureAwait(false);
-            var value = await document.QuerySelectorAllAsync(selector).ConfigureAwait(false);
-            return value;
+            return await document.QuerySelectorAllAsync(selector).ConfigureAwait(false);
         }
 
         internal async Task<IElementHandle[]> XPathAsync(string expression)
         {
             var document = await GetDocument().ConfigureAwait(false);
-            var value = await document.XPathAsync(expression).ConfigureAwait(false);
-            return value;
+            return await document.XPathAsync(expression).ConfigureAwait(false);
         }
 
         internal Task<string> GetContentAsync() => EvaluateFunctionAsync<string>(
@@ -225,6 +229,48 @@ namespace PuppeteerSharp
             throw new ArgumentException("Provide options with a `Url`, `Path` or `Content` property");
         }
 
+        internal async Task<ElementHandle> WaitForSelectorInPageAsync(string queryOne, string selector, WaitForSelectorOptions options)
+        {
+            var waitForVisible = options?.Visible ?? false;
+            var waitForHidden = options?.Hidden ?? false;
+            var timeout = options?.Timeout ?? _timeoutSettings.Timeout;
+
+            var polling = waitForVisible || waitForHidden ? WaitForFunctionPollingOption.Raf : WaitForFunctionPollingOption.Mutation;
+            var title = $"selector '{selector}'{(waitForHidden ? " to be hidden" : string.Empty)}";
+
+            var predicate = @$"async function predicate(root, selector, waitForVisible, waitForHidden) {{
+                const node = predicateQueryHandler
+                  ? ((await predicateQueryHandler(root, selector)))
+                  : root.querySelector(selector);
+                return checkWaitForOptions(node, waitForVisible, waitForHidden);
+            }}";
+
+            using var waitTask = new WaitTask(
+                this,
+                MakePredicateString(predicate, queryOne),
+                true,
+                title,
+                polling,
+                null,
+                timeout,
+                options?.Root,
+                new object[]
+                {
+                    selector,
+                    waitForVisible,
+                    waitForHidden,
+                },
+                true);
+
+            var jsHandle = await waitTask.Task.ConfigureAwait(false);
+            if (jsHandle is not ElementHandle elementHandle)
+            {
+                await jsHandle.DisposeAsync().ConfigureAwait(false);
+                return null;
+            }
+            return elementHandle;
+        }
+
         internal async Task<IElementHandle> AddStyleTagAsync(AddTagOptions options)
         {
             const string addStyleUrl = @"async function addStyleUrl(url) {
@@ -318,7 +364,7 @@ namespace PuppeteerSharp
 
         internal async Task<string[]> SelectAsync(string selector, params string[] values)
         {
-            if (!((await QuerySelectorAsync(selector).ConfigureAwait(false)) is IElementHandle handle))
+            if ((await QuerySelectorAsync(selector).ConfigureAwait(false)) is not IElementHandle handle)
             {
                 throw new SelectorException($"No node found for selector: {selector}", selector);
             }
@@ -350,7 +396,10 @@ namespace PuppeteerSharp
         }
 
         internal Task<IElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
-            => WaitForSelectorOrXPathAsync(selector, false, options);
+        {
+            var (updatedSelector, queryHandler) = CustomQueriesManager.GetQueryHandlerAndSelector(selector);
+            return queryHandler.WaitFor(this, updatedSelector, options);
+        }
 
         internal Task<IElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
             => WaitForSelectorOrXPathAsync(xpath, true, options);
@@ -365,6 +414,7 @@ namespace PuppeteerSharp
                  options.Polling,
                  options.PollingInterval,
                  options.Timeout ?? _timeoutSettings.Timeout,
+                 null,
                  args);
 
             return await waitTask
@@ -381,7 +431,8 @@ namespace PuppeteerSharp
                 "function",
                 options.Polling,
                 options.PollingInterval,
-                options.Timeout ?? _timeoutSettings.Timeout);
+                options.Timeout ?? _timeoutSettings.Timeout,
+                null);
 
             return await waitTask
                 .Task
@@ -402,9 +453,47 @@ namespace PuppeteerSharp
             return await _documentCompletionSource.Task.ConfigureAwait(false);
         }
 
+        private string MakePredicateString(string predicate, string predicateQueryHandler)
+        {
+            var checkWaitForOptions = @"function checkWaitForOptions(
+                node,
+                waitForVisible,
+                waitForHidden
+              ) {
+                if (!node) return waitForHidden;
+                if (!waitForVisible && !waitForHidden) return node;
+                const element =
+                  node.nodeType === Node.TEXT_NODE
+                    ? node.parentElement
+                    : node;
+
+                const style = window.getComputedStyle(element);
+                const isVisible =
+                    style && style.visibility !== 'hidden' && hasVisibleBoundingBox();
+                const success =
+                    waitForVisible === isVisible || waitForHidden === !isVisible;
+                return success? node : null;
+
+                function hasVisibleBoundingBox() {
+                  const rect = element.getBoundingClientRect();
+                  return !!(rect.top || rect.bottom || rect.width || rect.height);
+                }
+            }";
+
+            var predicateQueryHandlerDef = !string.IsNullOrEmpty(predicateQueryHandler)
+              ? $@"const predicateQueryHandler = {predicateQueryHandler};" : string.Empty;
+
+            return $@"
+                (() => {{
+                  {predicateQueryHandlerDef}
+                  const checkWaitForOptions = {checkWaitForOptions};
+                  return ({predicate})(...args)
+                }})() ";
+        }
+
         private async Task<IElementHandle> WaitForSelectorOrXPathAsync(string selectorOrXPath, bool isXPath, WaitForSelectorOptions options = null)
         {
-            options = options ?? new WaitForSelectorOptions();
+            options ??= new WaitForSelectorOptions();
             var timeout = options.Timeout ?? _timeoutSettings.Timeout;
 
             const string predicate = @"
@@ -438,11 +527,12 @@ namespace PuppeteerSharp
                 polling,
                 null,
                 timeout,
+                options.Root,
                 new object[] { selectorOrXPath, isXPath, options.Visible, options.Hidden });
 
             var handle = await waitTask.Task.ConfigureAwait(false);
 
-            if (!(handle is IElementHandle elementHandle))
+            if (handle is not IElementHandle elementHandle)
             {
                 if (handle != null)
                 {

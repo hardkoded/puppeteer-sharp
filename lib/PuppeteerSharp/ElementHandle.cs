@@ -38,7 +38,6 @@ namespace PuppeteerSharp
         private string DebuggerDisplay =>
             string.IsNullOrEmpty(RemoteObject.ClassName) ? ToString() : $"{RemoteObject.ClassName}@{RemoteObject.Description}";
 
-
         /// <inheritdoc/>
         public Task ScreenshotAsync(string file) => ScreenshotAsync(file, new ScreenshotOptions());
 
@@ -245,39 +244,38 @@ namespace PuppeteerSharp
             await Page.Keyboard.PressAsync(key, options).ConfigureAwait(false);
         }
 
-        /// <inheritdoc/>
-        public async Task<IElementHandle> QuerySelectorAsync(string selector)
+        /// <summary>
+        /// The method runs <c>element.querySelector</c> within the page. If no element matches the selector, the return value resolve to <c>null</c>.
+        /// </summary>
+        /// <param name="selector">A selector to query element for</param>
+        /// <returns>Task which resolves to <see cref="ElementHandle"/> pointing to the frame element</returns>
+        public Task<IElementHandle> QuerySelectorAsync(string selector)
         {
-            var handle = await EvaluateFunctionHandleAsync(
-                "(element, selector) => element.querySelector(selector)",
-                selector).ConfigureAwait(false);
-
-            if (handle is IElementHandle element)
-            {
-                return element;
-            }
-
-            await handle.DisposeAsync().ConfigureAwait(false);
-            return null;
+            var (updatedSelector, queryHandler) = CustomQueriesManager.GetQueryHandlerAndSelector(selector);
+            return queryHandler.QueryOne(this, updatedSelector);
         }
 
-        /// <inheritdoc/>
-        public async Task<IElementHandle[]> QuerySelectorAllAsync(string selector)
+        /// <summary>
+        /// Runs <c>element.querySelectorAll</c> within the page. If no elements match the selector, the return value resolve to <see cref="Array.Empty{T}"/>.
+        /// </summary>
+        /// <param name="selector">A selector to query element for</param>
+        /// <returns>Task which resolves to ElementHandles pointing to the frame elements</returns>
+        public Task<IElementHandle[]> QuerySelectorAllAsync(string selector)
         {
-            var arrayHandle = await EvaluateFunctionHandleAsync(
-                "(element, selector) => element.querySelectorAll(selector)",
-                selector).ConfigureAwait(false);
-
-            var properties = await arrayHandle.GetPropertiesAsync().ConfigureAwait(false);
-            await arrayHandle.DisposeAsync().ConfigureAwait(false);
-
-            return properties.Values.OfType<IElementHandle>().ToArray();
+            var (updatedSelector, queryHandler) = CustomQueriesManager.GetQueryHandlerAndSelector(selector);
+            return queryHandler.QueryAll(this, updatedSelector);
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// A utility function to be used with <see cref="PuppeteerHandleExtensions.EvaluateFunctionAsync{T}(Task{IJSHandle}, string, object[])"/>
+        /// </summary>
+        /// <param name="selector">A selector to query element for</param>
+        /// <returns>Task which resolves to a <see cref="IJSHandle"/> of <c>document.querySelectorAll</c> result</returns>
         public Task<IJSHandle> QuerySelectorAllHandleAsync(string selector)
-            => ExecutionContext.EvaluateFunctionHandleAsync(
-                "(element, selector) => Array.from(element.querySelectorAll(selector))", this, selector);
+        {
+            var (updatedSelector, queryHandler) = CustomQueriesManager.GetQueryHandlerAndSelector(selector);
+            return queryHandler.QueryAllArray(this, updatedSelector);
+        }
 
         /// <inheritdoc/>
         public async Task<IElementHandle[]> XPathAsync(string expression)

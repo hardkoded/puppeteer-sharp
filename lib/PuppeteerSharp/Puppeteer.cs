@@ -1,4 +1,6 @@
+﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Mobile;
@@ -106,7 +108,6 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>The browser fetcher.</returns>
         /// <param name="options">Options.</param>
-        public static IBrowserFetcher CreateBrowserFetcher(BrowserFetcherOptions options)
-            => new BrowserFetcher(options);
+        public static IBrowserFetcher CreateBrowserFetcher(BrowserFetcherOptions options) => new(options);
     }
 }

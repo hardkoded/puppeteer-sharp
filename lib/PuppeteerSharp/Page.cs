@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -505,7 +505,7 @@ namespace PuppeteerSharp
         /// <param name="selector">A selector to query page for</param>
         /// <returns>Task which resolves to a <see cref="IJSHandle"/> of <c>document.querySelectorAll</c> result</returns>
         public Task<IJSHandle> QuerySelectorAllHandleAsync(string selector)
-            => EvaluateFunctionHandleAsync("selector => Array.from(document.querySelectorAll(selector))", selector);
+            => MainFrame.QuerySelectorAllHandleAsync(selector);
 
         /// <summary>
         /// Evaluates the XPath expression
@@ -1195,7 +1195,7 @@ namespace PuppeteerSharp
                 throw new ArgumentNullException(nameof(viewport));
             }
 
-            var needsReload = await _emulationManager.EmulateViewport(viewport).ConfigureAwait(false);
+            var needsReload = await _emulationManager.EmulateViewportAsync(viewport).ConfigureAwait(false);
             Viewport = viewport;
 
             if (needsReload)
