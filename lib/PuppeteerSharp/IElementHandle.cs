@@ -259,6 +259,15 @@ namespace PuppeteerSharp
         Task UploadFileAsync(params string[] filePaths);
 
         /// <summary>
+        /// Waits for a selector to be added to the DOM
+        /// </summary>
+        /// <param name="selector">A selector of an element to wait for</param>
+        /// <param name="options">Optional waiting parameters</param>
+        /// <returns>A task that resolves when element specified by selector string is added to DOM.
+        /// Resolves to `null` if waiting for `hidden: true` and selector is not found in DOM.</returns>
+        Task<IElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null);
+
+        /// <summary>
         /// Evaluates the XPath expression relative to the elementHandle. If there's no such element, the method will resolve to <c>null</c>.
         /// </summary>
         /// <param name="expression">Expression to evaluate <see href="https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate"/></param>

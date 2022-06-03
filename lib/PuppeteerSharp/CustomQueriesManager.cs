@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -40,7 +40,7 @@ namespace PuppeteerSharp
 
             if (!string.IsNullOrEmpty(handler.QueryOne))
             {
-                internalHandler.QueryOne = async (ElementHandle element, string selector) =>
+                internalHandler.QueryOne = async (IElementHandle element, string selector) =>
                 {
                     var jsHandle = await element.EvaluateFunctionHandleAsync(handler.QueryOne, selector).ConfigureAwait(false);
                     if (jsHandle is ElementHandle elementHandle)
@@ -58,7 +58,7 @@ namespace PuppeteerSharp
 
             if (!string.IsNullOrEmpty(handler.QueryAll))
             {
-                internalHandler.QueryAll = async (ElementHandle element, string selector) =>
+                internalHandler.QueryAll = async (IElementHandle element, string selector) =>
                 {
                     var jsHandle = await element.EvaluateFunctionHandleAsync(handler.QueryAll, selector).ConfigureAwait(false);
                     var properties = await jsHandle.GetPropertiesAsync().ConfigureAwait(false);
@@ -75,7 +75,7 @@ namespace PuppeteerSharp
                     return result.ToArray();
                 };
 
-                internalHandler.QueryAllArray = async (ElementHandle element, string selector) =>
+                internalHandler.QueryAllArray = async (IElementHandle element, string selector) =>
                 {
                     var resultHandle = await element.EvaluateFunctionHandleAsync(
                       handler.QueryAll,

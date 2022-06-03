@@ -11,6 +11,7 @@ namespace PuppeteerSharp
     internal class DOMWorld
     {
         private readonly FrameManager _frameManager;
+        private readonly CustomQueriesManager _customQueriesManager;
         private readonly TimeoutSettings _timeoutSettings;
         private bool _detached;
         private TaskCompletionSource<ExecutionContext> _contextResolveTaskWrapper;
@@ -19,6 +20,7 @@ namespace PuppeteerSharp
         public DOMWorld(FrameManager frameManager, Frame frame, TimeoutSettings timeoutSettings)
         {
             _frameManager = frameManager;
+            _customQueriesManager = ((Browser)frameManager.Page.Browser).CustomQueriesManager;
             Frame = frame;
             _timeoutSettings = timeoutSettings;
 
@@ -27,8 +29,6 @@ namespace PuppeteerSharp
             WaitTasks = new ConcurrentSet<WaitTask>();
             _detached = false;
         }
-
-        private CustomQueriesManager CustomQueriesManager => _frameManager.Page.Browser.CustomQueriesManager;
 
         internal ICollection<WaitTask> WaitTasks { get; set; }
 
@@ -229,7 +229,7 @@ namespace PuppeteerSharp
             throw new ArgumentException("Provide options with a `Url`, `Path` or `Content` property");
         }
 
-        internal async Task<ElementHandle> WaitForSelectorInPageAsync(string queryOne, string selector, WaitForSelectorOptions options)
+        internal async Task<IElementHandle> WaitForSelectorInPageAsync(string queryOne, string selector, WaitForSelectorOptions options)
         {
             var waitForVisible = options?.Visible ?? false;
             var waitForHidden = options?.Hidden ?? false;
@@ -397,7 +397,7 @@ namespace PuppeteerSharp
 
         internal Task<IElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
         {
-            var (updatedSelector, queryHandler) = CustomQueriesManager.GetQueryHandlerAndSelector(selector);
+            var (updatedSelector, queryHandler) = _customQueriesManager.GetQueryHandlerAndSelector(selector);
             return queryHandler.WaitFor(this, updatedSelector, options);
         }
 

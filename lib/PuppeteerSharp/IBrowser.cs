@@ -198,5 +198,30 @@ namespace PuppeteerSharp
         /// <param name="options">options</param>
         /// <returns>Resolves to the first target found that matches the predicate function.</returns>
         Task<ITarget> WaitForTargetAsync(Func<ITarget, bool> predicate, WaitForOptions options = null);
+
+        /// <summary>
+        /// Registers a custom query handler.
+        /// After registration, the handler can be used everywhere where a selector is
+        /// expected by prepending the selection string with `name/`. The name is
+        /// only allowed to consist of lower- and upper case latin letters.
+        /// </summary>
+        /// <example>
+        /// Puppeteer.RegisterCustomQueryHandler("text", "{ … }");
+        /// var aHandle = await page.QuerySelectorAsync("text/…");
+        /// </example>
+        /// <param name="name">The name that the custom query handler will be registered under.</param>
+        /// <param name="queryHandler">The query handler to register</param>
+        void RegisterCustomQueryHandler(string name, CustomQueryHandler queryHandler);
+
+        /// <summary>
+        /// Unregisters a custom query handler
+        /// </summary>
+        /// <param name="name">The name of the query handler to unregistered.</param>
+        void UnregisterCustomQueryHandler(string name);
+
+        /// <summary>
+        /// Clears all registered handlers.
+        /// </summary>
+        void ClearCustomQueryHandlers();
     }
 }

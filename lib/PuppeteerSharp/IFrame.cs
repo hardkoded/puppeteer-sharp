@@ -269,6 +269,13 @@ namespace PuppeteerSharp
         Task<IElementHandle[]> QuerySelectorAllAsync(string selector);
 
         /// <summary>
+        /// A utility function to be used with <see cref="PuppeteerHandleExtensions.EvaluateFunctionAsync{T}(Task{IJSHandle}, string, object[])"/>
+        /// </summary>
+        /// <param name="selector">A selector to query page for</param>
+        /// <returns>Task which resolves to a <see cref="IJSHandle"/> of <c>document.querySelectorAll</c> result</returns>
+        Task<IJSHandle> QuerySelectorAllHandleAsync(string selector);
+
+        /// <summary>
         /// Queries frame for the selector. If there's no such element within the frame, the method will resolve to <c>null</c>.
         /// </summary>
         /// <param name="selector">Selector to query frame for</param>

@@ -15,7 +15,7 @@ namespace PuppeteerSharp
         private readonly object[] _args;
         private readonly string _title;
         private readonly Task _timeoutTimer;
-        private readonly ElementHandle _root;
+        private readonly IElementHandle _root;
         private readonly bool _predicateAcceptsContextElement;
         private readonly CancellationTokenSource _cts;
         private readonly TaskCompletionSource<IJSHandle> _taskCompletion;
@@ -120,7 +120,7 @@ async function waitForPredicatePageFunction(
             WaitForFunctionPollingOption polling,
             int? pollingInterval,
             int timeout,
-            ElementHandle root,
+            IElementHandle root,
             object[] args = null,
             bool predicateAcceptsContextElement = false)
         {

@@ -1,4 +1,4 @@
-﻿namespace PuppeteerSharp
+namespace PuppeteerSharp
 {
     /// <summary>
     /// Optional waiting parameters.
@@ -27,6 +27,6 @@
         /// <summary>
         /// Root element
         /// </summary>
-        public ElementHandle Root { get; set; }
+        public IElementHandle Root { get; set; }
     }
 }

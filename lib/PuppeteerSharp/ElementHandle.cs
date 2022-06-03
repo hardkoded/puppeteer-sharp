@@ -21,6 +21,7 @@ namespace PuppeteerSharp
     public class ElementHandle : JSHandle, IElementHandle
     {
         private readonly FrameManager _frameManager;
+        private readonly CustomQueriesManager _customQueriesManager;
         private readonly ILogger<ElementHandle> _logger;
 
         internal ElementHandle(
@@ -30,6 +31,7 @@ namespace PuppeteerSharp
             IFrame frame) : base(context, client, remoteObject)
         {
             _frameManager = ((Frame)frame).FrameManager;
+            _customQueriesManager = ((Browser)Page.Browser).CustomQueriesManager;
             _logger = client.LoggerFactory.CreateLogger<ElementHandle>();
         }
 
@@ -251,7 +253,7 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to <see cref="ElementHandle"/> pointing to the frame element</returns>
         public Task<IElementHandle> QuerySelectorAsync(string selector)
         {
-            var (updatedSelector, queryHandler) = CustomQueriesManager.GetQueryHandlerAndSelector(selector);
+            var (updatedSelector, queryHandler) = _customQueriesManager.GetQueryHandlerAndSelector(selector);
             return queryHandler.QueryOne(this, updatedSelector);
         }
 
@@ -262,7 +264,7 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to ElementHandles pointing to the frame elements</returns>
         public Task<IElementHandle[]> QuerySelectorAllAsync(string selector)
         {
-            var (updatedSelector, queryHandler) = CustomQueriesManager.GetQueryHandlerAndSelector(selector);
+            var (updatedSelector, queryHandler) = _customQueriesManager.GetQueryHandlerAndSelector(selector);
             return queryHandler.QueryAll(this, updatedSelector);
         }
 
@@ -273,7 +275,7 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to a <see cref="IJSHandle"/> of <c>document.querySelectorAll</c> result</returns>
         public Task<IJSHandle> QuerySelectorAllHandleAsync(string selector)
         {
-            var (updatedSelector, queryHandler) = CustomQueriesManager.GetQueryHandlerAndSelector(selector);
+            var (updatedSelector, queryHandler) = _customQueriesManager.GetQueryHandlerAndSelector(selector);
             return queryHandler.QueryAllArray(this, updatedSelector);
         }
 
@@ -506,6 +508,27 @@ namespace PuppeteerSharp
             }
 
             return new Point { X = x / 4, Y = y / 4 };
+        }
+
+        /// <inheritdoc/>
+        public async Task<IElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
+        {
+            var frame = (Frame)ExecutionContext.Frame;
+            var secondaryContext = await frame.SecondaryWorld.GetExecutionContextAsync().ConfigureAwait(false);
+            var adoptedRoot = await secondaryContext.AdoptElementHandleAsync(this).ConfigureAwait(false);
+            options ??= new WaitForSelectorOptions();
+            options.Root = adoptedRoot;
+
+            var handle = await frame.SecondaryWorld.WaitForSelectorAsync(selector, options).ConfigureAwait(false);
+            await adoptedRoot.DisposeAsync().ConfigureAwait(false);
+            if (handle == null)
+            {
+                return null;
+            }
+            var mainExecutionContext = await frame.MainWorld.GetExecutionContextAsync().ConfigureAwait(false);
+            var result = await mainExecutionContext.AdoptElementHandleAsync(handle).ConfigureAwait(false);
+            await handle.DisposeAsync().ConfigureAwait(false);
+            return result;
         }
 
         private IEnumerable<BoxModelPoint> IntersectQuadWithViewport(IEnumerable<BoxModelPoint> quad, PageGetLayoutMetricsResponse viewport)

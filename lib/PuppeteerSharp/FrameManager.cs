@@ -231,7 +231,7 @@ namespace PuppeteerSharp
         {
             while (_contextIdToContext.Count > 0)
             {
-                int key0 = _contextIdToContext.Keys.ElementAtOrDefault(0);
+                var key0 = _contextIdToContext.Keys.ElementAtOrDefault(0);
                 if (_contextIdToContext.TryRemove(key0, out var context))
                 {
                     if (context.World != null)

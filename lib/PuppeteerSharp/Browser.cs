@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -341,13 +341,13 @@ namespace PuppeteerSharp
         /// Unregisters a custom query handler
         /// </summary>
         /// <param name="name">The name of the query handler to unregistered.</param>
-        internal void UnregisterCustomQueryHandler(string name)
+        public void UnregisterCustomQueryHandler(string name)
             => CustomQueriesManager.UnregisterCustomQueryHandler(name);
 
         /// <summary>
         /// Clears all registered handlers.
         /// </summary>
-        internal void ClearCustomQueryHandlers()
+        public void ClearCustomQueryHandlers()
             => CustomQueriesManager.ClearCustomQueryHandlers();
 
         private async Task CloseCoreAsync()
