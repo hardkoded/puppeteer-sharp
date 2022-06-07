@@ -45,6 +45,7 @@ namespace CefSharp.Puppeteer
         private PageGetLayoutMetricsResponse _burstModeMetrics;
         private bool _screenshotBurstModeOn;
         private ScreenshotOptions _screenshotBurstModeOptions;
+        private bool _frameTreeLoaded;
 
         private static readonly Dictionary<string, decimal> _unitToPixels = new Dictionary<string, decimal> {
             { "px", 1 },
@@ -1937,7 +1938,23 @@ namespace CefSharp.Puppeteer
             return devToolsContext;
         }
 
-        internal async Task InitializeAsync()
+        /// <summary>
+        /// Create a new <see cref="IDevToolsContext"/> instance that's used
+        /// when running CefSharp out of process. Doesn't send and domain
+        /// enable commands or get the frame tree
+        /// </summary>
+        /// <param name="connection">connection</param>
+        /// <returns>DevToolsContext</returns>
+        public static IDevToolsContext CreateForOutOfProcess(Connection connection)
+        {
+            var devToolsContext = new DevToolsContext(connection);
+
+            devToolsContext.WireUpEvents();
+
+            return devToolsContext;
+        }
+
+        internal void WireUpEvents()
         {
             FrameManager = new FrameManager(Client, this, _timeoutSettings);
 
@@ -1951,6 +1968,32 @@ namespace CefSharp.Puppeteer
             FrameManager.NetworkManager.Response += (_, e) => Response?.Invoke(this, e);
             FrameManager.NetworkManager.RequestFinished += (_, e) => RequestFinished?.Invoke(this, e);
             FrameManager.NetworkManager.RequestServedFromCache += (_, e) => RequestServedFromCache?.Invoke(this, e);
+        }
+
+        /// <summary>
+        /// Loads the frame tree. Multiple calls will be ignored.
+        /// Generally speaking this method is not expected to be called directly by the user
+        /// </summary>
+        /// <returns>A Task that when awaited loads the frame tree</returns>
+        public async Task InvokeGetFrameTree()
+        {
+            if (_frameTreeLoaded)
+            {
+                return;
+            }
+
+            var frameTreeResponse = await Client.SendAsync<PageGetFrameTreeResponse>("Page.getFrameTree").ConfigureAwait(false);
+
+            await FrameManager.HandleFrameTreeAsync(new FrameTree(frameTreeResponse.FrameTree)).ConfigureAwait(false);
+
+            await FrameManager.EnsureIsolatedWorldAsync(FrameManager.UtilityWorldName).ConfigureAwait(false);
+
+            _frameTreeLoaded = true;
+        }
+
+        internal async Task InitializeAsync()
+        {
+            WireUpEvents();
 
             await Task.WhenAll(
                Client.SendAsync("Page.enable"),
@@ -1960,11 +2003,7 @@ namespace CefSharp.Puppeteer
                Client.SendAsync("Performance.enable"),
                Client.SendAsync("Log.enable")).ConfigureAwait(false);
 
-            var frameTreeResponse = await Client.SendAsync<PageGetFrameTreeResponse>("Page.getFrameTree").ConfigureAwait(false);
-
-            await FrameManager.HandleFrameTreeAsync(new FrameTree(frameTreeResponse.FrameTree)).ConfigureAwait(false);
-
-            await FrameManager.EnsureIsolatedWorldAsync(FrameManager.UtilityWorldName).ConfigureAwait(false);
+            await InvokeGetFrameTree().ConfigureAwait(false);
         }
 
         private async Task<Response> GoAsync(int delta, NavigationOptions options)

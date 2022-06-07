@@ -29,7 +29,6 @@
   <ItemGroup>
     <Compile Remove="CefSharpConnectionTransport.cs" />
     <Compile Remove="CefSharpDevMessageObserver.cs" />
-    <Compile Remove="DevToolsContext.cs" />
     <Compile Remove="Page.cs" />
     <Compile Remove="WebBrowserExtensions.cs" />
   </ItemGroup>
