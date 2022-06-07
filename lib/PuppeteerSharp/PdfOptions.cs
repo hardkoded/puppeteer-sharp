@@ -5,7 +5,7 @@ using CefSharp.Puppeteer.Media;
 namespace CefSharp.Puppeteer
 {
     /// <summary>
-    /// Options to be used in <see cref="DevToolsContext.PdfAsync(string, PdfOptions)"/>, <see cref="DevToolsContext.PdfStreamAsync(PdfOptions)"/> and <see cref="DevToolsContext.PdfDataAsync(PdfOptions)"/>
+    /// Options to be used in <see cref="IDevToolsContext.PdfAsync(string, PdfOptions)"/>, <see cref="IDevToolsContext.PdfStreamAsync(PdfOptions)"/> and <see cref="IDevToolsContext.PdfDataAsync(PdfOptions)"/>
     /// </summary>
     public class PdfOptions : IEquatable<PdfOptions>
     {

@@ -1,7 +1,7 @@
 namespace CefSharp.Puppeteer
 {
     /// <summary>
-    /// Options to be used in <see cref="DevToolsContext.AuthenticateAsync(Credentials)"/>
+    /// Options to be used in <see cref="IDevToolsContext.AuthenticateAsync(Credentials)"/>
     /// </summary>
     public class Credentials
     {

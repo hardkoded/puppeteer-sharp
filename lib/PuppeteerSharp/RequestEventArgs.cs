@@ -3,11 +3,11 @@ using System;
 namespace CefSharp.Puppeteer
 {
     /// <summary>
-    /// Arguments used by <see cref="DevToolsContext"/> events.
+    /// Arguments used by <see cref="IDevToolsContext"/> events.
     /// </summary>
-    /// <seealso cref="DevToolsContext.Request"/>
-    /// <seealso cref="DevToolsContext.RequestFailed"/>
-    /// <seealso cref="DevToolsContext.RequestFinished"/>
+    /// <seealso cref="IDevToolsContext.Request"/>
+    /// <seealso cref="IDevToolsContext.RequestFailed"/>
+    /// <seealso cref="IDevToolsContext.RequestFinished"/>
     public class RequestEventArgs : EventArgs
     {
         /// <summary>

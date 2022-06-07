@@ -22,7 +22,7 @@ namespace CefSharp.Puppeteer
         private const string RefererHeaderName = "referer";
         public const string UtilityWorldName = "__puppeteer_utility_world__";
 
-        internal FrameManager(Connection client, DevToolsContext devToolsContext, TimeoutSettings timeoutSettings)
+        internal FrameManager(Connection client, IDevToolsContext devToolsContext, TimeoutSettings timeoutSettings)
         {
             Client = client;
             DevToolsContext = devToolsContext;
@@ -54,7 +54,7 @@ namespace CefSharp.Puppeteer
 
         internal Frame MainFrame { get; set; }
 
-        internal DevToolsContext DevToolsContext { get; }
+        internal IDevToolsContext DevToolsContext { get; }
 
         internal TimeoutSettings TimeoutSettings { get; }
         #endregion

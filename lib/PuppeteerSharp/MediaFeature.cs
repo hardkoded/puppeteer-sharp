@@ -5,7 +5,7 @@ using Newtonsoft.Json.Converters;
 namespace CefSharp.Puppeteer
 {
     /// <summary>
-    /// Meadia Feature. See <see cref="DevToolsContext.EmulateMediaFeaturesAsync(System.Collections.Generic.IEnumerable{MediaFeatureValue})"/>
+    /// Meadia Feature. See <see cref="IDevToolsContext.EmulateMediaFeaturesAsync(System.Collections.Generic.IEnumerable{MediaFeatureValue})"/>
     /// </summary>
     [JsonConverter(typeof(StringEnumConverter))]
     public enum MediaFeature

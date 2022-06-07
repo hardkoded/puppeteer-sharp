@@ -15,7 +15,7 @@ namespace CefSharp.Puppeteer
 {
     /// <summary>
     /// Inherits from <see cref="JSHandle"/>. It represents an in-page DOM element.
-    /// ElementHandles can be created by <see cref="DevToolsContext.QuerySelectorAsync(string)"/> or <see cref="DevToolsContext.QuerySelectorAllAsync(string)"/>.
+    /// ElementHandles can be created by <see cref="IDevToolsContext.QuerySelectorAsync(string)"/> or <see cref="IDevToolsContext.QuerySelectorAllAsync(string)"/>.
     /// </summary>
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class ElementHandle : JSHandle
@@ -27,7 +27,7 @@ namespace CefSharp.Puppeteer
             ExecutionContext context,
             Connection client,
             RemoteObject remoteObject,
-            DevToolsContext devToolsContext,
+            IDevToolsContext devToolsContext,
             FrameManager frameManager) : base(context, client, remoteObject)
         {
             DevToolsContext = devToolsContext;
@@ -35,13 +35,13 @@ namespace CefSharp.Puppeteer
             _logger = client.LoggerFactory.CreateLogger<ElementHandle>();
         }
 
-        internal DevToolsContext DevToolsContext { get; }
+        internal IDevToolsContext DevToolsContext { get; }
 
         private string DebuggerDisplay =>
             string.IsNullOrEmpty(RemoteObject.ClassName) ? ToString() : $"{RemoteObject.ClassName}@{RemoteObject.Description}";
 
         /// <summary>
-        /// This method scrolls element into view if needed, and then uses <seealso cref="DevToolsContext.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
+        /// This method scrolls element into view if needed, and then uses <seealso cref="IDevToolsContext.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
         /// If the element is detached from DOM, the method throws an error.
         /// </summary>
         /// <returns>The task</returns>
@@ -51,7 +51,7 @@ namespace CefSharp.Puppeteer
         public Task ScreenshotAsync(string file) => ScreenshotAsync(file, new ScreenshotOptions());
 
         /// <summary>
-        /// This method scrolls element into view if needed, and then uses <seealso cref="DevToolsContext.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
+        /// This method scrolls element into view if needed, and then uses <seealso cref="IDevToolsContext.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
         /// If the element is detached from DOM, the method throws an error.
         /// </summary>
         /// <returns>The task</returns>
@@ -80,14 +80,14 @@ namespace CefSharp.Puppeteer
         }
 
         /// <summary>
-        /// This method scrolls element into view if needed, and then uses <seealso cref="DevToolsContext.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
+        /// This method scrolls element into view if needed, and then uses <seealso cref="IDevToolsContext.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
         /// If the element is detached from DOM, the method throws an error.
         /// </summary>
         /// <returns>Task which resolves to a <see cref="Stream"/> containing the image data.</returns>
         public Task<Stream> ScreenshotStreamAsync() => ScreenshotStreamAsync(new ScreenshotOptions());
 
         /// <summary>
-        /// This method scrolls element into view if needed, and then uses <seealso cref="DevToolsContext.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
+        /// This method scrolls element into view if needed, and then uses <seealso cref="IDevToolsContext.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
         /// If the element is detached from DOM, the method throws an error.
         /// </summary>
         /// <returns>Task which resolves to a <see cref="Stream"/> containing the image data.</returns>
@@ -96,14 +96,14 @@ namespace CefSharp.Puppeteer
             => new MemoryStream(await ScreenshotDataAsync(options).ConfigureAwait(false));
 
         /// <summary>
-        /// This method scrolls element into view if needed, and then uses <seealso cref="DevToolsContext.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
+        /// This method scrolls element into view if needed, and then uses <seealso cref="IDevToolsContext.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
         /// If the element is detached from DOM, the method throws an error.
         /// </summary>
         /// <returns>Task which resolves to a <see cref="byte"/>[] containing the image data.</returns>
         public Task<byte[]> ScreenshotDataAsync() => ScreenshotDataAsync(new ScreenshotOptions());
 
         /// <summary>
-        /// This method scrolls element into view if needed, and then uses <seealso cref="DevToolsContext.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
+        /// This method scrolls element into view if needed, and then uses <seealso cref="IDevToolsContext.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
         /// If the element is detached from DOM, the method throws an error.
         /// </summary>
         /// <returns>Task which resolves to a <see cref="byte"/>[] containing the image data.</returns>
@@ -112,14 +112,14 @@ namespace CefSharp.Puppeteer
             => Convert.FromBase64String(await ScreenshotBase64Async(options).ConfigureAwait(false));
 
         /// <summary>
-        /// This method scrolls element into view if needed, and then uses <seealso cref="DevToolsContext.ScreenshotBase64Async(ScreenshotOptions)"/> to take a screenshot of the element.
+        /// This method scrolls element into view if needed, and then uses <seealso cref="IDevToolsContext.ScreenshotBase64Async(ScreenshotOptions)"/> to take a screenshot of the element.
         /// If the element is detached from DOM, the method throws an error.
         /// </summary>
         /// <returns>Task which resolves to a <see cref="string"/> containing the image data as base64.</returns>
         public Task<string> ScreenshotBase64Async() => ScreenshotBase64Async(new ScreenshotOptions());
 
         /// <summary>
-        /// This method scrolls element into view if needed, and then uses <seealso cref="DevToolsContext.ScreenshotBase64Async(ScreenshotOptions)"/> to take a screenshot of the element.
+        /// This method scrolls element into view if needed, and then uses <seealso cref="IDevToolsContext.ScreenshotBase64Async(ScreenshotOptions)"/> to take a screenshot of the element.
         /// If the element is detached from DOM, the method throws an error.
         /// </summary>
         /// <returns>Task which resolves to a <see cref="string"/> containing the image data as base64.</returns>
@@ -190,7 +190,7 @@ namespace CefSharp.Puppeteer
         }
 
         /// <summary>
-        /// Scrolls element into view if needed, and then uses <see cref="DevToolsContext.Mouse"/> to hover over the center of the element.
+        /// Scrolls element into view if needed, and then uses <see cref="IDevToolsContext.Mouse"/> to hover over the center of the element.
         /// </summary>
         /// <returns>Task which resolves when the element is successfully hovered</returns>
         public async Task HoverAsync()
@@ -201,7 +201,7 @@ namespace CefSharp.Puppeteer
         }
 
         /// <summary>
-        /// Scrolls element into view if needed, and then uses <see cref="DevToolsContext.Mouse"/> to click in the center of the element.
+        /// Scrolls element into view if needed, and then uses <see cref="IDevToolsContext.Mouse"/> to click in the center of the element.
         /// </summary>
         /// <param name="options">click options</param>
         /// <exception cref="PuppeteerException">if the element is detached from DOM</exception>

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace CefSharp.Puppeteer
 {
     /// <summary>
-    /// <seealso cref="DevToolsContext.Metrics"/> arguments.
+    /// <seealso cref="IDevToolsContext.Metrics"/> arguments.
     /// </summary>
     public class MetricEventArgs : EventArgs
     {

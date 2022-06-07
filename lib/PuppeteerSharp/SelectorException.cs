@@ -8,11 +8,11 @@ namespace CefSharp.Puppeteer
     /// </summary>
     /// <seealso cref="PuppeteerHandleExtensions.EvaluateFunctionAsync{T}(System.Threading.Tasks.Task{ElementHandle}, string, object[])"/>
     /// <seealso cref="Frame.SelectAsync(string, string[])"/>
-    /// <seealso cref="DevToolsContext.ClickAsync(string, Input.ClickOptions)"/>
-    /// <seealso cref="DevToolsContext.TapAsync(string)"/>
-    /// <seealso cref="DevToolsContext.HoverAsync(string)"/>
-    /// <seealso cref="DevToolsContext.FocusAsync(string)"/>
-    /// <seealso cref="DevToolsContext.SelectAsync(string, string[])"/>
+    /// <seealso cref="IDevToolsContext.ClickAsync(string, Input.ClickOptions)"/>
+    /// <seealso cref="IDevToolsContext.TapAsync(string)"/>
+    /// <seealso cref="IDevToolsContext.HoverAsync(string)"/>
+    /// <seealso cref="IDevToolsContext.FocusAsync(string)"/>
+    /// <seealso cref="IDevToolsContext.SelectAsync(string, string[])"/>
     [Serializable]
     public class SelectorException : PuppeteerException
     {

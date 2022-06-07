@@ -3,7 +3,7 @@ using System;
 namespace CefSharp.Puppeteer
 {
     /// <summary>
-    /// <see cref="DevToolsContext.Error"/> arguments.
+    /// <see cref="IDevToolsContext.Error"/> arguments.
     /// </summary>
     public class ErrorEventArgs : EventArgs
     {

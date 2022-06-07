@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 namespace CefSharp.Puppeteer
 {
     /// <summary>
-    /// Media Feature. <see cref="DevToolsContext.EmulateMediaFeaturesAsync(System.Collections.Generic.IEnumerable{MediaFeatureValue})"/>
+    /// Media Feature. <see cref="IDevToolsContext.EmulateMediaFeaturesAsync(System.Collections.Generic.IEnumerable{MediaFeatureValue})"/>
     /// </summary>
     public class MediaFeatureValue
     {

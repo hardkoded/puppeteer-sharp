@@ -5,9 +5,9 @@ namespace CefSharp.Puppeteer
     /// <summary>
     /// Cookie data.
     /// </summary>
-    /// <seealso cref="DevToolsContext.SetContentAsync(string, NavigationOptions)"/>
-    /// <seealso cref="DevToolsContext.DeleteCookieAsync(CookieParam[])"/>
-    /// <seealso cref="DevToolsContext.GetCookiesAsync(string[])"/>
+    /// <seealso cref="IDevToolsContext.SetContentAsync(string, NavigationOptions)"/>
+    /// <seealso cref="IDevToolsContext.DeleteCookieAsync(CookieParam[])"/>
+    /// <seealso cref="IDevToolsContext.GetCookiesAsync(string[])"/>
     public class CookieParam
     {
         /// <summary>

@@ -35,7 +35,7 @@ namespace CefSharp.Puppeteer
     /// </code>
     /// </example>
     [DebuggerDisplay("DevToolsContext {Url}")]
-    public class DevToolsContext : IDisposable, IAsyncDisposable
+    public class DevToolsContext : IDisposable, IAsyncDisposable, IDevToolsContext
     {
         private readonly EmulationManager _emulationManager;
         private readonly Dictionary<string, Delegate> _pageBindings;
@@ -318,7 +318,10 @@ namespace CefSharp.Puppeteer
         /// </summary>
         public bool IsDragInterceptionEnabled { get; private set; }
 
-        internal bool JavascriptEnabled { get; set; } = true;
+        /// <summary>
+        /// Is Javascript Enabled
+        /// </summary>
+        public bool JavascriptEnabled { get; set; } = true;
 
         internal bool HasPopupEventListeners => Popup?.GetInvocationList().Any() == true;
 

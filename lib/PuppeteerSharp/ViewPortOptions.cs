@@ -1,7 +1,7 @@
 namespace CefSharp.Puppeteer
 {
     /// <summary>
-    /// View port options used on <see cref="DevToolsContext.SetViewportAsync(ViewPortOptions)"/>.
+    /// View port options used on <see cref="IDevToolsContext.SetViewportAsync(ViewPortOptions)"/>.
     /// </summary>
     public class ViewPortOptions
     {

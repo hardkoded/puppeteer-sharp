@@ -10,7 +10,7 @@ namespace CefSharp.Puppeteer
     public static class Emulation
     {
         /// <summary>
-        /// Returns a list of devices to be used with <seealso cref="DevToolsContext.EmulateAsync(DeviceDescriptor)"/>.
+        /// Returns a list of devices to be used with <seealso cref="IDevToolsContext.EmulateAsync(DeviceDescriptor)"/>.
         /// </summary>
         /// <example>
         /// <code>
@@ -24,7 +24,7 @@ namespace CefSharp.Puppeteer
         public static IReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor> Devices => DeviceDescriptors.ToReadOnly();
 
         /// <summary>
-        /// Returns a list of network conditions to be used with <seealso cref="DevToolsContext.EmulateNetworkConditionsAsync(NetworkConditions)"/>.
+        /// Returns a list of network conditions to be used with <seealso cref="IDevToolsContext.EmulateNetworkConditionsAsync(NetworkConditions)"/>.
         /// Actual list of conditions can be found in <seealso cref="PredefinedNetworkConditions.Conditions"/>.
         /// </summary>
         /// <example>

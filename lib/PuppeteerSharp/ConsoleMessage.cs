@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace CefSharp.Puppeteer
 {
     /// <summary>
-    /// ConsoleMessage is part of <see cref="ConsoleEventArgs"/> used by <see cref="DevToolsContext.Console"/>.
+    /// ConsoleMessage is part of <see cref="ConsoleEventArgs"/> used by <see cref="IDevToolsContext.Console"/>.
     /// </summary>
     public class ConsoleMessage
     {

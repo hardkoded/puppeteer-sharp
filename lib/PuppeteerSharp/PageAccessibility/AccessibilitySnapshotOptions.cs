@@ -3,7 +3,7 @@ namespace CefSharp.Puppeteer.PageAccessibility
     /// <summary>
     /// <see cref="Accessibility.SnapshotAsync(AccessibilitySnapshotOptions)"/>
     /// </summary>
-    /// <seealso cref="DevToolsContext.Accessibility"/>
+    /// <seealso cref="IDevToolsContext.Accessibility"/>
     public class AccessibilitySnapshotOptions
     {
         /// <summary>

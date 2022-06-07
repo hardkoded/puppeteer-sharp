@@ -7,7 +7,7 @@ using CefSharp.Puppeteer.Messaging;
 namespace CefSharp.Puppeteer
 {
     /// <summary>
-    /// <see cref="FileChooser"/> objects are returned via the <seealso cref="DevToolsContext.WaitForFileChooserAsync(WaitForFileChooserOptions)"/> method.
+    /// <see cref="FileChooser"/> objects are returned via the <seealso cref="IDevToolsContext.WaitForFileChooserAsync(WaitForFileChooserOptions)"/> method.
     /// File choosers let you react to the page requesting for a file.
     /// </summary>
     /// <example>

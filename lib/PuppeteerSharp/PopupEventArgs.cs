@@ -3,13 +3,13 @@ using System;
 namespace CefSharp.Puppeteer
 {
     /// <summary>
-    /// Popup event arguments. <see cref="DevToolsContext.Popup"/>
+    /// Popup event arguments. <see cref="IDevToolsContext.Popup"/>
     /// </summary>
     public class PopupEventArgs : EventArgs
     {
         /// <summary>
         /// Gets the popup page.
         /// </summary>
-        public DevToolsContext PopupPage { get; internal set; }
+        public IDevToolsContext PopupPage { get; internal set; }
     }
 }

@@ -1,7 +1,7 @@
 namespace CefSharp.Puppeteer
 {
     /// <summary>
-    /// Options used by <see cref="DevToolsContext.AddScriptTagAsync(AddTagOptions)"/> &amp; <see cref="DevToolsContext.AddStyleTagAsync(AddTagOptions)"/>.
+    /// Options used by <see cref="IDevToolsContext.AddScriptTagAsync(AddTagOptions)"/> &amp; <see cref="IDevToolsContext.AddStyleTagAsync(AddTagOptions)"/>.
     /// </summary>
     public class AddTagOptions
     {

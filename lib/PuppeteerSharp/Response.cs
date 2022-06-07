@@ -13,11 +13,11 @@ namespace CefSharp.Puppeteer
     /// <summary>
     /// <see cref="Response"/> class represents responses which are received by page.
     /// </summary>
-    /// <seealso cref="DevToolsContext.GoAsync(int, NavigationOptions)"/>
-    /// <seealso cref="DevToolsContext.GoForwardAsync(NavigationOptions)"/>
-    /// <seealso cref="DevToolsContext.ReloadAsync(int?, WaitUntilNavigation[])"/>
-    /// <seealso cref="DevToolsContext.Response"/>
-    /// <seealso cref="DevToolsContext.WaitForResponseAsync(Func{Response, bool}, WaitForOptions)"/>
+    /// <seealso cref="IDevToolsContext.GoToAsync(string, NavigationOptions)"/>
+    /// <seealso cref="IDevToolsContext.GoForwardAsync(NavigationOptions)"/>
+    /// <seealso cref="IDevToolsContext.ReloadAsync(int?, WaitUntilNavigation[])"/>
+    /// <seealso cref="IDevToolsContext.Response"/>
+    /// <seealso cref="IDevToolsContext.WaitForResponseAsync(Func{Response, bool}, WaitForOptions)"/>
     public class Response
     {
         private readonly Connection _client;
