@@ -29,7 +29,6 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.Equal(Page.FirstChildFrame(), frame);
         }
 
-        [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.contentFrame", "should work headful")]
         [PuppeteerFact]
         public async Task ShouldWorkHeadful()
         {
