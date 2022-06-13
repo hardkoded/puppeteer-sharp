@@ -38,9 +38,15 @@ namespace CefSharp.Puppeteer
     {
         private readonly List<Frame> _childFrames = new List<Frame>();
 
-        internal string Id { get; set; }
+        /// <summary>
+        /// Frame Id
+        /// </summary>
+        public string Id { get; internal set; }
 
-        internal bool IsMainFrame { get; set; }
+        /// <summary>
+        /// IsMainFrame - true if main frame
+        /// </summary>
+        public bool IsMainFrame { get; internal set; }
 
         internal string LoaderId { get; set; }
 

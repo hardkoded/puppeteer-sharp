@@ -252,7 +252,7 @@ namespace CefSharp.Puppeteer
         /// <summary>
         /// Shortcut for <c>devToolsContext.MainFrame.Url</c>
         /// </summary>
-        public string Url => MainFrame.Url;
+        public string Url => MainFrame == null ? string.Empty : MainFrame.Url;
 
         /// <summary>
         /// Gets this page's keyboard
@@ -1975,7 +1975,7 @@ namespace CefSharp.Puppeteer
         /// Generally speaking this method is not expected to be called directly by the user
         /// </summary>
         /// <returns>A Task that when awaited loads the frame tree</returns>
-        public async Task InvokeGetFrameTree()
+        public async Task InvokeGetFrameTreeAsync()
         {
             if (_frameTreeLoaded)
             {
@@ -2003,7 +2003,7 @@ namespace CefSharp.Puppeteer
                Client.SendAsync("Performance.enable"),
                Client.SendAsync("Log.enable")).ConfigureAwait(false);
 
-            await InvokeGetFrameTree().ConfigureAwait(false);
+            await InvokeGetFrameTreeAsync().ConfigureAwait(false);
         }
 
         private async Task<Response> GoAsync(int delta, NavigationOptions options)
