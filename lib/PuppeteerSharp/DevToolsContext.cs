@@ -72,44 +72,28 @@ namespace CefSharp.Puppeteer
             Accessibility = new Accessibility(client);
         }
 
-        /// <summary>
-        /// Is Disposed
-        /// </summary>
+        /// <inheritdoc/>
         public bool IsDisposed { get; private set; }
 
-        /// <summary>
-        /// Chrome DevTools Protocol session.
-        /// </summary>
+        /// <inheritdoc/>
         public Connection Client { get; }
 
-        /// <summary>
-        /// Raised when the JavaScript <c>load</c> <see href="https://developer.mozilla.org/en-US/docs/Web/Events/load"/> event is dispatched.
-        /// </summary>
+        /// <inheritdoc/>
         public event EventHandler Load;
 
-        /// <summary>
-        /// Raised when the page crashes
-        /// </summary>
+        /// <inheritdoc/>
         public event EventHandler<ErrorEventArgs> Error;
 
-        /// <summary>
-        /// Raised when the JavaScript code makes a call to <c>console.timeStamp</c>. For the list of metrics see <see cref="MetricsAsync"/>.
-        /// </summary>
+        /// <inheritdoc/>
         public event EventHandler<MetricEventArgs> Metrics;
 
-        /// <summary>
-        /// Raised when a JavaScript dialog appears, such as <c>alert</c>, <c>prompt</c>, <c>confirm</c> or <c>beforeunload</c>. Puppeteer can respond to the dialog via <see cref="Dialog"/>'s <see cref="Dialog.Accept(string)"/> or <see cref="Dialog.Dismiss"/> methods.
-        /// </summary>
+        /// <inheritdoc/>
         public event EventHandler<DialogEventArgs> Dialog;
 
-        /// <summary>
-        /// Raised when the JavaScript <c>DOMContentLoaded</c> <see href="https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded"/> event is dispatched.
-        /// </summary>
+        /// <inheritdoc/>
         public event EventHandler DOMContentLoaded;
 
-        /// <summary>
-        /// Fired for top level page lifecycle events such as navigation, load, paint, etc.
-        /// </summary>
+        /// <inheritdoc/>
         public event EventHandler<LifecycleEventArgs> LifecycleEvent;
 
         /// <summary>

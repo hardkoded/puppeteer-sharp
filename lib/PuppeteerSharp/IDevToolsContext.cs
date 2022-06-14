@@ -47,6 +47,11 @@ namespace CefSharp.Puppeteer
         event EventHandler DOMContentLoaded;
 
         /// <summary>
+        /// Fired for top level page lifecycle events such as navigation, load, paint, etc.
+        /// </summary>
+        event EventHandler<LifecycleEventArgs> LifecycleEvent;
+
+        /// <summary>
         /// Raised when the page crashes
         /// </summary>
 #pragma warning disable CA1716 // Identifiers should not match keywords
