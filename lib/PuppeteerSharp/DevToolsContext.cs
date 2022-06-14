@@ -108,6 +108,11 @@ namespace CefSharp.Puppeteer
         public event EventHandler DOMContentLoaded;
 
         /// <summary>
+        /// Fired for top level page lifecycle events such as navigation, load, paint, etc.
+        /// </summary>
+        public event EventHandler<LifecycleEventArgs> LifecycleEvent;
+
+        /// <summary>
         /// Raised when JavaScript within the page calls one of console API methods, e.g. <c>console.log</c> or <c>console.dir</c>. Also emitted if the page throws an error or a warning.
         /// The arguments passed into <c>console.log</c> appear as arguments on the event handler.
         /// </summary>
@@ -1962,6 +1967,7 @@ namespace CefSharp.Puppeteer
             FrameManager.FrameAttached += (_, e) => FrameAttached?.Invoke(this, e);
             FrameManager.FrameDetached += (_, e) => FrameDetached?.Invoke(this, e);
             FrameManager.FrameNavigated += (_, e) => FrameNavigated?.Invoke(this, e);
+            FrameManager.LifecycleEvent += (_, e) => LifecycleEvent?.Invoke(this, e);
 
             FrameManager.NetworkManager.Request += (_, e) => Request?.Invoke(this, e);
             FrameManager.NetworkManager.RequestFailed += (_, e) => RequestFailed?.Invoke(this, e);
