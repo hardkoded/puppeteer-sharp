@@ -8,9 +8,9 @@ using Xunit.Abstractions;
 namespace PuppeteerSharp.Tests.EmulationTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class PageViewPortTests : DevToolsContextBaseTest
+    public class DevToolsContextViewPortTests : DevToolsContextBaseTest
     {
-        public PageViewPortTests(ITestOutputHelper output) : base(output)
+        public DevToolsContextViewPortTests(ITestOutputHelper output) : base(output)
         {
         }
 

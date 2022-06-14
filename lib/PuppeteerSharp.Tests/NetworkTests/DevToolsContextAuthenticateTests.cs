@@ -11,9 +11,9 @@ using Xunit.Abstractions;
 namespace PuppeteerSharp.Tests.NetworkTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class PageAuthenticateTests : DevToolsContextBaseTest
+    public class DevToolsContextAuthenticateTests : DevToolsContextBaseTest
     {
-        public PageAuthenticateTests(ITestOutputHelper output) : base(output)
+        public DevToolsContextAuthenticateTests(ITestOutputHelper output) : base(output)
         {
         }
 

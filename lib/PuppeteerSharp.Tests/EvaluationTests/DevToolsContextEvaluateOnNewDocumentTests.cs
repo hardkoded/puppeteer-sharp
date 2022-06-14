@@ -12,9 +12,9 @@ using Xunit.Abstractions;
 namespace PuppeteerSharp.Tests.EvaluationTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class PageEvaluateOnNewDocumentTests : DevToolsContextBaseTest
+    public class DevToolsContextEvaluateOnNewDocumentTests : DevToolsContextBaseTest
     {
-        public PageEvaluateOnNewDocumentTests(ITestOutputHelper output) : base(output)
+        public DevToolsContextEvaluateOnNewDocumentTests(ITestOutputHelper output) : base(output)
         {
         }
 

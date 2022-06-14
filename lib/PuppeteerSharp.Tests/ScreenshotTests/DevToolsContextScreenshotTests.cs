@@ -12,9 +12,9 @@ using Xunit.Abstractions;
 namespace PuppeteerSharp.Tests.ScreenshotTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class PageScreenshotTests : DevToolsContextBaseTest
+    public class DevToolsContextScreenshotTests : DevToolsContextBaseTest
     {
-        public PageScreenshotTests(ITestOutputHelper output) : base(output)
+        public DevToolsContextScreenshotTests(ITestOutputHelper output) : base(output)
         {
         }
 

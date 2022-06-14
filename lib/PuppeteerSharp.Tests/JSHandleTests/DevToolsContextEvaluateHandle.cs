@@ -8,9 +8,9 @@ using Xunit.Abstractions;
 namespace PuppeteerSharp.Tests.JSHandleTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class PageEvaluateHandle : DevToolsContextBaseTest
+    public class DevToolsContextEvaluateHandle : DevToolsContextBaseTest
     {
-        public PageEvaluateHandle(ITestOutputHelper output) : base(output)
+        public DevToolsContextEvaluateHandle(ITestOutputHelper output) : base(output)
         {
         }
 

@@ -11,9 +11,9 @@ using CefSharp.Puppeteer;
 namespace PuppeteerSharp.Tests.NetworkTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class PageEventRequestTests : DevToolsContextBaseTest
+    public class DevToolsContextEventRequestTests : DevToolsContextBaseTest
     {
-        public PageEventRequestTests(ITestOutputHelper output) : base(output)
+        public DevToolsContextEventRequestTests(ITestOutputHelper output) : base(output)
         {
         }
 

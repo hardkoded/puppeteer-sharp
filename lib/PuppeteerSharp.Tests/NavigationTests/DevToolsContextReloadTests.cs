@@ -7,9 +7,9 @@ using PuppeteerSharp.Xunit;
 namespace PuppeteerSharp.Tests.NavigationTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class PageReloadTests : DevToolsContextBaseTest
+    public class DevToolsContextReloadTests : DevToolsContextBaseTest
     {
-        public PageReloadTests(ITestOutputHelper output) : base(output)
+        public DevToolsContextReloadTests(ITestOutputHelper output) : base(output)
         {
         }
 

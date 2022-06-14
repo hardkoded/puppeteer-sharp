@@ -7,9 +7,9 @@ using Xunit.Abstractions;
 namespace PuppeteerSharp.Tests.NavigationTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class PageGoBackTests : DevToolsContextBaseTest
+    public class DevToolsContextGoBackTests : DevToolsContextBaseTest
     {
-        public PageGoBackTests(ITestOutputHelper output) : base(output)
+        public DevToolsContextGoBackTests(ITestOutputHelper output) : base(output)
         {
         }
 

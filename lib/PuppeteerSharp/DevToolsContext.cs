@@ -27,7 +27,7 @@ namespace CefSharp.Puppeteer
     /// Provides methods to interact with a ChromiumWebBrowser instance
     /// </summary>
     /// <example>
-    /// This example creates a page, navigates it to a URL, and then saves a screenshot:
+    /// This example creates a devToolsContext, navigates it to a URL, and then saves a screenshot:
     /// <code>
     /// var devToolsContext = await chromiumWebBrowser.GetDevToolsContextAsync();
     /// await devToolsContext.GoToAsync("https://example.com");
@@ -157,7 +157,7 @@ namespace CefSharp.Puppeteer
         public event EventHandler<ResponseCreatedEventArgs> Response;
 
         /// <summary>
-        /// Raised when a page issues a request. The <see cref="Request"/> object is read-only.
+        /// Raised when a browser issues a request. The <see cref="Request"/> object is read-only.
         /// In order to intercept and mutate requests, see <see cref="SetRequestInterceptionAsync(bool)"/>
         /// </summary>
         public event EventHandler<RequestEventArgs> Request;
@@ -183,7 +183,7 @@ namespace CefSharp.Puppeteer
         public event EventHandler<PageErrorEventArgs> PageError;
 
         /// <summary>
-        /// Raised when the page opens a new tab or window.
+        /// Raised when the browser opens a new tab or window.
         /// </summary>
         public event EventHandler<PopupEventArgs> Popup;
 
@@ -225,10 +225,10 @@ namespace CefSharp.Puppeteer
         }
 
         /// <summary>
-        /// Gets page's main frame
+        /// Gets browser's main frame
         /// </summary>
         /// <remarks>
-        /// Page is guaranteed to have a main frame which persists during navigations.
+        /// Browser is guaranteed to have a main frame which persists during navigations.
         /// </remarks>
         public Frame MainFrame => FrameManager.MainFrame;
 
@@ -244,32 +244,32 @@ namespace CefSharp.Puppeteer
         public string Url => MainFrame == null ? string.Empty : MainFrame.Url;
 
         /// <summary>
-        /// Gets this page's keyboard
+        /// Gets this devToolsContext keyboard
         /// </summary>
         public Keyboard Keyboard { get; }
 
         /// <summary>
-        /// Gets this page's touchscreen
+        /// Gets this devToolsContext touchscreen
         /// </summary>
         public Touchscreen Touchscreen { get; }
 
         /// <summary>
-        /// Gets this page's coverage
+        /// Gets this devToolsContext coverage
         /// </summary>
         public Coverage Coverage { get; }
 
         /// <summary>
-        /// Gets this page's tracing
+        /// Gets this devToolsContext tracing
         /// </summary>
         public Tracing Tracing { get; }
 
         /// <summary>
-        /// Gets this page's mouse
+        /// Gets this devToolsContext mouse
         /// </summary>
         public Mouse Mouse { get; }
 
         /// <summary>
-        /// Gets this page's viewport
+        /// Gets this devToolsContext viewport
         /// </summary>
         public ViewPortOptions Viewport { get; private set; }
 

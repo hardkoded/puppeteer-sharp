@@ -13,9 +13,9 @@ using Microsoft.AspNetCore.Http;
 namespace PuppeteerSharp.Tests.NavigationTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class PageGotoTests : DevToolsContextBaseTest
+    public class DevToolsContextGotoTests : DevToolsContextBaseTest
     {
-        public PageGotoTests(ITestOutputHelper output) : base(output, ignoreHTTPSerrors:false)
+        public DevToolsContextGotoTests(ITestOutputHelper output) : base(output, ignoreHTTPSerrors:false)
         {
         }
 

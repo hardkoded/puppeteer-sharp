@@ -8,9 +8,9 @@ using PuppeteerSharp.Tests.Attributes;
 namespace PuppeteerSharp.Tests.QuerySelectorTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class PageQuerySelectorAllTests : DevToolsContextBaseTest
+    public class DevToolsContextQuerySelectorAllTests : DevToolsContextBaseTest
     {
-        public PageQuerySelectorAllTests(ITestOutputHelper output) : base(output)
+        public DevToolsContextQuerySelectorAllTests(ITestOutputHelper output) : base(output)
         {
         }
 

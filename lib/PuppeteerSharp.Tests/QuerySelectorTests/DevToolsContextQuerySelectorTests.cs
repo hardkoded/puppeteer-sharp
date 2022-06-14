@@ -9,9 +9,9 @@ using CefSharp.Puppeteer;
 namespace PuppeteerSharp.Tests.QuerySelectorTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class PageQuerySelectorTests : DevToolsContextBaseTest
+    public class DevToolsContextQuerySelectorTests : DevToolsContextBaseTest
     {
-        public PageQuerySelectorTests(ITestOutputHelper output) : base(output)
+        public DevToolsContextQuerySelectorTests(ITestOutputHelper output) : base(output)
         {
         }
 

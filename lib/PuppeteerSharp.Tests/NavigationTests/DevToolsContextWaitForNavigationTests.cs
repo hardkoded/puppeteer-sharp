@@ -10,9 +10,9 @@ using PuppeteerSharp.Xunit;
 namespace PuppeteerSharp.Tests.DevToolsContextTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class PageWaitForNavigationTests : DevToolsContextBaseTest
+    public class DevToolsContextWaitForNavigationTests : DevToolsContextBaseTest
     {
-        public PageWaitForNavigationTests(ITestOutputHelper output) : base(output)
+        public DevToolsContextWaitForNavigationTests(ITestOutputHelper output) : base(output)
         {
         }
 

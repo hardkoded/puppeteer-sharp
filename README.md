@@ -93,7 +93,7 @@ foreach(var div in divElements)
     await div.SetPropertyValueAsync("innerText", "Updated Div innerText");
 }
 ```
-<sup><a href='/lib/PuppeteerSharp.Tests/QuerySelectorTests/PageQuerySelectorTests.cs#L22-L57' title='Snippet source file'>snippet source</a> | <a href='#snippet-queryselector' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/lib/PuppeteerSharp.Tests/QuerySelectorTests/DevToolsContextQuerySelectorTests.cs#L22-L57' title='Snippet source file'>snippet source</a> | <a href='#snippet-queryselector' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ## Inject HTML

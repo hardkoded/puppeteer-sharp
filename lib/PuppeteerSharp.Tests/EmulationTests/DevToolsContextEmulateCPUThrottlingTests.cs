@@ -6,9 +6,9 @@ using Xunit.Abstractions;
 namespace PuppeteerSharp.Tests.EmulationTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class PageEmulateCPUThrottlingTests : DevToolsContextBaseTest
+    public class DevToolsContextEmulateCPUThrottlingTests : DevToolsContextBaseTest
     {
-        public PageEmulateCPUThrottlingTests(ITestOutputHelper output) : base(output)
+        public DevToolsContextEmulateCPUThrottlingTests(ITestOutputHelper output) : base(output)
         {
         }
 
