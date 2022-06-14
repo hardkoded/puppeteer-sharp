@@ -55,9 +55,9 @@ namespace CefSharp.Puppeteer
         };
 
         internal DevToolsContext(
-            Connection client)
+            DevToolsConnection client)
         {
-            Client = client;
+            Connection = client;
             Keyboard = new Keyboard(client);
             Mouse = new Mouse(client, Keyboard);
             Touchscreen = new Touchscreen(client, Keyboard);
@@ -68,7 +68,7 @@ namespace CefSharp.Puppeteer
             _timeoutSettings = new TimeoutSettings();
             _emulationManager = new EmulationManager(client);
             _pageBindings = new Dictionary<string, Delegate>();
-            _logger = Client.LoggerFactory.CreateLogger<DevToolsContext>();
+            _logger = Connection.LoggerFactory.CreateLogger<DevToolsContext>();
             Accessibility = new Accessibility(client);
         }
 
@@ -76,7 +76,7 @@ namespace CefSharp.Puppeteer
         public bool IsDisposed { get; private set; }
 
         /// <inheritdoc/>
-        public Connection Client { get; }
+        public DevToolsConnection Connection { get; }
 
         /// <inheritdoc/>
         public event EventHandler Load;
@@ -330,7 +330,7 @@ namespace CefSharp.Puppeteer
         public Task SetDragInterceptionAsync(bool enabled)
         {
             IsDragInterceptionEnabled = enabled;
-            return Client.SendAsync("Input.setInterceptDrags", new InputSetInterceptDragsRequest { Enabled = enabled });
+            return Connection.SendAsync("Input.setInterceptDrags", new InputSetInterceptDragsRequest { Enabled = enabled });
         }
 
         /// <summary>
@@ -342,7 +342,7 @@ namespace CefSharp.Puppeteer
         /// </remarks>
         public async Task<Dictionary<string, decimal>> MetricsAsync()
         {
-            var response = await Client.SendAsync<PerformanceGetMetricsResponse>("Performance.getMetrics").ConfigureAwait(false);
+            var response = await Connection.SendAsync<PerformanceGetMetricsResponse>("Performance.getMetrics").ConfigureAwait(false);
             return BuildMetricsObject(response.Metrics);
         }
 
@@ -453,7 +453,7 @@ namespace CefSharp.Puppeteer
         public Task EvaluateFunctionOnNewDocumentAsync(string pageFunction, params object[] args)
         {
             var source = EvaluationString(pageFunction, args);
-            return Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new PageAddScriptToEvaluateOnNewDocumentRequest
+            return Connection.SendAsync("Page.addScriptToEvaluateOnNewDocument", new PageAddScriptToEvaluateOnNewDocumentRequest
             {
                 Source = source
             });
@@ -476,7 +476,7 @@ namespace CefSharp.Puppeteer
         /// </example>
         /// <returns>Task</returns>
         public Task EvaluateExpressionOnNewDocumentAsync(string expression)
-            => Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new PageAddScriptToEvaluateOnNewDocumentRequest
+            => Connection.SendAsync("Page.addScriptToEvaluateOnNewDocument", new PageAddScriptToEvaluateOnNewDocumentRequest
             {
                 Source = expression
             });
@@ -535,7 +535,7 @@ namespace CefSharp.Puppeteer
                 throw new ArgumentNullException(nameof(urls));
             }
 
-            var response = await Client.SendAsync<NetworkGetCookiesResponse>("Network.getCookies", new NetworkGetCookiesRequest
+            var response = await Connection.SendAsync<NetworkGetCookiesResponse>("Network.getCookies", new NetworkGetCookiesRequest
             {
                 Urls = urls.Length > 0 ? urls : new string[] { Url }
             }).ConfigureAwait(false);
@@ -571,7 +571,7 @@ namespace CefSharp.Puppeteer
 
             if (cookies.Length > 0)
             {
-                await Client.SendAsync("Network.setCookies", new NetworkSetCookiesRequest
+                await Connection.SendAsync("Network.setCookies", new NetworkSetCookiesRequest
                 {
                     Cookies = cookies
                 }).ConfigureAwait(false);
@@ -597,7 +597,7 @@ namespace CefSharp.Puppeteer
                 {
                     cookie.Url = pageURL;
                 }
-                await Client.SendAsync("Network.deleteCookies", cookie).ConfigureAwait(false);
+                await Connection.SendAsync("Network.deleteCookies", cookie).ConfigureAwait(false);
             }
         }
 
@@ -913,7 +913,7 @@ namespace CefSharp.Puppeteer
                 await SetTransparentBackgroundColorAsync().ConfigureAwait(false);
             }
 
-            var result = await Client.SendAsync<PagePrintToPDFResponse>("Page.printToPDF", new PagePrintToPDFRequest
+            var result = await Connection.SendAsync<PagePrintToPDFResponse>("Page.printToPDF", new PagePrintToPDFRequest
             {
                 TransferMode = "ReturnAsStream",
                 Landscape = options.Landscape,
@@ -937,7 +937,7 @@ namespace CefSharp.Puppeteer
                 await ResetDefaultBackgroundColorAsync().ConfigureAwait(false);
             }
 
-            return await ProtocolStreamReader.ReadProtocolStreamByteAsync(Client, result.Stream, file).ConfigureAwait(false);
+            return await ProtocolStreamReader.ReadProtocolStreamByteAsync(Connection, result.Stream, file).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -952,7 +952,7 @@ namespace CefSharp.Puppeteer
                 return Task.CompletedTask;
             }
             JavascriptEnabled = enabled;
-            return Client.SendAsync("Emulation.setScriptExecutionDisabled", new EmulationSetScriptExecutionDisabledRequest
+            return Connection.SendAsync("Emulation.setScriptExecutionDisabled", new EmulationSetScriptExecutionDisabledRequest
             {
                 Value = !enabled
             });
@@ -965,7 +965,7 @@ namespace CefSharp.Puppeteer
         /// <returns>Task.</returns>
         public Task SetAutoDarkModeOverrideAsync(bool? enabled)
         {
-            return Client.SendAsync("Emulation.setAutoDarkModeOverride", new SetAutoDarkModeOverrideRequest
+            return Connection.SendAsync("Emulation.setAutoDarkModeOverride", new SetAutoDarkModeOverrideRequest
             {
                 Enabled = enabled
             });
@@ -980,7 +980,7 @@ namespace CefSharp.Puppeteer
         /// CSP bypassing happens at the moment of CSP initialization rather then evaluation.
         /// Usually this means that <see cref="SetBypassCSPAsync(bool)"/> should be called before navigating to the domain.
         /// </remarks>
-        public Task SetBypassCSPAsync(bool enabled) => Client.SendAsync("Page.setBypassCSP", new PageSetBypassCSPRequest
+        public Task SetBypassCSPAsync(bool enabled) => Connection.SendAsync("Page.setBypassCSP", new PageSetBypassCSPRequest
         {
             Enabled = enabled
         });
@@ -1011,7 +1011,7 @@ namespace CefSharp.Puppeteer
         /// </example>
         /// <returns>Emulate media type task.</returns>
         public Task EmulateMediaTypeAsync(MediaType type)
-            => Client.SendAsync("Emulation.setEmulatedMedia", new EmulationSetEmulatedMediaTypeRequest { Media = type });
+            => Connection.SendAsync("Emulation.setEmulatedMedia", new EmulationSetEmulatedMediaTypeRequest { Media = type });
 
         /// <summary>
         /// Given an array of media feature objects, emulates CSS media features on the page.
@@ -1052,7 +1052,7 @@ namespace CefSharp.Puppeteer
         /// </example>
         /// <returns>Emulate features task</returns>
         public Task EmulateMediaFeaturesAsync(IEnumerable<MediaFeatureValue> features)
-            => Client.SendAsync("Emulation.setEmulatedMedia", new EmulationSetEmulatedMediaFeatureRequest { Features = features });
+            => Connection.SendAsync("Emulation.setEmulatedMedia", new EmulationSetEmulatedMediaFeatureRequest { Features = features });
 
         /// <summary>
         /// Sets the viewport.
@@ -1417,7 +1417,7 @@ namespace CefSharp.Puppeteer
 
             await Task.WhenAll(
               navigationTask,
-              Client.SendAsync("Page.reload", new PageReloadRequest { FrameId = MainFrame.Id })).ConfigureAwait(false);
+              Connection.SendAsync("Page.reload", new PageReloadRequest { FrameId = MainFrame.Id })).ConfigureAwait(false);
 
             return navigationTask.Result;
         }
@@ -1751,7 +1751,7 @@ namespace CefSharp.Puppeteer
         {
             if (!_fileChooserInterceptors.Any())
             {
-                await Client.SendAsync("Page.setInterceptFileChooserDialog", new PageSetInterceptFileChooserDialog
+                await Connection.SendAsync("Page.setInterceptFileChooserDialog", new PageSetInterceptFileChooserDialog
                 {
                     Enabled = true
                 }).ConfigureAwait(false);
@@ -1808,7 +1808,7 @@ namespace CefSharp.Puppeteer
         /// Brings page to front (activates tab).
         /// </summary>
         /// <returns>A task that resolves when the message has been sent to Chromium.</returns>
-        public Task BringToFrontAsync() => Client.SendAsync("Page.bringToFront");
+        public Task BringToFrontAsync() => Connection.SendAsync("Page.bringToFront");
 
         /// <summary>
         /// Enable/disable whether all certificate errors should be ignored.
@@ -1817,7 +1817,7 @@ namespace CefSharp.Puppeteer
         /// <returns>A task that resolves when the command has executed.</returns>
         public Task IgnoreCertificateErrorsAsync(bool ignore = true)
         {
-            return Client.SendAsync("Security.setIgnoreCertificateErrors", new SecuritySetIgnoreCertificateErrorsRequest
+            return Connection.SendAsync("Security.setIgnoreCertificateErrors", new SecuritySetIgnoreCertificateErrorsRequest
             {
                 Ignore = ignore
             });
@@ -1833,7 +1833,7 @@ namespace CefSharp.Puppeteer
         /// <param name="type">The type of deficiency to simulate, or <see cref="VisionDeficiency.None"/> to reset.</param>
         /// <returns>A task that resolves when the message has been sent to the browser.</returns>
         public Task EmulateVisionDeficiencyAsync(VisionDeficiency type)
-            => Client.SendAsync("Emulation.setEmulatedVisionDeficiency", new EmulationSetEmulatedVisionDeficiencyRequest
+            => Connection.SendAsync("Emulation.setEmulatedVisionDeficiency", new EmulationSetEmulatedVisionDeficiencyRequest
             {
                 Type = type,
             });
@@ -1848,7 +1848,7 @@ namespace CefSharp.Puppeteer
         {
             try
             {
-                await Client.SendAsync("Emulation.setTimezoneOverride", new EmulateTimezoneRequest
+                await Connection.SendAsync("Emulation.setTimezoneOverride", new EmulateTimezoneRequest
                 {
                     TimezoneId = timezoneId ?? string.Empty
                 }).ConfigureAwait(false);
@@ -1871,7 +1871,7 @@ namespace CefSharp.Puppeteer
                 throw new ArgumentException("Throttling rate should be greater or equal to 1", nameof(factor));
             }
 
-            return Client.SendAsync("Emulation.setCPUThrottlingRate", new EmulationSetCPUThrottlingRateRequest
+            return Connection.SendAsync("Emulation.setCPUThrottlingRate", new EmulationSetCPUThrottlingRateRequest
             {
                 Rate = factor ?? 1
             });
@@ -1887,7 +1887,7 @@ namespace CefSharp.Puppeteer
         /// <param name="connection">connection</param>
         /// <param name="ignoreHTTPSerrors">ignore certificate errors</param>
         /// <returns>Task that can be awaited to obtain the DevToolsContext</returns>
-        public static Task<DevToolsContext> CreateDevToolsContextAsync(Connection connection, bool ignoreHTTPSerrors = false)
+        public static Task<DevToolsContext> CreateDevToolsContextAsync(DevToolsConnection connection, bool ignoreHTTPSerrors = false)
         {
             if (connection == null)
             {
@@ -1906,13 +1906,13 @@ namespace CefSharp.Puppeteer
         /// <param name="ignoreHTTPSerrors">ignore certificate errors</param>
         /// <returns>Task that can be awaited to obtain the DevToolsContext</returns>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public static Task<DevToolsContext> GetDevToolsContextAsync(Connection connection, bool ignoreHTTPSerrors = false)
+        public static Task<DevToolsContext> GetDevToolsContextAsync(DevToolsConnection connection, bool ignoreHTTPSerrors = false)
         {
             return CreateDevToolsContextAsync(connection, ignoreHTTPSerrors);
         }
 
         internal static async Task<DevToolsContext> CreateAsync(
-            Connection client,
+            DevToolsConnection client,
             bool ignoreHTTPSErrors)
         {
             var devToolsContext = new DevToolsContext(client);
@@ -1934,7 +1934,7 @@ namespace CefSharp.Puppeteer
         /// </summary>
         /// <param name="connection">connection</param>
         /// <returns>DevToolsContext</returns>
-        public static IDevToolsContext CreateForOutOfProcess(Connection connection)
+        public static IDevToolsContext CreateForOutOfProcess(DevToolsConnection connection)
         {
             var devToolsContext = new DevToolsContext(connection);
 
@@ -1945,9 +1945,9 @@ namespace CefSharp.Puppeteer
 
         internal void WireUpEvents()
         {
-            FrameManager = new FrameManager(Client, this, _timeoutSettings);
+            FrameManager = new FrameManager(Connection, this, _timeoutSettings);
 
-            Client.MessageReceived += ClientMessageReceived;
+            Connection.MessageReceived += ClientMessageReceived;
             FrameManager.FrameAttached += (_, e) => FrameAttached?.Invoke(this, e);
             FrameManager.FrameDetached += (_, e) => FrameDetached?.Invoke(this, e);
             FrameManager.FrameNavigated += (_, e) => FrameNavigated?.Invoke(this, e);
@@ -1972,7 +1972,7 @@ namespace CefSharp.Puppeteer
                 return;
             }
 
-            var frameTreeResponse = await Client.SendAsync<PageGetFrameTreeResponse>("Page.getFrameTree").ConfigureAwait(false);
+            var frameTreeResponse = await Connection.SendAsync<PageGetFrameTreeResponse>("Page.getFrameTree").ConfigureAwait(false);
 
             await FrameManager.HandleFrameTreeAsync(new FrameTree(frameTreeResponse.FrameTree)).ConfigureAwait(false);
 
@@ -1986,19 +1986,19 @@ namespace CefSharp.Puppeteer
             WireUpEvents();
 
             await Task.WhenAll(
-               Client.SendAsync("Page.enable"),
-               Client.SendAsync("Page.setLifecycleEventsEnabled", new PageSetLifecycleEventsEnabledRequest { Enabled = true }),
-               Client.SendAsync("Runtime.enable"),
-               Client.SendAsync("Network.enable"),
-               Client.SendAsync("Performance.enable"),
-               Client.SendAsync("Log.enable")).ConfigureAwait(false);
+               Connection.SendAsync("Page.enable"),
+               Connection.SendAsync("Page.setLifecycleEventsEnabled", new PageSetLifecycleEventsEnabledRequest { Enabled = true }),
+               Connection.SendAsync("Runtime.enable"),
+               Connection.SendAsync("Network.enable"),
+               Connection.SendAsync("Performance.enable"),
+               Connection.SendAsync("Log.enable")).ConfigureAwait(false);
 
             await InvokeGetFrameTreeAsync().ConfigureAwait(false);
         }
 
         private async Task<Response> GoAsync(int delta, NavigationOptions options)
         {
-            var history = await Client.SendAsync<PageGetNavigationHistoryResponse>("Page.getNavigationHistory").ConfigureAwait(false);
+            var history = await Connection.SendAsync<PageGetNavigationHistoryResponse>("Page.getNavigationHistory").ConfigureAwait(false);
 
             if (history.Entries.Count <= history.CurrentIndex + delta || history.CurrentIndex + delta < 0)
             {
@@ -2009,7 +2009,7 @@ namespace CefSharp.Puppeteer
 
             await Task.WhenAll(
                 waitTask,
-                Client.SendAsync("Page.navigateToHistoryEntry", new PageNavigateToHistoryEntryRequest
+                Connection.SendAsync("Page.navigateToHistoryEntry", new PageNavigateToHistoryEntryRequest
                 {
                     EntryId = entry.Id
                 })).ConfigureAwait(false);
@@ -2042,7 +2042,7 @@ namespace CefSharp.Puppeteer
                 {
                     var metrics = _screenshotBurstModeOn
                         ? _burstModeMetrics :
-                        await Client.SendAsync<PageGetLayoutMetricsResponse>("Page.getLayoutMetrics").ConfigureAwait(false);
+                        await Connection.SendAsync<PageGetLayoutMetricsResponse>("Page.getLayoutMetrics").ConfigureAwait(false);
 
                     if (options.BurstMode)
                     {
@@ -2079,7 +2079,7 @@ namespace CefSharp.Puppeteer
                             Type = ScreenOrientationType.PortraitPrimary
                         };
 
-                    await Client.SendAsync("Emulation.setDeviceMetricsOverride", new EmulationSetDeviceMetricsOverrideRequest
+                    await Connection.SendAsync("Emulation.setDeviceMetricsOverride", new EmulationSetDeviceMetricsOverrideRequest
                     {
                         Mobile = isMobile,
                         Width = width,
@@ -2110,7 +2110,7 @@ namespace CefSharp.Puppeteer
                 screenMessage.Clip = clip;
             }
 
-            var result = await Client.SendAsync<PageCaptureScreenshotResponse>("Page.captureScreenshot", screenMessage).ConfigureAwait(false);
+            var result = await Connection.SendAsync<PageCaptureScreenshotResponse>("Page.captureScreenshot", screenMessage).ConfigureAwait(false);
 
             if (options.BurstMode)
             {
@@ -2149,10 +2149,10 @@ namespace CefSharp.Puppeteer
         }
 
         private Task ResetDefaultBackgroundColorAsync()
-            => Client.SendAsync("Emulation.setDefaultBackgroundColorOverride");
+            => Connection.SendAsync("Emulation.setDefaultBackgroundColorOverride");
 
         private Task SetTransparentBackgroundColorAsync()
-            => Client.SendAsync("Emulation.setDefaultBackgroundColorOverride", new EmulationSetDefaultBackgroundColorOverrideRequest
+            => Connection.SendAsync("Emulation.setDefaultBackgroundColorOverride", new EmulationSetDefaultBackgroundColorOverrideRequest
             {
                 Color = new EmulationSetDefaultBackgroundColorOverrideColor
                 {
@@ -2247,7 +2247,7 @@ namespace CefSharp.Puppeteer
             {
                 var message = $"Page failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
                 _logger.LogError(ex, message);
-                Client.Close(message);
+                Connection.Close(message);
             }
         }
 
@@ -2257,7 +2257,7 @@ namespace CefSharp.Puppeteer
             {
                 try
                 {
-                    await Client.SendAsync("Page.handleFileChooser", new PageHandleFileChooserRequest
+                    await Connection.SendAsync("Page.handleFileChooser", new PageHandleFileChooserRequest
                     {
                         Action = FileChooserAction.Fallback
                     }).ConfigureAwait(false);
@@ -2320,7 +2320,7 @@ namespace CefSharp.Puppeteer
                     ex.StackTrace);
             }
 
-            Client.Send("Runtime.evaluate", new
+            Connection.Send("Runtime.evaluate", new
             {
                 expression,
                 contextId = e.ExecutionContextId
@@ -2357,7 +2357,7 @@ namespace CefSharp.Puppeteer
             {
                 foreach (var arg in e.Entry?.Args)
                 {
-                    await RemoteObjectHelper.ReleaseObjectAsync(Client, arg, _logger).ConfigureAwait(false);
+                    await RemoteObjectHelper.ReleaseObjectAsync(Connection, arg, _logger).ConfigureAwait(false);
                 }
             }
             if (e.Entry.Source != TargetType.Worker)
@@ -2411,7 +2411,7 @@ namespace CefSharp.Puppeteer
 
         private void OnDialog(PageJavascriptDialogOpeningResponse message)
         {
-            var dialog = new Dialog(Client, message.Type, message.Message, message.DefaultPrompt);
+            var dialog = new Dialog(Connection, message.Type, message.Message, message.DefaultPrompt);
             Dialog?.Invoke(this, new DialogEventArgs(dialog));
         }
 
@@ -2437,7 +2437,7 @@ namespace CefSharp.Puppeteer
         {
             if (Console?.GetInvocationList().Length == 0)
             {
-                await Task.WhenAll(values.Select(v => RemoteObjectHelper.ReleaseObjectAsync(Client, v.RemoteObject, _logger))).ConfigureAwait(false);
+                await Task.WhenAll(values.Select(v => RemoteObjectHelper.ReleaseObjectAsync(Connection, v.RemoteObject, _logger))).ConfigureAwait(false);
                 return;
             }
 
@@ -2483,8 +2483,8 @@ namespace CefSharp.Puppeteer
               };
             }";
             var expression = EvaluationString(addPageBinding, name);
-            await Client.SendAsync("Runtime.addBinding", new RuntimeAddBindingRequest { Name = name }).ConfigureAwait(false);
-            await Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new PageAddScriptToEvaluateOnNewDocumentRequest
+            await Connection.SendAsync("Runtime.addBinding", new RuntimeAddBindingRequest { Name = name }).ConfigureAwait(false);
+            await Connection.SendAsync("Page.addScriptToEvaluateOnNewDocument", new PageAddScriptToEvaluateOnNewDocumentRequest
             {
                 Source = expression
             }).ConfigureAwait(false);
@@ -2548,15 +2548,15 @@ namespace CefSharp.Puppeteer
 
             IsDisposed = true;
 
-            Client.MessageReceived -= ClientMessageReceived;
+            Connection.MessageReceived -= ClientMessageReceived;
 
             await Task.WhenAll(
-               Client.SendAsync("Log.disable"),
-               Client.SendAsync("Performance.disable"),
-               Client.SendAsync("Network.disable"),
-               Client.SendAsync("Runtime.disable"),
-               Client.SendAsync("Page.setLifecycleEventsEnabled", new PageSetLifecycleEventsEnabledRequest { Enabled = false }),
-               Client.SendAsync("Page.disable")).ConfigureAwait(false);
+               Connection.SendAsync("Log.disable"),
+               Connection.SendAsync("Performance.disable"),
+               Connection.SendAsync("Network.disable"),
+               Connection.SendAsync("Runtime.disable"),
+               Connection.SendAsync("Page.setLifecycleEventsEnabled", new PageSetLifecycleEventsEnabledRequest { Enabled = false }),
+               Connection.SendAsync("Page.disable")).ConfigureAwait(false);
         }
     }
 }

@@ -54,7 +54,7 @@ namespace CefSharp.Puppeteer
                 CefSharp.WebBrowserExtensions.ThrowExceptionIfBrowserHostNull(browserHost);
             }
 
-            var connection = Connection.Attach(new CefSharpConnectionTransport(browserHost), factory);
+            var connection = DevToolsConnection.Attach(new CefSharpConnectionTransport(browserHost), factory);
 
             ctx = await DevToolsContext.CreateDevToolsContextAsync(connection, ignoreHTTPSerrors: ignoreHTTPSerrors).ConfigureAwait(false);
 
@@ -91,7 +91,7 @@ namespace CefSharp.Puppeteer
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static Task<Page> GetPuppeteerPageAsync(this IWebBrowser chromiumWebBrowser, bool ignoreHTTPSerrors = false)
         {
-            var connection = Connection.Attach(new CefSharpConnectionTransport(chromiumWebBrowser.GetBrowserHost()));
+            var connection = DevToolsConnection.Attach(new CefSharpConnectionTransport(chromiumWebBrowser.GetBrowserHost()));
 
             return Page.GetPageAsync(connection, ignoreHTTPSerrors: ignoreHTTPSerrors);
         }

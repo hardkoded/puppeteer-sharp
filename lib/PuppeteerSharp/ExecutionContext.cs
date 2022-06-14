@@ -21,17 +21,17 @@ namespace CefSharp.Puppeteer
 
         private readonly string _evaluationScriptSuffix = $"//# sourceURL={EvaluationScriptUrl}";
         private static readonly Regex _sourceUrlRegex = new Regex(@"^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$", RegexOptions.Multiline);
-        private readonly Connection _client;
+        private readonly DevToolsConnection _connection;
         private readonly int _contextId;
 
         internal DOMWorld World { get; }
 
         internal ExecutionContext(
-            Connection client,
+            DevToolsConnection connection,
             int contextId,
             DOMWorld world)
         {
-            _client = client;
+            _connection = connection;
             _contextId = contextId;
             World = world;
         }
@@ -131,7 +131,7 @@ namespace CefSharp.Puppeteer
                 throw new PuppeteerException("Prototype JSHandle must not be referencing primitive value");
             }
 
-            var response = await _client.SendAsync<RuntimeQueryObjectsResponse>("Runtime.queryObjects", new RuntimeQueryObjectsRequest
+            var response = await _connection.SendAsync<RuntimeQueryObjectsResponse>("Runtime.queryObjects", new RuntimeQueryObjectsRequest
             {
                 PrototypeObjectId = prototypeHandle.RemoteObject.ObjectId
             }).ConfigureAwait(false);
@@ -170,7 +170,7 @@ namespace CefSharp.Puppeteer
         {
             try
             {
-                var response = await _client.SendAsync<EvaluateHandleResponse>(method, args).ConfigureAwait(false);
+                var response = await _connection.SendAsync<EvaluateHandleResponse>(method, args).ConfigureAwait(false);
 
                 if (response.ExceptionDetails != null)
                 {
@@ -193,8 +193,8 @@ namespace CefSharp.Puppeteer
 
         internal JSHandle CreateJSHandle(RemoteObject remoteObject)
             => remoteObject.Subtype == RemoteObjectSubtype.Node && Frame != null
-                ? new ElementHandle(this, _client, remoteObject, Frame.FrameManager.DevToolsContext, Frame.FrameManager)
-                : new JSHandle(this, _client, remoteObject);
+                ? new ElementHandle(this, _connection, remoteObject, Frame.FrameManager.DevToolsContext, Frame.FrameManager)
+                : new JSHandle(this, _connection, remoteObject);
 
         private object FormatArgument(object arg)
         {
@@ -254,7 +254,7 @@ namespace CefSharp.Puppeteer
 
         internal async Task<ElementHandle> AdoptBackendNodeAsync(object backendNodeId)
         {
-            var obj = await _client.SendAsync<DomResolveNodeResponse>("DOM.resolveNode", new DomResolveNodeRequest
+            var obj = await _connection.SendAsync<DomResolveNodeResponse>("DOM.resolveNode", new DomResolveNodeRequest
             {
                 BackendNodeId = backendNodeId,
                 ExecutionContextId = _contextId
@@ -274,12 +274,12 @@ namespace CefSharp.Puppeteer
                 throw new PuppeteerException("Cannot adopt handle without DOMWorld");
             }
 
-            var nodeInfo = await _client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
+            var nodeInfo = await _connection.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
             {
                 ObjectId = elementHandle.RemoteObject.ObjectId
             }).ConfigureAwait(false);
 
-            var obj = await _client.SendAsync<DomResolveNodeResponse>("DOM.resolveNode", new DomResolveNodeRequest
+            var obj = await _connection.SendAsync<DomResolveNodeResponse>("DOM.resolveNode", new DomResolveNodeRequest
             {
                 BackendNodeId = nodeInfo.Node.BackendNodeId,
                 ExecutionContextId = _contextId

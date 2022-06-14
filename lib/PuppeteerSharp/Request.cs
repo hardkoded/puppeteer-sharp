@@ -23,23 +23,23 @@ namespace CefSharp.Puppeteer
     /// </summary>
     public class Request
     {
-        private readonly Connection _client;
+        private readonly DevToolsConnection _connection;
         private readonly bool _allowInterception;
         private readonly ILogger _logger;
         private bool _interceptionHandled;
 
         internal Request(
-            Connection client,
+            DevToolsConnection connection,
             Frame frame,
             string interceptionId,
             bool allowInterception,
             RequestWillBeSentPayload e,
             List<Request> redirectChain)
         {
-            _client = client;
+            _connection = connection;
             _allowInterception = allowInterception;
             _interceptionHandled = false;
-            _logger = _client.LoggerFactory.CreateLogger<Request>();
+            _logger = _connection.LoggerFactory.CreateLogger<Request>();
 
             RequestId = e.RequestId;
             InterceptionId = interceptionId;
@@ -203,7 +203,7 @@ namespace CefSharp.Puppeteer
                     requestData.Headers = HeadersArray(overrides.Headers);
                 }
 
-                await _client.SendAsync("Fetch.continueRequest", requestData).ConfigureAwait(false);
+                await _connection.SendAsync("Fetch.continueRequest", requestData).ConfigureAwait(false);
             }
             catch (PuppeteerException ex)
             {
@@ -273,7 +273,7 @@ namespace CefSharp.Puppeteer
 
             try
             {
-                await _client.SendAsync("Fetch.fulfillRequest", new FetchFulfillRequest
+                await _connection.SendAsync("Fetch.fulfillRequest", new FetchFulfillRequest
                 {
                     RequestId = InterceptionId,
                     ResponseCode = response.Status != null ? (int)response.Status : 200,
@@ -317,7 +317,7 @@ namespace CefSharp.Puppeteer
 
             try
             {
-                await _client.SendAsync("Fetch.failRequest", new FetchFailRequest
+                await _connection.SendAsync("Fetch.failRequest", new FetchFailRequest
                 {
                     RequestId = InterceptionId,
                     ErrorReason = errorReason

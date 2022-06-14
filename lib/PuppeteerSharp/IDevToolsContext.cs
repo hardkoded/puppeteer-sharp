@@ -147,7 +147,7 @@ namespace CefSharp.Puppeteer
         /// <summary>
         /// Chrome DevTools Protocol connection
         /// </summary>
-        public Connection Client { get; }
+        public DevToolsConnection Connection { get; }
 
         /// <summary>
         /// Gets this page's coverage

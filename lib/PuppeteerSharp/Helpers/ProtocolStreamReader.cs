@@ -10,7 +10,7 @@ namespace CefSharp.Puppeteer.Helpers
 {
     internal static class ProtocolStreamReader
     {
-        internal static async Task<string> ReadProtocolStreamStringAsync(Connection client, string handle, string path)
+        internal static async Task<string> ReadProtocolStreamStringAsync(DevToolsConnection client, string handle, string path)
         {
             var result = new StringBuilder();
             var fs = !string.IsNullOrEmpty(path) ? AsyncFileHelper.CreateStream(path, FileMode.Create) : null;
@@ -50,7 +50,7 @@ namespace CefSharp.Puppeteer.Helpers
             }
         }
 
-        internal static async Task<byte[]> ReadProtocolStreamByteAsync(Connection client, string handle, string path)
+        internal static async Task<byte[]> ReadProtocolStreamByteAsync(DevToolsConnection client, string handle, string path)
         {
             IEnumerable<byte> result = null;
             var eof = false;

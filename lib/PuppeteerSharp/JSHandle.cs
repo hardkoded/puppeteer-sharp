@@ -15,11 +15,11 @@ namespace CefSharp.Puppeteer
     [JsonConverter(typeof(JSHandleMethodConverter))]
     public class JSHandle
     {
-        internal JSHandle(ExecutionContext context, Connection client, RemoteObject remoteObject)
+        internal JSHandle(ExecutionContext context, DevToolsConnection client, RemoteObject remoteObject)
         {
             ExecutionContext = context;
-            Client = client;
-            Logger = Client.LoggerFactory.CreateLogger(GetType());
+            Connection = client;
+            Logger = Connection.LoggerFactory.CreateLogger(GetType());
             RemoteObject = remoteObject;
         }
 
@@ -42,7 +42,7 @@ namespace CefSharp.Puppeteer
         /// Gets the client.
         /// </summary>
         /// <value>The client.</value>
-        protected Connection Client { get; }
+        protected DevToolsConnection Connection { get; }
         /// <summary>
         /// Gets the logger.
         /// </summary>
@@ -102,7 +102,7 @@ namespace CefSharp.Puppeteer
 
             if (objectId != null)
             {
-                var response = await Client.SendAsync<RuntimeCallFunctionOnResponse>("Runtime.callFunctionOn", new RuntimeCallFunctionOnRequest
+                var response = await Connection.SendAsync<RuntimeCallFunctionOnResponse>("Runtime.callFunctionOn", new RuntimeCallFunctionOnRequest
                 {
                     FunctionDeclaration = "function() { return this; }",
                     ObjectId = objectId,
@@ -131,7 +131,7 @@ namespace CefSharp.Puppeteer
         /// </example>
         public async Task<Dictionary<string, JSHandle>> GetPropertiesAsync()
         {
-            var response = await Client.SendAsync<RuntimeGetPropertiesResponse>("Runtime.getProperties", new RuntimeGetPropertiesRequest
+            var response = await Connection.SendAsync<RuntimeGetPropertiesResponse>("Runtime.getProperties", new RuntimeGetPropertiesRequest
             {
                 ObjectId = RemoteObject.ObjectId,
                 OwnProperties = true
@@ -185,7 +185,7 @@ namespace CefSharp.Puppeteer
             }
 
             Disposed = true;
-            await RemoteObjectHelper.ReleaseObjectAsync(Client, RemoteObject, Logger).ConfigureAwait(false);
+            await RemoteObjectHelper.ReleaseObjectAsync(Connection, RemoteObject, Logger).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>

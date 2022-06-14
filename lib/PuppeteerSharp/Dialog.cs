@@ -21,7 +21,7 @@ namespace CefSharp.Puppeteer
     /// </example>
     public class Dialog
     {
-        private readonly Connection _client;
+        private readonly DevToolsConnection _connection;
 
         /// <summary>
         /// Dialog's type, can be one of alert, beforeunload, confirm or prompt.
@@ -42,13 +42,13 @@ namespace CefSharp.Puppeteer
         /// <summary>
         /// Initializes a new instance of the <see cref="Dialog"/> class.
         /// </summary>
-        /// <param name="client">Client.</param>
+        /// <param name="connection">DevTools connection.</param>
         /// <param name="type">Type.</param>
         /// <param name="message">Message.</param>
         /// <param name="defaultValue">Default value.</param>
-        public Dialog(Connection client, DialogType type, string message, string defaultValue)
+        public Dialog(DevToolsConnection connection, DialogType type, string message, string defaultValue)
         {
-            _client = client;
+            _connection = connection;
             DialogType = type;
             Message = message;
             DefaultValue = defaultValue;
@@ -60,7 +60,7 @@ namespace CefSharp.Puppeteer
         /// <returns>Task which resolves when the dialog has been accepted.</returns>
         /// <param name="promptText">A text to enter in prompt. Does not cause any effects if the dialog's type is not prompt.</param>
         public Task Accept(string promptText = "")
-            => _client.SendAsync("Page.handleJavaScriptDialog", new PageHandleJavaScriptDialogRequest
+            => _connection.SendAsync("Page.handleJavaScriptDialog", new PageHandleJavaScriptDialogRequest
             {
                 Accept = true,
                 PromptText = promptText
@@ -71,7 +71,7 @@ namespace CefSharp.Puppeteer
         /// </summary>
         /// <returns>Task which resolves when the dialog has been dismissed.</returns>
         public Task Dismiss()
-            => _client.SendAsync("Page.handleJavaScriptDialog", new PageHandleJavaScriptDialogRequest
+            => _connection.SendAsync("Page.handleJavaScriptDialog", new PageHandleJavaScriptDialogRequest
             {
                 Accept = false
             });

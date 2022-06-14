@@ -5,7 +5,7 @@ using CefSharp.Puppeteer.Messaging;
 namespace CefSharp.Puppeteer
 {
     /// <summary>
-    /// Exception thrown by <seealso cref="Connection.SendAsync{T}(string, object)"/>
+    /// Exception thrown by <seealso cref="DevToolsConnection.SendAsync{T}(string, object)"/>
     /// </summary>
     [Serializable]
     public class MessageException : PuppeteerException

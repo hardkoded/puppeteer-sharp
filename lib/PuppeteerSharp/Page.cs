@@ -12,7 +12,7 @@ namespace CefSharp.Puppeteer
     public class Page : DevToolsContext
     {
         private Page(
-            Connection client) : base(client)
+            DevToolsConnection client) : base(client)
         {
         }
 
@@ -24,7 +24,7 @@ namespace CefSharp.Puppeteer
         /// <returns>Task</returns>
         [Obsolete("Use DevToolsContext.GetDevToolsContextAsync instead")]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public static async Task<Page> GetPageAsync(Connection connection, bool ignoreHTTPSerrors = false)
+        public static async Task<Page> GetPageAsync(DevToolsConnection connection, bool ignoreHTTPSerrors = false)
         {
             if (connection == null)
             {

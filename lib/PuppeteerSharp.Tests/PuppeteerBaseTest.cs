@@ -33,7 +33,7 @@ namespace PuppeteerSharp.Tests
             HttpsServer.Reset();
         }
 
-        protected static Task<JToken> WaitEvent(Connection emitter, string eventName)
+        protected static Task<JToken> WaitEvent(DevToolsConnection emitter, string eventName)
         {
             var completion = new TaskCompletionSource<JToken>();
             void handler(object sender, MessageEventArgs e)
@@ -50,7 +50,7 @@ namespace PuppeteerSharp.Tests
             return completion.Task;
         }
 
-        protected static Task WaitForBrowserDisconnect(Connection browser)
+        protected static Task WaitForBrowserDisconnect(DevToolsConnection browser)
         {
             var disconnectedTask = new TaskCompletionSource<bool>();
             browser.Disconnected += (_, _) => disconnectedTask.TrySetResult(true);

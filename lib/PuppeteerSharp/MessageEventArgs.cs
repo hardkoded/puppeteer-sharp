@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 namespace CefSharp.Puppeteer
 {
     /// <summary>
-    /// <seealso cref="Connection.MessageReceived"/> arguments.
+    /// <seealso cref="DevToolsConnection.MessageReceived"/> arguments.
     /// </summary>
     public class MessageEventArgs
     {

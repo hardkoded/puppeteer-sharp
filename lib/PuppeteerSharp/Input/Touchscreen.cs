@@ -9,17 +9,17 @@ namespace CefSharp.Puppeteer.Input
     /// </summary>
     public class Touchscreen
     {
-        private readonly Connection _client;
+        private readonly DevToolsConnection _connection;
         private readonly Keyboard _keyboard;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Touchscreen"/> class.
         /// </summary>
-        /// <param name="client">The client</param>
+        /// <param name="connection">The connection</param>
         /// <param name="keyboard">The keyboard</param>
-        public Touchscreen(Connection client, Keyboard keyboard)
+        public Touchscreen(DevToolsConnection connection, Keyboard keyboard)
         {
-            _client = client;
+            _connection = connection;
             _keyboard = keyboard;
         }
 
@@ -35,20 +35,20 @@ namespace CefSharp.Puppeteer.Input
             // Touches appear to be lost during the first frame after navigation.
             // This waits a frame before sending the tap.
             // @see https://crbug.com/613219
-            await _client.SendAsync("Runtime.evaluate", new RuntimeEvaluateRequest
+            await _connection.SendAsync("Runtime.evaluate", new RuntimeEvaluateRequest
             {
                 Expression = "new Promise(x => requestAnimationFrame(() => requestAnimationFrame(x)))",
                 AwaitPromise = true
             }).ConfigureAwait(false);
 
             var touchPoints = new[] { new TouchPoint { X = Math.Round(x), Y = Math.Round(y) } };
-            await _client.SendAsync("Input.dispatchTouchEvent", new InputDispatchTouchEventRequest
+            await _connection.SendAsync("Input.dispatchTouchEvent", new InputDispatchTouchEventRequest
             {
                 Type = "touchStart",
                 TouchPoints = touchPoints,
                 Modifiers = _keyboard.Modifiers
             }).ConfigureAwait(false);
-            await _client.SendAsync("Input.dispatchTouchEvent", new InputDispatchTouchEventRequest
+            await _connection.SendAsync("Input.dispatchTouchEvent", new InputDispatchTouchEventRequest
             {
                 Type = "touchEnd",
                 TouchPoints = Array.Empty<TouchPoint>(),

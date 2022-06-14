@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 namespace CefSharp.Puppeteer.Helpers
 {
     /// <summary>
-    /// Provides an async queue for responses for <see cref="Connection.SendAsync{T}(string, object)"/>, so that responses can be handled
+    /// Provides an async queue for responses for <see cref="DevToolsConnection.SendAsync{T}(string, object)"/>, so that responses can be handled
     /// async without risk callers causing a deadlock.
     /// </summary>
     internal class AsyncMessageQueue : IDisposable

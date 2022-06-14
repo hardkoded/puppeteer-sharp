@@ -25,7 +25,7 @@ namespace CefSharp.Puppeteer
 
         internal ElementHandle(
             ExecutionContext context,
-            Connection client,
+            DevToolsConnection client,
             RemoteObject remoteObject,
             IDevToolsContext devToolsContext,
             FrameManager frameManager) : base(context, client, remoteObject)
@@ -172,7 +172,7 @@ namespace CefSharp.Puppeteer
             {
                 throw new PuppeteerException("Node has 0 height.");
             }
-            var getLayoutMetricsResponse = await Client.SendAsync<GetLayoutMetricsResponse>("Page.getLayoutMetrics").ConfigureAwait(false);
+            var getLayoutMetricsResponse = await Connection.SendAsync<GetLayoutMetricsResponse>("Page.getLayoutMetrics").ConfigureAwait(false);
 
             var clip = boundingBox;
             clip.X += getLayoutMetricsResponse.LayoutViewport.PageX;
@@ -243,7 +243,7 @@ namespace CefSharp.Puppeteer
             }
 
             var objectId = RemoteObject.ObjectId;
-            var node = await Client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
+            var node = await Connection.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
             {
                 ObjectId = RemoteObject.ObjectId
             }).ConfigureAwait(false);
@@ -263,7 +263,7 @@ namespace CefSharp.Puppeteer
             {
                 var files = resolveFilePaths ? filePaths.Select(Path.GetFullPath).ToArray() : filePaths;
                 CheckForFileAccess(files);
-                await Client.SendAsync("DOM.setFileInputFiles", new DomSetFileInputFilesRequest
+                await Connection.SendAsync("DOM.setFileInputFiles", new DomSetFileInputFilesRequest
                 {
                     ObjectId = objectId,
                     Files = files,
@@ -503,7 +503,7 @@ namespace CefSharp.Puppeteer
         /// <returns>Resolves to the content frame</returns>
         public async Task<Frame> ContentFrameAsync()
         {
-            var nodeInfo = await Client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
+            var nodeInfo = await Connection.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
             {
                 ObjectId = RemoteObject.ObjectId
             }).ConfigureAwait(false);
@@ -683,11 +683,11 @@ namespace CefSharp.Puppeteer
         {
             GetContentQuadsResponse result = null;
 
-            var contentQuadsTask = Client.SendAsync<GetContentQuadsResponse>("DOM.getContentQuads", new DomGetContentQuadsRequest
+            var contentQuadsTask = Connection.SendAsync<GetContentQuadsResponse>("DOM.getContentQuads", new DomGetContentQuadsRequest
             {
                 ObjectId = RemoteObject.ObjectId
             });
-            var layoutTask = Client.SendAsync<PageGetLayoutMetricsResponse>("Page.getLayoutMetrics");
+            var layoutTask = Connection.SendAsync<PageGetLayoutMetricsResponse>("Page.getLayoutMetrics");
 
             try
             {
@@ -781,7 +781,7 @@ namespace CefSharp.Puppeteer
         {
             try
             {
-                return await Client.SendAsync<BoxModelResponse>("DOM.getBoxModel", new DomGetBoxModelRequest
+                return await Connection.SendAsync<BoxModelResponse>("DOM.getBoxModel", new DomGetBoxModelRequest
                 {
                     ObjectId = RemoteObject.ObjectId
                 }).ConfigureAwait(false);

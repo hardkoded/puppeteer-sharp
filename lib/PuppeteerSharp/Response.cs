@@ -20,18 +20,18 @@ namespace CefSharp.Puppeteer
     /// <seealso cref="IDevToolsContext.WaitForResponseAsync(Func{Response, bool}, WaitForOptions)"/>
     public class Response
     {
-        private readonly Connection _client;
+        private readonly DevToolsConnection _connection;
         private readonly bool _fromDiskCache;
         private byte[] _buffer;
         private static readonly Regex ExtraInfoLines = new Regex(@"[^ ]* [^ ]* (?<text>.*)", RegexOptions.Multiline);
 
         internal Response(
-            Connection client,
+            DevToolsConnection connection,
             Request request,
             ResponsePayload responseMessage,
             ResponseReceivedExtraInfoResponse extraInfo)
         {
-            _client = client;
+            _connection = connection;
             Request = request;
             Status = extraInfo != null ? extraInfo.StatusCode : responseMessage.Status;
             StatusText = ParseStatusTextFromExtrInfo(extraInfo) ?? responseMessage.StatusText;
@@ -148,7 +148,7 @@ namespace CefSharp.Puppeteer
 
                 try
                 {
-                    var response = await _client.SendAsync<NetworkGetResponseBodyResponse>("Network.getResponseBody", new NetworkGetResponseBodyRequest
+                    var response = await _connection.SendAsync<NetworkGetResponseBodyResponse>("Network.getResponseBody", new NetworkGetResponseBodyRequest
                     {
                         RequestId = Request.RequestId
                     }).ConfigureAwait(false);

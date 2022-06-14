@@ -22,18 +22,18 @@ namespace CefSharp.Puppeteer
         private const string RefererHeaderName = "referer";
         public const string UtilityWorldName = "__puppeteer_utility_world__";
 
-        internal FrameManager(Connection client, IDevToolsContext devToolsContext, TimeoutSettings timeoutSettings)
+        internal FrameManager(DevToolsConnection client, IDevToolsContext devToolsContext, TimeoutSettings timeoutSettings)
         {
-            Client = client;
+            Connection = client;
             DevToolsContext = devToolsContext;
             _frames = new ConcurrentDictionary<string, Frame>();
             _contextIdToContext = new ConcurrentDictionary<int, ExecutionContext>();
-            _logger = Client.LoggerFactory.CreateLogger<FrameManager>();
+            _logger = Connection.LoggerFactory.CreateLogger<FrameManager>();
             NetworkManager = new NetworkManager(client, this);
             TimeoutSettings = timeoutSettings;
             _asyncFrames = new AsyncDictionaryHelper<string, Frame>(_frames, "Frame {0} not found");
 
-            Client.MessageReceived += Client_MessageReceived;
+            Connection.MessageReceived += OnConnectionMessageReceived;
         }
 
         #region Properties
@@ -48,7 +48,7 @@ namespace CefSharp.Puppeteer
 
         internal event EventHandler<LifecycleEventArgs> LifecycleEvent;
 
-        internal Connection Client { get; }
+        internal DevToolsConnection Connection { get; }
 
         internal NetworkManager NetworkManager { get; }
 
@@ -82,7 +82,7 @@ namespace CefSharp.Puppeteer
             {
                 try
                 {
-                    var navigateTask = NavigateAsync(Client, url, referrer, frame.Id);
+                    var navigateTask = NavigateAsync(Connection, url, referrer, frame.Id);
                     var task = await Task.WhenAny(
                         watcher.TimeoutOrTerminationTask,
                         navigateTask).ConfigureAwait(false);
@@ -104,7 +104,7 @@ namespace CefSharp.Puppeteer
             }
         }
 
-        private async Task NavigateAsync(Connection client, string url, string referrer, string frameId)
+        private async Task NavigateAsync(DevToolsConnection client, string url, string referrer, string frameId)
         {
             var response = await client.SendAsync<PageNavigateResponse>("Page.navigate", new PageNavigateRequest
             {
@@ -141,7 +141,7 @@ namespace CefSharp.Puppeteer
 
         #region Private Methods
 
-        private async void Client_MessageReceived(object sender, MessageEventArgs e)
+        private async void OnConnectionMessageReceived(object sender, MessageEventArgs e)
         {
             try
             {
@@ -188,7 +188,7 @@ namespace CefSharp.Puppeteer
             {
                 var message = $"Connection failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
                 _logger.LogError(ex, message);
-                Client.Close(message);
+                Connection.Close(message);
             }
         }
 
@@ -257,7 +257,7 @@ namespace CefSharp.Puppeteer
                 }
             }
 
-            var context = new ExecutionContext(Client, contextPayload.Id, world);
+            var context = new ExecutionContext(Connection, contextPayload.Id, world);
             if (world != null)
             {
                 world.SetContext(context);
@@ -387,7 +387,7 @@ namespace CefSharp.Puppeteer
                 return;
             }
             _isolatedWorlds.Add(name);
-            await Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new PageAddScriptToEvaluateOnNewDocumentRequest
+            await Connection.SendAsync("Page.addScriptToEvaluateOnNewDocument", new PageAddScriptToEvaluateOnNewDocumentRequest
             {
                 Source = $"//# sourceURL={ExecutionContext.EvaluationScriptUrl}",
                 WorldName = name,
@@ -395,7 +395,7 @@ namespace CefSharp.Puppeteer
 
             try
             {
-                await Task.WhenAll(GetFrames().Select(frame => Client.SendAsync("Page.createIsolatedWorld", new PageCreateIsolatedWorldRequest
+                await Task.WhenAll(GetFrames().Select(frame => Connection.SendAsync("Page.createIsolatedWorld", new PageCreateIsolatedWorldRequest
                 {
                     FrameId = frame.Id,
                     GrantUniveralAccess = true,

@@ -7,13 +7,13 @@ namespace CefSharp.Puppeteer
 {
     internal class EmulationManager
     {
-        private readonly Connection _client;
+        private readonly DevToolsConnection _connection;
         private bool _hasTouch;
         private bool _emulatingMobile;
 
-        public EmulationManager(Connection client)
+        public EmulationManager(DevToolsConnection connection)
         {
-            _client = client;
+            _connection = connection;
         }
 
         internal async Task<bool> EmulateViewport(ViewPortOptions viewport)
@@ -36,7 +36,7 @@ namespace CefSharp.Puppeteer
             var hasTouch = viewport.HasTouch;
 
             await Task.WhenAll(new Task[] {
-                _client.SendAsync("Emulation.setDeviceMetricsOverride", new EmulationSetDeviceMetricsOverrideRequest
+                _connection.SendAsync("Emulation.setDeviceMetricsOverride", new EmulationSetDeviceMetricsOverrideRequest
                 {
                     Mobile = mobile,
                     Width = width,
@@ -44,7 +44,7 @@ namespace CefSharp.Puppeteer
                     DeviceScaleFactor = deviceScaleFactor,
                     ScreenOrientation = screenOrientation
                 }),
-                _client.SendAsync("Emulation.setTouchEmulationEnabled", new EmulationSetTouchEmulationEnabledRequest
+                _connection.SendAsync("Emulation.setTouchEmulationEnabled", new EmulationSetTouchEmulationEnabledRequest
                 {
                     Enabled = hasTouch,
                     Configuration = viewport.IsMobile ? "mobile" : "desktop"

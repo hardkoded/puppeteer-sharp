@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 namespace CefSharp.Puppeteer
 {
     /// <summary>
-    /// Exception thrown by the <see cref="Connection"/> when it detects that the target was closed.
+    /// Exception thrown by the <see cref="DevToolsConnection"/> when it detects that the target was closed.
     /// </summary>
     [System.Serializable]
     public class TargetClosedException : PuppeteerException

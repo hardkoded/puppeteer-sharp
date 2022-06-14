@@ -13,7 +13,7 @@ namespace CefSharp.Puppeteer.PageCoverage
         private readonly JSCoverage _jsCoverage;
         private readonly CSSCoverage _cssCoverage;
 
-        internal Coverage(Connection client)
+        internal Coverage(DevToolsConnection client)
         {
             _jsCoverage = new JSCoverage(client);
             _cssCoverage = new CSSCoverage(client);

@@ -11,7 +11,7 @@ namespace CefSharp.Puppeteer.PageCoverage
 {
     internal class CSSCoverage
     {
-        private readonly Connection _client;
+        private readonly DevToolsConnection _connection;
         private readonly ConcurrentDictionary<string, (string Url, string Source)> _stylesheets;
         private readonly DeferredTaskQueue _callbackQueue;
         private readonly ILogger _logger;
@@ -19,12 +19,12 @@ namespace CefSharp.Puppeteer.PageCoverage
         private bool _enabled;
         private bool _resetOnNavigation;
 
-        public CSSCoverage(Connection client)
+        public CSSCoverage(DevToolsConnection connection)
         {
-            _client = client;
+            _connection = connection;
             _enabled = false;
             _stylesheets = new ConcurrentDictionary<string, (string Url, string Source)>();
-            _logger = _client.LoggerFactory.CreateLogger<CSSCoverage>();
+            _logger = _connection.LoggerFactory.CreateLogger<CSSCoverage>();
             _callbackQueue = new DeferredTaskQueue();
 
             _resetOnNavigation = false;
@@ -41,12 +41,12 @@ namespace CefSharp.Puppeteer.PageCoverage
             _enabled = true;
             _stylesheets.Clear();
 
-            _client.MessageReceived += Client_MessageReceived;
+            _connection.MessageReceived += OnConnectionMessageReceived;
 
             return Task.WhenAll(
-                _client.SendAsync("DOM.enable"),
-                _client.SendAsync("CSS.enable"),
-                _client.SendAsync("CSS.startRuleUsageTracking"));
+                _connection.SendAsync("DOM.enable"),
+                _connection.SendAsync("CSS.enable"),
+                _connection.SendAsync("CSS.startRuleUsageTracking"));
         }
 
         internal async Task<CoverageEntry[]> StopAsync()
@@ -57,16 +57,16 @@ namespace CefSharp.Puppeteer.PageCoverage
             }
             _enabled = false;
 
-            var trackingResponse = await _client.SendAsync<CSSStopRuleUsageTrackingResponse>("CSS.stopRuleUsageTracking").ConfigureAwait(false);
+            var trackingResponse = await _connection.SendAsync<CSSStopRuleUsageTrackingResponse>("CSS.stopRuleUsageTracking").ConfigureAwait(false);
 
             // Wait until we've stopped CSS tracking before stopping listening for messages and finishing up, so that
             // any pending OnStyleSheetAddedAsync tasks can collect the remaining style sheet coverage.
-            _client.MessageReceived -= Client_MessageReceived;
+            _connection.MessageReceived -= OnConnectionMessageReceived;
             await _callbackQueue.DrainAsync().ConfigureAwait(false);
 
             await Task.WhenAll(
-                _client.SendAsync("CSS.disable"),
-                _client.SendAsync("DOM.disable")).ConfigureAwait(false);
+                _connection.SendAsync("CSS.disable"),
+                _connection.SendAsync("DOM.disable")).ConfigureAwait(false);
 
             var styleSheetIdToCoverage = new Dictionary<string, List<CoverageResponseRange>>();
             foreach (var entry in trackingResponse.RuleUsage)
@@ -103,7 +103,7 @@ namespace CefSharp.Puppeteer.PageCoverage
             return coverage.ToArray();
         }
 
-        private async void Client_MessageReceived(object sender, MessageEventArgs e)
+        private async void OnConnectionMessageReceived(object sender, MessageEventArgs e)
         {
             try
             {
@@ -121,7 +121,7 @@ namespace CefSharp.Puppeteer.PageCoverage
             {
                 var message = $"CSSCoverage failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
                 _logger.LogError(ex, message);
-                _client.Close(message);
+                _connection.Close(message);
             }
         }
 
@@ -134,7 +134,7 @@ namespace CefSharp.Puppeteer.PageCoverage
 
             try
             {
-                var response = await _client.SendAsync<CssGetStyleSheetTextResponse>("CSS.getStyleSheetText", new CssGetStyleSheetTextRequest
+                var response = await _connection.SendAsync<CssGetStyleSheetTextResponse>("CSS.getStyleSheetText", new CssGetStyleSheetTextRequest
                 {
                     StyleSheetId = styleSheetAddedResponse.Header.StyleSheetId
                 }).ConfigureAwait(false);

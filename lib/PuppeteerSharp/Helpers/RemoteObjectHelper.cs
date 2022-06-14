@@ -104,7 +104,7 @@ namespace CefSharp.Puppeteer.Helpers
             }
         }
 
-        internal static async Task ReleaseObjectAsync(Connection client, RemoteObject remoteObject, ILogger logger)
+        internal static async Task ReleaseObjectAsync(DevToolsConnection client, RemoteObject remoteObject, ILogger logger)
         {
             if (remoteObject.ObjectId == null)
             {

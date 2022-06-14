@@ -9,7 +9,7 @@ namespace CefSharp.Puppeteer.Input
     /// </summary>
     public class Mouse
     {
-        private readonly Connection _client;
+        private readonly DevToolsConnection _connection;
         private readonly Keyboard _keyboard;
 
         private decimal _x = 0;
@@ -19,11 +19,11 @@ namespace CefSharp.Puppeteer.Input
         /// <summary>
         /// Initializes a new instance of the <see cref="Mouse"/> class.
         /// </summary>
-        /// <param name="client">The client</param>
+        /// <param name="connection">The connection</param>
         /// <param name="keyboard">The keyboard</param>
-        public Mouse(Connection client, Keyboard keyboard)
+        public Mouse(DevToolsConnection connection, Keyboard keyboard)
         {
-            _client = client;
+            _connection = connection;
             _keyboard = keyboard;
         }
 
@@ -46,7 +46,7 @@ namespace CefSharp.Puppeteer.Input
 
             for (var i = 1; i <= steps; i++)
             {
-                await _client.SendAsync("Input.dispatchMouseEvent", new InputDispatchMouseEventRequest
+                await _connection.SendAsync("Input.dispatchMouseEvent", new InputDispatchMouseEventRequest
                 {
                     Type = MouseEventType.MouseMoved,
                     Button = _button,
@@ -97,7 +97,7 @@ namespace CefSharp.Puppeteer.Input
 
             _button = options.Button;
 
-            return _client.SendAsync("Input.dispatchMouseEvent", new InputDispatchMouseEventRequest
+            return _connection.SendAsync("Input.dispatchMouseEvent", new InputDispatchMouseEventRequest
             {
                 Type = MouseEventType.MousePressed,
                 Button = _button,
@@ -119,7 +119,7 @@ namespace CefSharp.Puppeteer.Input
 
             _button = MouseButton.None;
 
-            return _client.SendAsync("Input.dispatchMouseEvent", new InputDispatchMouseEventRequest
+            return _connection.SendAsync("Input.dispatchMouseEvent", new InputDispatchMouseEventRequest
             {
                 Type = MouseEventType.MouseReleased,
                 Button = options.Button,
@@ -137,7 +137,7 @@ namespace CefSharp.Puppeteer.Input
         /// <param name="deltaY">Delta Y.</param>
         /// <returns>Task</returns>
         public Task WheelAsync(decimal deltaX, decimal deltaY)
-            => _client.SendAsync(
+            => _connection.SendAsync(
                 "Input.dispatchMouseEvent",
                 new InputDispatchMouseEventRequest
                 {
@@ -167,10 +167,10 @@ namespace CefSharp.Puppeteer.Input
                 if (e.MessageID == "Input.dragIntercepted")
                 {
                     result.TrySetResult(e.MessageData.SelectToken("data").ToObject<DragData>());
-                    _client.MessageReceived -= DragIntercepted;
+                    _connection.MessageReceived -= DragIntercepted;
                 }
             }
-            _client.MessageReceived += DragIntercepted;
+            _connection.MessageReceived += DragIntercepted;
             await MoveAsync(startX, startY).ConfigureAwait(false);
             await DownAsync().ConfigureAwait(false);
             await MoveAsync(endX, endY).ConfigureAwait(false);
@@ -186,7 +186,7 @@ namespace CefSharp.Puppeteer.Input
         /// <param name="data">Drag data containing items and operations mask.</param>
         /// <returns>A Task that resolves when the message was confirmed by the browser</returns>
         public Task DragEnterAsync(decimal x, decimal y, DragData data)
-            => _client.SendAsync(
+            => _connection.SendAsync(
                 "Input.dispatchDragEvent",
                 new InputDispatchDragEventRequest
                 {
@@ -205,7 +205,7 @@ namespace CefSharp.Puppeteer.Input
         /// <param name="data">Drag data containing items and operations mask.</param>
         /// <returns>A Task that resolves when the message was confirmed by the browser</returns>
         public Task DragOverAsync(decimal x, decimal y, DragData data)
-            => _client.SendAsync(
+            => _connection.SendAsync(
                 "Input.dispatchDragEvent",
                 new InputDispatchDragEventRequest
                 {
@@ -224,7 +224,7 @@ namespace CefSharp.Puppeteer.Input
         /// <param name="data">Drag data containing items and operations mask.</param>
         /// <returns>A Task that resolves when the message was confirmed by the browser</returns>
         public Task DropAsync(decimal x, decimal y, DragData data)
-            => _client.SendAsync(
+            => _connection.SendAsync(
                 "Input.dispatchDragEvent",
                 new InputDispatchDragEventRequest
                 {

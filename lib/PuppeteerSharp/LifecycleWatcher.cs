@@ -65,7 +65,7 @@ namespace CefSharp.Puppeteer
             frameManager.FrameNavigatedWithinDocument += NavigatedWithinDocument;
             frameManager.FrameDetached += OnFrameDetached;
             frameManager.NetworkManager.Request += OnRequest;
-            frameManager.Client.Disconnected += OnClientDisconnected;
+            frameManager.Connection.Disconnected += OnClientDisconnected;
 
             CheckLifecycleComplete();
         }
@@ -86,7 +86,7 @@ namespace CefSharp.Puppeteer
         #region Private methods
 
         private void OnClientDisconnected(object sender, EventArgs e)
-            => Terminate(new TargetClosedException("Navigation failed because browser has disconnected!", _frameManager.Client.CloseReason));
+            => Terminate(new TargetClosedException("Navigation failed because browser has disconnected!", _frameManager.Connection.CloseReason));
 
         private void FrameManager_LifecycleEvent(object sender, LifecycleEventArgs e) => CheckLifecycleComplete();
 
@@ -170,7 +170,7 @@ namespace CefSharp.Puppeteer
             _frameManager.FrameNavigatedWithinDocument -= NavigatedWithinDocument;
             _frameManager.FrameDetached -= OnFrameDetached;
             _frameManager.NetworkManager.Request -= OnRequest;
-            _frameManager.Client.Disconnected -= OnClientDisconnected;
+            _frameManager.Connection.Disconnected -= OnClientDisconnected;
             _terminationCancellationToken.Cancel();
         }
 

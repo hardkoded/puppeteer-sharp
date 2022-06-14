@@ -12,14 +12,14 @@ namespace CefSharp.Puppeteer.Input
     /// </summary>
     public class Keyboard
     {
-        private readonly Connection _client;
+        private readonly DevToolsConnection _connection;
         private readonly HashSet<string> _pressedKeys = new HashSet<string>();
 
         internal int Modifiers { get; set; }
 
-        internal Keyboard(Connection client)
+        internal Keyboard(DevToolsConnection connection)
         {
-            _client = client;
+            _connection = connection;
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace CefSharp.Puppeteer.Input
 
             var text = options?.Text == null ? description.Text : options.Text;
 
-            return _client.SendAsync("Input.dispatchKeyEvent", new InputDispatchKeyEventRequest
+            return _connection.SendAsync("Input.dispatchKeyEvent", new InputDispatchKeyEventRequest
             {
                 Type = text != null ? DispatchKeyEventType.KeyDown : DispatchKeyEventType.RawKeyDown,
                 Modifiers = Modifiers,
@@ -70,7 +70,7 @@ namespace CefSharp.Puppeteer.Input
             Modifiers &= ~ModifierBit(key);
             _pressedKeys.Remove(description.Code);
 
-            return _client.SendAsync("Input.dispatchKeyEvent", new InputDispatchKeyEventRequest
+            return _connection.SendAsync("Input.dispatchKeyEvent", new InputDispatchKeyEventRequest
             {
                 Type = DispatchKeyEventType.KeyUp,
                 Modifiers = Modifiers,
@@ -87,7 +87,7 @@ namespace CefSharp.Puppeteer.Input
         /// <param name="charText">Character to send into the page</param>
         /// <returns>Task</returns>
         public Task SendCharacterAsync(string charText)
-            => _client.SendAsync("Input.insertText", new InputInsertTextRequest
+            => _connection.SendAsync("Input.insertText", new InputInsertTextRequest
             {
                 Text = charText
             });

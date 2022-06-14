@@ -11,7 +11,7 @@ namespace CefSharp.Puppeteer
 {
     internal class NetworkManager
     {
-        private readonly Connection _client;
+        private readonly DevToolsConnection _connection;
         private readonly ILogger _logger;
         private readonly ConcurrentSet<string> _attemptedAuthentications = new ConcurrentSet<string>();
         private readonly InternalNetworkConditions _emulatedNetworkConditions = new InternalNetworkConditions
@@ -30,12 +30,12 @@ namespace CefSharp.Puppeteer
         private bool _userCacheDisabled;
         private bool _protocolRequestInterceptionEnabled;
 
-        internal NetworkManager(Connection client, FrameManager frameManager)
+        internal NetworkManager(DevToolsConnection connection, FrameManager frameManager)
         {
             FrameManager = frameManager;
-            _client = client;
-            _client.MessageReceived += Client_MessageReceived;
-            _logger = _client.LoggerFactory.CreateLogger<NetworkManager>();
+            _connection = connection;
+            _connection.MessageReceived += OnConnectionMessageReceived;
+            _logger = _connection.LoggerFactory.CreateLogger<NetworkManager>();
         }
 
         internal Dictionary<string, string> ExtraHTTPHeaders => _extraHTTPHeaders?.Clone();
@@ -68,7 +68,7 @@ namespace CefSharp.Puppeteer
             {
                 _extraHTTPHeaders[item.Key.ToLower(CultureInfo.CurrentCulture)] = item.Value;
             }
-            return _client.SendAsync("Network.setExtraHTTPHeaders", new NetworkSetExtraHTTPHeadersRequest
+            return _connection.SendAsync("Network.setExtraHTTPHeaders", new NetworkSetExtraHTTPHeadersRequest
             {
                 Headers = _extraHTTPHeaders
             });
@@ -89,7 +89,7 @@ namespace CefSharp.Puppeteer
         }
 
         private Task UpdateNetworkConditionsAsync()
-            => _client.SendAsync("Network.emulateNetworkConditions", new NetworkEmulateNetworkConditionsRequest
+            => _connection.SendAsync("Network.emulateNetworkConditions", new NetworkEmulateNetworkConditionsRequest
             {
                 Offline = _emulatedNetworkConditions.Offline,
                 Latency = _emulatedNetworkConditions.Latency,
@@ -98,7 +98,7 @@ namespace CefSharp.Puppeteer
             });
 
         internal Task SetUserAgentAsync(string userAgent)
-            => _client.SendAsync("Network.setUserAgentOverride", new NetworkSetUserAgentOverrideRequest
+            => _connection.SendAsync("Network.setUserAgentOverride", new NetworkSetUserAgentOverrideRequest
             {
                 UserAgent = userAgent
             });
@@ -116,12 +116,12 @@ namespace CefSharp.Puppeteer
         }
 
         private Task UpdateProtocolCacheDisabledAsync()
-            => _client.SendAsync("Network.setCacheDisabled", new NetworkSetCacheDisabledRequest
+            => _connection.SendAsync("Network.setCacheDisabled", new NetworkSetCacheDisabledRequest
             {
                 CacheDisabled = _userCacheDisabled
             });
 
-        private async void Client_MessageReceived(object sender, MessageEventArgs e)
+        private async void OnConnectionMessageReceived(object sender, MessageEventArgs e)
         {
             try
             {
@@ -157,7 +157,7 @@ namespace CefSharp.Puppeteer
             {
                 var message = $"NetworkManager failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
                 _logger.LogError(ex, message);
-                _client.Close(message);
+                _connection.Close(message);
             }
         }
 
@@ -311,7 +311,7 @@ namespace CefSharp.Puppeteer
             }
 
             var response = new Response(
-                _client,
+                _connection,
                 request,
                 e.Response,
                 extraInfo);
@@ -339,7 +339,7 @@ namespace CefSharp.Puppeteer
             var credentials = _credentials ?? new Credentials();
             try
             {
-                await _client.SendAsync("Fetch.continueWithAuth", new ContinueWithAuthRequest
+                await _connection.SendAsync("Fetch.continueWithAuth", new ContinueWithAuthRequest
                 {
                     RequestId = e.RequestId,
                     AuthChallengeResponse = new ContinueWithAuthRequestChallengeResponse
@@ -362,7 +362,7 @@ namespace CefSharp.Puppeteer
             {
                 try
                 {
-                    await _client.SendAsync("Fetch.continueRequest", new FetchContinueRequestRequest
+                    await _connection.SendAsync("Fetch.continueRequest", new FetchContinueRequestRequest
                     {
                         RequestId = e.RequestId
                     }).ConfigureAwait(false);
@@ -436,7 +436,7 @@ namespace CefSharp.Puppeteer
             var frame = !string.IsNullOrEmpty(e.FrameId) ? await FrameManager.TryGetFrameAsync(e.FrameId).ConfigureAwait(false) : null;
 
             request = new Request(
-                _client,
+                _connection,
                 frame,
                 fetchRequestId,
                 _userRequestInterceptionEnabled,
@@ -465,7 +465,7 @@ namespace CefSharp.Puppeteer
         private void HandleRequestRedirect(Request request, ResponsePayload responseMessage, ResponseReceivedExtraInfoResponse extraInfo)
         {
             var response = new Response(
-                _client,
+                _connection,
                 request,
                 responseMessage,
                 extraInfo);
@@ -530,7 +530,7 @@ namespace CefSharp.Puppeteer
             {
                 await Task.WhenAll(
                     UpdateProtocolCacheDisabledAsync(),
-                    _client.SendAsync("Fetch.enable", new FetchEnableRequest
+                    _connection.SendAsync("Fetch.enable", new FetchEnableRequest
                     {
                         HandleAuthRequests = true,
                         Patterns = new[] { new FetchEnableRequest.Pattern { UrlPattern = "*" } }
@@ -540,7 +540,7 @@ namespace CefSharp.Puppeteer
             {
                 await Task.WhenAll(
                     UpdateProtocolCacheDisabledAsync(),
-                    _client.SendAsync("Fetch.disable")).ConfigureAwait(false);
+                    _connection.SendAsync("Fetch.disable")).ConfigureAwait(false);
             }
         }
     }

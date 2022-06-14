@@ -25,7 +25,7 @@ namespace CefSharp.Puppeteer
     public class Tracing
 #pragma warning restore CA1724
     {
-        private readonly Connection _client;
+        private readonly DevToolsConnection _connection;
         private bool _recording;
         private string _path;
         private static readonly List<string> _defaultCategories = new List<string>
@@ -45,10 +45,10 @@ namespace CefSharp.Puppeteer
 
         private readonly ILogger _logger;
 
-        internal Tracing(Connection client)
+        internal Tracing(DevToolsConnection connection)
         {
-            _client = client;
-            _logger = client.LoggerFactory.CreateLogger<Tracing>();
+            _connection = connection;
+            _logger = connection.LoggerFactory.CreateLogger<Tracing>();
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace CefSharp.Puppeteer
             _path = options?.Path;
             _recording = true;
 
-            return _client.SendAsync("Tracing.start", new TracingStartRequest
+            return _connection.SendAsync("Tracing.start", new TracingStartRequest
             {
                 TransferMode = "ReturnAsStream",
                 Categories = string.Join(", ", categories)
@@ -95,9 +95,9 @@ namespace CefSharp.Puppeteer
                     if (e.MessageID == "Tracing.tracingComplete")
                     {
                         var stream = e.MessageData.ToObject<TracingCompleteResponse>().Stream;
-                        var tracingData = await ProtocolStreamReader.ReadProtocolStreamStringAsync(_client, stream, _path).ConfigureAwait(false);
+                        var tracingData = await ProtocolStreamReader.ReadProtocolStreamStringAsync(_connection, stream, _path).ConfigureAwait(false);
 
-                        _client.MessageReceived -= EventHandler;
+                        _connection.MessageReceived -= EventHandler;
                         taskWrapper.TrySetResult(tracingData);
                     }
                 }
@@ -105,13 +105,13 @@ namespace CefSharp.Puppeteer
                 {
                     var message = $"Tracing failed to process the tracing complete. {ex.Message}. {ex.StackTrace}";
                     _logger.LogError(ex, message);
-                    _client.Close(message);
+                    _connection.Close(message);
                 }
             }
 
-            _client.MessageReceived += EventHandler;
+            _connection.MessageReceived += EventHandler;
 
-            await _client.SendAsync("Tracing.end").ConfigureAwait(false);
+            await _connection.SendAsync("Tracing.end").ConfigureAwait(false);
 
             _recording = false;
 

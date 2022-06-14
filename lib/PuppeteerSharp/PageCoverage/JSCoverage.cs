@@ -10,7 +10,7 @@ namespace CefSharp.Puppeteer.PageCoverage
 {
     internal class JSCoverage
     {
-        private readonly Connection _client;
+        private readonly DevToolsConnection _connection;
         private readonly Dictionary<string, string> _scriptURLs;
         private readonly Dictionary<string, string> _scriptSources;
         private readonly ILogger _logger;
@@ -19,13 +19,13 @@ namespace CefSharp.Puppeteer.PageCoverage
         private bool _resetOnNavigation;
         private bool _reportAnonymousScripts;
 
-        public JSCoverage(Connection client)
+        public JSCoverage(DevToolsConnection connection)
         {
-            _client = client;
+            _connection = connection;
             _enabled = false;
             _scriptURLs = new Dictionary<string, string>();
             _scriptSources = new Dictionary<string, string>();
-            _logger = _client.LoggerFactory.CreateLogger<JSCoverage>();
+            _logger = _connection.LoggerFactory.CreateLogger<JSCoverage>();
 
             _resetOnNavigation = false;
         }
@@ -43,17 +43,17 @@ namespace CefSharp.Puppeteer.PageCoverage
             _scriptURLs.Clear();
             _scriptSources.Clear();
 
-            _client.MessageReceived += Client_MessageReceived;
+            _connection.MessageReceived += Client_MessageReceived;
 
             return Task.WhenAll(
-                _client.SendAsync("Profiler.enable"),
-                _client.SendAsync("Profiler.startPreciseCoverage", new ProfilerStartPreciseCoverageRequest
+                _connection.SendAsync("Profiler.enable"),
+                _connection.SendAsync("Profiler.startPreciseCoverage", new ProfilerStartPreciseCoverageRequest
                 {
                     CallCount = false,
                     Detailed = true
                 }),
-                _client.SendAsync("Debugger.enable"),
-                _client.SendAsync("Debugger.setSkipAllPauses", new DebuggerSetSkipAllPausesRequest { Skip = true }));
+                _connection.SendAsync("Debugger.enable"),
+                _connection.SendAsync("Debugger.setSkipAllPauses", new DebuggerSetSkipAllPausesRequest { Skip = true }));
         }
 
         internal async Task<CoverageEntry[]> StopAsync()
@@ -64,13 +64,13 @@ namespace CefSharp.Puppeteer.PageCoverage
             }
             _enabled = false;
 
-            var profileResponseTask = _client.SendAsync<ProfilerTakePreciseCoverageResponse>("Profiler.takePreciseCoverage");
+            var profileResponseTask = _connection.SendAsync<ProfilerTakePreciseCoverageResponse>("Profiler.takePreciseCoverage");
             await Task.WhenAll(
                profileResponseTask,
-               _client.SendAsync("Profiler.stopPreciseCoverage"),
-               _client.SendAsync("Profiler.disable"),
-               _client.SendAsync("Debugger.disable")).ConfigureAwait(false);
-            _client.MessageReceived -= Client_MessageReceived;
+               _connection.SendAsync("Profiler.stopPreciseCoverage"),
+               _connection.SendAsync("Profiler.disable"),
+               _connection.SendAsync("Debugger.disable")).ConfigureAwait(false);
+            _connection.MessageReceived -= Client_MessageReceived;
 
             var coverage = new List<CoverageEntry>();
             foreach (var entry in profileResponseTask.Result.Result)
@@ -116,7 +116,7 @@ namespace CefSharp.Puppeteer.PageCoverage
             {
                 var message = $"JSCoverage failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
                 _logger.LogError(ex, message);
-                _client.Close(message);
+                _connection.Close(message);
             }
         }
 
@@ -130,7 +130,7 @@ namespace CefSharp.Puppeteer.PageCoverage
 
             try
             {
-                var response = await _client.SendAsync<DebuggerGetScriptSourceResponse>("Debugger.getScriptSource", new DebuggerGetScriptSourceRequest
+                var response = await _connection.SendAsync<DebuggerGetScriptSourceResponse>("Debugger.getScriptSource", new DebuggerGetScriptSourceRequest
                 {
                     ScriptId = scriptParseResponse.ScriptId
                 }).ConfigureAwait(false);

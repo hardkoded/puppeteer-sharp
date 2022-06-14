@@ -17,13 +17,13 @@ namespace CefSharp.Puppeteer.PageAccessibility
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1724:Type names should not match namespaces", Justification = "Matches Puppeteer naming.")]
     public class Accessibility
     {
-        private readonly Connection _client;
+        private readonly DevToolsConnection _connection;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PageAccessibility.Accessibility"/> class.
         /// </summary>
-        /// <param name="client">Client.</param>
-        public Accessibility(Connection client) => _client = client;
+        /// <param name="connection">connection.</param>
+        public Accessibility(DevToolsConnection connection) => _connection = connection;
 
         /// <summary>
         /// Snapshots the async.
@@ -32,12 +32,12 @@ namespace CefSharp.Puppeteer.PageAccessibility
         /// <param name="options">Options.</param>
         public async Task<SerializedAXNode> SnapshotAsync(AccessibilitySnapshotOptions options = null)
         {
-            var response = await _client.SendAsync<AccessibilityGetFullAXTreeResponse>("Accessibility.getFullAXTree").ConfigureAwait(false);
+            var response = await _connection.SendAsync<AccessibilityGetFullAXTreeResponse>("Accessibility.getFullAXTree").ConfigureAwait(false);
             var nodes = response.Nodes;
             object backendNodeId = null;
             if (options?.Root != null)
             {
-                var node = await _client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
+                var node = await _connection.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
                 {
                     ObjectId = options.Root.RemoteObject.ObjectId
                 }).ConfigureAwait(false);
