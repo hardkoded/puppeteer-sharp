@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using CefSharp.Puppeteer.Input;
 using CefSharp.Puppeteer.Media;
+using CefSharp.Puppeteer.Messaging;
 using CefSharp.Puppeteer.Mobile;
 using CefSharp.Puppeteer.PageAccessibility;
 using CefSharp.Puppeteer.PageCoverage;
@@ -315,6 +316,19 @@ namespace CefSharp.Puppeteer
         /// <param name="cookies">Cookies to delete</param>
         /// <returns>Task</returns>
         Task DeleteCookieAsync(params CookieParam[] cookies);
+
+        /// <summary>
+        /// Requests that page scale factor is reset to initial values.
+        /// </summary>
+        /// <returns>Task.</returns>
+        Task ResetPageScaleFactorAsync();
+
+        /// <summary>
+        /// Sets a specified page scale factor.
+        /// </summary>
+        /// <param name="pageScaleFactor">Page scale factor.</param>
+        /// <returns>Task.</returns>
+        Task SetPageScaleFactorAsync(double pageScaleFactor);
 
         /// <summary>
         /// Emulates given device metrics and user agent.
