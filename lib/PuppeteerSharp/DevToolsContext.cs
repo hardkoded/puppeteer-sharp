@@ -941,6 +941,25 @@ namespace CefSharp.Puppeteer
         }
 
         /// <summary>
+        /// Requests that page scale factor is reset to initial values.
+        /// </summary>
+        /// <returns>Task.</returns>
+        public Task ResetPageScaleFactorAsync()
+        {
+            return Connection.SendAsync("Emulation.resetPageScaleFactor");
+        }
+
+        /// <summary>
+        /// Sets a specified page scale factor.
+        /// </summary>
+        /// <param name="pageScaleFactor">Page scale factor.</param>
+        /// <returns>Task.</returns>
+        public Task SetPageScaleFactorAsync(double pageScaleFactor)
+        {
+            return Connection.SendAsync("Emulation.setPageScaleFactor", new EmulationSetPageScaleFactor { PageScaleFactor = pageScaleFactor });
+        }
+
+        /// <summary>
         /// Enables/Disables Javascript on the page
         /// </summary>
         /// <returns>Task.</returns>
