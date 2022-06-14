@@ -25,15 +25,16 @@
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Appveyor.TestLogger" Version="2.0.0" />
-		<PackageReference Include="MarkdownSnippets.MsBuild" Version="24.3.0" PrivateAssets="All" />
+		<PackageReference Include="MarkdownSnippets.MsBuild" Version="24.4.0" PrivateAssets="All" />
 		<PackageReference Include="Serilog.Extensions.Logging.File" Version="2.0.0" />
-    <PackageReference Include="System.Net.Http" Version="4.3.4" />
+		<PackageReference Include="System.Net.Http" Version="4.3.4" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
 		<PackageReference Include="xunit" Version="2.4.1" />
-		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
+		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="SixLabors.ImageSharp" Version="2.1.0" />
+		<PackageReference Include="SixLabors.ImageSharp" Version="2.1.2" />
     <PackageReference Include="Nito.AsyncEx.Context" Version="5.1.2" />
     <PackageReference Include="CefSharp.OffScreen.NETCore" Version="102.0.90" />
 	</ItemGroup>
@@ -85,37 +86,8 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <CustomAdditionalCompileInputs Remove="DevToolsContextTests\**" />
-	</ItemGroup>
-	<ItemGroup>
 	  <CustomAdditionalCompileInputs Remove="AccessibilityTests\**" />
-	</ItemGroup>
-	<ItemGroup>
 	  <CustomAdditionalCompileInputs Remove="Screenshots\**" />
-	</ItemGroup>
-	<ItemGroup>
-	  <Compile Include="DevToolsContextTests\AddScriptTagTests.cs" />
-	  <Compile Include="DevToolsContextTests\AddStyleTagTests.cs" />
-	  <Compile Include="DevToolsContextTests\DevToolsContextTests.cs" />
-	  <Compile Include="DevToolsContextTests\ExposeFunctionTests.cs" />
-	  <Compile Include="DevToolsContextTests\MetricsTests.cs" />
-	  <Compile Include="DevToolsContextTests\OfflineModeTests.cs" />
-	  <Compile Include="DevToolsContextTests\DevToolsContextEventsConsoleTests.cs" />
-	  <Compile Include="DevToolsContextTests\DevToolsContextEventsDOMContentLoadedTests.cs" />
-	  <Compile Include="DevToolsContextTests\DevToolsContextEventsErrorTests.cs" />
-	  <Compile Include="DevToolsContextTests\QueryObjectsTests.cs" />
-	  <Compile Include="DevToolsContextTests\SelectTests.cs" />
-	  <Compile Include="DevToolsContextTests\SetBypassCSPTests.cs" />
-	  <Compile Include="DevToolsContextTests\SetCacheEnabledTests.cs" />
-	  <Compile Include="DevToolsContextTests\SetContentTests.cs" />
-	  <Compile Include="DevToolsContextTests\SetJavaScriptEnabledTests.cs" />
-	  <Compile Include="DevToolsContextTests\SetUserAgentTests.cs" />
-	  <Compile Include="DevToolsContextTests\TitleTests.cs" />
-	  <Compile Include="DevToolsContextTests\UrlTests.cs" />
-	  <Compile Include="DevToolsContextTests\WaitForNetworkIdleTests.cs" />
-	  <Compile Include="DevToolsContextTests\WaitForRequestTests.cs" />
-	  <Compile Include="DevToolsContextTests\WaitForResponseTests.cs" />
-	</ItemGroup>
-	<ItemGroup>
 	  <CustomAdditionalCompileInputs Remove="InputTests\**" />
 	</ItemGroup>
 </Project>
