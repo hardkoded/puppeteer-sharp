@@ -88,7 +88,7 @@ namespace CefSharp.Puppeteer
         private void OnClientDisconnected(object sender, EventArgs e)
             => Terminate(new TargetClosedException("Navigation failed because browser has disconnected!", _frameManager.Client.CloseReason));
 
-        private void FrameManager_LifecycleEvent(object sender, FrameEventArgs e) => CheckLifecycleComplete();
+        private void FrameManager_LifecycleEvent(object sender, LifecycleEventArgs e) => CheckLifecycleComplete();
 
         private void OnFrameDetached(object sender, FrameEventArgs e)
         {

@@ -46,7 +46,7 @@ namespace CefSharp.Puppeteer
 
         internal event EventHandler<FrameEventArgs> FrameNavigatedWithinDocument;
 
-        internal event EventHandler<FrameEventArgs> LifecycleEvent;
+        internal event EventHandler<LifecycleEventArgs> LifecycleEvent;
 
         internal Connection Client { get; }
 
@@ -197,7 +197,7 @@ namespace CefSharp.Puppeteer
             if (_frames.TryGetValue(e.FrameId, out var frame))
             {
                 frame.OnLoadingStopped();
-                LifecycleEvent?.Invoke(this, new FrameEventArgs(frame));
+                LifecycleEvent?.Invoke(this, new LifecycleEventArgs(frame, "frameStoppedLoading"));
             }
         }
 
@@ -206,7 +206,7 @@ namespace CefSharp.Puppeteer
             if (_frames.TryGetValue(e.FrameId, out var frame))
             {
                 frame.OnLifecycleEvent(e.LoaderId, e.Name);
-                LifecycleEvent?.Invoke(this, new FrameEventArgs(frame));
+                LifecycleEvent?.Invoke(this, new LifecycleEventArgs(frame, e.Name));
             }
         }
 
