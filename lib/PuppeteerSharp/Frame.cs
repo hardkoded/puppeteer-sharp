@@ -41,16 +41,17 @@ namespace PuppeteerSharp
     {
         private readonly List<Frame> _childFrames = new();
 
-        internal Frame(FrameManager frameManager, Frame parentFrame, string frameId)
+        internal Frame(FrameManager frameManager, Frame parentFrame, string frameId, CDPSession client)
         {
             FrameManager = frameManager;
             ParentFrame = parentFrame;
             Id = frameId;
+            Client = client;
 
             LifecycleEvents = new List<string>();
 
-            MainWorld = new DOMWorld(FrameManager, this, FrameManager.TimeoutSettings);
-            SecondaryWorld = new DOMWorld(FrameManager, this, FrameManager.TimeoutSettings);
+            MainWorld = new DOMWorld(client, FrameManager, this, FrameManager.TimeoutSettings);
+            SecondaryWorld = new DOMWorld(client, FrameManager, this, FrameManager.TimeoutSettings);
 
             if (parentFrame != null)
             {
@@ -93,6 +94,11 @@ namespace PuppeteerSharp
         /// </summary>
         public Frame ParentFrame { get; private set; }
 
+        /// <summary>
+        /// `true` if the frame is an OOP frame, or `false` otherwise.
+        /// </summary>
+        public bool IsOopFrame => Client != FrameManager.Client;
+
         internal FrameManager FrameManager { get; }
 
         internal string Id { get; set; }
@@ -103,9 +109,11 @@ namespace PuppeteerSharp
 
         internal string NavigationURL { get; private set; }
 
-        internal DOMWorld MainWorld { get; }
+        internal DOMWorld MainWorld { get; private set; }
 
-        internal DOMWorld SecondaryWorld { get; }
+        internal DOMWorld SecondaryWorld { get; private set; }
+
+        internal CDPSession Client { get; private set; }
 
         /// <summary>
         /// Navigates to an url
@@ -612,6 +620,22 @@ namespace PuppeteerSharp
                 ParentFrame.RemoveChildFrame(this);
             }
             ParentFrame = null;
+        }
+
+        internal void UpdateClient(CDPSession client)
+        {
+            Client = client;
+            MainWorld = new DOMWorld(
+              Client,
+              FrameManager,
+              this,
+              FrameManager.TimeoutSettings);
+
+            SecondaryWorld = new DOMWorld(
+              Client,
+              FrameManager,
+              this,
+              FrameManager.TimeoutSettings);
         }
     }
 }

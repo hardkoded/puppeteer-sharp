@@ -31,10 +31,10 @@ namespace PuppeteerSharp
         private readonly TaskCompletionSource<bool> _sameDocumentNavigationTaskWrapper;
         private readonly TaskCompletionSource<bool> _lifecycleTaskWrapper;
         private readonly TaskCompletionSource<bool> _terminationTaskWrapper;
-        [SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", Justification = "False positive, as it is disposed.")]
         private readonly CancellationTokenSource _terminationCancellationToken;
         private Request _navigationRequest;
         private bool _hasSameDocumentNavigation;
+        private bool _swapped;
 
         public LifecycleWatcher(
             FrameManager frameManager,
@@ -66,7 +66,7 @@ namespace PuppeteerSharp
             frameManager.FrameDetached += OnFrameDetached;
             frameManager.NetworkManager.Request += OnRequest;
             frameManager.Client.Disconnected += OnClientDisconnected;
-
+            frameManager.FrameSwapped += FrameManager_FrameSwapped;
             CheckLifecycleComplete();
         }
 
@@ -84,6 +84,17 @@ namespace PuppeteerSharp
             => Terminate(new TargetClosedException("Navigation failed because browser has disconnected!", _frameManager.Client.CloseReason));
 
         private void FrameManager_LifecycleEvent(object sender, FrameEventArgs e) => CheckLifecycleComplete();
+
+        private void FrameManager_FrameSwapped(object sender, FrameEventArgs e)
+        {
+            if (e.Frame != _frame)
+            {
+                return;
+            }
+
+            _swapped = true;
+            CheckLifecycleComplete();
+        }
 
         private void OnFrameDetached(object sender, FrameEventArgs e)
         {
@@ -106,6 +117,11 @@ namespace PuppeteerSharp
             _lifecycleTaskWrapper.TrySetResult(true);
             if (_frame.LoaderId == _initialLoaderId && !_hasSameDocumentNavigation)
             {
+                if (_swapped)
+                {
+                    _swapped = false;
+                    _newDocumentNavigationTaskWrapper.TrySetResult(true);
+                }
                 return;
             }
 
@@ -167,6 +183,7 @@ namespace PuppeteerSharp
             _frameManager.NetworkManager.Request -= OnRequest;
             _frameManager.Client.Disconnected -= OnClientDisconnected;
             _terminationCancellationToken.Cancel();
+            _terminationCancellationToken.Dispose();
         }
     }
 }
