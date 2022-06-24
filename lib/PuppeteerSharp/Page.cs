@@ -2267,8 +2267,8 @@ namespace PuppeteerSharp
 
                     var contentSize = metrics.ContentSize;
 
-                    var width = Convert.ToInt32(Math.Ceiling(contentSize.Width));
-                    var height = Convert.ToInt32(Math.Ceiling(contentSize.Height));
+                    var width = Convert.ToInt32(Math.Ceiling(contentSize.ClientWidth));
+                    var height = Convert.ToInt32(Math.Ceiling(contentSize.ClientHeight));
 
                     // Overwrite clip for full page at all times.
                     clip = new Clip

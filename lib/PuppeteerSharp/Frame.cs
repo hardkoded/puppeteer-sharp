@@ -50,13 +50,12 @@ namespace PuppeteerSharp
 
             LifecycleEvents = new List<string>();
 
-            MainWorld = new DOMWorld(client, FrameManager, this, FrameManager.TimeoutSettings);
-            SecondaryWorld = new DOMWorld(client, FrameManager, this, FrameManager.TimeoutSettings);
-
             if (parentFrame != null)
             {
                 ParentFrame.AddChildFrame(this);
             }
+
+            UpdateClient(client);
         }
 
         /// <summary>
@@ -82,7 +81,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets the frame's url
         /// </summary>
-        public string Url { get; private set; }
+        public string Url { get; private set; } = string.Empty;
 
         /// <summary>
         /// Gets a value indicating if the frame is detached or not

@@ -22,15 +22,18 @@ namespace PuppeteerSharp
     {
         private readonly FrameManager _frameManager;
         private readonly ILogger<ElementHandle> _logger;
+        private readonly Frame _frame;
 
         internal ElementHandle(
             ExecutionContext context,
             CDPSession client,
             RemoteObject remoteObject,
+            Frame frame,
             Page page,
             FrameManager frameManager) : base(context, client, remoteObject)
         {
             Page = page;
+            _frame = frame;
             _frameManager = frameManager;
             _logger = client.LoggerFactory.CreateLogger<ElementHandle>();
         }
@@ -460,15 +463,16 @@ namespace PuppeteerSharp
         public async Task<BoxModel> BoxModelAsync()
         {
             var result = await GetBoxModelAsync().ConfigureAwait(false);
+            var (offsetX, offsetY) = await GetOOPIFOffsetsAsync(_frame).ConfigureAwait(false);
 
             return result == null
                 ? null
                 : new BoxModel
                 {
-                    Content = FromProtocolQuad(result.Model.Content),
-                    Padding = FromProtocolQuad(result.Model.Padding),
-                    Border = FromProtocolQuad(result.Model.Border),
-                    Margin = FromProtocolQuad(result.Model.Margin),
+                    Content = ApplyOffsetsToQuad(FromProtocolQuad(result.Model.Content), offsetX, offsetY).ToArray(),
+                    Padding = ApplyOffsetsToQuad(FromProtocolQuad(result.Model.Padding), offsetX, offsetY).ToArray(),
+                    Border = ApplyOffsetsToQuad(FromProtocolQuad(result.Model.Border), offsetX, offsetY).ToArray(),
+                    Margin = ApplyOffsetsToQuad(FromProtocolQuad(result.Model.Margin), offsetX, offsetY).ToArray(),
                     Width = result.Model.Width,
                     Height = result.Model.Height
                 };
@@ -642,7 +646,7 @@ namespace PuppeteerSharp
             {
                 ObjectId = RemoteObject.ObjectId
             });
-            var layoutTask = Client.SendAsync<PageGetLayoutMetricsResponse>("Page.getLayoutMetrics");
+            var layoutTask = Page.Client.SendAsync<PageGetLayoutMetricsResponse>("Page.getLayoutMetrics");
 
             try
             {
@@ -659,9 +663,12 @@ namespace PuppeteerSharp
                 throw new PuppeteerException("Node is either not visible or not an HTMLElement");
             }
 
+            var (offsetX, offsetY) = await GetOOPIFOffsetsAsync(_frame).ConfigureAwait(false);
+
             // Filter out quads that have too small area to click into.
             var quads = result.Quads
                 .Select(FromProtocolQuad)
+                .Select(quad => ApplyOffsetsToQuad(quad, offsetX, offsetY))
                 .Select(q => IntersectQuadWithViewport(q, layoutTask.Result))
                 .Where(q => ComputeQuadArea(q.ToArray()) > 1);
 
@@ -686,12 +693,60 @@ namespace PuppeteerSharp
                 Y: y / 4);
         }
 
-        private IEnumerable<BoxModelPoint> IntersectQuadWithViewport(IEnumerable<BoxModelPoint> quad, PageGetLayoutMetricsResponse viewport)
-            => quad.Select(point => new BoxModelPoint
+        private IEnumerable<BoxModelPoint> ApplyOffsetsToQuad(BoxModelPoint[] quad, decimal offsetX, decimal offsetY)
+            => quad.Select((part) => new BoxModelPoint() { X = part.X + offsetX, Y = part.Y + offsetY });
+
+        private async Task<(decimal OffsetX, decimal OffsetY)> GetOOPIFOffsetsAsync(Frame frame)
+        {
+            decimal offsetX = 0;
+            decimal offsetY = 0;
+
+            while (frame.ParentFrame != null)
             {
-                X = Math.Min(Math.Max(point.X, 0), viewport.ContentSize.Width),
-                Y = Math.Min(Math.Max(point.Y, 0), viewport.ContentSize.Height),
+                var parent = frame.ParentFrame;
+                if (!frame.IsOopFrame)
+                {
+                    frame = parent;
+                    continue;
+                }
+                var frameOwner = await parent.Client.SendAsync<DomGetFrameOwnerResponse>(
+                        "DOM.getFrameOwner",
+                        new DomGetFrameOwnerRequest
+                        {
+                            FrameId = frame.Id,
+                        }).ConfigureAwait(false);
+
+                var result = await parent.Client.SendAsync<DomGetBoxModelResponse>(
+                    "DOM.getBoxModel",
+                    new DomGetBoxModelRequest
+                    {
+                        BackendNodeId = frameOwner.BackendNodeId,
+                    }).ConfigureAwait(false);
+
+                if (result == null)
+                {
+                    break;
+                }
+
+                var contentBoxQuad = result.Model.Content;
+                var topLeftCorner = FromProtocolQuad(contentBoxQuad)[0];
+                offsetX += topLeftCorner.X;
+                offsetY += topLeftCorner.Y;
+                frame = parent;
+            }
+
+            return (offsetX, offsetY);
+        }
+
+        private IEnumerable<BoxModelPoint> IntersectQuadWithViewport(IEnumerable<BoxModelPoint> quad, PageGetLayoutMetricsResponse viewport)
+        {
+            PageGetLayoutMetricsResponse.LayoutContentSize size = viewport.CssLayoutViewport ?? viewport.LayoutViewport;
+            return quad.Select(point => new BoxModelPoint
+            {
+                X = Math.Min(Math.Max(point.X, 0), size.ClientWidth),
+                Y = Math.Min(Math.Max(point.Y, 0), size.ClientHeight),
             });
+        }
 
         private async Task ScrollIntoViewIfNeededAsync()
         {
@@ -725,11 +780,11 @@ namespace PuppeteerSharp
             }
         }
 
-        private async Task<BoxModelResponse> GetBoxModelAsync()
+        private async Task<DomGetBoxModelResponse> GetBoxModelAsync()
         {
             try
             {
-                return await Client.SendAsync<BoxModelResponse>("DOM.getBoxModel", new DomGetBoxModelRequest
+                return await Client.SendAsync<DomGetBoxModelResponse>("DOM.getBoxModel", new DomGetBoxModelRequest
                 {
                     ObjectId = RemoteObject.ObjectId
                 }).ConfigureAwait(false);
