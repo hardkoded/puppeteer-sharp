@@ -190,6 +190,10 @@ namespace PuppeteerSharp
                             OnFrameDetached(e.MessageData.ToObject<PageFrameDetachedResponse>(true));
                             break;
 
+                        case "Page.frameStartedLoading":
+                            OnFrameStartedLoading(e.MessageData.ToObject<BasicFrameResponse>(true));
+                            break;
+
                         case "Page.frameStoppedLoading":
                             OnFrameStoppedLoading(e.MessageData.ToObject<BasicFrameResponse>(true));
                             break;
@@ -250,6 +254,14 @@ namespace PuppeteerSharp
 
             session.MessageReceived += Client_MessageReceived;
             await InitializeAsync(session).ConfigureAwait(false);
+        }
+
+        private void OnFrameStartedLoading(BasicFrameResponse e)
+        {
+            if (_frames.TryGetValue(e.FrameId, out var frame))
+            {
+                frame.OnLoadingStarted();
+            }
         }
 
         private void OnFrameStoppedLoading(BasicFrameResponse e)

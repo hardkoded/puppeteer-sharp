@@ -114,6 +114,8 @@ namespace PuppeteerSharp
 
         internal CDPSession Client { get; private set; }
 
+        internal bool HasStartedLoading { get; private set; }
+
         /// <summary>
         /// Navigates to an url
         /// </summary>
@@ -583,6 +585,8 @@ namespace PuppeteerSharp
                 _childFrames.Remove(frame);
             }
         }
+
+        internal void OnLoadingStarted() => HasStartedLoading = true;
 
         internal void OnLoadingStopped()
         {

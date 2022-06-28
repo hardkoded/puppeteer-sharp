@@ -228,8 +228,8 @@ namespace PuppeteerSharp
         public async Task HoverAsync()
         {
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
-            var (x, y) = await ClickablePointAsync().ConfigureAwait(false);
-            await Page.Mouse.MoveAsync(x, y).ConfigureAwait(false);
+            var clickablePoint = await ClickablePointAsync().ConfigureAwait(false);
+            await Page.Mouse.MoveAsync(clickablePoint.X, clickablePoint.Y).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -241,8 +241,8 @@ namespace PuppeteerSharp
         public async Task ClickAsync(ClickOptions options = null)
         {
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
-            var (x, y) = await ClickablePointAsync().ConfigureAwait(false);
-            await Page.Mouse.ClickAsync(x, y, options).ConfigureAwait(false);
+            var clickablePoint = await ClickablePointAsync().ConfigureAwait(false);
+            await Page.Mouse.ClickAsync(clickablePoint.X, clickablePoint.Y, options).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -322,8 +322,8 @@ namespace PuppeteerSharp
         public async Task TapAsync()
         {
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
-            var (x, y) = await ClickablePointAsync().ConfigureAwait(false);
-            await Page.Touchscreen.TapAsync(x, y).ConfigureAwait(false);
+            var clickablePoint = await ClickablePointAsync().ConfigureAwait(false);
+            await Page.Touchscreen.TapAsync(clickablePoint.X, clickablePoint.Y).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -445,7 +445,7 @@ namespace PuppeteerSharp
             {
                 return null;
             }
-
+            var (offsetX, offsetY) = await GetOOPIFOffsetsAsync(_frame).ConfigureAwait(false);
             var quad = result.Model.Border;
 
             var x = new[] { quad[0], quad[2], quad[4], quad[6] }.Min();
@@ -453,7 +453,7 @@ namespace PuppeteerSharp
             var width = new[] { quad[0], quad[2], quad[4], quad[6] }.Max() - x;
             var height = new[] { quad[1], quad[3], quad[5], quad[7] }.Max() - y;
 
-            return new BoundingBox(x, y, width, height);
+            return new BoundingBox(x + offsetX, y + offsetY, width, height);
         }
 
         /// <summary>
@@ -576,8 +576,8 @@ namespace PuppeteerSharp
             }
 
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
-            var (x, y) = await ClickablePointAsync().ConfigureAwait(false);
-            await Page.Mouse.DragEnterAsync(x, y, data).ConfigureAwait(false);
+            var clickablePoint = await ClickablePointAsync().ConfigureAwait(false);
+            await Page.Mouse.DragEnterAsync(clickablePoint.X, clickablePoint.Y, data).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -593,8 +593,8 @@ namespace PuppeteerSharp
             }
 
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
-            var (x, y) = await ClickablePointAsync().ConfigureAwait(false);
-            await Page.Mouse.DragOverAsync(x, y, data).ConfigureAwait(false);
+            var clickablePoint = await ClickablePointAsync().ConfigureAwait(false);
+            await Page.Mouse.DragOverAsync(clickablePoint.X, clickablePoint.Y, data).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -610,8 +610,8 @@ namespace PuppeteerSharp
             }
 
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
-            var (x, y) = await ClickablePointAsync().ConfigureAwait(false);
-            await Page.Mouse.DropAsync(x, y, data).ConfigureAwait(false);
+            var clickablePoint = await ClickablePointAsync().ConfigureAwait(false);
+            await Page.Mouse.DropAsync(clickablePoint.X, clickablePoint.Y, data).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -633,12 +633,18 @@ namespace PuppeteerSharp
             }
 
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
-            var (x, y) = await ClickablePointAsync().ConfigureAwait(false);
+            var clickablePoint = await ClickablePointAsync().ConfigureAwait(false);
             var targetPoint = await target.ClickablePointAsync().ConfigureAwait(false);
-            await Page.Mouse.DragAndDropAsync(x, y, targetPoint.X, targetPoint.Y, delay).ConfigureAwait(false);
+            await Page.Mouse.DragAndDropAsync(clickablePoint.X, clickablePoint.Y, targetPoint.X, targetPoint.Y, delay).ConfigureAwait(false);
         }
 
-        private async Task<(decimal X, decimal Y)> ClickablePointAsync()
+        /// <summary>
+        /// Returns the middle point within an element unless a specific offset is provided.
+        /// </summary>
+        /// <param name="offset">Optional offset</param>
+        /// <exception cref="PuppeteerException">When the node is not visible or not an HTMLElement</exception>
+        /// <returns>A <see cref="Task"/> that resolves to the clickable point</returns>
+        public async Task<BoxModelPoint> ClickablePointAsync(BoxModelPoint? offset = null)
         {
             GetContentQuadsResponse result = null;
 
@@ -679,6 +685,31 @@ namespace PuppeteerSharp
 
             // Return the middle point of the first quad.
             var quad = quads.First();
+            if (offset != null)
+            {
+                // Return the point of the first quad identified by offset.
+                var minX = decimal.MaxValue;
+                var minY = decimal.MaxValue;
+                foreach (var point in quad) {
+                    if (point.X < minX)
+                    {
+                        minX = point.X;
+                    }
+                    if (point.Y < minY)
+                    {
+                        minY = point.Y;
+                    }
+                }
+                if (
+                  minX != decimal.MaxValue &&
+                  minY != decimal.MaxValue)
+                {
+                    return new BoxModelPoint() {
+                        X = minX + offset.Value.X,
+                        Y = minY + offset.Value.Y
+                     };
+                }
+            }
             var x = 0m;
             var y = 0m;
 
@@ -688,9 +719,10 @@ namespace PuppeteerSharp
                 y += point.Y;
             }
 
-            return (
-                X: x / 4,
-                Y: y / 4);
+            return new BoxModelPoint() {
+                X = x / 4,
+                Y = y / 4
+            };
         }
 
         private IEnumerable<BoxModelPoint> ApplyOffsetsToQuad(BoxModelPoint[] quad, decimal offsetX, decimal offsetY)
