@@ -249,7 +249,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
               oopIframe,
               "frame1",
               TestConstants.CrossProcessHttpPrefix + "/empty.html"
-            ).WithTimeout(); ;
+            ).WithTimeout();
             var frame1 = oopIframe.ChildFrames[0];
             Assert.Contains("empty.html", frame1.Url);
             await FrameUtils.NavigateFrameAsync(
@@ -260,7 +260,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             Assert.Contains("oopif.html", frame1.Url);
             await frame1.GoToAsync(
                 TestConstants.CrossProcessHttpPrefix + "/oopif.html#navigate-within-document",
-                new NavigationOptions { WaitUntil = new[] { WaitUntilNavigation.Load } }).WithTimeout(); ;
+                new NavigationOptions { WaitUntil = new[] { WaitUntilNavigation.Load } }).WithTimeout();
             Assert.Contains("/oopif.html#navigate-within-document", frame1.Url);
             var detachedTcs = new TaskCompletionSource<bool>();
             Page.FrameManager.FrameDetached += (sender, e) => detachedTcs.TrySetResult(true);
@@ -293,7 +293,6 @@ namespace PuppeteerSharp.Tests.OOPIFTests
                 document.body.appendChild(button);
             }");
 
-            
             var button = await frame.WaitForSelectorAsync("#test-button", new WaitForSelectorOptions { Visible = true });
             var result = await button.ClickablePointAsync();
             Assert.True(result.X > 150); // padding + margin + border left
