@@ -71,17 +71,17 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
             var frame = await frameTask.WithTimeout();
             Assert.False(frame.IsOopFrame);
-            var nav = frame.WaitForNavigationAsync();
+            var nav = frame.WaitForNavigationAsync().WithTimeout();
             await FrameUtils.NavigateFrameAsync(
               Page,
               "frame1",
               TestConstants.CrossProcessHttpPrefix + "/empty.html"
             );
             Assert.True(frame.IsOopFrame);
-            await nav;
+            await nav.WithTimeout();
             nav = frame.WaitForNavigationAsync();
             await FrameUtils.NavigateFrameAsync(Page, "frame1", TestConstants.EmptyPage);
-            await nav;
+            await nav.WithTimeout();
             Assert.False(frame.IsOopFrame);
             Assert.Equal(2, Page.Frames.Length);
         }
