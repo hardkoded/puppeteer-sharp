@@ -52,11 +52,13 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             );
             var frame = await frameTask.WithTimeout();
             Assert.Contains("/empty.html", frame.Url);
+            var nav = frame.WaitForNavigationAsync();
             await FrameUtils.NavigateFrameAsync(
               Page,
               "frame1",
               TestConstants.CrossProcessHttpPrefix + "/assets/frame.html"
             );
+            await nav.WithTimeout();
             Assert.Contains("/assets/frame.html", frame.Url);
         }
 
@@ -218,8 +220,9 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldReportOopifFrames()
         {
+            var frameTask = Page.WaitForFrameAsync((frame) => frame.Url.EndsWith("inner-frame2.html"));
             await Page.GoToAsync($"http://mainframe:{TestConstants.Port}/main-frame.html");
-            var frame = await Page.WaitForFrameAsync((frame) => frame.Url.EndsWith("inner-frame2.html"));
+            var frame = await frameTask.WithTimeout();
             Assert.Equal(2, Oopifs.Count());
             Assert.Equal(2, Page.Frames.Count(frame => frame.IsOopFrame));
             Assert.Equal(1, await frame.EvaluateFunctionAsync<int>("() => document.querySelectorAll('button').length"));
