@@ -66,21 +66,21 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldSupportOopIframesBecomingNormalIframesAgain()
         {
-            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.GoToAsync(TestConstants.EmptyPage).WithTimeout();
             var frameTask = Page.WaitForFrameAsync((frame) => frame != Page.MainFrame);
-            await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
+            await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage).WithTimeout();
             var frame = await frameTask.WithTimeout();
             Assert.False(frame.IsOopFrame);
-            var nav = frame.WaitForNavigationAsync().WithTimeout();
+            var nav = frame.WaitForNavigationAsync();
             await FrameUtils.NavigateFrameAsync(
               Page,
               "frame1",
               TestConstants.CrossProcessHttpPrefix + "/empty.html"
-            );
+            ).WithTimeout();
             Assert.True(frame.IsOopFrame);
             await nav.WithTimeout();
             nav = frame.WaitForNavigationAsync();
-            await FrameUtils.NavigateFrameAsync(Page, "frame1", TestConstants.EmptyPage);
+            await FrameUtils.NavigateFrameAsync(Page, "frame1", TestConstants.EmptyPage).WithTimeout();
             await nav.WithTimeout();
             Assert.False(frame.IsOopFrame);
             Assert.Equal(2, Page.Frames.Length);
