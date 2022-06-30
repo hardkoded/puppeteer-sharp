@@ -25,6 +25,7 @@ namespace PuppeteerSharp
             _queuedEventGroupMap.TryRemove(requestId, out _);
             _queuedRedirectInfoMap.TryRemove(requestId, out _);
             _responseReceivedExtraInfoMap.TryRemove(requestId, out _);
+            _httpRequestsMap.TryRemove(requestId, out _);
         }
 
         internal List<ResponseReceivedExtraInfoResponse> ResponseExtraInfo(string networkRequestId)
