@@ -12,13 +12,15 @@ namespace PuppeteerSharp.Tests.OOPIFTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class OOPIFTests : PuppeteerPageBaseTest
     {
+        static int _port = 21221;
+
         public OOPIFTests(ITestOutputHelper output) : base(output)
         {
             DefaultOptions = TestConstants.DefaultBrowserOptions();
             DefaultOptions.Args = new[]
             {
                 "--site-per-process",
-                "--remote-debugging-port=21222",
+                $"--remote-debugging-port={++_port}",
                 "--host-rules=\"MAP * 127.0.0.1\"",
             };
         }
@@ -146,7 +148,10 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             );
             await nav;
             Assert.True(frame.IsOopFrame);
+            var detachedTcs = new TaskCompletionSource<bool>();
+            Page.FrameManager.FrameDetached += (sender, e) => detachedTcs.TrySetResult(true);
             await FrameUtils.DetachFrameAsync(Page, "frame1");
+            await detachedTcs.Task.WithTimeout();
             Assert.Single(Page.Frames);
         }
 
@@ -328,7 +333,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             Assert.Single(Oopifs);
             Assert.Equal(2, Page.Frames.Length);
 
-            var browserURL = "http://127.0.0.1:21222";
+            var browserURL = $"http://127.0.0.1:{_port}";
             using var browser1 = await Puppeteer.ConnectAsync(new (){ BrowserURL = browserURL });
             var target = await browser1.WaitForTargetAsync((target) =>
               target.Url.EndsWith("dynamic-oopif.html")
