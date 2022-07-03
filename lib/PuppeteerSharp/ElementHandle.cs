@@ -693,7 +693,12 @@ namespace PuppeteerSharp
                 Y = Math.Min(Math.Max(point.Y, 0), viewport.ContentSize.Height),
             });
 
-        private async Task ScrollIntoViewIfNeededAsync()
+        /// <summary>
+        /// If the element is not already fully visible then scrolls the element's parent container such that the element on
+        /// which ScrollIntoViewIfNeededAsync() is called is visible to the user.
+        /// </summary>
+        /// <returns>A Task that resolves when the message was confirmed by the browser</returns>
+        public async Task ScrollIntoViewIfNeededAsync()
         {
             var errorMessage = await EvaluateFunctionAsync<string>(
                 @"async(element, pageJavascriptEnabled) => {
