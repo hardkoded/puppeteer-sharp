@@ -183,11 +183,6 @@ namespace PuppeteerSharp
                 await Page.SetViewportAsync(newRawViewport.ToObject<ViewPortOptions>(true)).ConfigureAwait(false);
                 needsViewportReset = true;
             }
-            await ExecutionContext.EvaluateFunctionAsync(
-                @"function(element) {
-                    element.scrollIntoView({ block: 'center', inline: 'center', behavior: 'instant'});
-                }",
-                this).ConfigureAwait(false);
 
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
             boundingBox = await BoundingBoxAsync().ConfigureAwait(false);
@@ -207,8 +202,9 @@ namespace PuppeteerSharp
             var getLayoutMetricsResponse = await Client.SendAsync<GetLayoutMetricsResponse>("Page.getLayoutMetrics").ConfigureAwait(false);
 
             var clip = boundingBox;
-            clip.X += getLayoutMetricsResponse.LayoutViewport.PageX;
-            clip.Y += getLayoutMetricsResponse.LayoutViewport.PageY;
+            var metricsViewport = getLayoutMetricsResponse.CssVisualViewport ?? getLayoutMetricsResponse.LayoutViewport;
+            clip.X += metricsViewport.PageX;
+            clip.Y += metricsViewport.PageY;
 
             options.Clip = boundingBox.ToClip();
             var imageData = await Page.ScreenshotBase64Async(options).ConfigureAwait(false);

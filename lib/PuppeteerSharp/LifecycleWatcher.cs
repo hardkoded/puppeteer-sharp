@@ -186,6 +186,7 @@ namespace PuppeteerSharp
             _frameManager.FrameDetached -= OnFrameDetached;
             _frameManager.NetworkManager.Request -= OnRequest;
             _frameManager.Client.Disconnected -= OnClientDisconnected;
+            _frameManager.FrameSwapped -= FrameManager_FrameSwapped;
             _terminationCancellationToken.Cancel();
             _terminationCancellationToken.Dispose();
         }

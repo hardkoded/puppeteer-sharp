@@ -1837,7 +1837,7 @@ namespace PuppeteerSharp
         /// <example>
         /// <code>
         /// <![CDATA[
-        /// var frame = await page.WaitForFrameAsync(frane=> request.Name == "Test");
+        /// var frame = await page.WaitForFrameAsync(frame => frame.Name == "Test");
         /// ]]>
         /// </code>
         /// </example>
@@ -1853,7 +1853,7 @@ namespace PuppeteerSharp
         /// <example>
         /// <code>
         /// <![CDATA[
-        /// var frame = await page.WaitForFrameAsync(frane=> request.Name == "Test");
+        /// var frame = await page.WaitForFrameAsync(frame => frame.Name == "Test");
         /// ]]>
         /// </code>
         /// </example>
@@ -1871,6 +1871,7 @@ namespace PuppeteerSharp
                 {
                     frameTcs.TrySetResult(e.Frame);
                     FrameManager.FrameAttached -= frameEventListener;
+                    FrameManager.FrameNavigated -= frameEventListener;
                 }
             }
 
