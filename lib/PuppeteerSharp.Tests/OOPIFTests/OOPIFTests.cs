@@ -135,9 +135,9 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldSupportWaitForNavigationForTransitionsFromLocalToOopif()
         {
-            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.GoToAsync(TestConstants.EmptyPage).WithTimeout();
             var frameTask = Page.WaitForFrameAsync((frame) => frame != Page.MainFrame);
-            await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
+            await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage).WithTimeout();
             var frame = await frameTask.WithTimeout();
             Assert.False(frame.IsOopFrame);
             var nav = frame.WaitForNavigationAsync();
@@ -145,12 +145,12 @@ namespace PuppeteerSharp.Tests.OOPIFTests
               Page,
               "frame1",
               TestConstants.CrossProcessHttpPrefix + "/empty.html"
-            );
-            await nav;
+            ).WithTimeout();
+            await nav.WithTimeout();
             Assert.True(frame.IsOopFrame);
             var detachedTcs = new TaskCompletionSource<bool>();
             Page.FrameManager.FrameDetached += (sender, e) => detachedTcs.TrySetResult(true);
-            await FrameUtils.DetachFrameAsync(Page, "frame1");
+            await FrameUtils.DetachFrameAsync(Page, "frame1").WithTimeout();
             await detachedTcs.Task.WithTimeout();
             Assert.Single(Page.Frames);
         }
