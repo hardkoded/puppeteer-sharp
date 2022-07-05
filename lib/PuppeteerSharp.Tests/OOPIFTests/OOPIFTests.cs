@@ -65,7 +65,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         }
 
         [PuppeteerTest("oopif.spec.ts", "OOPIF", "should support OOP iframes becoming normal iframes again")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact(Skip = "See why this is so brittle")]
         public async Task ShouldSupportOopIframesBecomingNormalIframesAgain()
         {
             await Page.GoToAsync(TestConstants.EmptyPage).WithTimeout();
