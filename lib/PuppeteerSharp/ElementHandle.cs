@@ -634,7 +634,11 @@ namespace PuppeteerSharp
             await Page.Mouse.DragAndDropAsync(x, y, targetPoint.X, targetPoint.Y, delay).ConfigureAwait(false);
         }
 
-        private async Task<(decimal X, decimal Y)> ClickablePointAsync()
+        /// <summary>
+        /// Gets a clickable point for the current element (currently the mid point).
+        /// </summary>
+        /// <returns>Task that resolves to the x, y point that describes the element's position.</returns>
+        public async Task<(decimal X, decimal Y)> ClickablePointAsync()
         {
             GetContentQuadsResponse result = null;
 
