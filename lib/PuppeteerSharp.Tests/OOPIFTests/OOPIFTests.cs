@@ -347,7 +347,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/lazy-oopif-frame.html");
             await Page.SetViewportAsync(new ViewPortOptions() { Width = 1000, Height = 1000 });
-            Assert.Equal(new[] { true, true, false }, Page.Frames.Select(frame => frame.HasStartedLoading).ToArray());
+            Assert.Single(Page.Frames.Where(frame => !frame.HasStartedLoading));
         }
 
         private IEnumerable<Target> Oopifs => Context.Targets().Where(target => target.TargetInfo.Type == TargetType.iFrame);
