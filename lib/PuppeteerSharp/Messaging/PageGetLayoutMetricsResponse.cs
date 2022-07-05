@@ -1,10 +1,14 @@
+using Newtonsoft.Json;
+
 namespace PuppeteerSharp.Messaging
 {
     internal class PageGetLayoutMetricsResponse
     {
-        public LayoutContentSize ContentSize { get; set; }
+        public Rect ContentSize { get; set; }
 
-        public LayoutContentSize CssLayoutViewport { get; set; }
+        public Rect CssContentSize { get; set; }
+
+        public LayoutContentSize CssVisualViewport { get; set; }
 
         public LayoutContentSize LayoutViewport { get; set; }
 
@@ -17,6 +21,17 @@ namespace PuppeteerSharp.Messaging
             public decimal PageX { get; set; }
 
             public decimal PageY { get; set; }
+        }
+
+        public class Rect
+        {
+            public decimal X { get; set; }
+
+            public decimal Y { get; set; }
+
+            public decimal Width { get; set; }
+
+            public decimal Height { get; set; }
         }
     }
 }

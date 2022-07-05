@@ -199,7 +199,7 @@ namespace PuppeteerSharp
             {
                 throw new PuppeteerException("Node has 0 height.");
             }
-            var getLayoutMetricsResponse = await Client.SendAsync<GetLayoutMetricsResponse>("Page.getLayoutMetrics").ConfigureAwait(false);
+            var getLayoutMetricsResponse = await Client.SendAsync<PageGetLayoutMetricsResponse>("Page.getLayoutMetrics").ConfigureAwait(false);
 
             var clip = boundingBox;
             var metricsViewport = getLayoutMetricsResponse.CssVisualViewport ?? getLayoutMetricsResponse.LayoutViewport;
@@ -768,7 +768,7 @@ namespace PuppeteerSharp
 
         private IEnumerable<BoxModelPoint> IntersectQuadWithViewport(IEnumerable<BoxModelPoint> quad, PageGetLayoutMetricsResponse viewport)
         {
-            PageGetLayoutMetricsResponse.LayoutContentSize size = viewport.CssLayoutViewport ?? viewport.LayoutViewport;
+            var size = viewport.CssVisualViewport ?? viewport.LayoutViewport;
             return quad.Select(point => new BoxModelPoint
             {
                 X = Math.Min(Math.Max(point.X, 0), size.ClientWidth),

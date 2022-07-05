@@ -2266,10 +2266,10 @@ namespace PuppeteerSharp
                         _burstModeMetrics = metrics;
                     }
 
-                    var contentSize = metrics.ContentSize;
+                    var contentSize = metrics.CssContentSize ?? metrics.ContentSize;
 
-                    var width = Convert.ToInt32(Math.Ceiling(contentSize.ClientWidth));
-                    var height = Convert.ToInt32(Math.Ceiling(contentSize.ClientHeight));
+                    var width = Convert.ToInt32(Math.Ceiling(contentSize.Width));
+                    var height = Convert.ToInt32(Math.Ceiling(contentSize.Height));
 
                     // Overwrite clip for full page at all times.
                     clip = new Clip
