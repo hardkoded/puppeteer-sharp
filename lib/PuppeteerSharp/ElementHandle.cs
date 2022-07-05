@@ -638,7 +638,7 @@ namespace PuppeteerSharp
         /// Gets a clickable point for the current element (currently the mid point).
         /// </summary>
         /// <returns>Task that resolves to the x, y point that describes the element's position.</returns>
-        Public async Task<(decimal X, decimal Y)> ClickablePointAsync()
+        public async Task<(decimal X, decimal Y)> ClickablePointAsync()
         {
             GetContentQuadsResponse result = null;
 
