@@ -6,6 +6,7 @@ using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 using PuppeteerSharp.Helpers;
+using System;
 
 namespace PuppeteerSharp.Tests.OOPIFTests
 {
@@ -135,24 +136,39 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldSupportWaitForNavigationForTransitionsFromLocalToOopif()
         {
+            Console.WriteLine("1");
             await Page.GoToAsync(TestConstants.EmptyPage).WithTimeout();
+            Console.WriteLine("2");
             var frameTask = Page.WaitForFrameAsync((frame) => frame != Page.MainFrame);
+            Console.WriteLine("3");
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage).WithTimeout();
+            Console.WriteLine("4");
             var frame = await frameTask.WithTimeout();
+            Console.WriteLine("5");
             Assert.False(frame.IsOopFrame);
+            Console.WriteLine("6");
             var nav = frame.WaitForNavigationAsync();
+            Console.WriteLine("7");
             await FrameUtils.NavigateFrameAsync(
               Page,
               "frame1",
               TestConstants.CrossProcessHttpPrefix + "/empty.html"
             ).WithTimeout();
+            Console.WriteLine("8");
             await nav.WithTimeout();
+            Console.WriteLine("9");
             Assert.True(frame.IsOopFrame);
+            Console.WriteLine("10");
             var detachedTcs = new TaskCompletionSource<bool>();
+            Console.WriteLine("11");
             Page.FrameManager.FrameDetached += (sender, e) => detachedTcs.TrySetResult(true);
+            Console.WriteLine("12");
             await FrameUtils.DetachFrameAsync(Page, "frame1").WithTimeout();
+            Console.WriteLine("13");
             await detachedTcs.Task.WithTimeout();
+            Console.WriteLine("14");
             Assert.Single(Page.Frames);
+            Console.WriteLine("15");
         }
 
         [PuppeteerTest("oopif.spec.ts", "OOPIF", "should keep track of a frames OOP state")]
