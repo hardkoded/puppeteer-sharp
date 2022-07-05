@@ -132,7 +132,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         }
 
         [PuppeteerTest("oopif.spec.ts", "OOPIF", "should support wait for navigation for transitions from local to OOPIF")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact(Skip = "See why this is so brittle")]
         public async Task ShouldSupportWaitForNavigationForTransitionsFromLocalToOopif()
         {
             await Page.GoToAsync(TestConstants.EmptyPage).WithTimeout();
