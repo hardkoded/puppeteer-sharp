@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Xunit.Abstractions;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Tests
 {
@@ -20,8 +21,8 @@ namespace PuppeteerSharp.Tests
 
         public override async Task DisposeAsync()
         {
-            await Page.CloseAsync();
-            await base.DisposeAsync();
+            await Page.CloseAsync().WithTimeout();
+            await base.DisposeAsync().WithTimeout();
         }
 
         protected Task WaitForError()
