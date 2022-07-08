@@ -42,7 +42,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         }
 
         [PuppeteerTest("oopif.spec.ts", "OOPIF", "should track navigations within OOP iframes")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact(Skip = "See why this is so brittle")]
         public async Task ShouldTrackNavigationsWithinOopIframes()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -89,7 +89,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         }
 
         [PuppeteerTest("oopif.spec.ts", "OOPIF", "should support frames within OOP frames")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact(Skip = "See why this is so brittle")]
         public async Task ShouldSupportFramesWithinOopframes()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -110,7 +110,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         }
 
         [PuppeteerTest("oopif.spec.ts", "OOPIF", "should support OOP iframes getting detached")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact(Skip = "See why this is so brittle")]
         public async Task ShouldSupportOopIframesGettingDetached()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -156,7 +156,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         }
 
         [PuppeteerTest("oopif.spec.ts", "OOPIF", "should keep track of a frames OOP state")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact(Skip = "See why this is so brittle")]
         public async Task ShouldKeepTrackOfAFramesOopState()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -222,7 +222,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         }
 
         [PuppeteerTest("oopif.spec.ts", "OOPIF", "should report oopif frames")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [PuppeteerFact(Skip = "See why this is so brittle")]
         public async Task ShouldReportOopifFrames()
         {
             var frameTask = Page.WaitForFrameAsync((frame) => frame.Url.EndsWith("inner-frame2.html"));
