@@ -16,14 +16,13 @@ namespace PuppeteerSharp
         private readonly FrameManager _frameManager;
         private readonly TimeoutSettings _timeoutSettings;
         private readonly CDPSession _client;
-        private readonly ILogger _logger;
         private bool _detached;
         private TaskCompletionSource<ExecutionContext> _contextResolveTaskWrapper;
         private TaskCompletionSource<ElementHandle> _documentCompletionSource;
 
         public DOMWorld(CDPSession client, FrameManager frameManager, Frame frame, TimeoutSettings timeoutSettings)
         {
-            _logger = client.Connection.LoggerFactory.CreateLogger<DOMWorld>();
+            Logger = client.Connection.LoggerFactory.CreateLogger<DOMWorld>();
             _client = client;
             _frameManager = frameManager;
             Frame = frame;
@@ -60,7 +59,7 @@ namespace PuppeteerSharp
             catch (Exception ex)
             {
                 var message = $"DOMWorld failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
-                _logger.LogError(ex, message);
+                Logger.LogError(ex, message);
                 _client.Close(message);
             }
         }
