@@ -1,6 +1,6 @@
 namespace PuppeteerSharp.Messaging
 {
-    internal class BoxModelResponse
+    internal class DomGetBoxModelResponse
     {
         public BoxModelResponseModel Model { get; set; }
 
