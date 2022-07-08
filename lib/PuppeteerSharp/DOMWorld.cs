@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Input;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
@@ -12,12 +15,15 @@ namespace PuppeteerSharp
     {
         private readonly FrameManager _frameManager;
         private readonly TimeoutSettings _timeoutSettings;
+        private readonly CDPSession _client;
         private bool _detached;
         private TaskCompletionSource<ExecutionContext> _contextResolveTaskWrapper;
         private TaskCompletionSource<ElementHandle> _documentCompletionSource;
 
-        public DOMWorld(FrameManager frameManager, Frame frame, TimeoutSettings timeoutSettings)
+        public DOMWorld(CDPSession client, FrameManager frameManager, Frame frame, TimeoutSettings timeoutSettings)
         {
+            Logger = client.Connection.LoggerFactory.CreateLogger<DOMWorld>();
+            _client = client;
             _frameManager = frameManager;
             Frame = frame;
             _timeoutSettings = timeoutSettings;
@@ -26,6 +32,7 @@ namespace PuppeteerSharp
 
             WaitTasks = new ConcurrentSet<WaitTask>();
             _detached = false;
+            _client.MessageReceived += Client_MessageReceived;
         }
 
         private CustomQueriesManager CustomQueriesManager => _frameManager.Page.Browser.CustomQueriesManager;
@@ -35,6 +42,33 @@ namespace PuppeteerSharp
         internal Frame Frame { get; }
 
         internal bool HasContext => _contextResolveTaskWrapper?.Task.IsCompleted == true;
+
+        internal ILogger Logger { get; }
+
+        private async void Client_MessageReceived(object sender, MessageEventArgs e)
+        {
+            try
+            {
+                switch (e.MessageID)
+                {
+                    case "Runtime.bindingCalled":
+                        await OnBindingCalled(e.MessageData.ToObject<BindingCalledResponse>(true)).ConfigureAwait(false);
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                var message = $"DOMWorld failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
+                Logger.LogError(ex, message);
+                _client.Close(message);
+            }
+        }
+
+        private Task OnBindingCalled(BindingCalledResponse bindingCalledResponse)
+        {
+            // TODO
+            return Task.CompletedTask;
+        }
 
         internal void SetContext(ExecutionContext context)
         {

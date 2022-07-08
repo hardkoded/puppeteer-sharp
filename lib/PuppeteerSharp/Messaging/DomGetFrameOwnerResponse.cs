@@ -1,9 +1,7 @@
 namespace PuppeteerSharp.Messaging
 {
-    internal class DomGetBoxModelRequest
+    internal class DomGetFrameOwnerResponse
     {
-        public string ObjectId { get; set; }
-
         public object BackendNodeId { get; set; }
     }
 }
