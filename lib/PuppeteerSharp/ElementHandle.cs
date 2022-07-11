@@ -179,7 +179,7 @@ namespace PuppeteerSharp
         public async Task ClickAsync(ClickOptions options = null)
         {
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
-            var clickablePoint = await ClickablePointAsync().ConfigureAwait(false);
+            var clickablePoint = await ClickablePointAsync(options?.OffSet).ConfigureAwait(false);
             await Page.Mouse.ClickAsync(clickablePoint.X, clickablePoint.Y, options).ConfigureAwait(false);
         }
 
@@ -469,7 +469,7 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
-        public async Task<BoxModelPoint> ClickablePointAsync(BoxModelPoint? offset = null)
+        public async Task<BoxModelPoint> ClickablePointAsync(Offset? offset = null)
         {
             GetContentQuadsResponse result = null;
 
