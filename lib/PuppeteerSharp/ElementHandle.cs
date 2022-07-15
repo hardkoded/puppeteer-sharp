@@ -240,6 +240,20 @@ namespace PuppeteerSharp
             var clickablePoint = await ClickablePointAsync().ConfigureAwait(false);
             await Page.Mouse.ClickAsync(clickablePoint.X, clickablePoint.Y, options).ConfigureAwait(false);
         }
+        
+        /// <summary>
+        /// Scrolls element into view if needed, and then uses <see cref="PuppeteerSharp.Page.Mouse"/> to double click in the center of the element.
+        /// </summary>
+        /// <param name="options">click options</param>
+        /// <exception cref="PuppeteerException">if the element is detached from DOM</exception>
+        /// <returns>Task which resolves when the element is successfully clicked</returns>
+        public async Task DoubleClickAsync(ClickOptions options = null)
+        {
+            await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
+            var clickablePoint = await ClickablePointAsync().ConfigureAwait(false);
+            await Page.Mouse.ClickAsync(clickablePoint.X, clickablePoint.Y, options).ConfigureAwait(false);
+            await Page.Mouse.ClickAsync(clickablePoint.X, clickablePoint.Y, options).ConfigureAwait(false);
+        }
 
         /// <summary>
         /// Uploads files
