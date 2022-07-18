@@ -1,25 +1,26 @@
-# CefSharp Puppeteer
+# CefSharp.DevTools.Dom
 
-[![Nuget](https://img.shields.io/nuget/v/CefSharp.Puppeteer?style=for-the-badge)](https://www.nuget.org/packages/CefSharp.Puppeteer/)
+[![Nuget](https://img.shields.io/nuget/v/CefSharp.DevTools.Dom?style=for-the-badge)](https://www.nuget.org/packages/CefSharp.DevTools.Dom/)
 [![AppVeyor](https://img.shields.io/appveyor/build/cefsharp/puppeteer?style=for-the-badge)](https://ci.appveyor.com/project/cefsharp/puppeteer)
 [![AppVeyor tests](https://img.shields.io/appveyor/tests/cefsharp/puppeteer?style=for-the-badge)](https://ci.appveyor.com/project/cefsharp/puppeteer/build/tests)
 [![GitHub](https://img.shields.io/github/license/cefsharp/puppeteer?style=for-the-badge)](https://github.com/cefsharp/Puppeteer/blob/main/LICENSE)
 
-CefSharp Puppeteer is a fork of [puppeteer-sharp by Darío Kondratiuk](https://github.com/hardkoded/puppeteer-sharp) that has been adapted specifically for use with CefSharp.
-Direct communication with the ChromiumWebBrowser instance rather than opening a web socket.
-1:1 mapping of Page and ChromiumWebBrowser
-CEF only supports a subset of features, features will be added/removed as the project matures
+CefSharp.DevTools.Dom is a fork of [puppeteer-sharp by Darío Kondratiuk](https://github.com/hardkoded/puppeteer-sharp) that has been adapted specifically for use with CefSharp.
+- Strongly typed async DOM API
+- Direct communication with the ChromiumWebBrowser instance rather than opening a web socket.
+- 1:1 mapping of DevToolsContext and ChromiumWebBrowser
+- CEF only supports a subset of features, features will be added/removed as the project matures
 
 # Prerequisites
 
  * .Net 4.7.2 or .Net Core 3.1 or greater
- * CefSharp 95.7.141 or greater
+ * CefSharp 102.0.100 or greater
 
 # Questions and Support
 
 If you have an issue or a question:
 
-* Ask a question on [Discussions](https://github.com/cefsharp/Puppeteer/discussions).
+* Ask a question on [Discussions](https://github.com/cefsharp/CefSharp.DevTools.Dom/discussions).
 
 ## Contributing Guide
 
@@ -39,7 +40,7 @@ the DevToolsContext in multiple places in your code, calling CreateDevToolsConte
 If the DevToolsContext is disposed then calls to CreateDevToolsContextAsync will create a new instance.
 
 ```c#
-// Add using CefSharp.Puppeteer; to get access to the
+// Add using CefSharp.DevTools.Dom; to get access to the
 // CreateDevToolsContextAsync extension method
 var devtoolsContext = await chromiumWebBrowser.CreateDevToolsContextAsync();
 
@@ -59,41 +60,111 @@ Read/write to the DOM
 <!-- snippet: QuerySelector -->
 <a id='snippet-queryselector'></a>
 ```cs
-// Wait for Initial page load
-await chromiumWebBrowser.WaitForInitialLoadAsync();
+// Add using CefSharp.DevTools.Dom to access CreateDevToolsContextAsync and related extension methods.
+await using var devToolsContext = await chromiumWebBrowser.CreateDevToolsContextAsync();
 
-await using var devtoolsContext = await chromiumWebBrowser.CreateDevToolsContextAsync();
+await devToolsContext.GoToAsync("http://www.google.com");
 
-var element = await devtoolsContext.QuerySelectorAsync("#myElementId");
+// Get element by Id
+// https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector
+var element = await devToolsContext.QuerySelectorAsync<HtmlElement>("#myElementId");
+
+//Strongly typed element types (this is only a subset of the types mapped)
+var htmlDivElement = await devToolsContext.QuerySelectorAsync<HtmlDivElement>("#myDivElementId");
+var htmlSpanElement = await devToolsContext.QuerySelectorAsync<HtmlSpanElement>("#mySpanElementId");
+var htmlSelectElement = await devToolsContext.QuerySelectorAsync<HtmlSelectElement>("#mySelectElementId");
+var htmlInputElement = await devToolsContext.QuerySelectorAsync<HtmlInputElement>("#myInputElementId");
+var htmlFormElement = await devToolsContext.QuerySelectorAsync<HtmlFormElement>("#myFormElementId");
+var htmlAnchorElement = await devToolsContext.QuerySelectorAsync<HtmlAnchorElement>("#myAnchorElementId");
+var htmlImageElement = await devToolsContext.QuerySelectorAsync<HtmlImageElement>("#myImageElementId");
+var htmlTextAreaElement = await devToolsContext.QuerySelectorAsync<HtmlImageElement>("#myTextAreaElementId");
+var htmlButtonElement = await devToolsContext.QuerySelectorAsync<HtmlButtonElement>("#myButtonElementId");
+var htmlParagraphElement = await devToolsContext.QuerySelectorAsync<HtmlParagraphElement>("#myParagraphElementId");
+var htmlTableElement = await devToolsContext.QuerySelectorAsync<HtmlTableElement>("#myTableElementId");
 
 // Get a custom attribute value
-var customAttribute = await element.GetAttributeValueAsync<string>("data-customAttribute");
+var customAttribute = await element.GetAttributeAsync<string>("data-customAttribute");
 
 //Set innerText property for the element
-await element.SetPropertyValueAsync("innerText", "Welcome!");
+await element.SetInnerTextAsync("Welcome!");
 
 //Get innerText property for the element
-var innerText = await element.GetPropertyValueAsync<string>("innerText");
-
-//Change CSS style background colour
-_ = await element.EvaluateFunctionAsync("e => e.style.backgroundColor = 'yellow'");
+var innerText = await element.GetInnerTextAsync();
 
 //Get all child elements
 var childElements = await element.QuerySelectorAllAsync("div");
 
+//Change CSS style background colour
+await element.EvaluateFunctionAsync("e => e.style.backgroundColor = 'yellow'");
+
+//Type text in an input field
+await element.TypeAsync("Welcome to my Website!");
+
 //Click The element
 await element.ClickAsync();
 
-var divElements = await devtoolsContext.QuerySelectorAllAsync("div");
+// Simple way of chaining method calls together when you don't need a handle to the HtmlElement
+var htmlButtonElementInnerText = await devToolsContext.QuerySelectorAsync<HtmlButtonElement>("#myButtonElementId")
+    .AndThen(x => x.GetInnerTextAsync());
 
-foreach(var div in divElements)
+//Event Handler
+//Expose a function to javascript, functions persist across navigations
+//So only need to do this once
+await devToolsContext.ExposeFunctionAsync("jsAlertButtonClick", () =>
 {
-    var style = await div.GetAttributeValueAsync<string>("style");
-    await div.SetAttributeValueAsync("data-customAttribute", "123");
-    await div.SetPropertyValueAsync("innerText", "Updated Div innerText");
+    _ = devToolsContext.EvaluateExpressionAsync("window.alert('Hello! You invoked window.alert()');");
+});
+
+var jsAlertButton = await devToolsContext.QuerySelectorAsync<HtmlButtonElement>("#jsAlertButton");
+
+//Write up the click event listner to call our exposed function
+_ = jsAlertButton.AddEventListenerAsync("click", "jsAlertButtonClick");
+
+//Get a collection of HtmlElements
+var divElements = await devToolsContext.QuerySelectorAllAsync<HtmlDivElement>("div");
+
+foreach (var div in divElements)
+{
+    // Get a reference to the CSSStyleDeclaration
+    var style = await div.GetStyleAsync();
+
+    //Set the border to 1px solid red
+    await style.SetPropertyAsync("border", "1px solid red", important: true);
+
+    await div.SetAttributeAsync("data-customAttribute", "123");
+    await div.SetInnerTextAsync("Updated Div innerText");
+}
+
+//Using standard array
+var tableRows = await htmlTableElement.GetRowsAsync().ToArrayAsync();
+
+foreach (var row in tableRows)
+{
+    var cells = await row.GetCellsAsync().ToArrayAsync();
+    foreach (var cell in cells)
+    {
+        var newDiv = await devToolsContext.CreateHtmlElementAsync<HtmlDivElement>("div");
+        await newDiv.SetInnerTextAsync("New Div Added!");
+        await cell.AppendChildAsync(newDiv);
+    }
+}
+
+//Get a reference to the HtmlCollection and use async enumerable
+//Requires Net Core 3.1 or higher
+var tableRowsHtmlCollection = await htmlTableElement.GetRowsAsync();
+
+await foreach (var row in tableRowsHtmlCollection)
+{
+    var cells = await row.GetCellsAsync();
+    await foreach (var cell in cells)
+    {
+        var newDiv = await devToolsContext.CreateHtmlElementAsync<HtmlDivElement>("div");
+        await newDiv.SetInnerTextAsync("New Div Added!");
+        await cell.AppendChildAsync(newDiv);
+    }
 }
 ```
-<sup><a href='/lib/PuppeteerSharp.Tests/QuerySelectorTests/DevToolsContextQuerySelectorTests.cs#L22-L57' title='Snippet source file'>snippet source</a> | <a href='#snippet-queryselector' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/lib/PuppeteerSharp.Tests/QuerySelectorTests/DevToolsContextQuerySelectorTests.cs#L22-L128' title='Snippet source file'>snippet source</a> | <a href='#snippet-queryselector' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ## Inject HTML
@@ -153,4 +224,4 @@ await DevToolsContext.SetViewportAsync(new ViewPortOptions
 
 ## Generate PDF files
 
-Currently not supported via CefSharp Puppeteer, use ChromiumWebBrowser.PrintToPdfAsync instead.
+Currently not supported via CefSharp.DevTools.Dom, use ChromiumWebBrowser.PrintToPdfAsync instead.

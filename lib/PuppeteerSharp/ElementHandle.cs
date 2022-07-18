@@ -4,14 +4,14 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using CefSharp.Puppeteer.Helpers;
-using CefSharp.Puppeteer.Helpers.Json;
-using CefSharp.Puppeteer.Input;
-using CefSharp.Puppeteer.Messaging;
+using CefSharp.DevTools.Dom.Helpers;
+using CefSharp.DevTools.Dom.Helpers.Json;
+using CefSharp.DevTools.Dom.Input;
+using CefSharp.DevTools.Dom.Messaging;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 
-namespace CefSharp.Puppeteer
+namespace CefSharp.DevTools.Dom
 {
     /// <summary>
     /// Inherits from <see cref="JSHandle"/>. It represents an in-page DOM element.
@@ -278,7 +278,7 @@ namespace CefSharp.Puppeteer
             {
                 try
                 {
-                    File.Open(file, FileMode.Open).Dispose();
+                    System.IO.File.Open(file, FileMode.Open).Dispose();
                 }
                 catch (Exception ex)
                 {
@@ -354,7 +354,7 @@ namespace CefSharp.Puppeteer
         /// </code>
         /// An example of typing into a text field and then submitting the form:
         /// <code>
-        /// var elementHandle = await page.GetElementAsync("input");
+        /// var elementHandle = await devToolsContext.GetElementAsync("input");
         /// await elementHandle.TypeAsync("some text");
         /// await elementHandle.PressAsync("Enter");
         /// </code>

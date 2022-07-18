@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace CefSharp.Puppeteer.Media
+namespace CefSharp.DevTools.Dom.Media
 {
     /// <summary>
     /// Paper format.

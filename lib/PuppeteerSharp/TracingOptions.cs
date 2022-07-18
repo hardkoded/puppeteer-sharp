@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace CefSharp.Puppeteer
+namespace CefSharp.DevTools.Dom
 {
     /// <summary>
     /// Tracing options used on <see cref="Tracing.StartAsync(TracingOptions)"/>.

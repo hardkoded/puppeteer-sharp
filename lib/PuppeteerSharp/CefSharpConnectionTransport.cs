@@ -2,10 +2,10 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using CefSharp.Callback;
+using CefSharp.DevTools.Dom.Transport;
 using CefSharp.Internals;
-using CefSharp.Puppeteer.Transport;
 
-namespace CefSharp.Puppeteer
+namespace CefSharp.DevTools.Dom
 {
     internal class CefSharpConnectionTransport : IConnectionTransport
     {
@@ -17,6 +17,8 @@ namespace CefSharp.Puppeteer
 
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
 
+        public event EventHandler<MessageErrorEventArgs> MessageError;
+
         public CefSharpConnectionTransport(IBrowserHost browserHost)
         {
             _browserHost = browserHost;
@@ -25,9 +27,16 @@ namespace CefSharp.Puppeteer
             observer.OnDevToolsAgentDetached((b) => { IsClosed = true; });
             observer.OnDevToolsMessage((b, m) =>
             {
-                using var reader = new StreamReader(m);
-                var msg = reader.ReadToEnd();
-                MessageReceived?.Invoke(this, new MessageReceivedEventArgs(msg));
+                try
+                {
+                    using var reader = new StreamReader(m);
+                    var msg = reader.ReadToEnd();
+                    MessageReceived?.Invoke(this, new MessageReceivedEventArgs(msg));
+                }
+                catch (Exception ex)
+                {
+                    MessageError?.Invoke(this, new MessageErrorEventArgs(ex));
+                }
             });
 
             _devtoolsMessageObserver = observer;

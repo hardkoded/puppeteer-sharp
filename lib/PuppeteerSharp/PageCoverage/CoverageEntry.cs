@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace CefSharp.Puppeteer.PageCoverage
+namespace CefSharp.DevTools.Dom.PageCoverage
 {
     /// <summary>
     /// Coverage report for all non-anonymous scripts.

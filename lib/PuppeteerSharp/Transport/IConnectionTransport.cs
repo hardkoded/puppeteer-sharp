@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace CefSharp.Puppeteer.Transport
+namespace CefSharp.DevTools.Dom.Transport
 {
     /// <summary>
     /// Connection transport abstraction.
@@ -26,5 +26,9 @@ namespace CefSharp.Puppeteer.Transport
         /// Occurs when a message is received.
         /// </summary>
         event EventHandler<MessageReceivedEventArgs> MessageReceived;
+        /// <summary>
+        /// Occurs when an error occurs processing the message.
+        /// </summary>
+        event EventHandler<MessageErrorEventArgs> MessageError;
     }
 }

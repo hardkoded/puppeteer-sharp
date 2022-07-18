@@ -6,7 +6,7 @@ using Xunit;
 using Xunit.Abstractions;
 using PuppeteerSharp.Xunit;
 using PuppeteerSharp.Tests.Attributes;
-using CefSharp.Puppeteer;
+using CefSharp.DevTools.Dom;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {

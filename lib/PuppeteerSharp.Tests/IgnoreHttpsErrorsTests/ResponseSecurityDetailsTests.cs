@@ -3,11 +3,11 @@ using System.Net;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
-using CefSharp.Puppeteer.Helpers;
+using CefSharp.DevTools.Dom.Helpers;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using Microsoft.AspNetCore.Connections.Features;
-using CefSharp.Puppeteer;
+using CefSharp.DevTools.Dom;
 using Microsoft.AspNetCore.Http;
 
 namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests

@@ -1,5 +1,5 @@
 using Newtonsoft.Json.Linq;
-using CefSharp.Puppeteer;
+using CefSharp.DevTools.Dom;
 using PuppeteerSharp.TestServer;
 using System.IO;
 using System.Threading.Tasks;

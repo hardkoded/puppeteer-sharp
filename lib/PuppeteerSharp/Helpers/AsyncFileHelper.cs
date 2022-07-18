@@ -2,7 +2,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CefSharp.Puppeteer.Helpers
+namespace CefSharp.DevTools.Dom.Helpers
 {
     /// <summary>
     /// Provides static methods for asynchronous file access.

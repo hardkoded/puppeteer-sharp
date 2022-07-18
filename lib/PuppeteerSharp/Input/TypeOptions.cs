@@ -1,4 +1,4 @@
-namespace CefSharp.Puppeteer.Input
+namespace CefSharp.DevTools.Dom.Input
 {
     /// <summary>
     /// Options to use when typing

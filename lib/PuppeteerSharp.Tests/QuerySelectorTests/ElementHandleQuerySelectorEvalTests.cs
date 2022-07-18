@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using CefSharp;
-using CefSharp.Puppeteer;
+using CefSharp.DevTools.Dom;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using Xunit;
@@ -31,9 +31,9 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         public async Task QuerySelectorShouldWork()
         {
             await DevToolsContext.SetContentAsync("<html><body><div class='tweet'><div class='like'>100</div><div class='retweets'>10</div></div></body></html>");
-            var tweet = await DevToolsContext.QuerySelectorAsync(".tweet");
+            var tweet = await DevToolsContext.QuerySelectorAsync<HtmlDivElement>(".tweet");
             var content = await tweet.QuerySelectorAsync(".like")
-                .EvaluateFunctionAsync<string>("node => node.innerText");
+                .AndThen(x => x.EvaluateFunctionAsync<string>("node => node.innerText"));
             Assert.Equal("100", content);
         }
 
@@ -43,9 +43,9 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         {
             var htmlContent = "<div class='a'>not-a-child-div</div><div id='myId'><div class='a'>a-child-div</div></div>";
             await DevToolsContext.SetContentAsync(htmlContent);
-            var elementHandle = await DevToolsContext.QuerySelectorAsync("#myId");
-            var content = await elementHandle.QuerySelectorAsync(".a")
-                .EvaluateFunctionAsync<string>("node => node.innerText");
+            var elementHandle = await DevToolsContext.QuerySelectorAsync<HtmlDivElement>("#myId");
+            var content = await elementHandle.QuerySelectorAsync<HtmlElement>(".a")
+                .AndThen(x => x.EvaluateFunctionAsync<string>("node => node.innerText"));
             Assert.Equal("a-child-div", content);
         }
 
@@ -55,11 +55,12 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         {
             var htmlContent = "<div class=\"a\">not-a-child-div</div><div id=\"myId\"></div>";
             await DevToolsContext.SetContentAsync(htmlContent);
-            var elementHandle = await DevToolsContext.QuerySelectorAsync("#myId");
-            var exception = await Assert.ThrowsAsync<SelectorException>(
-                () => elementHandle.QuerySelectorAsync(".a").EvaluateFunctionAsync<string>("node => node.innerText")
+            var elementHandle = await DevToolsContext.QuerySelectorAsync<HtmlDivElement>("#myId");
+            var exception = await Assert.ThrowsAsync<NullReferenceException>(
+                () => elementHandle.QuerySelectorAsync<HtmlElement>(".a")
+                    .AndThen(x => x.GetInnerTextAsync())
             );
-            Assert.Equal("Error: failed to find element matching selector", exception.Message);
+            Assert.Equal("Object reference not set to an instance of an object.", exception.Message);
         }
     }
 }

@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace CefSharp.Puppeteer.Input
+namespace CefSharp.DevTools.Dom.Input
 {
     /// <summary>
     /// The type of button click to use with <see cref="Mouse.DownAsync(ClickOptions)"/>, <see cref="Mouse.UpAsync(ClickOptions)"/> and <see cref="Mouse.ClickAsync(decimal, decimal, ClickOptions)"/>

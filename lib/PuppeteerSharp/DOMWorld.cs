@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CefSharp.Puppeteer.Helpers;
-using CefSharp.Puppeteer.Input;
+using CefSharp.DevTools.Dom.Helpers;
+using CefSharp.DevTools.Dom.Input;
 using Newtonsoft.Json.Linq;
 
-namespace CefSharp.Puppeteer
+namespace CefSharp.DevTools.Dom
 {
     internal class DOMWorld
     {

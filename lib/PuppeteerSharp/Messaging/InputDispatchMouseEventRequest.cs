@@ -1,6 +1,6 @@
-using CefSharp.Puppeteer.Input;
+using CefSharp.DevTools.Dom.Input;
 
-namespace CefSharp.Puppeteer.Messaging
+namespace CefSharp.DevTools.Dom.Messaging
 {
     internal class InputDispatchMouseEventRequest
     {

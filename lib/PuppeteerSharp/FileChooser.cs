@@ -2,9 +2,9 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using CefSharp.Puppeteer.Messaging;
+using CefSharp.DevTools.Dom.Messaging;
 
-namespace CefSharp.Puppeteer
+namespace CefSharp.DevTools.Dom
 {
     /// <summary>
     /// <see cref="FileChooser"/> objects are returned via the <seealso cref="IDevToolsContext.WaitForFileChooserAsync(WaitForFileChooserOptions)"/> method.

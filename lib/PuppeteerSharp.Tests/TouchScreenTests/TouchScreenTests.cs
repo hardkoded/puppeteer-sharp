@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
-using CefSharp.Puppeteer;
-using CefSharp.Puppeteer.Mobile;
+using CefSharp.DevTools.Dom;
+using CefSharp.DevTools.Dom.Mobile;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using Xunit;

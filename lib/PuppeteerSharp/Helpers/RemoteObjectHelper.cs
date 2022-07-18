@@ -1,12 +1,12 @@
 using System;
 using System.Numerics;
 using System.Threading.Tasks;
-using CefSharp.Puppeteer.Helpers.Json;
-using CefSharp.Puppeteer.Messaging;
+using CefSharp.DevTools.Dom.Helpers.Json;
+using CefSharp.DevTools.Dom.Messaging;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 
-namespace CefSharp.Puppeteer.Helpers
+namespace CefSharp.DevTools.Dom.Helpers
 {
     internal class RemoteObjectHelper
     {

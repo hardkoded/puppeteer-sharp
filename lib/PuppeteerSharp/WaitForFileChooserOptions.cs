@@ -1,4 +1,4 @@
-namespace CefSharp.Puppeteer
+namespace CefSharp.DevTools.Dom
 {
     /// <summary>
     /// Optional waiting parameters.
@@ -10,6 +10,6 @@ namespace CefSharp.Puppeteer
         /// Maximum time to wait for in milliseconds. Defaults to 30000 (30 seconds). Pass 0 to disable timeout.
         /// The default value can be changed by setting the <see cref="IDevToolsContext.DefaultTimeout"/> property.
         /// </summary>
-        public int Timeout { get; set; } = PuppeteerSharp.DefaultTimeout;
+        public int Timeout { get; set; } = 30_000;
     }
 }

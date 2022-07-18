@@ -2,7 +2,7 @@ using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace CefSharp.Puppeteer.Helpers.Json
+namespace CefSharp.DevTools.Dom.Helpers.Json
 {
     internal class FlexibleStringEnumConverter : StringEnumConverter
     {

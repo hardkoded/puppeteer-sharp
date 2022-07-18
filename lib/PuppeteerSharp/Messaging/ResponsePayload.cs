@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Net;
 using Newtonsoft.Json;
 
-namespace CefSharp.Puppeteer.Messaging
+namespace CefSharp.DevTools.Dom.Messaging
 {
     internal class ResponsePayload
     {

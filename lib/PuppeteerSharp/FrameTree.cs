@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using CefSharp.Puppeteer.Messaging;
+using CefSharp.DevTools.Dom.Messaging;
 
-namespace CefSharp.Puppeteer
+namespace CefSharp.DevTools.Dom
 {
     internal class FrameTree
     {
@@ -23,13 +23,9 @@ namespace CefSharp.Puppeteer
             LoadChilds(this, frameTree);
         }
 
-        #region Properties
         internal FramePayload Frame { get; set; }
 
         internal List<FrameTree> Childs { get; set; }
-        #endregion
-
-        #region Private Functions
 
         private void LoadChilds(FrameTree frame, PageGetFrameTreeItem frameTree)
         {
@@ -57,7 +53,5 @@ namespace CefSharp.Puppeteer
                 }
             }
         }
-
-        #endregion
     }
 }

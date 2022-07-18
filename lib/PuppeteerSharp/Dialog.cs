@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using CefSharp.Puppeteer.Messaging;
+using CefSharp.DevTools.Dom.Messaging;
 
-namespace CefSharp.Puppeteer
+namespace CefSharp.DevTools.Dom
 {
     /// <summary>
     /// <see cref="Dialog"/> objects are dispatched by page via the 'dialog' event.

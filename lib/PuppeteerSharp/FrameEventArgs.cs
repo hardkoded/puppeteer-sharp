@@ -1,4 +1,4 @@
-namespace CefSharp.Puppeteer
+namespace CefSharp.DevTools.Dom
 {
     /// <summary>
     /// <see cref="IDevToolsContext.FrameAttached"/>, <see cref="IDevToolsContext.FrameDetached"/> and <see cref="IDevToolsContext.FrameNavigated"/> arguments.

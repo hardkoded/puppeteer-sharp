@@ -1,4 +1,4 @@
-namespace CefSharp.Puppeteer.PageCoverage
+namespace CefSharp.DevTools.Dom.PageCoverage
 {
     /// <summary>
     /// Set of configurable options for coverage.

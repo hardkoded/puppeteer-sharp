@@ -9,10 +9,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
-using CefSharp.Puppeteer.Helpers;
+using CefSharp.DevTools.Dom.Helpers;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
-using CefSharp.Puppeteer;
+using CefSharp.DevTools.Dom;
 
 namespace PuppeteerSharp.Tests.RequestInterceptionTests
 {

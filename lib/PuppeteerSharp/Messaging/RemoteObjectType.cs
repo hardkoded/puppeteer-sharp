@@ -1,7 +1,7 @@
-using CefSharp.Puppeteer.Helpers.Json;
+using CefSharp.DevTools.Dom.Helpers.Json;
 using Newtonsoft.Json;
 
-namespace CefSharp.Puppeteer.Messaging
+namespace CefSharp.DevTools.Dom.Messaging
 {
     /// <summary>
     /// Remote object type.

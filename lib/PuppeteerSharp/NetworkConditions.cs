@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace CefSharp.Puppeteer
+namespace CefSharp.DevTools.Dom
 {
     /// <summary>
     /// Options to be used in <see cref="IDevToolsContext.EmulateNetworkConditionsAsync(NetworkConditions)"/>

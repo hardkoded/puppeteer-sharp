@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace CefSharp.Puppeteer.Messaging
+namespace CefSharp.DevTools.Dom.Messaging
 {
     [JsonConverter(typeof(StringEnumConverter))]
     internal enum DragEventType

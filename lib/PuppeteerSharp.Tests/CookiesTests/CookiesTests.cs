@@ -2,7 +2,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
-using CefSharp.Puppeteer;
+using CefSharp.DevTools.Dom;
 using Xunit;
 using Xunit.Abstractions;
 

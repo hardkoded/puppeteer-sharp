@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using CefSharp.Puppeteer;
+using CefSharp.DevTools.Dom;
 using PuppeteerSharp.Tests.Attributes;
 using System.Threading.Tasks;
 using Xunit;

@@ -1,8 +1,8 @@
-using CefSharp.Puppeteer.Helpers.Json;
+using CefSharp.DevTools.Dom.Helpers.Json;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace CefSharp.Puppeteer.Messaging
+namespace CefSharp.DevTools.Dom.Messaging
 {
     internal class BindingCalledResponse
     {

@@ -1,4 +1,4 @@
-namespace CefSharp.Puppeteer
+namespace CefSharp.DevTools.Dom
 {
     /// <summary>
     /// Navigation options used by <see cref="IDevToolsContext.WaitForNavigationAsync(NavigationOptions)"/> and <see cref="IDevToolsContext.SetContentAsync(string, NavigationOptions)"/>

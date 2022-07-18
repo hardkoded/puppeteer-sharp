@@ -2,12 +2,12 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using CefSharp.Puppeteer.Helpers;
-using CefSharp.Puppeteer.Helpers.Json;
-using CefSharp.Puppeteer.Messaging;
+using CefSharp.DevTools.Dom.Helpers;
+using CefSharp.DevTools.Dom.Helpers.Json;
+using CefSharp.DevTools.Dom.Messaging;
 using Microsoft.Extensions.Logging;
 
-namespace CefSharp.Puppeteer.PageCoverage
+namespace CefSharp.DevTools.Dom.PageCoverage
 {
     internal class CSSCoverage
     {

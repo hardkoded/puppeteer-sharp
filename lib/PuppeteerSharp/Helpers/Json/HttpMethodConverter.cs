@@ -2,7 +2,7 @@ using System;
 using System.Net.Http;
 using Newtonsoft.Json;
 
-namespace CefSharp.Puppeteer.Helpers.Json
+namespace CefSharp.DevTools.Dom.Helpers.Json
 {
     internal class HttpMethodConverter : JsonConverter
     {

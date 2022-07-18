@@ -1,4 +1,4 @@
-namespace CefSharp.Puppeteer.Mobile
+namespace CefSharp.DevTools.Dom.Mobile
 {
     /// <summary>
     /// Device descriptor.

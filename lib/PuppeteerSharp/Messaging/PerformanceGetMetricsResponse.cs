@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace CefSharp.Puppeteer.Messaging
+namespace CefSharp.DevTools.Dom.Messaging
 {
     internal class PerformanceGetMetricsResponse
     {

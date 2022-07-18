@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using CefSharp.Puppeteer.Helpers;
-using CefSharp.Puppeteer.Helpers.Json;
-using CefSharp.Puppeteer.Messaging;
+using CefSharp.DevTools.Dom.Helpers;
+using CefSharp.DevTools.Dom.Helpers.Json;
+using CefSharp.DevTools.Dom.Messaging;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace CefSharp.Puppeteer
+namespace CefSharp.DevTools.Dom
 {
     /// <summary>
     /// JSHandle represents an in-page JavaScript object. JSHandles can be created with the <see cref="IDevToolsContext.EvaluateExpressionHandleAsync(string)"/> and <see cref="IDevToolsContext.EvaluateFunctionHandleAsync(string, object[])"/> methods.
@@ -122,7 +122,7 @@ namespace CefSharp.Puppeteer
         /// <returns>Task which resolves to a <see cref="Dictionary{TKey, TValue}"/></returns>
         /// <example>
         /// <code>
-        /// var handle = await page.EvaluateExpressionHandle("({window, document})");
+        /// var handle = await devToolsContext.EvaluateExpressionHandle("({window, document})");
         /// var properties = await handle.GetPropertiesAsync();
         /// var windowHandle = properties["window"];
         /// var documentHandle = properties["document"];
@@ -252,6 +252,28 @@ namespace CefSharp.Puppeteer
             var list = new List<object>(args);
             list.Insert(0, this);
             return ExecutionContext.EvaluateFunctionAsync<T>(script, list.ToArray());
+        }
+
+        /// <summary>
+        /// Creates a Html Element from the <see cref="JSHandle"/>
+        /// </summary>
+        /// <typeparam name="T">Element type</typeparam>
+        /// <returns>Element or null</returns>
+        public T ToDomHandle<T>()
+            where T : DomHandle
+        {
+            var remoteObject = RemoteObject;
+
+            // Types like FileList are of SubType other
+            if (remoteObject.Type == Messaging.RemoteObjectType.Object &&
+                (remoteObject.Subtype == Messaging.RemoteObjectSubtype.Node ||
+                remoteObject.Subtype == Messaging.RemoteObjectSubtype.Array ||
+                remoteObject.Subtype == Messaging.RemoteObjectSubtype.Other))
+            {
+                return HtmlObjectFactory.CreateObject<T>(remoteObject.ClassName, this);
+            }
+
+            return default;
         }
 
         internal object FormatArgument(ExecutionContext context)

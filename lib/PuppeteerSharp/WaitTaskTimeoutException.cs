@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace CefSharp.Puppeteer
+namespace CefSharp.DevTools.Dom
 {
     /// <summary>
     /// Timeout exception that might be thrown by <c>WaitFor</c> methods in <see cref="Frame"/>.

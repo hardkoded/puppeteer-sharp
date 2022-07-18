@@ -2,15 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using CefSharp.Puppeteer.Input;
-using CefSharp.Puppeteer.Media;
-using CefSharp.Puppeteer.Messaging;
-using CefSharp.Puppeteer.Mobile;
-using CefSharp.Puppeteer.PageAccessibility;
-using CefSharp.Puppeteer.PageCoverage;
+using CefSharp.DevTools.Dom.Input;
+using CefSharp.DevTools.Dom.Media;
+using CefSharp.DevTools.Dom.Messaging;
+using CefSharp.DevTools.Dom.Mobile;
+using CefSharp.DevTools.Dom.PageAccessibility;
+using CefSharp.DevTools.Dom.PageCoverage;
 using Newtonsoft.Json.Linq;
 
-namespace CefSharp.Puppeteer
+namespace CefSharp.DevTools.Dom
 {
     /// <summary>
     /// Provides an entry point for DevTools protocol
@@ -143,7 +143,7 @@ namespace CefSharp.Puppeteer
         /// <summary>
         /// Gets the accessibility.
         /// </summary>
-        Accessibility Accessibility { get; }
+        PageAccessibility.Accessibility Accessibility { get; }
 
         /// <summary>
         /// Chrome DevTools Protocol connection
@@ -343,11 +343,8 @@ namespace CefSharp.Puppeteer
         /// <example>
         ///<![CDATA[
         /// var iPhone = Puppeteer.Devices[DeviceDescriptorName.IPhone6];
-        /// using(var page = await browser.NewPageAsync())
-        /// {
-        ///     await page.EmulateAsync(iPhone);
-        ///     await page.goto('https://www.google.com');
-        /// }
+        /// await devToolsContext.EmulateAsync(iPhone);
+        /// await devToolsContext.GoToAsync('https://www.google.com');
         /// ]]>
         /// </example>
         /// <returns>Task.</returns>
@@ -368,32 +365,32 @@ namespace CefSharp.Puppeteer
         /// <example>
         /// <code>
         /// <![CDATA[
-        /// await page.EmulateMediaFeaturesAsync(new MediaFeature[]{ new MediaFeature { MediaFeature =  MediaFeature.PrefersColorScheme, Value = "dark" }});
-        /// await page.EvaluateFunctionAsync<bool>("() => matchMedia('(prefers-color-scheme: dark)').matches)");
+        /// await devToolsContext.EmulateMediaFeaturesAsync(new MediaFeature[]{ new MediaFeature { MediaFeature =  MediaFeature.PrefersColorScheme, Value = "dark" }});
+        /// await devToolsContext.EvaluateFunctionAsync<bool>("() => matchMedia('(prefers-color-scheme: dark)').matches)");
         /// // → true
-        /// await page.EvaluateFunctionAsync<bool>("() => matchMedia('(prefers-color-scheme: light)').matches)");
+        /// await devToolsContext.EvaluateFunctionAsync<bool>("() => matchMedia('(prefers-color-scheme: light)').matches)");
         /// // → false
-        /// await page.EvaluateFunctionAsync<bool>("() => matchMedia('(prefers-color-scheme: no-preference)').matches)");
+        /// await devToolsContext.EvaluateFunctionAsync<bool>("() => matchMedia('(prefers-color-scheme: no-preference)').matches)");
         /// // → false
-        /// await page.EmulateMediaFeaturesAsync(new MediaFeature[]{ new MediaFeature { MediaFeature = MediaFeature.PrefersReducedMotion, Value = "reduce" }});
-        /// await page.EvaluateFunctionAsync<bool>("() => matchMedia('(prefers-reduced-motion: reduce)').matches)");
+        /// await devToolsContext.EmulateMediaFeaturesAsync(new MediaFeature[]{ new MediaFeature { MediaFeature = MediaFeature.PrefersReducedMotion, Value = "reduce" }});
+        /// await devToolsContext.EvaluateFunctionAsync<bool>("() => matchMedia('(prefers-reduced-motion: reduce)').matches)");
         /// // → true
-        /// await page.EvaluateFunctionAsync<bool>("() => matchMedia('(prefers-color-scheme: no-preference)').matches)");
+        /// await devToolsContext.EvaluateFunctionAsync<bool>("() => matchMedia('(prefers-color-scheme: no-preference)').matches)");
         /// // → false
-        /// await page.EmulateMediaFeaturesAsync(new MediaFeature[]
+        /// await devToolsContext.EmulateMediaFeaturesAsync(new MediaFeature[]
         /// {
         ///   new MediaFeature { MediaFeature = MediaFeature.PrefersColorScheme, Value = "dark" },
         ///   new MediaFeature { MediaFeature = MediaFeature.PrefersReducedMotion, Value = "reduce" },
         /// });
-        /// await page.EvaluateFunctionAsync<bool>("() => matchMedia('(prefers-color-scheme: dark)').matches)");
+        /// await devToolsContext.EvaluateFunctionAsync<bool>("() => matchMedia('(prefers-color-scheme: dark)').matches)");
         /// // → true
-        /// await page.EvaluateFunctionAsync<bool>("() => matchMedia('(prefers-color-scheme: light)').matches)");
+        /// await devToolsContext.EvaluateFunctionAsync<bool>("() => matchMedia('(prefers-color-scheme: light)').matches)");
         /// // → false
-        /// await page.EvaluateFunctionAsync<bool>("() => matchMedia('(prefers-color-scheme: no-preference)').matches)");
+        /// await devToolsContext.EvaluateFunctionAsync<bool>("() => matchMedia('(prefers-color-scheme: no-preference)').matches)");
         /// // → false
-        /// await page.EvaluateFunctionAsync<bool>("() => matchMedia('(prefers-reduced-motion: reduce)').matches)");
+        /// await devToolsContext.EvaluateFunctionAsync<bool>("() => matchMedia('(prefers-reduced-motion: reduce)').matches)");
         /// // → true
-        /// await page.EvaluateFunctionAsync<bool>("() => matchMedia('(prefers-color-scheme: no-preference)').matches)");
+        /// await devToolsContext.EvaluateFunctionAsync<bool>("() => matchMedia('(prefers-color-scheme: no-preference)').matches)");
         /// // → false
         /// ]]>
         /// </code>
@@ -408,19 +405,19 @@ namespace CefSharp.Puppeteer
         /// <example>
         /// <code>
         /// <![CDATA[
-        /// await page.EvaluateFunctionAsync<bool>("() => matchMedia('screen').matches)");
+        /// await devToolsContext.EvaluateFunctionAsync<bool>("() => matchMedia('screen').matches)");
         /// // → true
-        /// await page.EvaluateFunctionAsync<bool>("() => matchMedia('print').matches)");
+        /// await devToolsContext.EvaluateFunctionAsync<bool>("() => matchMedia('print').matches)");
         /// // → true
-        /// await page.EmulateMediaTypeAsync(MediaType.Print);
-        /// await page.EvaluateFunctionAsync<bool>("() => matchMedia('screen').matches)");
+        /// await devToolsContext.EmulateMediaTypeAsync(MediaType.Print);
+        /// await devToolsContext.EvaluateFunctionAsync<bool>("() => matchMedia('screen').matches)");
         /// // → false
-        /// await page.EvaluateFunctionAsync<bool>("() => matchMedia('print').matches)");
+        /// await devToolsContext.EvaluateFunctionAsync<bool>("() => matchMedia('print').matches)");
         /// // → true
-        /// await page.EmulateMediaTypeAsync(MediaType.None);
-        /// await page.EvaluateFunctionAsync<bool>("() => matchMedia('screen').matches)");
+        /// await devToolsContext.EmulateMediaTypeAsync(MediaType.None);
+        /// await devToolsContext.EvaluateFunctionAsync<bool>("() => matchMedia('screen').matches)");
         /// // → true
-        /// await page.EvaluateFunctionAsync<bool>("() => matchMedia('print').matches)");
+        /// await devToolsContext.EvaluateFunctionAsync<bool>("() => matchMedia('print').matches)");
         /// // → true
         /// ]]>
         /// </code>
@@ -450,8 +447,8 @@ namespace CefSharp.Puppeteer
         /// Simulates the given vision deficiency on the page.
         /// </summary>
         /// <example>
-        /// await Page.EmulateVisionDeficiencyAsync(VisionDeficiency.Achromatopsia);
-        /// await Page.ScreenshotAsync("Achromatopsia.png");
+        /// await devToolsContext.EmulateVisionDeficiencyAsync(VisionDeficiency.Achromatopsia);
+        /// await devToolsContext.ScreenshotAsync("Achromatopsia.png");
         /// </example>
         /// <param name="type">The type of deficiency to simulate, or <see cref="VisionDeficiency.None"/> to reset.</param>
         /// <returns>A task that resolves when the message has been sent to the browser.</returns>
@@ -467,7 +464,7 @@ namespace CefSharp.Puppeteer
         /// <example>
         /// An example of scraping information from all hyperlinks on the page.
         /// <code>
-        /// var hyperlinkInfo = await page.EvaluateExpressionAsync(@"
+        /// var hyperlinkInfo = await devToolsContext.EvaluateExpressionAsync(@"
         ///     Array
         ///        .from(document.querySelectorAll('a'))
         ///        .map(n => ({
@@ -518,7 +515,7 @@ namespace CefSharp.Puppeteer
         /// <example>
         /// An example of overriding the navigator.languages property before the page loads:
         /// <code>
-        /// await page.EvaluateExpressionOnNewDocumentAsync("window.__example = true;");
+        /// await devToolsContext.EvaluateExpressionOnNewDocumentAsync("window.__example = true;");
         /// </code>
         /// </example>
         /// <returns>Task</returns>
@@ -576,7 +573,7 @@ namespace CefSharp.Puppeteer
         /// <example>
         /// An example of overriding the navigator.languages property before the page loads:
         /// <code>
-        /// await page.EvaluateFunctionOnNewDocumentAsync("() => window.__example = true");
+        /// await devToolsContext.EvaluateFunctionOnNewDocumentAsync("() => window.__example = true");
         /// </code>
         /// </example>
         /// <returns>Task</returns>
@@ -1062,16 +1059,13 @@ namespace CefSharp.Puppeteer
         /// </summary>
         /// <example>
         ///<![CDATA[
-        /// using(var page = await browser.NewPageAsync())
+        /// await devToolsContext.SetViewPortAsync(new ViewPortOptions
         /// {
-        ///     await page.SetViewPortAsync(new ViewPortOptions
-        ///     {
-        ///         Width = 640,
-        ///         Height = 480,
-        ///         DeviceScaleFactor = 1
-        ///     });
-        ///     await page.goto('https://www.example.com');
-        /// }
+        ///   Width = 640,
+        ///   Height = 480,
+        ///   DeviceScaleFactor = 1
+        /// });
+        /// await devToolsContext.GoToAsync('https://www.example.com');
         /// ]]>
         /// </example>
         /// <returns>The viewport task.</returns>
@@ -1098,8 +1092,8 @@ namespace CefSharp.Puppeteer
         /// </remarks>
         /// <example>
         /// <code>
-        /// await page.TypeAsync("#mytextarea", "Hello"); // Types instantly
-        /// await page.TypeAsync("#mytextarea", "World", new TypeOptions { Delay = 100 }); // Types slower, like a user
+        /// await devToolsContext.TypeAsync("#mytextarea", "Hello"); // Types instantly
+        /// await devToolsContext.TypeAsync("#mytextarea", "World", new TypeOptions { Delay = 100 }); // Types slower, like a user
         /// </code>
         /// </example>
         /// <returns>Task</returns>
@@ -1175,7 +1169,7 @@ namespace CefSharp.Puppeteer
         /// <code>
         /// <![CDATA[
         /// var navigationTask = page.WaitForNavigationAsync();
-        /// await page.ClickAsync("a.my-link");
+        /// await devToolsContext.ClickAsync("a.my-link");
         /// await navigationTask;
         /// ]]>
         /// </code>
@@ -1190,8 +1184,8 @@ namespace CefSharp.Puppeteer
         /// <example>
         /// <code>
         /// <![CDATA[
-        /// page.EvaluateFunctionAsync("() => fetch('some-url')");
-        /// await page.WaitForNetworkIdle(); // The Task resolves after fetch above finishes
+        /// devToolsContext.EvaluateFunctionAsync("() => fetch('some-url')");
+        /// await devToolsContext.WaitForNetworkIdle(); // The Task resolves after fetch above finishes
         /// ]]>
         /// </code>
         /// </example>
@@ -1203,7 +1197,7 @@ namespace CefSharp.Puppeteer
         /// <example>
         /// <code>
         /// <![CDATA[
-        /// var request = await page.WaitForRequestAsync(request => request.Url === "http://example.com" && request.Method === HttpMethod.Get;
+        /// var request = await devToolsContext.WaitForRequestAsync(request => request.Url === "http://example.com" && request.Method === HttpMethod.Get;
         /// return request.Url;
         /// ]]>
         /// </code>
@@ -1219,7 +1213,7 @@ namespace CefSharp.Puppeteer
         /// <example>
         /// <code>
         /// <![CDATA[
-        /// var firstRequest = await page.WaitForRequestAsync("http://example.com/resource");
+        /// var firstRequest = await devToolsContext.WaitForRequestAsync("http://example.com/resource");
         /// return firstRequest.Url;
         /// ]]>
         /// </code>
@@ -1235,7 +1229,7 @@ namespace CefSharp.Puppeteer
         /// <example>
         /// <code>
         /// <![CDATA[
-        /// var response = await page.WaitForResponseAsync(response => response.Url === "http://example.com" && response.Status === HttpStatus.Ok;
+        /// var response = await devToolsContext.WaitForResponseAsync(response => response.Url === "http://example.com" && response.Status === HttpStatus.Ok;
         /// return response.Url;
         /// ]]>
         /// </code>
@@ -1251,7 +1245,7 @@ namespace CefSharp.Puppeteer
         /// <example>
         /// <code>
         /// <![CDATA[
-        /// var firstResponse = await page.WaitForResponseAsync("http://example.com/resource");
+        /// var firstResponse = await devToolsContext.WaitForResponseAsync("http://example.com/resource");
         /// return firstResponse.Url;
         /// ]]>
         /// </code>
@@ -1290,18 +1284,15 @@ namespace CefSharp.Puppeteer
         /// <example>
         /// <code>
         /// <![CDATA[
-        /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions());
-        /// var page = await browser.NewPageAsync();
         /// string currentURL = null;
-        /// page
+        /// devToolsContext
         ///     .WaitForXPathAsync("//img")
         ///     .ContinueWith(_ => Console.WriteLine("First URL with image: " + currentURL));
         /// foreach (var current in new[] { "https://example.com", "https://google.com", "https://bbc.com" })
         /// {
         ///     currentURL = current;
-        ///     await page.GoToAsync(currentURL);
+        ///     await devToolsContext.GoToAsync(currentURL);
         /// }
-        /// await browser.CloseAsync();
         /// ]]>
         /// </code>
         /// </example>

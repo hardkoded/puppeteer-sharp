@@ -1,4 +1,4 @@
-namespace CefSharp.Puppeteer.Messaging
+namespace CefSharp.DevTools.Dom.Messaging
 {
     internal class LoadingFailedEventResponse
     {

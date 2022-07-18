@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using CefSharp.Puppeteer;
+using CefSharp.DevTools.Dom;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using Xunit;

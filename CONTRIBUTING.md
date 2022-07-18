@@ -18,7 +18,7 @@ You can run this PowerShell script on Windows
 ```
 New-SelfSignedCertificate -Subject "localhost" -FriendlyName "Puppeteer" -CertStoreLocation "cert:\CurrentUser\My"
 
-Get-ChildItem -Path cert:\CurrentUSer\my | where { $_.friendlyname -eq "Puppeteer" } | Export-Certificate -FilePath C:\Projects\CefSharp.Puppeteer\lib\PuppeteerSharp.TestServer\testCert.cer
+Get-ChildItem -Path cert:\CurrentUSer\my | where { $_.friendlyname -eq "Puppeteer" } | Export-Certificate -FilePath C:\Projects\CefSharp.DevTools.Dom\lib\PuppeteerSharp.TestServer\testCert.cer
 
 ```
 

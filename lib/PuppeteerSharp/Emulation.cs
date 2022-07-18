@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using CefSharp.Puppeteer.Mobile;
+using CefSharp.DevTools.Dom.Mobile;
 
-namespace CefSharp.Puppeteer
+namespace CefSharp.DevTools.Dom
 {
     /// <summary>
     /// Device Emulation

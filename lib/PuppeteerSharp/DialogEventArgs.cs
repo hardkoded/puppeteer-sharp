@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace CefSharp.Puppeteer
+namespace CefSharp.DevTools.Dom
 {
     /// <summary>
     /// <see cref="IDevToolsContext.Dialog"/> arguments.

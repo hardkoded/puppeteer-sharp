@@ -2,7 +2,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CefSharp.Puppeteer.Helpers
+namespace CefSharp.DevTools.Dom.Helpers
 {
     internal class MultiMap<TKey, TValue>
     {

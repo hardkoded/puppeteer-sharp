@@ -5,7 +5,7 @@ using System.Linq;
 using Xunit.Abstractions;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
-using CefSharp.Puppeteer;
+using CefSharp.DevTools.Dom;
 
 namespace PuppeteerSharp.Tests.FrameTests
 {

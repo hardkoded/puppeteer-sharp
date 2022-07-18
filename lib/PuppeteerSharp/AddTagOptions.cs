@@ -1,4 +1,4 @@
-namespace CefSharp.Puppeteer
+namespace CefSharp.DevTools.Dom
 {
     /// <summary>
     /// Options used by <see cref="IDevToolsContext.AddScriptTagAsync(AddTagOptions)"/> &amp; <see cref="IDevToolsContext.AddStyleTagAsync(AddTagOptions)"/>.

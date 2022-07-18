@@ -6,10 +6,10 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using CefSharp.Puppeteer.Messaging;
+using CefSharp.DevTools.Dom.Messaging;
 using Microsoft.Extensions.Logging;
 
-namespace CefSharp.Puppeteer
+namespace CefSharp.DevTools.Dom
 {
     /// <summary>
     /// Whenever the page sends a request, the following events are emitted by puppeteer's page:
@@ -134,14 +134,14 @@ namespace CefSharp.Puppeteer
         /// <example>
         /// For example, if the website http://example.com has a single redirect to https://example.com, then the chain will contain one request:
         /// <code>
-        /// var response = await page.GoToAsync("http://example.com");
+        /// var response = await devToolsContext.GoToAsync("http://example.com");
         /// var chain = response.Request.RedirectChain;
         /// Console.WriteLine(chain.Length); // 1
         /// Console.WriteLine(chain[0].Url); // 'http://example.com'
         /// </code>
         /// If the website https://google.com has no redirects, then the chain will be empty:
         /// <code>
-        /// var response = await page.GoToAsync("https://google.com");
+        /// var response = await devToolsContext.GoToAsync("https://google.com");
         /// var chain = response.Request.RedirectChain;
         /// Console.WriteLine(chain.Length); // 0
         /// </code>

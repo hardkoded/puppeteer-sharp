@@ -1,4 +1,4 @@
-namespace CefSharp.Puppeteer
+namespace CefSharp.DevTools.Dom
 {
     /// <summary>
     /// Abort error codes. used by <see cref="Request.AbortAsync(RequestAbortErrorCode)"/>

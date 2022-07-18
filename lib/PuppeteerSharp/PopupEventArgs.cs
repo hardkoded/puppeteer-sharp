@@ -1,6 +1,6 @@
 using System;
 
-namespace CefSharp.Puppeteer
+namespace CefSharp.DevTools.Dom
 {
     /// <summary>
     /// Popup event arguments. <see cref="IDevToolsContext.Popup"/>

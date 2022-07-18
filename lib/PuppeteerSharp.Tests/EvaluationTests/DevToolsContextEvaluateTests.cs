@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
-using CefSharp.Puppeteer;
+using CefSharp.DevTools.Dom;
 using System.Numerics;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
@@ -11,9 +11,9 @@ using PuppeteerSharp.Xunit;
 namespace PuppeteerSharp.Tests.DevToolsContextTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class EvaluateTests : DevToolsContextBaseTest
+    public class DevToolsContextEvaluateTests : DevToolsContextBaseTest
     {
-        public EvaluateTests(ITestOutputHelper output) : base(output)
+        public DevToolsContextEvaluateTests(ITestOutputHelper output) : base(output)
         {
         }
 

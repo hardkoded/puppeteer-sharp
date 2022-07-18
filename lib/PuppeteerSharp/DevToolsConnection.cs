@@ -3,15 +3,15 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using CefSharp.Puppeteer.Helpers;
-using CefSharp.Puppeteer.Helpers.Json;
-using CefSharp.Puppeteer.Messaging;
-using CefSharp.Puppeteer.Transport;
+using CefSharp.DevTools.Dom.Helpers;
+using CefSharp.DevTools.Dom.Helpers.Json;
+using CefSharp.DevTools.Dom.Messaging;
+using CefSharp.DevTools.Dom.Transport;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace CefSharp.Puppeteer
+namespace CefSharp.DevTools.Dom
 {
     /// <summary>
     /// A connection handles the communication with a Chromium browser
@@ -27,17 +27,14 @@ namespace CefSharp.Puppeteer
 
             _logger = LoggerFactory.CreateLogger<DevToolsConnection>();
 
-            Transport.MessageReceived += Transport_MessageReceived;
+            Transport.MessageReceived += OnTransportMessageReceived;
+            Transport.MessageError += OnTransportErrorReceived;
             _callbacks = new ConcurrentDictionary<int, MessageTask>();
             MessageQueue = new AsyncMessageQueue(enqueueAsyncMessages, _logger);
         }
 
-        #region Private Members
         private readonly ConcurrentDictionary<int, MessageTask> _callbacks;
         private int _lastId;
-        #endregion
-
-        #region Properties
 
         /// <summary>
         /// Gets the Connection transport.
@@ -73,10 +70,6 @@ namespace CefSharp.Puppeteer
         public ILoggerFactory LoggerFactory { get; }
 
         internal AsyncMessageQueue MessageQueue { get; }
-
-        #endregion
-
-        #region Public Methods
 
         internal int GetMessageID() => Interlocked.Increment(ref _lastId);
 
@@ -118,7 +111,6 @@ namespace CefSharp.Puppeteer
         /// </summary>
         /// <returns>returns true if there are pending callbacks, otherwise false</returns>
         public bool HasPendingCallbacks() => _callbacks.Count != 0;
-        #endregion
 
         internal void Close(string closeReason)
         {
@@ -144,9 +136,14 @@ namespace CefSharp.Puppeteer
             MessageQueue.Dispose();
         }
 
-        #region Private Methods
+        private void OnTransportErrorReceived(object sender, MessageErrorEventArgs e)
+        {
+            var message = $"Connection failed to process {e.Exception.Message}. {e.Exception.Message}. {e.Exception.StackTrace}";
+            _logger.LogError(e.Exception, message);
+            Close(message);
+        }
 
-        private void Transport_MessageReceived(object sender, MessageReceivedEventArgs e)
+        private void OnTransportMessageReceived(object sender, MessageReceivedEventArgs e)
         {
             try
             {
@@ -195,10 +192,6 @@ namespace CefSharp.Puppeteer
             }
         }
 
-        #endregion
-
-        #region Static Methods
-
         /// <summary>
         /// Attach to an existing embedded Browser instance
         /// </summary>
@@ -237,12 +230,10 @@ namespace CefSharp.Puppeteer
         protected virtual void Dispose(bool disposing)
         {
             Close("Connection disposed");
-            Transport.MessageReceived -= Transport_MessageReceived;
+            Transport.MessageReceived -= OnTransportMessageReceived;
+            Transport.MessageError -= OnTransportErrorReceived;
             Transport.Dispose();
         }
-        #endregion
-
-        #region Public Methods
 
         internal void Send(string method, object args = null)
             => _ = SendAsync(method, args, false);
@@ -281,7 +272,5 @@ namespace CefSharp.Puppeteer
 
             return waitForCallback ? await callback.TaskWrapper.Task.ConfigureAwait(false) : null;
         }
-
-        #endregion
     }
 }

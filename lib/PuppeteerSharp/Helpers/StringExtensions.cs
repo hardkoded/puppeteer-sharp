@@ -1,6 +1,6 @@
 using System;
 
-namespace CefSharp.Puppeteer.Helpers
+namespace CefSharp.DevTools.Dom.Helpers
 {
     internal static class StringExtensions
     {

@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using CefSharp.Puppeteer.Media;
+using CefSharp.DevTools.Dom.Media;
 
-namespace CefSharp.Puppeteer
+namespace CefSharp.DevTools.Dom
 {
     /// <summary>
     /// Options to be used in <see cref="IDevToolsContext.PdfAsync(string, PdfOptions)"/>, <see cref="IDevToolsContext.PdfStreamAsync(PdfOptions)"/> and <see cref="IDevToolsContext.PdfDataAsync(PdfOptions)"/>

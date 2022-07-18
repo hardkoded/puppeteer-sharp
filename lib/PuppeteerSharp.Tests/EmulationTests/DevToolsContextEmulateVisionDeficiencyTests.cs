@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using CefSharp.Puppeteer;
+using CefSharp.DevTools.Dom;
 using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;

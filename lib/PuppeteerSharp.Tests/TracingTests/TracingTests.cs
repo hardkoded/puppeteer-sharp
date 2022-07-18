@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using CefSharp.Puppeteer;
+using CefSharp.DevTools.Dom;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using Xunit;
@@ -36,9 +36,9 @@ namespace PuppeteerSharp.Tests.TracingTests
                 try
                 {
                     attempts++;
-                    if (File.Exists(_file))
+                    if (System.IO.File.Exists(_file))
                     {
-                        File.Delete(_file);
+                        System.IO.File.Delete(_file);
                     }
                     break;
                 }
@@ -66,7 +66,7 @@ namespace PuppeteerSharp.Tests.TracingTests
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             await DevToolsContext.Tracing.StopAsync();
 
-            Assert.True(File.Exists(_file));
+            Assert.True(System.IO.File.Exists(_file));
         }
 
         [PuppeteerTest("tracing.spec.ts", "Tracing", "should run with custom categories if provided")]
@@ -85,7 +85,7 @@ namespace PuppeteerSharp.Tests.TracingTests
 
             await DevToolsContext.Tracing.StopAsync();
 
-            using (var file = File.OpenText(_file))
+            using (var file = System.IO.File.OpenText(_file))
             using (var reader = new JsonTextReader(file))
             {
                 var traceJson = JToken.ReadFrom(reader);
@@ -97,21 +97,21 @@ namespace PuppeteerSharp.Tests.TracingTests
         //[PuppeteerFact]
         //public async Task ShouldThrowIfTracingOnTwoPages()
         //{
-        //    await Page.Tracing.StartAsync(new TracingOptions
+        //    await DevToolsContext.Tracing.StartAsync(new TracingOptions
         //    {
         //        Path = _file
         //    });
         //    var newPage = await Browser.NewPageAsync();
         //    await Assert.ThrowsAsync<InvalidOperationException>(async () =>
         //    {
-        //        await Page.Tracing.StartAsync(new TracingOptions
+        //        await DevToolsContext.Tracing.StartAsync(new TracingOptions
         //        {
         //            Path = _file
         //        });
         //    });
 
         //    await newPage.CloseAsync();
-        //    await Page.Tracing.StopAsync();
+        //    await DevToolsContext.Tracing.StopAsync();
         //}
 
         [PuppeteerTest("tracing.spec.ts", "Tracing", "should return a buffer")]
@@ -125,7 +125,7 @@ namespace PuppeteerSharp.Tests.TracingTests
             });
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             var trace = await DevToolsContext.Tracing.StopAsync();
-            var buf = File.ReadAllText(_file);
+            var buf = System.IO.File.ReadAllText(_file);
             Assert.Equal(trace, buf);
         }
 

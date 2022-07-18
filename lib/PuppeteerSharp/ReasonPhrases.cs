@@ -4,7 +4,7 @@
 
 using System.Collections.Generic;
 
-namespace CefSharp.Puppeteer
+namespace CefSharp.DevTools.Dom
 {
     /// <summary>
     /// Provides access to HTTP status code reason phrases as listed in

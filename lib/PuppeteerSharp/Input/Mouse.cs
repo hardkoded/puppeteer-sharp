@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
 
-using CefSharp.Puppeteer.Messaging;
+using CefSharp.DevTools.Dom.Messaging;
 
-namespace CefSharp.Puppeteer.Input
+namespace CefSharp.DevTools.Dom.Input
 {
     /// <summary>
     /// Provides methods to interact with the mouse

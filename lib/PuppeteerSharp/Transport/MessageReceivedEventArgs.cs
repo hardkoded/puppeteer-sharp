@@ -1,6 +1,6 @@
 using System;
 
-namespace CefSharp.Puppeteer.Transport
+namespace CefSharp.DevTools.Dom.Transport
 {
     /// <summary>
     /// Message received event arguments.

@@ -1,6 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
-using CefSharp.Puppeteer;
+using CefSharp.DevTools.Dom;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using Xunit;
@@ -25,7 +25,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
                 Height = 500
             });
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/grid.html");
-            var elementHandle = await DevToolsContext.QuerySelectorAsync(".box:nth-of-type(13)");
+            var elementHandle = await DevToolsContext.QuerySelectorAsync<HtmlElement>(".box:nth-of-type(13)");
             var box = await elementHandle.BoundingBoxAsync();
             Assert.Equal(new BoundingBox(100, 50, 50, 50), box);
         }
@@ -42,7 +42,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/frames/nested-frames.html", WaitUntilNavigation.Networkidle0);
             var childFrame = DevToolsContext.Frames.First(f => f.Url.Contains("two-frames.html"));
             var nestedFrame = childFrame.ChildFrames.Last();
-            var elementHandle = await nestedFrame.QuerySelectorAsync("div");
+            var elementHandle = await nestedFrame.QuerySelectorAsync<HtmlElement>("div");
             var box = await elementHandle.BoundingBoxAsync();
 
             Assert.Equal(new BoundingBox(28, 182, 264, 18), box);
@@ -53,7 +53,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         public async Task ShouldReturnNullForInvisibleElements()
         {
             await DevToolsContext.SetContentAsync("<div style='display:none'>hi</div>");
-            var elementHandle = await DevToolsContext.QuerySelectorAsync("div");
+            var elementHandle = await DevToolsContext.QuerySelectorAsync<HtmlDivElement>("div");
             Assert.Null(await elementHandle.BoundingBoxAsync());
         }
 
@@ -63,8 +63,8 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         {
             await DevToolsContext.SetViewportAsync(new ViewPortOptions { Width = 500, Height = 500 });
             await DevToolsContext.SetContentAsync("<div style='width: 100px; height: 100px'>hello</div>");
-            var elementHandle = await DevToolsContext.QuerySelectorAsync("div");
-            await DevToolsContext.EvaluateFunctionAsync("element => element.style.height = '200px'", elementHandle);
+            var elementHandle = await DevToolsContext.QuerySelectorAsync<HtmlDivElement>("div");
+            await DevToolsContext.EvaluateFunctionAsync("element => element.style.height = '200px'", (JSHandle)elementHandle);
             var box = await elementHandle.BoundingBoxAsync();
             Assert.Equal(new BoundingBox(8, 8, 100, 200), box);
         }
@@ -85,7 +85,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             {
                 const rect = e.getBoundingClientRect();
                 return { x: rect.x, y: rect.y, width: rect.width, height: rect.height};
-            }", element);
+            }", (JSHandle)element);
             Assert.Equal(webBoundingBox, pptrBoundingBox);
         }
     }

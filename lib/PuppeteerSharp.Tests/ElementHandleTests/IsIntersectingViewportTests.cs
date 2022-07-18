@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using CefSharp.DevTools.Dom;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using Xunit;
@@ -20,7 +21,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/offscreenbuttons.html");
             for (var i = 0; i < 11; ++i)
             {
-                var button = await DevToolsContext.QuerySelectorAsync("#btn" + i);
+                var button = await DevToolsContext.QuerySelectorAsync<HtmlButtonElement>("#btn" + i);
                 // All but last button are visible.
                 var visible = i < 10;
                 Assert.Equal(visible, await button.IsIntersectingViewportAsync());

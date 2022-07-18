@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 // namespace Roslyn.Utilities
-namespace CefSharp.Puppeteer.Helpers
+namespace CefSharp.DevTools.Dom.Helpers
 {
     /// <summary>
     /// A concurrent, simplified HashSet.

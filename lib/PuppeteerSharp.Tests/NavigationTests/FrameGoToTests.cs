@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
 using Xunit;
 using Xunit.Abstractions;
-using CefSharp.Puppeteer;
+using CefSharp.DevTools.Dom;
 using PuppeteerSharp.Xunit;
 using Microsoft.AspNetCore.Http;
 

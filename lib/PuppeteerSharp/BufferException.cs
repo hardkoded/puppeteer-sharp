@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace CefSharp.Puppeteer
+namespace CefSharp.DevTools.Dom
 {
     [Serializable]
     internal class BufferException : PuppeteerException

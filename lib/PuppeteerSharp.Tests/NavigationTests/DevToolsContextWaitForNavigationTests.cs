@@ -2,8 +2,8 @@ using System.Net;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
-using CefSharp.Puppeteer;
-using CefSharp.Puppeteer.Helpers;
+using CefSharp.DevTools.Dom;
+using CefSharp.DevTools.Dom.Helpers;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 

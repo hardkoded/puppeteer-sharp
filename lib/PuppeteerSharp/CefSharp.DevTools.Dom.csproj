@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp3.1;net472</TargetFrameworks>
+    <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
+    <CodeAnalysisRuleSet>../CefSharp.DevTools.Dom.ruleset</CodeAnalysisRuleSet>
+    <AssemblyName>CefSharp.DevTools.Dom</AssemblyName>
+    <RootNamespace>CefSharp.DevTools.Dom</RootNamespace>
+    <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">true</GeneratePackageOnBuild>
+    <Authors>Alex Maitland, Darío Kondratiuk</Authors>
+    <Owners>amaitland</Owners>
+    <PackageProjectUrl>https://github.com/cefsharp/CefSharp.DevTools.Dom</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>chrome,browser,chromium-embedded,cefsharp,puppeteer</PackageTags>
+    <Title>CefSharp.DevTools.Dom</Title>
+    <Description>CefSharp.DevTools.Dom - A strongly typed DOM API for use with with CefSharp, based on PuppeteerSharp.</Description>
+    <PackageId>CefSharp.DevTools.Dom</PackageId>
+    <PackageReleaseNotes>Improved DOM API</PackageReleaseNotes>
+    <VersionPrefix>2.0.0</VersionPrefix>
+    <!--<VersionSuffix>preview</VersionSuffix>-->
+    <DebugType>embedded</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <EmbedAllSources>true</EmbedAllSources>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- Don't need to copy the CEF files to our output folder so set NoAction -->
+    <CefSharpBuildAction>NoAction</CefSharpBuildAction>
+  </PropertyGroup>
+  <Import Project="../Common/SignAssembly.props" />
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+    <PackageReference Include="CefSharp.Common" Version="102.0.100" />
+    <Reference Include="System.Net.Http" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' != 'net472'">
+    <PackageReference Include="CefSharp.Common.NETCore" Version="102.0.100" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.1.0" />
+    <PackageReference Include="SharpZipLib" Version="1.3.3" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+</Project>

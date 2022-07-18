@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Net.Http;
-using CefSharp.Puppeteer.Helpers.Json;
+using CefSharp.DevTools.Dom.Helpers.Json;
 using Newtonsoft.Json;
 
-namespace CefSharp.Puppeteer
+namespace CefSharp.DevTools.Dom
 {
     /// <summary>
     /// Payload information.

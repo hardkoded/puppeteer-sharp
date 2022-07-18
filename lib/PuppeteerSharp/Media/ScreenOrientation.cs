@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace CefSharp.Puppeteer.Media
+namespace CefSharp.DevTools.Dom.Media
 {
     internal class ScreenOrientation
     {

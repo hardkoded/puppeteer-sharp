@@ -4,11 +4,11 @@ using System.Linq;
 using System.Numerics;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using CefSharp.Puppeteer.Helpers;
-using CefSharp.Puppeteer.Messaging;
+using CefSharp.DevTools.Dom.Helpers;
+using CefSharp.DevTools.Dom.Messaging;
 using Newtonsoft.Json.Linq;
 
-namespace CefSharp.Puppeteer
+namespace CefSharp.DevTools.Dom
 {
     /// <summary>
     /// The class represents a context for JavaScript execution. Examples of JavaScript contexts are:

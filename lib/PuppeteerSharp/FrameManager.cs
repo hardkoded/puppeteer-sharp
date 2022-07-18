@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading.Tasks;
-using CefSharp.Puppeteer.Helpers;
-using CefSharp.Puppeteer.Helpers.Json;
-using CefSharp.Puppeteer.Messaging;
+using CefSharp.DevTools.Dom.Helpers;
+using CefSharp.DevTools.Dom.Helpers.Json;
+using CefSharp.DevTools.Dom.Messaging;
 using Microsoft.Extensions.Logging;
 
-namespace CefSharp.Puppeteer
+namespace CefSharp.DevTools.Dom
 {
     internal class FrameManager
     {
@@ -36,8 +36,6 @@ namespace CefSharp.Puppeteer
             Connection.MessageReceived += OnConnectionMessageReceived;
         }
 
-        #region Properties
-
         internal event EventHandler<FrameEventArgs> FrameAttached;
 
         internal event EventHandler<FrameEventArgs> FrameDetached;
@@ -57,9 +55,7 @@ namespace CefSharp.Puppeteer
         internal IDevToolsContext DevToolsContext { get; }
 
         internal TimeoutSettings TimeoutSettings { get; }
-        #endregion
 
-        #region Public Methods
         internal ExecutionContext ExecutionContextById(int contextId)
         {
             _contextIdToContext.TryGetValue(contextId, out var context);
@@ -136,10 +132,6 @@ namespace CefSharp.Puppeteer
                 return watcher.NavigationResponse;
             }
         }
-
-        #endregion
-
-        #region Private Methods
 
         private async void OnConnectionMessageReceived(object sender, MessageEventArgs e)
         {
@@ -411,7 +403,5 @@ namespace CefSharp.Puppeteer
         internal Task<Frame> GetFrameAsync(string frameId) => _asyncFrames.GetItemAsync(frameId);
 
         internal Task<Frame> TryGetFrameAsync(string frameId) => _asyncFrames.TryGetItemAsync(frameId);
-
-        #endregion
     }
 }

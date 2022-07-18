@@ -54,7 +54,7 @@ namespace PuppeteerSharp.DevicesFetcher
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace CefSharp.Puppeteer.Mobile
+namespace CefSharp.DevTools.Dom.Mobile
 {
     /// <summary>
     /// Device descriptors.
@@ -84,7 +84,7 @@ namespace CefSharp.Puppeteer.Mobile
         static void WriteDeviceDescriptorName(IEnumerable<Device> devices)
         {
             var builder = new StringBuilder();
-            var begin = @"namespace CefSharp.Puppeteer.Mobile
+            var begin = @"namespace CefSharp.DevTools.Dom.Mobile
 {
     /// <summary>
     /// Device descriptor name.

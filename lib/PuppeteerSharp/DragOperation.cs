@@ -1,4 +1,4 @@
-﻿namespace CefSharp.Puppeteer
+﻿namespace CefSharp.DevTools.Dom
 {
     /// <summary>
     /// Drag operations available on <see cref="DragData"/>.

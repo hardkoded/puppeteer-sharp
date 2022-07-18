@@ -1,10 +1,10 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace CefSharp.Puppeteer
+namespace CefSharp.DevTools.Dom
 {
     /// <summary>
-    /// Base exception used to identify any exception thrown by CefSharp.Puppeteer
+    /// Base exception used to identify any exception thrown by CefSharp.DevTools.Dom
     /// </summary>
     [Serializable]
     public class PuppeteerException : Exception

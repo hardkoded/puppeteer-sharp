@@ -1,7 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Text;
-using CefSharp.Puppeteer;
+using CefSharp.DevTools.Dom;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using System.Threading.Tasks;
@@ -23,8 +22,8 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             const string expected = "checkbox";
 
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/checkbox.html");
-            var checkbox = await DevToolsContext.QuerySelectorAsync("#agree");
-            var actual = await checkbox.GetAttributeValueAsync<string>("type");
+            var checkbox = await DevToolsContext.QuerySelectorAsync<HtmlInputElement>("#agree");
+            var actual = await checkbox.GetAttributeAsync<string>("type");
 
             Assert.Equal(expected, actual);
         }
@@ -35,10 +34,10 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             const int expected = 1676;
 
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/checkbox.html");
-            var checkbox = await DevToolsContext.QuerySelectorAsync("#agree");
-            await checkbox.SetAttributeValueAsync("data-custom", expected);
+            var checkbox = await DevToolsContext.QuerySelectorAsync<HtmlInputElement>("#agree");
+            await checkbox.SetAttributeAsync("data-custom", expected);
 
-            var actual = await checkbox.GetAttributeValueAsync<int>("data-custom");
+            var actual = await checkbox.GetAttributeAsync<int>("data-custom");
 
             Assert.Equal(expected, actual);
         }

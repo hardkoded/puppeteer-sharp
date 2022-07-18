@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Net;
 
-namespace CefSharp.Puppeteer.Messaging
+namespace CefSharp.DevTools.Dom.Messaging
 {
     internal class ResponseReceivedExtraInfoResponse
     {

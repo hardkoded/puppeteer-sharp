@@ -1,7 +1,7 @@
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using CefSharp.Puppeteer;
+using CefSharp.DevTools.Dom;
 
 namespace PuppeteerSharp.Tests
 {
@@ -69,7 +69,7 @@ namespace PuppeteerSharp.Tests
 
                 try
                 {
-                    if (File.Exists(cookiesFile) && File.ReadAllText(cookiesFile).Contains(valueToCheck))
+                    if (System.IO.File.Exists(cookiesFile) && System.IO.File.ReadAllText(cookiesFile).Contains(valueToCheck))
                     {
                         return;
                     }

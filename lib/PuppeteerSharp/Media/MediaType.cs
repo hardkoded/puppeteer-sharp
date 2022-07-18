@@ -2,7 +2,7 @@ using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace CefSharp.Puppeteer.Media
+namespace CefSharp.DevTools.Dom.Media
 {
     /// <summary>
     /// Media type.

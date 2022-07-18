@@ -1,4 +1,4 @@
-namespace CefSharp.Puppeteer.PageAccessibility
+namespace CefSharp.DevTools.Dom.PageAccessibility
 {
     /// <summary>
     /// <see cref="Accessibility.SnapshotAsync(AccessibilitySnapshotOptions)"/>

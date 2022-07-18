@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.IO;
-using CefSharp.Puppeteer.Media;
+using CefSharp.DevTools.Dom.Media;
 using Newtonsoft.Json;
 
-namespace CefSharp.Puppeteer
+namespace CefSharp.DevTools.Dom
 {
     /// <summary>
     /// Options to be used in <see cref="IDevToolsContext.ScreenshotAsync(string, ScreenshotOptions)"/>, <see cref="IDevToolsContext.ScreenshotStreamAsync(ScreenshotOptions)"/> and <see cref="IDevToolsContext.ScreenshotDataAsync(ScreenshotOptions)"/>
@@ -54,12 +54,12 @@ namespace CefSharp.Puppeteer
         ///     FullPage = true,
         ///     BurstMode = true
         /// };
-        /// await page.GoToAsync("https://www.google.com");
+        /// await devToolsContext.GoToAsync("https://www.google.com");
         /// for(var x = 0; x < 100; x++)
         /// {
-        ///     await page.ScreenshotBase64Async(screenShotOptions);
+        ///     await devToolsContext.ScreenshotBase64Async(screenShotOptions);
         /// }
-        /// await page.SetBurstModeOffAsync();
+        /// await devToolsContext.SetBurstModeOffAsync();
         /// ]]></example>
         [JsonIgnore]
         public bool BurstMode { get; set; } = false;

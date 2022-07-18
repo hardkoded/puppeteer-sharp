@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CefSharp.Puppeteer.Input;
+using CefSharp.DevTools.Dom.Input;
 using Newtonsoft.Json.Linq;
 
-namespace CefSharp.Puppeteer
+namespace CefSharp.DevTools.Dom
 {
     /// <summary>
     /// Provides methods to interact with a single page frame in Chromium. One <see cref="IDevToolsContext"/> instance might have multiple <see cref="Frame"/> instances.
@@ -76,7 +76,6 @@ namespace CefSharp.Puppeteer
             }
         }
 
-        #region Properties
         /// <summary>
         /// Gets the child frames of the this frame
         /// </summary>
@@ -113,9 +112,6 @@ namespace CefSharp.Puppeteer
         public Frame ParentFrame { get; private set; }
 
         internal FrameManager FrameManager { get; }
-        #endregion
-
-        #region Public Methods
 
         /// <summary>
         /// Navigates to an url
@@ -517,6 +513,51 @@ namespace CefSharp.Puppeteer
         public Task TypeAsync(string selector, string text, TypeOptions options = null)
              => SecondaryWorld.TypeAsync(selector, text, options);
 
+        /// <summary>
+        /// The method runs <c>document.querySelector</c> within the page. If no element matches the selector, the return value resolve to <c>null</c>.
+        /// </summary>
+        /// <typeparam name="T">Type of <see cref="HtmlElement"/> or derived type</typeparam>
+        /// <param name="querySelector">A selector to query page for</param>
+        /// <returns>Task which resolves to <see cref="HtmlElement"/> pointing to the frame element</returns>
+        /// <remarks>
+        /// Shortcut for <c>page.MainFrame.QuerySelectorAsync(selector)</c>
+        /// </remarks>
+        /// <seealso cref="Frame.QuerySelectorAsync(string)"/>
+        public async Task<T> QuerySelectorAsync<T>(string querySelector)
+            where T : Element
+        {
+            var handle = await QuerySelectorAsync(querySelector).ConfigureAwait(false);
+
+            if (handle == null)
+            {
+                return default;
+            }
+
+            return handle.ToDomHandle<T>();
+        }
+
+        /// <summary>
+        /// Runs <c>document.querySelectorAll</c> within the page. If no elements match the selector, the return value resolve to <see cref="Array.Empty{T}"/>.
+        /// </summary>
+        /// <typeparam name="T">Type derived from <see cref="Element"/></typeparam>
+        /// <param name="querySelector">A selector to query page for</param>
+        /// <returns>Task which resolves to ElementHandles pointing to the frame elements</returns>
+        /// <seealso cref="Frame.QuerySelectorAllAsync(string)"/>
+        public async Task<T[]> QuerySelectorAllAsync<T>(string querySelector)
+            where T : Element
+        {
+            var elements = await QuerySelectorAllAsync(querySelector).ConfigureAwait(false);
+
+            var list = new List<T>();
+
+            foreach (var element in elements)
+            {
+                list.Add(element.ToDomHandle<T>());
+            }
+
+            return list.ToArray();
+        }
+
         internal void AddChildFrame(Frame frame)
         {
             lock (_childFrames)
@@ -569,7 +610,5 @@ namespace CefSharp.Puppeteer
             }
             ParentFrame = null;
         }
-
-        #endregion
     }
 }

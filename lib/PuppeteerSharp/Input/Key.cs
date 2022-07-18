@@ -1,4 +1,4 @@
-namespace CefSharp.Puppeteer.Input
+namespace CefSharp.DevTools.Dom.Input
 {
     /// <summary>
     /// Utility class to be used with <see cref="Keyboard"/> operations

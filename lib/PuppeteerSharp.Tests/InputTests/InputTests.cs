@@ -12,16 +12,6 @@ namespace PuppeteerSharp.Tests.InputTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class InputTests : PuppeteerPageBaseTest
     {
-        private const string Dimensions = @"function dimensions() {
-            const rect = document.querySelector('textarea').getBoundingClientRect();
-            return {
-                x: rect.left,
-                y: rect.top,
-                width: rect.width,
-                height: rect.height
-            };
-        }";
-
         public InputTests(ITestOutputHelper output) : base(output)
         {
         }
@@ -32,15 +22,30 @@ namespace PuppeteerSharp.Tests.InputTests
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/fileupload.html");
             var filePath = TestConstants.FileToUpload;
-            var input = await Page.QuerySelectorAsync("input");
+
+            Assert.True(System.IO.File.Exists(filePath));
+
+            var input = await Page.QuerySelectorAsync<HtmlInputElement>("input");
             await input.UploadFileAsync(filePath);
-            Assert.Equal("file-to-upload.txt", await Page.EvaluateFunctionAsync<string>("e => e.files[0].name", input));
-            Assert.Equal("contents of the file", await Page.EvaluateFunctionAsync<string>(@"e => {
+
+            var fileList = await input.GetFilesAsync();
+
+            Assert.Equal(1, await fileList.GetLengthAsync());
+
+            var files = await fileList.ToArrayAsync();
+
+            var fileName = await files[0].GetNameAsync();
+
+            Assert.Equal("file-to-upload.txt", fileName);
+
+            var fileContents = await Page.EvaluateFunctionAsync<string>(@"e => {
                 const reader = new FileReader();
                 const promise = new Promise(fulfill => reader.onload = fulfill);
                 reader.readAsText(e.files[0]);
                 return promise.then(() => reader.result);
-            }", input));
+            }", (JSHandle)input);
+
+            Assert.Equal("contents of the file", fileContents);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace CefSharp.Puppeteer
+﻿namespace CefSharp.DevTools.Dom
 {
     /// <summary>
     /// Item returned by drag methods.

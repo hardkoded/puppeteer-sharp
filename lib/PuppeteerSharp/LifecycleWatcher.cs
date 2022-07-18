@@ -5,9 +5,9 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using CefSharp.Puppeteer.Helpers;
+using CefSharp.DevTools.Dom.Helpers;
 
-namespace CefSharp.Puppeteer
+namespace CefSharp.DevTools.Dom
 {
     internal class LifecycleWatcher : IDisposable
     {
@@ -70,7 +70,6 @@ namespace CefSharp.Puppeteer
             CheckLifecycleComplete();
         }
 
-        #region Properties
         public Task<bool> SameDocumentNavigationTask => _sameDocumentNavigationTaskWrapper.Task;
 
         public Task<bool> NewDocumentNavigationTask => _newDocumentNavigationTaskWrapper.Task;
@@ -80,10 +79,6 @@ namespace CefSharp.Puppeteer
         public Task TimeoutOrTerminationTask => _terminationTaskWrapper.Task.WithTimeout(_timeout, cancellationToken: _terminationCancellationToken.Token);
 
         public Task LifecycleTask => _lifecycleTaskWrapper.Task;
-
-        #endregion
-
-        #region Private methods
 
         private void OnClientDisconnected(object sender, EventArgs e)
             => Terminate(new TargetClosedException("Navigation failed because browser has disconnected!", _frameManager.Connection.CloseReason));
@@ -173,7 +168,5 @@ namespace CefSharp.Puppeteer
             _frameManager.Connection.Disconnected -= OnClientDisconnected;
             _terminationCancellationToken.Cancel();
         }
-
-        #endregion
     }
 }

@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using CefSharp.Puppeteer;
+using CefSharp.DevTools.Dom;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using Xunit;
@@ -19,7 +19,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         public async Task ShouldWork()
         {
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
-            var button = await DevToolsContext.QuerySelectorAsync("button");
+            var button = await DevToolsContext.QuerySelectorAsync<HtmlButtonElement>("button");
             await button.ClickAsync();
             Assert.Equal("Clicked", await DevToolsContext.EvaluateExpressionAsync<string>("result"));
         }
@@ -29,7 +29,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         public async Task ShouldWorkForShadowDomV1()
         {
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/shadow.html");
-            var buttonHandle = (ElementHandle)await DevToolsContext.EvaluateExpressionHandleAsync("button");
+            var buttonHandle = await DevToolsContext.EvaluateExpressionHandleAsync("button") as ElementHandle;
             await buttonHandle.ClickAsync();
             Assert.True(await DevToolsContext.EvaluateExpressionAsync<bool>("clicked"));
         }
@@ -50,8 +50,8 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         public async Task ShouldThrowForDetachedNodes()
         {
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
-            var button = await DevToolsContext.QuerySelectorAsync("button");
-            await DevToolsContext.EvaluateFunctionAsync("button => button.remove()", button);
+            var button = await DevToolsContext.QuerySelectorAsync<HtmlButtonElement>("button");
+            await button.RemoveAsync();
             var exception = await Assert.ThrowsAsync<PuppeteerException>(async () => await button.ClickAsync());
             Assert.Equal("Node is detached from document", exception.Message);
         }
@@ -61,8 +61,10 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         public async Task ShouldThrowForHiddenNodes()
         {
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
-            var button = await DevToolsContext.QuerySelectorAsync("button");
-            await DevToolsContext.EvaluateFunctionAsync("button => button.style.display = 'none'", button);
+            var button = await DevToolsContext.QuerySelectorAsync<HtmlButtonElement>("button");
+            await button.GetStyleAsync()
+                .AndThen(x => x.SetPropertyAsync("display", "none"));
+            //await DevToolsContext.EvaluateFunctionAsync("button => button.style.display = 'none'", (JSHandle)button);
             var exception = await Assert.ThrowsAsync<PuppeteerException>(async () => await button.ClickAsync());
             Assert.Equal("Node is either not visible or not an HTMLElement", exception.Message);
         }
@@ -72,8 +74,10 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         public async Task ShouldThrowForRecursivelyHiddenNodes()
         {
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
-            var button = await DevToolsContext.QuerySelectorAsync("button");
-            await DevToolsContext.EvaluateFunctionAsync("button => button.parentElement.style.display = 'none'", button);
+            var button = await DevToolsContext.QuerySelectorAsync<HtmlButtonElement>("button");
+            await button.GetParentElementAsync<HtmlElement>()
+                .AndThen(x => x.GetStyleAsync())
+                .AndThen(x => x.SetPropertyAsync("display", "none"));
             var exception = await Assert.ThrowsAsync<PuppeteerException>(async () => await button.ClickAsync());
             Assert.Equal("Node is either not visible or not an HTMLElement", exception.Message);
         }
@@ -83,7 +87,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         public async Task ShouldThrowForBrElements()
         {
             await DevToolsContext.SetContentAsync("hello<br>goodbye");
-            var br = await DevToolsContext.QuerySelectorAsync("br");
+            var br = await DevToolsContext.QuerySelectorAsync<HtmlElement>("br");
             var exception = await Assert.ThrowsAsync<PuppeteerException>(async () => await br.ClickAsync());
             Assert.Equal("Node is either not visible or not an HTMLElement", exception.Message);
         }

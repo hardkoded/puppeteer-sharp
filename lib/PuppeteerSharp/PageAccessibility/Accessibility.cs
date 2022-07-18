@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using CefSharp.Puppeteer.Messaging;
+using CefSharp.DevTools.Dom.Messaging;
 
-namespace CefSharp.Puppeteer.PageAccessibility
+namespace CefSharp.DevTools.Dom.PageAccessibility
 {
     /// <summary>
     /// The Accessibility class provides methods for inspecting Chromium's accessibility tree.

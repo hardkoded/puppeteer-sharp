@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained Condition="'$(SelfContained)' == ''">false</SelfContained>
+		<IsTestProject>true</IsTestProject>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <AssemblyName>CefSharp.DevTools.Dom.Tests</AssemblyName>
+	</PropertyGroup>
+	<ItemGroup>
+	  <Compile Remove="AccessibilityTests\**" />
+	  <Compile Remove="InputTests\**" />
+	  <Compile Remove="DevToolsContextTests\**" />
+	  <Compile Remove="Screenshots\**" />
+	  <EmbeddedResource Remove="AccessibilityTests\**" />
+	  <EmbeddedResource Remove="InputTests\**" />
+	  <EmbeddedResource Remove="DevToolsContextTests\**" />
+	  <EmbeddedResource Remove="Screenshots\**" />
+	  <None Remove="AccessibilityTests\**" />
+	  <None Remove="InputTests\**" />
+	  <None Remove="DevToolsContextTests\**" />
+	  <None Remove="Screenshots\**" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Appveyor.TestLogger" Version="2.0.0" />
+		<PackageReference Include="MarkdownSnippets.MsBuild" Version="24.5.0" PrivateAssets="All" />
+		<PackageReference Include="Serilog.Extensions.Logging.File" Version="3.0.0" />
+		<PackageReference Include="System.Net.Http" Version="4.3.4" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
+		<PackageReference Include="xunit" Version="2.4.1" />
+		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="SixLabors.ImageSharp" Version="2.1.3" />
+    <PackageReference Include="Nito.AsyncEx.Context" Version="5.1.2" />
+    <PackageReference Include="CefSharp.OffScreen.NETCore" Version="102.0.100" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\PuppeteerSharp.TestServer\CefSharp.DevTools.Dom.TestServer.csproj" />
+		<ProjectReference Include="..\PuppeteerSharp\CefSharp.DevTools.Dom.csproj" />
+		<ProjectReference Include="..\PuppeteerSharp.Xunit\CefSharp.DevTools.Dom.Xunit.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Update="Assets\es6\es6import.js">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Assets\es6\es6module.js">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Assets\es6\es6pathimport.js">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Assets\file-to-upload.txt">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Assets\injectedfile.js">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Assets\injectedstyle.css">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Assets\one-style.css">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Assets\one-style.html">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Assets\pptr.png">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="test.runsettings">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+	<ItemGroup>
+		<None Remove="xunit.runner.json" />
+		<Content Include="xunit.runner.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<None Remove="Emulation\" />
+		<None Remove="FixturesTests\" />
+		<None Remove="HeadfulTests\" />
+	</ItemGroup>
+	<ItemGroup>
+	  <CustomAdditionalCompileInputs Remove="DevToolsContextTests\**" />
+	  <CustomAdditionalCompileInputs Remove="AccessibilityTests\**" />
+	  <CustomAdditionalCompileInputs Remove="Screenshots\**" />
+	  <CustomAdditionalCompileInputs Remove="InputTests\**" />
+	</ItemGroup>
+</Project>

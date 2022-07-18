@@ -1,4 +1,4 @@
-namespace CefSharp.Puppeteer.Media
+namespace CefSharp.DevTools.Dom.Media
 {
     internal class ScreenOrientationType
     {

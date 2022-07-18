@@ -1,4 +1,4 @@
-namespace CefSharp.Puppeteer.Input
+namespace CefSharp.DevTools.Dom.Input
 {
     /// <summary>
     /// options to use <see cref="Mouse.MoveAsync(decimal, decimal, MoveOptions)"/>

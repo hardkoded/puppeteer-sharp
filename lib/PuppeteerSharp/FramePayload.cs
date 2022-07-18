@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace CefSharp.Puppeteer
+namespace CefSharp.DevTools.Dom
 {
     internal class FramePayload
     {

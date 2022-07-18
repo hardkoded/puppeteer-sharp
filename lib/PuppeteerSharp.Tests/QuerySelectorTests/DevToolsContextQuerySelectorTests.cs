@@ -4,7 +4,7 @@ using Xunit.Abstractions;
 using PuppeteerSharp.Xunit;
 using PuppeteerSharp.Tests.Attributes;
 using CefSharp;
-using CefSharp.Puppeteer;
+using CefSharp.DevTools.Dom;
 
 namespace PuppeteerSharp.Tests.QuerySelectorTests
 {
@@ -15,43 +15,114 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         {
         }
 
-#pragma warning disable IDE0051 // Remove unused private members
-        async Task Usage(IWebBrowser chromiumWebBrowser)
-#pragma warning restore IDE0051 // Remove unused private members
+#pragma warning disable xUnit1013 // Public method should be marked as test
+        public static async Task Usage(IWebBrowser chromiumWebBrowser)
+#pragma warning restore xUnit1013 // Public method should be marked as test
         {
             #region QuerySelector
-            // Wait for Initial page load
-            await chromiumWebBrowser.WaitForInitialLoadAsync();
 
-            await using var devtoolsContext = await chromiumWebBrowser.CreateDevToolsContextAsync();
+            // Add using CefSharp.DevTools.Dom to access CreateDevToolsContextAsync and related extension methods.
+            await using var devToolsContext = await chromiumWebBrowser.CreateDevToolsContextAsync();
 
-            var element = await devtoolsContext.QuerySelectorAsync("#myElementId");
+            await devToolsContext.GoToAsync("http://www.google.com");
+
+            // Get element by Id
+            // https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector
+            var element = await devToolsContext.QuerySelectorAsync<HtmlElement>("#myElementId");
+
+            //Strongly typed element types (this is only a subset of the types mapped)
+            var htmlDivElement = await devToolsContext.QuerySelectorAsync<HtmlDivElement>("#myDivElementId");
+            var htmlSpanElement = await devToolsContext.QuerySelectorAsync<HtmlSpanElement>("#mySpanElementId");
+            var htmlSelectElement = await devToolsContext.QuerySelectorAsync<HtmlSelectElement>("#mySelectElementId");
+            var htmlInputElement = await devToolsContext.QuerySelectorAsync<HtmlInputElement>("#myInputElementId");
+            var htmlFormElement = await devToolsContext.QuerySelectorAsync<HtmlFormElement>("#myFormElementId");
+            var htmlAnchorElement = await devToolsContext.QuerySelectorAsync<HtmlAnchorElement>("#myAnchorElementId");
+            var htmlImageElement = await devToolsContext.QuerySelectorAsync<HtmlImageElement>("#myImageElementId");
+            var htmlTextAreaElement = await devToolsContext.QuerySelectorAsync<HtmlImageElement>("#myTextAreaElementId");
+            var htmlButtonElement = await devToolsContext.QuerySelectorAsync<HtmlButtonElement>("#myButtonElementId");
+            var htmlParagraphElement = await devToolsContext.QuerySelectorAsync<HtmlParagraphElement>("#myParagraphElementId");
+            var htmlTableElement = await devToolsContext.QuerySelectorAsync<HtmlTableElement>("#myTableElementId");
 
             // Get a custom attribute value
-            var customAttribute = await element.GetAttributeValueAsync<string>("data-customAttribute");
+            var customAttribute = await element.GetAttributeAsync<string>("data-customAttribute");
 
             //Set innerText property for the element
-            await element.SetPropertyValueAsync("innerText", "Welcome!");
+            await element.SetInnerTextAsync("Welcome!");
 
             //Get innerText property for the element
-            var innerText = await element.GetPropertyValueAsync<string>("innerText");
-
-            //Change CSS style background colour
-            _ = await element.EvaluateFunctionAsync("e => e.style.backgroundColor = 'yellow'");
+            var innerText = await element.GetInnerTextAsync();
 
             //Get all child elements
             var childElements = await element.QuerySelectorAllAsync("div");
 
+            //Change CSS style background colour
+            await element.EvaluateFunctionAsync("e => e.style.backgroundColor = 'yellow'");
+
+            //Type text in an input field
+            await element.TypeAsync("Welcome to my Website!");
+
             //Click The element
             await element.ClickAsync();
 
-            var divElements = await devtoolsContext.QuerySelectorAllAsync("div");
+            // Simple way of chaining method calls together when you don't need a handle to the HtmlElement
+            var htmlButtonElementInnerText = await devToolsContext.QuerySelectorAsync<HtmlButtonElement>("#myButtonElementId")
+                .AndThen(x => x.GetInnerTextAsync());
 
-            foreach(var div in divElements)
+            //Event Handler
+            //Expose a function to javascript, functions persist across navigations
+            //So only need to do this once
+            await devToolsContext.ExposeFunctionAsync("jsAlertButtonClick", () =>
             {
-                var style = await div.GetAttributeValueAsync<string>("style");
-                await div.SetAttributeValueAsync("data-customAttribute", "123");
-                await div.SetPropertyValueAsync("innerText", "Updated Div innerText");
+                _ = devToolsContext.EvaluateExpressionAsync("window.alert('Hello! You invoked window.alert()');");
+            });
+
+            var jsAlertButton = await devToolsContext.QuerySelectorAsync<HtmlButtonElement>("#jsAlertButton");
+
+            //Write up the click event listner to call our exposed function
+            _ = jsAlertButton.AddEventListenerAsync("click", "jsAlertButtonClick");
+
+            //Get a collection of HtmlElements
+            var divElements = await devToolsContext.QuerySelectorAllAsync<HtmlDivElement>("div");
+
+            foreach (var div in divElements)
+            {
+                // Get a reference to the CSSStyleDeclaration
+                var style = await div.GetStyleAsync();
+
+                //Set the border to 1px solid red
+                await style.SetPropertyAsync("border", "1px solid red", important: true);
+
+                await div.SetAttributeAsync("data-customAttribute", "123");
+                await div.SetInnerTextAsync("Updated Div innerText");
+            }
+
+            //Using standard array
+            var tableRows = await htmlTableElement.GetRowsAsync().ToArrayAsync();
+
+            foreach (var row in tableRows)
+            {
+                var cells = await row.GetCellsAsync().ToArrayAsync();
+                foreach (var cell in cells)
+                {
+                    var newDiv = await devToolsContext.CreateHtmlElementAsync<HtmlDivElement>("div");
+                    await newDiv.SetInnerTextAsync("New Div Added!");
+                    await cell.AppendChildAsync(newDiv);
+                }
+            }
+
+            //Get a reference to the HtmlCollection and use async enumerable
+            //Requires Net Core 3.1 or higher
+            var tableRowsHtmlCollection = await htmlTableElement.GetRowsAsync();
+
+            await foreach (var row in tableRowsHtmlCollection)
+            {
+                var cells = await row.GetCellsAsync();
+                await foreach (var cell in cells)
+                {
+                    var newDiv = await devToolsContext.CreateHtmlElementAsync<HtmlDivElement>("div");
+                    await newDiv.SetInnerTextAsync("New Div Added!");
+                    await cell.AppendChildAsync(newDiv);
+                }
             }
 
             #endregion
