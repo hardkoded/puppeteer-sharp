@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -8,7 +9,58 @@ namespace PuppeteerSharp
     internal class CustomQueriesManager
     {
         private readonly Dictionary<string, InternalQueryHandler> _queryHandlers = new();
-        private readonly Dictionary<string, InternalQueryHandler> _builtInHandlers = new();
+        private readonly InternalQueryHandler _pierceHandler = MakeQueryHandler(new CustomQueryHandler
+        {
+            QueryOne = @"(element, selector) => {
+                let found = null;
+                const search = (root) => {
+                  const iter = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
+                  do {
+                    const currentNode = iter.currentNode;
+                    if (currentNode.shadowRoot) {
+                      search(currentNode.shadowRoot);
+                    }
+                    if (currentNode instanceof ShadowRoot) {
+                      continue;
+                    }
+                    if (currentNode !== root && !found && currentNode.matches(selector)) {
+                      found = currentNode;
+                    }
+                  } while (!found && iter.nextNode());
+                };
+                if (element instanceof Document) {
+                  element = element.documentElement;
+                }
+                search(element);
+                return found;
+              }",
+            QueryAll = @"(element, selector) => {
+                const result = [];
+                const collect = (root) => {
+                  const iter = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
+                  do {
+                    const currentNode = iter.currentNode;
+                    if (currentNode.shadowRoot) {
+                      collect(currentNode.shadowRoot);
+                    }
+                    if (currentNode instanceof ShadowRoot) {
+                      continue;
+                    }
+                    if (currentNode !== root && currentNode.matches(selector)) {
+                      result.push(currentNode);
+                    }
+                  } while (iter.nextNode());
+                };
+                if (element instanceof Document) {
+                  element = element.documentElement;
+                }
+                collect(element);
+                return result;
+              }",
+        });
+
+        private readonly Dictionary<string, InternalQueryHandler> _builtInHandlers;
+
         private readonly Regex _customQueryHandlerNameRegex = new("[a-zA-Z]+$", RegexOptions.Compiled);
         private readonly Regex _customQueryHandlerParserRegex = new("(?<query>^[a-zA-Z]+)\\/(?<selector>.*)", RegexOptions.Compiled);
         private readonly InternalQueryHandler _defaultHandler = MakeQueryHandler(new CustomQueryHandler
@@ -16,6 +68,17 @@ namespace PuppeteerSharp
             QueryOne = "(element, selector) => element.querySelector(selector)",
             QueryAll = "(element, selector) => element.querySelectorAll(selector)",
         });
+
+        public CustomQueriesManager()
+        {
+            _builtInHandlers = new()
+            {
+                ["pierce"] = _pierceHandler,
+            };
+            _queryHandlers = _builtInHandlers.ToDictionary(
+                entry => entry.Key,
+                entry => entry.Value);
+        }
 
         internal void RegisterCustomQueryHandler(string name, CustomQueryHandler queryHandler)
         {
