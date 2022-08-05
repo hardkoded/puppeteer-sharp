@@ -590,7 +590,7 @@ namespace PuppeteerSharp
         /// <returns>Task</returns>
         public Task EvaluateFunctionOnNewDocumentAsync(string pageFunction, params object[] args)
         {
-            var source = EvaluationString(pageFunction, args);
+            var source = BindingUtils.EvaluationString(pageFunction, args);
             return Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new PageAddScriptToEvaluateOnNewDocumentRequest
             {
                 Source = source
@@ -2512,9 +2512,9 @@ namespace PuppeteerSharp
             string expression;
             try
             {
-                var result = await ExecuteBinding(e).ConfigureAwait(false);
+                var result = await BindingUtils.ExecuteBindingAsync(e, _pageBindings).ConfigureAwait(false);
 
-                expression = EvaluationString(
+                expression = BindingUtils.EvaluationString(
                     @"function deliverResult(name, seq, result) {
                         window[name]['callbacks'].get(seq).resolve(result);
                         window[name]['callbacks'].delete(seq);
@@ -2530,7 +2530,7 @@ namespace PuppeteerSharp
                     ex = ex.InnerException;
                 }
 
-                expression = EvaluationString(
+                expression = BindingUtils.EvaluationString(
                     @"function deliverError(name, seq, message, stack) {
                         const error = new Error(message);
                         error.stack = stack;
@@ -2548,30 +2548,6 @@ namespace PuppeteerSharp
                 expression,
                 contextId = e.ExecutionContextId
             });
-        }
-
-        private async Task<object> ExecuteBinding(BindingCalledResponse e)
-        {
-            const string taskResultPropertyName = "Result";
-            object result;
-            var binding = _pageBindings[e.BindingPayload.Name];
-            var methodParams = binding.Method.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
-
-            var args = e.BindingPayload.Args.Select((token, i) => token.ToObject(methodParams[i])).ToArray();
-
-            result = binding.DynamicInvoke(args);
-            if (result is Task taskResult)
-            {
-                await taskResult.ConfigureAwait(false);
-
-                if (taskResult.GetType().IsGenericType)
-                {
-                    // the task is already awaited and therefore the call to property Result will not deadlock
-                    result = taskResult.GetType().GetProperty(taskResultPropertyName).GetValue(taskResult);
-                }
-            }
-
-            return result;
         }
 
         private void OnDetachedFromTarget(TargetDetachedFromTargetResponse e)
@@ -2735,7 +2711,7 @@ namespace PuppeteerSharp
                 return promise;
               };
             }";
-            var expression = EvaluationString(addPageBinding, name);
+            var expression = BindingUtils.EvaluationString(addPageBinding, name);
             await Client.SendAsync("Runtime.addBinding", new RuntimeAddBindingRequest { Name = name }).ConfigureAwait(false);
             await Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new PageAddScriptToEvaluateOnNewDocumentRequest
             {
@@ -2755,18 +2731,6 @@ namespace PuppeteerSharp
                         },
                         TaskScheduler.Default)))
                 .ConfigureAwait(false);
-        }
-
-        private static string EvaluationString(string fun, params object[] args)
-        {
-            return $"({fun})({string.Join(",", args.Select(SerializeArgument))})";
-
-            string SerializeArgument(object arg)
-            {
-                return arg == null
-                    ? "undefined"
-                    : JsonConvert.SerializeObject(arg, JsonHelper.DefaultJsonSerializerSettings);
-            }
         }
 
         /// <inheritdoc />

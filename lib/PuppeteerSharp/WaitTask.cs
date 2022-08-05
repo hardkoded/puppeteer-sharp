@@ -7,7 +7,7 @@ namespace PuppeteerSharp
 {
     internal class WaitTask : IDisposable
     {
-        private readonly DOMWorld _world;
+        private readonly DOMWorld _domWorld;
         private readonly string _predicateBody;
         private readonly WaitForFunctionPollingOption _polling;
         private readonly int? _pollingInterval;
@@ -19,7 +19,7 @@ namespace PuppeteerSharp
         private readonly bool _predicateAcceptsContextElement;
         private readonly CancellationTokenSource _cts;
         private readonly TaskCompletionSource<JSHandle> _taskCompletion;
-
+        private readonly PageBinding _binding;
         private int _runCount;
         private bool _terminated;
         private bool _isDisposing;
@@ -113,7 +113,7 @@ async function waitForPredicatePageFunction(
 }";
 
         internal WaitTask(
-            DOMWorld world,
+            DOMWorld domWorld,
             string predicateBody,
             bool isExpression,
             string title,
@@ -121,6 +121,7 @@ async function waitForPredicatePageFunction(
             int? pollingInterval,
             int timeout,
             ElementHandle root,
+            PageBinding biding = null,
             object[] args = null,
             bool predicateAcceptsContextElement = false)
         {
@@ -133,7 +134,7 @@ async function waitForPredicatePageFunction(
                 throw new ArgumentOutOfRangeException(nameof(pollingInterval), "Cannot poll with non-positive interval");
             }
 
-            _world = world;
+            _domWorld = domWorld;
             _predicateBody = isExpression ? $"return ({predicateBody})" : $"return ({predicateBody})(...args)";
             _polling = polling;
             _pollingInterval = pollingInterval;
@@ -144,8 +145,14 @@ async function waitForPredicatePageFunction(
             _cts = new CancellationTokenSource();
             _predicateAcceptsContextElement = predicateAcceptsContextElement;
             _taskCompletion = new TaskCompletionSource<JSHandle>(TaskCreationOptions.RunContinuationsAsynchronously);
+            _binding = biding;
 
-            _world.WaitTasks.Add(this);
+            if (biding != null)
+            {
+                _domWorld.BoundFunctions.TryAdd(_binding.Name, _binding.Function);
+            }
+
+            _domWorld.WaitTasks.Add(this);
 
             if (timeout > 0)
             {
@@ -166,7 +173,12 @@ async function waitForPredicatePageFunction(
             JSHandle success = null;
             Exception exception = null;
 
-            var context = await _world.GetExecutionContextAsync().ConfigureAwait(false);
+            var context = await _domWorld.GetExecutionContextAsync().ConfigureAwait(false);
+            if (_binding != null)
+            {
+              await _domWorld.AddBindingToContextAsync(context, _binding.Name).ConfigureAwait(false);
+            }
+
             try
             {
                 success = await context.EvaluateFunctionHandleAsync(
@@ -194,7 +206,7 @@ async function waitForPredicatePageFunction(
                 return;
             }
             if (exception == null &&
-                await _world.EvaluateFunctionAsync<bool>("s => !s", success)
+                await _domWorld.EvaluateFunctionAsync<bool>("s => !s", success)
                     .ContinueWith(
                         task => task.IsFaulted || task.Result,
                         TaskScheduler.Default)
@@ -243,7 +255,7 @@ async function waitForPredicatePageFunction(
             {
                 _cts.Cancel();
             }
-            _world.WaitTasks.Remove(this);
+            _domWorld.WaitTasks.Remove(this);
         }
 
         public void Dispose()

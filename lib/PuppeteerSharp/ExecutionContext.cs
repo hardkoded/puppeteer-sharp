@@ -21,7 +21,6 @@ namespace PuppeteerSharp
 
         private readonly string _evaluationScriptSuffix = $"//# sourceURL={EvaluationScriptUrl}";
         private static readonly Regex _sourceUrlRegex = new(@"^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$", RegexOptions.Multiline);
-        private readonly int _contextId;
 
         internal ExecutionContext(
             CDPSession client,
@@ -29,9 +28,14 @@ namespace PuppeteerSharp
             DOMWorld world)
         {
             Client = client;
-            _contextId = contextPayload.Id;
+            ContextId = contextPayload.Id;
+            ContextName = contextPayload.Name;
             World = world;
         }
+
+        internal int ContextId { get; }
+
+        internal string ContextName { get; }
 
         internal CDPSession Client { get; }
 
@@ -145,7 +149,7 @@ namespace PuppeteerSharp
             => ExecuteEvaluationAsync("Runtime.evaluate", new Dictionary<string, object>
             {
                 ["expression"] = _sourceUrlRegex.IsMatch(script) ? script : $"{script}\n{_evaluationScriptSuffix}",
-                ["contextId"] = _contextId,
+                ["contextId"] = ContextId,
                 ["returnByValue"] = returnByValue,
                 ["awaitPromise"] = true,
                 ["userGesture"] = true
@@ -155,7 +159,7 @@ namespace PuppeteerSharp
             => ExecuteEvaluationAsync("Runtime.callFunctionOn", new RuntimeCallFunctionOnRequest
             {
                 FunctionDeclaration = $"{script}\n{_evaluationScriptSuffix}\n",
-                ExecutionContextId = _contextId,
+                ExecutionContextId = ContextId,
                 Arguments = args.Select(FormatArgument),
                 ReturnByValue = returnByValue,
                 AwaitPromise = true,
@@ -253,7 +257,7 @@ namespace PuppeteerSharp
             var obj = await Client.SendAsync<DomResolveNodeResponse>("DOM.resolveNode", new DomResolveNodeRequest
             {
                 BackendNodeId = backendNodeId,
-                ExecutionContextId = _contextId
+                ExecutionContextId = ContextId
             }).ConfigureAwait(false);
 
             return CreateJSHandle(obj.Object) as ElementHandle;
@@ -278,7 +282,7 @@ namespace PuppeteerSharp
             var obj = await Client.SendAsync<DomResolveNodeResponse>("DOM.resolveNode", new DomResolveNodeRequest
             {
                 BackendNodeId = nodeInfo.Node.BackendNodeId,
-                ExecutionContextId = _contextId
+                ExecutionContextId = ContextId
             }).ConfigureAwait(false);
 
             return CreateJSHandle(obj.Object) as ElementHandle;
