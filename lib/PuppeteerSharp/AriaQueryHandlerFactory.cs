@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -54,10 +56,29 @@ namespace PuppeteerSharp
                     binding);
             };
 
+            Func<ElementHandle, string, Task<ElementHandle[]>> queryAll = async (ElementHandle element, string selector) =>
+            {
+                var exeCtx = element.ExecutionContext;
+                var ariaSelector = ParseAriaSelector(selector);
+                var res = await QueryAXTreeAsync(exeCtx.Client, element, ariaSelector.Name, ariaSelector.Role).ConfigureAwait(false);
+                var elements = await Task.WhenAll(res.Select(axNode => exeCtx.AdoptBackendNodeAsync(axNode.BackendDOMNodeId))).ConfigureAwait(false);
+                return elements.ToArray();
+            };
+
+            Func<ElementHandle, string, Task<JSHandle>> queryAllArray = async (ElementHandle element, string selector) =>
+            {
+                var elementHandles = await queryAll(element, selector).ConfigureAwait(false);
+                var exeCtx = element.ExecutionContext;
+                var jsHandle = await exeCtx.EvaluateFunctionHandleAsync("(...elements) => elements", elementHandles).ConfigureAwait(false);
+                return jsHandle;
+            };
+
             return new()
             {
                 QueryOne = queryOne,
                 WaitFor = waitFor,
+                QueryAll = queryAll,
+                QueryAllArray = queryAllArray,
             };
         }
 
