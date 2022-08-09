@@ -18,7 +18,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
 
         //Appveyor is differing by 1px for some reason
         [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.boundingBox", "should work")]
-        [SkipIfRunOnAppVeyorFact]
+        [PuppeteerFact]
         public async Task ShouldWork()
         {
             await DevToolsContext.SetViewportAsync(new ViewPortOptions
@@ -29,7 +29,12 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             var elementHandle = await DevToolsContext.QuerySelectorAsync<HtmlElement>(".box:nth-of-type(13)");
             var box = await elementHandle.BoundingBoxAsync();
-            Assert.Equal(new BoundingBox(100, 50, 50, 50), box);
+
+            Assert.Equal(50, box.Width);
+            Assert.Equal(50, box.Height);
+            //Allow for minor variance in positioning
+            Assert.InRange(box.X, 100, 101);
+            Assert.InRange(box.Y, 50, 51);
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.boundingBox", "should handle nested frames")]
