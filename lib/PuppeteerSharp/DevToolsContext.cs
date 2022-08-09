@@ -15,7 +15,6 @@ using CefSharp.DevTools.Dom.Input;
 using CefSharp.DevTools.Dom.Media;
 using CefSharp.DevTools.Dom.Messaging;
 using CefSharp.DevTools.Dom.Mobile;
-using CefSharp.DevTools.Dom.PageAccessibility;
 using CefSharp.DevTools.Dom.PageCoverage;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -86,9 +85,6 @@ namespace CefSharp.DevTools.Dom
 
         /// <inheritdoc/>
         public event EventHandler<MetricEventArgs> Metrics;
-
-        /// <inheritdoc/>
-        public event EventHandler<DialogEventArgs> Dialog;
 
         /// <inheritdoc/>
         public event EventHandler DOMContentLoaded;
@@ -2339,9 +2335,6 @@ namespace CefSharp.DevTools.Dom
                     case "Runtime.consoleAPICalled":
                         await OnConsoleAPIAsync(e.MessageData.ToObject<PageConsoleResponse>(true)).ConfigureAwait(false);
                         break;
-                    case "Page.javascriptDialogOpening":
-                        OnDialog(e.MessageData.ToObject<PageJavascriptDialogOpeningResponse>(true));
-                        break;
                     case "Runtime.exceptionThrown":
                         HandleException(e.MessageData.ToObject<RuntimeExceptionThrownResponse>(true).ExceptionDetails);
                         break;
@@ -2526,12 +2519,6 @@ namespace CefSharp.DevTools.Dom
                 }
             }
             return message;
-        }
-
-        private void OnDialog(PageJavascriptDialogOpeningResponse message)
-        {
-            var dialog = new Dialog(Connection, message.Type, message.Message, message.DefaultPrompt);
-            Dialog?.Invoke(this, new DialogEventArgs(dialog));
         }
 
         private Task OnConsoleAPIAsync(PageConsoleResponse message)

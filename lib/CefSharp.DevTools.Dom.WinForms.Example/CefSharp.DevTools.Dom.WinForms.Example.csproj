@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PuppeteerSharp\CefSharp.DevTools.Dom.csproj" />
-    <PackageReference Include="CefSharp.WinForms.NETCore" Version="102.0.100" />
+    <PackageReference Include="CefSharp.WinForms.NETCore" Version="104.4.180" />
   </ItemGroup>
 
   <ItemGroup>
