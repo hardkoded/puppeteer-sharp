@@ -1,9 +1,9 @@
-# CefSharp.DevTools.Dom
+# CefSharp.DevTools.Dom (Formerly CefSharp.Puppeteer)
 
 [![Nuget](https://img.shields.io/nuget/v/CefSharp.DevTools.Dom?style=for-the-badge)](https://www.nuget.org/packages/CefSharp.DevTools.Dom/)
-[![AppVeyor](https://img.shields.io/appveyor/build/cefsharp/puppeteer?style=for-the-badge)](https://ci.appveyor.com/project/cefsharp/puppeteer)
-[![AppVeyor tests](https://img.shields.io/appveyor/tests/cefsharp/puppeteer?style=for-the-badge)](https://ci.appveyor.com/project/cefsharp/puppeteer/build/tests)
-[![GitHub](https://img.shields.io/github/license/cefsharp/puppeteer?style=for-the-badge)](https://github.com/cefsharp/Puppeteer/blob/main/LICENSE)
+[![AppVeyor](https://img.shields.io/appveyor/build/cefsharp/CefSharp.DevTools.Dom?style=for-the-badge)](https://ci.appveyor.com/project/cefsharp/CefSharp.DevTools.Dom)
+[![AppVeyor tests](https://img.shields.io/appveyor/tests/cefsharp/CefSharp.DevTools.Dom?style=for-the-badge)](https://ci.appveyor.com/project/cefsharp/CefSharp.DevTools.Dom/build/tests)
+[![GitHub](https://img.shields.io/github/license/cefsharp/CefSharp.DevTools.Dom?style=for-the-badge)](https://github.com/cefsharp/CefSharp.DevTools.Dom/blob/main/LICENSE)
 
 CefSharp.DevTools.Dom is a fork of [puppeteer-sharp by Darío Kondratiuk](https://github.com/hardkoded/puppeteer-sharp) that has been adapted specifically for use with CefSharp.
 - Strongly typed async DOM API
