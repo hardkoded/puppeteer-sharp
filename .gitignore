@@ -299,3 +299,4 @@ samples/PupppeterSharpAspNetFrameworkSample/PupppeterSharpAspNetFrameworkSample/
 
 # Visual Studio Code user config directory
 .vscode/
+/lib/PuppeteerSharp.Tests/Screenshots/golden-chromium/test.png

@@ -164,12 +164,16 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         [PuppeteerFact]
         public async Task ShouldTakeFullPageScreenshots()
         {
-            await DevToolsContext.SetViewportAsync(new ViewPortOptions
-            {
-                Width = 500,
-                Height = 500
-            });
+            await DevToolsContext.SetViewportAsync(new ViewPortOptions { Width = 500, Height = 500 });
+
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+
+            // CEF's OSR implementation (used by WPF/OffScreen) doesn't dynamically resize so we have to manually resize.
+            // Should work correctly in non OSR (WinForms)
+            var size = await ChromiumWebBrowser.GetContentSizeAsync();
+
+            await ChromiumWebBrowser.ResizeAsync((int)size.Width, (int)size.Height);
+
             var screenshot = await DevToolsContext.ScreenshotDataAsync(new ScreenshotOptions
             {
                 FullPage = true
@@ -279,6 +283,13 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
                 Height = 500
             });
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+
+            // CEF's OSR implementation (used by WPF/OffScreen) doesn't dynamically resize so we have to manually resize.
+            // Should work correctly in non OSR (WinForms)
+            var size = await ChromiumWebBrowser.GetContentSizeAsync();
+
+            await ChromiumWebBrowser.ResizeAsync((int)size.Width, (int)size.Height);
+
             var screenshot = await DevToolsContext.ScreenshotDataAsync(new ScreenshotOptions
             {
                 Type = ScreenshotType.Jpeg,
