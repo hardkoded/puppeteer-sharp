@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
 
             await Task.WhenAll(
                 requestTask,
-                responseTask).WithTimeout();
+                responseTask).WithTimeout(5000);
 
             var response = responseTask.Result;
             Assert.Equal(HttpStatusCode.OK, response.Status);
