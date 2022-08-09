@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using CefSharp.DevTools.Dom;
+using CefSharp.DevTools.Dom.Tests;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using Xunit;
@@ -15,8 +16,9 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         {
         }
 
+        //Appveyor is differing by 1px for some reason
         [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.boundingBox", "should work")]
-        [PuppeteerFact]
+        [SkipIfRunOnAppVeyorFact]
         public async Task ShouldWork()
         {
             await DevToolsContext.SetViewportAsync(new ViewPortOptions
