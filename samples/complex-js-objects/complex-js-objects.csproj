@@ -9,8 +9,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="CefSharp.OffScreen.NETCore" Version="96.0.142" />
-        <PackageReference Include="CefSharp.Puppeteer" Version="1.0.22" />
+        <PackageReference Include="CefSharp.OffScreen.NETCore" Version="104.4.180" />
+        <PackageReference Include="CefSharp.DevTools.Dom" Version="2.0.76" />
+        <PackageReference Include="Nito.AsyncEx.Context" Version="5.1.2" />
     </ItemGroup>
 
 </Project>

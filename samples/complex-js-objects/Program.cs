@@ -2,13 +2,15 @@ using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using CefSharp.OffScreen;
-using CefSharp.Puppeteer;
+using CefSharp.DevTools.Dom;
+using Nito.AsyncEx;
+using CefSharp;
 
 namespace Example.ComplexJSObjects
 {
     class Program
     {
-        [DebuggerDisplay("Content: {Content} Url: {Url}")]
+        [DebuggerDisplay("Title: {Title} Url: {Url}")]
         public class Data
         {
             public string Title { get; set; }
@@ -16,29 +18,37 @@ namespace Example.ComplexJSObjects
             public override string ToString() => $"Title: {Title} \nURL: {Url}";
         }
 
-        static async Task Main(string[] args)
+        public static int Main(string[] args) => AsyncContext.Run(AsyncMain);
+
+        static async Task<int> AsyncMain()
         {
-            using var chromiumWebBrowser = new ChromiumWebBrowser("https://google.com");
+            Console.WriteLine("Navigating to https://stackoverflow.com/questions/tagged/cefsharp");
+
+            using var chromiumWebBrowser = new ChromiumWebBrowser("https://stackoverflow.com/questions/tagged/cefsharp");
 
             await chromiumWebBrowser.WaitForInitialLoadAsync();
 
-            await using var page = await chromiumWebBrowser.GetPuppeteerPageAsync();
+            var devtolsContext = await chromiumWebBrowser.CreateDevToolsContextAsync();
 
-            Console.WriteLine("Navigating to Hacker News");
-
-            await page.GoToAsync("https://news.ycombinator.com/");
             Console.WriteLine("Get all urls from page");
             var jsCode = @"() => {
-const selectors = Array.from(document.querySelectorAll('a[class=""titlelink""]'));
-return selectors.map( t=> {return { title: t.innerHTML, url: t.href}});
-}";
-            var results = await page.EvaluateFunctionAsync<Data[]>(jsCode);
+                const selectors = Array.from(document.querySelectorAll('.s-post-summary--content-title .s-link'));
+                return selectors.map( t=> {return { title: t.innerHTML, url: t.href}});
+            }";
+            var results = await devtolsContext.EvaluateFunctionAsync<Data[]>(jsCode);
             foreach (var result in results)
             {
                 Console.WriteLine(result.ToString());
             }
+
+            await devtolsContext.DisposeAsync();
+
+            Cef.Shutdown();
+
             Console.WriteLine("Press any key to continue...");
             Console.ReadKey();
+
+            return 0;
         }
     }
 }

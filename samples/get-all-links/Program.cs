@@ -1,31 +1,42 @@
 using System;
 using System.Threading.Tasks;
 using CefSharp.OffScreen;
-using CefSharp.Puppeteer;
+using CefSharp.DevTools.Dom;
+using Nito.AsyncEx;
+using CefSharp;
 
 namespace Example.GetAllLinks
 {
-    class Program
+    public class Program
     {
-        public static async Task Main(string[] args)
+        public static int Main(string[] args) => AsyncContext.Run(AsyncMain);
+
+        public static async Task<int> AsyncMain()
         {
             using var chromiumWebBrowser = new ChromiumWebBrowser("https://github.com");
 
             await chromiumWebBrowser.WaitForInitialLoadAsync();
 
-            await using var page = await chromiumWebBrowser.GetPuppeteerPageAsync();
+            var devtoolsContext = await chromiumWebBrowser.CreateDevToolsContextAsync();
 
             Console.WriteLine("Navigating to google.com");
 
-            await page.GoToAsync("http://www.google.com");
+            await devtoolsContext.GoToAsync("http://www.google.com");
             var jsSelectAllAnchors = @"Array.from(document.querySelectorAll('a')).map(a => a.href);";
-            var urls = await page.EvaluateExpressionAsync<string[]>(jsSelectAllAnchors);
+            var urls = await devtoolsContext.EvaluateExpressionAsync<string[]>(jsSelectAllAnchors);
             foreach (string url in urls)
             {
                 Console.WriteLine($"Url: {url}");
             }
+
+            await devtoolsContext.DisposeAsync();
+
+            Cef.Shutdown();
+
             Console.WriteLine("Press any key to continue...");
             Console.ReadKey();
+
+            return 0;
         }
     }
 }

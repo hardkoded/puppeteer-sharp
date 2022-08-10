@@ -1,35 +1,39 @@
 using System;
 using System.Threading.Tasks;
 using CefSharp.OffScreen;
-using CefSharp.Puppeteer;
+using CefSharp.DevTools.Dom;
+using CefSharp;
+using Nito.AsyncEx;
 
 namespace Example.Searching
 {
     class Program
     {
-        public static async Task Main(string[] args)
+        public static int Main(string[] args) => AsyncContext.Run(AsyncMain);
+
+        public static async Task<int> AsyncMain()
         {
             using var chromiumWebBrowser = new ChromiumWebBrowser("https://github.com");
 
             await chromiumWebBrowser.WaitForInitialLoadAsync();
 
-            await using var page = await chromiumWebBrowser.GetPuppeteerPageAsync();
+            var devtoolsContext = await chromiumWebBrowser.CreateDevToolsContextAsync();
 
             Console.WriteLine("Navigating to developers.google.com");
 
-            await page.GoToAsync("https://developers.google.com/web/");
+            await devtoolsContext.GoToAsync("https://developers.google.com/web/");
             // Type into search box.
-            await page.TypeAsync(@"input[name='q']", "Headless Chrome");
+            await devtoolsContext.TypeAsync(@"input[name='q']", "Headless Chrome");
 
             // Wait for suggest overlay to appear and click "show all results".
             var allResultsSelector = ".devsite-suggest-all-results";
-            await page.WaitForSelectorAsync(allResultsSelector);
-            await page.ClickAsync(allResultsSelector);
+            await devtoolsContext.WaitForSelectorAsync(allResultsSelector);
+            await devtoolsContext.ClickAsync(allResultsSelector);
 
             // Wait for the results page to load and display the results.
             var resultsSelector = ".gsc-results .gsc-thumbnail-inside a.gs-title";
-            await page.WaitForSelectorAsync(resultsSelector);
-            var links = await page.EvaluateFunctionAsync(@"(resultsSelector) => {
+            await devtoolsContext.WaitForSelectorAsync(resultsSelector);
+            var links = await devtoolsContext.EvaluateFunctionAsync(@"(resultsSelector) => {
     const anchors = Array.from(document.querySelectorAll(resultsSelector));
     return anchors.map(anchor => {
       const title = anchor.textContent.split('|')[0].trim();
@@ -42,8 +46,14 @@ namespace Example.Searching
                 Console.WriteLine(link);
             }
 
+            await devtoolsContext.DisposeAsync();
+
+            Cef.Shutdown();
+
             Console.WriteLine("Press any key to continue...");
             Console.ReadKey();
+
+            return 0;
         }
     }
 }
