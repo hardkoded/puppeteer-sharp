@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using CefSharp.OffScreen;
-using CefSharp.DevTools.Dom;
+using CefSharp.Dom;
 using Nito.AsyncEx;
 using CefSharp;
 

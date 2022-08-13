@@ -9,7 +9,7 @@
 
     <ItemGroup>
         <PackageReference Include="CefSharp.OffScreen.NETCore" Version="104.4.180" />
-        <PackageReference Include="CefSharp.DevTools.Dom" Version="2.0.76" />
+        <PackageReference Include="CefSharp.Dom" Version="2.0.78" />
         <PackageReference Include="Nito.AsyncEx.Context" Version="5.1.2" />
     </ItemGroup>
 

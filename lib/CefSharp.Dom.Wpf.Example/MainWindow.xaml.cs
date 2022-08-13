@@ -26,7 +26,7 @@ namespace CefSharp.Dom.Wpf.Example
             await devToolsContext.EvaluateExpressionAsync(@"{
               window.addEventListener('keydown', event => window.keyLocation = event.location, true);
             }");
-            var textarea = await devToolsContext.QuerySelectorAsync("textarea");
+            var textarea = await devToolsContext.QuerySelectorAsync<HtmlTextAreaElement>("textarea");
 
             await textarea.PressAsync("Digit5");
 
@@ -54,7 +54,7 @@ namespace CefSharp.Dom.Wpf.Example
 
             if(actual == 3)
             {
-                await textarea.SetPropertyValueAsync("value", "Testing Complete");
+                await textarea.SetValueAsync("Testing Complete");
             }
 
             await devToolsContext.DisposeAsync();
