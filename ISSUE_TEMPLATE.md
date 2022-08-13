@@ -2,7 +2,7 @@
 
 **Before you file a bug, have you:**
 
-* Tried upgrading to newest version of CefSharp.Puppeteer, to see if your issue has already been resolved and released?
+* Tried upgrading to newest version of CefSharp.Dom, to see if your issue has already been resolved and released?
 * Checked existing open *and* closed issues, to see if the issue has already been reported?
 * Tried reproducing your problem in a new isolated project?
 * Considered if this is a general question and not a bug?. For general questions please use Discussions.
@@ -20,7 +20,7 @@ E.g.
 
 ```csharp
 // Arrange
-var page = await chromiumWebBrowser.GetPuppeteerPageAsync();
+var devtoolsContext = await chromiumWebBrowser.CreateDevToolsContextAsync();
 
 // Act
 ...
@@ -39,12 +39,12 @@ var page = await chromiumWebBrowser.GetPuppeteerPageAsync();
 
 ### Versions
 
-* Which version of CefSharp.Puppeteer are you using?
+* Which version of CefSharp.Dom are you using?
 * Which .NET runtime and version are you targeting? E.g. .NET framework 4.6.1 or .NET Core 3.1.
 
 ### Additional Information
 
 Any additional information, configuration or data that might be necessary to reproduce the issue.
 
-<!-- Love PuppeteerSharp Embedded (CefSharp)? Please consider supporting:
+<!-- Love CefSharp.Dom? Please consider supporting:
 👉  https://github.com/sponsors/amaitland -->
