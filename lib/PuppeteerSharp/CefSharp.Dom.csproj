@@ -23,6 +23,7 @@
     <EmbedAllSources>true</EmbedAllSources>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <!-- Don't need to copy the CEF files to our output folder so set NoAction -->
     <CefSharpBuildAction>NoAction</CefSharpBuildAction>
   </PropertyGroup>
@@ -35,6 +36,10 @@
 
   <ItemGroup Condition="'$(TargetFramework)' != 'net472'">
     <PackageReference Include="CefSharp.Common.NETCore" Version="104.4.180" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Link="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
   
   <ItemGroup>
