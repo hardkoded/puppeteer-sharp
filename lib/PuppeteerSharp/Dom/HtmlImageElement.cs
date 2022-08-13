@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// The HTMLImageElement interface represents an HTML img element,

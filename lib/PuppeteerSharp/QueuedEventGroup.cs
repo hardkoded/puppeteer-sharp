@@ -1,6 +1,6 @@
-using CefSharp.DevTools.Dom.Messaging;
+using CefSharp.Dom.Messaging;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     internal class QueuedEventGroup
     {

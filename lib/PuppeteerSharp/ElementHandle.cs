@@ -4,14 +4,14 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using CefSharp.DevTools.Dom.Helpers;
-using CefSharp.DevTools.Dom.Helpers.Json;
-using CefSharp.DevTools.Dom.Input;
-using CefSharp.DevTools.Dom.Messaging;
+using CefSharp.Dom.Helpers;
+using CefSharp.Dom.Helpers.Json;
+using CefSharp.Dom.Input;
+using CefSharp.Dom.Messaging;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// Inherits from <see cref="JSHandle"/>. It represents an in-page DOM element.

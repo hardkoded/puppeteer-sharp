@@ -2,7 +2,7 @@ using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace CefSharp.DevTools.Dom.Media
+namespace CefSharp.Dom.Media
 {
     /// <summary>
     /// Media type.

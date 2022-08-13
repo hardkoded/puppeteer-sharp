@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// An interval at which the <c>pageFunction</c> is executed.

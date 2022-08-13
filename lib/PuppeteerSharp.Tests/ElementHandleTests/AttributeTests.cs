@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Text;
-using CefSharp.DevTools.Dom;
+using CefSharp.Dom;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using System.Threading.Tasks;

@@ -1,6 +1,6 @@
 using System.Runtime.Serialization;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// Enumeration with possible values for the adjacent position insertion.

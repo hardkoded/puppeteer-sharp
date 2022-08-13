@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
-using CefSharp.DevTools.Dom.Messaging;
+using CefSharp.Dom.Messaging;
 
-namespace CefSharp.DevTools.Dom.Input
+namespace CefSharp.Dom.Input
 {
     /// <summary>
     /// Keyboard provides an api for managing a virtual keyboard. The high level api is <see cref="TypeAsync(string, TypeOptions)"/>, which takes raw characters and generates proper keydown, keypress/input, and keyup events on your page.

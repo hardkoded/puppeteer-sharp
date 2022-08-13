@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+
 namespace PuppeteerSharp.DevicesFetcher
 {
     class Program
@@ -54,7 +55,7 @@ namespace PuppeteerSharp.DevicesFetcher
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace CefSharp.DevTools.Dom.Mobile
+namespace CefSharp.Dom.Mobile
 {
     /// <summary>
     /// Device descriptors.
@@ -84,7 +85,7 @@ namespace CefSharp.DevTools.Dom.Mobile
         static void WriteDeviceDescriptorName(IEnumerable<Device> devices)
         {
             var builder = new StringBuilder();
-            var begin = @"namespace CefSharp.DevTools.Dom.Mobile
+            var begin = @"namespace CefSharp.Dom.Mobile
 {
     /// <summary>
     /// Device descriptor name.

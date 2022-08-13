@@ -2,15 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using CefSharp.DevTools.Dom.Input;
-using CefSharp.DevTools.Dom.Media;
-using CefSharp.DevTools.Dom.Messaging;
-using CefSharp.DevTools.Dom.Mobile;
-using CefSharp.DevTools.Dom.PageAccessibility;
-using CefSharp.DevTools.Dom.PageCoverage;
+using CefSharp.Dom.Input;
+using CefSharp.Dom.Media;
+using CefSharp.Dom.Messaging;
+using CefSharp.Dom.Mobile;
+using CefSharp.Dom.PageAccessibility;
+using CefSharp.Dom.PageCoverage;
 using Newtonsoft.Json.Linq;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// Provides an entry point for DevTools protocol

@@ -1,4 +1,4 @@
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// An enumeration of possible values for position comparisons in a range object.

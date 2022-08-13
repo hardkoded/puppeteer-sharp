@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using CefSharp.DevTools.Dom.Media;
+using CefSharp.Dom.Media;
 using Newtonsoft.Json;
 
-namespace CefSharp.DevTools.Dom.Messaging
+namespace CefSharp.Dom.Messaging
 {
     internal class EmulationSetEmulatedMediaFeatureRequest
     {

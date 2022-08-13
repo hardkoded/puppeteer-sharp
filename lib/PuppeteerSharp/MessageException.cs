@@ -1,8 +1,8 @@
 using System;
 using System.Runtime.Serialization;
-using CefSharp.DevTools.Dom.Messaging;
+using CefSharp.Dom.Messaging;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// Exception thrown by <seealso cref="DevToolsConnection.SendAsync{T}(string, object)"/>

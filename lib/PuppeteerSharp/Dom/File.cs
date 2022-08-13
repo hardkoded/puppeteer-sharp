@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// The File interface provides information about files and allows JavaScript in a web page to access their content.

@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace CefSharp.DevTools.Dom.Helpers.Json
+namespace CefSharp.Dom.Helpers.Json
 {
     internal static class JsonHelper
     {

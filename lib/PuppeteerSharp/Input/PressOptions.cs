@@ -1,4 +1,4 @@
-namespace CefSharp.DevTools.Dom.Input
+namespace CefSharp.Dom.Input
 {
     /// <summary>
     /// options to use when pressing a key.

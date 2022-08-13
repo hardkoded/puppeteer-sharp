@@ -1,9 +1,9 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using CefSharp.DevTools.Dom.Messaging;
+using CefSharp.Dom.Messaging;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     internal class NetworkEventManager
     {

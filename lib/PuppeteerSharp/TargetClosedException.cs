@@ -1,6 +1,6 @@
 using System.Runtime.Serialization;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// Exception thrown by the <see cref="DevToolsConnection"/> when it detects that the target was closed.

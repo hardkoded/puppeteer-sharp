@@ -10,14 +10,14 @@ environment:
 
 before_build:
 - ps: >-
-    dotnet restore .\lib\CefSharp.DevTools.Dom.sln
+    dotnet restore .\lib\CefSharp.Dom.sln
 
     New-SelfSignedCertificate -Subject "localhost" -FriendlyName "Puppeteer" -CertStoreLocation "cert:\CurrentUser\My"
 
     Get-ChildItem -Path cert:\CurrentUSer\my | where { $_.friendlyname -eq "Puppeteer" } | Export-Certificate -FilePath .\lib\PuppeteerSharp.TestServer\testCert.cer
 
 build:
-  project: .\lib\CefSharp.DevTools.Dom.sln
+  project: .\lib\CefSharp.Dom.sln
   verbosity: minimal
 test_script:
 - cmd: >-

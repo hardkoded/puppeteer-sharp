@@ -4,10 +4,10 @@ using System.Net;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
-using CefSharp.DevTools.Dom.Helpers;
+using CefSharp.Dom.Helpers;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
-using CefSharp.DevTools.Dom;
+using CefSharp.Dom;
 using Microsoft.AspNetCore.Http;
 
 namespace PuppeteerSharp.Tests.NavigationTests

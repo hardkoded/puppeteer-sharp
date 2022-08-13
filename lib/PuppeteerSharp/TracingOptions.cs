@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// Tracing options used on <see cref="Tracing.StartAsync(TracingOptions)"/>.

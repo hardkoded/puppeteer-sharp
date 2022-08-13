@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Windows;
 
-namespace CefSharp.DevTools.Dom.Wpf.Example
+namespace CefSharp.Dom.Wpf.Example
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

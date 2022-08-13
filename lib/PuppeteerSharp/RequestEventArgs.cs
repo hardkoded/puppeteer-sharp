@@ -1,6 +1,6 @@
 using System;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// Arguments used by <see cref="IDevToolsContext"/> events.

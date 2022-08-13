@@ -1,4 +1,4 @@
-namespace CefSharp.DevTools.Dom.Input
+namespace CefSharp.Dom.Input
 {
     internal class KeyDefinition
     {

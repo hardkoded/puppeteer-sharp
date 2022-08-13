@@ -1,4 +1,4 @@
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// Options to be used in <see cref="IDevToolsContext.AuthenticateAsync(Credentials)"/>

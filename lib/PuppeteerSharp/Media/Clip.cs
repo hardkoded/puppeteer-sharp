@@ -1,4 +1,4 @@
-namespace CefSharp.DevTools.Dom.Media
+namespace CefSharp.Dom.Media
 {
     /// <summary>
     /// Clip data.

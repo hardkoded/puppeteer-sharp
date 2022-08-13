@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     internal class MessageTask
     {

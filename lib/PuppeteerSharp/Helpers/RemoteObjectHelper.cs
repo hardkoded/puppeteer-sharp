@@ -1,12 +1,12 @@
 using System;
 using System.Numerics;
 using System.Threading.Tasks;
-using CefSharp.DevTools.Dom.Helpers.Json;
-using CefSharp.DevTools.Dom.Messaging;
+using CefSharp.Dom.Helpers.Json;
+using CefSharp.Dom.Messaging;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 
-namespace CefSharp.DevTools.Dom.Helpers
+namespace CefSharp.Dom.Helpers
 {
     internal class RemoteObjectHelper
     {

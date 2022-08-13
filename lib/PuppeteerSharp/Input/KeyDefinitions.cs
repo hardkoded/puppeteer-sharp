@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace CefSharp.DevTools.Dom.Input
+namespace CefSharp.Dom.Input
 {
     internal static class KeyDefinitions
     {

@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using CefSharp.DevTools.Dom.Media;
+using CefSharp.Dom.Media;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using Xunit;

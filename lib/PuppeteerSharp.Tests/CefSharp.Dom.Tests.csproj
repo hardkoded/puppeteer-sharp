@@ -7,7 +7,7 @@
 		<IsTestProject>true</IsTestProject>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-    <AssemblyName>CefSharp.DevTools.Dom.Tests</AssemblyName>
+    <AssemblyName>CefSharp.Dom.Tests</AssemblyName>
 	</PropertyGroup>
 	<ItemGroup>
 	  <Compile Remove="AccessibilityTests\**" />
@@ -39,9 +39,9 @@
     <PackageReference Include="CefSharp.OffScreen.NETCore" Version="104.4.180" />
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\PuppeteerSharp.TestServer\CefSharp.DevTools.Dom.TestServer.csproj" />
-		<ProjectReference Include="..\PuppeteerSharp\CefSharp.DevTools.Dom.csproj" />
-		<ProjectReference Include="..\PuppeteerSharp.Xunit\CefSharp.DevTools.Dom.Xunit.csproj" />
+		<ProjectReference Include="..\PuppeteerSharp.TestServer\CefSharp.Dom.TestServer.csproj" />
+		<ProjectReference Include="..\PuppeteerSharp\CefSharp.Dom.csproj" />
+		<ProjectReference Include="..\PuppeteerSharp.Xunit\CefSharp.Dom.Xunit.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Update="Assets\es6\es6import.js">

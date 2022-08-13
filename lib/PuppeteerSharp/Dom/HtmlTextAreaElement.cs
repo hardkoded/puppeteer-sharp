@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// The HTMLTextAreaElement interface provides special properties and methods for manipulating the layout and presentation of textarea elements.

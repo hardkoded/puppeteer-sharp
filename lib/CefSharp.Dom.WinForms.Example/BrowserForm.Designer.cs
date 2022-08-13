@@ -1,4 +1,4 @@
-namespace CefSharp.DevTools.Dom.WinForms.Example
+namespace CefSharp.Dom.WinForms.Example
 {
     partial class BrowserForm
     {
@@ -113,7 +113,7 @@ namespace CefSharp.DevTools.Dom.WinForms.Example
             // backButton
             // 
             this.backButton.Enabled = false;
-            this.backButton.Image = global::CefSharp.DevTools.Dom.WinForms.Example.Properties.Resources.nav_left_green;
+            this.backButton.Image = global::CefSharp.Dom.WinForms.Example.Properties.Resources.nav_left_green;
             this.backButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.backButton.Name = "backButton";
             this.backButton.Size = new System.Drawing.Size(52, 22);
@@ -123,7 +123,7 @@ namespace CefSharp.DevTools.Dom.WinForms.Example
             // forwardButton
             // 
             this.forwardButton.Enabled = false;
-            this.forwardButton.Image = global::CefSharp.DevTools.Dom.WinForms.Example.Properties.Resources.nav_right_green;
+            this.forwardButton.Image = global::CefSharp.Dom.WinForms.Example.Properties.Resources.nav_right_green;
             this.forwardButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.forwardButton.Name = "forwardButton";
             this.forwardButton.Size = new System.Drawing.Size(70, 22);
@@ -139,7 +139,7 @@ namespace CefSharp.DevTools.Dom.WinForms.Example
             // 
             // goButton
             // 
-            this.goButton.Image = global::CefSharp.DevTools.Dom.WinForms.Example.Properties.Resources.nav_plain_green;
+            this.goButton.Image = global::CefSharp.Dom.WinForms.Example.Properties.Resources.nav_plain_green;
             this.goButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.goButton.Name = "goButton";
             this.goButton.Size = new System.Drawing.Size(42, 22);

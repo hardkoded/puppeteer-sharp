@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
-using CefSharp.DevTools.Dom;
+using CefSharp.Dom;
 using System.Numerics;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;

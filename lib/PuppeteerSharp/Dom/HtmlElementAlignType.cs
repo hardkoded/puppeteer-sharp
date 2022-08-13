@@ -1,6 +1,6 @@
 using System.Runtime.Serialization;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// Indicates alignment of the element's contents with respect to the surrounding context.

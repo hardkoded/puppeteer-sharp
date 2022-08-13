@@ -4,11 +4,11 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using CefSharp.DevTools.Dom.Helpers.Json;
-using CefSharp.DevTools.Dom.Messaging;
+using CefSharp.Dom.Helpers.Json;
+using CefSharp.Dom.Messaging;
 using Newtonsoft.Json.Linq;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// <see cref="Response"/> class represents responses which are received by page.

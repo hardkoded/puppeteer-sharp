@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     using System;
     using System.Threading.Tasks;

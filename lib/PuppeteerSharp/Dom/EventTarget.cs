@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// The EventTarget interface is implemented by objects that can receive events and may have listeners for them.

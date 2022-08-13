@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
 
-using CefSharp.DevTools.Dom.Messaging;
+using CefSharp.Dom.Messaging;
 
-namespace CefSharp.DevTools.Dom.Input
+namespace CefSharp.Dom.Input
 {
     /// <summary>
     /// Provides methods to interact with the mouse

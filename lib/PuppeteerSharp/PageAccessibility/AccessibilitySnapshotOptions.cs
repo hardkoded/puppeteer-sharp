@@ -1,4 +1,4 @@
-namespace CefSharp.DevTools.Dom.PageAccessibility
+namespace CefSharp.Dom.PageAccessibility
 {
     /// <summary>
     /// <see cref="Accessibility.SnapshotAsync(AccessibilitySnapshotOptions)"/>

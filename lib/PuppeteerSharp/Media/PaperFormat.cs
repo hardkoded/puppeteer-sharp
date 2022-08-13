@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace CefSharp.DevTools.Dom.Media
+namespace CefSharp.Dom.Media
 {
     /// <summary>
     /// Paper format.

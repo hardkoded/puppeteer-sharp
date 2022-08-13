@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PuppeteerSharp\CefSharp.DevTools.Dom.csproj" />
+    <ProjectReference Include="..\PuppeteerSharp\CefSharp.Dom.csproj" />
     <PackageReference Include="CefSharp.WinForms.NETCore" Version="104.4.180" />
   </ItemGroup>
 

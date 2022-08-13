@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using CefSharp.Callback;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     internal class CefSharpDevMessageObserver : IDevToolsMessageObserver
     {

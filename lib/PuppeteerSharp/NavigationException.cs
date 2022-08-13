@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// Exception thrown when a <see cref="IDevToolsContext"/> fails to navigate an URL.

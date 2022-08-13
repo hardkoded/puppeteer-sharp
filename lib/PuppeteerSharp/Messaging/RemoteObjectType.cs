@@ -1,7 +1,7 @@
-using CefSharp.DevTools.Dom.Helpers.Json;
+using CefSharp.Dom.Helpers.Json;
 using Newtonsoft.Json;
 
-namespace CefSharp.DevTools.Dom.Messaging
+namespace CefSharp.Dom.Messaging
 {
     /// <summary>
     /// Remote object type.

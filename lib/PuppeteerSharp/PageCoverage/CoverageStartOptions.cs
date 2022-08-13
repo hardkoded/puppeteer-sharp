@@ -1,4 +1,4 @@
-namespace CefSharp.DevTools.Dom.PageCoverage
+namespace CefSharp.Dom.PageCoverage
 {
     /// <summary>
     /// Set of configurable options for coverage.

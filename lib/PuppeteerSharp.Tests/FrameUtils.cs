@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using CefSharp.DevTools.Dom;
+using CefSharp.Dom;
 
 namespace PuppeteerSharp.Tests
 {

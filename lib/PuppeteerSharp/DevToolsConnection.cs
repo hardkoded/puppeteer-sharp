@@ -3,15 +3,15 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using CefSharp.DevTools.Dom.Helpers;
-using CefSharp.DevTools.Dom.Helpers.Json;
-using CefSharp.DevTools.Dom.Messaging;
-using CefSharp.DevTools.Dom.Transport;
+using CefSharp.Dom.Helpers;
+using CefSharp.Dom.Helpers.Json;
+using CefSharp.Dom.Messaging;
+using CefSharp.Dom.Transport;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// A connection handles the communication with a Chromium browser

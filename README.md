@@ -1,11 +1,11 @@
-# CefSharp.DevTools.Dom (Formerly CefSharp.Puppeteer)
+# CefSharp.Dom (Formerly CefSharp.Puppeteer)
 
-[![Nuget](https://img.shields.io/nuget/v/CefSharp.DevTools.Dom?style=for-the-badge)](https://www.nuget.org/packages/CefSharp.DevTools.Dom/)
-[![AppVeyor](https://img.shields.io/appveyor/build/cefsharp/cefsharp-devtools-dom?style=for-the-badge)](https://ci.appveyor.com/project/cefsharp/cefsharp-devtools-dom)
-[![AppVeyor tests](https://img.shields.io/appveyor/tests/cefsharp/cefsharp-devtools-dom?style=for-the-badge)](https://ci.appveyor.com/project/cefsharp/cefsharp-devtools-dom/build/tests)
-[![GitHub](https://img.shields.io/github/license/cefsharp/CefSharp.DevTools.Dom?style=for-the-badge)](https://github.com/cefsharp/CefSharp.DevTools.Dom/blob/main/LICENSE)
+[![Nuget](https://img.shields.io/nuget/v/CefSharp.Dom?style=for-the-badge)](https://www.nuget.org/packages/CefSharp.Dom/)
+[![AppVeyor](https://img.shields.io/appveyor/build/cefsharp/cefsharp-dom?style=for-the-badge)](https://ci.appveyor.com/project/cefsharp/cefsharp-dom)
+[![AppVeyor tests](https://img.shields.io/appveyor/tests/cefsharp/cefsharp-dom?style=for-the-badge)](https://ci.appveyor.com/project/cefsharp/cefsharp-dom/build/tests)
+[![GitHub](https://img.shields.io/github/license/cefsharp/CefSharp.Dom?style=for-the-badge)](https://github.com/cefsharp/CefSharp.Dom/blob/main/LICENSE)
 
-CefSharp.DevTools.Dom is a fork of [puppeteer-sharp by Darío Kondratiuk](https://github.com/hardkoded/puppeteer-sharp) that has been adapted specifically for use with CefSharp.
+CefSharp.Dom is a fork of [puppeteer-sharp by Darío Kondratiuk](https://github.com/hardkoded/puppeteer-sharp) that has been adapted specifically for use with CefSharp.
 - Strongly typed async DOM API
 - Direct communication with the ChromiumWebBrowser instance rather than opening a web socket.
 - 1:1 mapping of DevToolsContext and ChromiumWebBrowser
@@ -20,7 +20,7 @@ CefSharp.DevTools.Dom is a fork of [puppeteer-sharp by Darío Kondratiuk](https:
 
 If you have an issue or a question:
 
-* Ask a question on [Discussions](https://github.com/cefsharp/CefSharp.DevTools.Dom/discussions).
+* Ask a question on [Discussions](https://github.com/cefsharp/CefSharp.Dom/discussions).
 
 ## Contributing Guide
 
@@ -40,7 +40,7 @@ the DevToolsContext in multiple places in your code, calling CreateDevToolsConte
 If the DevToolsContext is disposed then calls to CreateDevToolsContextAsync will create a new instance.
 
 ```c#
-// Add using CefSharp.DevTools.Dom; to get access to the
+// Add using CefSharp.Dom; to get access to the
 // CreateDevToolsContextAsync extension method
 var devtoolsContext = await chromiumWebBrowser.CreateDevToolsContextAsync();
 
@@ -60,7 +60,7 @@ Read/write to the DOM
 <!-- snippet: QuerySelector -->
 <a id='snippet-queryselector'></a>
 ```cs
-// Add using CefSharp.DevTools.Dom to access CreateDevToolsContextAsync and related extension methods.
+// Add using CefSharp.Dom to access CreateDevToolsContextAsync and related extension methods.
 await using var devToolsContext = await chromiumWebBrowser.CreateDevToolsContextAsync();
 
 await devToolsContext.GoToAsync("http://www.google.com");
@@ -224,4 +224,4 @@ await DevToolsContext.SetViewportAsync(new ViewPortOptions
 
 ## Generate PDF files
 
-Currently not supported via CefSharp.DevTools.Dom, use ChromiumWebBrowser.PrintToPdfAsync instead.
+Currently not supported via CefSharp.Dom, use ChromiumWebBrowser.PrintToPdfAsync instead.

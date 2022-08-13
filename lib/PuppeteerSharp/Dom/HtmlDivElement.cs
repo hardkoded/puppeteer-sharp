@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// The HTMLDivElement interface provides special properties

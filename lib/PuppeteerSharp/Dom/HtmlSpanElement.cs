@@ -1,4 +1,4 @@
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// The HTMLSpanElement interface represents a span element and derives from the <see cref="HtmlElement"/> interface,

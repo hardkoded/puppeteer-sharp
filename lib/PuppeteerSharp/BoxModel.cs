@@ -1,4 +1,4 @@
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// Represents boxes of the element.

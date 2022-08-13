@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace CefSharp.DevTools.Dom.Transport
+namespace CefSharp.Dom.Transport
 {
     /// <summary>
     /// Connection transport abstraction.

@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Runtime.Serialization;
 
-namespace CefSharp.DevTools.Dom.Converters
+namespace CefSharp.Dom.Converters
 {
     internal class StringToEnumTypeConverter : EnumConverter
     {

@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// <see cref="JSHandle"/> and <see cref="ElementHandle"/> Extensions.

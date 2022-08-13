@@ -2,7 +2,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.Xaml.Behaviors;
 
-namespace CefSharp.DevTools.Dom.Wpf.Example
+namespace CefSharp.Dom.Wpf.Example
 {
     public class TextBoxBindingUpdateOnEnterBehaviour : Behavior<TextBox>
     {

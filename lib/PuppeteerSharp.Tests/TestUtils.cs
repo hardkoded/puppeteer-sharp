@@ -1,7 +1,7 @@
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using CefSharp.DevTools.Dom;
+using CefSharp.Dom;
 
 namespace PuppeteerSharp.Tests
 {

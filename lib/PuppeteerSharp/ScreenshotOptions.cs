@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.IO;
-using CefSharp.DevTools.Dom.Media;
+using CefSharp.Dom.Media;
 using Newtonsoft.Json;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// Options to be used in <see cref="IDevToolsContext.ScreenshotAsync(string, ScreenshotOptions)"/>, <see cref="IDevToolsContext.ScreenshotStreamAsync(ScreenshotOptions)"/> and <see cref="IDevToolsContext.ScreenshotDataAsync(ScreenshotOptions)"/>

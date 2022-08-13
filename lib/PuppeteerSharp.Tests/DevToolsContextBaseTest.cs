@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using CefSharp;
 using CefSharp.OffScreen;
-using CefSharp.DevTools.Dom;
+using CefSharp.Dom;
 using Microsoft.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;

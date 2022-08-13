@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace CefSharp.DevTools.Dom.PageAccessibility
+namespace CefSharp.Dom.PageAccessibility
 {
     /// <summary>
     /// AXNode.

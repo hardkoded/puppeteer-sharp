@@ -1,7 +1,7 @@
 using System;
-using CefSharp.DevTools.Dom.Media;
+using CefSharp.Dom.Media;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// Bounding box data returned by <see cref="ElementHandle.BoundingBoxAsync"/>.

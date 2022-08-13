@@ -1,6 +1,6 @@
 using Newtonsoft.Json.Linq;
 
-namespace CefSharp.DevTools.Dom.Messaging
+namespace CefSharp.Dom.Messaging
 {
     /// <summary>
     /// Remote object is a mirror object referencing original JavaScript object.

@@ -1,4 +1,4 @@
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// <see cref="IDevToolsContext.FrameAttached"/>, <see cref="IDevToolsContext.FrameDetached"/> and <see cref="IDevToolsContext.FrameNavigated"/> arguments.

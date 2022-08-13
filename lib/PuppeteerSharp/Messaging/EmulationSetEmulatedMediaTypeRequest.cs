@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using CefSharp.DevTools.Dom.Media;
+using CefSharp.Dom.Media;
 
-namespace CefSharp.DevTools.Dom.Messaging
+namespace CefSharp.Dom.Messaging
 {
     internal class EmulationSetEmulatedMediaTypeRequest
     {

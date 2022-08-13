@@ -1,4 +1,4 @@
-namespace CefSharp.DevTools.Dom.Input
+namespace CefSharp.Dom.Input
 {
     /// <summary>
     /// Utility class to be used with <see cref="Keyboard"/> operations

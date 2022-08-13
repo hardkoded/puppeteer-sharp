@@ -1,4 +1,4 @@
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// The HTMLOptionElement interface represents option elements and inherits all properties and methods of the <see cref="HtmlElement"/> class.

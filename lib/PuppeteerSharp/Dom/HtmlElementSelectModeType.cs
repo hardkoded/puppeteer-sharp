@@ -1,8 +1,8 @@
 using System.ComponentModel;
 using System.Runtime.Serialization;
-using CefSharp.DevTools.Dom.Converters;
+using CefSharp.Dom.Converters;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// HtmlElementSelectMode Type

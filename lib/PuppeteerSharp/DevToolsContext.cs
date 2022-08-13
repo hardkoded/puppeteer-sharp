@@ -9,18 +9,18 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Timers;
-using CefSharp.DevTools.Dom.Helpers;
-using CefSharp.DevTools.Dom.Helpers.Json;
-using CefSharp.DevTools.Dom.Input;
-using CefSharp.DevTools.Dom.Media;
-using CefSharp.DevTools.Dom.Messaging;
-using CefSharp.DevTools.Dom.Mobile;
-using CefSharp.DevTools.Dom.PageCoverage;
+using CefSharp.Dom.Helpers;
+using CefSharp.Dom.Helpers.Json;
+using CefSharp.Dom.Input;
+using CefSharp.Dom.Media;
+using CefSharp.Dom.Messaging;
+using CefSharp.Dom.Mobile;
+using CefSharp.Dom.PageCoverage;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// Provides methods to interact with a ChromiumWebBrowser instance

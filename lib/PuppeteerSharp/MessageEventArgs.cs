@@ -1,6 +1,6 @@
 using Newtonsoft.Json.Linq;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// <seealso cref="DevToolsConnection.MessageReceived"/> arguments.

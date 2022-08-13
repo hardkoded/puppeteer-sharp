@@ -2,28 +2,28 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30404.54
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CefSharp.DevTools.Dom", "PuppeteerSharp\CefSharp.DevTools.Dom.csproj", "{19B9B1ED-AF6C-4DAF-8B73-401570111F88}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CefSharp.Dom", "PuppeteerSharp\CefSharp.Dom.csproj", "{19B9B1ED-AF6C-4DAF-8B73-401570111F88}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CefSharp.DevTools.Dom.Tests", "PuppeteerSharp.Tests\CefSharp.DevTools.Dom.Tests.csproj", "{1682289E-5ED3-405F-8ABC-01A3ED58CBC6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CefSharp.Dom.Tests", "PuppeteerSharp.Tests\CefSharp.Dom.Tests.csproj", "{1682289E-5ED3-405F-8ABC-01A3ED58CBC6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CefSharp.DevTools.Dom.TestServer", "PuppeteerSharp.TestServer\CefSharp.DevTools.Dom.TestServer.csproj", "{0CC393AB-10C2-4CDB-8353-78924D3DD5D3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CefSharp.Dom.TestServer", "PuppeteerSharp.TestServer\CefSharp.Dom.TestServer.csproj", "{0CC393AB-10C2-4CDB-8353-78924D3DD5D3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CefSharp.DevTools.Dom.DevicesFetcher", "PuppeteerSharp.DevicesFetcher\CefSharp.DevTools.Dom.DevicesFetcher.csproj", "{A500694A-3649-4474-BC71-C835FA19B865}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CefSharp.Dom.DevicesFetcher", "PuppeteerSharp.DevicesFetcher\CefSharp.Dom.DevicesFetcher.csproj", "{A500694A-3649-4474-BC71-C835FA19B865}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5993B99D-AC7B-4D6F-832C-6784D7EFE9B3}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
-		CefSharp.DevTools.Dom.ruleset = CefSharp.DevTools.Dom.ruleset
+		CefSharp.Dom.ruleset = CefSharp.Dom.ruleset
 		..\Directory.Build.props = ..\Directory.Build.props
 		..\README.md = ..\README.md
 		Common\SignAssembly.props = Common\SignAssembly.props
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CefSharp.DevTools.Dom.Xunit", "PuppeteerSharp.Xunit\CefSharp.DevTools.Dom.Xunit.csproj", "{EE53767C-D321-4BCF-B372-57949F38AB40}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CefSharp.Dom.Xunit", "PuppeteerSharp.Xunit\CefSharp.Dom.Xunit.csproj", "{EE53767C-D321-4BCF-B372-57949F38AB40}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CefSharp.DevTools.Dom.Wpf.Example", "CefSharp.DevTools.Dom.Wpf.Example\CefSharp.DevTools.Dom.Wpf.Example.csproj", "{D9163132-1A78-40A8-9E39-F2C74FB29353}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CefSharp.Dom.Wpf.Example", "CefSharp.Dom.Wpf.Example\CefSharp.Dom.Wpf.Example.csproj", "{D9163132-1A78-40A8-9E39-F2C74FB29353}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CefSharp.DevTools.Dom.WinForms.Example", "CefSharp.DevTools.Dom.WinForms.Example\CefSharp.DevTools.Dom.WinForms.Example.csproj", "{1D1D63D1-5257-4AA0-A284-7EF4574878CB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CefSharp.Dom.WinForms.Example", "CefSharp.Dom.WinForms.Example\CefSharp.Dom.WinForms.Example.csproj", "{1D1D63D1-5257-4AA0-A284-7EF4574878CB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,6 +1,6 @@
 using System.Runtime.Serialization;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// Represents kinds of table cells.

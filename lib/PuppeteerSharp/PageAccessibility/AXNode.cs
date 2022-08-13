@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using CefSharp.DevTools.Dom.Helpers;
-using CefSharp.DevTools.Dom.Messaging;
+using CefSharp.Dom.Helpers;
+using CefSharp.Dom.Messaging;
 using Newtonsoft.Json.Linq;
 
-namespace CefSharp.DevTools.Dom.PageAccessibility
+namespace CefSharp.Dom.PageAccessibility
 {
     internal class AXNode
     {

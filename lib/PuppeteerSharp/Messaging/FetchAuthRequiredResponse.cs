@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Net;
 
-namespace CefSharp.DevTools.Dom.Messaging
+namespace CefSharp.Dom.Messaging
 {
     internal class FetchAuthRequiredResponse
     {

@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using CefSharp.DevTools.Dom.Messaging;
+using CefSharp.Dom.Messaging;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace CefSharp.DevTools.Dom.Helpers
+namespace CefSharp.Dom.Helpers
 {
     /// <summary>
     /// Provides an async queue for responses for <see cref="DevToolsConnection.SendAsync{T}(string, object)"/>, so that responses can be handled

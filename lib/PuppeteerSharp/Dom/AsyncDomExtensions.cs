@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// AsyncDomExtensions

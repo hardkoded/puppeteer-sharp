@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// Console message location.

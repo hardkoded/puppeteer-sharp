@@ -1,4 +1,4 @@
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// Options used by <see cref="IDevToolsContext.AddScriptTagAsync(AddTagOptions)"/> &amp; <see cref="IDevToolsContext.AddStyleTagAsync(AddTagOptions)"/>.

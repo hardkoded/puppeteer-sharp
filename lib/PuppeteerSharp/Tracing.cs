@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using CefSharp.DevTools.Dom.Helpers;
-using CefSharp.DevTools.Dom.Messaging;
+using CefSharp.Dom.Helpers;
+using CefSharp.Dom.Messaging;
 using Microsoft.Extensions.Logging;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// You can use <see cref="Tracing.StartAsync(TracingOptions)"/> and <see cref="Tracing.StopAsync"/> to create a trace file which can be opened in Chrome DevTools or timeline viewer.

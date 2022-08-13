@@ -1,6 +1,6 @@
-using CefSharp.DevTools.Dom.Input;
+using CefSharp.Dom.Input;
 
-namespace CefSharp.DevTools.Dom.Messaging
+namespace CefSharp.Dom.Messaging
 {
     internal class InputDispatchMouseEventRequest
     {

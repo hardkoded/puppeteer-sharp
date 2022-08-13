@@ -1,4 +1,4 @@
-namespace CefSharp.DevTools.Dom.PageAccessibility
+namespace CefSharp.Dom.PageAccessibility
 {
     /// <summary>
     /// Three-state boolean. See <seealso cref="SerializedAXNode.Checked"/> and <seealso cref="SerializedAXNode.Pressed"/>

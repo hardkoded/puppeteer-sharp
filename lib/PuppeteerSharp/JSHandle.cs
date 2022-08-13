@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using CefSharp.DevTools.Dom.Helpers;
-using CefSharp.DevTools.Dom.Helpers.Json;
-using CefSharp.DevTools.Dom.Messaging;
+using CefSharp.Dom.Helpers;
+using CefSharp.Dom.Helpers.Json;
+using CefSharp.Dom.Messaging;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// JSHandle represents an in-page JavaScript object. JSHandles can be created with the <see cref="IDevToolsContext.EvaluateExpressionHandleAsync(string)"/> and <see cref="IDevToolsContext.EvaluateFunctionHandleAsync(string, object[])"/> methods.

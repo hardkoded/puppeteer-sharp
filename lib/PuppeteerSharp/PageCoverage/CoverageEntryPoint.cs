@@ -1,7 +1,7 @@
 using System;
-using CefSharp.DevTools.Dom.Messaging;
+using CefSharp.Dom.Messaging;
 
-namespace CefSharp.DevTools.Dom.PageCoverage
+namespace CefSharp.Dom.PageCoverage
 {
     internal class CoverageEntryPoint : IComparable<CoverageEntryPoint>
     {

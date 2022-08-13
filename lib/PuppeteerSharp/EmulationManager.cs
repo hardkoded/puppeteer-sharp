@@ -1,9 +1,9 @@
 using System;
 using System.Threading.Tasks;
-using CefSharp.DevTools.Dom.Media;
-using CefSharp.DevTools.Dom.Messaging;
+using CefSharp.Dom.Media;
+using CefSharp.Dom.Messaging;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     internal class EmulationManager
     {

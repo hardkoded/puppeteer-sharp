@@ -1,5 +1,5 @@
 using System.Linq;
-using CefSharp.DevTools.Dom;
+using CefSharp.Dom;
 
 namespace PuppeteerSharp.Tests
 {

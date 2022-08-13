@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CefSharp.DevTools.Dom.Messaging;
+using CefSharp.Dom.Messaging;
 
-namespace CefSharp.DevTools.Dom.PageCoverage
+namespace CefSharp.Dom.PageCoverage
 {
     /// <summary>
     /// gathers information about parts of JavaScript and CSS that were used by the page.

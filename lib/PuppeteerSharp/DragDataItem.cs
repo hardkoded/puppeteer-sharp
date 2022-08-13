@@ -1,4 +1,4 @@
-﻿namespace CefSharp.DevTools.Dom
+﻿namespace CefSharp.Dom
 {
     /// <summary>
     /// Item returned by drag methods.

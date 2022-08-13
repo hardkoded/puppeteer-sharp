@@ -1,4 +1,4 @@
-﻿namespace CefSharp.DevTools.Dom
+﻿namespace CefSharp.Dom
 {
     /// <summary>
     /// Drag operations available on <see cref="DragData"/>.

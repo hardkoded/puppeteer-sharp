@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CefSharp.DevTools.Dom.Helpers.Json;
-using CefSharp.DevTools.Dom.Messaging;
+using CefSharp.Dom.Helpers.Json;
+using CefSharp.Dom.Messaging;
 using Microsoft.Extensions.Logging;
 
-namespace CefSharp.DevTools.Dom.PageCoverage
+namespace CefSharp.Dom.PageCoverage
 {
     internal class JSCoverage
     {

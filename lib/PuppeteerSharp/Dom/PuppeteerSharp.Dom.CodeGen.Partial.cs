@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
 #pragma warning disable SA1402 // File may only contain a single type
 #pragma warning disable SA1601 // Partial elements should be documented

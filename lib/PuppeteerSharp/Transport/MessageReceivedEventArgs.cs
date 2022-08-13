@@ -1,6 +1,6 @@
 using System;
 
-namespace CefSharp.DevTools.Dom.Transport
+namespace CefSharp.Dom.Transport
 {
     /// <summary>
     /// Message received event arguments.

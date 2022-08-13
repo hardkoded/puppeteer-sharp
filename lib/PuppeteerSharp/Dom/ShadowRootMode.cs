@@ -1,6 +1,6 @@
 using System.Runtime.Serialization;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// List of possible shadow root mode states.

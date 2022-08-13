@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// Enumeration of possible document position values.

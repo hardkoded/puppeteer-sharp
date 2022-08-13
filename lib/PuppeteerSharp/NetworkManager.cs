@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
-using CefSharp.DevTools.Dom.Helpers;
-using CefSharp.DevTools.Dom.Helpers.Json;
-using CefSharp.DevTools.Dom.Messaging;
+using CefSharp.Dom.Helpers;
+using CefSharp.Dom.Helpers.Json;
+using CefSharp.Dom.Messaging;
 using Microsoft.Extensions.Logging;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     internal class NetworkManager
     {

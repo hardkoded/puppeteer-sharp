@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using CefSharp.DevTools.Dom.Input;
+using CefSharp.Dom.Input;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// Inherits from <see cref="Element"/>. It represents an in-page DOM element.

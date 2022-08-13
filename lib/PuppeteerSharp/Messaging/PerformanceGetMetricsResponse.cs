@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace CefSharp.DevTools.Dom.Messaging
+namespace CefSharp.Dom.Messaging
 {
     internal class PerformanceGetMetricsResponse
     {

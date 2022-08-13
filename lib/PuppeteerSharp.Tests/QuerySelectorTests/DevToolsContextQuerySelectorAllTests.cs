@@ -5,7 +5,7 @@ using Xunit.Abstractions;
 using PuppeteerSharp.Xunit;
 using PuppeteerSharp.Tests.Attributes;
 using CefSharp;
-using CefSharp.DevTools.Dom;
+using CefSharp.Dom;
 
 namespace PuppeteerSharp.Tests.QuerySelectorTests
 {
@@ -22,7 +22,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         {
             #region QuerySelectorAll
 
-            // Add using CefSharp.DevTools.Dom to access CreateDevToolsContextAsync and related extension methods.
+            // Add using CefSharp.Dom to access CreateDevToolsContextAsync and related extension methods.
             await using var devToolsContext = await chromiumWebBrowser.CreateDevToolsContextAsync();
 
             // Get elements by tag name

@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using CefSharp.DevTools.Dom;
-using CefSharp.DevTools.Dom.Mobile;
+using CefSharp.Dom;
+using CefSharp.Dom.Mobile;
 
 namespace PuppeteerSharp.Tests
 {

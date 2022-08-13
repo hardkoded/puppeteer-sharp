@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using CefSharp.DevTools.Dom.Mobile;
+using CefSharp.Dom.Mobile;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// Device Emulation

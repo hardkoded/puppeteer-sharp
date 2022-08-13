@@ -1,9 +1,9 @@
 # How to Contribute
 
-If you are interested in contributing to PuppeteerSharp Embedded (CefSharp), Thank you!
+If you are interested in contributing to CefSharp.Dom, Thank you!
 
 If you want to contribute, ask before submitting a PR.
-If you don’t know what to do, ASK! We have many many things to implement :)
+If you don’t know what to do, ASK!
 
 ## Getting setup
 
@@ -18,7 +18,7 @@ You can run this PowerShell script on Windows
 ```
 New-SelfSignedCertificate -Subject "localhost" -FriendlyName "Puppeteer" -CertStoreLocation "cert:\CurrentUser\My"
 
-Get-ChildItem -Path cert:\CurrentUSer\my | where { $_.friendlyname -eq "Puppeteer" } | Export-Certificate -FilePath C:\Projects\CefSharp.DevTools.Dom\lib\PuppeteerSharp.TestServer\testCert.cer
+Get-ChildItem -Path cert:\CurrentUSer\my | where { $_.friendlyname -eq "Puppeteer" } | Export-Certificate -FilePath C:\Projects\CefSharp.Dom\lib\PuppeteerSharp.TestServer\testCert.cer
 
 ```
 

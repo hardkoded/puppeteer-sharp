@@ -1,4 +1,4 @@
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// View port options used on <see cref="IDevToolsContext.SetViewportAsync(ViewPortOptions)"/>.

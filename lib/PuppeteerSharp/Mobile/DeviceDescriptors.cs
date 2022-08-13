@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace CefSharp.DevTools.Dom.Mobile
+namespace CefSharp.Dom.Mobile
 {
     /// <summary>
     /// Device descriptors.

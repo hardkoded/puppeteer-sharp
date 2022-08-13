@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace CefSharp.DevTools.Dom.PageCoverage
+namespace CefSharp.Dom.PageCoverage
 {
     /// <summary>
     /// Coverage report for all non-anonymous scripts.

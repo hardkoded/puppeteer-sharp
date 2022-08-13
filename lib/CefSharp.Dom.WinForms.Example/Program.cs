@@ -1,17 +1,21 @@
+// Copyright © 2022 The CefSharp Authors. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style license that can be found in the LICENSE file.
+
+using CefSharp.WinForms;
 using System;
 using System.IO;
-using System.Windows;
-using CefSharp.Wpf;
+using System.Windows.Forms;
 
-namespace CefSharp.DevTools.Dom.Wpf.Example
+namespace CefSharp.Dom.WinForms.Example
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
-    public partial class App : Application
+    public static class Program
     {
-        public App()
+        [STAThread]
+        public static int Main(string[] args)
         {
+            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+
             var settings = new CefSettings()
             {
                 //By default CefSharp will use an in-memory cache, you need to specify a Cache Folder to persist data
@@ -32,6 +36,11 @@ namespace CefSharp.DevTools.Dom.Wpf.Example
 
             //Perform dependency check to make sure all relevant resources are in our output directory.
             Cef.Initialize(settings, performDependencyCheck: true, browserProcessHandler: null);
+
+            var browser = new BrowserForm();
+            Application.Run(browser);
+
+            return 0;
         }
     }
 }

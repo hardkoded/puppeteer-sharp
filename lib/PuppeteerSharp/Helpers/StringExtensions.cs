@@ -1,6 +1,6 @@
 using System;
 
-namespace CefSharp.DevTools.Dom.Helpers
+namespace CefSharp.Dom.Helpers
 {
     internal static class StringExtensions
     {

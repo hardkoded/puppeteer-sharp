@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace CefSharp.DevTools.Dom.Messaging
+namespace CefSharp.Dom.Messaging
 {
     internal class RequestWillBeSentPayload
     {

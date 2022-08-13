@@ -1,6 +1,6 @@
 using System;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// DomHandle is a base clas providing for all DOM/HTML Elements

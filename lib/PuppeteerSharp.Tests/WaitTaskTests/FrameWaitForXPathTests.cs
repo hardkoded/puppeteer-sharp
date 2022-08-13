@@ -3,8 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
-using CefSharp.DevTools.Dom;
-using CefSharp.DevTools.Dom.Helpers;
+using CefSharp.Dom;
+using CefSharp.Dom.Helpers;
 using PuppeteerSharp.Xunit;
 using PuppeteerSharp.Tests.Attributes;
 

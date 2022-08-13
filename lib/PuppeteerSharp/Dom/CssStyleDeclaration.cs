@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// The CSSStyleDeclaration interface represents an object that is a CSS declaration block, and exposes style information and various style-related methods.

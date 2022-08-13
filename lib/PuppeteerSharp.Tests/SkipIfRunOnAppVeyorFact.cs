@@ -1,7 +1,7 @@
 using System;
 using PuppeteerSharp.Tests.Attributes;
 
-namespace CefSharp.DevTools.Dom.Tests
+namespace CefSharp.Dom.Tests
 {
     public class SkipIfRunOnAppVeyorFact : PuppeteerFact
     {

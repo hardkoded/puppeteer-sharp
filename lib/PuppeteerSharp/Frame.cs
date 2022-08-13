@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CefSharp.DevTools.Dom.Input;
+using CefSharp.Dom.Input;
 using Newtonsoft.Json.Linq;
 
-namespace CefSharp.DevTools.Dom
+namespace CefSharp.Dom
 {
     /// <summary>
     /// Provides methods to interact with a single page frame in Chromium. One <see cref="IDevToolsContext"/> instance might have multiple <see cref="Frame"/> instances.

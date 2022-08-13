@@ -1,7 +1,7 @@
 using System;
 using Newtonsoft.Json;
 
-namespace CefSharp.DevTools.Dom.Helpers.Json
+namespace CefSharp.Dom.Helpers.Json
 {
     /// <summary>
     /// JSHandleMethodConverter will throw an exception if a JSHandle object is trying to be serialized

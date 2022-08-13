@@ -2,12 +2,12 @@
 //
 // Use of this source code is governed by a BSD-style license that can be found in the LICENSE file.
 
-using CefSharp.DevTools.Dom.WinForms.Example.Controls;
+using CefSharp.Dom.WinForms.Example.Controls;
 using CefSharp.WinForms;
 using System;
 using System.Windows.Forms;
 
-namespace CefSharp.DevTools.Dom.WinForms.Example
+namespace CefSharp.Dom.WinForms.Example
 {
     public partial class BrowserForm : Form
     {
@@ -16,7 +16,7 @@ namespace CefSharp.DevTools.Dom.WinForms.Example
 #else
         private const string Build = "Release";
 #endif
-        private readonly string title = "CefSharp.DevTools.Dom.WinForms.Example (" + Build + ")";
+        private readonly string title = "CefSharp.Dom.WinForms.Example (" + Build + ")";
         private readonly ChromiumWebBrowser browser;
 
         public BrowserForm()

@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace CefSharp.DevTools.Dom.Input
+namespace CefSharp.Dom.Input
 {
     [JsonConverter(typeof(StringEnumConverter))]
     internal enum PointerType

@@ -1,8 +1,8 @@
-using CefSharp.DevTools.Dom.Helpers.Json;
+using CefSharp.Dom.Helpers.Json;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace CefSharp.DevTools.Dom.Messaging
+namespace CefSharp.Dom.Messaging
 {
     internal class BindingCalledResponse
     {
