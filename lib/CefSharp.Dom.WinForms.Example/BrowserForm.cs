@@ -201,11 +201,15 @@ namespace CefSharp.Dom.WinForms.Example
         {
             var devToolsContext = await browser.CreateDevToolsContextAsync();
 
-            var links = await devToolsContext.QuerySelectorAllAsync("a");
+            var links = await devToolsContext.QuerySelectorAllAsync<HtmlAnchorElement>("a");
+
+            var previousColor = await links[0].GetStyleAsync().AndThen(x => x.GetPropertyValueAsync<string>("background-color"));
+
+            var color = previousColor == "yellow" ? "red" : "yellow";
 
             foreach (var link in links)
             {
-                _ = await link.EvaluateFunctionAsync("e => e.style.backgroundColor = 'yellow'");
+                await link.GetStyleAsync().AndThen(x => x.SetPropertyAsync("background-color", color));
             }
 
             await devToolsContext.DisposeAsync();
