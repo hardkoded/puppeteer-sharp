@@ -3,26 +3,11 @@
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1;net462</TargetFrameworks>
     <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
-    <CodeAnalysisRuleSet>../PuppeteerSharp.ruleset</CodeAnalysisRuleSet>
-    <AssemblyName>CefSharp.DevTools.OutOfProcess</AssemblyName>
-    <RootNamespace>CefSharp.Puppeteer</RootNamespace>
-    <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">true</GeneratePackageOnBuild>
-    <Authors>Alex Maitland, Darío Kondratiuk</Authors>
-    <Owners>amaitland</Owners>
-    <PackageProjectUrl>https://github.com/cefsharp/Puppeteer</PackageProjectUrl>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Summary>CefSharp Puppeteer - A cutdown version of PuppeteerSharp for use with CefSharp</Summary>
-    <PackageTags>chrome,browser,chromium-embedded,cefsharp,puppeteer</PackageTags>
-    <Title>CefSharp.Puppeteer</Title>
-    <Description>CefSharp Puppeteer - A cutdown version of PuppeteerSharp for use with CefSharp</Description>
-    <PackageId>CefSharp.Puppeteer</PackageId>
-    <PackageReleaseNotes>Simplify Package structure</PackageReleaseNotes>
+    <CodeAnalysisRuleSet>../CefSharp.Dom.ruleset</CodeAnalysisRuleSet>
+    <AssemblyName>CefSharp.Dom.OutOfProcess</AssemblyName>
+    <RootNamespace>CefSharp.Dom</RootNamespace>
     <VersionPrefix>2.0.0</VersionPrefix>
     <!--<VersionSuffix>preview</VersionSuffix>-->
-    <DebugType>embedded</DebugType>
-    <DebugSymbols>true</DebugSymbols>
-    <EmbedAllSources>true</EmbedAllSources>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <Import Project="../Common/SignAssembly.props" />

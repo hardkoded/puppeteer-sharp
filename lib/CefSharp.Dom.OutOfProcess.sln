@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.32510.428
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CefSharp.DevTools.OutOfProcess", "PuppeteerSharp\CefSharp.DevTools.OutOfProcess.csproj", "{DDAA533B-BAD2-4EC0-8F91-DED3C7C9F1B1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CefSharp.Dom.OutOfProcess", "PuppeteerSharp\CefSharp.Dom.OutOfProcess.csproj", "{DDAA533B-BAD2-4EC0-8F91-DED3C7C9F1B1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
