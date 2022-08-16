@@ -929,7 +929,7 @@ namespace PuppeteerSharp
         /// generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaAsync(MediaType)"/> with <see cref="MediaType.Screen"/>
         /// </summary>
         /// <param name="file">The file path to save the PDF to. paths are resolved using <see cref="Path.GetFullPath(string)"/></param>
-        /// <returns>Task</returns>
+        /// <returns>A Task which resolves after the PDF is generated</returns>
         /// <remarks>
         /// Generating a pdf is currently only supported in Chrome headless
         /// </remarks>
@@ -940,7 +940,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="file">The file path to save the PDF to. paths are resolved using <see cref="Path.GetFullPath(string)"/></param>
         /// <param name="options">pdf options</param>
-        /// <returns>Task</returns>
+        /// <returns>A Task which resolves after the PDF is generated</returns>
         /// <remarks>
         /// Generating a pdf is currently only supported in Chrome headless
         /// </remarks>
@@ -1082,7 +1082,7 @@ namespace PuppeteerSharp
         /// Toggles bypassing page's Content-Security-Policy.
         /// </summary>
         /// <param name="enabled">sets bypassing of page's Content-Security-Policy.</param>
-        /// <returns>Task</returns>
+        /// <returns>A Task which resolves after the message is sent to the browser</returns>
         /// <remarks>
         /// CSP bypassing happens at the moment of CSP initialization rather then evaluation.
         /// Usually this means that <see cref="SetBypassCSPAsync(bool)"/> should be called before navigating to the domain.
@@ -1547,7 +1547,7 @@ namespace PuppeteerSharp
         /// Provide credentials for http authentication <see href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication"/>
         /// </summary>
         /// <param name="credentials">The credentials</param>
-        /// <returns>Task</returns>
+        /// <returns>A Task which resolves after the message is sent to the browser</returns>
         /// <remarks>
         /// To disable authentication, pass <c>null</c>
         /// </remarks>
