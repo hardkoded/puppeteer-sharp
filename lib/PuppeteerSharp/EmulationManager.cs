@@ -22,20 +22,21 @@ namespace PuppeteerSharp
             var width = viewport.Width;
             var height = viewport.Height;
             var deviceScaleFactor = viewport.DeviceScaleFactor;
-            var screenOrientation = viewport.IsLandscape ?
-                new ScreenOrientation
+            var screenOrientation = viewport.IsLandscape
+                ? new ScreenOrientation
                 {
                     Angle = 90,
                     Type = ScreenOrientationType.LandscapePrimary
-                } :
-                new ScreenOrientation
+                }
+                : new ScreenOrientation
                 {
                     Angle = 0,
                     Type = ScreenOrientationType.PortraitPrimary
                 };
             var hasTouch = viewport.HasTouch;
 
-            await Task.WhenAll(new Task[] {
+            await Task.WhenAll(new Task[]
+            {
                 _client.SendAsync("Emulation.setDeviceMetricsOverride", new EmulationSetDeviceMetricsOverrideRequest
                 {
                     Mobile = mobile,

@@ -13,7 +13,8 @@ namespace PuppeteerSharp
     /// </summary>
     public class ChromiumLauncher : LauncherBase
     {
-        internal static readonly string[] DefaultArgs = {
+        internal static readonly string[] _defaultArgs =
+        {
             "--disable-background-networking",
             "--enable-features=NetworkService,NetworkServiceInProcess",
             "--disable-background-timer-throttling",
@@ -43,7 +44,7 @@ namespace PuppeteerSharp
         private const string UserDataDirArgument = "--user-data-dir";
 
         /// <summary>
-        /// Creates a new <see cref="ChromiumLauncher"/> instance.
+        /// Initializes a new instance of the <see cref="ChromiumLauncher"/> class.
         /// </summary>
         /// <param name="executable">Full path of executable.</param>
         /// <param name="options">Options for launching Chromium.</param>
@@ -95,7 +96,7 @@ namespace PuppeteerSharp
 
         internal static string[] GetDefaultArgs(LaunchOptions options)
         {
-            var chromiumArguments = new List<string>(DefaultArgs);
+            var chromiumArguments = new List<string>(_defaultArgs);
 
             if (!string.IsNullOrEmpty(options.UserDataDir))
             {
@@ -109,7 +110,8 @@ namespace PuppeteerSharp
 
             if (options.Headless)
             {
-                chromiumArguments.AddRange(new[] {
+                chromiumArguments.AddRange(new[]
+                {
                     "--headless",
                     "--hide-scrollbars",
                     "--mute-audio"

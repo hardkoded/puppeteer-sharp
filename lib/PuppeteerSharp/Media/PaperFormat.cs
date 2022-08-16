@@ -10,6 +10,7 @@ namespace PuppeteerSharp.Media
     public class PaperFormat : IEquatable<PaperFormat>
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="PaperFormat"/> class.
         /// Page width and height in inches.
         /// </summary>
         /// <param name="width">Page width in inches</param>

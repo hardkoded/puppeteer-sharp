@@ -13,7 +13,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="address">address</param>
         /// <param name="fileName">fileName</param>
-        /// <returns></returns>
+        /// <returns>Task</returns>
         public delegate Task CustomFileDownloadAction(string address, string fileName);
 
         /// <summary>

@@ -7,23 +7,6 @@ namespace PuppeteerSharp
 {
     internal class WaitTask : IDisposable
     {
-        private readonly DOMWorld _world;
-        private readonly string _predicateBody;
-        private readonly WaitForFunctionPollingOption _polling;
-        private readonly int? _pollingInterval;
-        private readonly int _timeout;
-        private readonly object[] _args;
-        private readonly string _title;
-        private readonly Task _timeoutTimer;
-        private readonly ElementHandle _root;
-        private readonly bool _predicateAcceptsContextElement;
-        private readonly CancellationTokenSource _cts;
-        private readonly TaskCompletionSource<JSHandle> _taskCompletion;
-
-        private int _runCount;
-        private bool _terminated;
-        private bool _isDisposing;
-
         private const string WaitForPredicatePageFunction = @"
 async function waitForPredicatePageFunction(
   root,
@@ -112,6 +95,23 @@ async function waitForPredicatePageFunction(
   }
 }";
 
+        private readonly DOMWorld _world;
+        private readonly string _predicateBody;
+        private readonly WaitForFunctionPollingOption _polling;
+        private readonly int? _pollingInterval;
+        private readonly int _timeout;
+        private readonly object[] _args;
+        private readonly string _title;
+        private readonly Task _timeoutTimer;
+        private readonly ElementHandle _root;
+        private readonly bool _predicateAcceptsContextElement;
+        private readonly CancellationTokenSource _cts;
+        private readonly TaskCompletionSource<JSHandle> _taskCompletion;
+
+        private int _runCount;
+        private bool _terminated;
+        private bool _isDisposing;
+
         internal WaitTask(
             DOMWorld world,
             string predicateBody,
@@ -171,7 +171,8 @@ async function waitForPredicatePageFunction(
             {
                 success = await context.EvaluateFunctionHandleAsync(
                     WaitForPredicatePageFunction,
-                    new object[] {
+                    new object[]
+                    {
                         _root,
                         _predicateBody,
                         _predicateAcceptsContextElement,
