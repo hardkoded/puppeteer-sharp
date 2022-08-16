@@ -103,7 +103,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Asynchronously starts Base process.
         /// </summary>
-        /// <returns>Task</returns>
+        /// <returns>Task which resolves when after start process begins.</returns>
         public Task StartAsync() => _stateManager.CurrentState.StartAsync(this);
 
         /// <summary>
