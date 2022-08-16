@@ -24,11 +24,6 @@ namespace PuppeteerSharp
         internal const int DefaultTimeout = 30_000;
 
         /// <summary>
-        /// The default flags that Chromium will be launched with.
-        /// </summary>
-        internal static string[] DefaultArgs => ChromiumLauncher._defaultArgs;
-
-        /// <summary>
         /// Returns a list of devices to be used with <seealso cref="Page.EmulateAsync(DeviceDescriptor)"/>.
         /// </summary>
         /// <example>

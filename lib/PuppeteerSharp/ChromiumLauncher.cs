@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
@@ -13,7 +12,26 @@ namespace PuppeteerSharp
     /// </summary>
     public class ChromiumLauncher : LauncherBase
     {
-        internal static readonly string[] _defaultArgs =
+        private const string UserDataDirArgument = "--user-data-dir";
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ChromiumLauncher"/> class.
+        /// </summary>
+        /// <param name="executable">Full path of executable.</param>
+        /// <param name="options">Options for launching Chromium.</param>
+        public ChromiumLauncher(string executable, LaunchOptions options)
+            : base(executable, options)
+        {
+            List<string> chromiumArgs;
+            (chromiumArgs, TempUserDataDir) = PrepareChromiumArgs(options);
+
+            Process.StartInfo.Arguments = string.Join(" ", chromiumArgs);
+        }
+
+        /// <summary>
+        /// The default flags that Chromium will be launched with.
+        /// </summary>
+        internal static string[] DefaultArgs { get; } =
         {
             "--disable-background-networking",
             "--enable-features=NetworkService,NetworkServiceInProcess",
@@ -40,22 +58,6 @@ namespace PuppeteerSharp
             "--use-mock-keychain",
             "--enable-blink-features=IdleDetection",
         };
-
-        private const string UserDataDirArgument = "--user-data-dir";
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ChromiumLauncher"/> class.
-        /// </summary>
-        /// <param name="executable">Full path of executable.</param>
-        /// <param name="options">Options for launching Chromium.</param>
-        public ChromiumLauncher(string executable, LaunchOptions options)
-            : base(executable, options)
-        {
-            List<string> chromiumArgs;
-            (chromiumArgs, TempUserDataDir) = PrepareChromiumArgs(options);
-
-            Process.StartInfo.Arguments = string.Join(" ", chromiumArgs);
-        }
 
         /// <inheritdoc />
         public override string ToString() => $"Chromium process; EndPoint={EndPoint}; State={CurrentState}";
@@ -96,7 +98,7 @@ namespace PuppeteerSharp
 
         internal static string[] GetDefaultArgs(LaunchOptions options)
         {
-            var chromiumArguments = new List<string>(_defaultArgs);
+            var chromiumArguments = new List<string>(DefaultArgs);
 
             if (!string.IsNullOrEmpty(options.UserDataDir))
             {
