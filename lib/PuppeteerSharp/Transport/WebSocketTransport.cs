@@ -29,7 +29,6 @@ namespace PuppeteerSharp.Transport
         public static readonly TransportTaskScheduler DefaultTransportScheduler = ScheduleTransportTask;
 
         private readonly WebSocket _client;
-        private readonly bool _queueRequests;
         private readonly TaskQueue _socketQueue = new TaskQueue();
         [SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", Justification = "False positive, as it is disposed in StopReading() method.")]
         private CancellationTokenSource _readerCancellationSource = new CancellationTokenSource();
@@ -39,8 +38,7 @@ namespace PuppeteerSharp.Transport
         /// </summary>
         /// <param name="client">The web socket</param>
         /// <param name="scheduler">The scheduler to use for long-running tasks.</param>
-        /// <param name="queueRequests">Indicates whether requests should be queued.</param>
-        public WebSocketTransport(WebSocket client, TransportTaskScheduler scheduler, bool queueRequests)
+        public WebSocketTransport(WebSocket client, TransportTaskScheduler scheduler)
         {
             if (client == null)
             {
@@ -52,7 +50,6 @@ namespace PuppeteerSharp.Transport
             }
 
             _client = client;
-            _queueRequests = queueRequests;
             scheduler(GetResponseAsync, _readerCancellationSource.Token);
         }
 
@@ -82,7 +79,7 @@ namespace PuppeteerSharp.Transport
         {
             var webSocketFactory = connectionOptions.WebSocketFactory ?? DefaultWebSocketFactory;
             var webSocket = await webSocketFactory(url, connectionOptions, cancellationToken).ConfigureAwait(false);
-            return new WebSocketTransport(webSocket, DefaultTransportScheduler, connectionOptions.EnqueueTransportMessages);
+            return new WebSocketTransport(webSocket, DefaultTransportScheduler);
         }
 
         private static void ScheduleTransportTask(Func<CancellationToken, Task> taskFactory, CancellationToken cancellationToken)
@@ -103,7 +100,7 @@ namespace PuppeteerSharp.Transport
             var buffer = new ArraySegment<byte>(encoded, 0, encoded.Length);
             Task SendCoreAsync() => _client.SendAsync(buffer, WebSocketMessageType.Text, true, default);
 
-            return _queueRequests ? _socketQueue.Enqueue(SendCoreAsync) : SendCoreAsync();
+            return _socketQueue.Enqueue(SendCoreAsync);
         }
 
         /// <summary>

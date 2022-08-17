@@ -45,14 +45,8 @@ namespace PuppeteerSharp.Tests
             SlowMo = Convert.ToInt32(Environment.GetEnvironmentVariable("SLOW_MO")),
             Headless = Convert.ToBoolean(Environment.GetEnvironmentVariable("HEADLESS") ?? "true"),
             Product = IsChrome ? Product.Chrome : Product.Firefox,
-            EnqueueAsyncMessages = Convert.ToBoolean(Environment.GetEnvironmentVariable("ENQUEUE_ASYNC_MESSAGES") ?? "false"),
             Timeout = 0,
             LogProcess = true,
-#if NETCOREAPP
-            EnqueueTransportMessages = false
-#else
-            EnqueueTransportMessages = true
-#endif
         };
 
         public static LaunchOptions BrowserWithExtensionOptions() => new LaunchOptions
