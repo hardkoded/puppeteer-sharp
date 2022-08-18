@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Tests.Issues
             await using (var page = await browser.NewPageAsync())
             {
                 await page.GoToAsync("https://duckduckgo.com/");
-                var input = await page.WaitForSelectorAsync("#search_form_input_homepage");
+                var input = await page.WaitForSelectorAsync("input[type=\"text\"");
                 await input.TypeAsync("Lorem ipsum dolor sit amet.");
             }
         }
