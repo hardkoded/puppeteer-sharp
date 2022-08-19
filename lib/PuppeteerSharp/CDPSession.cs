@@ -162,7 +162,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Detaches session from target. Once detached, session won't emit any events and can't be used to send messages.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Task</returns>
         /// <exception cref="T:PuppeteerSharp.PuppeteerException">If the <see cref="Connection"/> is closed.</exception>
         public Task DetachAsync()
         {

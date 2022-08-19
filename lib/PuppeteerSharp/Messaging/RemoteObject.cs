@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Messaging
         /// </summary>
         public string Description { get; set; }
         /// <summary>
-        ///Gets or sets the Object class (constructor) name. Specified for object type values only. (Optional)
+        /// Gets or sets the Object class (constructor) name. Specified for object type values only. (Optional)
         /// </summary>
         public string ClassName { get; set; }
         /// <summary>

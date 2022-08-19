@@ -73,6 +73,6 @@ namespace PuppeteerSharp
         /// Target type iFrame.
         /// </summary>
         [EnumMember(Value = "iframe")]
-        iFrame
+        IFrame
     }
 }

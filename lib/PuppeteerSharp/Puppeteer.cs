@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -24,16 +24,11 @@ namespace PuppeteerSharp
         internal const int DefaultTimeout = 30_000;
 
         /// <summary>
-        /// The default flags that Chromium will be launched with.
-        /// </summary>
-        internal static string[] DefaultArgs => ChromiumLauncher.DefaultArgs;
-
-        /// <summary>
         /// Returns a list of devices to be used with <seealso cref="Page.EmulateAsync(DeviceDescriptor)"/>.
         /// </summary>
         /// <example>
         /// <code>
-        ///<![CDATA[
+        /// <![CDATA[
         /// var iPhone = Puppeteer.Devices[DeviceDescriptorName.IPhone6];
         /// using(var page = await browser.NewPageAsync())
         /// {
@@ -51,7 +46,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <example>
         /// <code>
-        ///<![CDATA[
+        /// <![CDATA[
         /// var slow3G = Puppeteer.NetworkConditions["Slow 3G"];
         /// using(var page = await browser.NewPageAsync())
         /// {
