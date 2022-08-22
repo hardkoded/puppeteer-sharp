@@ -135,7 +135,7 @@ async function waitForPredicatePageFunction(
                 throw new ArgumentOutOfRangeException(nameof(pollingInterval), "Cannot poll with non-positive interval");
             }
 
-            _domWorld = domWorld;
+            _world = domWorld;
             _predicateBody = isExpression ? $"return ({predicateBody})" : $"return ({predicateBody})(...args)";
             _polling = polling;
             _pollingInterval = pollingInterval;
@@ -150,10 +150,10 @@ async function waitForPredicatePageFunction(
 
             if (biding != null)
             {
-                _domWorld.BoundFunctions.TryAdd(_binding.Name, _binding.Function);
+                _world.BoundFunctions.TryAdd(_binding.Name, _binding.Function);
             }
 
-            _domWorld.WaitTasks.Add(this);
+            _world.WaitTasks.Add(this);
 
             if (timeout > 0)
             {
@@ -174,10 +174,10 @@ async function waitForPredicatePageFunction(
             JSHandle success = null;
             Exception exception = null;
 
-            var context = await _domWorld.GetExecutionContextAsync().ConfigureAwait(false);
+            var context = await _world.GetExecutionContextAsync().ConfigureAwait(false);
             if (_binding != null)
             {
-              await _domWorld.AddBindingToContextAsync(context, _binding.Name).ConfigureAwait(false);
+              await _world.AddBindingToContextAsync(context, _binding.Name).ConfigureAwait(false);
             }
 
             try
@@ -208,7 +208,7 @@ async function waitForPredicatePageFunction(
                 return;
             }
             if (exception == null &&
-                await _domWorld.EvaluateFunctionAsync<bool>("s => !s", success)
+                await _world.EvaluateFunctionAsync<bool>("s => !s", success)
                     .ContinueWith(
                         task => task.IsFaulted || task.Result,
                         TaskScheduler.Default)
@@ -257,7 +257,7 @@ async function waitForPredicatePageFunction(
             {
                 _cts.Cancel();
             }
-            _domWorld.WaitTasks.Remove(this);
+            _world.WaitTasks.Remove(this);
         }
 
         public void Dispose()
