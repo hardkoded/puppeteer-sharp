@@ -73,7 +73,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
 
         [PuppeteerTest("ariaqueryhandler.spec.ts", "waitForSelector (aria)", "should work independently of `exposeFunction`")]
         [PuppeteerFact]
-        public async Task ShouldWorkIndependentlyOfEexposeFunction()
+        public async Task ShouldWorkIndependentlyOfExposeFunction()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             await Page.ExposeFunctionAsync("ariaQuerySelector", new Func<int, int, int>((a, b) => a + b));
@@ -87,9 +87,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
         [PuppeteerFact]
         public async Task ShouldWorkWithRemovedMutationObserver()
         {
-            await Page.EvaluateFunctionAsync(@"() => {
-                return delete window.MutationObserver;
-            }");
+            await Page.EvaluateFunctionAsync(@"() => delete window.MutationObserver");
             var handleTask = Page.WaitForSelectorAsync("aria/anything");
             await Task.WhenAll(
                 handleTask,

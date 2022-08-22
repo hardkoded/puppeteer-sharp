@@ -38,7 +38,7 @@ namespace PuppeteerSharp
             {
                 Func<string, Task<ElementHandle>> func = async (string selector) =>
                 {
-                    var root = options.Root ?? await domWorld.GetDocumentAsync().ConfigureAwait(false);
+                    var root = options?.Root ?? await domWorld.GetDocumentAsync().ConfigureAwait(false);
                     var element = await queryOne(root, selector).ConfigureAwait(false);
                     return element;
                 };
@@ -50,7 +50,7 @@ namespace PuppeteerSharp
                 };
 
                 return domWorld.WaitForSelectorInPageAsync(
-                    @"(_, selector) => return globalThis.ariaQuerySelector(selector)",
+                    @"(_, selector) => globalThis.ariaQuerySelector(selector)",
                     selector,
                     options,
                     binding);

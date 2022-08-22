@@ -40,7 +40,7 @@ namespace PuppeteerSharp
     {
         private readonly TaskQueue _screenshotTaskQueue;
         private readonly EmulationManager _emulationManager;
-        private readonly Dictionary<string, Delegate> _pageBindings;
+        private readonly ConcurrentDictionary<string, Delegate> _pageBindings;
         private readonly IDictionary<string, Worker> _workers;
         private readonly ILogger _logger;
         private readonly TaskCompletionSource<bool> _closeCompletedTcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -96,7 +96,7 @@ namespace PuppeteerSharp
             _fileChooserInterceptors = new ConcurrentDictionary<Guid, TaskCompletionSource<FileChooser>>();
             _timeoutSettings = new TimeoutSettings();
             _emulationManager = new EmulationManager(client);
-            _pageBindings = new Dictionary<string, Delegate>();
+            _pageBindings = new ConcurrentDictionary<string, Delegate>();
             _workers = new ConcurrentDictionary<string, Worker>();
             _logger = Client.Connection.LoggerFactory.CreateLogger<Page>();
             FrameManager = new FrameManager(client, this, ignoreHTTPSErrors, _timeoutSettings);
@@ -2512,6 +2512,11 @@ namespace PuppeteerSharp
             string expression;
             try
             {
+                if (e.BindingPayload.Type != "exposedFun" || !_pageBindings.ContainsKey(e.BindingPayload.Name))
+                {
+                    return;
+                }
+
                 var result = await BindingUtils.ExecuteBindingAsync(e, _pageBindings).ConfigureAwait(false);
 
                 expression = BindingUtils.EvaluationString(
@@ -2693,7 +2698,7 @@ namespace PuppeteerSharp
             {
                 throw new PuppeteerException($"Failed to add page binding with name {name}: window['{name}'] already exists!");
             }
-            _pageBindings.Add(name, puppeteerFunction);
+            _pageBindings.TryAdd(name, puppeteerFunction);
 
             const string addPageBinding = @"function addPageBinding(bindingName) {
               const binding = window[bindingName];

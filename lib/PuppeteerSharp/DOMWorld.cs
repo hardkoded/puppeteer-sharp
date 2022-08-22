@@ -22,7 +22,6 @@ namespace PuppeteerSharp
         private readonly CDPSession _client;
         private readonly ILogger _logger;
         private readonly List<string> _ctxBindings = new();
-        private readonly Dictionary<string, Delegate> _boundFunctions = new();
         private bool _detached;
         private TaskCompletionSource<ExecutionContext> _contextResolveTaskWrapper;
         private TaskCompletionSource<ElementHandle> _documentCompletionSource;
@@ -99,11 +98,11 @@ namespace PuppeteerSharp
 
             try
             {
-                if (_boundFunctions.TryGetValue(payload.Name, out var fn))
+                if (!BoundFunctions.TryGetValue(payload.Name, out var fn))
                 {
                     throw new PuppeteerException($"Bound function {payload.Name} is not found");
                 }
-                var result = await BindingUtils.ExecuteBindingAsync(e, _boundFunctions).ConfigureAwait(false);
+                var result = await BindingUtils.ExecuteBindingAsync(e, BoundFunctions).ConfigureAwait(false);
 
                 await context.EvaluateFunctionAsync(
                     @"function deliverResult(name, seq, result) {
@@ -153,7 +152,7 @@ namespace PuppeteerSharp
                             Name = name,
                             ExecutionContextName = context.ContextName,
                         }).ConfigureAwait(false);
-                    await context.EvaluateFunctionAsync(expression).ConfigureAwait(false);
+                    await context.EvaluateExpressionAsync(expression).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {

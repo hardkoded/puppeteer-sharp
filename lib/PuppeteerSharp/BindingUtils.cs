@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -48,7 +49,7 @@ namespace PuppeteerSharp
             }
         }
 
-        internal static async Task<object> ExecuteBindingAsync(BindingCalledResponse e, Dictionary<string, Delegate> pageBindings)
+        internal static async Task<object> ExecuteBindingAsync(BindingCalledResponse e, ConcurrentDictionary<string, Delegate> pageBindings)
         {
             const string taskResultPropertyName = "Result";
             object result;
