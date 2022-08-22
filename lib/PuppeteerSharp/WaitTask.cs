@@ -108,9 +108,6 @@ async function waitForPredicatePageFunction(
         private readonly CancellationTokenSource _cts;
         private readonly TaskCompletionSource<JSHandle> _taskCompletion;
         private readonly PageBinding _binding;
-        private int _runCount;
-        private bool _terminated;
-        private bool _isDisposing;
 
         private int _runCount;
         private bool _terminated;
