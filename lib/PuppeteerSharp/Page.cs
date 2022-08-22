@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -390,12 +390,12 @@ namespace PuppeteerSharp
                 if (_sessionClosedTcs == null)
                 {
                     _sessionClosedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-                    Client.Disconnected += clientDisconnected;
+                    Client.Disconnected += ClientDisconnected;
 
-                    void clientDisconnected(object sender, EventArgs e)
+                    void ClientDisconnected(object sender, EventArgs e)
                     {
                         _sessionClosedTcs.TrySetException(new TargetClosedException("Target closed", "Session closed"));
-                        Client.Disconnected -= clientDisconnected;
+                        Client.Disconnected -= ClientDisconnected;
                     }
                 }
 
@@ -929,7 +929,7 @@ namespace PuppeteerSharp
         /// generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaAsync(MediaType)"/> with <see cref="MediaType.Screen"/>
         /// </summary>
         /// <param name="file">The file path to save the PDF to. paths are resolved using <see cref="Path.GetFullPath(string)"/></param>
-        /// <returns></returns>
+        /// <returns>A Task which resolves after the PDF is generated</returns>
         /// <remarks>
         /// Generating a pdf is currently only supported in Chrome headless
         /// </remarks>
@@ -940,7 +940,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="file">The file path to save the PDF to. paths are resolved using <see cref="Path.GetFullPath(string)"/></param>
         /// <param name="options">pdf options</param>
-        /// <returns></returns>
+        /// <returns>A Task which resolves after the PDF is generated</returns>
         /// <remarks>
         /// Generating a pdf is currently only supported in Chrome headless
         /// </remarks>
@@ -1082,7 +1082,7 @@ namespace PuppeteerSharp
         /// Toggles bypassing page's Content-Security-Policy.
         /// </summary>
         /// <param name="enabled">sets bypassing of page's Content-Security-Policy.</param>
-        /// <returns></returns>
+        /// <returns>A Task which resolves after the message is sent to the browser</returns>
         /// <remarks>
         /// CSP bypassing happens at the moment of CSP initialization rather then evaluation.
         /// Usually this means that <see cref="SetBypassCSPAsync(bool)"/> should be called before navigating to the domain.
@@ -1175,7 +1175,7 @@ namespace PuppeteerSharp
         /// <see cref="SetViewportAsync(ViewPortOptions)"/> will resize the page. A lot of websites don't expect phones to change size, so you should set the viewport before navigating to the page.
         /// </summary>
         /// <example>
-        ///<![CDATA[
+        /// <![CDATA[
         /// using(var page = await browser.NewPageAsync())
         /// {
         ///     await page.SetViewPortAsync(new ViewPortOptions
@@ -1217,7 +1217,7 @@ namespace PuppeteerSharp
         /// <see cref="EmulateAsync(DeviceDescriptor)"/> will resize the page. A lot of websites don't expect phones to change size, so you should emulate before navigating to the page.
         /// </remarks>
         /// <example>
-        ///<![CDATA[
+        /// <![CDATA[
         /// var iPhone = Puppeteer.Devices[DeviceDescriptorName.IPhone6];
         /// using(var page = await browser.NewPageAsync())
         /// {
@@ -1547,7 +1547,7 @@ namespace PuppeteerSharp
         /// Provide credentials for http authentication <see href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication"/>
         /// </summary>
         /// <param name="credentials">The credentials</param>
-        /// <returns></returns>
+        /// <returns>A Task which resolves after the message is sent to the browser</returns>
         /// <remarks>
         /// To disable authentication, pass <c>null</c>
         /// </remarks>
@@ -1807,20 +1807,20 @@ namespace PuppeteerSharp
             var timeout = options?.Timeout ?? DefaultTimeout;
             var requestTcs = new TaskCompletionSource<Request>(TaskCreationOptions.RunContinuationsAsynchronously);
 
-            void requestEventListener(object sender, RequestEventArgs e)
+            void RequestEventListener(object sender, RequestEventArgs e)
             {
                 if (predicate(e.Request))
                 {
                     requestTcs.TrySetResult(e.Request);
-                    FrameManager.NetworkManager.Request -= requestEventListener;
+                    FrameManager.NetworkManager.Request -= RequestEventListener;
                 }
             }
 
-            FrameManager.NetworkManager.Request += requestEventListener;
+            FrameManager.NetworkManager.Request += RequestEventListener;
 
             await Task.WhenAny(requestTcs.Task, SessionClosedTask).WithTimeout(timeout, t =>
             {
-                FrameManager.NetworkManager.Request -= requestEventListener;
+                FrameManager.NetworkManager.Request -= RequestEventListener;
                 return new TimeoutException($"Timeout of {t.TotalMilliseconds} ms exceeded");
             }).ConfigureAwait(false);
 
@@ -1865,23 +1865,23 @@ namespace PuppeteerSharp
             var timeout = options?.Timeout ?? DefaultTimeout;
             var frameTcs = new TaskCompletionSource<Frame>(TaskCreationOptions.RunContinuationsAsynchronously);
 
-            void frameEventListener(object sender, FrameEventArgs e)
+            void FrameEventListener(object sender, FrameEventArgs e)
             {
                 if (predicate(e.Frame))
                 {
                     frameTcs.TrySetResult(e.Frame);
-                    FrameManager.FrameAttached -= frameEventListener;
-                    FrameManager.FrameNavigated -= frameEventListener;
+                    FrameManager.FrameAttached -= FrameEventListener;
+                    FrameManager.FrameNavigated -= FrameEventListener;
                 }
             }
 
-            FrameManager.FrameAttached += frameEventListener;
-            FrameManager.FrameNavigated += frameEventListener;
+            FrameManager.FrameAttached += FrameEventListener;
+            FrameManager.FrameNavigated += FrameEventListener;
 
             var eventRace = Task.WhenAny(frameTcs.Task, SessionClosedTask).WithTimeout(timeout, t =>
             {
-                FrameManager.FrameAttached -= frameEventListener;
-                FrameManager.FrameNavigated -= frameEventListener;
+                FrameManager.FrameAttached -= FrameEventListener;
+                FrameManager.FrameNavigated -= FrameEventListener;
                 return new TimeoutException($"Timeout of {t.TotalMilliseconds} ms exceeded");
             });
 
@@ -1955,14 +1955,14 @@ namespace PuppeteerSharp
             var timeout = options?.Timeout ?? DefaultTimeout;
             var responseTcs = new TaskCompletionSource<Response>(TaskCreationOptions.RunContinuationsAsynchronously);
 
-            async void responseEventListener(object sender, ResponseCreatedEventArgs e)
+            async void ResponseEventListener(object sender, ResponseCreatedEventArgs e)
             {
                 try
                 {
                     if (await predicate(e.Response).ConfigureAwait(false))
                     {
                         responseTcs.TrySetResult(e.Response);
-                        FrameManager.NetworkManager.Response -= responseEventListener;
+                        FrameManager.NetworkManager.Response -= ResponseEventListener;
                     }
                 }
                 catch (Exception ex)
@@ -1971,7 +1971,7 @@ namespace PuppeteerSharp
                 }
             }
 
-            FrameManager.NetworkManager.Response += responseEventListener;
+            FrameManager.NetworkManager.Response += ResponseEventListener;
 
             await Task.WhenAny(responseTcs.Task, SessionClosedTask).WithTimeout(timeout).ConfigureAwait(false);
 
@@ -2284,13 +2284,13 @@ namespace PuppeteerSharp
                     var isMobile = Viewport?.IsMobile ?? false;
                     var deviceScaleFactor = Viewport?.DeviceScaleFactor ?? 1;
                     var isLandscape = Viewport?.IsLandscape ?? false;
-                    var screenOrientation = isLandscape ?
-                        new ScreenOrientation
+                    var screenOrientation = isLandscape
+                        ? new ScreenOrientation
                         {
                             Angle = 90,
                             Type = ScreenOrientationType.LandscapePrimary
-                        } :
-                        new ScreenOrientation
+                        }
+                        : new ScreenOrientation
                         {
                             Angle = 0,
                             Type = ScreenOrientationType.PortraitPrimary
@@ -2564,7 +2564,7 @@ namespace PuppeteerSharp
         {
             var targetInfo = e.TargetInfo;
             var sessionId = e.SessionId;
-            if (targetInfo.Type != TargetType.Worker && targetInfo.Type != TargetType.iFrame)
+            if (targetInfo.Type != TargetType.Worker && targetInfo.Type != TargetType.IFrame)
             {
                 try
                 {

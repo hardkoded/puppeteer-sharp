@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -363,7 +363,7 @@ namespace PuppeteerSharp
         /// <remarks>
         /// If <c>key</c> is a single character and no modifier keys besides <c>Shift</c> are being held down, a <c>keypress</c>/<c>input</c> event will also be generated. The <see cref="DownOptions.Text"/> option can be specified to force an input event to be generated.
         /// </remarks>
-        /// <returns></returns>
+        /// <returns>Task which resolves when the key is successfully pressed</returns>
         public async Task PressAsync(string key, PressOptions options = null)
         {
             await FocusAsync().ConfigureAwait(false);
@@ -475,7 +475,7 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        ///Content frame for element handles referencing iframe nodes, or null otherwise.
+        /// Content frame for element handles referencing iframe nodes, or null otherwise.
         /// </summary>
         /// <returns>Resolves to the content frame</returns>
         public async Task<Frame> ContentFrameAsync()
@@ -686,7 +686,8 @@ namespace PuppeteerSharp
                 // Return the point of the first quad identified by offset.
                 var minX = decimal.MaxValue;
                 var minY = decimal.MaxValue;
-                foreach (var point in quad) {
+                foreach (var point in quad)
+                {
                     if (point.X < minX)
                     {
                         minX = point.X;
@@ -700,10 +701,11 @@ namespace PuppeteerSharp
                   minX != decimal.MaxValue &&
                   minY != decimal.MaxValue)
                 {
-                    return new BoxModelPoint() {
+                    return new BoxModelPoint()
+                    {
                         X = minX + offset.Value.X,
                         Y = minY + offset.Value.Y
-                     };
+                    };
                 }
             }
             var x = 0m;
@@ -715,7 +717,8 @@ namespace PuppeteerSharp
                 y += point.Y;
             }
 
-            return new BoxModelPoint() {
+            return new BoxModelPoint()
+            {
                 X = x / 4,
                 Y = y / 4
             };

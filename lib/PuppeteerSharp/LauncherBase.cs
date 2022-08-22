@@ -2,12 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.States;
 
@@ -22,7 +17,7 @@ namespace PuppeteerSharp
         private readonly StateManager _stateManager;
 
         /// <summary>
-        /// Creates a new <see cref="LauncherBase"/> instance.
+        /// Initializes a new instance of the <see cref="LauncherBase"/> class.
         /// </summary>
         /// <param name="executable">Full path of executable.</param>
         /// <param name="options">Options for launching Base.</param>
@@ -108,7 +103,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Asynchronously starts Base process.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Task which resolves when after start process begins.</returns>
         public Task StartAsync() => _stateManager.CurrentState.StartAsync(this);
 
         /// <summary>
@@ -116,7 +111,7 @@ namespace PuppeteerSharp
         /// Kills the Base process if it has not exited within this period.
         /// </summary>
         /// <param name="timeout">The maximum waiting time for a graceful process exit.</param>
-        /// <returns></returns>
+        /// <returns>Task which resolves when the process is exited or killed</returns>
         public Task EnsureExitAsync(TimeSpan? timeout) => timeout.HasValue
             ? _stateManager.CurrentState.ExitAsync(this, timeout.Value)
             : _stateManager.CurrentState.KillAsync(this);
@@ -124,7 +119,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Asynchronously kills Base process.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Task which resolves when the process is killed</returns>
         public Task KillAsync() => _stateManager.CurrentState.KillAsync(this);
 
         /// <summary>

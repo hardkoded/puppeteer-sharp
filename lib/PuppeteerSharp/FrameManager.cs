@@ -13,6 +13,9 @@ namespace PuppeteerSharp
 {
     internal class FrameManager
     {
+        private const string RefererHeaderName = "referer";
+        private const string UtilityWorldName = "__puppeteer_utility_world__";
+
         private readonly ConcurrentDictionary<string, ExecutionContext> _contextIdToContext;
         private readonly ILogger _logger;
         private readonly ConcurrentDictionary<string, Frame> _frames;
@@ -20,8 +23,6 @@ namespace PuppeteerSharp
         private readonly List<string> _isolatedWorlds = new();
         private readonly TaskQueue _eventsQueue = new();
         private bool _ensureNewDocumentNavigation;
-        private const string RefererHeaderName = "referer";
-        private const string UtilityWorldName = "__puppeteer_utility_world__";
 
         internal FrameManager(CDPSession client, Page page, bool ignoreHTTPSErrors, TimeoutSettings timeoutSettings)
         {
@@ -241,7 +242,8 @@ namespace PuppeteerSharp
 
         private async Task OnAttachedToTargetAsync(TargetAttachedToTargetResponse e)
         {
-            if (e.TargetInfo.Type != TargetType.iFrame) {
+            if (e.TargetInfo.Type != TargetType.IFrame)
+            {
                 return;
             }
 
@@ -284,7 +286,8 @@ namespace PuppeteerSharp
 
         private void OnExecutionContextsCleared(CDPSession session)
         {
-            foreach (var key in _contextIdToContext.Keys.ToArray()) {
+            foreach (var key in _contextIdToContext.Keys.ToArray())
+            {
                 var context = _contextIdToContext[key];
                 if (context.Client != session)
                 {

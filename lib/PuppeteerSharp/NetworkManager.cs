@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
@@ -195,11 +195,13 @@ namespace PuppeteerSharp
             {
                 EmitResponseEvent(queuedEvents.ResponseReceivedEvent, e);
 
-                if (queuedEvents.LoadingFinishedEvent != null) {
+                if (queuedEvents.LoadingFinishedEvent != null)
+                {
                     OnLoadingFinished(queuedEvents.LoadingFinishedEvent);
                 }
 
-                if (queuedEvents.LoadingFailedEvent != null) {
+                if (queuedEvents.LoadingFailedEvent != null)
+                {
                     OnLoadingFailed(queuedEvents.LoadingFailedEvent);
                 }
 
@@ -319,7 +321,6 @@ namespace PuppeteerSharp
             var request = _networkEventManager.GetRequest(e.RequestId);
 
             // FileUpload sends a response without a matching request.
-
             if (request == null)
             {
                 return;

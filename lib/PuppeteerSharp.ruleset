@@ -19,26 +19,26 @@
     <Rule Id="SA1210" Action="Error" /> <!-- Error SA1210: Using directives should be ordered alphabetically by the namespaces. (SA1210)-->
     <Rule Id="SA1208" Action="Error" /> <!-- Error SA1208: Order usings-->
     <Rule Id="SA1204" Action="None" /> <!-- Error SA1204: Static members should appear before non-static members (SA1204)-->
-    <Rule Id="SA1004" Action="None" /> <!-- Error SA1004: Documentation line should begin with a space. (SA1004)-->
+    <Rule Id="SA1004" Action="Error" /> <!-- Error SA1004: Documentation line should begin with a space. (SA1004)-->
     <Rule Id="SA1513" Action="None" /> <!-- Error SA1513: Closing brace should be followed by blank line (SA1513)-->
     <Rule Id="SA1124" Action="Error" /> <!-- Error SA1124: Don't use regions-->
     <Rule Id="SA1009" Action="Error" /> <!-- Error SA1009: Closing parenthesis should not be preceded by a space. (SA1009)-->
     <Rule Id="SA1413" Action="None" /> <!-- Error SA1413: Use trailing comma in multi-line initializers (SA1413)-->
     <Rule Id="SA1602" Action="None" /> <!-- Error SA1602: Enumeration items should be documented (SA1602)-->
     <Rule Id="SA1005" Action="Error" /> <!-- Error SA1005: Single line comment should begin with a space. (SA1005)-->
-    <Rule Id="SA1203" Action="None" /> <!-- Error SA1203: Constant fields should appear before non-constant fields (SA1203)-->
-    <Rule Id="SA1720" Action="None" /> <!-- Error SA1720: Name contains type-->
-    <Rule Id="SA1300" Action="None" /> <!-- Error SA1300: Element 'iFrame' should begin with an uppercase letter (SA1300)-->
-    <Rule Id="SA1500" Action="None" /> <!-- Error SA1500: Braces for multi-line statements should not share line (SA1500)-->
+    <Rule Id="SA1203" Action="Error" /> <!-- Error SA1203: Constant fields should appear before non-constant fields (SA1203)-->
+    <Rule Id="SA1720" Action="Error" /> <!-- Error SA1720: Name contains type-->
+    <Rule Id="SA1300" Action="Error" /> <!-- Error SA1300: Element 'iFrame' should begin with an uppercase letter (SA1300)-->
+    <Rule Id="SA1500" Action="Error" /> <!-- Error SA1500: Braces for multi-line statements should not share line (SA1500)-->
     <Rule Id="SA1214" Action="Error" /> <!-- Error SA1214: Readonly fields should appear before non-readonly fields (SA1214)-->
-    <Rule Id="SA1642" Action="None" /> <!-- Error SA1642: Constructor summary documentation should begin with standard text (SA1642) (PuppeteerSharp)-->
+    <Rule Id="SA1642" Action="Error" /> <!-- Error SA1642: Constructor summary documentation should begin with standard text (SA1642) (PuppeteerSharp)-->
     <Rule Id="SA1013" Action="Error" /> <!-- Error SA1013: Closing brace should be preceded by a space. (SA1013) -->
     <Rule Id="SA1515" Action="Error" /> <!-- Error SA1515: Single-line comment should be preceded by blank line (SA1515) -->
     <Rule Id="SA1518" Action="None" /> <!-- Error SA1518: File is required to end with a single newline character (SA1518)-->
     <Rule Id="SA1012" Action="Error" /> <!-- Error SA1012: Opening brace should be followed by a space. (SA1012) -->
-    <Rule Id="SA1512" Action="None" /> <!-- Error SA1502: Element should not be on a single line (SA1502) -->
+    <Rule Id="SA1512" Action="Error" /> <!-- Error SA1502: Element should not be on a single line (SA1502) -->
     <Rule Id="SA1648" Action="None" /> <!-- Error SA1648: inheritdoc should be used with inheriting class (SA1648) -->
-    <Rule Id="SA1616" Action="None" /> <!-- Error SA1616: Element return value documentation should have text (SA1616)-->
+    <Rule Id="SA1616" Action="Error" /> <!-- Error SA1616: Element return value documentation should have text (SA1616)-->
     <Rule Id="SA1627" Action="Error" /> <!-- Error SA1627: The documentation text within the \'exception\' tag should not be empty. (SA1627)-->
     <Rule Id="SA1643" Action="Error" /> <!-- Error SA1643: Destructor summary documentation should begin with standard text (SA1643) -->
     <Rule Id="SA1614" Action="Error" /> <!-- Error SA1614: Element parameter documentation should have text (SA1614)-->

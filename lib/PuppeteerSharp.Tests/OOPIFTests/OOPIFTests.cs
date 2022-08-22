@@ -350,6 +350,6 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             Assert.Single(Page.Frames.Where(frame => !frame.HasStartedLoading));
         }
 
-        private IEnumerable<Target> Oopifs => Context.Targets().Where(target => target.TargetInfo.Type == TargetType.iFrame);
+        private IEnumerable<Target> Oopifs => Context.Targets().Where(target => target.TargetInfo.Type == TargetType.IFrame);
     }
 }
