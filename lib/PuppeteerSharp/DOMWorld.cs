@@ -133,7 +133,8 @@ namespace PuppeteerSharp
             }
 
             // Wait for other operation to finish
-            if (_settingUpBinding != null) {
+            if (_settingUpBinding != null)
+            {
                 await _settingUpBinding.ConfigureAwait(false);
                 await AddBindingToContextAsync(context, name).ConfigureAwait(false);
                 return;
@@ -591,7 +592,8 @@ namespace PuppeteerSharp
 
         internal Task<ElementHandle> GetDocumentAsync()
         {
-            if (_documentTask != null) {
+            if (_documentTask != null)
+            {
               return _documentTask;
             }
 
