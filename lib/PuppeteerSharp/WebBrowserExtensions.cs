@@ -12,6 +12,50 @@ namespace CefSharp.Dom
     {
         /// <summary>
         /// Asynchronously creates a new instance of <see cref="DevToolsContext"/>. It's reccommended that you only
+        /// create a single <see cref="DevToolsContext"/> per <see cref="IBrowser"/> instance. Store and reuse a single reference.
+        /// If you need to create multiple, make sure to Dispose of the previous instance before creating a new instance.
+        /// </summary>
+        /// <param name="browser">CEF Browser instance</param>
+        /// <param name="ignoreHTTPSerrors">ignore HTTPS errors</param>
+        /// <param name="factory">Logger factory</param>
+        /// <returns>A Task</returns>
+        public static async Task<DevToolsContext> CreateDevToolsContextAsync(this IBrowser browser, bool ignoreHTTPSerrors = false, ILoggerFactory factory = null)
+        {
+            if (browser == null)
+            {
+                throw new ArgumentNullException(nameof(browser));
+            }
+
+            if (browser.IsDisposed)
+            {
+                throw new ObjectDisposedException(browser.GetType().Name);
+            }
+
+            if (browser.IsValid)
+            {
+                throw new Exception("Invalid Browser");
+            }
+
+            DevToolsContext ctx;
+
+            var browserHost = browser.GetHost();
+
+            if (browserHost == null)
+            {
+                CefSharp.WebBrowserExtensions.ThrowExceptionIfBrowserHostNull(browserHost);
+            }
+
+#pragma warning disable CA2000 // Dispose objects before losing scope
+            var connection = DevToolsConnection.Attach(new CefSharpConnectionTransport(browserHost), factory);
+#pragma warning restore CA2000 // Dispose objects before losing scope
+
+            ctx = await DevToolsContext.CreateDevToolsContextAsync(connection, ignoreHTTPSerrors: ignoreHTTPSerrors).ConfigureAwait(false);
+
+            return ctx;
+        }
+
+        /// <summary>
+        /// Asynchronously creates a new instance of <see cref="DevToolsContext"/>. It's reccommended that you only
         /// create a single <see cref="DevToolsContext"/> per ChromiumWebBrowser instance. Store and reuse a single reference.
         /// If you need to create multiple, make sure to Dispose of the previous instance before creating a new instance.
         /// </summary>
