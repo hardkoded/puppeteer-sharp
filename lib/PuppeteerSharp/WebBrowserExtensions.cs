@@ -46,7 +46,7 @@ namespace CefSharp.Dom
             }
 
 #pragma warning disable CA2000 // Dispose objects before losing scope
-            var connection = DevToolsConnection.Attach(new CefSharpConnectionTransport(browserHost), factory);
+            var connection = DevToolsConnection.Attach(new CefSharpConnectionTransport(browser.Identifier, browserHost), factory);
 #pragma warning restore CA2000 // Dispose objects before losing scope
 
             ctx = await DevToolsContext.CreateDevToolsContextAsync(connection, ignoreHTTPSerrors: ignoreHTTPSerrors).ConfigureAwait(false);
@@ -99,7 +99,7 @@ namespace CefSharp.Dom
             }
 
 #pragma warning disable CA2000 // Dispose objects before losing scope
-            var connection = DevToolsConnection.Attach(new CefSharpConnectionTransport(browserHost), factory);
+            var connection = DevToolsConnection.Attach(new CefSharpConnectionTransport(chromiumWebBrowser.BrowserCore.Identifier, browserHost), factory);
 #pragma warning restore CA2000 // Dispose objects before losing scope
 
             ctx = await DevToolsContext.CreateDevToolsContextAsync(connection, ignoreHTTPSerrors: ignoreHTTPSerrors).ConfigureAwait(false);

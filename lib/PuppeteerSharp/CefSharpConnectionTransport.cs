@@ -13,6 +13,7 @@ namespace CefSharp.Dom
     /// </summary>
     public sealed class CefSharpConnectionTransport : IConnectionTransport, IDevToolsMessageObserver
     {
+        private readonly int _browserId;
         private readonly IBrowserHost _browserHost;
 
         /// <summary>
@@ -37,9 +38,11 @@ namespace CefSharp.Dom
         /// <summary>
         /// Creates a new <see cref="CefSharpConnectionTransport"/> instance
         /// </summary>
+        /// <param name="browserId">browser Identifier</param>
         /// <param name="browserHost">browserHost</param>
-        public CefSharpConnectionTransport(IBrowserHost browserHost)
+        public CefSharpConnectionTransport(int browserId, IBrowserHost browserHost)
         {
+            _browserId = browserId;
             _browserHost = browserHost;
 
             _devtoolsRegistration = _browserHost.AddDevToolsMessageObserver(this);
@@ -106,10 +109,21 @@ namespace CefSharp.Dom
         /// <inheritdoc/>
         void IDevToolsMessageObserver.OnDevToolsAgentDetached(IBrowser browser)
         {
-            IsClosed = true;
+            if (IsClosed)
+            {
+                return;
+            }
 
-            Disconnected?.Invoke(this, EventArgs.Empty);
-            Disconnected = null;
+            if (_browserId == browser.Identifier)
+            {
+                IsClosed = true;
+
+                _devtoolsRegistration?.Dispose();
+                _devtoolsRegistration = null;
+
+                Disconnected?.Invoke(this, EventArgs.Empty);
+                Disconnected = null;
+            }
         }
     }
 }
