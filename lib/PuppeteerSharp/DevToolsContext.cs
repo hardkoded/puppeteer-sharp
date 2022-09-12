@@ -2062,7 +2062,8 @@ namespace CefSharp.Dom
         {
             FrameManager = new FrameManager(Connection, this, _timeoutSettings);
 
-            Connection.MessageReceived += ClientMessageReceived;
+            Connection.MessageReceived += OnConnectionMessageReceived;
+            Connection.Disconnected += OnConnectionDisconnected;
             FrameManager.FrameAttached += (_, e) => FrameAttached?.Invoke(this, e);
             FrameManager.FrameDetached += (_, e) => FrameDetached?.Invoke(this, e);
             FrameManager.FrameNavigated += (_, e) => FrameNavigated?.Invoke(this, e);
@@ -2073,6 +2074,16 @@ namespace CefSharp.Dom
             FrameManager.NetworkManager.Response += (_, e) => Response?.Invoke(this, e);
             FrameManager.NetworkManager.RequestFinished += (_, e) => RequestFinished?.Invoke(this, e);
             FrameManager.NetworkManager.RequestServedFromCache += (_, e) => RequestServedFromCache?.Invoke(this, e);
+        }
+
+        private void OnConnectionDisconnected(object sender, EventArgs e)
+        {
+            // DevTools was disconnected, we'll mark ourselves as Disposed
+            // and unhook the event handlers
+            IsDisposed = true;
+
+            Connection.MessageReceived -= OnConnectionMessageReceived;
+            Connection.Disconnected -= OnConnectionDisconnected;
         }
 
         /// <summary>
@@ -2320,7 +2331,7 @@ namespace CefSharp.Dom
             return pixels / 96;
         }
 
-        private async void ClientMessageReceived(object sender, MessageEventArgs e)
+        private async void OnConnectionMessageReceived(object sender, MessageEventArgs e)
         {
             try
             {
@@ -2638,7 +2649,14 @@ namespace CefSharp.Dom
         /// the garbage collector can reclaim the memory that the <see cref="DevToolsContext"/> was occupying.</remarks>
         /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
         protected virtual void Dispose(bool disposing)
-            => _ = DisposeAsync();
+        {
+            if (IsDisposed)
+            {
+                return;
+            }
+
+            _ = DisposeAsync();
+        }
 
         /// <summary>
         /// Releases all resource used by the <see cref="DevToolsContext"/> object
@@ -2650,11 +2668,17 @@ namespace CefSharp.Dom
         /// <returns>ValueTask</returns>
         public async ValueTask DisposeAsync()
         {
+            if (IsDisposed)
+            {
+                return;
+            }
+
             GC.SuppressFinalize(this);
 
             IsDisposed = true;
 
-            Connection.MessageReceived -= ClientMessageReceived;
+            Connection.MessageReceived -= OnConnectionMessageReceived;
+            Connection.Disconnected -= OnConnectionDisconnected;
 
             await Task.WhenAll(
                Connection.SendAsync("Log.disable"),
@@ -2663,6 +2687,8 @@ namespace CefSharp.Dom
                Connection.SendAsync("Runtime.disable"),
                Connection.SendAsync("Page.setLifecycleEventsEnabled", new PageSetLifecycleEventsEnabledRequest { Enabled = false }),
                Connection.SendAsync("Page.disable")).ConfigureAwait(false);
+
+            Connection.Dispose();
         }
     }
 }

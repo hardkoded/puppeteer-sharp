@@ -9,7 +9,7 @@ namespace CefSharp.Dom.Transport
     public interface IConnectionTransport : IDisposable
     {
         /// <summary>
-        /// Gets a value indicating whether this <see cref="Transport.IConnectionTransport"/> is closed.
+        /// Gets a value indicating whether this <see cref="IConnectionTransport"/> is closed.
         /// </summary>
         bool IsClosed { get; }
         /// <summary>
@@ -30,5 +30,9 @@ namespace CefSharp.Dom.Transport
         /// Occurs when an error occurs processing the message.
         /// </summary>
         event EventHandler<MessageErrorEventArgs> MessageError;
+        /// <summary>
+        /// Occurs when the <see cref="IConnectionTransport"/> is disposed by a call to the Dispose() method.
+        /// </summary>
+        event EventHandler Disconnected;
     }
 }

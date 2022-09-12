@@ -29,6 +29,7 @@ namespace CefSharp.Dom
 
             Transport.MessageReceived += OnTransportMessageReceived;
             Transport.MessageError += OnTransportErrorReceived;
+            Transport.Disconnected += OnTransportDisposed;
             _callbacks = new ConcurrentDictionary<int, MessageTask>();
             MessageQueue = new AsyncMessageQueue(enqueueAsyncMessages, _logger);
         }
@@ -125,6 +126,9 @@ namespace CefSharp.Dom
             Transport.StopReading();
             Disconnected?.Invoke(this, new EventArgs());
 
+            MessageReceived = null;
+            Disconnected = null;
+
             foreach (var response in _callbacks.Values.ToArray())
             {
                 response.TaskWrapper.TrySetException(new TargetClosedException(
@@ -134,6 +138,17 @@ namespace CefSharp.Dom
 
             _callbacks.Clear();
             MessageQueue.Dispose();
+        }
+
+        private void OnTransportDisposed(object sender, EventArgs e)
+        {
+            IsClosed = true;
+            CloseReason = "Browser Disposed";
+
+            Disconnected?.Invoke(this, new EventArgs());
+
+            MessageReceived = null;
+            Disconnected = null;
         }
 
         private void OnTransportErrorReceived(object sender, MessageErrorEventArgs e)
@@ -232,6 +247,7 @@ namespace CefSharp.Dom
             Close("Connection disposed");
             Transport.MessageReceived -= OnTransportMessageReceived;
             Transport.MessageError -= OnTransportErrorReceived;
+            Transport.Disconnected -= OnTransportDisposed;
             Transport.Dispose();
         }
 
