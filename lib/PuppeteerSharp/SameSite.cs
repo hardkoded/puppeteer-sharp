@@ -24,6 +24,6 @@ namespace PuppeteerSharp
         /// <summary>
         /// Extended
         /// </summary>
-        Extended
+        Extended,
     }
 }

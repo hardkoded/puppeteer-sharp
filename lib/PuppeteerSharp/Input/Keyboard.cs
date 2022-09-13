@@ -54,7 +54,7 @@ namespace PuppeteerSharp.Input
                 UnmodifiedText = text,
                 AutoRepeat = autoRepeat,
                 Location = description.Location,
-                IsKeypad = description.Location == 3
+                IsKeypad = description.Location == 3,
             });
         }
 
@@ -77,7 +77,7 @@ namespace PuppeteerSharp.Input
                 Key = description.Key,
                 WindowsVirtualKeyCode = description.KeyCode,
                 Code = description.Code,
-                Location = description.Location
+                Location = description.Location,
             });
         }
 
@@ -89,7 +89,7 @@ namespace PuppeteerSharp.Input
         public Task SendCharacterAsync(string charText)
             => _client.SendAsync("Input.insertText", new InputInsertTextRequest
             {
-                Text = charText
+                Text = charText,
             });
 
         /// <summary>
@@ -178,7 +178,7 @@ namespace PuppeteerSharp.Input
                 KeyCode = 0,
                 Code = string.Empty,
                 Text = string.Empty,
-                Location = 0
+                Location = 0,
             };
 
             var definition = KeyDefinitions.Get(keyString);

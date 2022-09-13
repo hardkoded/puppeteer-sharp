@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Helpers
                 {
                     var response = await client.SendAsync<IOReadResponse>("IO.read", new IOReadRequest
                     {
-                        Handle = handle
+                        Handle = handle,
                     }).ConfigureAwait(false);
 
                     eof = response.Eof;
@@ -39,7 +39,7 @@ namespace PuppeteerSharp.Helpers
 
                 await client.SendAsync("IO.close", new IOCloseRequest
                 {
-                    Handle = handle
+                    Handle = handle,
                 }).ConfigureAwait(false);
 
                 return result.ToString();
@@ -62,7 +62,7 @@ namespace PuppeteerSharp.Helpers
                 {
                     var response = await client.SendAsync<IOReadResponse>("IO.read", new IOReadRequest
                     {
-                        Handle = handle
+                        Handle = handle,
                     }).ConfigureAwait(false);
 
                     eof = response.Eof;
@@ -77,7 +77,7 @@ namespace PuppeteerSharp.Helpers
 
                 await client.SendAsync("IO.close", new IOCloseRequest
                 {
-                    Handle = handle
+                    Handle = handle,
                 }).ConfigureAwait(false);
 
                 return result.ToArray();

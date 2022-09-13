@@ -125,7 +125,7 @@ namespace PuppeteerSharp
             {
                 Origin = origin,
                 BrowserContextId = _id,
-                Permissions = permissions.ToArray()
+                Permissions = permissions.ToArray(),
             });
 
         /// <summary>
@@ -135,7 +135,7 @@ namespace PuppeteerSharp
         public Task ClearPermissionOverridesAsync()
             => _connection.SendAsync("Browser.resetPermissions", new BrowserResetPermissionsRequest
             {
-                BrowserContextId = _id
+                BrowserContextId = _id,
             });
 
         internal void OnTargetCreated(Browser browser, TargetChangedArgs args) => TargetCreated?.Invoke(browser, args);

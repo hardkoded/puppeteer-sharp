@@ -26,6 +26,6 @@ namespace PuppeteerSharp
         /// <summary>
         /// Win64.
         /// </summary>
-        Win64
+        Win64,
     }
 }

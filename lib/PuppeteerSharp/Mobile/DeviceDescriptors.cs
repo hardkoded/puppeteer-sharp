@@ -22,8 +22,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 1,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.BlackberryPlayBookLandscape] = new DeviceDescriptor
             {
@@ -36,8 +36,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 1,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.BlackBerryZ30] = new DeviceDescriptor
             {
@@ -50,8 +50,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.BlackBerryZ30Landscape] = new DeviceDescriptor
             {
@@ -64,8 +64,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.GalaxyNote3] = new DeviceDescriptor
             {
@@ -78,8 +78,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 3,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.GalaxyNote3Landscape] = new DeviceDescriptor
             {
@@ -92,8 +92,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 3,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.GalaxyNoteII] = new DeviceDescriptor
             {
@@ -106,8 +106,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.GalaxyNoteIILandscape] = new DeviceDescriptor
             {
@@ -120,8 +120,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.GalaxySIII] = new DeviceDescriptor
             {
@@ -134,8 +134,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.GalaxySIIILandscape] = new DeviceDescriptor
             {
@@ -148,8 +148,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.GalaxyS5] = new DeviceDescriptor
             {
@@ -162,8 +162,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 3,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.GalaxyS5Landscape] = new DeviceDescriptor
             {
@@ -176,8 +176,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 3,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.GalaxyS8] = new DeviceDescriptor
             {
@@ -190,8 +190,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 3,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.GalaxyS8Landscape] = new DeviceDescriptor
             {
@@ -204,8 +204,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 3,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.GalaxyS9Plus] = new DeviceDescriptor
             {
@@ -218,8 +218,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 4.5,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.GalaxyS9PlusLandscape] = new DeviceDescriptor
             {
@@ -232,8 +232,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 4.5,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.GalaxyTabS4] = new DeviceDescriptor
             {
@@ -246,8 +246,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2.25,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.GalaxyTabS4Landscape] = new DeviceDescriptor
             {
@@ -260,8 +260,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2.25,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.IPad] = new DeviceDescriptor
             {
@@ -274,8 +274,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.IPadLandscape] = new DeviceDescriptor
             {
@@ -288,8 +288,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.IPadMini] = new DeviceDescriptor
             {
@@ -302,8 +302,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.IPadMiniLandscape] = new DeviceDescriptor
             {
@@ -316,8 +316,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.IPadPro] = new DeviceDescriptor
             {
@@ -330,8 +330,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.IPadProLandscape] = new DeviceDescriptor
             {
@@ -344,8 +344,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.IPhone4] = new DeviceDescriptor
             {
@@ -358,8 +358,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.IPhone4Landscape] = new DeviceDescriptor
             {
@@ -372,8 +372,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.IPhone5] = new DeviceDescriptor
             {
@@ -386,8 +386,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.IPhone5Landscape] = new DeviceDescriptor
             {
@@ -400,8 +400,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.IPhone6] = new DeviceDescriptor
             {
@@ -414,8 +414,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.IPhone6Landscape] = new DeviceDescriptor
             {
@@ -428,8 +428,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.IPhone6Plus] = new DeviceDescriptor
             {
@@ -442,8 +442,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 3,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.IPhone6PlusLandscape] = new DeviceDescriptor
             {
@@ -456,8 +456,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 3,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.IPhone7] = new DeviceDescriptor
             {
@@ -470,8 +470,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.IPhone7Landscape] = new DeviceDescriptor
             {
@@ -484,8 +484,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.IPhone7Plus] = new DeviceDescriptor
             {
@@ -498,8 +498,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 3,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.IPhone7PlusLandscape] = new DeviceDescriptor
             {
@@ -512,8 +512,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 3,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.IPhone8] = new DeviceDescriptor
             {
@@ -526,8 +526,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.IPhone8Landscape] = new DeviceDescriptor
             {
@@ -540,8 +540,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.IPhone8Plus] = new DeviceDescriptor
             {
@@ -554,8 +554,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 3,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.IPhone8PlusLandscape] = new DeviceDescriptor
             {
@@ -568,8 +568,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 3,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.IPhoneSE] = new DeviceDescriptor
             {
@@ -582,8 +582,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.IPhoneSELandscape] = new DeviceDescriptor
             {
@@ -596,8 +596,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.IPhoneX] = new DeviceDescriptor
             {
@@ -610,8 +610,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 3,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.IPhoneXLandscape] = new DeviceDescriptor
             {
@@ -624,8 +624,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 3,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.IPhoneXR] = new DeviceDescriptor
             {
@@ -638,8 +638,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 3,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.IPhoneXRLandscape] = new DeviceDescriptor
             {
@@ -652,8 +652,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 3,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.IPhone11] = new DeviceDescriptor
             {
@@ -666,8 +666,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.IPhone11Landscape] = new DeviceDescriptor
             {
@@ -680,8 +680,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.IPhone11Pro] = new DeviceDescriptor
             {
@@ -694,8 +694,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 3,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.IPhone11ProLandscape] = new DeviceDescriptor
             {
@@ -708,8 +708,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 3,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.IPhone11ProMax] = new DeviceDescriptor
             {
@@ -722,8 +722,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 3,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.IPhone11ProMaxLandscape] = new DeviceDescriptor
             {
@@ -736,8 +736,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 3,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.JioPhone2] = new DeviceDescriptor
             {
@@ -750,8 +750,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 1,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.JioPhone2Landscape] = new DeviceDescriptor
             {
@@ -764,8 +764,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 1,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.KindleFireHDX] = new DeviceDescriptor
             {
@@ -778,8 +778,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.KindleFireHDXLandscape] = new DeviceDescriptor
             {
@@ -792,8 +792,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.LGOptimusL70] = new DeviceDescriptor
             {
@@ -806,8 +806,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 1.25,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.LGOptimusL70Landscape] = new DeviceDescriptor
             {
@@ -820,8 +820,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 1.25,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.MicrosoftLumia550] = new DeviceDescriptor
             {
@@ -834,8 +834,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.MicrosoftLumia950] = new DeviceDescriptor
             {
@@ -848,8 +848,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 4,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.MicrosoftLumia950Landscape] = new DeviceDescriptor
             {
@@ -862,8 +862,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 4,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.Nexus10] = new DeviceDescriptor
             {
@@ -876,8 +876,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.Nexus10Landscape] = new DeviceDescriptor
             {
@@ -890,8 +890,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.Nexus4] = new DeviceDescriptor
             {
@@ -904,8 +904,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.Nexus4Landscape] = new DeviceDescriptor
             {
@@ -918,8 +918,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.Nexus5] = new DeviceDescriptor
             {
@@ -932,8 +932,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 3,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.Nexus5Landscape] = new DeviceDescriptor
             {
@@ -946,8 +946,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 3,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.Nexus5X] = new DeviceDescriptor
             {
@@ -960,8 +960,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2.625,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.Nexus5XLandscape] = new DeviceDescriptor
             {
@@ -974,8 +974,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2.625,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.Nexus6] = new DeviceDescriptor
             {
@@ -988,8 +988,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 3.5,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.Nexus6Landscape] = new DeviceDescriptor
             {
@@ -1002,8 +1002,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 3.5,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.Nexus6P] = new DeviceDescriptor
             {
@@ -1016,8 +1016,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 3.5,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.Nexus6PLandscape] = new DeviceDescriptor
             {
@@ -1030,8 +1030,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 3.5,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.Nexus7] = new DeviceDescriptor
             {
@@ -1044,8 +1044,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.Nexus7Landscape] = new DeviceDescriptor
             {
@@ -1058,8 +1058,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.NokiaLumia520] = new DeviceDescriptor
             {
@@ -1072,8 +1072,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 1.5,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.NokiaLumia520Landscape] = new DeviceDescriptor
             {
@@ -1086,8 +1086,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 1.5,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.NokiaN9] = new DeviceDescriptor
             {
@@ -1100,8 +1100,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 1,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.NokiaN9Landscape] = new DeviceDescriptor
             {
@@ -1114,8 +1114,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 1,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.Pixel2] = new DeviceDescriptor
             {
@@ -1128,8 +1128,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2.625,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.Pixel2Landscape] = new DeviceDescriptor
             {
@@ -1142,8 +1142,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2.625,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.Pixel2XL] = new DeviceDescriptor
             {
@@ -1156,8 +1156,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 3.5,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.Pixel2XLLandscape] = new DeviceDescriptor
             {
@@ -1170,8 +1170,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 3.5,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.Pixel3] = new DeviceDescriptor
             {
@@ -1184,8 +1184,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2.75,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.Pixel3Landscape] = new DeviceDescriptor
             {
@@ -1198,8 +1198,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 2.75,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
+                    IsLandscape = true,
+                },
             },
             [DeviceDescriptorName.Pixel4] = new DeviceDescriptor
             {
@@ -1212,8 +1212,8 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 3,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = false
-                }
+                    IsLandscape = false,
+                },
             },
             [DeviceDescriptorName.Pixel4Landscape] = new DeviceDescriptor
             {
@@ -1226,12 +1226,12 @@ namespace PuppeteerSharp.Mobile
                     DeviceScaleFactor = 3,
                     IsMobile = true,
                     HasTouch = true,
-                    IsLandscape = true
-                }
-            }
+                    IsLandscape = true,
+                },
+            },
         };
 
-        private static Lazy<IReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor>> _readOnlyDevices =
+        private static readonly Lazy<IReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor>> _readOnlyDevices =
             new Lazy<IReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor>>(() => new ReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor>(Devices));
 
         internal static IReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor> ToReadOnly() => _readOnlyDevices.Value;

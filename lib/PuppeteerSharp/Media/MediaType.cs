@@ -22,6 +22,6 @@ namespace PuppeteerSharp.Media
         /// No media set
         /// </summary>
         [EnumMember(Value = "")]
-        None
+        None,
     }
 }

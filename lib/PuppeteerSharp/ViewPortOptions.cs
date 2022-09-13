@@ -52,7 +52,7 @@ namespace PuppeteerSharp
         public static ViewPortOptions Default => new ViewPortOptions
         {
             Width = 800,
-            Height = 600
+            Height = 600,
         };
     }
 }

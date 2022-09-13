@@ -63,7 +63,7 @@ namespace PuppeteerSharp
             => _client.SendAsync("Page.handleJavaScriptDialog", new PageHandleJavaScriptDialogRequest
             {
                 Accept = true,
-                PromptText = promptText
+                PromptText = promptText,
             });
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace PuppeteerSharp
         public Task Dismiss()
             => _client.SendAsync("Page.handleJavaScriptDialog", new PageHandleJavaScriptDialogRequest
             {
-                Accept = false
+                Accept = false,
             });
     }
 }

@@ -16,6 +16,6 @@ namespace PuppeteerSharp.PageAccessibility
         /// <summary>
         /// Mixed.
         /// </summary>
-        Mixed
+        Mixed,
     }
 }

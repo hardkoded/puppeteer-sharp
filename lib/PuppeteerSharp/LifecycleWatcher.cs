@@ -17,7 +17,7 @@ namespace PuppeteerSharp
                 [WaitUntilNavigation.Load] = "load",
                 [WaitUntilNavigation.DOMContentLoaded] = "DOMContentLoaded",
                 [WaitUntilNavigation.Networkidle0] = "networkIdle",
-                [WaitUntilNavigation.Networkidle2] = "networkAlmostIdle"
+                [WaitUntilNavigation.Networkidle2] = "networkAlmostIdle",
             };
 
         private static readonly WaitUntilNavigation[] _defaultWaitUntil = { WaitUntilNavigation.Load };

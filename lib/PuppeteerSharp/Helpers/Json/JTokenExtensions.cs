@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Helpers.Json
                 return token.ToObject<T>(new JsonSerializerSettings
                 {
                     ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                    NullValueHandling = NullValueHandling.Ignore
+                    NullValueHandling = NullValueHandling.Ignore,
                 });
             }
 
