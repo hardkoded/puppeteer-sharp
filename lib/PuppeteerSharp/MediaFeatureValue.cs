@@ -12,6 +12,7 @@ namespace PuppeteerSharp
         /// </summary>
         [JsonProperty(PropertyName = "name")]
         public MediaFeature MediaFeature { get; set; }
+
         /// <summary>
         /// The value for the given CSS media feature.
         /// </summary>

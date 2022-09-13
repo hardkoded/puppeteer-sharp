@@ -18,11 +18,13 @@ namespace PuppeteerSharp
             Title = title;
             Metrics = metrics;
         }
+
         /// <summary>
         /// Gets the title.
         /// </summary>
         /// <value>The title.</value>
         public string Title { get; }
+
         /// <summary>
         /// Gets the metrics.
         /// </summary>

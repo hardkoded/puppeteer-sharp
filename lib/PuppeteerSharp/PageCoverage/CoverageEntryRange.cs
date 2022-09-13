@@ -10,6 +10,7 @@ namespace PuppeteerSharp.PageCoverage
         /// </summary>
         /// <value>Start offset.</value>
         public int Start { get; internal set; }
+
         /// <summary>
         /// An end offset in text, exclusive.
         /// </summary>

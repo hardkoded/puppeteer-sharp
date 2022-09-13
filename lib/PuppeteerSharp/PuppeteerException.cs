@@ -15,6 +15,7 @@ namespace PuppeteerSharp
         public PuppeteerException()
         {
         }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="PuppeteerException"/> class.
         /// </summary>
@@ -22,6 +23,7 @@ namespace PuppeteerSharp
         public PuppeteerException(string message) : base(message)
         {
         }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="PuppeteerException"/> class.
         /// </summary>
@@ -30,6 +32,7 @@ namespace PuppeteerSharp
         public PuppeteerException(string message, Exception innerException) : base(message, innerException)
         {
         }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="PuppeteerException"/> class.
         /// </summary>

@@ -13,14 +13,17 @@ namespace PuppeteerSharp
         /// None
         /// </summary>
         None,
+
         /// <summary>
         /// Strict
         /// </summary>
         Strict,
+
         /// <summary>
         /// Lax
         /// </summary>
         Lax,
+
         /// <summary>
         /// Extended
         /// </summary>

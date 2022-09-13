@@ -12,14 +12,17 @@ namespace PuppeteerSharp
         /// Alert dialog.
         /// </summary>
         Alert,
+
         /// <summary>
         /// Prompt dialog.
         /// </summary>
         Prompt,
+
         /// <summary>
         /// Confirm dialog.
         /// </summary>
         Confirm,
+
         /// <summary>
         /// Before unload dialog.
         /// </summary>
