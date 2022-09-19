@@ -48,6 +48,6 @@ namespace PuppeteerSharp.Messaging
         /// <summary>
         /// Bigint.
         /// </summary>
-        Bigint
+        Bigint,
     }
 }

@@ -19,6 +19,6 @@ namespace PuppeteerSharp
         /// prefers-reduced-motion media feature.
         /// </summary>
         [EnumMember(Value = "prefers-reduced-motion")]
-        PrefersReducedMotion
+        PrefersReducedMotion,
     }
 }

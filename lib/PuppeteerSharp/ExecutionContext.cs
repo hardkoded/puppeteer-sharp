@@ -129,7 +129,7 @@ namespace PuppeteerSharp
 
             var response = await Client.SendAsync<RuntimeQueryObjectsResponse>("Runtime.queryObjects", new RuntimeQueryObjectsRequest
             {
-                PrototypeObjectId = prototypeHandle.RemoteObject.ObjectId
+                PrototypeObjectId = prototypeHandle.RemoteObject.ObjectId,
             }).ConfigureAwait(false);
 
             return CreateJSHandle(response.Objects);
@@ -148,7 +148,7 @@ namespace PuppeteerSharp
                 ["contextId"] = _contextId,
                 ["returnByValue"] = returnByValue,
                 ["awaitPromise"] = true,
-                ["userGesture"] = true
+                ["userGesture"] = true,
             });
 
         private Task<RemoteObject> EvaluateFunctionInternalAsync(bool returnByValue, string script, params object[] args)
@@ -159,7 +159,7 @@ namespace PuppeteerSharp
                 Arguments = args.Select(FormatArgument),
                 ReturnByValue = returnByValue,
                 AwaitPromise = true,
-                UserGesture = true
+                UserGesture = true,
             });
 
         private async Task<RemoteObject> ExecuteEvaluationAsync(string method, object args)
@@ -225,7 +225,7 @@ namespace PuppeteerSharp
             }
             return new RuntimeCallFunctionOnRequestArgument
             {
-                Value = arg
+                Value = arg,
             };
         }
 
@@ -253,7 +253,7 @@ namespace PuppeteerSharp
             var obj = await Client.SendAsync<DomResolveNodeResponse>("DOM.resolveNode", new DomResolveNodeRequest
             {
                 BackendNodeId = backendNodeId,
-                ExecutionContextId = _contextId
+                ExecutionContextId = _contextId,
             }).ConfigureAwait(false);
 
             return CreateJSHandle(obj.Object) as ElementHandle;
@@ -272,13 +272,13 @@ namespace PuppeteerSharp
 
             var nodeInfo = await Client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
             {
-                ObjectId = elementHandle.RemoteObject.ObjectId
+                ObjectId = elementHandle.RemoteObject.ObjectId,
             }).ConfigureAwait(false);
 
             var obj = await Client.SendAsync<DomResolveNodeResponse>("DOM.resolveNode", new DomResolveNodeRequest
             {
                 BackendNodeId = nodeInfo.Node.BackendNodeId,
-                ExecutionContextId = _contextId
+                ExecutionContextId = _contextId,
             }).ConfigureAwait(false);
 
             return CreateJSHandle(obj.Object) as ElementHandle;

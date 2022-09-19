@@ -27,6 +27,6 @@ namespace PuppeteerSharp.Input
         /// <summary>
         /// The middle mouse button
         /// </summary>
-        Middle
+        Middle,
     }
 }

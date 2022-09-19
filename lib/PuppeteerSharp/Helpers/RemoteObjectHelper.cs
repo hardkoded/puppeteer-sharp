@@ -115,7 +115,7 @@ namespace PuppeteerSharp.Helpers
             {
                 await client.SendAsync("Runtime.releaseObject", new RuntimeReleaseObjectRequest
                 {
-                    ObjectId = remoteObject.ObjectId
+                    ObjectId = remoteObject.ObjectId,
                 }).ConfigureAwait(false);
             }
             catch (Exception ex)

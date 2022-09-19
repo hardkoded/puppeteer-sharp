@@ -13,6 +13,6 @@ namespace PuppeteerSharp
         /// <summary>
         /// PNG type.
         /// </summary>
-        Png
+        Png,
     }
 }

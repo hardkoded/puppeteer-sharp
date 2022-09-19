@@ -17,6 +17,6 @@ namespace PuppeteerSharp
         /// <summary>
         /// To execute <c>pageFunction</c> on every DOM mutation.
         /// </summary>
-        Mutation
+        Mutation,
     }
 }

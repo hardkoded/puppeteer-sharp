@@ -352,6 +352,6 @@ namespace PuppeteerSharp.Mobile
         /// <summary>
         /// Pixel 4 landscape
         /// </summary>
-        Pixel4Landscape
+        Pixel4Landscape,
     }
 }

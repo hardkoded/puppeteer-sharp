@@ -12,6 +12,6 @@ namespace PuppeteerSharp.Messaging
         [EnumMember(Value = "fallback")]
         Fallback,
         [EnumMember(Value = "cancel")]
-        Cancel
+        Cancel,
     }
 }

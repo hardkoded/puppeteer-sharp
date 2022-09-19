@@ -22,6 +22,6 @@ namespace PuppeteerSharp.Helpers.Linux
         UserReadWriteExecute = UserRead | UserWrite | UserExecute,
 
         DefaultPermissions = OtherWrite | OtherRead | GroupWrite | GroupRead | UserWrite | UserRead,
-        AllPermissions = DefaultPermissions | OtherExecute | GroupExecute | UserExecute
+        AllPermissions = DefaultPermissions | OtherExecute | GroupExecute | UserExecute,
     }
 }

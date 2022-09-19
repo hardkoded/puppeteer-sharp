@@ -78,6 +78,6 @@ namespace PuppeteerSharp
         /// <summary>
         /// Other.
         /// </summary>
-        Other
+        Other,
     }
 }

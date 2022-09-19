@@ -97,7 +97,7 @@ namespace PuppeteerSharp.PageCoverage
                 {
                     Url = url,
                     Ranges = ranges,
-                    Text = text
+                    Text = text,
                 });
             }
             return coverage.ToArray();
@@ -136,7 +136,7 @@ namespace PuppeteerSharp.PageCoverage
             {
                 var response = await _client.SendAsync<CssGetStyleSheetTextResponse>("CSS.getStyleSheetText", new CssGetStyleSheetTextRequest
                 {
-                    StyleSheetId = styleSheetAddedResponse.Header.StyleSheetId
+                    StyleSheetId = styleSheetAddedResponse.Header.StyleSheetId,
                 }).ConfigureAwait(false);
 
                 _stylesheets.TryAdd(styleSheetAddedResponse.Header.StyleSheetId, (styleSheetAddedResponse.Header.SourceURL, response.Text));

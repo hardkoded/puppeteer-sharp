@@ -80,6 +80,6 @@ namespace PuppeteerSharp
         /// Idle detection.
         /// </summary>
         [EnumMember(Value = "idleDetection")]
-        IdleDetection
+        IdleDetection,
     }
 }

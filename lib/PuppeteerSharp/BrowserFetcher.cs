@@ -239,7 +239,7 @@ namespace PuppeteerSharp
                 FolderPath = GetFolderPath(revision),
                 Url = GetDownloadURL(Product, Platform, DownloadHost, revision),
                 Revision = revision,
-                Platform = Platform
+                Platform = Platform,
             };
             result.ExecutablePath = GetExecutablePath(Product, Platform, revision, result.FolderPath);
             result.Local = new DirectoryInfo(result.FolderPath).Exists;
@@ -369,7 +369,7 @@ namespace PuppeteerSharp
 
                 using var process = new Process
                 {
-                    EnableRaisingEvents = true
+                    EnableRaisingEvents = true,
                 };
 
                 process.StartInfo.FileName = "hdiutil";

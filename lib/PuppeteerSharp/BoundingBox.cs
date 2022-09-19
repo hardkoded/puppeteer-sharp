@@ -59,7 +59,7 @@ namespace PuppeteerSharp
                 X = X,
                 Y = Y,
                 Width = Width,
-                Height = Height
+                Height = Height,
             };
         }
 

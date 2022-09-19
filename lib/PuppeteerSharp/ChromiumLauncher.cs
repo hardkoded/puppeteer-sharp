@@ -116,7 +116,7 @@ namespace PuppeteerSharp
                 {
                     "--headless",
                     "--hide-scrollbars",
-                    "--mute-audio"
+                    "--mute-audio",
                 });
             }
 

@@ -80,6 +80,6 @@ namespace PuppeteerSharp.Messaging
         /// <summary>
         /// Dataview.
         /// </summary>
-        Dataview
+        Dataview,
     }
 }

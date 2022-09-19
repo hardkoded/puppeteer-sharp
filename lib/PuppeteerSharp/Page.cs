@@ -56,7 +56,7 @@ namespace PuppeteerSharp
             { "px", 1 },
             { "in", 96 },
             { "cm", 37.8m },
-            { "mm", 3.78m }
+            { "mm", 3.78m },
         };
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace PuppeteerSharp
             "ScriptDuration",
             "TaskDuration",
             "JSHeapUsedSize",
-            "JSHeapTotalSize"
+            "JSHeapTotalSize",
         };
 
         private Page(
@@ -593,7 +593,7 @@ namespace PuppeteerSharp
             var source = EvaluationString(pageFunction, args);
             return Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new PageAddScriptToEvaluateOnNewDocumentRequest
             {
-                Source = source
+                Source = source,
             });
         }
 
@@ -616,7 +616,7 @@ namespace PuppeteerSharp
         public Task EvaluateExpressionOnNewDocumentAsync(string expression)
             => Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new PageAddScriptToEvaluateOnNewDocumentRequest
             {
-                Source = expression
+                Source = expression,
             });
 
         /// <summary>
@@ -669,7 +669,7 @@ namespace PuppeteerSharp
         public async Task<CookieParam[]> GetCookiesAsync(params string[] urls)
             => (await Client.SendAsync<NetworkGetCookiesResponse>("Network.getCookies", new NetworkGetCookiesRequest
             {
-                Urls = urls.Length > 0 ? urls : new string[] { Url }
+                Urls = urls.Length > 0 ? urls : new string[] { Url },
             }).ConfigureAwait(false)).Cookies;
 
         /// <summary>
@@ -697,7 +697,7 @@ namespace PuppeteerSharp
             {
                 await Client.SendAsync("Network.setCookies", new NetworkSetCookiesRequest
                 {
-                    Cookies = cookies
+                    Cookies = cookies,
                 }).ConfigureAwait(false);
             }
         }
@@ -1049,7 +1049,7 @@ namespace PuppeteerSharp
                 MarginLeft = marginLeft,
                 MarginRight = marginRight,
                 PageRanges = options.PageRanges,
-                PreferCSSPageSize = options.PreferCSSPageSize
+                PreferCSSPageSize = options.PreferCSSPageSize,
             }).ConfigureAwait(false);
 
             if (options.OmitBackground)
@@ -1074,7 +1074,7 @@ namespace PuppeteerSharp
             JavascriptEnabled = enabled;
             return Client.SendAsync("Emulation.setScriptExecutionDisabled", new EmulationSetScriptExecutionDisabledRequest
             {
-                Value = !enabled
+                Value = !enabled,
             });
         }
 
@@ -1089,7 +1089,7 @@ namespace PuppeteerSharp
         /// </remarks>
         public Task SetBypassCSPAsync(bool enabled) => Client.SendAsync("Page.setBypassCSP", new PageSetBypassCSPRequest
         {
-            Enabled = enabled
+            Enabled = enabled,
         });
 
         /// <summary>
@@ -1388,7 +1388,7 @@ namespace PuppeteerSharp
 
                 return Client.Connection.SendAsync("Target.closeTarget", new TargetCloseTargetRequest
                 {
-                    TargetId = Target.TargetId
+                    TargetId = Target.TargetId,
                 }).ContinueWith(task => Target.CloseTask, TaskScheduler.Default);
             }
 
@@ -1719,7 +1719,7 @@ namespace PuppeteerSharp
 
             var idleTimer = new Timer
             {
-                Interval = idleTime
+                Interval = idleTime,
             };
 
             idleTimer.Elapsed += (sender, args) =>
@@ -2013,7 +2013,7 @@ namespace PuppeteerSharp
             {
                 await Client.SendAsync("Page.setInterceptFileChooserDialog", new PageSetInterceptFileChooserDialog
                 {
-                    Enabled = true
+                    Enabled = true,
                 }).ConfigureAwait(false);
             }
 
@@ -2097,7 +2097,7 @@ namespace PuppeteerSharp
             {
                 await Client.SendAsync("Emulation.setTimezoneOverride", new EmulateTimezoneRequest
                 {
-                    TimezoneId = timezoneId ?? string.Empty
+                    TimezoneId = timezoneId ?? string.Empty,
                 }).ConfigureAwait(false);
             }
             catch (Exception ex) when (ex.Message.Contains("Invalid timezone"))
@@ -2154,7 +2154,7 @@ namespace PuppeteerSharp
 
             return Client.SendAsync("Emulation.setCPUThrottlingRate", new EmulationSetCPUThrottlingRateRequest
             {
-                Rate = factor ?? 1
+                Rate = factor ?? 1,
             });
         }
 
@@ -2199,7 +2199,7 @@ namespace PuppeteerSharp
                {
                    AutoAttach = true,
                    WaitForDebuggerOnStart = false,
-                   Flatten = true
+                   Flatten = true,
                }),
                Client.SendAsync("Performance.enable", null),
                Client.SendAsync("Log.enable", null)).ConfigureAwait(false);
@@ -2220,7 +2220,7 @@ namespace PuppeteerSharp
                 waitTask,
                 Client.SendAsync("Page.navigateToHistoryEntry", new PageNavigateToHistoryEntryRequest
                 {
-                    EntryId = entry.Id
+                    EntryId = entry.Id,
                 })).ConfigureAwait(false);
 
             return waitTask.Result;
@@ -2247,7 +2247,7 @@ namespace PuppeteerSharp
             {
                 await Client.SendAsync("Target.activateTarget", new TargetActivateTargetRequest
                 {
-                    TargetId = Target.TargetId
+                    TargetId = Target.TargetId,
                 }).ConfigureAwait(false);
             }
 
@@ -2278,7 +2278,7 @@ namespace PuppeteerSharp
                         Y = 0,
                         Width = width,
                         Height = height,
-                        Scale = 1
+                        Scale = 1,
                     };
 
                     var isMobile = Viewport?.IsMobile ?? false;
@@ -2288,12 +2288,12 @@ namespace PuppeteerSharp
                         ? new ScreenOrientation
                         {
                             Angle = 90,
-                            Type = ScreenOrientationType.LandscapePrimary
+                            Type = ScreenOrientationType.LandscapePrimary,
                         }
                         : new ScreenOrientation
                         {
                             Angle = 0,
-                            Type = ScreenOrientationType.PortraitPrimary
+                            Type = ScreenOrientationType.PortraitPrimary,
                         };
 
                     await Client.SendAsync("Emulation.setDeviceMetricsOverride", new EmulationSetDeviceMetricsOverrideRequest
@@ -2302,7 +2302,7 @@ namespace PuppeteerSharp
                         Width = width,
                         Height = height,
                         DeviceScaleFactor = deviceScaleFactor,
-                        ScreenOrientation = screenOrientation
+                        ScreenOrientation = screenOrientation,
                     }).ConfigureAwait(false);
                 }
 
@@ -2314,7 +2314,7 @@ namespace PuppeteerSharp
 
             var screenMessage = new PageCaptureScreenshotRequest
             {
-                Format = type.ToString().ToLower(CultureInfo.CurrentCulture)
+                Format = type.ToString().ToLower(CultureInfo.CurrentCulture),
             };
 
             if (options.Quality.HasValue)
@@ -2352,7 +2352,7 @@ namespace PuppeteerSharp
                 Y = y,
                 Width = Math.Round(clip.Width + clip.X - x, MidpointRounding.AwayFromZero),
                 Height = Math.Round(clip.Height + clip.Y - y, MidpointRounding.AwayFromZero),
-                Scale = clip.Scale
+                Scale = clip.Scale,
             };
         }
 
@@ -2376,8 +2376,8 @@ namespace PuppeteerSharp
                     R = 0,
                     G = 0,
                     B = 0,
-                    A = 0
-                }
+                    A = 0,
+                },
             });
 
         private decimal ConvertPrintParameterToInches(object parameter)
@@ -2482,7 +2482,7 @@ namespace PuppeteerSharp
                 {
                     await Client.SendAsync("Page.handleFileChooser", new PageHandleFileChooserRequest
                     {
-                        Action = FileChooserAction.Fallback
+                        Action = FileChooserAction.Fallback,
                     }).ConfigureAwait(false);
                     return;
                 }
@@ -2546,7 +2546,7 @@ namespace PuppeteerSharp
             Client.Send("Runtime.evaluate", new
             {
                 expression,
-                contextId = e.ExecutionContextId
+                contextId = e.ExecutionContextId,
             });
         }
 
@@ -2594,7 +2594,7 @@ namespace PuppeteerSharp
                 {
                     await Client.SendAsync("Target.detachFromTarget", new TargetDetachFromTargetRequest
                     {
-                        SessionId = sessionId
+                        SessionId = sessionId,
                     }).ConfigureAwait(false);
                 }
                 catch (Exception ex)
@@ -2628,7 +2628,7 @@ namespace PuppeteerSharp
                     new ConsoleMessageLocation
                     {
                         URL = e.Entry.URL,
-                        LineNumber = e.Entry.LineNumber
+                        LineNumber = e.Entry.LineNumber,
                     })));
             }
         }
@@ -2739,7 +2739,7 @@ namespace PuppeteerSharp
             await Client.SendAsync("Runtime.addBinding", new RuntimeAddBindingRequest { Name = name }).ConfigureAwait(false);
             await Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new PageAddScriptToEvaluateOnNewDocumentRequest
             {
-                Source = expression
+                Source = expression,
             }).ConfigureAwait(false);
 
             await Task.WhenAll(Frames.Select(

@@ -38,7 +38,7 @@ namespace PuppeteerSharp.Input
             await _client.SendAsync("Runtime.evaluate", new RuntimeEvaluateRequest
             {
                 Expression = "new Promise(x => requestAnimationFrame(() => requestAnimationFrame(x)))",
-                AwaitPromise = true
+                AwaitPromise = true,
             }).ConfigureAwait(false);
 
             var touchPoints = new[] { new TouchPoint { X = Math.Round(x), Y = Math.Round(y) } };
@@ -46,13 +46,13 @@ namespace PuppeteerSharp.Input
             {
                 Type = "touchStart",
                 TouchPoints = touchPoints,
-                Modifiers = _keyboard.Modifiers
+                Modifiers = _keyboard.Modifiers,
             }).ConfigureAwait(false);
             await _client.SendAsync("Input.dispatchTouchEvent", new InputDispatchTouchEventRequest
             {
                 Type = "touchEnd",
                 TouchPoints = Array.Empty<TouchPoint>(),
-                Modifiers = _keyboard.Modifiers
+                Modifiers = _keyboard.Modifiers,
             }).ConfigureAwait(false);
         }
     }

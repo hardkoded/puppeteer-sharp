@@ -62,14 +62,14 @@ namespace PuppeteerSharp.PageCoverage
                 {
                     Offset = range.StartOffset,
                     Type = 0,
-                    Range = range
+                    Range = range,
                 });
 
                 points.Add(new CoverageEntryPoint
                 {
                     Offset = range.EndOffset,
                     Type = 1,
-                    Range = range
+                    Range = range,
                 });
             }
 
@@ -94,7 +94,7 @@ namespace PuppeteerSharp.PageCoverage
                         results.Add(new CoverageEntryRange
                         {
                             Start = lastOffset,
-                            End = point.Offset
+                            End = point.Offset,
                         });
                     }
                 }

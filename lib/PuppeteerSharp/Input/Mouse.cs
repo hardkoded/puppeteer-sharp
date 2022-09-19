@@ -52,7 +52,7 @@ namespace PuppeteerSharp.Input
                     Button = _button,
                     X = fromX + ((_x - fromX) * ((decimal)i / steps)),
                     Y = fromY + ((_y - fromY) * ((decimal)i / steps)),
-                    Modifiers = _keyboard.Modifiers
+                    Modifiers = _keyboard.Modifiers,
                 }).ConfigureAwait(false);
             }
         }
@@ -104,7 +104,7 @@ namespace PuppeteerSharp.Input
                 X = _x,
                 Y = _y,
                 Modifiers = _keyboard.Modifiers,
-                ClickCount = options.ClickCount
+                ClickCount = options.ClickCount,
             });
         }
 
@@ -126,7 +126,7 @@ namespace PuppeteerSharp.Input
                 X = _x,
                 Y = _y,
                 Modifiers = _keyboard.Modifiers,
-                ClickCount = options.ClickCount
+                ClickCount = options.ClickCount,
             });
         }
 
@@ -147,7 +147,7 @@ namespace PuppeteerSharp.Input
                     X = _x,
                     Y = _y,
                     Modifiers = _keyboard.Modifiers,
-                    PointerType = PointerType.Mouse
+                    PointerType = PointerType.Mouse,
                 });
 
         /// <summary>

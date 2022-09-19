@@ -139,7 +139,7 @@ namespace PuppeteerSharp
                 callback = new MessageTask
                 {
                     TaskWrapper = new TaskCompletionSource<JObject>(TaskCreationOptions.RunContinuationsAsynchronously),
-                    Method = method
+                    Method = method,
                 };
                 _callbacks[id] = callback;
             }
@@ -173,7 +173,7 @@ namespace PuppeteerSharp
 
             return Connection.SendAsync("Target.detachFromTarget", new TargetDetachFromTargetRequest
             {
-                SessionId = Id
+                SessionId = Id,
             });
         }
 
@@ -193,7 +193,7 @@ namespace PuppeteerSharp
                 MessageReceived?.Invoke(this, new MessageEventArgs
                 {
                     MessageID = method,
-                    MessageData = obj.Params
+                    MessageData = obj.Params,
                 });
             }
         }
