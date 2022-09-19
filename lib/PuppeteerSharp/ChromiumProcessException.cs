@@ -18,7 +18,7 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ProcessException"/> class.
+        /// Initializes a new instance of the <see cref="ChromiumProcessException"/> class.
         /// </summary>
         /// <param name="message">Message.</param>
         public ChromiumProcessException(string message) : base(message)
@@ -26,7 +26,7 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ProcessException"/> class.
+        /// Initializes a new instance of the <see cref="ChromiumProcessException"/> class.
         /// </summary>
         /// <param name="message">Message.</param>
         /// <param name="innerException">Inner exception.</param>

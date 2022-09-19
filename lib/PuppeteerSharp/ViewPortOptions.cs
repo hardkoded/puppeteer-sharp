@@ -38,7 +38,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets or sets if viewport is in landscape mode.
         /// </summary>
-        ///<value>Specifies if viewport is in landscape mode. Defaults to <c>false</c>.</value>
+        /// <value>Specifies if viewport is in landscape mode. Defaults to <c>false</c>.</value>
         public bool IsLandscape { get; set; }
         /// <summary>
         /// Gets or sets if viewport supports touch events.

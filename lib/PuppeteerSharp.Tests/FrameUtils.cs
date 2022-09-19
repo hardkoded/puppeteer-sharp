@@ -6,9 +6,12 @@ namespace PuppeteerSharp.Tests
 {
     public static class FrameUtils
     {
-        public static async Task<IFrame> AttachFrameAsync(IPage page, string frameId, string url)
+        public static Task<IFrame> AttachFrameAsync(IPage page, string frameId, string url)
+            => AttachFrameAsync(page.MainFrame, frameId, url);
+
+        public static async Task<IFrame> AttachFrameAsync(IFrame frame, string frameId, string url)
         {
-            var handle = (IElementHandle)await page.EvaluateFunctionHandleAsync(@" async (frameId, url) => {
+            var handle = (IElementHandle)await frame.EvaluateFunctionHandleAsync(@" async (frameId, url) => {
               const frame = document.createElement('iframe');
               frame.src = url;
               frame.id = frameId;
@@ -19,13 +22,14 @@ namespace PuppeteerSharp.Tests
             return await handle.ContentFrameAsync();
         }
 
-        public static async Task DetachFrameAsync(IPage page, string frameId)
-        {
-            await page.EvaluateFunctionAsync(@"function detachFrame(frameId) {
-              const frame = document.getElementById(frameId);
-              frame.remove();
-            }", frameId);
-        }
+        public static Task DetachFrameAsync(IPage page, string frameId)
+            => DetachFrameAsync(page.MainFrame, frameId);
+
+        public static Task DetachFrameAsync(IFrame frame, string frameId)
+            => frame.EvaluateFunctionAsync(@"function detachFrame(frameId) {
+                  const frame = document.getElementById(frameId);
+                  frame.remove();
+                }", frameId);
 
         public static IEnumerable<string> DumpFrames(IFrame frame, string indentation = "")
         {
@@ -35,7 +39,7 @@ namespace PuppeteerSharp.Tests
                 description += $" ({frame.Name})";
             }
             var result = new List<string>() { description };
-            foreach (var child in frame.ChildFrames)
+            foreach (Frame child in frame.ChildFrames)
             {
                 result.AddRange(DumpFrames(child, "    " + indentation));
             }
@@ -43,9 +47,12 @@ namespace PuppeteerSharp.Tests
             return result;
         }
 
-        internal static async Task NavigateFrameAsync(IPage page, string frameId, string url)
+        internal static Task NavigateFrameAsync(IPage page, string frameId, string url)
+            => NavigateFrameAsync(page.MainFrame, frameId, url);
+
+        internal static async Task NavigateFrameAsync(IFrame frame, string frameId, string url)
         {
-            await page.EvaluateFunctionAsync(@"function navigateFrame(frameId, url) {
+            await frame.EvaluateFunctionAsync(@"function navigateFrame(frameId, url) {
               const frame = document.getElementById(frameId);
               frame.src = url;
               return new Promise(x => frame.onload = x);

@@ -13,9 +13,9 @@ namespace PuppeteerSharp
     [JsonConverter(typeof(JSHandleMethodConverter))]
     public class JSHandle : IJSHandle
     {
-        private readonly ExecutionContext _executionContext;
+        private readonly IExecutionContext _executionContext;
 
-        internal JSHandle(ExecutionContext context, CDPSession client, RemoteObject remoteObject)
+        internal JSHandle(IExecutionContext context, CDPSession client, RemoteObject remoteObject)
         {
             _executionContext = context;
             Client = client;
@@ -74,7 +74,7 @@ namespace PuppeteerSharp
                     continue;
                 }
 
-                result.Add(property.Name, _executionContext.CreateJSHandle(property.Value));
+                result.Add(property.Name, ((ExecutionContext)_executionContext).CreateJSHandle(property.Value));
             }
             return result;
         }

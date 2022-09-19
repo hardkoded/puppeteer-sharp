@@ -1,17 +1,17 @@
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// Represents a <see cref="BoxModel"/> point
+    /// Represents a point
     /// </summary>
     public struct BoxModelPoint
     {
         /// <summary>
-        /// Gets the X point
+        /// The X coordinate
         /// </summary>
         public decimal X { get; set; }
 
         /// <summary>
-        /// Gets the y point
+        /// The y coordinate
         /// </summary>
         public decimal Y { get; set; }
     }

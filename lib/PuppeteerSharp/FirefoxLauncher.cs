@@ -15,12 +15,13 @@ namespace PuppeteerSharp
     /// </summary>
     public class FirefoxLauncher : LauncherBase
     {
-        internal static readonly string[] _defaultArgs = {
+        internal static readonly string[] _defaultArgs =
+        {
           "--no-remote",
         };
 
         /// <summary>
-        /// Creates a new <see cref="FirefoxLauncher"/> instance.
+        /// Initializes a new instance of the <see cref="FirefoxLauncher"/> class.
         /// </summary>
         /// <param name="executable">Full path of executable.</param>
         /// <param name="options">Options for launching Firefox.</param>

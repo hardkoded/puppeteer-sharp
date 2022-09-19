@@ -273,9 +273,12 @@ namespace PuppeteerSharp
                 var executables = new string[]
                 {
                     "chrome",
+                    "chrome_crashpad_handler",
+                    "chrome-management-service",
                     "chrome_sandbox", // setuid
                     "crashpad_handler",
                     "google-chrome",
+                    "libvulkan.so.1",
                     "nacl_helper",
                     "nacl_helper_bootstrap",
                     "xdg-mime",

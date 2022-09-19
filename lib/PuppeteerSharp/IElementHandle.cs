@@ -25,10 +25,12 @@ namespace PuppeteerSharp
         Task<BoxModel> BoxModelAsync();
 
         /// <summary>
-        /// Returns the middle point within an element
+        /// Returns the middle point within an element unless a specific offset is provided.
         /// </summary>
-        /// <returns>Task which resolves to a <see cref="Point"/></returns>
-        Task<Point> ClickablePointAsync();
+        /// <param name="offset">Optional offset</param>
+        /// <exception cref="PuppeteerException">When the node is not visible or not an HTMLElement</exception>
+        /// <returns>A <see cref="Task"/> that resolves to the clickable point</returns>
+        public Task<BoxModelPoint> ClickablePointAsync(BoxModelPoint? offset = null);
 
         /// <summary>
         /// Scrolls element into view if needed, and then uses <see cref="PuppeteerSharp.IPage.Mouse"/> to click in the center of the element.
@@ -39,7 +41,7 @@ namespace PuppeteerSharp
         Task ClickAsync(ClickOptions options = null);
 
         /// <summary>
-        ///Content frame for element handles referencing iframe nodes, or null otherwise.
+        /// Content frame for element handles referencing iframe nodes, or null otherwise.
         /// </summary>
         /// <returns>Resolves to the content frame</returns>
         Task<IFrame> ContentFrameAsync();
@@ -107,7 +109,7 @@ namespace PuppeteerSharp
         /// <remarks>
         /// If <c>key</c> is a single character and no modifier keys besides <c>Shift</c> are being held down, a <c>keypress</c>/<c>input</c> event will also be generated. The <see cref="DownOptions.Text"/> option can be specified to force an input event to be generated.
         /// </remarks>
-        /// <returns></returns>
+        /// <returns>Task which resolves when the key is successfully pressed</returns>
         Task PressAsync(string key, PressOptions options = null);
 
         /// <summary>

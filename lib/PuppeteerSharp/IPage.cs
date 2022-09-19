@@ -323,7 +323,7 @@ namespace PuppeteerSharp
         /// Provide credentials for http authentication <see href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication"/>
         /// </summary>
         /// <param name="credentials">The credentials</param>
-        /// <returns></returns>
+        /// <returns>A Task which resolves after the message is sent to the browser</returns>
         /// <remarks>
         /// To disable authentication, pass <c>null</c>
         /// </remarks>
@@ -369,7 +369,7 @@ namespace PuppeteerSharp
         /// <see cref="EmulateAsync(DeviceDescriptor)"/> will resize the page. A lot of websites don't expect phones to change size, so you should emulate before navigating to the page.
         /// </remarks>
         /// <example>
-        ///<![CDATA[
+        /// <![CDATA[
         /// var iPhone = Puppeteer.Devices[DeviceDescriptorName.IPhone6];
         /// using(var page = await browser.NewPageAsync())
         /// {
@@ -837,7 +837,7 @@ namespace PuppeteerSharp
         /// generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaTypeAsync(MediaType)"/> with <see cref="MediaType.Screen"/>
         /// </summary>
         /// <param name="file">The file path to save the PDF to. paths are resolved using <see cref="Path.GetFullPath(string)"/></param>
-        /// <returns></returns>
+        /// <returns>A Task which resolves after the PDF is generated</returns>
         /// <remarks>
         /// Generating a pdf is currently only supported in Chrome headless
         /// </remarks>
@@ -848,7 +848,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="file">The file path to save the PDF to. paths are resolved using <see cref="Path.GetFullPath(string)"/></param>
         /// <param name="options">pdf options</param>
-        /// <returns></returns>
+        /// <returns>A Task which resolves after the PDF is generated</returns>
         /// <remarks>
         /// Generating a pdf is currently only supported in Chrome headless
         /// </remarks>
@@ -1023,7 +1023,7 @@ namespace PuppeteerSharp
         /// Toggles bypassing page's Content-Security-Policy.
         /// </summary>
         /// <param name="enabled">sets bypassing of page's Content-Security-Policy.</param>
-        /// <returns></returns>
+        /// <returns>A Task which resolves after the message is sent to the browser</returns>
         /// <remarks>
         /// CSP bypassing happens at the moment of CSP initialization rather then evaluation.
         /// Usually this means that <see cref="SetBypassCSPAsync(bool)"/> should be called before navigating to the domain.
@@ -1118,7 +1118,7 @@ namespace PuppeteerSharp
         /// <see cref="SetViewportAsync(ViewPortOptions)"/> will resize the page. A lot of websites don't expect phones to change size, so you should set the viewport before navigating to the page.
         /// </summary>
         /// <example>
-        ///<![CDATA[
+        /// <![CDATA[
         /// using(var page = await browser.NewPageAsync())
         /// {
         ///     await page.SetViewPortAsync(new ViewPortOptions
@@ -1170,6 +1170,36 @@ namespace PuppeteerSharp
         /// <returns>A task that resolves when the <c>script</c> returns a truthy value</returns>
         /// <seealso cref="IFrame.WaitForExpressionAsync(string, WaitForFunctionOptions)"/>
         Task<IJSHandle> WaitForExpressionAsync(string script, WaitForFunctionOptions options = null);
+
+        /// <summary>
+        /// Waits for a frame.
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// var frame = await page.WaitForFrameAsync(frame => frame.Name == "Test");
+        /// ]]>
+        /// </code>
+        /// </example>
+        /// <returns>A task which resolves when a matching frame was attached to the page.</returns>
+        /// <param name="url">Frame url.</param>
+        /// <param name="options">Options.</param>
+        public Task<IFrame> WaitForFrameAsync(string url, WaitForOptions options = null);
+
+        /// <summary>
+        /// Waits for a frame.
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// var frame = await page.WaitForFrameAsync(frame => frame.Name == "Test");
+        /// ]]>
+        /// </code>
+        /// </example>
+        /// <returns>A task which resolves when a matching frame was attached to the page.</returns>
+        /// <param name="predicate">Function which looks for a matching frame.</param>
+        /// <param name="options">Options.</param>
+        public Task<IFrame> WaitForFrameAsync(Func<IFrame, bool> predicate, WaitForOptions options = null);
 
         /// <summary>
         /// Waits for a page to open a file picker

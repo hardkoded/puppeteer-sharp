@@ -13,21 +13,23 @@ namespace PuppeteerSharp
 {
     internal class FrameManager
     {
-        private readonly ConcurrentDictionary<int, ExecutionContext> _contextIdToContext;
-        private readonly ILogger _logger;
-        private readonly ConcurrentDictionary<string, Frame> _frames;
-        private readonly AsyncDictionaryHelper<string, Frame> _asyncFrames;
-        private readonly List<string> _isolatedWorlds = new List<string>();
-        private bool _ensureNewDocumentNavigation;
         private const string RefererHeaderName = "referer";
         private const string UtilityWorldName = "__puppeteer_utility_world__";
 
-        private FrameManager(CDPSession client, Page page, bool ignoreHTTPSErrors, TimeoutSettings timeoutSettings)
+        private readonly ConcurrentDictionary<string, ExecutionContext> _contextIdToContext;
+        private readonly ILogger _logger;
+        private readonly ConcurrentDictionary<string, Frame> _frames;
+        private readonly AsyncDictionaryHelper<string, Frame> _asyncFrames;
+        private readonly List<string> _isolatedWorlds = new();
+        private readonly TaskQueue _eventsQueue = new();
+        private bool _ensureNewDocumentNavigation;
+
+        internal FrameManager(CDPSession client, Page page, bool ignoreHTTPSErrors, TimeoutSettings timeoutSettings)
         {
             Client = client;
             Page = page;
             _frames = new ConcurrentDictionary<string, Frame>();
-            _contextIdToContext = new ConcurrentDictionary<int, ExecutionContext>();
+            _contextIdToContext = new ConcurrentDictionary<string, ExecutionContext>();
             _logger = Client.Connection.LoggerFactory.CreateLogger<FrameManager>();
             NetworkManager = new NetworkManager(client, ignoreHTTPSErrors, this);
             TimeoutSettings = timeoutSettings;
@@ -39,6 +41,8 @@ namespace PuppeteerSharp
         internal event EventHandler<FrameEventArgs> FrameAttached;
 
         internal event EventHandler<FrameEventArgs> FrameDetached;
+
+        internal event EventHandler<FrameEventArgs> FrameSwapped;
 
         internal event EventHandler<FrameEventArgs> FrameNavigated;
 
@@ -56,34 +60,39 @@ namespace PuppeteerSharp
 
         internal TimeoutSettings TimeoutSettings { get; }
 
-        internal static async Task<FrameManager> CreateFrameManagerAsync(
-            CDPSession client,
-            Page page,
-            bool ignoreHTTPSErrors,
-            TimeoutSettings timeoutSettings)
+        internal async Task InitializeAsync(CDPSession client = null)
         {
-            var frameManager = new FrameManager(client, page, ignoreHTTPSErrors, timeoutSettings);
+            client ??= Client;
             var getFrameTreeTask = client.SendAsync<PageGetFrameTreeResponse>("Page.getFrameTree");
+            var autoAttachTask = client != Client
+                ? client.SendAsync("Target.setAutoAttach", new TargetSetAutoAttachRequest
+                {
+                    AutoAttach = true,
+                    WaitForDebuggerOnStart = false,
+                    Flatten = true,
+                })
+                : Task.CompletedTask;
 
             await Task.WhenAll(
                 client.SendAsync("Page.enable"),
-                getFrameTreeTask).ConfigureAwait(false);
+                getFrameTreeTask,
+                autoAttachTask).ConfigureAwait(false);
 
-            await frameManager.HandleFrameTreeAsync(new FrameTree(getFrameTreeTask.Result.FrameTree)).ConfigureAwait(false);
+            await HandleFrameTreeAsync(client, new FrameTree(getFrameTreeTask.Result.FrameTree)).ConfigureAwait(false);
 
             await Task.WhenAll(
                 client.SendAsync("Page.setLifecycleEventsEnabled", new PageSetLifecycleEventsEnabledRequest { Enabled = true }),
                 client.SendAsync("Runtime.enable"),
-                frameManager.NetworkManager.InitializeAsync()).ConfigureAwait(false);
+                client == Client ? NetworkManager.InitializeAsync() : Task.CompletedTask).ConfigureAwait(false);
 
-            await frameManager.EnsureIsolatedWorldAsync().ConfigureAwait(false);
-
-            return frameManager;
+            await EnsureIsolatedWorldAsync(client, UtilityWorldName).ConfigureAwait(false);
         }
 
-        internal ExecutionContext ExecutionContextById(int contextId)
+        internal ExecutionContext ExecutionContextById(int contextId, CDPSession session = null)
         {
-            _contextIdToContext.TryGetValue(contextId, out var context);
+            session ??= Client;
+            var key = $"{session.Id}:{contextId}";
+            _contextIdToContext.TryGetValue(key, out var context);
 
             if (context == null)
             {
@@ -158,54 +167,102 @@ namespace PuppeteerSharp
             }
         }
 
-        private async void Client_MessageReceived(object sender, MessageEventArgs e)
+        private void Client_MessageReceived(object sender, MessageEventArgs e)
         {
-            try
+            _ = _eventsQueue.Enqueue(async () =>
             {
-                switch (e.MessageID)
+                try
                 {
-                    case "Page.frameAttached":
-                        OnFrameAttached(e.MessageData.ToObject<PageFrameAttachedResponse>());
-                        break;
+                    switch (e.MessageID)
+                    {
+                        case "Page.frameAttached":
+                            OnFrameAttached(sender as CDPSession, e.MessageData.ToObject<PageFrameAttachedResponse>());
+                            break;
 
-                    case "Page.frameNavigated":
-                        await OnFrameNavigatedAsync(e.MessageData.ToObject<PageFrameNavigatedResponse>(true).Frame).ConfigureAwait(false);
-                        break;
+                        case "Page.frameNavigated":
+                            await OnFrameNavigatedAsync(e.MessageData.ToObject<PageFrameNavigatedResponse>(true).Frame).ConfigureAwait(false);
+                            break;
 
-                    case "Page.navigatedWithinDocument":
-                        OnFrameNavigatedWithinDocument(e.MessageData.ToObject<NavigatedWithinDocumentResponse>(true));
-                        break;
+                        case "Page.navigatedWithinDocument":
+                            OnFrameNavigatedWithinDocument(e.MessageData.ToObject<NavigatedWithinDocumentResponse>(true));
+                            break;
 
-                    case "Page.frameDetached":
-                        OnFrameDetached(e.MessageData.ToObject<BasicFrameResponse>(true));
-                        break;
+                        case "Page.frameDetached":
+                            OnFrameDetached(e.MessageData.ToObject<PageFrameDetachedResponse>(true));
+                            break;
 
-                    case "Page.frameStoppedLoading":
-                        OnFrameStoppedLoading(e.MessageData.ToObject<BasicFrameResponse>(true));
-                        break;
+                        case "Page.frameStartedLoading":
+                            OnFrameStartedLoading(e.MessageData.ToObject<BasicFrameResponse>(true));
+                            break;
 
-                    case "Runtime.executionContextCreated":
-                        await OnExecutionContextCreatedAsync(e.MessageData.ToObject<RuntimeExecutionContextCreatedResponse>(true).Context).ConfigureAwait(false);
-                        break;
+                        case "Page.frameStoppedLoading":
+                            OnFrameStoppedLoading(e.MessageData.ToObject<BasicFrameResponse>(true));
+                            break;
 
-                    case "Runtime.executionContextDestroyed":
-                        OnExecutionContextDestroyed(e.MessageData.ToObject<RuntimeExecutionContextDestroyedResponse>(true).ExecutionContextId);
-                        break;
-                    case "Runtime.executionContextsCleared":
-                        OnExecutionContextsCleared();
-                        break;
-                    case "Page.lifecycleEvent":
-                        OnLifeCycleEvent(e.MessageData.ToObject<LifecycleEventResponse>(true));
-                        break;
-                    default:
-                        break;
+                        case "Runtime.executionContextCreated":
+                            await OnExecutionContextCreatedAsync(e.MessageData.ToObject<RuntimeExecutionContextCreatedResponse>(true).Context, sender as CDPSession).ConfigureAwait(false);
+                            break;
+
+                        case "Runtime.executionContextDestroyed":
+                            OnExecutionContextDestroyed(e.MessageData.ToObject<RuntimeExecutionContextDestroyedResponse>(true).ExecutionContextId, sender as CDPSession);
+                            break;
+                        case "Runtime.executionContextsCleared":
+                            OnExecutionContextsCleared(sender as CDPSession);
+                            break;
+                        case "Page.lifecycleEvent":
+                            OnLifeCycleEvent(e.MessageData.ToObject<LifecycleEventResponse>(true));
+                            break;
+                        case "Target.attachedToTarget":
+                            await OnAttachedToTargetAsync(e.MessageData.ToObject<TargetAttachedToTargetResponse>(true)).ConfigureAwait(false);
+                            break;
+                        case "Target.detachedFromTarget":
+                            OnDetachedFromTarget(e.MessageData.ToObject<TargetDetachedFromTargetResponse>(true));
+                            break;
+                        default:
+                            break;
+                    }
                 }
-            }
-            catch (Exception ex)
+                catch (Exception ex)
+                {
+                    var message = $"Connection failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
+                    _logger.LogError(ex, message);
+                    Client.Close(message);
+                }
+            });
+        }
+
+        private void OnDetachedFromTarget(TargetDetachedFromTargetResponse e)
+        {
+            _frames.TryGetValue(e.TargetId, out var frame);
+            if (frame != null && frame.IsOopFrame)
             {
-                var message = $"Connection failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
-                _logger.LogError(ex, message);
-                Client.Close(message);
+              RemoveFramesRecursively(frame);
+            }
+        }
+
+        private async Task OnAttachedToTargetAsync(TargetAttachedToTargetResponse e)
+        {
+            if (e.TargetInfo.Type != TargetType.IFrame)
+            {
+                return;
+            }
+
+            _frames.TryGetValue(e.TargetInfo.TargetId, out var frame);
+            var session = Connection.FromSession(Client).GetSession(e.SessionId);
+            if (frame != null)
+            {
+                frame.UpdateClient(session);
+            }
+
+            session.MessageReceived += Client_MessageReceived;
+            await InitializeAsync(session).ConfigureAwait(false);
+        }
+
+        private void OnFrameStartedLoading(BasicFrameResponse e)
+        {
+            if (_frames.TryGetValue(e.FrameId, out var frame))
+            {
+                frame.OnLoadingStarted();
             }
         }
 
@@ -227,24 +284,27 @@ namespace PuppeteerSharp
             }
         }
 
-        private void OnExecutionContextsCleared()
+        private void OnExecutionContextsCleared(CDPSession session)
         {
-            while (_contextIdToContext.Count > 0)
+            foreach (var key in _contextIdToContext.Keys.ToArray())
             {
-                var key0 = _contextIdToContext.Keys.ElementAtOrDefault(0);
-                if (_contextIdToContext.TryRemove(key0, out var context))
+                var context = _contextIdToContext[key];
+                if (context.Client != session)
                 {
-                    if (context.World != null)
-                    {
-                        context.World.SetContext(null);
-                    }
+                    continue;
                 }
+                if (context.World != null)
+                {
+                    context.World.SetContext(null);
+                }
+                _contextIdToContext.TryRemove(key, out var _);
             }
         }
 
-        private void OnExecutionContextDestroyed(int executionContextId)
+        private void OnExecutionContextDestroyed(int contextId, CDPSession session)
         {
-            if (_contextIdToContext.TryRemove(executionContextId, out var context))
+            var key = $"{session.Id}:{contextId}";
+            if (_contextIdToContext.TryRemove(key, out var context))
             {
                 if (context.World != null)
                 {
@@ -253,7 +313,7 @@ namespace PuppeteerSharp
             }
         }
 
-        private async Task OnExecutionContextCreatedAsync(ContextPayload contextPayload)
+        private async Task OnExecutionContextCreatedAsync(ContextPayload contextPayload, CDPSession session)
         {
             var frameId = contextPayload.AuxData?.FrameId;
             var frame = !string.IsNullOrEmpty(frameId) ? await GetFrameAsync(frameId).ConfigureAwait(false) : null;
@@ -261,6 +321,11 @@ namespace PuppeteerSharp
 
             if (frame != null)
             {
+                if (frame.Client != session)
+                {
+                    return;
+                }
+
                 if (contextPayload.AuxData?.IsDefault == true)
                 {
                     world = frame.MainWorld;
@@ -274,19 +339,27 @@ namespace PuppeteerSharp
                 }
             }
 
-            var context = new ExecutionContext(Client, contextPayload, world);
+            var context = new ExecutionContext(frame?.Client ?? Client, contextPayload, world);
             if (world != null)
             {
                 world.SetContext(context);
             }
-            _contextIdToContext[contextPayload.Id] = context;
+            var key = $"{session.Id}:{contextPayload.Id}";
+            _contextIdToContext[key] = context;
         }
 
-        private void OnFrameDetached(BasicFrameResponse e)
+        private void OnFrameDetached(PageFrameDetachedResponse e)
         {
             if (_frames.TryGetValue(e.FrameId, out var frame))
             {
-                RemoveFramesRecursively(frame);
+                if (e.Reason == FrameDetachedReason.Remove)
+                {
+                    RemoveFramesRecursively(frame);
+                }
+                else if (e.Reason == FrameDetachedReason.Swap)
+                {
+                    FrameSwapped?.Invoke(frame, new FrameEventArgs(frame));
+                }
             }
         }
 
@@ -302,7 +375,7 @@ namespace PuppeteerSharp
             {
                 while (frame.ChildFrames.Count > 0)
                 {
-                    RemoveFramesRecursively((Frame)frame.ChildFrames[0]);
+                    RemoveFramesRecursively(frame.ChildFrames[0]);
                 }
             }
 
@@ -321,7 +394,7 @@ namespace PuppeteerSharp
                 else
                 {
                     // Initial main frame navigation.
-                    frame = new Frame(this, null, framePayload.Id);
+                    frame = new Frame(this, null, framePayload.Id, Client);
                 }
                 _asyncFrames.AddItem(framePayload.Id, frame);
                 MainFrame = frame;
@@ -347,36 +420,45 @@ namespace PuppeteerSharp
             }
         }
 
-        private void RemoveFramesRecursively(Frame frame)
+        private void RemoveFramesRecursively(IFrame frame)
         {
             while (frame.ChildFrames.Count > 0)
             {
-                RemoveFramesRecursively((Frame)frame.ChildFrames[0]);
+                RemoveFramesRecursively(frame.ChildFrames[0]);
             }
-            frame.Detach();
+            ((Frame)frame).Detach();
             _frames.TryRemove(frame.Id, out _);
             FrameDetached?.Invoke(this, new FrameEventArgs(frame));
         }
 
-        private void OnFrameAttached(PageFrameAttachedResponse frameAttached)
-            => OnFrameAttached(frameAttached.FrameId, frameAttached.ParentFrameId);
+        private void OnFrameAttached(CDPSession session, PageFrameAttachedResponse frameAttached)
+            => OnFrameAttached(session, frameAttached.FrameId, frameAttached.ParentFrameId);
 
-        private void OnFrameAttached(string frameId, string parentFrameId)
+        private void OnFrameAttached(CDPSession session, string frameId, string parentFrameId)
         {
+            if (_frames.TryGetValue(frameId, out var existingFrame))
+            {
+                if (session != null && existingFrame.IsOopFrame)
+                {
+                    existingFrame.UpdateClient(session);
+                }
+                return;
+            }
+
             if (!_frames.ContainsKey(frameId) && _frames.ContainsKey(parentFrameId))
             {
                 var parentFrame = _frames[parentFrameId];
-                var frame = new Frame(this, parentFrame, frameId);
+                var frame = new Frame(this, parentFrame, frameId, session);
                 _frames[frame.Id] = frame;
                 FrameAttached?.Invoke(this, new FrameEventArgs(frame));
             }
         }
 
-        private async Task HandleFrameTreeAsync(FrameTree frameTree)
+        private async Task HandleFrameTreeAsync(CDPSession session, FrameTree frameTree)
         {
             if (!string.IsNullOrEmpty(frameTree.Frame.ParentId))
             {
-                OnFrameAttached(frameTree.Frame.Id, frameTree.Frame.ParentId);
+                OnFrameAttached(session, frameTree.Frame.Id, frameTree.Frame.ParentId);
             }
 
             await OnFrameNavigatedAsync(frameTree.Frame).ConfigureAwait(false);
@@ -385,21 +467,20 @@ namespace PuppeteerSharp
             {
                 foreach (var child in frameTree.Childs)
                 {
-                    await HandleFrameTreeAsync(child).ConfigureAwait(false);
+                    await HandleFrameTreeAsync(session, child).ConfigureAwait(false);
                 }
             }
         }
 
-        private Task EnsureIsolatedWorldAsync() => EnsureIsolatedWorldAsync(UtilityWorldName);
-
-        private async Task EnsureIsolatedWorldAsync(string name)
+        private async Task EnsureIsolatedWorldAsync(CDPSession session, string name)
         {
-            if (_isolatedWorlds.Contains(name))
+            var key = $"{session.Id}:{name}";
+            if (_isolatedWorlds.Contains(key))
             {
                 return;
             }
-            _isolatedWorlds.Add(name);
-            await Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new PageAddScriptToEvaluateOnNewDocumentRequest
+            _isolatedWorlds.Add(key);
+            await session.SendAsync("Page.addScriptToEvaluateOnNewDocument", new PageAddScriptToEvaluateOnNewDocumentRequest
             {
                 Source = $"//# sourceURL={ExecutionContext.EvaluationScriptUrl}",
                 WorldName = name,
@@ -407,12 +488,14 @@ namespace PuppeteerSharp
 
             try
             {
-                await Task.WhenAll(GetFrames().Select(frame => Client.SendAsync("Page.createIsolatedWorld", new PageCreateIsolatedWorldRequest
-                {
-                    FrameId = frame.Id,
-                    GrantUniveralAccess = true,
-                    WorldName = name
-                }))).ConfigureAwait(false);
+                await Task.WhenAll(GetFrames()
+                    .Where(frame => frame.Client == session)
+                    .Select(frame => session.SendAsync("Page.createIsolatedWorld", new PageCreateIsolatedWorldRequest
+                    {
+                        FrameId = frame.Id,
+                        GrantUniveralAccess = true,
+                        WorldName = name
+                    }))).ConfigureAwait(false);
             }
             catch (PuppeteerException ex)
             {

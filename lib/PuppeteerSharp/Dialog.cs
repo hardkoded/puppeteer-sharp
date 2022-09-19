@@ -9,8 +9,8 @@ namespace PuppeteerSharp
     /// </summary>
     /// <example>
     /// An example of using Dialog class:
-    ///<code>
-    ///<![CDATA[
+    /// <code>
+    /// <![CDATA[
     /// Page.Dialog += async (sender, e) =>
     /// {
     ///     await e.Dialog.Accept();

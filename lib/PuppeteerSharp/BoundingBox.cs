@@ -10,7 +10,7 @@ namespace PuppeteerSharp
     public class BoundingBox : IEquatable<BoundingBox>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:PuppeteerSharp.BoundingBox"/> class.
+        /// Initializes a new instance of the <see cref="BoundingBox"/> class.
         /// </summary>
         public BoundingBox()
         {

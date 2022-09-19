@@ -35,7 +35,7 @@ namespace PuppeteerSharp.Transport
         private CancellationTokenSource _readerCancellationSource = new CancellationTokenSource();
 
         /// <summary>
-        /// Initialize the Transport
+        /// Initializes a new instance of the <see cref="WebSocketTransport"/> class.
         /// </summary>
         /// <param name="client">The web socket</param>
         /// <param name="scheduler">The scheduler to use for long-running tasks.</param>

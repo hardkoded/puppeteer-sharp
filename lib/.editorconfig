@@ -149,6 +149,10 @@ csharp_space_between_square_brackets = false
 dotnet_code_quality.ca1802.api_surface = private, internal
 
 # C++ Files
+
+# Default severity for analyzer diagnostics with category 'Usage'
+dotnet_analyzer_diagnostic.category-Usage.severity = none
+
 [*.{cpp,h,in}]
 curly_bracket_next_line = true
 indent_brace_style = Allman

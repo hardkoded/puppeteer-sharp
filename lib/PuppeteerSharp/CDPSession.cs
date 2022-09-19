@@ -43,7 +43,7 @@ namespace PuppeteerSharp
         {
             Connection = connection;
             TargetType = targetType;
-            SessionId = sessionId;
+            Id = sessionId;
 
             _callbacks = new ConcurrentDictionary<int, MessageTask>();
         }
@@ -70,7 +70,7 @@ namespace PuppeteerSharp
         /// Gets the session identifier.
         /// </summary>
         /// <value>The session identifier.</value>
-        public string SessionId { get; }
+        public string Id { get; }
 
         /// <summary>
         /// Gets the connection.
@@ -146,7 +146,7 @@ namespace PuppeteerSharp
 
             try
             {
-                await Connection.RawSendASync(id, method, args, SessionId).ConfigureAwait(false);
+                await Connection.RawSendASync(id, method, args, Id).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -162,7 +162,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Detaches session from target. Once detached, session won't emit any events and can't be used to send messages.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Task</returns>
         /// <exception cref="T:PuppeteerSharp.PuppeteerException">If the <see cref="Connection"/> is closed.</exception>
         public Task DetachAsync()
         {
@@ -173,7 +173,7 @@ namespace PuppeteerSharp
 
             return Connection.SendAsync("Target.detachFromTarget", new TargetDetachFromTargetRequest
             {
-                SessionId = SessionId
+                SessionId = Id
             });
         }
 

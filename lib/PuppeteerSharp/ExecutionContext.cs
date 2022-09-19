@@ -12,7 +12,7 @@ namespace PuppeteerSharp
 {
     /// <summary>
     /// The class represents a context for JavaScript execution. Examples of JavaScript contexts are:
-    /// Each <see cref="Frame"/> has a separate <see cref="IExecutionContext"/>
+    /// Each <see cref="Frame"/> has a separate <see cref="ExecutionContext"/>
     /// All kind of web workers have their own contexts
     /// </summary>
     public class ExecutionContext : IExecutionContext
@@ -20,8 +20,7 @@ namespace PuppeteerSharp
         internal const string EvaluationScriptUrl = "__puppeteer_evaluation_script__";
 
         private readonly string _evaluationScriptSuffix = $"//# sourceURL={EvaluationScriptUrl}";
-        private static readonly Regex _sourceUrlRegex = new Regex(@"^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$", RegexOptions.Multiline);
-        private readonly CDPSession _client;
+        private static readonly Regex _sourceUrlRegex = new(@"^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$", RegexOptions.Multiline);
         private readonly int _contextId;
 
         internal ExecutionContext(
@@ -29,10 +28,12 @@ namespace PuppeteerSharp
             ContextPayload contextPayload,
             DOMWorld world)
         {
-            _client = client;
+            Client = client;
             _contextId = contextPayload.Id;
             World = world;
         }
+
+        internal CDPSession Client { get; }
 
         internal DOMWorld World { get; }
 
@@ -128,7 +129,7 @@ namespace PuppeteerSharp
                 throw new PuppeteerException("Prototype JSHandle must not be referencing primitive value");
             }
 
-            var response = await _client.SendAsync<RuntimeQueryObjectsResponse>("Runtime.queryObjects", new RuntimeQueryObjectsRequest
+            var response = await Client.SendAsync<RuntimeQueryObjectsResponse>("Runtime.queryObjects", new RuntimeQueryObjectsRequest
             {
                 PrototypeObjectId = prototypeHandle.RemoteObject.ObjectId
             }).ConfigureAwait(false);
@@ -167,7 +168,7 @@ namespace PuppeteerSharp
         {
             try
             {
-                var response = await _client.SendAsync<EvaluateHandleResponse>(method, args).ConfigureAwait(false);
+                var response = await Client.SendAsync<EvaluateHandleResponse>(method, args).ConfigureAwait(false);
 
                 if (response.ExceptionDetails != null)
                 {
@@ -190,8 +191,8 @@ namespace PuppeteerSharp
 
         internal IJSHandle CreateJSHandle(RemoteObject remoteObject)
             => remoteObject.Subtype == RemoteObjectSubtype.Node && Frame != null
-                ? new ElementHandle(this, _client, remoteObject, Frame)
-                : new JSHandle(this, _client, remoteObject);
+                ? new ElementHandle(this, Client, remoteObject, Frame, ((Frame)Frame).FrameManager.Page, ((Frame)Frame).FrameManager)
+                : new JSHandle(this, Client, remoteObject);
 
         private object FormatArgument(object arg)
         {
@@ -251,7 +252,7 @@ namespace PuppeteerSharp
 
         internal async Task<IElementHandle> AdoptBackendNodeAsync(object backendNodeId)
         {
-            var obj = await _client.SendAsync<DomResolveNodeResponse>("DOM.resolveNode", new DomResolveNodeRequest
+            var obj = await Client.SendAsync<DomResolveNodeResponse>("DOM.resolveNode", new DomResolveNodeRequest
             {
                 BackendNodeId = backendNodeId,
                 ExecutionContextId = _contextId
@@ -271,18 +272,18 @@ namespace PuppeteerSharp
                 throw new PuppeteerException("Cannot adopt handle without DOMWorld");
             }
 
-            var nodeInfo = await _client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
+            var nodeInfo = await Client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
             {
                 ObjectId = elementHandle.RemoteObject.ObjectId
             }).ConfigureAwait(false);
 
-            var obj = await _client.SendAsync<DomResolveNodeResponse>("DOM.resolveNode", new DomResolveNodeRequest
+            var obj = await Client.SendAsync<DomResolveNodeResponse>("DOM.resolveNode", new DomResolveNodeRequest
             {
                 BackendNodeId = nodeInfo.Node.BackendNodeId,
                 ExecutionContextId = _contextId
             }).ConfigureAwait(false);
 
-            return CreateJSHandle(obj.Object) as IElementHandle;
+            return CreateJSHandle(obj.Object) as ElementHandle;
         }
     }
 }
