@@ -28,21 +28,25 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The execution context.</value>
         public ExecutionContext ExecutionContext { get; }
+
         /// <summary>
         /// Gets a value indicating whether this <see cref="JSHandle"/> is disposed.
         /// </summary>
         /// <value><c>true</c> if disposed; otherwise, <c>false</c>.</value>
         public bool Disposed { get; private set; }
+
         /// <summary>
         /// Gets or sets the remote object.
         /// </summary>
         /// <value>The remote object.</value>
         public RemoteObject RemoteObject { get; }
+
         /// <summary>
         /// Gets the client.
         /// </summary>
         /// <value>The client.</value>
         protected CDPSession Client { get; }
+
         /// <summary>
         /// Gets the logger.
         /// </summary>

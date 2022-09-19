@@ -12,11 +12,13 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>Screenshots option</value>
         public bool Screenshots { get; set; }
+
         /// <summary>
         /// A path to write the trace file to
         /// </summary>
         /// <value>The path.</value>
         public string Path { get; set; }
+
         /// <summary>
         /// Specify custom categories to use instead of default.
         /// </summary>

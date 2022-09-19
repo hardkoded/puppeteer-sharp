@@ -58,6 +58,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The timeout.</value>
         public int Timeout { get; }
+
         /// <summary>
         /// Element type the WaitTask was waiting for
         /// </summary>

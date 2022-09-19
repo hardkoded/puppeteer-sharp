@@ -62,45 +62,54 @@ namespace PuppeteerSharp
         /// Contains the URL of the response.
         /// </summary>
         public string Url { get; }
+
         /// <summary>
         /// An object with HTTP headers associated with the response. All header names are lower-case.
         /// </summary>
         /// <value>The headers.</value>
         public Dictionary<string, string> Headers { get; }
+
         /// <summary>
         /// Contains the status code of the response
         /// </summary>
         /// <value>The status.</value>
         public HttpStatusCode Status { get; }
+
         /// <summary>
         /// Contains a boolean stating whether the response was successful (status in the range 200-299) or not.
         /// </summary>
         /// <value><c>true</c> if ok; otherwise, <c>false</c>.</value>
         public bool Ok => Status == 0 || ((int)Status >= 200 && (int)Status <= 299);
+
         /// <summary>
         /// A matching <see cref="Request"/> object.
         /// </summary>
         /// <value>The request.</value>
         public Request Request { get; }
+
         /// <summary>
         /// True if the response was served from either the browser's disk cache or memory cache.
         /// </summary>
         public bool FromCache => _fromDiskCache || (Request?.FromMemoryCache ?? false);
+
         /// <summary>
         /// Gets or sets the security details.
         /// </summary>
         /// <value>The security details.</value>
         public SecurityDetails SecurityDetails { get; }
+
         /// <summary>
         /// Gets a value indicating whether the <see cref="Response"/> was served by a service worker.
         /// </summary>
         /// <value><c>true</c> if the <see cref="Response"/> was served by a service worker; otherwise, <c>false</c>.</value>
         public bool FromServiceWorker { get; }
+
         /// <summary>
         /// Contains the status text of the response (e.g. usually an "OK" for a success).
         /// </summary>
         /// <value>The status text.</value>
         public string StatusText { get; }
+
         /// <summary>
         /// Remove server address.
         /// </summary>

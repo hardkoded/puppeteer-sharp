@@ -19,16 +19,19 @@ namespace PuppeteerSharp
         /// <value>HTTP method.</value>
         [JsonConverter(typeof(HttpMethodConverter))]
         public HttpMethod Method { get; set; }
+
         /// <summary>
         /// Gets or sets the post data.
         /// </summary>
         /// <value>The post data.</value>
         public string PostData { get; set; }
+
         /// <summary>
         /// Gets or sets the HTTP headers.
         /// </summary>
         /// <value>HTTP headers.</value>
         public Dictionary<string, string> Headers { get; set; } = new Dictionary<string, string>();
+
         /// <summary>
         /// Gets or sets the URL.
         /// </summary>

@@ -11,18 +11,22 @@ namespace PuppeteerSharp
         /// Unknown.
         /// </summary>
         Unknown,
+
         /// <summary>
         /// MacOS.
         /// </summary>
         MacOS,
+
         /// <summary>
         /// Linux.
         /// </summary>
         Linux,
+
         /// <summary>
         /// Win32.
         /// </summary>
         Win32,
+
         /// <summary>
         /// Win64.
         /// </summary>
