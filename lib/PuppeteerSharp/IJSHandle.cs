@@ -16,11 +16,13 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value><c>true</c> if disposed; otherwise, <c>false</c>.</value>
         bool Disposed { get; }
+
         /// <summary>
         /// Gets the execution context.
         /// </summary>
         /// <value>The execution context.</value>
         IExecutionContext ExecutionContext { get; }
+
         /// <summary>
         /// Gets or sets the remote object.
         /// </summary>

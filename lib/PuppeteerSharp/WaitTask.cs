@@ -177,7 +177,7 @@ async function waitForPredicatePageFunction(
                         _predicateBody,
                         _predicateAcceptsContextElement,
                         _pollingInterval ?? (object)_polling,
-                        _timeout
+                        _timeout,
                     }.Concat(_args).ToArray()).ConfigureAwait(false);
             }
             catch (Exception ex)

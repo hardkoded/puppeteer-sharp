@@ -24,26 +24,31 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The clip.</value>
         public Clip Clip { get; set; }
+
         /// <summary>
         /// When <c>true</c>, takes a screenshot of the full scrollable page. Defaults to <c>false</c>.
         /// </summary>
         /// <value><c>true</c> if full page; otherwise, <c>false</c>.</value>
         public bool FullPage { get; set; }
+
         /// <summary>
         /// Hides default white background and allows capturing screenshots with transparency. Defaults to <c>false</c>
         /// </summary>
         /// <value><c>true</c> if omit background; otherwise, <c>false</c>.</value>
         public bool OmitBackground { get; set; }
+
         /// <summary>
         /// Specify screenshot type, can be either jpeg or png. Defaults to 'png'.
         /// </summary>
         /// <value>The type.</value>
         public ScreenshotType? Type { get; set; }
+
         /// <summary>
         /// The quality of the image, between 0-100. Not applicable to png images.
         /// </summary>
         /// <value>The quality.</value>
         public int? Quality { get; set; }
+
         /// <summary>
         /// When BurstMode is <c>true</c> the screenshot process will only execute all the screenshot setup actions (background and metrics overrides)
         /// before the first screenshot call and it will ignore the reset actions after the screenshoot is taken.

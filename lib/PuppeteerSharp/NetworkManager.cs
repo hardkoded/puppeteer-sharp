@@ -63,7 +63,7 @@ namespace PuppeteerSharp
             {
                 await _client.SendAsync("Security.setIgnoreCertificateErrors", new SecuritySetIgnoreCertificateErrorsRequest
                 {
-                    Ignore = true
+                    Ignore = true,
                 }).ConfigureAwait(false);
             }
         }
@@ -84,7 +84,7 @@ namespace PuppeteerSharp
             }
             return _client.SendAsync("Network.setExtraHTTPHeaders", new NetworkSetExtraHTTPHeadersRequest
             {
-                Headers = _extraHTTPHeaders
+                Headers = _extraHTTPHeaders,
             });
         }
 
@@ -133,7 +133,7 @@ namespace PuppeteerSharp
         private Task UpdateProtocolCacheDisabledAsync()
             => _client.SendAsync("Network.setCacheDisabled", new NetworkSetCacheDisabledRequest
             {
-                CacheDisabled = _userCacheDisabled
+                CacheDisabled = _userCacheDisabled,
             });
 
         private async void Client_MessageReceived(object sender, MessageEventArgs e)
@@ -243,7 +243,7 @@ namespace PuppeteerSharp
 
             RequestFailed?.Invoke(this, new RequestEventArgs
             {
-                Request = request
+                Request = request,
             });
         }
 
@@ -275,7 +275,7 @@ namespace PuppeteerSharp
 
             RequestFinished?.Invoke(this, new RequestEventArgs
             {
-                Request = request
+                Request = request,
             });
         }
 
@@ -307,7 +307,7 @@ namespace PuppeteerSharp
                 {
                     _networkEventManager.QueuedEventGroup(e.RequestId, new()
                     {
-                        ResponseReceivedEvent = e
+                        ResponseReceivedEvent = e,
                     });
                     return;
                 }
@@ -336,7 +336,7 @@ namespace PuppeteerSharp
 
             Response?.Invoke(this, new ResponseCreatedEventArgs
             {
-                Response = response
+                Response = response,
             });
         }
 
@@ -362,8 +362,8 @@ namespace PuppeteerSharp
                     {
                         Response = response,
                         Username = credentials.Username,
-                        Password = credentials.Password
-                    }
+                        Password = credentials.Password,
+                    },
                 }).ConfigureAwait(false);
             }
             catch (PuppeteerException ex)
@@ -380,7 +380,7 @@ namespace PuppeteerSharp
                 {
                     await _client.SendAsync("Fetch.continueRequest", new FetchContinueRequestRequest
                     {
-                        RequestId = e.RequestId
+                        RequestId = e.RequestId,
                     }).ConfigureAwait(false);
                 }
                 catch (PuppeteerException ex)
@@ -463,7 +463,7 @@ namespace PuppeteerSharp
 
             Request?.Invoke(this, new RequestEventArgs
             {
-                Request = request
+                Request = request,
             });
         }
 
@@ -495,12 +495,12 @@ namespace PuppeteerSharp
 
             Response?.Invoke(this, new ResponseCreatedEventArgs
             {
-                Response = response
+                Response = response,
             });
 
             RequestFinished?.Invoke(this, new RequestEventArgs
             {
-                Request = request
+                Request = request,
             });
         }
 
@@ -549,7 +549,7 @@ namespace PuppeteerSharp
                     _client.SendAsync("Fetch.enable", new FetchEnableRequest
                     {
                         HandleAuthRequests = true,
-                        Patterns = new[] { new FetchEnableRequest.Pattern { UrlPattern = "*" } }
+                        Patterns = new[] { new FetchEnableRequest.Pattern { UrlPattern = "*", } },
                     })).ConfigureAwait(false);
             }
             else

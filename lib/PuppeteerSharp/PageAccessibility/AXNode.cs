@@ -247,7 +247,7 @@ namespace PuppeteerSharp.PageAccessibility
                 AutoComplete = GetIfNotFalse(properties.GetValueOrDefault("autocomplete")?.ToObject<string>()),
                 HasPopup = GetIfNotFalse(properties.GetValueOrDefault("haspopup")?.ToObject<string>()),
                 Invalid = GetIfNotFalse(properties.GetValueOrDefault("invalid")?.ToObject<string>()),
-                Orientation = GetIfNotFalse(properties.GetValueOrDefault("orientation")?.ToObject<string>())
+                Orientation = GetIfNotFalse(properties.GetValueOrDefault("orientation")?.ToObject<string>()),
             };
 
             return node;

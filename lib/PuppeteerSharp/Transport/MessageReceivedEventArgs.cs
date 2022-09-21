@@ -13,6 +13,7 @@ namespace PuppeteerSharp.Transport
         /// </summary>
         /// <param name="message">Message.</param>
         public MessageReceivedEventArgs(string message) => Message = message;
+
         /// <summary>
         /// Transport message.
         /// </summary>

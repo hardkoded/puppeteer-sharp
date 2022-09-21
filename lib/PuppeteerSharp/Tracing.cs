@@ -79,7 +79,7 @@ namespace PuppeteerSharp
             return _client.SendAsync("Tracing.start", new TracingStartRequest
             {
                 TransferMode = "ReturnAsStream",
-                Categories = string.Join(", ", categories)
+                Categories = string.Join(", ", categories),
             });
         }
 

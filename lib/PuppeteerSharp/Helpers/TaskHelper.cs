@@ -13,6 +13,7 @@ namespace PuppeteerSharp.Helpers
             timeout => new TimeoutException($"Timeout of {timeout.TotalMilliseconds} ms exceeded");
 
         // Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
+
         /// <summary>
         /// Cancels the <paramref name="task"/> after <paramref name="milliseconds"/> milliseconds
         /// </summary>
@@ -29,6 +30,7 @@ namespace PuppeteerSharp.Helpers
             => WithTimeout(task, TimeSpan.FromMilliseconds(milliseconds), exceptionFactory, cancellationToken);
 
         // Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
+
         /// <summary>
         /// Cancels the <paramref name="task"/> after a given <paramref name="timeout"/> period
         /// </summary>
@@ -48,6 +50,7 @@ namespace PuppeteerSharp.Helpers
                 cancellationToken);
 
         // Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
+
         /// <summary>
         /// Cancels the <paramref name="task"/> after <paramref name="milliseconds"/> milliseconds
         /// </summary>
@@ -64,6 +67,7 @@ namespace PuppeteerSharp.Helpers
             => WithTimeout(task, timeoutAction, TimeSpan.FromMilliseconds(milliseconds), cancellationToken);
 
         // Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
+
         /// <summary>
         /// Cancels the <paramref name="task"/> after a given <paramref name="timeout"/> period
         /// </summary>
@@ -92,6 +96,7 @@ namespace PuppeteerSharp.Helpers
         }
 
         // Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
+
         /// <summary>
         /// Cancels the <paramref name="task"/> after <paramref name="milliseconds"/> milliseconds
         /// </summary>
@@ -104,6 +109,7 @@ namespace PuppeteerSharp.Helpers
             => WithTimeout(task, timeoutAction, TimeSpan.FromMilliseconds(milliseconds));
 
         // Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
+
         /// <summary>
         /// Cancels the <paramref name="task"/> after a given <paramref name="timeout"/> period
         /// </summary>
@@ -134,6 +140,7 @@ namespace PuppeteerSharp.Helpers
         }
 
         // Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
+
         /// <summary>
         /// Cancels the <paramref name="task"/> after <paramref name="milliseconds"/> milliseconds
         /// </summary>
@@ -146,6 +153,7 @@ namespace PuppeteerSharp.Helpers
             => WithTimeout(task, TimeSpan.FromMilliseconds(milliseconds), exceptionFactory);
 
         // Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
+
         /// <summary>
         /// Cancels the <paramref name="task"/> after a given <paramref name="timeout"/> period
         /// </summary>

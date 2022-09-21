@@ -270,7 +270,7 @@ namespace PuppeteerSharp
         {
             var createTargetRequest = new TargetCreateTargetRequest
             {
-                Url = "about:blank"
+                Url = "about:blank",
             };
 
             if (contextId != null)
@@ -289,7 +289,7 @@ namespace PuppeteerSharp
         {
             await Connection.SendAsync("Target.disposeBrowserContext", new TargetDisposeBrowserContextRequest
             {
-                BrowserContextId = contextId
+                BrowserContextId = contextId,
             }).ConfigureAwait(false);
             _contexts.TryRemove(contextId, out var _);
         }
@@ -418,7 +418,7 @@ namespace PuppeteerSharp
 
             await connection.SendAsync("Target.setDiscoverTargets", new TargetSetDiscoverTargetsRequest
             {
-                Discover = true
+                Discover = true,
             }).ConfigureAwait(false);
 
             return browser;

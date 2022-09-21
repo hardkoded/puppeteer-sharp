@@ -125,7 +125,7 @@ namespace PuppeteerSharp
                 callback = new MessageTask
                 {
                     TaskWrapper = new TaskCompletionSource<JObject>(TaskCreationOptions.RunContinuationsAsynchronously),
-                    Method = method
+                    Method = method,
                 };
                 _callbacks[id] = callback;
             }
@@ -145,7 +145,7 @@ namespace PuppeteerSharp
             var sessionId = (await SendAsync<TargetAttachToTargetResponse>("Target.attachToTarget", new TargetAttachToTargetRequest
             {
                 TargetId = targetInfo.TargetId,
-                Flatten = true
+                Flatten = true,
             }).ConfigureAwait(false)).SessionId;
             return await GetSessionAsync(sessionId).ConfigureAwait(false);
         }
@@ -271,7 +271,7 @@ namespace PuppeteerSharp
                 MessageReceived?.Invoke(this, new MessageEventArgs
                 {
                     MessageID = method,
-                    MessageData = obj.Params
+                    MessageData = obj.Params,
                 });
             }
         }

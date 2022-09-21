@@ -10,9 +10,10 @@ namespace PuppeteerSharp
         /// JPEG type.
         /// </summary>
         Jpeg,
+
         /// <summary>
         /// PNG type.
         /// </summary>
-        Png
+        Png,
     }
 }

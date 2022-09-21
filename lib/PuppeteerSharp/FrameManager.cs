@@ -140,7 +140,7 @@ namespace PuppeteerSharp
             {
                 Url = url,
                 Referrer = referrer ?? string.Empty,
-                FrameId = frameId
+                FrameId = frameId,
             }).ConfigureAwait(false);
 
             _ensureNewDocumentNavigation = !string.IsNullOrEmpty(response.LoaderId);
@@ -494,7 +494,7 @@ namespace PuppeteerSharp
                     {
                         FrameId = frame.Id,
                         GrantUniveralAccess = true,
-                        WorldName = name
+                        WorldName = name,
                     }))).ConfigureAwait(false);
             }
             catch (PuppeteerException ex)

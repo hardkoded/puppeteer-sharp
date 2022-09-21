@@ -36,16 +36,19 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The x.</value>
         public decimal X { get; set; }
+
         /// <summary>
         /// The y coordinate of the element in pixels.
         /// </summary>
         /// <value>The y.</value>
         public decimal Y { get; set; }
+
         /// <summary>
         /// The width of the element in pixels.
         /// </summary>
         /// <value>The width.</value>
         public decimal Width { get; set; }
+
         /// <summary>
         /// The height of the element in pixels.
         /// </summary>
@@ -59,7 +62,7 @@ namespace PuppeteerSharp
                 X = X,
                 Y = Y,
                 Width = Width,
-                Height = Height
+                Height = Height,
             };
         }
 

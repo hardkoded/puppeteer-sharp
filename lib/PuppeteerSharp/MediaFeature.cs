@@ -15,10 +15,11 @@ namespace PuppeteerSharp
         /// </summary>
         [EnumMember(Value = "prefers-color-scheme")]
         PrefersColorScheme,
+
         /// <summary>
         /// prefers-reduced-motion media feature.
         /// </summary>
         [EnumMember(Value = "prefers-reduced-motion")]
-        PrefersReducedMotion
+        PrefersReducedMotion,
     }
 }

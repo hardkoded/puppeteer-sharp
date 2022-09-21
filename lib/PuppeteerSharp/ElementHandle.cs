@@ -127,7 +127,7 @@ namespace PuppeteerSharp
                 newRawViewport.Merge(new ViewPortOptions
                 {
                     Width = (int)Math.Max(viewport.Width, Math.Ceiling(boundingBox.Width)),
-                    Height = (int)Math.Max(viewport.Height, Math.Ceiling(boundingBox.Height))
+                    Height = (int)Math.Max(viewport.Height, Math.Ceiling(boundingBox.Height)),
                 });
                 await Page.SetViewportAsync(newRawViewport.ToObject<ViewPortOptions>(true)).ConfigureAwait(false);
                 needsViewportReset = true;
@@ -198,7 +198,7 @@ namespace PuppeteerSharp
             var objectId = RemoteObject.ObjectId;
             var node = await Client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
             {
-                ObjectId = RemoteObject.ObjectId
+                ObjectId = RemoteObject.ObjectId,
             }).ConfigureAwait(false);
             var backendNodeId = node.Node.BackendNodeId;
 
@@ -220,7 +220,7 @@ namespace PuppeteerSharp
                 {
                     ObjectId = objectId,
                     Files = files,
-                    BackendNodeId = backendNodeId
+                    BackendNodeId = backendNodeId,
                 }).ConfigureAwait(false);
             }
         }
@@ -342,7 +342,7 @@ namespace PuppeteerSharp
                     Border = ApplyOffsetsToQuad(FromProtocolQuad(result.Model.Border), offsetX, offsetY).ToArray(),
                     Margin = ApplyOffsetsToQuad(FromProtocolQuad(result.Model.Margin), offsetX, offsetY).ToArray(),
                     Width = result.Model.Width,
-                    Height = result.Model.Height
+                    Height = result.Model.Height,
                 };
         }
 
@@ -351,7 +351,7 @@ namespace PuppeteerSharp
         {
             var nodeInfo = await Client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
             {
-                ObjectId = RemoteObject.ObjectId
+                ObjectId = RemoteObject.ObjectId,
             }).ConfigureAwait(false);
 
             return string.IsNullOrEmpty(nodeInfo.Node.FrameId) ? null : await _frameManager.GetFrameAsync(nodeInfo.Node.FrameId).ConfigureAwait(false);
@@ -474,7 +474,7 @@ namespace PuppeteerSharp
 
             var contentQuadsTask = Client.SendAsync<GetContentQuadsResponse>("DOM.getContentQuads", new DomGetContentQuadsRequest
             {
-                ObjectId = RemoteObject.ObjectId
+                ObjectId = RemoteObject.ObjectId,
             });
             var layoutTask = Page.Client.SendAsync<PageGetLayoutMetricsResponse>("Page.getLayoutMetrics");
 
@@ -532,7 +532,7 @@ namespace PuppeteerSharp
                     return new BoxModelPoint()
                     {
                         X = minX + offset.Value.X,
-                        Y = minY + offset.Value.Y
+                        Y = minY + offset.Value.Y,
                     };
                 }
             }
@@ -548,7 +548,7 @@ namespace PuppeteerSharp
             return new BoxModelPoint()
             {
                 X = x / 4,
-                Y = y / 4
+                Y = y / 4,
             };
         }
 
@@ -646,7 +646,7 @@ namespace PuppeteerSharp
             {
                 return await Client.SendAsync<DomGetBoxModelResponse>("DOM.getBoxModel", new DomGetBoxModelRequest
                 {
-                    ObjectId = RemoteObject.ObjectId
+                    ObjectId = RemoteObject.ObjectId,
                 }).ConfigureAwait(false);
             }
             catch (PuppeteerException ex)
@@ -661,7 +661,7 @@ namespace PuppeteerSharp
             new BoxModelPoint { X = quad[0], Y = quad[1] },
             new BoxModelPoint { X = quad[2], Y = quad[3] },
             new BoxModelPoint { X = quad[4], Y = quad[5] },
-            new BoxModelPoint { X = quad[6], Y = quad[7] }
+            new BoxModelPoint { X = quad[6], Y = quad[7] },
         };
 
         private decimal ComputeQuadArea(BoxModelPoint[] quad)

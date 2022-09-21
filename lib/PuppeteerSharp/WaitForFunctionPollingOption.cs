@@ -14,9 +14,10 @@ namespace PuppeteerSharp
         /// This is the tightest polling mode which is suitable to observe styling changes.
         /// </summary>
         Raf,
+
         /// <summary>
         /// To execute <c>pageFunction</c> on every DOM mutation.
         /// </summary>
-        Mutation
+        Mutation,
     }
 }

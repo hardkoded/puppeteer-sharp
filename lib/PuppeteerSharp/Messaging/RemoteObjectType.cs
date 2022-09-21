@@ -13,6 +13,7 @@ namespace PuppeteerSharp.Messaging
         /// Other.
         /// </summary>
         Other,
+
         /// <summary>
         /// Object.
         /// </summary>
@@ -23,10 +24,12 @@ namespace PuppeteerSharp.Messaging
         /// Function.
         /// </summary>
         Function,
+
         /// <summary>
         /// Undefined.
         /// </summary>
         Undefined,
+
         /// <summary>
         /// String.
         /// </summary>
@@ -37,17 +40,20 @@ namespace PuppeteerSharp.Messaging
         /// Number.
         /// </summary>
         Number,
+
         /// <summary>
         /// Boolean.
         /// </summary>
         Boolean,
+
         /// <summary>
         /// Symbol.
         /// </summary>
         Symbol,
+
         /// <summary>
         /// Bigint.
         /// </summary>
-        Bigint
+        Bigint,
     }
 }

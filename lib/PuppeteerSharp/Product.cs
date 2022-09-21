@@ -9,6 +9,7 @@ namespace PuppeteerSharp
         /// Chrome.
         /// </summary>
         Chrome,
+
         /// <summary>
         /// Firefox.
         /// </summary>

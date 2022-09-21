@@ -117,7 +117,7 @@ namespace PuppeteerSharp
             {
                 var requestData = new FetchContinueRequestRequest
                 {
-                    RequestId = InterceptionId
+                    RequestId = InterceptionId,
                 };
                 if (overrides?.Url != null)
                 {
@@ -210,7 +210,7 @@ namespace PuppeteerSharp
                     RequestId = InterceptionId,
                     ResponseCode = response.Status != null ? (int)response.Status : 200,
                     ResponseHeaders = responseHeaders.ToArray(),
-                    Body = response.BodyData != null ? Convert.ToBase64String(response.BodyData) : null
+                    Body = response.BodyData != null ? Convert.ToBase64String(response.BodyData) : null,
                 }).ConfigureAwait(false);
             }
             catch (PuppeteerException ex)
@@ -247,7 +247,7 @@ namespace PuppeteerSharp
                 await _client.SendAsync("Fetch.failRequest", new FetchFailRequest
                 {
                     RequestId = InterceptionId,
-                    ErrorReason = errorReason
+                    ErrorReason = errorReason,
                 }).ConfigureAwait(false);
             }
             catch (PuppeteerException ex)

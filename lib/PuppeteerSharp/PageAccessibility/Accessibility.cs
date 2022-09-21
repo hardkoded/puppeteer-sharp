@@ -22,7 +22,7 @@ namespace PuppeteerSharp.PageAccessibility
             {
                 var node = await _client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
                 {
-                    ObjectId = options.Root.RemoteObject.ObjectId
+                    ObjectId = options.Root.RemoteObject.ObjectId,
                 }).ConfigureAwait(false);
                 backendNodeId = node.Node.BackendNodeId;
             }

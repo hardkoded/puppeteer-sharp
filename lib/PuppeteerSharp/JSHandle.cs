@@ -36,7 +36,9 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         protected CDPSession Client { get; }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Logger.
+        /// </summary>
         protected ILogger Logger { get; }
 
         /// <inheritdoc/>
@@ -61,7 +63,7 @@ namespace PuppeteerSharp
             var response = await Client.SendAsync<RuntimeGetPropertiesResponse>("Runtime.getProperties", new RuntimeGetPropertiesRequest
             {
                 ObjectId = RemoteObject.ObjectId,
-                OwnProperties = true
+                OwnProperties = true,
             }).ConfigureAwait(false);
 
             var result = new Dictionary<string, IJSHandle>();
@@ -93,7 +95,7 @@ namespace PuppeteerSharp
                     FunctionDeclaration = "function() { return this; }",
                     ObjectId = objectId,
                     ReturnByValue = true,
-                    AwaitPromise = true
+                    AwaitPromise = true,
                 }).ConfigureAwait(false);
                 return (T)RemoteObjectHelper.ValueFromRemoteObject<T>(response.Result);
             }

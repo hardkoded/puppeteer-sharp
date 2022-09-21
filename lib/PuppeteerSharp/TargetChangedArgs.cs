@@ -13,6 +13,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The target info.</value>
         public TargetInfo TargetInfo { get; internal set; }
+
         /// <summary>
         /// Gets the target.
         /// </summary>

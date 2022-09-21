@@ -10,11 +10,13 @@ namespace PuppeteerSharp.Mobile
         /// </summary>
         /// <value>The name.</value>
         public string Name { get; internal set; }
+
         /// <summary>
         /// User Agent
         /// </summary>
         /// <value>The user agent.</value>
         public string UserAgent { get; internal set; }
+
         /// <summary>
         /// ViewPort.
         /// </summary>
