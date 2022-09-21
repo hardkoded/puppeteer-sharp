@@ -129,4 +129,3 @@ namespace PuppeteerSharp
         Task AbortAsync(RequestAbortErrorCode errorCode = RequestAbortErrorCode.Failed);
     }
 }
-

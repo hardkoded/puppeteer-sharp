@@ -106,4 +106,3 @@ namespace PuppeteerSharp
         Task<T> JsonAsync<T>();
     }
 }
-
