@@ -83,7 +83,7 @@ namespace PuppeteerSharp.Tests
                 await Task.Delay(100);
             }
         }
-        internal static bool IsFavicon(Request request) => request.Url.Contains("favicon.ico");
+        internal static bool IsFavicon(IRequest request) => request.Url.Contains("favicon.ico");
         internal static string CurateProtocol(string protocol)
             => protocol
                 .ToLower()

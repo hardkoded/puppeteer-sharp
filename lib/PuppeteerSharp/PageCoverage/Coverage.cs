@@ -5,9 +5,7 @@ using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp.PageCoverage
 {
-    /// <summary>
-    /// gathers information about parts of JavaScript and CSS that were used by the page.
-    /// </summary>
+    /// <inheritdoc/>
     public class Coverage : ICoverage
     {
         private readonly JSCoverage _jsCoverage;
@@ -19,38 +17,18 @@ namespace PuppeteerSharp.PageCoverage
             _cssCoverage = new CSSCoverage(client);
         }
 
-        /// <summary>
-        /// Starts JS coverage
-        /// </summary>
-        /// <param name="options">Set of configurable options for coverage</param>
-        /// <returns>A task that resolves when coverage is started</returns>
+        /// <inheritdoc/>
         public Task StartJSCoverageAsync(CoverageStartOptions options = null)
             => _jsCoverage.StartAsync(options ?? new CoverageStartOptions());
 
-        /// <summary>
-        /// Stops JS coverage and returns coverage reports for all scripts
-        /// </summary>
-        /// <returns>Task that resolves to the array of coverage reports for all stylesheets</returns>
-        /// <remarks>
-        /// JavaScript Coverage doesn't include anonymous scripts by default; however, scripts with sourceURLs are reported.
-        /// </remarks>
+        /// <inheritdoc/>
         public Task<CoverageEntry[]> StopJSCoverageAsync() => _jsCoverage.StopAsync();
 
-        /// <summary>
-        /// Starts CSS coverage
-        /// </summary>
-        /// <param name="options">Set of configurable options for coverage</param>
-        /// <returns>A task that resolves when coverage is started</returns>
+        /// <inheritdoc/>
         public Task StartCSSCoverageAsync(CoverageStartOptions options = null)
             => _cssCoverage.StartAsync(options ?? new CoverageStartOptions());
 
-        /// <summary>
-        /// Stops JS coverage and returns coverage reports for all non-anonymous scripts
-        /// </summary>
-        /// <returns>Task that resolves to the array of coverage reports for all stylesheets</returns>
-        /// <remarks>
-        /// JavaScript Coverage doesn't include anonymous scripts; however, scripts with sourceURLs are reported.
-        /// </remarks>
+        /// <inheritdoc/>
         public Task<CoverageEntry[]> StopCSSCoverageAsync() => _cssCoverage.StopAsync();
 
         internal static CoverageEntryRange[] ConvertToDisjointRanges(List<CoverageResponseRange> nestedRanges)

@@ -136,7 +136,7 @@ namespace PuppeteerSharp.Tests.HeadfulTests
             await using (var page = await browser.NewPageAsync())
             {
                 // Setup our session listeners to observe OOPIF activity.
-                var session = (CDPSession)await page.Target.CreateCDPSessionAsync();
+                var session = await page.Target.CreateCDPSessionAsync();
                 var networkEvents = new List<string>();
                 var otherSessions = new List<ICDPSession>();
 
@@ -147,7 +147,7 @@ namespace PuppeteerSharp.Tests.HeadfulTests
                     WaitForDebuggerOnStart = true,
                 });
 
-                session.SessionAttached += async (_, e) =>
+                ((CDPSession)session).SessionAttached += async (_, e) =>
                 {
                     otherSessions.Add(e.Session);
 

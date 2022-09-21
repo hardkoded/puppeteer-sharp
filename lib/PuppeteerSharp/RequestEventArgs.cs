@@ -14,6 +14,6 @@ namespace PuppeteerSharp
         /// Gets the request.
         /// </summary>
         /// <value>The request.</value>
-        public Request Request { get; internal set; }
+        public IRequest Request { get; internal set; }
     }
 }

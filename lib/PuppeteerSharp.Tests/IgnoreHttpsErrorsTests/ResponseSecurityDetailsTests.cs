@@ -54,7 +54,7 @@ namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
         [SkipBrowserFact(skipFirefox: true)]
         public async Task NetworkRedirectsShouldReportSecurityDetails()
         {
-            var responses = new List<Response>();
+            var responses = new List<IResponse>();
             HttpsServer.SetRedirect("/plzredirect", "/empty.html");
 
             Page.Response += (_, e) => responses.Add(e.Response);

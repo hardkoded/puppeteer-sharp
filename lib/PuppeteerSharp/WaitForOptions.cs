@@ -5,10 +5,10 @@ namespace PuppeteerSharp
     /// <summary>
     /// Optional waiting parameters.
     /// </summary>
-    /// <seealso cref="IPage.WaitForRequestAsync(Func{Request, bool}, WaitForOptions)"/>
+    /// <seealso cref="IPage.WaitForRequestAsync(Func{IRequest, bool}, WaitForOptions)"/>
     /// <seealso cref="IPage.WaitForRequestAsync(string, WaitForOptions)"/>
     /// <seealso cref="IPage.WaitForResponseAsync(string, WaitForOptions)"/>
-    /// <seealso cref="IPage.WaitForResponseAsync(Func{Response, bool}, WaitForOptions)"/>
+    /// <seealso cref="IPage.WaitForResponseAsync(Func{IResponse, bool}, WaitForOptions)"/>
     public class WaitForOptions
     {
         /// <summary>

@@ -20,7 +20,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         [PuppeteerFact]
         public async Task ShouldWorkForMainFrameNavigationRequests()
         {
-            var requests = new List<Request>();
+            var requests = new List<IRequest>();
             Page.Request += (_, e) =>
             {
                 if (!TestUtils.IsFavicon(e.Request))
@@ -38,7 +38,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         [PuppeteerFact]
         public async Task ShouldWorkForSubframeNavigationRequest()
         {
-            var requests = new List<Request>();
+            var requests = new List<IRequest>();
             Page.Request += (_, e) =>
             {
                 if (!TestUtils.IsFavicon(e.Request))
@@ -58,7 +58,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         [PuppeteerFact]
         public async Task ShouldWorkForFetchRequests()
         {
-            var requests = new List<Request>();
+            var requests = new List<IRequest>();
             Page.Request += (_, e) =>
             {
                 if (!TestUtils.IsFavicon(e.Request))

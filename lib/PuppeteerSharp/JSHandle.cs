@@ -13,31 +13,30 @@ namespace PuppeteerSharp
     [JsonConverter(typeof(JSHandleMethodConverter))]
     public class JSHandle : IJSHandle
     {
-        private readonly IExecutionContext _executionContext;
-
-        internal JSHandle(IExecutionContext context, CDPSession client, RemoteObject remoteObject)
+        internal JSHandle(ExecutionContext context, CDPSession client, RemoteObject remoteObject)
         {
-            _executionContext = context;
+            ExecutionContext = context;
             Client = client;
             Logger = Client.Connection.LoggerFactory.CreateLogger(GetType());
             RemoteObject = remoteObject;
         }
 
         /// <inheritdoc/>
-        public IExecutionContext ExecutionContext => _executionContext;
+        public ExecutionContext ExecutionContext { get; }
+
+        /// <inheritdoc/>
+        IExecutionContext IJSHandle.ExecutionContext => ExecutionContext;
+
         /// <inheritdoc/>
         public bool Disposed { get; private set; }
+
         /// <inheritdoc/>
         public RemoteObject RemoteObject { get; }
-        /// <summary>
-        /// Gets the client.
-        /// </summary>
-        /// <value>The client.</value>
+
+        /// <inheritdoc/>
         protected CDPSession Client { get; }
-        /// <summary>
-        /// Gets the logger.
-        /// </summary>
-        /// <value>The logger.</value>
+
+        /// <inheritdoc/>
         protected ILogger Logger { get; }
 
         /// <inheritdoc/>
@@ -74,7 +73,7 @@ namespace PuppeteerSharp
                     continue;
                 }
 
-                result.Add(property.Name, ((ExecutionContext)_executionContext).CreateJSHandle(property.Value));
+                result.Add(property.Name, ExecutionContext.CreateJSHandle(property.Value));
             }
             return result;
         }
@@ -102,10 +101,7 @@ namespace PuppeteerSharp
             return (T)RemoteObjectHelper.ValueFromRemoteObject<T>(RemoteObject);
         }
 
-        /// <summary>
-        /// Disposes the Handle. It will mark the JSHandle as disposed and release the <see cref="IJSHandle.RemoteObject"/>
-        /// </summary>
-        /// <returns>The async.</returns>
+        /// <inheritdoc/>
         public async ValueTask DisposeAsync()
         {
             if (Disposed)
@@ -136,7 +132,7 @@ namespace PuppeteerSharp
         {
             var list = new List<object>(args);
             list.Insert(0, this);
-            return _executionContext.EvaluateFunctionHandleAsync(pageFunction, list.ToArray());
+            return ExecutionContext.EvaluateFunctionHandleAsync(pageFunction, list.ToArray());
         }
 
         /// <inheritdoc/>
@@ -144,7 +140,7 @@ namespace PuppeteerSharp
         {
             var list = new List<object>(args);
             list.Insert(0, this);
-            return _executionContext.EvaluateFunctionAsync<JToken>(script, list.ToArray());
+            return ExecutionContext.EvaluateFunctionAsync<JToken>(script, list.ToArray());
         }
 
         /// <inheritdoc/>
@@ -152,12 +148,12 @@ namespace PuppeteerSharp
         {
             var list = new List<object>(args);
             list.Insert(0, this);
-            return _executionContext.EvaluateFunctionAsync<T>(script, list.ToArray());
+            return ExecutionContext.EvaluateFunctionAsync<T>(script, list.ToArray());
         }
 
         internal object FormatArgument(ExecutionContext context)
         {
-            if (_executionContext != context)
+            if (ExecutionContext != context)
             {
                 throw new PuppeteerException("JSHandles can be evaluated only in the context they were created!");
             }

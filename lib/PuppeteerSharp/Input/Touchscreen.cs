@@ -4,32 +4,20 @@ using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp.Input
 {
-    /// <summary>
-    /// Provides methods to interact with the touch screen
-    /// </summary>
+    /// <inheritdoc/>
     public class Touchscreen : ITouchscreen
     {
         private readonly CDPSession _client;
         private readonly Keyboard _keyboard;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Touchscreen"/> class.
-        /// </summary>
-        /// <param name="client">The client</param>
-        /// <param name="keyboard">The keyboard</param>
+        /// <inheritdoc/>
         public Touchscreen(CDPSession client, Keyboard keyboard)
         {
             _client = client;
             _keyboard = keyboard;
         }
 
-        /// <summary>
-        /// Dispatches a <c>touchstart</c> and <c>touchend</c> event.
-        /// </summary>
-        /// <param name="x">The touch X location.</param>
-        /// <param name="y">The touch Y location.</param>
-        /// <returns>Task</returns>
-        /// <seealso cref="IPage.TapAsync(string)"/>
+        /// <inheritdoc/>
         public async Task TapAsync(decimal x, decimal y)
         {
             // Touches appear to be lost during the first frame after navigation.

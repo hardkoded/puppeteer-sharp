@@ -42,14 +42,10 @@ namespace PuppeteerSharp
         private readonly CustomFileDownloadAction _customFileDownload;
         private bool _isDisposed;
 
-        /// <summary>
-        /// Default Chromium revision.
-        /// </summary>
+        /// <inheritdoc/>
         public const string DefaultChromiumRevision = "970485";
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BrowserFetcher"/> class.
-        /// </summary>
+        /// <inheritdoc/>
         public BrowserFetcher()
         {
             DownloadsFolder = Path.Combine(Directory.GetCurrentDirectory(), ".local-chromium");
@@ -59,18 +55,12 @@ namespace PuppeteerSharp
             _customFileDownload = _webClient.DownloadFileTaskAsync;
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BrowserFetcher"/> class.
-        /// </summary>
-        /// <param name="product">Product.</param>
+        /// <inheritdoc/>
         public BrowserFetcher(Product product) : this(new BrowserFetcherOptions { Product = product })
         {
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BrowserFetcher"/> class.
-        /// </summary>
-        /// <param name="options">Fetch options.</param>
+        /// <inheritdoc/>
         public BrowserFetcher(BrowserFetcherOptions options)
         {
             if (options == null)
@@ -89,12 +79,6 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public event DownloadProgressChangedEventHandler DownloadProgressChanged;
-
-        /// <summary>
-        /// Default Chromium revision.
-        /// </summary>
-        [Obsolete("Use DefaultChromiumRevision instead")]
-        public static int DefaultRevision { get; } = int.Parse(DefaultChromiumRevision, CultureInfo.CurrentCulture.NumberFormat);
 
         /// <inheritdoc/>
         public string DefaultFirefoxRevision { get; private set; } = "latest";
@@ -117,14 +101,6 @@ namespace PuppeteerSharp
             get => _webClient.Proxy;
             set => _webClient.Proxy = value;
         }
-
-        /// <summary>
-        /// The method initiates a HEAD request to check if the revision is available.
-        /// </summary>
-        /// <returns>Whether the version is available or not.</returns>
-        /// <param name="revision">A revision to check availability.</param>
-        [Obsolete("Use CanDownloadAsync(string revision) instead")]
-        public Task<bool> CanDownloadAsync(int revision) => CanDownloadAsync(revision.ToString(CultureInfo.CurrentCulture.NumberFormat));
 
         /// <inheritdoc/>
         public async Task<bool> CanDownloadAsync(string revision)
@@ -160,13 +136,6 @@ namespace PuppeteerSharp
             return Array.Empty<string>();
         }
 
-        /// <summary>
-        /// Removes a downloaded revision.
-        /// </summary>
-        /// <param name="revision">Revision to remove.</param>
-        [Obsolete("Use remove(string revision) instead")]
-        public void Remove(int revision) => Remove(revision.ToString(CultureInfo.CurrentCulture.NumberFormat));
-
         /// <inheritdoc/>
         public void Remove(string revision)
         {
@@ -176,14 +145,6 @@ namespace PuppeteerSharp
                 directory.Delete(true);
             }
         }
-
-        /// <summary>
-        /// Gets the revision info.
-        /// </summary>
-        /// <returns>Revision info.</returns>
-        /// <param name="revision">A revision to get info for.</param>
-        [Obsolete("Use RevisionInfo(string revision) instead")]
-        public RevisionInfo RevisionInfo(int revision) => RevisionInfo(revision.ToString(CultureInfo.CurrentCulture.NumberFormat));
 
         /// <inheritdoc/>
         public async Task<RevisionInfo> GetRevisionInfoAsync()
@@ -204,14 +165,6 @@ namespace PuppeteerSharp
 
             return result;
         }
-
-        /// <summary>
-        /// Downloads the revision.
-        /// </summary>
-        /// <returns>Task which resolves to the completed download.</returns>
-        /// <param name="revision">Revision.</param>
-        [Obsolete("Use DownloadAsync(string revision) instead")]
-        public Task<RevisionInfo> DownloadAsync(int revision) => DownloadAsync(revision.ToString(CultureInfo.CurrentCulture.NumberFormat));
 
         /// <inheritdoc/>
         public async Task<RevisionInfo> DownloadAsync()
@@ -399,38 +352,11 @@ namespace PuppeteerSharp
             process.WaitForExit();
         }
 
-        /// <summary>
-        /// Gets the executable path for a revision.
-        /// </summary>
-        /// <returns>The executable path.</returns>
-        /// <param name="revision">Revision.</param>
-        [Obsolete("Use GetExecutablePath(string revision) instead")]
-        public string GetExecutablePath(int revision) => GetExecutablePath(revision.ToString(CultureInfo.CurrentCulture.NumberFormat));
-
         /// <inheritdoc/>
         public string GetExecutablePath(string revision)
             => GetExecutablePath(Product, Platform, revision, GetFolderPath(revision));
 
-        /// <summary>
-        /// Gets the executable path.
-        /// </summary>
-        /// <returns>The executable path.</returns>
-        /// <param name="product">Product.</param>
-        /// <param name="platform">Platform.</param>
-        /// <param name="revision">Revision.</param>
-        /// <param name="folderPath">Folder path.</param>
-        [Obsolete("Use GetExecutablePath(string product, Platform platform, string revision, string folderPath) instead")]
-        public static string GetExecutablePath(Product product, Platform platform, int revision, string folderPath)
-            => GetExecutablePath(product, platform, revision.ToString(CultureInfo.CurrentCulture.NumberFormat), folderPath);
-
-        /// <summary>
-        /// Gets the executable path.
-        /// </summary>
-        /// <returns>The executable path.</returns>
-        /// <param name="product">Product.</param>
-        /// <param name="platform">Platform.</param>
-        /// <param name="revision">Revision.</param>
-        /// <param name="folderPath">Folder path.</param>
+        /// <inheritdoc/>
         public static string GetExecutablePath(Product product, Platform platform, string revision, string folderPath)
         {
             if (product == Product.Chrome)
@@ -580,19 +506,14 @@ namespace PuppeteerSharp
         private static string GetDownloadURL(Product product, Platform platform, string host, string revision)
             => string.Format(CultureInfo.CurrentCulture, _downloadUrls[(product, platform)], host, revision, GetArchiveName(product, platform, revision));
 
-        /// <summary>
-        /// Disposes of any disposable members in <see cref="BrowserFetcher" />.
-        /// </summary>
+        /// <inheritdoc/>
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
-        /// <summary>
-        /// Disposes of any disposable members in <see cref="BrowserFetcher" />.
-        /// </summary>
-        /// <param name="disposing">Indicates disposing of managed resources.</param>
+        /// <inheritdoc/>
         protected virtual void Dispose(bool disposing)
         {
             if (_isDisposed)

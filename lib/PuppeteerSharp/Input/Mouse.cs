@@ -4,9 +4,7 @@ using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp.Input
 {
-    /// <summary>
-    /// Provides methods to interact with the mouse
-    /// </summary>
+    /// <inheritdoc/>
     public class Mouse : IMouse
     {
         private readonly CDPSession _client;
@@ -16,27 +14,17 @@ namespace PuppeteerSharp.Input
         private decimal _y = 0;
         private MouseButton _button = MouseButton.None;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Mouse"/> class.
-        /// </summary>
-        /// <param name="client">The client</param>
-        /// <param name="keyboard">The keyboard</param>
+        /// <inheritdoc/>
         public Mouse(CDPSession client, Keyboard keyboard)
         {
             _client = client;
             _keyboard = keyboard;
         }
 
-        /// <summary>
-        /// Dispatches a <c>mousemove</c> event.
-        /// </summary>
-        /// <param name="x">The destination mouse X coordinate.</param>
-        /// <param name="y">The destination mouse Y coordinate.</param>
-        /// <param name="options">Options to apply to the move operation.</param>
-        /// <returns>Task</returns>
+        /// <inheritdoc/>
         public async Task MoveAsync(decimal x, decimal y, MoveOptions options = null)
         {
-            options = options ?? new MoveOptions();
+            options ??= new MoveOptions();
 
             var fromX = _x;
             var fromY = _y;
@@ -57,16 +45,10 @@ namespace PuppeteerSharp.Input
             }
         }
 
-        /// <summary>
-        /// Shortcut for <see cref="MoveAsync(decimal, decimal, MoveOptions)"/>, <see cref="DownAsync(ClickOptions)"/> and <see cref="UpAsync(ClickOptions)"/>
-        /// </summary>
-        /// <param name="x">The target mouse X location to click.</param>
-        /// <param name="y">The target mouse Y location to click.</param>
-        /// <param name="options">Options to apply to the click operation.</param>
-        /// <returns>Task</returns>
+        /// <inheritdoc/>
         public async Task ClickAsync(decimal x, decimal y, ClickOptions options = null)
         {
-            options = options ?? new ClickOptions();
+            options ??= new ClickOptions();
 
             if (options.Delay > 0)
             {
@@ -86,14 +68,10 @@ namespace PuppeteerSharp.Input
             }
         }
 
-        /// <summary>
-        /// Dispatches a <c>mousedown</c> event.
-        /// </summary>
-        /// <param name="options">Options to apply to the mouse down operation.</param>
-        /// <returns>Task</returns>
+        /// <inheritdoc/>
         public Task DownAsync(ClickOptions options = null)
         {
-            options = options ?? new ClickOptions();
+            options ??= new ClickOptions();
 
             _button = options.Button;
 
@@ -108,14 +86,10 @@ namespace PuppeteerSharp.Input
             });
         }
 
-        /// <summary>
-        /// Dispatches a <c>mouseup</c> event.
-        /// </summary>
-        /// <param name="options">Options to apply to the mouse up operation.</param>
-        /// <returns>Task</returns>
+        /// <inheritdoc/>
         public Task UpAsync(ClickOptions options = null)
         {
-            options = options ?? new ClickOptions();
+            options ??= new ClickOptions();
 
             _button = MouseButton.None;
 
@@ -130,12 +104,7 @@ namespace PuppeteerSharp.Input
             });
         }
 
-        /// <summary>
-        /// Dispatches a <c>wheel</c> event.
-        /// </summary>
-        /// <param name="deltaX">Delta X.</param>
-        /// <param name="deltaY">Delta Y.</param>
-        /// <returns>Task</returns>
+        /// <inheritdoc/>
         public Task WheelAsync(decimal deltaX, decimal deltaY)
             => _client.SendAsync(
                 "Input.dispatchMouseEvent",
@@ -150,14 +119,7 @@ namespace PuppeteerSharp.Input
                     PointerType = PointerType.Mouse
                 });
 
-        /// <summary>
-        /// Dispatches a `drag` event.
-        /// </summary>
-        /// <param name="startX">Start X coordinate</param>
-        /// <param name="startY">Start Y coordinate</param>
-        /// <param name="endX">End X coordinate</param>
-        /// <param name="endY">End Y coordinate</param>
-        /// <returns>A Task that resolves when the message was confirmed by the browser with the drag data</returns>
+        /// <inheritdoc/>
         public async Task<DragData> DragAsync(decimal startX, decimal startY, decimal endX, decimal endY)
         {
             var result = new TaskCompletionSource<DragData>();
@@ -178,13 +140,7 @@ namespace PuppeteerSharp.Input
             return await result.Task.ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Dispatches a `dragenter` event.
-        /// </summary>
-        /// <param name="x">x coordinate</param>
-        /// <param name="y">y coordinate</param>
-        /// <param name="data">Drag data containing items and operations mask.</param>
-        /// <returns>A Task that resolves when the message was confirmed by the browser</returns>
+        /// <inheritdoc/>
         public Task DragEnterAsync(decimal x, decimal y, DragData data)
             => _client.SendAsync(
                 "Input.dispatchDragEvent",
@@ -197,13 +153,7 @@ namespace PuppeteerSharp.Input
                     Data = data,
                 });
 
-        /// <summary>
-        /// Dispatches a `dragover` event.
-        /// </summary>
-        /// <param name="x">x coordinate</param>
-        /// <param name="y">y coordinate</param>
-        /// <param name="data">Drag data containing items and operations mask.</param>
-        /// <returns>A Task that resolves when the message was confirmed by the browser</returns>
+        /// <inheritdoc/>
         public Task DragOverAsync(decimal x, decimal y, DragData data)
             => _client.SendAsync(
                 "Input.dispatchDragEvent",
@@ -216,13 +166,7 @@ namespace PuppeteerSharp.Input
                     Data = data,
                 });
 
-        /// <summary>
-        /// Dispatches a `drop` event.
-        /// </summary>
-        /// <param name="x">x coordinate</param>
-        /// <param name="y">y coordinate</param>
-        /// <param name="data">Drag data containing items and operations mask.</param>
-        /// <returns>A Task that resolves when the message was confirmed by the browser</returns>
+        /// <inheritdoc/>
         public Task DropAsync(decimal x, decimal y, DragData data)
             => _client.SendAsync(
                 "Input.dispatchDragEvent",
@@ -235,15 +179,7 @@ namespace PuppeteerSharp.Input
                     Data = data,
                 });
 
-        /// <summary>
-        /// Performs a drag, dragenter, dragover, and drop in sequence.
-        /// </summary>
-        /// <param name="startX">Start X coordinate</param>
-        /// <param name="startY">Start Y coordinate</param>
-        /// <param name="endX">End X coordinate</param>
-        /// <param name="endY">End Y coordinate</param>
-        /// <param name="delay">If specified, is the time to wait between `dragover` and `drop` in milliseconds.</param>
-        /// <returns>A Task that resolves when the message was confirmed by the browser</returns>
+        /// <inheritdoc/>
         public async Task DragAndDropAsync(decimal startX, decimal startY, decimal endX, decimal endY, int delay = 0)
         {
             var data = await DragAsync(startX, startY, endX, endY).ConfigureAwait(false);

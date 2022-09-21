@@ -13,10 +13,7 @@ using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
-    /// <summary>
-    /// Inherits from <see cref="JSHandle"/>. It represents an in-page DOM element.
-    /// ElementHandles can be created by <see cref="PuppeteerSharp.IPage.QuerySelectorAsync(string)"/> or <see cref="PuppeteerSharp.IPage.QuerySelectorAllAsync(string)"/>.
-    /// </summary>
+    /// <inheritdoc/>
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class ElementHandle : JSHandle, IElementHandle
     {
@@ -25,7 +22,7 @@ namespace PuppeteerSharp
         private readonly IFrame _frame;
 
         internal ElementHandle(
-            IExecutionContext context,
+            ExecutionContext context,
             CDPSession client,
             RemoteObject remoteObject,
             IFrame frame,
@@ -45,14 +42,7 @@ namespace PuppeteerSharp
 
         internal CustomQueriesManager CustomQueriesManager => ((Browser)Page.Browser).CustomQueriesManager;
 
-        /// <summary>
-        /// This method scrolls element into view if needed, and then uses <seealso cref="PuppeteerSharp.Page.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
-        /// If the element is detached from DOM, the method throws an error.
-        /// </summary>
-        /// <returns>The task</returns>
-        /// <param name="file">The file path to save the image to. The screenshot type will be inferred from file extension.
-        /// If path is a relative path, then it is resolved relative to current working directory. If no path is provided,
-        /// the image won't be saved to the disk.</param>
+        /// <inheritdoc/>
         public Task ScreenshotAsync(string file) => ScreenshotAsync(file, new ScreenshotOptions());
 
         /// <inheritdoc/>
@@ -86,13 +76,7 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public Task<byte[]> ScreenshotDataAsync() => ScreenshotDataAsync(new ScreenshotOptions());
 
-        /// <summary>
-        /// Waits for a selector to be added to the DOM
-        /// </summary>
-        /// <param name="selector">A selector of an element to wait for</param>
-        /// <param name="options">Optional waiting parameters</param>
-        /// <returns>A task that resolves when element specified by selector string is added to DOM.
-        /// Resolves to `null` if waiting for `hidden: true` and selector is not found in DOM.</returns>
+        /// <inheritdoc/>
         public async Task<IElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
         {
             var frame = (Frame)ExecutionContext.Frame;
@@ -113,12 +97,7 @@ namespace PuppeteerSharp
             return result;
         }
 
-        /// <summary>
-        /// This method scrolls element into view if needed, and then uses <seealso cref="PuppeteerSharp.Page.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
-        /// If the element is detached from DOM, the method throws an error.
-        /// </summary>
-        /// <returns>Task which resolves to a <see cref="byte"/>[] containing the image data.</returns>
-        /// <param name="options">Screenshot options.</param>
+        /// <inheritdoc/>
         public async Task<byte[]> ScreenshotDataAsync(ScreenshotOptions options)
             => Convert.FromBase64String(await ScreenshotBase64Async(options).ConfigureAwait(false));
 
@@ -286,44 +265,28 @@ namespace PuppeteerSharp
             await Page.Keyboard.PressAsync(key, options).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// The method runs <c>element.querySelector</c> within the page. If no element matches the selector, the return value resolve to <c>null</c>.
-        /// </summary>
-        /// <param name="selector">A selector to query element for</param>
-        /// <returns>Task which resolves to <see cref="ElementHandle"/> pointing to the frame element</returns>
+        /// <inheritdoc/>
         public Task<IElementHandle> QuerySelectorAsync(string selector)
         {
             var (updatedSelector, queryHandler) = CustomQueriesManager.GetQueryHandlerAndSelector(selector);
             return queryHandler.QueryOne(this, updatedSelector);
         }
 
-        /// <summary>
-        /// Runs <c>element.querySelectorAll</c> within the page. If no elements match the selector, the return value resolve to <see cref="Array.Empty{T}"/>.
-        /// </summary>
-        /// <param name="selector">A selector to query element for</param>
-        /// <returns>Task which resolves to ElementHandles pointing to the frame elements</returns>
+        /// <inheritdoc/>
         public Task<IElementHandle[]> QuerySelectorAllAsync(string selector)
         {
             var (updatedSelector, queryHandler) = CustomQueriesManager.GetQueryHandlerAndSelector(selector);
             return queryHandler.QueryAll(this, updatedSelector);
         }
 
-        /// <summary>
-        /// A utility function to be used with <see cref="PuppeteerHandleExtensions.EvaluateFunctionAsync{T}(Task{IJSHandle}, string, object[])"/>
-        /// </summary>
-        /// <param name="selector">A selector to query element for</param>
-        /// <returns>Task which resolves to a <see cref="IJSHandle"/> of <c>document.querySelectorAll</c> result</returns>
+        /// <inheritdoc/>
         public Task<IJSHandle> QuerySelectorAllHandleAsync(string selector)
         {
             var (updatedSelector, queryHandler) = CustomQueriesManager.GetQueryHandlerAndSelector(selector);
             return queryHandler.QueryAllArray(this, updatedSelector);
         }
 
-        /// <summary>
-        /// Evaluates the XPath expression relative to the elementHandle. If there's no such element, the method will resolve to <c>null</c>.
-        /// </summary>
-        /// <param name="expression">Expression to evaluate <see href="https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate"/></param>
-        /// <returns>Task which resolves to an array of <see cref="ElementHandle"/></returns>
+        /// <inheritdoc/>
         public async Task<IElementHandle[]> XPathAsync(string expression)
         {
             var arrayHandle = await ExecutionContext.EvaluateFunctionHandleAsync(
@@ -383,10 +346,7 @@ namespace PuppeteerSharp
                 };
         }
 
-        /// <summary>
-        /// Content frame for element handles referencing iframe nodes, or null otherwise.
-        /// </summary>
-        /// <returns>Resolves to the content frame</returns>
+        /// <inheritdoc/>
         public async Task<IFrame> ContentFrameAsync()
         {
             var nodeInfo = await Client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
@@ -488,12 +448,7 @@ namespace PuppeteerSharp
             await Page.Mouse.DropAsync(clickablePoint.X, clickablePoint.Y, data).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Performs a drag, dragenter, dragover, and drop in sequence.
-        /// </summary>
-        /// <param name="target">Target element</param>
-        /// <param name="delay">If specified, is the time to wait between `dragover` and `drop` in milliseconds.</param>
-        /// <returns>A Task that resolves when the message was confirmed by the browser</returns>
+        /// <inheritdoc/>
         public async Task DragAndDropAsync(IElementHandle target, int delay = 0)
         {
             if (target == null)
@@ -512,12 +467,7 @@ namespace PuppeteerSharp
             await Page.Mouse.DragAndDropAsync(clickablePoint.X, clickablePoint.Y, targetPoint.X, targetPoint.Y, delay).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Returns the middle point within an element unless a specific offset is provided.
-        /// </summary>
-        /// <param name="offset">Optional offset</param>
-        /// <exception cref="PuppeteerException">When the node is not visible or not an HTMLElement</exception>
-        /// <returns>A <see cref="Task"/> that resolves to the clickable point</returns>
+        /// <inheritdoc/>
         public async Task<BoxModelPoint> ClickablePointAsync(BoxModelPoint? offset = null)
         {
             GetContentQuadsResponse result = null;
@@ -657,11 +607,7 @@ namespace PuppeteerSharp
             });
         }
 
-        /// <summary>
-        /// If the element is not already fully visible then scrolls the element's parent container such that the element on
-        /// which ScrollIntoViewIfNeededAsync() is called is visible to the user.
-        /// </summary>
-        /// <returns>A Task that resolves when the message was confirmed by the browser</returns>
+        /// <inheritdoc/>
         public async Task ScrollIntoViewIfNeededAsync()
         {
             var errorMessage = await EvaluateFunctionAsync<string>(

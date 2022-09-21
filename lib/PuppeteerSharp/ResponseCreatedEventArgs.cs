@@ -11,6 +11,6 @@ namespace PuppeteerSharp
         /// Gets the response.
         /// </summary>
         /// <value>The response.</value>
-        public Response Response { get; internal set; }
+        public IResponse Response { get; internal set; }
     }
 }

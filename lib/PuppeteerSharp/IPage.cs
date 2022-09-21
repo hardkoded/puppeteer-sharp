@@ -177,7 +177,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Chrome DevTools Protocol session.
         /// </summary>
-        CDPSession Client { get; }
+        ICDPSession Client { get; }
 
         /// <summary>
         /// Gets this page's coverage
@@ -760,7 +760,7 @@ namespace PuppeteerSharp
         /// <returns>Task that resolves to the main resource response. In case of multiple redirects,
         /// the navigation will resolve with the response of the last redirect. If can not go back, resolves to null.</returns>
         /// <param name="options">Navigation parameters.</param>
-        Task<Response> GoBackAsync(NavigationOptions options = null);
+        Task<IResponse> GoBackAsync(NavigationOptions options = null);
 
         /// <summary>
         /// Navigate to the next page in history.
@@ -768,7 +768,7 @@ namespace PuppeteerSharp
         /// <returns>Task that resolves to the main resource response. In case of multiple redirects,
         /// the navigation will resolve with the response of the last redirect. If can not go forward, resolves to null.</returns>
         /// <param name="options">Navigation parameters.</param>
-        Task<Response> GoForwardAsync(NavigationOptions options = null);
+        Task<IResponse> GoForwardAsync(NavigationOptions options = null);
 
         /// <summary>
         /// Navigates to an url
@@ -778,7 +778,7 @@ namespace PuppeteerSharp
         /// <param name="waitUntil">When to consider navigation succeeded, defaults to <see cref="WaitUntilNavigation.Load"/>. Given an array of <see cref="WaitUntilNavigation"/>, navigation is considered to be successful after all events have been fired</param>
         /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect</returns>
         /// <seealso cref="GoToAsync(string, NavigationOptions)"/>
-        Task<Response> GoToAsync(string url, int? timeout = null, WaitUntilNavigation[] waitUntil = null);
+        Task<IResponse> GoToAsync(string url, int? timeout = null, WaitUntilNavigation[] waitUntil = null);
 
         /// <summary>
         /// Navigates to an url
@@ -805,7 +805,7 @@ namespace PuppeteerSharp
         /// <param name="options">Navigation parameters.</param>
         /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.</returns>
         /// <seealso cref="GoToAsync(string, int?, WaitUntilNavigation[])"/>
-        Task<Response> GoToAsync(string url, NavigationOptions options);
+        Task<IResponse> GoToAsync(string url, NavigationOptions options);
 
         /// <summary>
         /// Navigates to an url
@@ -814,7 +814,7 @@ namespace PuppeteerSharp
         /// <param name="waitUntil">When to consider navigation succeeded.</param>
         /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect</returns>
         /// <seealso cref="GoToAsync(string, NavigationOptions)"/>
-        Task<Response> GoToAsync(string url, WaitUntilNavigation waitUntil);
+        Task<IResponse> GoToAsync(string url, WaitUntilNavigation waitUntil);
 
         /// <summary>
         /// Fetches an element with <paramref name="selector"/>, scrolls it into view if needed, and then uses <see cref="Mouse"/> to hover over the center of the element.
@@ -933,7 +933,7 @@ namespace PuppeteerSharp
         /// <param name="waitUntil">When to consider navigation succeeded, defaults to <see cref="WaitUntilNavigation.Load"/>. Given an array of <see cref="WaitUntilNavigation"/>, navigation is considered to be successful after all events have been fired</param>
         /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect</returns>
         /// <seealso cref="ReloadAsync(NavigationOptions)"/>
-        Task<Response> ReloadAsync(int? timeout = null, WaitUntilNavigation[] waitUntil = null);
+        Task<IResponse> ReloadAsync(int? timeout = null, WaitUntilNavigation[] waitUntil = null);
 
         /// <summary>
         /// Reloads the page
@@ -941,7 +941,7 @@ namespace PuppeteerSharp
         /// <param name="options">Navigation options</param>
         /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect</returns>
         /// <seealso cref="ReloadAsync(int?, WaitUntilNavigation[])"/>
-        Task<Response> ReloadAsync(NavigationOptions options);
+        Task<IResponse> ReloadAsync(NavigationOptions options);
 
         /// <summary>
         /// Takes a screenshot of the page
@@ -1267,7 +1267,7 @@ namespace PuppeteerSharp
         /// ]]>
         /// </code>
         /// </example>
-        Task<Response> WaitForNavigationAsync(NavigationOptions options = null);
+        Task<IResponse> WaitForNavigationAsync(NavigationOptions options = null);
 
         /// <summary>
         /// Waits for Network Idle
@@ -1298,7 +1298,7 @@ namespace PuppeteerSharp
         /// <returns>A task which resolves when a matching request was made.</returns>
         /// <param name="predicate">Function which looks for a matching request.</param>
         /// <param name="options">Options.</param>
-        Task<Request> WaitForRequestAsync(Func<Request, bool> predicate, WaitForOptions options = null);
+        Task<IRequest> WaitForRequestAsync(Func<IRequest, bool> predicate, WaitForOptions options = null);
 
         /// <summary>
         /// Waits for a request.
@@ -1314,7 +1314,7 @@ namespace PuppeteerSharp
         /// <returns>A task which resolves when a matching request was made.</returns>
         /// <param name="url">URL to wait for.</param>
         /// <param name="options">Options.</param>
-        Task<Request> WaitForRequestAsync(string url, WaitForOptions options = null);
+        Task<IRequest> WaitForRequestAsync(string url, WaitForOptions options = null);
 
         /// <summary>
         /// Waits for a response.
@@ -1330,7 +1330,7 @@ namespace PuppeteerSharp
         /// <returns>A task which resolves when a matching response is received.</returns>
         /// <param name="predicate">Function which looks for a matching response.</param>
         /// <param name="options">Options.</param>
-        Task<Response> WaitForResponseAsync(Func<Response, bool> predicate, WaitForOptions options = null);
+        Task<IResponse> WaitForResponseAsync(Func<IResponse, bool> predicate, WaitForOptions options = null);
 
         /// <summary>
         /// Waits for a response.
@@ -1346,7 +1346,7 @@ namespace PuppeteerSharp
         /// <returns>A task which resolves when a matching response is received.</returns>
         /// <param name="predicate">Function which looks for a matching response.</param>
         /// <param name="options">Options.</param>
-        Task<Response> WaitForResponseAsync(Func<Response, Task<bool>> predicate, WaitForOptions options = null);
+        Task<IResponse> WaitForResponseAsync(Func<IResponse, Task<bool>> predicate, WaitForOptions options = null);
 
         /// <summary>
         /// Waits for a response.
@@ -1362,7 +1362,7 @@ namespace PuppeteerSharp
         /// <returns>A task which resolves when a matching response is received.</returns>
         /// <param name="url">URL to wait for.</param>
         /// <param name="options">Options.</param>
-        Task<Response> WaitForResponseAsync(string url, WaitForOptions options = null);
+        Task<IResponse> WaitForResponseAsync(string url, WaitForOptions options = null);
 
         /// <summary>
         /// Waits for a selector to be added to the DOM

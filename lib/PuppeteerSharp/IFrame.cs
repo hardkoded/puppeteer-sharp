@@ -230,7 +230,7 @@ namespace PuppeteerSharp
         /// property.</param>
         /// <param name="waitUntil">When to consider navigation succeeded, defaults to <see cref="WaitUntilNavigation.Load"/>. Given an array of <see cref="WaitUntilNavigation"/>, navigation is considered to be successful after all events have been fired</param>
         /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect</returns>
-        Task<Response> GoToAsync(string url, int? timeout = null, WaitUntilNavigation[] waitUntil = null);
+        Task<IResponse> GoToAsync(string url, int? timeout = null, WaitUntilNavigation[] waitUntil = null);
 
         /// <summary>
         /// Navigates to an url
@@ -255,7 +255,7 @@ namespace PuppeteerSharp
         /// <param name="options">Navigation parameters.</param>
         /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.</returns>
         /// <seealso cref="GoToAsync(string, int?, WaitUntilNavigation[])"/>
-        Task<Response> GoToAsync(string url, NavigationOptions options);
+        Task<IResponse> GoToAsync(string url, NavigationOptions options);
 
         /// <summary>
         /// Fetches an element with <paramref name="selector"/>, scrolls it into view if needed, and then uses <see cref="IPage.Mouse"/> to hover over the center of the element.
@@ -372,7 +372,7 @@ namespace PuppeteerSharp
         /// ]]>
         /// </code>
         /// </example>
-        Task<Response> WaitForNavigationAsync(NavigationOptions options = null);
+        Task<IResponse> WaitForNavigationAsync(NavigationOptions options = null);
 
         /// <summary>
         /// Waits for a selector to be added to the DOM

@@ -113,7 +113,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         public async Task ShouldContainRefererHeader()
         {
             await Page.SetRequestInterceptionAsync(true);
-            var requests = new List<Request>();
+            var requests = new List<IRequest>();
             var requestsReadyTcs = new TaskCompletionSource<bool>();
 
             Page.Request += async (_, e) =>
@@ -259,7 +259,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             {
                 await e.Request.AbortAsync(RequestAbortErrorCode.InternetDisconnected);
             };
-            Request failedRequest = null;
+            IRequest failedRequest = null;
             Page.RequestFailed += (_, e) => failedRequest = e.Request;
             await Page.GoToAsync(TestConstants.EmptyPage).ContinueWith(_ => { });
             Assert.NotNull(failedRequest);
@@ -308,7 +308,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         public async Task ShouldWorkWithRedirects()
         {
             await Page.SetRequestInterceptionAsync(true);
-            var requests = new List<Request>();
+            var requests = new List<IRequest>();
             Page.Request += async (_, e) =>
             {
                 await e.Request.ContinueAsync();
@@ -344,7 +344,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         public async Task ShouldWorkWithRedirectsForSubresources()
         {
             await Page.SetRequestInterceptionAsync(true);
-            var requests = new List<Request>();
+            var requests = new List<IRequest>();
             Page.Request += async (_, e) =>
             {
                 if (!TestUtils.IsFavicon(e.Request))
@@ -460,7 +460,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         public async Task ShouldNavigateToDataURLAndFireDataURLRequests()
         {
             await Page.SetRequestInterceptionAsync(true);
-            var requests = new List<Request>();
+            var requests = new List<IRequest>();
             Page.Request += async (_, e) =>
             {
                 requests.Add(e.Request);
@@ -479,7 +479,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             await Page.SetRequestInterceptionAsync(true);
-            var requests = new List<Request>();
+            var requests = new List<IRequest>();
             Page.Request += async (_, e) =>
             {
                 requests.Add(e.Request);
@@ -498,7 +498,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         public async Task ShouldNavigateToURLWithHashAndAndFireRequestsWithoutHash()
         {
             await Page.SetRequestInterceptionAsync(true);
-            var requests = new List<Request>();
+            var requests = new List<IRequest>();
             Page.Request += async (_, e) =>
             {
                 requests.Add(e.Request);
@@ -541,7 +541,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             // The requestWillBeSent will report URL as-is, whereas interception will
             // report encoded URL for stylesheet. @see crbug.com/759388
             await Page.SetRequestInterceptionAsync(true);
-            var requests = new List<Request>();
+            var requests = new List<IRequest>();
             Page.Request += async (_, e) =>
             {
                 requests.Add(e.Request);
@@ -559,7 +559,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         {
             await Page.SetContentAsync("<iframe></iframe>");
             await Page.SetRequestInterceptionAsync(true);
-            Request request = null;
+            IRequest request = null;
             var requestIntercepted = new TaskCompletionSource<bool>();
             Page.Request += (_, e) =>
             {
@@ -624,7 +624,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             var urls = new List<string>();
             Page.Request += (_, e) => _ = e.Request.ContinueAsync();
 
-            var cached = new List<Request>();
+            var cached = new List<IRequest>();
             Page.RequestServedFromCache += (_, e) => cached.Add(e.Request);
 
             await Page.ReloadAsync();
@@ -641,7 +641,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             var urls = new List<string>();
             Page.Request += (_, e) => _ = e.Request.ContinueAsync();
 
-            var cached = new List<Request>();
+            var cached = new List<IRequest>();
             Page.RequestServedFromCache += (_, e) => cached.Add(e.Request);
 
             await Page.ReloadAsync();

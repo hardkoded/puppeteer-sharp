@@ -101,7 +101,7 @@ namespace PuppeteerSharp
             return context;
         }
 
-        public async Task<Response> NavigateFrameAsync(Frame frame, string url, NavigationOptions options)
+        public async Task<IResponse> NavigateFrameAsync(Frame frame, string url, NavigationOptions options)
         {
             var referrer = string.IsNullOrEmpty(options.Referer)
                ? NetworkManager.ExtraHTTPHeaders?.GetValueOrDefault(RefererHeaderName)
@@ -151,7 +151,7 @@ namespace PuppeteerSharp
             }
         }
 
-        public async Task<Response> WaitForFrameNavigationAsync(Frame frame, NavigationOptions options = null)
+        public async Task<IResponse> WaitForFrameNavigationAsync(Frame frame, NavigationOptions options = null)
         {
             var timeout = options?.Timeout ?? TimeoutSettings.NavigationTimeout;
             using (var watcher = new LifecycleWatcher(this, frame, options?.WaitUntil, timeout))

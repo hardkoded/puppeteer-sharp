@@ -65,7 +65,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
                 return serverResponseCompletion.Task;
             });
             // Setup page to trap response.
-            Response pageResponse = null;
+            IResponse pageResponse = null;
             var requestFinished = false;
             Page.Response += (_, e) => pageResponse = e.Response;
             Page.RequestFinished += (_, _) => requestFinished = true;
