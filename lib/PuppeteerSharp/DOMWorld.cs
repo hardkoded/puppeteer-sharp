@@ -105,7 +105,7 @@ namespace PuppeteerSharp
                 var result = await BindingUtils.ExecuteBindingAsync(e, BoundFunctions).ConfigureAwait(false);
 
                 await context.EvaluateFunctionAsync(
-                    @"function deliverResult(name, seq, result) {
+                    @"(name, seq, result) => {
                       globalThis[name].callbacks.get(seq).resolve(result);
                       globalThis[name].callbacks.delete(seq);
                     }",

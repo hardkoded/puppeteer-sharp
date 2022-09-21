@@ -71,7 +71,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             await Page.WaitForSelectorAsync("aria/[role=\"button\"]");
         }
 
-        [PuppeteerTest("ariaqueryhandler.spec.ts", "waitForSelector (aria)", "should work independently of `exposeFunction`")]
+        [PuppeteerTest("ariaqueryhandler.spec.ts", "waitForSelector (aria)", "should work independently of `exposeFunction")]
         [PuppeteerFact]
         public async Task ShouldWorkIndependentlyOfExposeFunction()
         {
@@ -120,7 +120,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             var watchdog = Page.WaitForSelectorAsync("aria/name");
             await Page.EvaluateFunctionAsync(addElement, "span");
             await Page.EvaluateFunctionAsync(@"() => {
-                return (document.querySelector('span')!.innerHTML =
+                return (document.querySelector('span').innerHTML =
                   '<h3><div aria-label=""name""></div></h3>');
             }");
             await watchdog;
@@ -146,8 +146,8 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
         {
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
             await FrameUtils.AttachFrameAsync(Page, "frame2", TestConstants.EmptyPage);
-            var frame1 = Page.Frames.First(frame => frame.Id == "frame1");
-            var frame2 = Page.Frames.First(frame => frame.Id == "frame2");
+            var frame1 = Page.Frames.First(frame => frame.Name == "frame1");
+            var frame2 = Page.Frames.First(frame => frame.Name == "frame2");
             var waitForSelectorTask = frame2.WaitForSelectorAsync("aria/[role=\"button\"]");
             await frame1.EvaluateFunctionAsync(addElement, "button");
             await frame2.EvaluateFunctionAsync(addElement, "button");

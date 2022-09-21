@@ -2700,7 +2700,7 @@ namespace PuppeteerSharp
             }
             _pageBindings.TryAdd(name, puppeteerFunction);
 
-            const string addPageBinding = @"function addPageBinding(bindingName) {
+            const string addPageBinding = @"function addPageBinding(type, bindingName) {
               const binding = window[bindingName];
               window[bindingName] = (...args) => {
                 const me = window[bindingName];
@@ -2712,11 +2712,11 @@ namespace PuppeteerSharp
                 const seq = (me['lastSeq'] || 0) + 1;
                 me['lastSeq'] = seq;
                 const promise = new Promise((resolve, reject) => callbacks.set(seq, {resolve, reject}));
-                binding(JSON.stringify({name: bindingName, seq, args}));
+                binding(JSON.stringify({type, name: bindingName, seq, args}));
                 return promise;
               };
             }";
-            var expression = BindingUtils.EvaluationString(addPageBinding, name);
+            var expression = BindingUtils.EvaluationString(addPageBinding, "exposedFun", name);
             await Client.SendAsync("Runtime.addBinding", new RuntimeAddBindingRequest { Name = name }).ConfigureAwait(false);
             await Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new PageAddScriptToEvaluateOnNewDocumentRequest
             {
