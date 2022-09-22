@@ -421,7 +421,7 @@ namespace PuppeteerSharp
         private async Task OnRequestAsync(RequestWillBeSentPayload e, string fetchRequestId)
         {
             Request request;
-            var redirectChain = new List<Request>();
+            var redirectChain = new List<IRequest>();
             if (e.RedirectResponse != null)
             {
                 ResponseReceivedExtraInfoResponse redirectResponseExtraInfo = null;

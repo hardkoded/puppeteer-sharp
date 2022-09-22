@@ -38,7 +38,7 @@ namespace PuppeteerSharp
         /// for a description of the differences between Chromium and Chrome.
         /// <a href="https://chromium.googlesource.com/chromium/src/+/lkcr/docs/chromium_browser_vs_google_chrome.md">This article</a> describes some differences for Linux users.
         /// </remarks>
-        public async Task<Browser> LaunchAsync(LaunchOptions options)
+        public async Task<IBrowser> LaunchAsync(LaunchOptions options)
         {
             if (options == null)
             {
@@ -90,7 +90,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="options">Options for connecting.</param>
         /// <returns>A connected browser.</returns>
-        public async Task<Browser> ConnectAsync(ConnectOptions options)
+        public async Task<IBrowser> ConnectAsync(ConnectOptions options)
         {
             if (options == null)
             {

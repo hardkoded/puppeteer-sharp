@@ -1,9 +1,9 @@
 namespace PuppeteerSharp.PageAccessibility
 {
     /// <summary>
-    /// <see cref="Accessibility.SnapshotAsync(AccessibilitySnapshotOptions)"/>
+    /// <see cref="IAccessibility.SnapshotAsync(AccessibilitySnapshotOptions)"/>
     /// </summary>
-    /// <seealso cref="Page.Accessibility"/>
+    /// <seealso cref="IPage.Accessibility"/>
     public class AccessibilitySnapshotOptions
     {
         /// <summary>
@@ -14,6 +14,6 @@ namespace PuppeteerSharp.PageAccessibility
         /// <summary>
         /// The root DOM element for the snapshot. Defaults to the whole page.
         /// </summary>
-        public ElementHandle Root { get; set; }
+        public IElementHandle Root { get; set; }
     }
 }

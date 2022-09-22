@@ -1,7 +1,7 @@
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// Options to be used in <see cref="Page.EmulateNetworkConditionsAsync(NetworkConditions)"/>
+    /// Options to be used in <see cref="IPage.EmulateNetworkConditionsAsync(NetworkConditions)"/>
     /// </summary>
     public class NetworkConditions
     {

@@ -6,7 +6,7 @@ namespace PuppeteerSharp
     /// <summary>
     /// Geolocation option.
     /// </summary>
-    /// <seealso cref="Page.SetGeolocationAsync(GeolocationOption)"/>
+    /// <seealso cref="IPage.SetGeolocationAsync(GeolocationOption)"/>
     public class GeolocationOption : IEquatable<GeolocationOption>
     {
         /// <summary>

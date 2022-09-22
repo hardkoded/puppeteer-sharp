@@ -3,7 +3,7 @@ using System;
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// <see cref="Page.Error"/> arguments.
+    /// <see cref="IPage.Error"/> arguments.
     /// </summary>
     public class ErrorEventArgs : EventArgs
     {

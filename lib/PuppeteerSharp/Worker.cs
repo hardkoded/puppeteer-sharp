@@ -10,7 +10,7 @@ namespace PuppeteerSharp
 {
     /// <summary>
     /// The Worker class represents a WebWorker (<see href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API"/>).
-    /// The events <see cref="Page.WorkerCreated"/> and <see cref="Page.WorkerDestroyed"/> are emitted on the page object to signal the worker lifecycle.
+    /// The events <see cref="IPage.WorkerCreated"/> and <see cref="IPage.WorkerDestroyed"/> are emitted on the page object to signal the worker lifecycle.
     /// </summary>
     /// <example>
     /// <code>
@@ -28,16 +28,16 @@ namespace PuppeteerSharp
     {
         private readonly ILogger _logger;
         private readonly CDPSession _client;
-        private readonly Func<ConsoleType, JSHandle[], StackTrace, Task> _consoleAPICalled;
+        private readonly Func<ConsoleType, IJSHandle[], StackTrace, Task> _consoleAPICalled;
         private readonly Action<EvaluateExceptionResponseDetails> _exceptionThrown;
         private readonly TaskCompletionSource<ExecutionContext> _executionContextCallback;
         private ExecutionContext _executionContext;
-        private Func<ExecutionContext, RemoteObject, JSHandle> _jsHandleFactory;
+        private Func<ExecutionContext, RemoteObject, IJSHandle> _jsHandleFactory;
 
         internal Worker(
             CDPSession client,
             string url,
-            Func<ConsoleType, JSHandle[], StackTrace, Task> consoleAPICalled,
+            Func<ConsoleType, IJSHandle[], StackTrace, Task> consoleAPICalled,
             Action<EvaluateExceptionResponseDetails> exceptionThrown)
         {
             _logger = client.Connection.LoggerFactory.CreateLogger<Worker>();
@@ -98,7 +98,7 @@ namespace PuppeteerSharp
         /// <param name="args">Arguments to pass to script</param>
         /// <remarks>
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
-        /// <see cref="JSHandle"/> instances can be passed as arguments
+        /// <see cref="IJSHandle"/> instances can be passed as arguments
         /// </remarks>
         /// <returns>Task which resolves to script return value</returns>
         public async Task<JToken> EvaluateFunctionAsync(string script, params object[] args)
@@ -112,7 +112,7 @@ namespace PuppeteerSharp
         /// <param name="args">Arguments to pass to script</param>
         /// <remarks>
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
-        /// <see cref="JSHandle"/> instances can be passed as arguments
+        /// <see cref="IJSHandle"/> instances can be passed as arguments
         /// </remarks>
         /// <returns>Task which resolves to script return value</returns>
         public async Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
@@ -127,7 +127,7 @@ namespace PuppeteerSharp
         /// </remarks>
         /// <returns>Task which resolves to script return value</returns>
         /// <seealso cref="ExecutionContext.EvaluateExpressionHandleAsync(string)"/>
-        public async Task<JSHandle> EvaluateExpressionHandleAsync(string script)
+        public async Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
             => await (await ExecutionContextTask.ConfigureAwait(false)).EvaluateExpressionHandleAsync(script).ConfigureAwait(false);
 
         internal async void OnMessageReceived(object sender, MessageEventArgs e)

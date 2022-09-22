@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Tests
         {
         }
 
-        protected Page Page { get; set; }
+        protected IPage Page { get; set; }
 
         public override async Task InitializeAsync()
         {

@@ -125,7 +125,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             ).WithTimeout();
             Assert.True(frame.IsOopFrame);
             var detachedTcs = new TaskCompletionSource<bool>();
-            Page.FrameManager.FrameDetached += (sender, e) => detachedTcs.TrySetResult(true);
+            Page.FrameDetached += (sender, e) => detachedTcs.TrySetResult(true);
             await FrameUtils.DetachFrameAsync(Page, "frame1").WithTimeout();
             await detachedTcs.Task.WithTimeout();
             Assert.Single(Page.Frames);
@@ -149,7 +149,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             await nav.WithTimeout();
             Assert.True(frame.IsOopFrame);
             var detachedTcs = new TaskCompletionSource<bool>();
-            Page.FrameManager.FrameDetached += (sender, e) => detachedTcs.TrySetResult(true);
+            Page.FrameDetached += (sender, e) => detachedTcs.TrySetResult(true);
             await FrameUtils.DetachFrameAsync(Page, "frame1").WithTimeout();
             await detachedTcs.Task.WithTimeout();
             Assert.Single(Page.Frames);
@@ -271,7 +271,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
                 new NavigationOptions { WaitUntil = new[] { WaitUntilNavigation.Load } }).WithTimeout();
             Assert.Contains("/oopif.html#navigate-within-document", frame1.Url);
             var detachedTcs = new TaskCompletionSource<bool>();
-            Page.FrameManager.FrameDetached += (sender, e) => detachedTcs.TrySetResult(true);
+            Page.FrameDetached += (sender, e) => detachedTcs.TrySetResult(true);
             await FrameUtils.DetachFrameAsync(oopIframe, "frame1").WithTimeout();
             await detachedTcs.Task.WithTimeout();
             Assert.Empty(oopIframe.ChildFrames);
@@ -347,9 +347,9 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/lazy-oopif-frame.html");
             await Page.SetViewportAsync(new ViewPortOptions() { Width = 1000, Height = 1000 });
-            Assert.Single(Page.Frames.Where(frame => !frame.HasStartedLoading));
+            Assert.Single(Page.Frames.Where(frame => !((Frame)frame).HasStartedLoading));
         }
 
-        private IEnumerable<Target> Oopifs => Context.Targets().Where(target => target.TargetInfo.Type == TargetType.IFrame);
+        private IEnumerable<ITarget> Oopifs => Context.Targets().Where(target => ((Target)target).TargetInfo.Type == TargetType.IFrame);
     }
 }

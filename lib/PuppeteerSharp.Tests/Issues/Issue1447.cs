@@ -42,7 +42,7 @@ namespace PuppeteerSharp.Tests.Issues
             }
         }
 
-        public Task<Response> Navigate(Page page, string url)
+        public Task<IResponse> Navigate(IPage page, string url)
         {
             return page.MainFrame.GoToAsync(
                 url,

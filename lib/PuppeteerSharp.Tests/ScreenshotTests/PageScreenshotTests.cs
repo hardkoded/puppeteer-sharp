@@ -220,10 +220,10 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         public async Task ShouldRunInParallelInMultiplePages()
         {
             var n = 2;
-            var pageTasks = new List<Task<Page>>();
+            var pageTasks = new List<Task<IPage>>();
             for (var i = 0; i < n; i++)
             {
-                async Task<Page> func()
+                async Task<IPage> func()
                 {
                     var page = await Context.NewPageAsync();
                     await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");

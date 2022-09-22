@@ -16,7 +16,7 @@ namespace PuppeteerSharp.Tests.Issues
         public async Task MultiplePagesShouldNotShareSameScreenshotTaskQueue()
         {
             // 1st page
-            using (Page page = await Context.NewPageAsync())
+            using (var page = await Context.NewPageAsync())
             {
                 var html = "...some html..";
                 await page.GoToAsync($"data:text/html,{html}", new NavigationOptions
@@ -34,7 +34,7 @@ namespace PuppeteerSharp.Tests.Issues
             }
 
             //2nd page
-            using (Page page = await Context.NewPageAsync())
+            using (var page = await Context.NewPageAsync())
             {
                 var html = "...some html...";
                 await page.GoToAsync($"data:text/html,{html}", new NavigationOptions

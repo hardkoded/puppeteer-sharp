@@ -30,7 +30,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             var scriptHandle = await Page.AddScriptTagAsync(new AddTagOptions { Url = "/injectedfile.js" });
-            Assert.NotNull(scriptHandle as ElementHandle);
+            Assert.NotNull(scriptHandle as IElementHandle);
             Assert.Equal(42, await Page.EvaluateExpressionAsync<int>("__injected"));
         }
 
@@ -90,7 +90,7 @@ namespace PuppeteerSharp.Tests.PageTests
             {
                 Path = Path.Combine(Directory.GetCurrentDirectory(), Path.Combine("Assets", "injectedfile.js"))
             });
-            Assert.NotNull(scriptHandle as ElementHandle);
+            Assert.NotNull(scriptHandle as IElementHandle);
             Assert.Equal(42, await Page.EvaluateExpressionAsync<int>("__injected"));
         }
 
@@ -113,7 +113,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             var scriptHandle = await Page.AddScriptTagAsync(new AddTagOptions { Content = "window.__injected = 35;" });
-            Assert.NotNull(scriptHandle as ElementHandle);
+            Assert.NotNull(scriptHandle as IElementHandle);
             Assert.Equal(35, await Page.EvaluateExpressionAsync<int>("__injected"));
         }
 

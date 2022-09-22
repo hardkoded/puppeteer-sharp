@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
@@ -37,7 +37,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
                 @"(el) => el.id",
                 element));
 
-            var handlerNamesAfterRegistering = Browser.GetCustomQueryHandlerNames();
+            var handlerNamesAfterRegistering = ((Browser)Browser).GetCustomQueryHandlerNames();
             Assert.Contains("getById", handlerNamesAfterRegistering);
 
             // Unregister.
@@ -52,7 +52,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
                 Assert.Equal($"Query set to use \"getById\", but no query handler of that name was found", ex.Message);
             }
 
-            var handlerNamesAfterUnregistering = Browser.GetCustomQueryHandlerNames();
+            var handlerNamesAfterUnregistering = ((Browser)Browser).GetCustomQueryHandlerNames();
             Assert.DoesNotContain("getById", handlerNamesAfterUnregistering);
         }
 

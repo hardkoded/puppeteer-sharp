@@ -5,9 +5,9 @@ namespace PuppeteerSharp
     /// <summary>
     /// Cookie data.
     /// </summary>
-    /// <seealso cref="Page.SetContentAsync(string, NavigationOptions)"/>
-    /// <seealso cref="Page.DeleteCookieAsync(CookieParam[])"/>
-    /// <seealso cref="Page.GetCookiesAsync(string[])"/>
+    /// <seealso cref="IPage.SetContentAsync(string, NavigationOptions)"/>
+    /// <seealso cref="IPage.DeleteCookieAsync(CookieParam[])"/>
+    /// <seealso cref="IPage.GetCookiesAsync(string[])"/>
     public class CookieParam
     {
         /// <summary>

@@ -32,7 +32,7 @@ namespace PuppeteerSharp
         private readonly TaskCompletionSource<bool> _lifecycleTaskWrapper;
         private readonly TaskCompletionSource<bool> _terminationTaskWrapper;
         private readonly CancellationTokenSource _terminationCancellationToken;
-        private Request _navigationRequest;
+        private IRequest _navigationRequest;
         private bool _hasSameDocumentNavigation;
         private bool _swapped;
         private bool _newDocumentNavigation;
@@ -76,7 +76,7 @@ namespace PuppeteerSharp
 
         public Task<bool> NewDocumentNavigationTask => _newDocumentNavigationTaskWrapper.Task;
 
-        public Response NavigationResponse => _navigationRequest?.Response;
+        public Response NavigationResponse => (Response)_navigationRequest?.Response;
 
         public Task TimeoutOrTerminationTask => _terminationTaskWrapper.Task.WithTimeout(_timeout, cancellationToken: _terminationCancellationToken.Token);
 
@@ -168,7 +168,7 @@ namespace PuppeteerSharp
                     return false;
                 }
             }
-            foreach (var child in frame.ChildFrames)
+            foreach (Frame child in frame.ChildFrames)
             {
                 if (child.HasStartedLoading && !CheckLifecycle(child, expectedLifecycle))
                 {

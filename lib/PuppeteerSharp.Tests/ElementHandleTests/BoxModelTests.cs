@@ -32,7 +32,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
 
             // Step 2: Add div and position it absolutely inside frame.
             var frame = Page.FirstChildFrame();
-            var divHandle = (ElementHandle)await frame.EvaluateFunctionHandleAsync(@"() => {
+            var divHandle = (IElementHandle)await frame.EvaluateFunctionHandleAsync(@"() => {
               const div = document.createElement('div');
               document.body.appendChild(div);
               div.style = `

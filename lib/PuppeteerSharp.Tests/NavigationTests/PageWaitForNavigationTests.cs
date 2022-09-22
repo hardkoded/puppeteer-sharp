@@ -158,7 +158,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             Server.SetRoute("/frames/style.css", _ => Task.CompletedTask);
             var navigationTask = Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
-            var frameAttachedTaskSource = new TaskCompletionSource<Frame>();
+            var frameAttachedTaskSource = new TaskCompletionSource<IFrame>();
             Page.FrameAttached += (_, e) =>
             {
                 frameAttachedTaskSource.SetResult(e.Frame);

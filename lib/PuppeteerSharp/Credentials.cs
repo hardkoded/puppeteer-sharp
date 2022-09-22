@@ -1,7 +1,7 @@
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// Options to be used in <see cref="Page.AuthenticateAsync(Credentials)"/>
+    /// Options to be used in <see cref="IPage.AuthenticateAsync(Credentials)"/>
     /// </summary>
     public class Credentials
     {

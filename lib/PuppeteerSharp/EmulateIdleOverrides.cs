@@ -1,7 +1,7 @@
-﻿namespace PuppeteerSharp
+namespace PuppeteerSharp
 {
     /// <summary>
-    /// Options for <see cref="Page.EmulateIdleStateAsync(EmulateIdleOverrides)"/>
+    /// Options for <see cref="IPage.EmulateIdleStateAsync(EmulateIdleOverrides)"/>
     /// </summary>
     public class EmulateIdleOverrides
     {

@@ -11,17 +11,8 @@ using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
-    /// <summary>
-    /// Whenever the page sends a request, the following events are emitted by puppeteer's page:
-    /// <see cref="Page.Request"/> emitted when the request is issued by the page.
-    /// <see cref="Page.Response"/> emitted when/if the response is received for the request.
-    /// <see cref="Page.RequestFinished"/> emitted when the response body is downloaded and the request is complete.
-    ///
-    /// If request fails at some point, then instead of <see cref="Page.RequestFinished"/> event (and possibly instead of <see cref="Page.Response"/> event), the <see cref="Page.RequestFailed"/> event is emitted.
-    ///
-    /// If request gets a 'redirect' response, the request is successfully finished with the <see cref="Page.RequestFinished"/> event, and a new request is issued to a redirected url.
-    /// </summary>
-    public class Request
+    /// <inheritdoc/>
+    public class Request : IRequest
     {
         private readonly CDPSession _client;
         private readonly bool _allowInterception;
@@ -34,7 +25,7 @@ namespace PuppeteerSharp
             string interceptionId,
             bool allowInterception,
             RequestWillBeSentPayload e,
-            List<Request> redirectChain)
+            List<IRequest> redirectChain)
         {
             _client = client;
             _allowInterception = allowInterception;
@@ -60,105 +51,50 @@ namespace PuppeteerSharp
             FromMemoryCache = false;
         }
 
-        /// <summary>
-        /// Responsed attached to the request.
-        /// </summary>
-        /// <value>The response.</value>
+        /// <inheritdoc/>
         public Response Response { get; internal set; }
 
-        /// <summary>
-        /// Gets the failure.
-        /// </summary>
-        /// <value>The failure.</value>
+        /// <inheritdoc/>
+        IResponse IRequest.Response => Response;
+
+        /// <inheritdoc/>
         public string Failure { get; internal set; }
 
-        /// <summary>
-        /// Gets the request identifier.
-        /// </summary>
-        /// <value>The request identifier.</value>
+        /// <inheritdoc/>
         public string RequestId { get; internal set; }
 
-        /// <summary>
-        /// Gets the interception identifier.
-        /// </summary>
-        /// <value>The interception identifier.</value>
+        /// <inheritdoc/>
         public string InterceptionId { get; internal set; }
 
-        /// <summary>
-        /// Gets the type of the resource.
-        /// </summary>
-        /// <value>The type of the resource.</value>
+        /// <inheritdoc/>
         public ResourceType ResourceType { get; internal set; }
 
-        /// <summary>
-        /// Gets the frame.
-        /// </summary>
-        /// <value>The frame.</value>
-        public Frame Frame { get; }
+        /// <inheritdoc/>
+        public IFrame Frame { get; }
 
-        /// <summary>
-        /// Gets whether this request is driving frame's navigation
-        /// </summary>
+        /// <inheritdoc/>
         public bool IsNavigationRequest { get; }
 
-        /// <summary>
-        /// Gets the HTTP method.
-        /// </summary>
-        /// <value>HTTP method.</value>
+        /// <inheritdoc/>
         public HttpMethod Method { get; internal set; }
 
-        /// <summary>
-        /// Gets the post data.
-        /// </summary>
-        /// <value>The post data.</value>
+        /// <inheritdoc/>
         public object PostData { get; internal set; }
 
-        /// <summary>
-        /// Gets the HTTP headers.
-        /// </summary>
-        /// <value>HTTP headers.</value>
+        /// <inheritdoc/>
         public Dictionary<string, string> Headers { get; internal set; }
 
-        /// <summary>
-        /// Gets the URL.
-        /// </summary>
-        /// <value>The URL.</value>
+        /// <inheritdoc/>
         public string Url { get; internal set; }
 
-        /// <summary>
-        /// A redirectChain is a chain of requests initiated to fetch a resource.
-        /// If there are no redirects and the request was successful, the chain will be empty.
-        /// If a server responds with at least a single redirect, then the chain will contain all the requests that were redirected.
-        /// redirectChain is shared between all the requests of the same chain.
-        /// </summary>
-        /// <example>
-        /// For example, if the website http://example.com has a single redirect to https://example.com, then the chain will contain one request:
-        /// <code>
-        /// var response = await page.GoToAsync("http://example.com");
-        /// var chain = response.Request.RedirectChain;
-        /// Console.WriteLine(chain.Length); // 1
-        /// Console.WriteLine(chain[0].Url); // 'http://example.com'
-        /// </code>
-        /// If the website https://google.com has no redirects, then the chain will be empty:
-        /// <code>
-        /// var response = await page.GoToAsync("https://google.com");
-        /// var chain = response.Request.RedirectChain;
-        /// Console.WriteLine(chain.Length); // 0
-        /// </code>
-        /// </example>
-        /// <value>The redirect chain.</value>
-        public Request[] RedirectChain => RedirectChainList.ToArray();
+        /// <inheritdoc/>
+        public IRequest[] RedirectChain => RedirectChainList.ToArray();
 
         internal bool FromMemoryCache { get; set; }
 
-        internal List<Request> RedirectChainList { get; }
+        internal List<IRequest> RedirectChainList { get; }
 
-        /// <summary>
-        /// Continues request with optional request overrides. To use this, request interception should be enabled with <see cref="Page.SetRequestInterceptionAsync(bool)"/>. Exception is immediately thrown if the request interception is not enabled.
-        /// If the URL is set it won't perform a redirect. The request will be silently forwarded to the new url. For example, the address bar will show the original url.
-        /// </summary>
-        /// <param name="overrides">Optional request overwrites.</param>
-        /// <returns>Task</returns>
+        /// <inheritdoc/>
         public async Task ContinueAsync(Payload overrides = null)
         {
             // Request interception is not supported for data: urls.
@@ -213,11 +149,7 @@ namespace PuppeteerSharp
             }
         }
 
-        /// <summary>
-        /// Fulfills request with given response. To use this, request interception should be enabled with <see cref="Page.SetRequestInterceptionAsync(bool)"/>. Exception is thrown if request interception is not enabled.
-        /// </summary>
-        /// <param name="response">Response that will fulfill this request</param>
-        /// <returns>Task</returns>
+        /// <inheritdoc/>
         public async Task RespondAsync(ResponseData response)
         {
             if (Url.StartsWith("data:", StringComparison.Ordinal))
@@ -289,12 +221,7 @@ namespace PuppeteerSharp
             }
         }
 
-        /// <summary>
-        /// Aborts request. To use this, request interception should be enabled with <see cref="Page.SetRequestInterceptionAsync(bool)"/>.
-        /// Exception is immediately thrown if the request interception is not enabled.
-        /// </summary>
-        /// <param name="errorCode">Optional error code. Defaults to <see cref="RequestAbortErrorCode.Failed"/></param>
-        /// <returns>Task</returns>
+        /// <inheritdoc/>
         public async Task AbortAsync(RequestAbortErrorCode errorCode = RequestAbortErrorCode.Failed)
         {
             // Request interception is not supported for data: urls.

@@ -116,7 +116,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
                         "about:blank",
                         TestConstants.EmptyPage
                     },
-                    pages.Select((Page p) => p.Url).OrderBy(t => t));
+                    pages.Select((IPage p) => p.Url).OrderBy(t => t));
             }
         }
 
@@ -175,7 +175,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             {
                 BrowserWSEndpoint = browserOne.WebSocketEndpoint
             });
-            var tcs = new TaskCompletionSource<Page>();
+            var tcs = new TaskCompletionSource<IPage>();
             async void TargetCreated(object sender, TargetChangedArgs e)
             {
                 tcs.TrySetResult(await e.Target.PageAsync());

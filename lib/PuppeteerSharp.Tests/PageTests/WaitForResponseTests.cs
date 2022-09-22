@@ -56,7 +56,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldWorkWithAsyncPredicate()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var task = Page.WaitForResponseAsync(async (Response response) =>
+            var task = Page.WaitForResponseAsync(async (IResponse response) =>
             {
                 await Task.Delay(1);
                 return response.Url == TestConstants.ServerUrl + "/digits/2.png";

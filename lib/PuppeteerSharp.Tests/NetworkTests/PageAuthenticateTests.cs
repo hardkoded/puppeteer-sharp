@@ -85,7 +85,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
                 Password = "pass4"
             });
 
-            var responses = new Dictionary<string, Response>();
+            var responses = new Dictionary<string, IResponse>();
             Page.Response += (_, e) => responses[e.Response.Url.Split('/').Last()] = e.Response;
 
             await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");

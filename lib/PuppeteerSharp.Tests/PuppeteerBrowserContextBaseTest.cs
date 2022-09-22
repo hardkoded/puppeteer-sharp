@@ -1,6 +1,4 @@
-using System.IO;
 using System.Threading.Tasks;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests
@@ -11,7 +9,7 @@ namespace PuppeteerSharp.Tests
         {
         }
 
-        protected BrowserContext Context { get; set; }
+        protected IBrowserContext Context { get; set; }
         public override async Task InitializeAsync()
         {
             await base.InitializeAsync();

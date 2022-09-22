@@ -17,7 +17,7 @@ namespace PuppeteerSharp.Tests.PageTests
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWorkWithWindowClose()
         {
-            var newPageTaskSource = new TaskCompletionSource<Page>();
+            var newPageTaskSource = new TaskCompletionSource<IPage>();
             Context.TargetCreated += async (_, e) => newPageTaskSource.TrySetResult(await e.Target.PageAsync());
 
             await Page.EvaluateExpressionAsync("window['newPage'] = window.open('about:blank');");

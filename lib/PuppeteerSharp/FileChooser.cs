@@ -7,7 +7,7 @@ using PuppeteerSharp.Messaging;
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// <see cref="FileChooser"/> objects are returned via the <seealso cref="Page.WaitForFileChooserAsync(WaitForFileChooserOptions)"/> method.
+    /// <see cref="FileChooser"/> objects are returned via the <seealso cref="IPage.WaitForFileChooserAsync(WaitForFileChooserOptions)"/> method.
     /// File choosers let you react to the page requesting for a file.
     /// </summary>
     /// <example>
@@ -28,10 +28,10 @@ namespace PuppeteerSharp
     /// </remarks>
     public class FileChooser
     {
-        private readonly ElementHandle _element;
+        private readonly IElementHandle _element;
         private bool _handled;
 
-        internal FileChooser(ElementHandle element, PageFileChooserOpenedResponse e)
+        internal FileChooser(IElementHandle element, PageFileChooserOpenedResponse e)
         {
             _element = element;
             IsMultiple = e.Mode != "selectSingle";

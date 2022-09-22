@@ -22,7 +22,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             Server.SetRoute("/post", _ => Task.CompletedTask);
-            Request request = null;
+            IRequest request = null;
             Page.Request += (_, e) => request = e.Request;
             await Page.EvaluateExpressionHandleAsync("fetch('./post', { method: 'POST', body: JSON.stringify({ foo: 'bar'})})");
             Assert.NotNull(request);

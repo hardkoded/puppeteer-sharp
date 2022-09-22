@@ -137,7 +137,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.ExposeFunctionAsync("compute", (int a, int b) => a * b);
             await Page.EvaluateExpressionAsync<int>("compute(9, 4)");
-            Assert.False(Page.Client.HasPendingCallbacks());
+            Assert.False(((CDPSession)Page.Client).HasPendingCallbacks());
         }
     }
 }

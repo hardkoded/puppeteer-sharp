@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// <seealso cref="Page.Metrics"/> arguments.
+    /// <seealso cref="IPage.Metrics"/> arguments.
     /// </summary>
     public class MetricEventArgs : EventArgs
     {

@@ -1,16 +1,16 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp
 {
     internal class InternalQueryHandler
     {
-        public Func<ElementHandle, string, Task<ElementHandle>> QueryOne { get; set; }
+        public Func<IElementHandle, string, Task<IElementHandle>> QueryOne { get; set; }
 
-        public Func<DOMWorld, string, WaitForSelectorOptions, Task<ElementHandle>> WaitFor { get; set; }
+        public Func<DOMWorld, string, WaitForSelectorOptions, Task<IElementHandle>> WaitFor { get; set; }
 
-        public Func<ElementHandle, string, Task<ElementHandle[]>> QueryAll { get; set; }
+        public Func<IElementHandle, string, Task<IElementHandle[]>> QueryAll { get; set; }
 
-        public Func<ElementHandle, string, Task<JSHandle>> QueryAllArray { get; set; }
+        public Func<IElementHandle, string, Task<IJSHandle>> QueryAllArray { get; set; }
     }
 }

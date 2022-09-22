@@ -28,7 +28,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ResponseFromServiceWorker()
         {
-            var responses = new Dictionary<string, Response>();
+            var responses = new Dictionary<string, IResponse>();
             Page.Response += (_, e) => responses[e.Response.Url.Split('/').Last()] = e.Response;
             await Page.GoToAsync(TestConstants.ServerUrl + "/serviceworkers/fetch/sw.html",
                 waitUntil: new[] { WaitUntilNavigation.Networkidle2 });

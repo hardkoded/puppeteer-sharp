@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
@@ -34,7 +34,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         [PuppeteerFact]
         public void ShouldHaveRegisteredHandler()
         {
-            Assert.Contains("allArray", Browser.GetCustomQueryHandlerNames());
+            Assert.Contains("allArray", ((Browser)Browser).GetCustomQueryHandlerNames());
         }
 
         [PuppeteerTest("queryselector.spec.ts", "QueryAll", "$$ should query existing elements")]

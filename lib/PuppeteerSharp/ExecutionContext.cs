@@ -10,12 +10,8 @@ using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
-    /// <summary>
-    /// The class represents a context for JavaScript execution. Examples of JavaScript contexts are:
-    /// Each <see cref="Frame"/> has a separate <see cref="ExecutionContext"/>
-    /// All kind of web workers have their own contexts
-    /// </summary>
-    public class ExecutionContext
+    /// <inheritdoc/>
+    public class ExecutionContext : IExecutionContext
     {
         internal const string EvaluationScriptUrl = "__puppeteer_evaluation_script__";
 
@@ -37,80 +33,33 @@ namespace PuppeteerSharp
 
         internal DOMWorld World { get; }
 
-        /// <summary>
-        /// Frame associated with this execution context.
-        /// </summary>
-        /// <remarks>
-        /// NOTE Not every execution context is associated with a frame. For example, workers and extensions have execution contexts that are not associated with frames.
-        /// </remarks>
-        public Frame Frame => World?.Frame;
+        /// <inheritdoc/>
+        public IFrame Frame => World?.Frame;
 
-        /// <summary>
-        /// Executes a script in browser context
-        /// </summary>
-        /// <param name="script">Script to be evaluated in browser context</param>
-        /// <remarks>
-        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
-        /// </remarks>
-        /// <seealso cref="EvaluateFunctionAsync{T}(string, object[])"/>
-        /// <seealso cref="EvaluateExpressionHandleAsync(string)"/>
-        /// <returns>Task which resolves to script return value</returns>
+        /// <inheritdoc/>
         public Task<JToken> EvaluateExpressionAsync(string script) => EvaluateExpressionAsync<JToken>(script);
 
-        /// <summary>
-        /// Executes a script in browser context
-        /// </summary>
-        /// <typeparam name="T">The type to deserialize the result to</typeparam>
-        /// <param name="script">Script to be evaluated in browser context</param>
-        /// <remarks>
-        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
-        /// </remarks>
-        /// <seealso cref="EvaluateFunctionAsync{T}(string, object[])"/>
-        /// <seealso cref="EvaluateExpressionHandleAsync(string)"/>
-        /// <returns>Task which resolves to script return value</returns>
+        /// <inheritdoc/>
         public Task<T> EvaluateExpressionAsync<T>(string script)
             => RemoteObjectTaskToObject<T>(EvaluateExpressionInternalAsync(true, script));
 
-        internal async Task<JSHandle> EvaluateExpressionHandleAsync(string script)
+        /// <inheritdoc/>
+        public async Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
             => CreateJSHandle(await EvaluateExpressionInternalAsync(false, script).ConfigureAwait(false));
 
-        /// <summary>
-        /// Executes a function in browser context
-        /// </summary>
-        /// <param name="script">Script to be evaluated in browser context</param>
-        /// <param name="args">Arguments to pass to script</param>
-        /// <remarks>
-        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
-        /// <see cref="JSHandle"/> instances can be passed as arguments
-        /// </remarks>
-        /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
-        /// <returns>Task which resolves to script return value</returns>
+        /// <inheritdoc/>
+        public async Task<IJSHandle> EvaluateFunctionHandleAsync(string script, params object[] args)
+            => CreateJSHandle(await EvaluateFunctionInternalAsync(false, script, args).ConfigureAwait(false));
+
+        /// <inheritdoc/>
         public Task<JToken> EvaluateFunctionAsync(string script, params object[] args) => EvaluateFunctionAsync<JToken>(script, args);
 
-        /// <summary>
-        /// Executes a function in browser context
-        /// </summary>
-        /// <typeparam name="T">The type to deserialize the result to</typeparam>
-        /// <param name="script">Script to be evaluated in browser context</param>
-        /// <param name="args">Arguments to pass to script</param>
-        /// <remarks>
-        /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
-        /// <see cref="JSHandle"/> instances can be passed as arguments
-        /// </remarks>
-        /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
-        /// <returns>Task which resolves to script return value</returns>
+        /// <inheritdoc/>
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
             => RemoteObjectTaskToObject<T>(EvaluateFunctionInternalAsync(true, script, args));
 
-        internal async Task<JSHandle> EvaluateFunctionHandleAsync(string script, params object[] args)
-            => CreateJSHandle(await EvaluateFunctionInternalAsync(false, script, args).ConfigureAwait(false));
-
-        /// <summary>
-        /// The method iterates JavaScript heap and finds all the objects with the given prototype.
-        /// </summary>
-        /// <returns>A task which resolves to a handle to an array of objects with this prototype.</returns>
-        /// <param name="prototypeHandle">A handle to the object prototype.</param>
-        public async Task<JSHandle> QueryObjectsAsync(JSHandle prototypeHandle)
+        /// <inheritdoc/>
+        public async Task<IJSHandle> QueryObjectsAsync(IJSHandle prototypeHandle)
         {
             if (prototypeHandle == null)
             {
@@ -187,9 +136,9 @@ namespace PuppeteerSharp
             }
         }
 
-        internal JSHandle CreateJSHandle(RemoteObject remoteObject)
+        internal IJSHandle CreateJSHandle(RemoteObject remoteObject)
             => remoteObject.Subtype == RemoteObjectSubtype.Node && Frame != null
-                ? new ElementHandle(this, Client, remoteObject, Frame, Frame.FrameManager.Page, Frame.FrameManager)
+                ? new ElementHandle(this, Client, remoteObject, Frame, ((Frame)Frame).FrameManager.Page, ((Frame)Frame).FrameManager)
                 : new JSHandle(this, Client, remoteObject);
 
         private object FormatArgument(object arg)
@@ -248,7 +197,7 @@ namespace PuppeteerSharp
             return message;
         }
 
-        internal async Task<ElementHandle> AdoptBackendNodeAsync(object backendNodeId)
+        internal async Task<IElementHandle> AdoptBackendNodeAsync(object backendNodeId)
         {
             var obj = await Client.SendAsync<DomResolveNodeResponse>("DOM.resolveNode", new DomResolveNodeRequest
             {
@@ -256,10 +205,10 @@ namespace PuppeteerSharp
                 ExecutionContextId = _contextId,
             }).ConfigureAwait(false);
 
-            return CreateJSHandle(obj.Object) as ElementHandle;
+            return CreateJSHandle(obj.Object) as IElementHandle;
         }
 
-        internal async Task<ElementHandle> AdoptElementHandleAsync(ElementHandle elementHandle)
+        internal async Task<IElementHandle> AdoptElementHandleAsync(IElementHandle elementHandle)
         {
             if (elementHandle.ExecutionContext == this)
             {

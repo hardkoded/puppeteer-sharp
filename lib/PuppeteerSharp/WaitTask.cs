@@ -103,10 +103,10 @@ async function waitForPredicatePageFunction(
         private readonly object[] _args;
         private readonly string _title;
         private readonly Task _timeoutTimer;
-        private readonly ElementHandle _root;
+        private readonly IElementHandle _root;
         private readonly bool _predicateAcceptsContextElement;
         private readonly CancellationTokenSource _cts;
-        private readonly TaskCompletionSource<JSHandle> _taskCompletion;
+        private readonly TaskCompletionSource<IJSHandle> _taskCompletion;
 
         private int _runCount;
         private bool _terminated;
@@ -120,7 +120,7 @@ async function waitForPredicatePageFunction(
             WaitForFunctionPollingOption polling,
             int? pollingInterval,
             int timeout,
-            ElementHandle root,
+            IElementHandle root,
             object[] args = null,
             bool predicateAcceptsContextElement = false)
         {
@@ -143,7 +143,7 @@ async function waitForPredicatePageFunction(
             _root = root;
             _cts = new CancellationTokenSource();
             _predicateAcceptsContextElement = predicateAcceptsContextElement;
-            _taskCompletion = new TaskCompletionSource<JSHandle>(TaskCreationOptions.RunContinuationsAsynchronously);
+            _taskCompletion = new TaskCompletionSource<IJSHandle>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             _world.WaitTasks.Add(this);
 
@@ -158,12 +158,12 @@ async function waitForPredicatePageFunction(
             _ = Rerun();
         }
 
-        internal Task<JSHandle> Task => _taskCompletion.Task;
+        internal Task<IJSHandle> Task => _taskCompletion.Task;
 
         internal async Task Rerun()
         {
             var runCount = Interlocked.Increment(ref _runCount);
-            JSHandle success = null;
+            IJSHandle success = null;
             Exception exception = null;
 
             var context = await _world.GetExecutionContextAsync().ConfigureAwait(false);

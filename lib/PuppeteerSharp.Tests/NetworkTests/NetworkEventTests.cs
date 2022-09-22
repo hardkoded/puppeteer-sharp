@@ -21,7 +21,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         [SkipBrowserFact(skipFirefox: true)]
         public async Task PageEventsRequest()
         {
-            var requests = new List<Request>();
+            var requests = new List<IRequest>();
             Page.Request += (_, e) => requests.Add(e.Request);
             await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.Single(requests);
@@ -49,7 +49,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         [SkipBrowserFact(skipFirefox: true)]
         public async Task PageEventsResponse()
         {
-            var responses = new List<Response>();
+            var responses = new List<IResponse>();
             Page.Response += (_, e) => responses.Add(e.Response);
             await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.Single(responses);
@@ -81,7 +81,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
                     await e.Request.ContinueAsync();
                 }
             };
-            var failedRequests = new List<Request>();
+            var failedRequests = new List<IRequest>();
             Page.RequestFailed += (_, e) => failedRequests.Add(e.Request);
             await Page.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
 
@@ -106,7 +106,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         [SkipBrowserFact(skipFirefox: true)]
         public async Task PageEventsRequestFinished()
         {
-            var requests = new List<Request>();
+            var requests = new List<IRequest>();
             Page.RequestFinished += (_, e) => requests.Add(e.Request);
             await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.Single(requests);

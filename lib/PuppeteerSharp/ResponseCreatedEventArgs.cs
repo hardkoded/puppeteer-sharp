@@ -3,7 +3,7 @@ using System;
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// <see cref="Page.Response"/> arguments.
+    /// <see cref="IPage.Response"/> arguments.
     /// </summary>
     public class ResponseCreatedEventArgs : EventArgs
     {
@@ -11,6 +11,6 @@ namespace PuppeteerSharp
         /// Gets the response.
         /// </summary>
         /// <value>The response.</value>
-        public Response Response { get; internal set; }
+        public IResponse Response { get; internal set; }
     }
 }
