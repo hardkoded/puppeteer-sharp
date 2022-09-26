@@ -26,12 +26,12 @@ namespace PuppeteerSharp
                 ? new ScreenOrientation
                 {
                     Angle = 90,
-                    Type = ScreenOrientationType.LandscapePrimary
+                    Type = ScreenOrientationType.LandscapePrimary,
                 }
                 : new ScreenOrientation
                 {
                     Angle = 0,
-                    Type = ScreenOrientationType.PortraitPrimary
+                    Type = ScreenOrientationType.PortraitPrimary,
                 };
             var hasTouch = viewport.HasTouch;
 
@@ -43,12 +43,12 @@ namespace PuppeteerSharp
                     Width = width,
                     Height = height,
                     DeviceScaleFactor = deviceScaleFactor,
-                    ScreenOrientation = screenOrientation
+                    ScreenOrientation = screenOrientation,
                 }),
                 _client.SendAsync("Emulation.setTouchEmulationEnabled", new EmulationSetTouchEmulationEnabledRequest
                 {
                     Enabled = hasTouch,
-                })
+                }),
             }).ConfigureAwait(false);
 
             var reloadNeeded = _emulatingMobile != mobile || _hasTouch != hasTouch;

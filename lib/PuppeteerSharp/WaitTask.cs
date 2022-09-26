@@ -103,10 +103,10 @@ async function waitForPredicatePageFunction(
         private readonly object[] _args;
         private readonly string _title;
         private readonly Task _timeoutTimer;
-        private readonly ElementHandle _root;
+        private readonly IElementHandle _root;
         private readonly bool _predicateAcceptsContextElement;
         private readonly CancellationTokenSource _cts;
-        private readonly TaskCompletionSource<JSHandle> _taskCompletion;
+        private readonly TaskCompletionSource<IJSHandle> _taskCompletion;
         private readonly PageBinding _binding;
 
         private int _runCount;
@@ -121,7 +121,7 @@ async function waitForPredicatePageFunction(
             WaitForFunctionPollingOption polling,
             int? pollingInterval,
             int timeout,
-            ElementHandle root,
+            IElementHandle root,
             PageBinding biding = null,
             object[] args = null,
             bool predicateAcceptsContextElement = false)
@@ -145,7 +145,7 @@ async function waitForPredicatePageFunction(
             _root = root;
             _cts = new CancellationTokenSource();
             _predicateAcceptsContextElement = predicateAcceptsContextElement;
-            _taskCompletion = new TaskCompletionSource<JSHandle>(TaskCreationOptions.RunContinuationsAsynchronously);
+            _taskCompletion = new TaskCompletionSource<IJSHandle>(TaskCreationOptions.RunContinuationsAsynchronously);
             _binding = biding;
 
             if (biding != null)
@@ -166,12 +166,12 @@ async function waitForPredicatePageFunction(
             _ = Rerun();
         }
 
-        internal Task<JSHandle> Task => _taskCompletion.Task;
+        internal Task<IJSHandle> Task => _taskCompletion.Task;
 
         internal async Task Rerun()
         {
             var runCount = Interlocked.Increment(ref _runCount);
-            JSHandle success = null;
+            IJSHandle success = null;
             Exception exception = null;
 
             var context = await _world.GetExecutionContextAsync().ConfigureAwait(false);
@@ -190,7 +190,7 @@ async function waitForPredicatePageFunction(
                         _predicateBody,
                         _predicateAcceptsContextElement,
                         _pollingInterval ?? (object)_polling,
-                        _timeout
+                        _timeout,
                     }.Concat(_args).ToArray()).ConfigureAwait(false);
             }
             catch (Exception ex)

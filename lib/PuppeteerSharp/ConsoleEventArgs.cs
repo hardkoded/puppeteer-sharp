@@ -3,7 +3,7 @@ using System;
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// <see cref="Page.Console"/> data.
+    /// <see cref="IPage.Console"/> data.
     /// </summary>
     public class ConsoleEventArgs : EventArgs
     {

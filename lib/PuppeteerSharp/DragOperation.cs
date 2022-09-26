@@ -1,4 +1,4 @@
-﻿namespace PuppeteerSharp
+namespace PuppeteerSharp
 {
     /// <summary>
     /// Drag operations available on <see cref="DragData"/>.
@@ -9,14 +9,17 @@
         /// Unknown.
         /// </summary>
         Unknown = -1,
+
         /// <summary>
         /// Copy.
         /// </summary>
         Copy = 1,
+
         /// <summary>
         /// Link.
         /// </summary>
         Link = 2,
+
         /// <summary>
         /// Move.
         /// </summary>

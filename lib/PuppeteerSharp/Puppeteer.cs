@@ -24,7 +24,7 @@ namespace PuppeteerSharp
         internal const int DefaultTimeout = 30_000;
 
         /// <summary>
-        /// Returns a list of devices to be used with <seealso cref="Page.EmulateAsync(DeviceDescriptor)"/>.
+        /// Returns a list of devices to be used with <seealso cref="IPage.EmulateAsync(DeviceDescriptor)"/>.
         /// </summary>
         /// <example>
         /// <code>
@@ -41,7 +41,7 @@ namespace PuppeteerSharp
         public static IReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor> Devices => DeviceDescriptors.ToReadOnly();
 
         /// <summary>
-        /// Returns a list of network conditions to be used with <seealso cref="Page.EmulateNetworkConditionsAsync(NetworkConditions)"/>.
+        /// Returns a list of network conditions to be used with <seealso cref="IPage.EmulateNetworkConditionsAsync(NetworkConditions)"/>.
         /// Actual list of conditions can be found in <seealso cref="PredefinedNetworkConditions.Conditions"/>.
         /// </summary>
         /// <example>
@@ -86,7 +86,7 @@ namespace PuppeteerSharp
         /// - <c>PUPPETEER_EXECUTABLE_PATH</c> - specify an executable path to be used in <see cref="Puppeteer.LaunchAsync(LaunchOptions, ILoggerFactory)"/>.
         ///   **BEWARE**: Puppeteer is only <see href="https://github.com/GoogleChrome/puppeteer/#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy">guaranteed to work</see> with the bundled Chromium, use at your own risk.
         /// </remarks>
-        public static Task<Browser> LaunchAsync(LaunchOptions options, ILoggerFactory loggerFactory = null)
+        public static Task<IBrowser> LaunchAsync(LaunchOptions options, ILoggerFactory loggerFactory = null)
             => new Launcher(loggerFactory).LaunchAsync(options);
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace PuppeteerSharp
         /// <param name="options">Options for connecting.</param>
         /// <param name="loggerFactory">The logger factory</param>
         /// <returns>A connected browser.</returns>
-        public static Task<Browser> ConnectAsync(ConnectOptions options, ILoggerFactory loggerFactory = null)
+        public static Task<IBrowser> ConnectAsync(ConnectOptions options, ILoggerFactory loggerFactory = null)
             => new Launcher(loggerFactory).ConnectAsync(options);
 
         /// <summary>
@@ -103,6 +103,6 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>The browser fetcher.</returns>
         /// <param name="options">Options.</param>
-        public static BrowserFetcher CreateBrowserFetcher(BrowserFetcherOptions options) => new(options);
+        public static IBrowserFetcher CreateBrowserFetcher(BrowserFetcherOptions options) => new BrowserFetcher(options);
     }
 }

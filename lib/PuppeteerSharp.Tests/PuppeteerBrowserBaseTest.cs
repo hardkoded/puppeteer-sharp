@@ -7,7 +7,7 @@ namespace PuppeteerSharp.Tests
 {
     public class PuppeteerBrowserBaseTest : PuppeteerBaseTest, IAsyncLifetime
     {
-        protected Browser Browser { get; set; }
+        protected IBrowser Browser { get; set; }
         protected LaunchOptions DefaultOptions { get; set; }
 
         public PuppeteerBrowserBaseTest(ITestOutputHelper output) : base(output)

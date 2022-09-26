@@ -12,6 +12,7 @@ namespace PuppeteerSharp.Transport
         /// </summary>
         /// <param name="closeReason">Close reason.</param>
         public TransportClosedEventArgs(string closeReason) => CloseReason = closeReason;
+
         /// <summary>
         /// Gets or sets the close reason.
         /// </summary>

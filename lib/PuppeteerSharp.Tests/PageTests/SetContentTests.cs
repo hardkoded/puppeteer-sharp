@@ -16,7 +16,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        async Task Usage(Browser browser)
+        async Task Usage(IBrowser browser)
         {
             #region SetContentAsync
 

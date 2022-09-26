@@ -101,7 +101,7 @@ namespace PuppeteerSharp
             return context;
         }
 
-        public async Task<Response> NavigateFrameAsync(Frame frame, string url, NavigationOptions options)
+        public async Task<IResponse> NavigateFrameAsync(Frame frame, string url, NavigationOptions options)
         {
             var referrer = string.IsNullOrEmpty(options.Referer)
                ? NetworkManager.ExtraHTTPHeaders?.GetValueOrDefault(RefererHeaderName)
@@ -140,7 +140,7 @@ namespace PuppeteerSharp
             {
                 Url = url,
                 Referrer = referrer ?? string.Empty,
-                FrameId = frameId
+                FrameId = frameId,
             }).ConfigureAwait(false);
 
             _ensureNewDocumentNavigation = !string.IsNullOrEmpty(response.LoaderId);
@@ -151,7 +151,7 @@ namespace PuppeteerSharp
             }
         }
 
-        public async Task<Response> WaitForFrameNavigationAsync(Frame frame, NavigationOptions options = null)
+        public async Task<IResponse> WaitForFrameNavigationAsync(Frame frame, NavigationOptions options = null)
         {
             var timeout = options?.Timeout ?? TimeoutSettings.NavigationTimeout;
             using (var watcher = new LifecycleWatcher(this, frame, options?.WaitUntil, timeout))
@@ -420,13 +420,13 @@ namespace PuppeteerSharp
             }
         }
 
-        private void RemoveFramesRecursively(Frame frame)
+        private void RemoveFramesRecursively(IFrame frame)
         {
             while (frame.ChildFrames.Count > 0)
             {
                 RemoveFramesRecursively(frame.ChildFrames[0]);
             }
-            frame.Detach();
+            ((Frame)frame).Detach();
             _frames.TryRemove(frame.Id, out _);
             FrameDetached?.Invoke(this, new FrameEventArgs(frame));
         }
@@ -494,7 +494,7 @@ namespace PuppeteerSharp
                     {
                         FrameId = frame.Id,
                         GrantUniveralAccess = true,
-                        WorldName = name
+                        WorldName = name,
                     }))).ConfigureAwait(false);
             }
             catch (PuppeteerException ex)

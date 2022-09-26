@@ -127,7 +127,7 @@ namespace PuppeteerSharp.Tests.PageTests
         [PuppeteerFact(Timeout = 10000)]
         public async Task ShouldCloseWhenConnectionBreaksPrematurely()
         {
-            Browser.Connection.Dispose();
+            Browser.Disconnect();
             await Page.CloseAsync();
         }
     }

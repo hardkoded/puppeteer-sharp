@@ -74,7 +74,7 @@ namespace PuppeteerSharp.Tests.FixturesTests
                 browserClosedTaskWrapper.SetResult(true);
             };
 
-            KillProcess(browser.Launcher.Process.Id);
+            KillProcess(browser.Process.Id);
 
             await browserClosedTaskWrapper.Task;
             Assert.True(browser.IsClosed);

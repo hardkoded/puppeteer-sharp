@@ -14,14 +14,16 @@ namespace PuppeteerSharp.Media
         /// Media Print.
         /// </summary>
         Print,
+
         /// <summary>
         /// Media Screen.
         /// </summary>
         Screen,
+
         /// <summary>
         /// No media set
         /// </summary>
         [EnumMember(Value = "")]
-        None
+        None,
     }
 }

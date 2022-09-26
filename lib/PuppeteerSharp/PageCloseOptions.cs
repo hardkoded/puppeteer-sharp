@@ -3,7 +3,7 @@ namespace PuppeteerSharp
     /// <summary>
     /// Page close options.
     /// </summary>
-    /// <seealso cref="Page.CloseAsync(PageCloseOptions)"/>
+    /// <seealso cref="IPage.CloseAsync(PageCloseOptions)"/>
     public class PageCloseOptions
     {
         /// <summary>

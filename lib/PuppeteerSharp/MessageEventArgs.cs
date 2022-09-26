@@ -12,6 +12,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The message identifier.</value>
         public string MessageID { get; internal set; }
+
         /// <summary>
         /// Gets the message data.
         /// </summary>

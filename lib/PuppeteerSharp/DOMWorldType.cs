@@ -11,6 +11,6 @@ namespace PuppeteerSharp
         [EnumMember(Value = "isolated")]
         Isolated,
         [EnumMember(Value = "default")]
-        Default
+        Default,
     }
 }

@@ -6,13 +6,13 @@ namespace PuppeteerSharp
     /// <summary>
     /// Exception thrown when an element selector returns null.
     /// </summary>
-    /// <seealso cref="PuppeteerHandleExtensions.EvaluateFunctionAsync{T}(System.Threading.Tasks.Task{ElementHandle}, string, object[])"/>
-    /// <seealso cref="Frame.SelectAsync(string, string[])"/>
-    /// <seealso cref="Page.ClickAsync(string, Input.ClickOptions)"/>
-    /// <seealso cref="Page.TapAsync(string)"/>
-    /// <seealso cref="Page.HoverAsync(string)"/>
-    /// <seealso cref="Page.FocusAsync(string)"/>
-    /// <seealso cref="Page.SelectAsync(string, string[])"/>
+    /// <seealso cref="PuppeteerHandleExtensions.EvaluateFunctionAsync{T}(System.Threading.Tasks.Task{IElementHandle}, string, object[])"/>
+    /// <seealso cref="IFrame.SelectAsync(string, string[])"/>
+    /// <seealso cref="IPage.ClickAsync(string, Input.ClickOptions)"/>
+    /// <seealso cref="IPage.TapAsync(string)"/>
+    /// <seealso cref="IPage.HoverAsync(string)"/>
+    /// <seealso cref="IPage.FocusAsync(string)"/>
+    /// <seealso cref="IPage.SelectAsync(string, string[])"/>
     [Serializable]
     public class SelectorException : PuppeteerException
     {
@@ -30,6 +30,7 @@ namespace PuppeteerSharp
         public SelectorException(string message) : base(message)
         {
         }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SelectorException"/> class.
         /// </summary>

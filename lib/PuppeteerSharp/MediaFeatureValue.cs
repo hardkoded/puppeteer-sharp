@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// Media Feature. <see cref="Page.EmulateMediaFeaturesAsync(System.Collections.Generic.IEnumerable{MediaFeatureValue})"/>
+    /// Media Feature. <see cref="IPage.EmulateMediaFeaturesAsync(System.Collections.Generic.IEnumerable{MediaFeatureValue})"/>
     /// </summary>
     public class MediaFeatureValue
     {
@@ -12,6 +12,7 @@ namespace PuppeteerSharp
         /// </summary>
         [JsonProperty(PropertyName = "name")]
         public MediaFeature MediaFeature { get; set; }
+
         /// <summary>
         /// The value for the given CSS media feature.
         /// </summary>

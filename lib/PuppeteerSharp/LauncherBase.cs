@@ -30,7 +30,7 @@ namespace PuppeteerSharp
 
             Process = new Process
             {
-                EnableRaisingEvents = true
+                EnableRaisingEvents = true,
             };
             Process.StartInfo.UseShellExecute = false;
             Process.StartInfo.FileName = executable;

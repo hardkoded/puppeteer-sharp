@@ -6,7 +6,7 @@ namespace PuppeteerSharp
     /// <summary>
     /// Geolocation option.
     /// </summary>
-    /// <seealso cref="Page.SetGeolocationAsync(GeolocationOption)"/>
+    /// <seealso cref="IPage.SetGeolocationAsync(GeolocationOption)"/>
     public class GeolocationOption : IEquatable<GeolocationOption>
     {
         /// <summary>
@@ -14,11 +14,13 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The latitude.</value>
         public decimal Latitude { get; set; }
+
         /// <summary>
         /// Longitude between -180 and 180.
         /// </summary>
         /// <value>The longitude.</value>
         public decimal Longitude { get; set; }
+
         /// <summary>
         /// Optional non-negative accuracy value.
         /// </summary>
@@ -36,8 +38,10 @@ namespace PuppeteerSharp
                 Latitude == other.Latitude &&
                 Longitude == other.Longitude &&
                 Accuracy == other.Accuracy;
+
         /// <inheritdoc/>
         public override bool Equals(object obj) => Equals(obj as GeolocationOption);
+
         /// <inheritdoc/>
         public override int GetHashCode()
             => (Latitude.GetHashCode() ^ 2014) +

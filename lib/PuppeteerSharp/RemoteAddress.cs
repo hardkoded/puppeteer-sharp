@@ -10,6 +10,7 @@ namespace PuppeteerSharp
         /// The IP address of the remote server.
         /// </summary>
         public string IP { get; set; }
+
         /// <summary>
         /// The port used to connect to the remote server.
         /// </summary>

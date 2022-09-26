@@ -18,7 +18,7 @@ namespace PuppeteerSharp
                 Id = frame.Id,
                 ParentId = frame.ParentId,
                 Name = frame.Name,
-                Url = frame.Url
+                Url = frame.Url,
             };
 
             Childs = new List<FrameTree>();
@@ -46,8 +46,8 @@ namespace PuppeteerSharp
                             Id = childFrame.Id,
                             Name = childFrame.Name,
                             ParentId = childFrame.ParentId,
-                            Url = childFrame.Url
-                        }
+                            Url = childFrame.Url,
+                        },
                     };
 
                     LoadChilds(newFrame, item);

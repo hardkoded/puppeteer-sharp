@@ -10,7 +10,7 @@ using PuppeteerSharp.Messaging;
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// You can use <see cref="Tracing.StartAsync(TracingOptions)"/> and <see cref="Tracing.StopAsync"/> to create a trace file which can be opened in Chrome DevTools or timeline viewer.
+    /// You can use <see cref="ITracing.StartAsync(TracingOptions)"/> and <see cref="ITracing.StopAsync"/> to create a trace file which can be opened in Chrome DevTools or timeline viewer.
     /// </summary>
     /// <example>
     /// <code>
@@ -24,7 +24,8 @@ namespace PuppeteerSharp
     /// </code>
     /// </example>
 #pragma warning disable CA1724
-    public class Tracing
+    public class Tracing : ITracing
+
 #pragma warning restore CA1724
     {
         private readonly CDPSession _client;
@@ -78,7 +79,7 @@ namespace PuppeteerSharp
             return _client.SendAsync("Tracing.start", new TracingStartRequest
             {
                 TransferMode = "ReturnAsStream",
-                Categories = string.Join(", ", categories)
+                Categories = string.Join(", ", categories),
             });
         }
 
