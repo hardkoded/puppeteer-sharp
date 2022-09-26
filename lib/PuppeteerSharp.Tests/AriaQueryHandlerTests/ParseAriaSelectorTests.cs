@@ -34,7 +34,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
         [PuppeteerFact]
         public async Task ShouldFindButton()
         {
-            async Task ExpectFound(ElementHandle button)
+            async Task ExpectFound(IElementHandle button)
             {
                 Assert.NotNull(button);
                 var id = await button.EvaluateFunctionAsync<string>(@"(button) => {

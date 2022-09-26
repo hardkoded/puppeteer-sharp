@@ -22,9 +22,9 @@ namespace PuppeteerSharp
 
         internal static InternalQueryHandler Create()
         {
-            Func<ElementHandle, string, Task<ElementHandle>> queryOne = async (ElementHandle element, string selector) =>
+            Func<IElementHandle, string, Task<IElementHandle>> queryOne = async (IElementHandle element, string selector) =>
             {
-                var exeCtx = element.ExecutionContext;
+                var exeCtx = element.ExecutionContext as ExecutionContext;
                 var queryOptions = ParseAriaSelector(selector);
                 var res = await QueryAXTreeAsync(exeCtx.Client, element, queryOptions.Name, queryOptions.Role).ConfigureAwait(false);
                 if (!res.Any() || res.First().BackendDOMNodeId == null)
@@ -34,9 +34,9 @@ namespace PuppeteerSharp
                 return await exeCtx.AdoptBackendNodeAsync(res.First().BackendDOMNodeId).ConfigureAwait(false);
             };
 
-            Func<DOMWorld, string, WaitForSelectorOptions, Task<ElementHandle>> waitFor = (DOMWorld domWorld, string selector, WaitForSelectorOptions options) =>
+            Func<DOMWorld, string, WaitForSelectorOptions, Task<IElementHandle>> waitFor = (DOMWorld domWorld, string selector, WaitForSelectorOptions options) =>
             {
-                Func<string, Task<ElementHandle>> func = async (string selector) =>
+                Func<string, Task<IElementHandle>> func = async (string selector) =>
                 {
                     var root = options?.Root ?? await domWorld.GetDocumentAsync().ConfigureAwait(false);
                     var element = await queryOne(root, selector).ConfigureAwait(false);
@@ -56,16 +56,16 @@ namespace PuppeteerSharp
                     binding);
             };
 
-            Func<ElementHandle, string, Task<ElementHandle[]>> queryAll = async (ElementHandle element, string selector) =>
+            Func<IElementHandle, string, Task<IElementHandle[]>> queryAll = async (IElementHandle element, string selector) =>
             {
-                var exeCtx = element.ExecutionContext;
+                var exeCtx = element.ExecutionContext as ExecutionContext;
                 var ariaSelector = ParseAriaSelector(selector);
                 var res = await QueryAXTreeAsync(exeCtx.Client, element, ariaSelector.Name, ariaSelector.Role).ConfigureAwait(false);
                 var elements = await Task.WhenAll(res.Select(axNode => exeCtx.AdoptBackendNodeAsync(axNode.BackendDOMNodeId))).ConfigureAwait(false);
                 return elements.ToArray();
             };
 
-            Func<ElementHandle, string, Task<JSHandle>> queryAllArray = async (ElementHandle element, string selector) =>
+            Func<IElementHandle, string, Task<IJSHandle>> queryAllArray = async (IElementHandle element, string selector) =>
             {
                 var elementHandles = await queryAll(element, selector).ConfigureAwait(false);
                 var exeCtx = element.ExecutionContext;
@@ -82,7 +82,7 @@ namespace PuppeteerSharp
             };
         }
 
-        private static async Task<IEnumerable<AXTreeNode>> QueryAXTreeAsync(CDPSession client, ElementHandle element, string accessibleName, string role)
+        private static async Task<IEnumerable<AXTreeNode>> QueryAXTreeAsync(CDPSession client, IElementHandle element, string accessibleName, string role)
         {
             var nodes = await client.SendAsync<AccessibilityQueryAXTreeResponse>(
                 "Accessibility.queryAXTree",
