@@ -107,7 +107,7 @@ async function waitForPredicatePageFunction(
         private readonly bool _predicateAcceptsContextElement;
         private readonly CancellationTokenSource _cts;
         private readonly TaskCompletionSource<IJSHandle> _taskCompletion;
-        private readonly PageBinding _binding;
+        private readonly PageBinding[] _bindings;
 
         private int _runCount;
         private bool _terminated;
@@ -122,7 +122,7 @@ async function waitForPredicatePageFunction(
             int? pollingInterval,
             int timeout,
             IElementHandle root,
-            PageBinding biding = null,
+            PageBinding[] bidings = null,
             object[] args = null,
             bool predicateAcceptsContextElement = false)
         {
@@ -146,11 +146,11 @@ async function waitForPredicatePageFunction(
             _cts = new CancellationTokenSource();
             _predicateAcceptsContextElement = predicateAcceptsContextElement;
             _taskCompletion = new TaskCompletionSource<IJSHandle>(TaskCreationOptions.RunContinuationsAsynchronously);
-            _binding = biding;
+            _bindings = bidings ?? Array.Empty<PageBinding>();
 
-            if (biding != null)
+            foreach (var binding in _bindings)
             {
-                _world.BoundFunctions.TryAdd(_binding.Name, _binding.Function);
+                _world.BoundFunctions.AddOrUpdate(binding.Name, binding.Function, (_, __) => binding.Function);
             }
 
             _world.WaitTasks.Add(this);
@@ -175,10 +175,7 @@ async function waitForPredicatePageFunction(
             Exception exception = null;
 
             var context = await _world.GetExecutionContextAsync().ConfigureAwait(false);
-            if (_binding != null)
-            {
-              await _world.AddBindingToContextAsync(context, _binding.Name).ConfigureAwait(false);
-            }
+            await System.Threading.Tasks.Task.WhenAll(_bindings.Select(binding => _world.AddBindingToContextAsync(context, binding.Name))).ConfigureAwait(false);
 
             try
             {

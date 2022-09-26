@@ -19,7 +19,6 @@ namespace PuppeteerSharp
     {
         private readonly FrameManager _frameManager;
         private readonly ILogger<ElementHandle> _logger;
-        private readonly IFrame _frame;
 
         internal ElementHandle(
             ExecutionContext context,
@@ -30,7 +29,7 @@ namespace PuppeteerSharp
             FrameManager frameManager) : base(context, client, remoteObject)
         {
             Page = page;
-            _frame = frame;
+            Frame = frame as Frame;
             _frameManager = frameManager;
             _logger = client.LoggerFactory.CreateLogger<ElementHandle>();
         }
@@ -39,6 +38,8 @@ namespace PuppeteerSharp
             string.IsNullOrEmpty(RemoteObject.ClassName) ? ToString() : $"{RemoteObject.ClassName}@{RemoteObject.Description}";
 
         internal IPage Page { get; }
+
+        internal Frame Frame { get; }
 
         internal CustomQueriesManager CustomQueriesManager => ((Browser)Page.Browser).CustomQueriesManager;
 
@@ -316,7 +317,7 @@ namespace PuppeteerSharp
             {
                 return null;
             }
-            var (offsetX, offsetY) = await GetOOPIFOffsetsAsync(_frame).ConfigureAwait(false);
+            var (offsetX, offsetY) = await GetOOPIFOffsetsAsync(Frame).ConfigureAwait(false);
             var quad = result.Model.Border;
 
             var x = new[] { quad[0], quad[2], quad[4], quad[6] }.Min();
@@ -331,7 +332,7 @@ namespace PuppeteerSharp
         public async Task<BoxModel> BoxModelAsync()
         {
             var result = await GetBoxModelAsync().ConfigureAwait(false);
-            var (offsetX, offsetY) = await GetOOPIFOffsetsAsync(_frame).ConfigureAwait(false);
+            var (offsetX, offsetY) = await GetOOPIFOffsetsAsync(Frame).ConfigureAwait(false);
 
             return result == null
                 ? null
@@ -493,7 +494,7 @@ namespace PuppeteerSharp
                 throw new PuppeteerException("Node is either not visible or not an HTMLElement");
             }
 
-            var (offsetX, offsetY) = await GetOOPIFOffsetsAsync(_frame).ConfigureAwait(false);
+            var (offsetX, offsetY) = await GetOOPIFOffsetsAsync(Frame).ConfigureAwait(false);
 
             // Filter out quads that have too small area to click into.
             var quads = result.Quads

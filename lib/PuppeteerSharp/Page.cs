@@ -1461,7 +1461,8 @@ namespace PuppeteerSharp
 
             var frame = await FrameManager.GetFrameAsync(e.FrameId).ConfigureAwait(false);
             var context = await frame.GetExecutionContextAsync().ConfigureAwait(false) as ExecutionContext;
-            var element = await context.AdoptBackendNodeAsync(e.BackendNodeId).ConfigureAwait(false);
+            var world = context.World;
+            var element = await world.AdoptBackendNodeAsync(e.BackendNodeId).ConfigureAwait(false);
             var fileChooser = new FileChooser(element, e);
             while (_fileChooserInterceptors.Count > 0)
             {

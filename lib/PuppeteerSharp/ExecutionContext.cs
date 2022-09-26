@@ -201,17 +201,6 @@ namespace PuppeteerSharp
             return message;
         }
 
-        internal async Task<IElementHandle> AdoptBackendNodeAsync(object backendNodeId)
-        {
-            var obj = await Client.SendAsync<DomResolveNodeResponse>("DOM.resolveNode", new DomResolveNodeRequest
-            {
-                BackendNodeId = backendNodeId,
-                ExecutionContextId = ContextId,
-            }).ConfigureAwait(false);
-
-            return CreateJSHandle(obj.Object) as IElementHandle;
-        }
-
         internal async Task<IElementHandle> AdoptElementHandleAsync(IElementHandle elementHandle)
         {
             if (elementHandle.ExecutionContext == this)

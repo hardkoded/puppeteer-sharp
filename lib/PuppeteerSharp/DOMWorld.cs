@@ -3,6 +3,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.Extensions.Logging;
@@ -180,6 +182,7 @@ namespace PuppeteerSharp
 
         internal void SetContext(ExecutionContext context)
         {
+            _documentTask = null;
             if (context != null)
             {
                 _ctxBindings.Clear();
@@ -194,6 +197,34 @@ namespace PuppeteerSharp
                 _documentCompletionSource = null;
                 _contextResolveTaskWrapper = new TaskCompletionSource<ExecutionContext>(TaskCreationOptions.RunContinuationsAsynchronously);
             }
+        }
+
+        internal async Task<IElementHandle> AdoptBackendNodeAsync(object backendNodeId)
+        {
+            var executionContext = await GetExecutionContextAsync().ConfigureAwait(false);
+            var obj = await _client.SendAsync<DomResolveNodeResponse>("DOM.resolveNode", new DomResolveNodeRequest
+            {
+                BackendNodeId = backendNodeId,
+                ExecutionContextId = executionContext.ContextId,
+            }).ConfigureAwait(false);
+
+            return executionContext.CreateJSHandle(obj.Object) as IElementHandle;
+        }
+
+        internal async Task<IElementHandle> AdoptHandleAsync(IElementHandle handle)
+        {
+            var executionContext = await this.GetExecutionContextAsync().ConfigureAwait(false);
+
+            if (executionContext == handle.ExecutionContext)
+            {
+                return handle;
+            }
+
+            var nodeInfo = await _client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
+            {
+                ObjectId = ((ElementHandle)handle).RemoteObject.ObjectId,
+            }).ConfigureAwait(false);
+            return await AdoptBackendNodeAsync(nodeInfo.Node.BackendNodeId).ConfigureAwait(false);
         }
 
         internal void Detach()
@@ -372,7 +403,7 @@ namespace PuppeteerSharp
             throw new ArgumentException("Provide options with a `Url`, `Path` or `Content` property");
         }
 
-        internal async Task<IElementHandle> WaitForSelectorInPageAsync(string queryOne, string selector, WaitForSelectorOptions options, PageBinding binding = null)
+        internal async Task<IElementHandle> WaitForSelectorInPageAsync(string queryOne, string selector, WaitForSelectorOptions options, PageBinding[] bindings = null)
         {
             var waitForVisible = options?.Visible ?? false;
             var waitForHidden = options?.Hidden ?? false;
@@ -397,7 +428,7 @@ namespace PuppeteerSharp
                 null,
                 timeout,
                 options?.Root,
-                binding,
+                bindings,
                 new object[]
                 {
                     selector,
@@ -539,10 +570,11 @@ namespace PuppeteerSharp
             await handle.DisposeAsync().ConfigureAwait(false);
         }
 
-        internal Task<IElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
+        internal async Task<IElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
         {
             var (updatedSelector, queryHandler) = _customQueriesManager.GetQueryHandlerAndSelector(selector);
-            return queryHandler.WaitFor(this, updatedSelector, options);
+            var root = options?.Root ?? await this.GetDocumentAsync().ConfigureAwait(false);
+            return await queryHandler.WaitFor(root, updatedSelector, options).ConfigureAwait(false);
         }
 
         internal Task<IElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
