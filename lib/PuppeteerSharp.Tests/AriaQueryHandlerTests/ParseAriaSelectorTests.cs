@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
         }
 
         [PuppeteerTest("ariaqueryhandler.spec.ts", "parseAriaSelector", "should find button")]
-        [PuppeteerFact]
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldFindButton()
         {
             async Task ExpectFound(IElementHandle button)
