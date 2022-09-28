@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json.Linq;
 
 namespace PuppeteerSharp
 {
@@ -59,8 +60,8 @@ namespace PuppeteerSharp
               }",
         });
 
+        private readonly InternalQueryHandler _ariaHandler = AriaQueryHandlerFactory.Create();
         private readonly Dictionary<string, InternalQueryHandler> _builtInHandlers;
-
         private readonly Regex _customQueryHandlerNameRegex = new("[a-zA-Z]+$", RegexOptions.Compiled);
         private readonly Regex _customQueryHandlerParserRegex = new("(?<query>^[a-zA-Z]+)\\/(?<selector>.*)", RegexOptions.Compiled);
         private readonly InternalQueryHandler _defaultHandler = MakeQueryHandler(new CustomQueryHandler
@@ -73,6 +74,7 @@ namespace PuppeteerSharp
         {
             _builtInHandlers = new()
             {
+                ["aria"] = _ariaHandler,
                 ["pierce"] = _pierceHandler,
             };
             _queryHandlers = _builtInHandlers.ToDictionary(
@@ -115,8 +117,13 @@ namespace PuppeteerSharp
                     return null;
                 };
 
-                internalHandler.WaitFor = (DOMWorld domWorld, string selector, WaitForSelectorOptions options)
-                    => domWorld.WaitForSelectorInPageAsync(handler.QueryOne, selector, options);
+                internalHandler.WaitFor = async (IElementHandle root, string selector, WaitForSelectorOptions options) =>
+                {
+                    var frame = (root as ElementHandle).Frame;
+                    var element = await frame.SecondaryWorld.AdoptHandleAsync(root).ConfigureAwait(false);
+
+                    return await frame.SecondaryWorld.WaitForSelectorInPageAsync(handler.QueryOne, selector, options).ConfigureAwait(false);
+                };
             }
 
             if (!string.IsNullOrEmpty(handler.QueryAll))

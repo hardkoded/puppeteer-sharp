@@ -26,6 +26,8 @@ namespace PuppeteerSharp.Messaging
 
         internal class BindingCalledResponsePayload
         {
+            public string Type { get; set; }
+
             public string Name { get; set; }
 
             public JToken[] Args { get; set; }

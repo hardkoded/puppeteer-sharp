@@ -28,7 +28,7 @@ namespace PuppeteerSharp
     {
         private readonly TaskQueue _screenshotTaskQueue;
         private readonly EmulationManager _emulationManager;
-        private readonly Dictionary<string, Delegate> _pageBindings;
+        private readonly ConcurrentDictionary<string, Delegate> _pageBindings;
         private readonly IDictionary<string, Worker> _workers;
         private readonly ILogger _logger;
         private readonly TaskCompletionSource<bool> _closeCompletedTcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -82,7 +82,7 @@ namespace PuppeteerSharp
             _fileChooserInterceptors = new ConcurrentDictionary<Guid, TaskCompletionSource<FileChooser>>();
             _timeoutSettings = new TimeoutSettings();
             _emulationManager = new EmulationManager(client);
-            _pageBindings = new Dictionary<string, Delegate>();
+            _pageBindings = new ConcurrentDictionary<string, Delegate>();
             _workers = new ConcurrentDictionary<string, Worker>();
             _logger = Client.Connection.LoggerFactory.CreateLogger<Page>();
             FrameManager = new FrameManager(client, this, ignoreHTTPSErrors, _timeoutSettings);
@@ -342,7 +342,7 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public Task EvaluateFunctionOnNewDocumentAsync(string pageFunction, params object[] args)
         {
-            var source = EvaluationString(pageFunction, args);
+            var source = BindingUtils.EvaluationString(pageFunction, args);
             return Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new PageAddScriptToEvaluateOnNewDocumentRequest
             {
                 Source = source,
@@ -1461,7 +1461,8 @@ namespace PuppeteerSharp
 
             var frame = await FrameManager.GetFrameAsync(e.FrameId).ConfigureAwait(false);
             var context = await frame.GetExecutionContextAsync().ConfigureAwait(false) as ExecutionContext;
-            var element = await context.AdoptBackendNodeAsync(e.BackendNodeId).ConfigureAwait(false);
+            var world = context.World;
+            var element = await world.AdoptBackendNodeAsync(e.BackendNodeId).ConfigureAwait(false);
             var fileChooser = new FileChooser(element, e);
             while (_fileChooserInterceptors.Count > 0)
             {
@@ -1479,9 +1480,14 @@ namespace PuppeteerSharp
             string expression;
             try
             {
-                var result = await ExecuteBinding(e).ConfigureAwait(false);
+                if (e.BindingPayload.Type != "exposedFun" || !_pageBindings.ContainsKey(e.BindingPayload.Name))
+                {
+                    return;
+                }
 
-                expression = EvaluationString(
+                var result = await BindingUtils.ExecuteBindingAsync(e, _pageBindings).ConfigureAwait(false);
+
+                expression = BindingUtils.EvaluationString(
                     @"function deliverResult(name, seq, result) {
                         window[name]['callbacks'].get(seq).resolve(result);
                         window[name]['callbacks'].delete(seq);
@@ -1497,7 +1503,7 @@ namespace PuppeteerSharp
                     ex = ex.InnerException;
                 }
 
-                expression = EvaluationString(
+                expression = BindingUtils.EvaluationString(
                     @"function deliverError(name, seq, message, stack) {
                         const error = new Error(message);
                         error.stack = stack;
@@ -1515,30 +1521,6 @@ namespace PuppeteerSharp
                 expression,
                 contextId = e.ExecutionContextId,
             });
-        }
-
-        private async Task<object> ExecuteBinding(BindingCalledResponse e)
-        {
-            const string taskResultPropertyName = "Result";
-            object result;
-            var binding = _pageBindings[e.BindingPayload.Name];
-            var methodParams = binding.Method.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
-
-            var args = e.BindingPayload.Args.Select((token, i) => token.ToObject(methodParams[i])).ToArray();
-
-            result = binding.DynamicInvoke(args);
-            if (result is Task taskResult)
-            {
-                await taskResult.ConfigureAwait(false);
-
-                if (taskResult.GetType().IsGenericType)
-                {
-                    // the task is already awaited and therefore the call to property Result will not deadlock
-                    result = taskResult.GetType().GetProperty(taskResultPropertyName).GetValue(taskResult);
-                }
-            }
-
-            return result;
         }
 
         private void OnDetachedFromTarget(TargetDetachedFromTargetResponse e)
@@ -1684,9 +1666,9 @@ namespace PuppeteerSharp
             {
                 throw new PuppeteerException($"Failed to add page binding with name {name}: window['{name}'] already exists!");
             }
-            _pageBindings.Add(name, puppeteerFunction);
+            _pageBindings.TryAdd(name, puppeteerFunction);
 
-            const string addPageBinding = @"function addPageBinding(bindingName) {
+            const string addPageBinding = @"function addPageBinding(type, bindingName) {
               const binding = window[bindingName];
               window[bindingName] = (...args) => {
                 const me = window[bindingName];
@@ -1698,11 +1680,11 @@ namespace PuppeteerSharp
                 const seq = (me['lastSeq'] || 0) + 1;
                 me['lastSeq'] = seq;
                 const promise = new Promise((resolve, reject) => callbacks.set(seq, {resolve, reject}));
-                binding(JSON.stringify({name: bindingName, seq, args}));
+                binding(JSON.stringify({type, name: bindingName, seq, args}));
                 return promise;
               };
             }";
-            var expression = EvaluationString(addPageBinding, name);
+            var expression = BindingUtils.EvaluationString(addPageBinding, "exposedFun", name);
             await Client.SendAsync("Runtime.addBinding", new RuntimeAddBindingRequest { Name = name }).ConfigureAwait(false);
             await Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new PageAddScriptToEvaluateOnNewDocumentRequest
             {
@@ -1722,18 +1704,6 @@ namespace PuppeteerSharp
                         },
                         TaskScheduler.Default)))
                 .ConfigureAwait(false);
-        }
-
-        private static string EvaluationString(string fun, params object[] args)
-        {
-            return $"({fun})({string.Join(",", args.Select(SerializeArgument))})";
-
-            string SerializeArgument(object arg)
-            {
-                return arg == null
-                    ? "undefined"
-                    : JsonConvert.SerializeObject(arg, JsonHelper.DefaultJsonSerializerSettings);
-            }
         }
 
         /// <inheritdoc />

@@ -1,13 +1,19 @@
-using System;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Input;
 using PuppeteerSharp.Messaging;
+using PuppeteerSharp.PageCoverage;
 
 namespace PuppeteerSharp
 {
@@ -17,9 +23,13 @@ namespace PuppeteerSharp
         private readonly CustomQueriesManager _customQueriesManager;
         private readonly TimeoutSettings _timeoutSettings;
         private readonly CDPSession _client;
+        private readonly ILogger _logger;
+        private readonly List<string> _ctxBindings = new();
         private bool _detached;
         private TaskCompletionSource<ExecutionContext> _contextResolveTaskWrapper;
         private TaskCompletionSource<IElementHandle> _documentCompletionSource;
+        private Task _settingUpBinding;
+        private Task<ElementHandle> _documentTask;
 
         public DOMWorld(CDPSession client, FrameManager frameManager, Frame frame, TimeoutSettings timeoutSettings)
         {
@@ -35,6 +45,7 @@ namespace PuppeteerSharp
             WaitTasks = new ConcurrentSet<WaitTask>();
             _detached = false;
             _client.MessageReceived += Client_MessageReceived;
+            _logger = _client.Connection.LoggerFactory.CreateLogger<DOMWorld>();
         }
 
         internal ICollection<WaitTask> WaitTasks { get; set; }
@@ -44,6 +55,8 @@ namespace PuppeteerSharp
         internal bool HasContext => _contextResolveTaskWrapper?.Task.IsCompleted == true;
 
         internal ILogger Logger { get; }
+
+        internal ConcurrentDictionary<string, Delegate> BoundFunctions { get; } = new();
 
         private async void Client_MessageReceived(object sender, MessageEventArgs e)
         {
@@ -64,16 +77,115 @@ namespace PuppeteerSharp
             }
         }
 
-        private Task OnBindingCalled(BindingCalledResponse bindingCalledResponse)
+        private async Task OnBindingCalled(BindingCalledResponse e)
         {
-            // TODO
-            return Task.CompletedTask;
+            var payload = e.BindingPayload;
+            if (!HasContext)
+            {
+                return;
+            }
+            var context = await GetExecutionContextAsync().ConfigureAwait(false);
+
+            if (
+                e.BindingPayload.Type != "internal" ||
+                !_ctxBindings.Contains(GetBindingIdentifier(payload.Name, context.ContextId)))
+            {
+                return;
+            }
+
+            if (context.ContextId != e.ExecutionContextId)
+            {
+                return;
+            }
+
+            try
+            {
+                if (!BoundFunctions.TryGetValue(payload.Name, out var fn))
+                {
+                    throw new PuppeteerException($"Bound function {payload.Name} is not found");
+                }
+                var result = await BindingUtils.ExecuteBindingAsync(e, BoundFunctions).ConfigureAwait(false);
+
+                await context.EvaluateFunctionAsync(
+                    @"(name, seq, result) => {
+                      globalThis[name].callbacks.get(seq).resolve(result);
+                      globalThis[name].callbacks.delete(seq);
+                    }",
+                    payload.Name,
+                    payload.Seq,
+                    result).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.Contains("Protocol error"))
+                {
+                    return;
+                }
+                _logger.LogError(ex.ToString());
+            }
         }
+
+        internal async Task AddBindingToContextAsync(ExecutionContext context, string name)
+        {
+            // Previous operation added the binding so we are done.
+            if (_ctxBindings.Contains(GetBindingIdentifier(name, context.ContextId)))
+            {
+                return;
+            }
+
+            // Wait for other operation to finish
+            if (_settingUpBinding != null)
+            {
+                await _settingUpBinding.ConfigureAwait(false);
+                await AddBindingToContextAsync(context, name).ConfigureAwait(false);
+                return;
+            }
+
+            async Task BindAsync(string name)
+            {
+                var expression = BindingUtils.PageBindingInitString("internal", name);
+                try
+                {
+                    // TODO: In theory, it would be enough to call this just once
+                    await context.Client.SendAsync(
+                        "Runtime.addBinding",
+                        new RuntimeAddBindingRequest
+                        {
+                            Name = name,
+                            ExecutionContextName = context.ContextName,
+                        }).ConfigureAwait(false);
+                    await context.EvaluateExpressionAsync(expression).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    var ctxDestroyed = ex.Message.Contains("Execution context was destroyed");
+                    var ctxNotFound = ex.Message.Contains("Cannot find context with specified id");
+                    if (ctxDestroyed || ctxNotFound)
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        _logger.LogError(ex.ToString());
+                        return;
+                    }
+                }
+                _ctxBindings.Add(GetBindingIdentifier(name, context.ContextId));
+            }
+
+            _settingUpBinding = BindAsync(name);
+            await _settingUpBinding.ConfigureAwait(false);
+            _settingUpBinding = null;
+        }
+
+        private string GetBindingIdentifier(string name, int contextId) => $"{name}_{contextId}";
 
         internal void SetContext(ExecutionContext context)
         {
+            _documentTask = null;
             if (context != null)
             {
+                _ctxBindings.Clear();
                 _contextResolveTaskWrapper.TrySetResult(context);
                 foreach (var waitTask in WaitTasks)
                 {
@@ -85,6 +197,34 @@ namespace PuppeteerSharp
                 _documentCompletionSource = null;
                 _contextResolveTaskWrapper = new TaskCompletionSource<ExecutionContext>(TaskCreationOptions.RunContinuationsAsynchronously);
             }
+        }
+
+        internal async Task<IElementHandle> AdoptBackendNodeAsync(object backendNodeId)
+        {
+            var executionContext = await GetExecutionContextAsync().ConfigureAwait(false);
+            var obj = await _client.SendAsync<DomResolveNodeResponse>("DOM.resolveNode", new DomResolveNodeRequest
+            {
+                BackendNodeId = backendNodeId,
+                ExecutionContextId = executionContext.ContextId,
+            }).ConfigureAwait(false);
+
+            return executionContext.CreateJSHandle(obj.Object) as IElementHandle;
+        }
+
+        internal async Task<IElementHandle> AdoptHandleAsync(IElementHandle handle)
+        {
+            var executionContext = await this.GetExecutionContextAsync().ConfigureAwait(false);
+
+            if (executionContext == handle.ExecutionContext)
+            {
+                return handle;
+            }
+
+            var nodeInfo = await _client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
+            {
+                ObjectId = ((ElementHandle)handle).RemoteObject.ObjectId,
+            }).ConfigureAwait(false);
+            return await AdoptBackendNodeAsync(nodeInfo.Node.BackendNodeId).ConfigureAwait(false);
         }
 
         internal void Detach()
@@ -263,7 +403,7 @@ namespace PuppeteerSharp
             throw new ArgumentException("Provide options with a `Url`, `Path` or `Content` property");
         }
 
-        internal async Task<IElementHandle> WaitForSelectorInPageAsync(string queryOne, string selector, WaitForSelectorOptions options)
+        internal async Task<IElementHandle> WaitForSelectorInPageAsync(string queryOne, string selector, WaitForSelectorOptions options, PageBinding[] bindings = null)
         {
             var waitForVisible = options?.Visible ?? false;
             var waitForHidden = options?.Hidden ?? false;
@@ -288,6 +428,7 @@ namespace PuppeteerSharp
                 null,
                 timeout,
                 options?.Root,
+                bindings,
                 new object[]
                 {
                     selector,
@@ -429,10 +570,11 @@ namespace PuppeteerSharp
             await handle.DisposeAsync().ConfigureAwait(false);
         }
 
-        internal Task<IElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
+        internal async Task<IElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
         {
             var (updatedSelector, queryHandler) = _customQueriesManager.GetQueryHandlerAndSelector(selector);
-            return queryHandler.WaitFor(this, updatedSelector, options);
+            var root = options?.Root ?? await this.GetDocumentAsync().ConfigureAwait(false);
+            return await queryHandler.WaitFor(root, updatedSelector, options).ConfigureAwait(false);
         }
 
         internal Task<IElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
@@ -448,6 +590,7 @@ namespace PuppeteerSharp
                  options.Polling,
                  options.PollingInterval,
                  options.Timeout ?? _timeoutSettings.Timeout,
+                 null,
                  null,
                  args);
 
@@ -466,7 +609,10 @@ namespace PuppeteerSharp
                 options.Polling,
                 options.PollingInterval,
                 options.Timeout ?? _timeoutSettings.Timeout,
-                null);
+                null, // Root
+                null, // PageBinding
+                null, // args
+                false); // predicateAcceptsContextElement
 
             return await waitTask
                 .Task
@@ -474,6 +620,31 @@ namespace PuppeteerSharp
         }
 
         internal Task<string> GetTitleAsync() => EvaluateExpressionAsync<string>("document.title");
+
+        internal Task<ElementHandle> GetDocumentAsync()
+        {
+            if (_documentTask != null)
+            {
+              return _documentTask;
+            }
+
+            async Task<ElementHandle> EvalauteDocumentInContext()
+            {
+                var context = await GetExecutionContextAsync().ConfigureAwait(false);
+                var document = await context.EvaluateFunctionHandleAsync("() => document").ConfigureAwait(false);
+                var element = document as ElementHandle;
+
+                if (element == null)
+                {
+                    throw new PuppeteerException("Document is null");
+                }
+                return element;
+            }
+
+            _documentTask = EvalauteDocumentInContext();
+
+            return _documentTask;
+        }
 
         private async Task<IElementHandle> GetDocument()
         {
@@ -559,9 +730,10 @@ namespace PuppeteerSharp
                 false,
                 $"{(isXPath ? "XPath" : "selector")} '{selectorOrXPath}'{(options.Hidden ? " to be hidden" : string.Empty)}",
                 polling,
-                null,
+                null, // Polling interval
                 timeout,
                 options.Root,
+                null,
                 new object[] { selectorOrXPath, isXPath, options.Visible, options.Hidden });
 
             var handle = await waitTask.Task.ConfigureAwait(false);

@@ -107,13 +107,14 @@ async function waitForPredicatePageFunction(
         private readonly bool _predicateAcceptsContextElement;
         private readonly CancellationTokenSource _cts;
         private readonly TaskCompletionSource<IJSHandle> _taskCompletion;
+        private readonly PageBinding[] _bindings;
 
         private int _runCount;
         private bool _terminated;
         private bool _isDisposing;
 
         internal WaitTask(
-            DOMWorld world,
+            DOMWorld domWorld,
             string predicateBody,
             bool isExpression,
             string title,
@@ -121,6 +122,7 @@ async function waitForPredicatePageFunction(
             int? pollingInterval,
             int timeout,
             IElementHandle root,
+            PageBinding[] bidings = null,
             object[] args = null,
             bool predicateAcceptsContextElement = false)
         {
@@ -133,7 +135,7 @@ async function waitForPredicatePageFunction(
                 throw new ArgumentOutOfRangeException(nameof(pollingInterval), "Cannot poll with non-positive interval");
             }
 
-            _world = world;
+            _world = domWorld;
             _predicateBody = isExpression ? $"return ({predicateBody})" : $"return ({predicateBody})(...args)";
             _polling = polling;
             _pollingInterval = pollingInterval;
@@ -144,6 +146,12 @@ async function waitForPredicatePageFunction(
             _cts = new CancellationTokenSource();
             _predicateAcceptsContextElement = predicateAcceptsContextElement;
             _taskCompletion = new TaskCompletionSource<IJSHandle>(TaskCreationOptions.RunContinuationsAsynchronously);
+            _bindings = bidings ?? Array.Empty<PageBinding>();
+
+            foreach (var binding in _bindings)
+            {
+                _world.BoundFunctions.AddOrUpdate(binding.Name, binding.Function, (_, __) => binding.Function);
+            }
 
             _world.WaitTasks.Add(this);
 
@@ -167,6 +175,8 @@ async function waitForPredicatePageFunction(
             Exception exception = null;
 
             var context = await _world.GetExecutionContextAsync().ConfigureAwait(false);
+            await System.Threading.Tasks.Task.WhenAll(_bindings.Select(binding => _world.AddBindingToContextAsync(context, binding.Name))).ConfigureAwait(false);
+
             try
             {
                 success = await context.EvaluateFunctionHandleAsync(
