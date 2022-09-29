@@ -13,10 +13,10 @@
     <Description>Headless Browser .NET API</Description>
     <PackageId>PuppeteerSharp</PackageId>
     <PackageReleaseNotes></PackageReleaseNotes>
-    <PackageVersion>7.1.0</PackageVersion>
-    <ReleaseVersion>7.1.0</ReleaseVersion>
-    <AssemblyVersion>7.1.0.0</AssemblyVersion>
-    <FileVersion>7.1.0.0</FileVersion>
+    <PackageVersion>8.0.0</PackageVersion>
+    <ReleaseVersion>8.0.0</ReleaseVersion>
+    <AssemblyVersion>8.0.0.0</AssemblyVersion>
+    <FileVersion>8.0.0.0</FileVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
     <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
     <CodeAnalysisRuleSet>../PuppeteerSharp.ruleset</CodeAnalysisRuleSet>
