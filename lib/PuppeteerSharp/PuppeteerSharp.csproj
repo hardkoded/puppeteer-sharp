@@ -52,5 +52,9 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="SharpZipLib" Version="1.3.3" />
+    <PackageReference Include="System.Text.Encodings.Web" Version="6.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="System.Text.Encodings.Web" />
   </ItemGroup>
 </Project>
