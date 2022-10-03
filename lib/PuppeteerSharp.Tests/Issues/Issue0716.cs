@@ -22,6 +22,7 @@ namespace PuppeteerSharp.Tests.Issues
             await using (var browser = await Puppeteer.LaunchAsync(options))
             await using (var page = await browser.NewPageAsync())
             {
+                page.DefaultNavigationTimeout = 60_000;
                 await page.GoToAsync("https://duckduckgo.com/");
                 var input = await page.WaitForSelectorAsync("input[type=\"text\"");
                 await input.TypeAsync("Lorem ipsum dolor sit amet.");
