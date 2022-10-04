@@ -30,7 +30,7 @@ namespace PuppeteerSharp
         /// <param name="offset">Optional offset</param>
         /// <exception cref="PuppeteerException">When the node is not visible or not an HTMLElement</exception>
         /// <returns>A <see cref="Task"/> that resolves to the clickable point</returns>
-        public Task<BoxModelPoint> ClickablePointAsync(BoxModelPoint? offset = null);
+        public Task<BoxModelPoint> ClickablePointAsync(Offset? offset = null);
 
         /// <summary>
         /// Scrolls element into view if needed, and then uses <see cref="PuppeteerSharp.IPage.Mouse"/> to click in the center of the element.

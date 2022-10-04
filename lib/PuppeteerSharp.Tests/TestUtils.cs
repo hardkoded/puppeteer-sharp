@@ -1,3 +1,4 @@
+using System.Collections;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -6,6 +7,18 @@ namespace PuppeteerSharp.Tests
 {
     public static class TestUtils
     {
+        public static async Task ShortWaitForCollectionToHaveAtLeastNElementsAsync(ICollection collection, int minLength, int attempts = 3, int timeout = 50)
+        {
+            for (var i = 0; i < attempts; i++)
+            {
+                if (collection.Count >= minLength)
+                {
+                    break;
+                }
+                await Task.Delay(timeout);
+            }
+        }
+
         public static string FindParentDirectory(string directory)
         {
             var current = Directory.GetCurrentDirectory();
